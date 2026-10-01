@@ -343,6 +343,7 @@ pub(crate) struct Inputs<'a> {
     /// The exact interface-special targets whose Java source binding the facade proved.
     pub(crate) interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
     pub(crate) reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
+    pub(crate) snapshot_hierarchy_widenings: &'a [crate::report::ProvedSnapshotHierarchyWidening],
     pub(crate) captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
     pub(crate) outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
     pub(crate) physical_method: Option<&'a jarde_reader::model::PhysicalMethodId>,
@@ -7335,6 +7336,7 @@ pub(crate) fn build(
         typed_functional_target: inputs.typed_functional_target,
         interface_super_calls: inputs.interface_super_calls,
         reference_overload_calls: inputs.reference_overload_calls,
+        snapshot_hierarchy_widenings: inputs.snapshot_hierarchy_widenings,
         captured_outer_reads: inputs.captured_outer_reads,
         outer_super_calls: inputs.outer_super_calls,
         declaring_class: inputs.declaring_class,
@@ -8017,6 +8019,7 @@ struct Builder<'a> {
     typed_functional_target: Option<crate::report::TypedFunctionalTarget>,
     interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
     reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
+    snapshot_hierarchy_widenings: &'a [crate::report::ProvedSnapshotHierarchyWidening],
     captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
     outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
     /// The class this body belongs to, in internal form, when the run's own member declaration
@@ -21189,6 +21192,16 @@ impl Builder<'_> {
                     return Ok(cast_argument(argument, required, bci));
                 }
                 if java_lang_throwable_widens(&presented_name, required_name) {
+                    return Ok(cast_argument(argument, required, bci));
+                }
+                // The last reference answer, and only after every earlier one: the argument's own
+                // snapshot states the chain, so the pool's selected parameter type stays in the
+                // source and the call cannot retarget to an overload the bytes never selected.
+                if self.snapshot_hierarchy_widenings.iter().any(|proof| {
+                    proof.bci == bci
+                        && proof.source == presented_name
+                        && proof.target == *required_name
+                }) {
                     return Ok(cast_argument(argument, required, bci));
                 }
                 Err(format!(

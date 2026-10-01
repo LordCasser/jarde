@@ -14440,6 +14440,39 @@ fn proved_reference_widening(
             && platform_class_unprovided(content, request, target, budget)?);
     }
 
+    snapshot_header_chain_widens(
+        content,
+        request,
+        ir,
+        source,
+        target,
+        u64::MAX,
+        cache,
+        execution,
+        budget,
+    )
+}
+
+/// The snapshot's own bytes state the chain: `source`'s class-file header names its superclass and
+/// its interfaces, and every next name is read the same way from this snapshot alone. A name the
+/// snapshot does not hold ends its branch — no classpath is consulted — and `java/lang/Object`
+/// carries no further facts, so a walk that reaches the `target` has read a physical definition of
+/// every class between the two, the target included. One charged header read per class, a visited
+/// set against cycles, a depth the caller bounds and `dependency_depth` observed at every step.
+fn snapshot_header_chain_widens(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    source: &[u8],
+    target: &[u8],
+    max_depth: u64,
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<bool> {
+    if source == target {
+        return Ok(false);
+    }
     let mut pending = vec![(source.to_vec(), 0_u64)];
     let mut visited = std::collections::BTreeSet::new();
     while let Some((name, depth)) = pending.pop() {
@@ -14456,6 +14489,9 @@ fn proved_reference_widening(
         };
         if name == target {
             return Ok(true);
+        }
+        if depth >= max_depth {
+            continue;
         }
         if let Some(parent) = header.super_name {
             if parent != b"java/lang/Object" {
@@ -15126,6 +15162,261 @@ fn reference_overload_calls_presented(
         Ok(proved) => Ok(proved),
         Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
         Err(error) => Err(error),
+    }
+}
+
+/// The hierarchy walk's bound (design decision): a chain deeper than eight classes is not walked,
+/// and the position keeps its refusal rather than an unbounded search.
+const SNAPSHOT_HIERARCHY_WALK_DEPTH: u64 = 8;
+
+/// One call's reference parameters, each with the ordinal of its value among the operands the call
+/// consumes: a receiver first for instance calls, then the parameters in descriptor order — a
+/// `long`/`double` is one value of two slots. The descriptor itself states the names; one the
+/// reader refuses states no site at all.
+fn reference_parameter_sites<'a>(
+    descriptor: &'a [u8],
+    receiver_slots: usize,
+    budget: &mut Budget,
+) -> Option<Vec<(usize, &'a [u8])>> {
+    let facts = jarde_reader::classfile::descriptor_facts(
+        descriptor,
+        jarde_reader::classfile::DescriptorKind::Method,
+    )
+    .ok()?;
+    let mut sites = Vec::new();
+    for (index, component) in facts.parameters().iter().enumerate() {
+        if !component.is_array()
+            && let Some(bytes) = component.bytes(descriptor)
+            && let Some(internal) = bytes
+                .strip_prefix(b"L")
+                .and_then(|bytes| bytes.strip_suffix(b";"))
+        {
+            sites.push((receiver_slots + index, internal));
+        }
+    }
+    budget
+        .charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(facts.parameters().len()).unwrap_or(u64::MAX),
+        )
+        .ok()?;
+    Some(sites)
+}
+
+/// The class a named SSA reference states, in the internal form both descriptor and class-file
+/// spellings normalize to. An array is the array closed set's own shape, not a class name, and a
+/// reference the facts do not name states no proof at all.
+fn named_reference_class(ty: &jarde_jvm::method_ir::Value) -> Option<&[u8]> {
+    let jarde_jvm::method_ir::Value::Ref(jarde_jvm::method_ir::RefType::Named { name, .. }) = ty
+    else {
+        return None;
+    };
+    match name.first() {
+        Some(b'[') => None,
+        _ => Some(
+            name.strip_prefix(b"L")
+                .and_then(|name| name.strip_suffix(b";"))
+                .unwrap_or(name),
+        ),
+    }
+}
+
+/// The per-BCI widening proofs this body's own invocation arguments state (change
+/// `recover-snapshot-hierarchy-widening`): one call, one reference parameter whose presented type
+/// and required type are both classes of this snapshot, and the presented type's own class-file
+/// header chain reaches the required one. The same-name, Object-target, array and platform answers
+/// run earlier in the dispatch and never need this proof; a pair the walk does not reach stays
+/// refused exactly as before.
+fn prove_snapshot_hierarchy_widenings(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedSnapshotHierarchyWidening>> {
+    use jarde_reader::classfile::{CpEntryKind, cp_entry};
+    let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+        return Ok(Vec::new());
+    };
+    let mut cache = std::collections::BTreeMap::new();
+    let mut execution = ExecutionReport::Complete {
+        usage: budget.usage(),
+    };
+    let mut proved = Vec::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        // An `invokedynamic` site names no method reference at all; every other call carries its
+        // receiver as the bottom operand it consumes, and a static call's first parameter stands
+        // first instead.
+        let receiver_slots = match instruction.opcode {
+            0xb6 | 0xb7 | 0xb9 => 1,
+            0xb8 => 0,
+            _ => continue,
+        };
+        let Some(index) = instruction.constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = cp_entry(ir.constant_pool(), index) else {
+            continue;
+        };
+        let descriptor: &[u8] = match &entry.kind {
+            CpEntryKind::MethodRef { descriptor, .. }
+            | CpEntryKind::InterfaceMethodRef { descriptor, .. } => descriptor.0.as_slice(),
+            _ => continue,
+        };
+        let Some(sites) = reference_parameter_sites(descriptor, receiver_slots, budget) else {
+            continue;
+        };
+        if sites.is_empty() {
+            continue;
+        }
+        // The operands this call consumes, bottom first: the one site this BCI holds records one
+        // read per consumed value at its stack depth — whatever residual prefix the stack carries
+        // below the call's own operands — so the ascending depths are the operand order itself.
+        let mut operands: Vec<&jarde_jvm::method_ir::Value> = Vec::new();
+        for site in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if site.bci() != instruction.bci {
+                continue;
+            }
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(site.reads().len()).unwrap_or(u64::MAX),
+            )?;
+            let mut reads: Vec<(u32, &jarde_jvm::method_ir::Value)> = site
+                .reads()
+                .iter()
+                .filter_map(|(slot, value)| match slot {
+                    jarde_jvm::method_ir::Slot::Stack(depth) => {
+                        Some((*depth, ssa.value(*value).ty()))
+                    }
+                    jarde_jvm::method_ir::Slot::Local(_) => None,
+                })
+                .collect();
+            reads.sort_by_key(|(depth, _)| *depth);
+            operands = reads.into_iter().map(|(_, ty)| ty).collect();
+            break;
+        }
+        for (ordinal, target) in sites {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            // The dispatch's unconditional Object answer runs before this proof is ever consulted,
+            // and an array parameter is the array closed set's shape; neither is proved here.
+            if target == b"java/lang/Object" {
+                continue;
+            }
+            let Some(presented) = operands
+                .get(ordinal)
+                .and_then(|ty| named_reference_class(ty))
+            else {
+                continue;
+            };
+            if presented == target {
+                continue;
+            }
+            if snapshot_header_chain_widens(
+                content,
+                request,
+                ir,
+                presented,
+                target,
+                SNAPSHOT_HIERARCHY_WALK_DEPTH,
+                &mut cache,
+                &mut execution,
+                budget,
+            )? {
+                let (Ok(presented), Ok(target)) =
+                    (std::str::from_utf8(presented), std::str::from_utf8(target))
+                else {
+                    continue;
+                };
+                proved.push(jarde_java::report::ProvedSnapshotHierarchyWidening {
+                    bci: instruction.bci,
+                    source: presented.replace('/', "."),
+                    target: target.replace('/', "."),
+                });
+            }
+        }
+    }
+    Ok(proved)
+}
+
+fn snapshot_hierarchy_widenings_presented(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedSnapshotHierarchyWidening>> {
+    match prove_snapshot_hierarchy_widenings(content, request, ir, budget) {
+        Ok(proved) => Ok(proved),
+        Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
+        Err(error) => Err(error),
+    }
+}
+
+#[cfg(test)]
+mod snapshot_hierarchy_tests {
+    use super::*;
+
+    fn sites(descriptor: &[u8], receiver_slots: usize) -> Option<Vec<(usize, Vec<u8>)>> {
+        let mut budget = task_budget(&[]).unwrap();
+        reference_parameter_sites(descriptor, receiver_slots, &mut budget).map(|sites| {
+            sites
+                .into_iter()
+                .map(|(ordinal, name)| (ordinal, name.to_vec()))
+                .collect()
+        })
+    }
+
+    #[test]
+    fn parameter_ordinals_count_values_not_slots() {
+        // A `long` parameter is one value of two slots, so the reference after it moves one
+        // ordinal and two stack slots; the array parameter is no class site at all.
+        assert_eq!(
+            sites(b"(Ljava/lang/String;JLH1$Greet;[Ljava/lang/Object;)V", 0),
+            Some(vec![
+                (0, b"java/lang/String".to_vec()),
+                (2, b"H1$Greet".to_vec())
+            ])
+        );
+        // An instance call's receiver is the first consumed value.
+        assert_eq!(
+            sites(b"(LH1$Greet;Ljava/lang/String;)Ljava/lang/String;", 1),
+            Some(vec![
+                (1, b"H1$Greet".to_vec()),
+                (2, b"java/lang/String".to_vec())
+            ])
+        );
+        // A descriptor the reader refuses states no site.
+        assert_eq!(sites(b"(LH1$Greet", 0), None);
+    }
+
+    #[test]
+    fn named_reference_classes_carry_both_spellings_and_no_arrays() {
+        let named = |name: &[u8]| {
+            jarde_jvm::method_ir::Value::Ref(jarde_jvm::method_ir::RefType::Named {
+                name: name.to_vec(),
+                loader: Box::new(LoaderId("app".to_owned())),
+            })
+        };
+        // The descriptor form and the bare internal form are one class.
+        assert_eq!(
+            named_reference_class(&named(b"LH1$TwoLevel;")),
+            Some(&b"H1$TwoLevel"[..])
+        );
+        assert_eq!(
+            named_reference_class(&named(b"H1$TwoLevel")),
+            Some(&b"H1$TwoLevel"[..])
+        );
+        // An array is the array closed set's shape, and an unnamed reference states no proof.
+        assert_eq!(named_reference_class(&named(b"[LH1$Greet;")), None);
+        assert_eq!(
+            named_reference_class(&jarde_jvm::method_ir::Value::Ref(
+                jarde_jvm::method_ir::RefType::Unknown
+            )),
+            None
+        );
     }
 }
 
@@ -27033,6 +27324,14 @@ fn recovery_from_with_class_candidates(
     } else {
         (Vec::new(), Vec::new())
     };
+    // The widening proofs this body's own invocation arguments state, read from the same snapshot
+    // the body was decoded from: the presented type's class-file headers, and nothing else. A
+    // method-only request states none, like the other class-source proofs above.
+    let snapshot_hierarchy_widenings = if assembly_context.is_some() {
+        snapshot_hierarchy_widenings_presented(content, request, analyzed.ir(), budget)?
+    } else {
+        Vec::new()
+    };
     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
     // it (D3'): the physical identity the run was bound to, the member record the selection above
     // established and the environment the run was validated under. This is the entry's statement and
@@ -27048,7 +27347,8 @@ fn recovery_from_with_class_candidates(
         .with_subject(subject)
         .with_member_inner_targets(&member_inner_targets)
         .with_interface_super_calls(&interface_super_calls)
-        .with_reference_overload_calls(&reference_overload_calls);
+        .with_reference_overload_calls(&reference_overload_calls)
+        .with_snapshot_hierarchy_widenings(&snapshot_hierarchy_widenings);
     let request = request.with_superclass_field_writes(&superclass_field_writes);
     let request = if let Some(target) = static_member_target {
         request.with_static_member_target(target)
