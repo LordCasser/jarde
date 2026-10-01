@@ -1,0 +1,79 @@
+// jarde: presentation of `G1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class G1 extends java.lang.Object {
+    public G1() {
+        // @method <init>()V
+        // @declaration a constructor of `G1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `pick(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static java.lang.Object pick(java.lang.Object arg0, java.lang.Object arg1) {
+        // @method pick(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+        // @declaration a static method of `G1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0;
+    }
+
+    // jarde: generic Signature projection refused for `max(Ljava/util/List;)Ljava/lang/Comparable;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static java.lang.Comparable max(java.util.List arg0) {
+        // @method max(Ljava/util/List;)Ljava/lang/Comparable;
+        // @declaration a static method of `G1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.Comparable local1;
+        java.util.Iterator local2;
+        local1 = (java.lang.Comparable) arg0.get(0);
+        local2 = arg0.iterator();
+        while (local2.hasNext()) {
+            java.lang.Comparable local3 = (java.lang.Comparable) local2.next();
+            if (local3.compareTo((java.lang.Object) local1) > 0) {
+                local1 = local3;
+            }
+        }
+        return local1;
+    }
+
+    public static java.lang.String use() {
+        // @method use()Ljava/lang/String;
+        // @declaration a static method of `G1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local0 = new java.util.ArrayList();
+        local0.add((java.lang.Object) "pear");
+        local0.add((java.lang.Object) "apple");
+        local0.add((java.lang.Object) "zeta");
+        // @bytecode 42 39 36 35
+        // the parameter 0 of the invocation at BCI 36 is declared `java.util.List` presents `java.util.ArrayList` but the invocation requires `java.util.List` and this layer has no safe reference conversion evidence
+        java.lang.String local2 = (java.lang.String) pick((java.lang.Object) "a", (java.lang.Object) "b");
+        // @bytecode 54 57 58 61 62 65 67 70 71 74 77
+        // the statement at BCI 77 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+
+    public static int autoboxLoop() {
+        // @method autoboxLoop()I
+        // @declaration a static method of `G1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.Integer local0;
+        java.lang.Integer local1;
+        local0 = java.lang.Integer.valueOf(0);
+        local1 = java.lang.Integer.valueOf(1);
+        while (local1.intValue() <= 3) {
+            local0 = java.lang.Integer.valueOf(local0.intValue() + local1.intValue());
+            java.lang.Integer local2 = local1;
+            local1 = java.lang.Integer.valueOf(local1.intValue() + 1);
+            // @bytecode 44
+            // the instruction at BCI 44 is not part of the provable subset
+        }
+        return local0.intValue();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `G1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) use());
+        java.lang.System.out.println(autoboxLoop());
+        return;
+    }
+}

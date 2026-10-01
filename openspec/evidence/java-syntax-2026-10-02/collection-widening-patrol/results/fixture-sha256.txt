@@ -1,0 +1,1 @@
+fabbfd8e7301f29eaeb5b7786ff578a78b53dab6a9cdad12c9223fac7eeae825  openspec/evidence/java-syntax-2026-10-02/collection-widening-patrol/fixture/G1.class
