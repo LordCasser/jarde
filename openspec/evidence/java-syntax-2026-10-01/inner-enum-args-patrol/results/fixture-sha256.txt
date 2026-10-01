@@ -1,0 +1,4 @@
+12624bc7c6e42aa640999d5597f3a25e37bd605c5c1241a39e294488e1411cc7  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.class
+639b24d7acc1c2c966e6499645916b303d00570cf61e4efa53706b0a8d7178ec  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N1.class
+c8d374e723775e20d4c838d786def3bdf8e8045777a14a9e577966cbc4fce407  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2.class
+dbba22f7d2cdbd0d1c41809ae791290a34fc1ae98743544ab1a42a637754aa6e  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N3.class
