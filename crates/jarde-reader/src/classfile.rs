@@ -11865,7 +11865,9 @@ mod tests {
             // The 2026-10-01 caught-value typing fixture (one TWR class, seven bodies) moved it again.
             // The 2026-10-01 array-slot-retype fixtures (the patrol's A1/A2 plus four boundary
             // variants, twenty-three bodies) moved it again.
-            (438, 2109, 249, 1645, 8),
+            // The 2026-10-01 scv-concat-consumers fixtures (two classes, nine bodies, the
+            // concatenation-consumed short-circuit locals) moved it again.
+            (440, 2118, 249, 1665, 8),
             "fixture population changed: re-measure these counts"
         );
     }
