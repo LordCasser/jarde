@@ -7078,6 +7078,39 @@ pub(crate) struct ClassSourceTextContext<'a> {
     pub(crate) array_helper_markers: Option<&'a [String]>,
 }
 
+/// The source text of one arbitrary user-tail enum constructor: the folded declaration spells
+/// the user parameters only, in argument order, each assigned to its own stored field. One
+/// spelling shared by the ordinary constant list and the constant-body projection.
+fn spell_user_tail_constructor_text(
+    declaration_name: &str,
+    access_flags: u16,
+    tail: &crate::enum_constants::ProvedEnumUserConstructorTail,
+) -> String {
+    let mut constructor_declaration = String::new();
+    if let Some(modifier) = visibility(access_flags) {
+        constructor_declaration.push_str(modifier);
+        constructor_declaration.push(' ');
+    }
+    constructor_declaration.push_str(declaration_name);
+    constructor_declaration.push('(');
+    for (index, parameter) in tail.parameters.iter().enumerate() {
+        if index > 0 {
+            constructor_declaration.push_str(", ");
+        }
+        constructor_declaration.push_str(&parameter.type_text);
+        constructor_declaration.push_str(&format!(" arg{index}"));
+    }
+    constructor_declaration.push(')');
+    let mut assignments = String::new();
+    for (index, parameter) in tail.parameters.iter().enumerate() {
+        assignments.push_str(&format!(
+            "        this.{} = arg{index};\n",
+            parameter.field_name
+        ));
+    }
+    format!("    {constructor_declaration} {{\n{assignments}    }}\n")
+}
+
 pub(crate) fn prepare_enum_constant_source_projection(
     declaration: &ClassSourceDeclaration,
     fields: &[ClassSourceField],
@@ -7290,33 +7323,16 @@ pub(crate) fn prepare_enum_constant_source_projection(
         if let Some(tail) = user_tail {
             // The arbitrary tail's proof carries each parameter's type text and its own stored
             // field; the folded declaration spells the user parameters only, in argument order.
-            let mut constructor_declaration = String::new();
-            if let Some(modifier) = visibility(constructor.item.access_flags) {
-                constructor_declaration.push_str(modifier);
-                constructor_declaration.push(' ');
-            }
-            constructor_declaration.push_str(&declaration.name);
-            constructor_declaration.push('(');
-            for (index, parameter) in tail.parameters.iter().enumerate() {
-                if index > 0 {
-                    constructor_declaration.push_str(", ");
-                }
-                constructor_declaration.push_str(&parameter.type_text);
-                constructor_declaration.push_str(&format!(" arg{index}"));
-            }
-            constructor_declaration.push(')');
-            let mut assignments = String::new();
-            for (index, parameter) in tail.parameters.iter().enumerate() {
-                assignments.push_str(&format!(
-                    "        this.{} = arg{index};\n",
-                    parameter.field_name
-                ));
-            }
-            let constructor_body =
-                format!("    {constructor_declaration} {{\n{assignments}    }}\n");
             constructor_texts.push((
                 group.constructor_method_index,
-                prefix_method_annotations(constructor_body, &constructor.annotations),
+                prefix_method_annotations(
+                    spell_user_tail_constructor_text(
+                        &declaration.name,
+                        constructor.item.access_flags,
+                        tail,
+                    ),
+                    &constructor.annotations,
+                ),
             ));
         } else if !no_source_constructor {
             let Some(field_name) = field_name.as_deref() else {
@@ -7531,12 +7547,14 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
     shape: &crate::facade::PendingEnumConstantBodyGroupShape,
     budget: &mut Budget,
 ) -> Result<Option<EnumConstantSourceProjection>> {
-    if group.constants.len() != 2 || shape.constants.len() != 2 || shape.implicit_members.len() != 6
+    if group.constants.is_empty()
+        || shape.constants.len() != group.constants.len()
+        || shape.implicit_members.len() != 6
     {
         return Ok(None);
     }
     let mut constants_text = String::new();
-    let mut constant_field_indices = Vec::with_capacity(2);
+    let mut constant_field_indices = Vec::with_capacity(group.constants.len());
     for (position, constant) in group.constants.iter().enumerate() {
         budget.poll()?;
         let Some(field) = usize::try_from(constant.field_index)
@@ -7560,18 +7578,18 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
         }
         constants_text.push_str("    ");
         constants_text.push_str(&name);
-        if let Some(argument) = &constant.string_argument {
-            if !argument.is_ascii() {
-                return Ok(None);
-            }
+        if !constant.source_arguments.is_empty() {
+            // The argument spelling is the one arbitrary-argument channel's own joined text.
+            let arguments =
+                crate::enum_constants::user_arguments_source_text(&constant.source_arguments);
             budget.charge(
                 CountedBudgetDimension::OutputBytes,
-                u64::try_from(argument.len().saturating_mul(6).saturating_add(4))
+                u64::try_from(arguments.len().saturating_mul(6).saturating_add(4))
                     .unwrap_or(u64::MAX),
             )?;
-            constants_text.push_str("(\"");
-            constants_text.push_str(&jarde_java::escape_string(argument));
-            constants_text.push_str("\")");
+            constants_text.push('(');
+            constants_text.push_str(&arguments);
+            constants_text.push(')');
         }
         match (&constant.subclass, &constant.methods) {
             (None, None) => {}
@@ -7666,10 +7684,36 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
             u64::try_from(text.len()).unwrap_or(u64::MAX),
         )?;
         constructor_texts.push((constructor.table_index, text.clone()));
+    } else if let Some(tail) = &group.constructor_user_tail {
+        // The arbitrary tail spells through the one shared user-tail constructor text.
+        let constructors: Vec<_> = shape
+            .constructors
+            .iter()
+            .filter(|member| member.descriptor == shape.constants[0].constructor_descriptor)
+            .collect();
+        let [constructor] = constructors.as_slice() else {
+            return Ok(None);
+        };
+        let Some(method) = usize::try_from(constructor.table_index)
+            .ok()
+            .and_then(|index| methods.get(index))
+        else {
+            return Ok(None);
+        };
+        if method.item.index != constructor.table_index || method.item.name.raw().0 != b"<init>" {
+            return Ok(None);
+        }
+        let text =
+            spell_user_tail_constructor_text(&declaration.name, method.item.access_flags, tail);
+        budget.charge(
+            CountedBudgetDimension::OutputBytes,
+            u64::try_from(text.len()).unwrap_or(u64::MAX),
+        )?;
+        constructor_texts.push((constructor.table_index, text));
     } else if group
         .constants
         .iter()
-        .any(|constant| constant.string_argument.is_some())
+        .any(|constant| !constant.source_arguments.is_empty())
     {
         return Ok(None);
     }

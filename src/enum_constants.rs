@@ -33,13 +33,13 @@ const CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;II)V";
 const DELEGATING_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
 const STRING_VARARGS_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I[Ljava/lang/String;)V";
 const STRING_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;ILjava/lang/String;)V";
-const ENUM_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
+pub(crate) const ENUM_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
 const MAX_ENUM_STRING_VARARGS_ELEMENTS: usize = 64;
 /// The most user arguments one arbitrary enum constructor tail may carry. The bound keeps the
 /// per-argument proof budget bounded; wider tails stay per-field until evidence asks for them.
 const MAX_ENUM_USER_ARGUMENTS: usize = 3;
 /// The shared `(Ljava/lang/String;I` prefix every enum constructor descriptor starts with.
-const ENUM_CTOR_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;I";
+pub(crate) const ENUM_CTOR_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;I";
 const VALUES_DESCRIPTOR_PREFIX: &[u8] = b"()[L";
 const VALUE_OF_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;)L";
 const ENUM_VALUE_OF_DESCRIPTOR: &[u8] = b"(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;";
@@ -164,7 +164,7 @@ pub(crate) struct ProvedEnumStringLiteral {
 /// proves past the four fixed descriptors. `J`/`F`/`D` literals and array parameters stay outside
 /// it and keep the per-field presentation.
 #[derive(Clone, Debug, Eq, PartialEq)]
-enum EnumUserParameter {
+pub(crate) enum EnumUserParameter {
     /// A primitive int-family parameter: the constant step expects one int literal, and the
     /// presentation narrows it by this parameter type.
     IntLiteral(EnumIntUserParameter),
@@ -176,7 +176,7 @@ enum EnumUserParameter {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum EnumIntUserParameter {
+pub(crate) enum EnumIntUserParameter {
     Byte,
     Char,
     Short,
@@ -199,7 +199,7 @@ impl EnumUserParameter {
     }
 
     /// Parse one parameter descriptor from the front of a constructor descriptor tail.
-    fn parse(descriptor: &[u8]) -> Option<(Self, &[u8])> {
+    pub(crate) fn parse(descriptor: &[u8]) -> Option<(Self, &[u8])> {
         match descriptor.first()? {
             b'B' => Some((
                 Self::IntLiteral(EnumIntUserParameter::Byte),
@@ -274,7 +274,7 @@ impl EnumUserParameter {
 /// Parse an arbitrary enum constructor descriptor: the shared `(Ljava/lang/String;I` prefix plus
 /// one to three user parameters of the admitted shapes, then `)V`. The no-user-argument shape is
 /// its own fixed descriptor and is never produced here.
-fn parse_arbitrary_ctor_descriptor(descriptor: &[u8]) -> Option<Vec<EnumUserParameter>> {
+pub(crate) fn parse_arbitrary_ctor_descriptor(descriptor: &[u8]) -> Option<Vec<EnumUserParameter>> {
     let tail = descriptor.strip_prefix(ENUM_CTOR_DESCRIPTOR_PREFIX)?;
     let tail = tail.strip_suffix(b")V")?;
     if tail.is_empty() {
@@ -295,14 +295,14 @@ fn parse_arbitrary_ctor_descriptor(descriptor: &[u8]) -> Option<Vec<EnumUserPara
 
 /// What the constant step expects at one user argument position, derived from the parameter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum EnumUserArgumentExpectation {
+pub(crate) enum EnumUserArgumentExpectation {
     IntLiteral(EnumIntUserParameter),
     StringLiteral,
     StaticFieldOrNull,
 }
 
 impl EnumUserArgumentExpectation {
-    fn of_parameter(parameter: &EnumUserParameter) -> Self {
+    pub(crate) fn of_parameter(parameter: &EnumUserParameter) -> Self {
         match parameter {
             EnumUserParameter::IntLiteral(kind) => Self::IntLiteral(*kind),
             EnumUserParameter::StringLiteral => Self::StringLiteral,
@@ -347,6 +347,16 @@ impl ProvedEnumUserArgument {
     }
 }
 
+/// The joined `", "` spelling of one constant's proved user arguments: the one channel both the
+/// ordinary constant list and the constant-body presentation read.
+pub(crate) fn user_arguments_source_text(arguments: &[ProvedEnumUserArgument]) -> String {
+    arguments
+        .iter()
+        .map(|argument| argument.source_text())
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
 impl ProvedEnumSourceArgument {
     pub(crate) fn source_text(&self) -> String {
         match self {
@@ -357,11 +367,7 @@ impl ProvedEnumSourceArgument {
                 .map(|value| format!("\"{}\"", jarde_java::escape_string(&value.value)))
                 .collect::<Vec<_>>()
                 .join(", "),
-            Self::User(arguments) => arguments
-                .iter()
-                .map(|argument| argument.source_text())
-                .collect::<Vec<_>>()
-                .join(", "),
+            Self::User(arguments) => user_arguments_source_text(arguments),
         }
     }
 }
@@ -470,6 +476,10 @@ pub(crate) struct ProvedEnumConstantBodyGroup {
     pub(crate) constants: Vec<ProvedEnumBodyConstant>,
     /// Source constructor recovered from the exact single-String assignment proof.
     pub(crate) constructor_text: Option<String>,
+    /// The proved user tail of the shared source constructor, present exactly when the constant
+    /// arguments came through the arbitrary grammar and the constructor stores each parameter
+    /// into its own instance field.
+    pub(crate) constructor_user_tail: Option<ProvedEnumUserConstructorTail>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -478,8 +488,9 @@ pub(crate) struct ProvedEnumBodyConstant {
     pub(crate) allocation_bci: u32,
     pub(crate) constructor_bci: u32,
     pub(crate) field_write_bci: u32,
-    /// ASCII-only Java source spelling proven from this constant's initializer stack.
-    pub(crate) string_argument: Option<String>,
+    /// The proved user argument tail of this constant's constructor step, empty exactly when the
+    /// constructor takes no user arguments. Spellings follow the arbitrary-argument channel.
+    pub(crate) source_arguments: Vec<ProvedEnumUserArgument>,
     pub(crate) subclass: Option<jarde_reader::model::PhysicalDefinitionId>,
     /// The selected child's already-recovered source-visible members. A direct constant has no
     /// child and no member sidecar; sharing this slice does not run recovery or copy reports.
@@ -2178,7 +2189,7 @@ pub(crate) fn prove_group(
             source_fields,
             budget,
         )? {
-            Ok(tail) => {
+            Ok((tail, _super_call_bci)) => {
                 constructor_user_tail = Some(tail);
                 None
             }
@@ -2815,14 +2826,14 @@ fn prove_string_varargs_constructor(
 /// the exact `Enum` super call, then exactly one `this`-slot store per user parameter into its
 /// own distinct instance field of the parameter's descriptor, then a bare return. Every other
 /// effect refuses the constructor and with it the fold.
-fn prove_arbitrary_user_constructor(
+pub(crate) fn prove_arbitrary_user_constructor(
     code: &EnumMethodCodeCandidate,
     owner: &[u8],
     parameters: &[EnumUserParameter],
     fields: &[MemberHeader],
     source_fields: &[ClassSourceField],
     budget: &mut Budget,
-) -> Result<std::result::Result<ProvedEnumUserConstructorTail, String>> {
+) -> Result<std::result::Result<(ProvedEnumUserConstructorTail, u32), String>> {
     let refused = |reason: &str| Ok(Err(reason.to_owned()));
     let instructions = &code.instructions;
     let expected_len = 4 + parameters.len() * 3 + 1;
@@ -2947,9 +2958,12 @@ fn prove_arbitrary_user_constructor(
     {
         return refused("the arbitrary constructor does not end in a bare return");
     }
-    Ok(Ok(ProvedEnumUserConstructorTail {
-        parameters: tail_parameters,
-    }))
+    Ok(Ok((
+        ProvedEnumUserConstructorTail {
+            parameters: tail_parameters,
+        },
+        instructions[3].bci,
+    )))
 }
 
 fn prove_constructor(
@@ -4253,7 +4267,7 @@ fn constants_by_code_field<'a>(
     }
 }
 
-fn local_load(instruction: &EnumCodeInstruction, kind: u8, slot: u16) -> bool {
+pub(crate) fn local_load(instruction: &EnumCodeInstruction, kind: u8, slot: u16) -> bool {
     match kind {
         b'a' => {
             (instruction.opcode == 0x19 && instruction.local == Some(slot))
@@ -4315,7 +4329,11 @@ fn string_constant(instruction: Option<&EnumCodeInstruction>, value: &[u8]) -> b
     })
 }
 
-fn int_constant_at(instructions: &[EnumCodeInstruction], index: usize, value: i32) -> bool {
+pub(crate) fn int_constant_at(
+    instructions: &[EnumCodeInstruction],
+    index: usize,
+    value: i32,
+) -> bool {
     instructions
         .get(index)
         .and_then(int_constant_value)
@@ -4633,7 +4651,7 @@ fn spelled_static_field_owner(owner: &[u8]) -> Option<String> {
 /// Prove one user argument of an arbitrary enum constructor call at the initializer stack
 /// position, expecting exactly the shape its parameter descriptor classifies. Every spelling is
 /// decided here; a shape outside the expectation refuses the argument and with it the fold.
-fn prove_user_source_argument(
+pub(crate) fn prove_user_source_argument(
     instructions: &[EnumCodeInstruction],
     start: usize,
     expectation: EnumUserArgumentExpectation,
