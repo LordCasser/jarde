@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含旧常量体切片全部测试）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 两嵌套 jar 三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核名派生语义与三方行为，更新 DT-12/13 账本与矩阵记录。
+- [x] 3.3 root 独立复核名派生语义与三方行为，更新 DT-12/13 账本与矩阵记录。（root 于合并主线 3f39f4c2 复核：根因为顶层专属的桥 marker 名绑定（javac 嵌套枚举取最外围类合成空类作 marker），修复为"marker ≠ 枚举自身常量 + 既有证明边绑定"，义务证明零放宽；四格矩阵两嵌套折叠、两顶层逐字节不变、人为 `$` 名不误伤；全仓 2761/0、fmt/openspec 233/233。**偏差裁决**：多级嵌套 `A$B$C` 随之折叠属义务证明下的正确泛化，接受为有意行为（非本片边界回归），测试与三方对照已在案。剩余：双基声明（接口方法+自声明抽象）词表、混合形态（常量体+构造实参）另片。）
