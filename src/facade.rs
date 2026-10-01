@@ -6886,6 +6886,7 @@ impl Engine {
                 read.facts.access_flags,
                 &enum_interfaces,
                 &read.facts.fields,
+                &fields,
                 &read.facts.methods,
                 &enum_code_candidates,
                 &anonymous_allocation_scans,
@@ -11479,6 +11480,9 @@ pub(crate) struct PendingEnumConstantBodyGroupShape {
     /// The private constructor reaches java/lang/Enum unchanged; the optional synthetic
     /// access constructor reaches that private constructor unchanged and ignores its marker.
     pub(crate) constructor_chain: std::result::Result<Vec<PendingEnumConstructorEdge>, String>,
+    /// The proved user tail of the shared private constructor, present exactly when the constant
+    /// arguments came through the arbitrary grammar; `None` for the fixed zero/String shapes.
+    pub(crate) constructor_user_tail: Option<crate::enum_constants::ProvedEnumUserConstructorTail>,
     /// Ordinary constants use their own physical constructor without an access bridge.
     pub(crate) direct_constant_bcis: std::result::Result<Vec<u32>, String>,
     /// Exact same-run `<clinit>` prefix evidence; a refusal leaves the physical relations intact.
@@ -11493,8 +11497,9 @@ pub(crate) struct PendingEnumConstantBodyInitializerPrefix {
     pub(crate) values_factory_call_bci: u32,
     pub(crate) values_field_write_bci: u32,
     pub(crate) prefix_end_bci: u32,
-    /// Raw class-file string constants, retained until the ASCII-only source proof.
-    pub(crate) source_arguments: Vec<Vec<u8>>,
+    /// The proved user argument tail of each constant step, empty exactly when that constant's
+    /// constructor takes no user arguments. Spellings follow the arbitrary-argument channel.
+    pub(crate) source_arguments: Vec<Vec<crate::enum_constants::ProvedEnumUserArgument>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -11507,7 +11512,9 @@ pub(crate) struct PendingEnumConstantBodyConstant {
     pub(crate) allocation_owner: Vec<u8>,
     pub(crate) constructor_owner: Vec<u8>,
     pub(crate) constructor_descriptor: Vec<u8>,
-    pub(crate) descriptor_source_argument_count: u8,
+    /// The classified user parameter tail parsed from the constant's shared constructor
+    /// descriptor, empty exactly for the fixed `(Ljava/lang/String;I)V` shape.
+    pub(crate) source_parameters: Vec<crate::enum_constants::EnumUserParameter>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -11522,46 +11529,62 @@ pub(crate) struct PendingEnumConstantBodyMember {
 }
 
 /// Check the entire straight-line constructor body, not just its `invokespecial`. The
-/// positional loads establish that neither name nor ordinal was replaced; the optional
-/// `aconst_null` is the only value allowed in the marker slot. No other effect can hide here.
+/// positional loads establish that neither name nor ordinal nor any user parameter was replaced;
+/// the optional `aconst_null` is the only value allowed in the marker slot. Each proved user
+/// parameter is forwarded from its own local, exactly as the constant step passed it. No other
+/// effect can hide here.
 fn prove_enum_constructor_instructions(
     instructions: &[crate::enum_constants::EnumCodeInstruction],
     expected_owner: &[u8],
     expected_descriptor: &[u8],
+    parameters: &[crate::enum_constants::EnumUserParameter],
     marker: bool,
 ) -> std::result::Result<u32, String> {
-    use crate::enum_constants::EnumCodeReference;
+    use crate::enum_constants::{EnumCodeReference, EnumUserParameter};
 
     let refusal =
         || "the constructor does not forward unchanged name/ordinal on a pure edge".to_owned();
-    let source_argument =
-        expected_descriptor.starts_with(b"(Ljava/lang/String;ILjava/lang/String;");
-    let opcodes: &[u8] = match (source_argument, marker) {
-        (false, false) => &[0x2a, 0x2b, 0x1c, 0xb7, 0xb1],
-        (false, true) => &[0x2a, 0x2b, 0x1c, 0x01, 0xb7, 0xb1],
-        (true, false) => &[0x2a, 0x2b, 0x1c, 0x2d, 0xb7, 0xb1],
-        (true, true) => &[0x2a, 0x2b, 0x1c, 0x2d, 0x01, 0xb7, 0xb1],
-    };
-    if instructions.len() != opcodes.len() {
+    // One expected step per instruction: (opcode, width, local). The name/ordinal locals are the
+    // VM-injected pair; every user parameter loads its own slot; the marker slot (when the
+    // target is an access constructor) takes only `aconst_null`.
+    let mut steps: Vec<(u8, u32, Option<u16>)> =
+        vec![(0x2a, 1, Some(0)), (0x2b, 1, Some(1)), (0x1c, 1, Some(2))];
+    for (index, parameter) in parameters.iter().enumerate() {
+        let Some(slot) = u16::try_from(3 + index).ok() else {
+            return Err(refusal());
+        };
+        let kind = match parameter {
+            EnumUserParameter::IntLiteral(_) => b'i',
+            EnumUserParameter::StringLiteral | EnumUserParameter::Object { .. } => b'a',
+        };
+        let (wide_opcode, wide_width, narrow_opcode) = if kind == b'i' {
+            (0x15, 2, 0x1a)
+        } else {
+            (0x19, 2, 0x2a)
+        };
+        if slot <= 3 {
+            steps.push((narrow_opcode + slot as u8, 1, Some(slot)));
+        } else {
+            steps.push((wide_opcode, wide_width, Some(slot)));
+        }
+    }
+    if marker {
+        steps.push((0x01, 1, None));
+    }
+    steps.push((0xb7, 3, None));
+    steps.push((0xb1, 1, None));
+    if instructions.len() != steps.len() {
         return Err(refusal());
     }
     let mut next_bci = 0;
-    for (position, instruction) in instructions.iter().enumerate() {
+    for (instruction, expected) in instructions.iter().zip(&steps) {
+        let (opcode, width, local) = *expected;
         if instruction.bci != next_bci
-            || instruction.opcode != opcodes[position]
-            || instruction.width != if instruction.opcode == 0xb7 { 3 } else { 1 }
+            || instruction.opcode != opcode
+            || instruction.width != width
             || instruction.immediate.is_some()
             || (instruction.opcode != 0xb7 && instruction.reference.is_some())
-            || (instruction.opcode == 0xb7 && instruction.local.is_some())
-            || (instruction.opcode != 0xb7
-                && instruction.local
-                    != match position {
-                        0 => Some(0),
-                        1 => Some(1),
-                        2 => Some(2),
-                        3 if source_argument => Some(3),
-                        _ => None,
-                    })
+            || instruction.local != local
         {
             return Err(refusal());
         }
@@ -11585,6 +11608,7 @@ fn prove_enum_constructor_candidate(
     identity: &PhysicalMethodId,
     target_owner: &[u8],
     target_descriptor: &[u8],
+    parameters: &[crate::enum_constants::EnumUserParameter],
 ) -> std::result::Result<PendingEnumConstructorEdge, String> {
     let matching: Vec<_> = candidates
         .iter()
@@ -11604,6 +11628,7 @@ fn prove_enum_constructor_candidate(
         &code.instructions,
         target_owner,
         target_descriptor,
+        parameters,
         false,
     )?;
     Ok(PendingEnumConstructorEdge {
@@ -11691,6 +11716,7 @@ fn prove_enum_physical_constructor(
     pool: &[jarde_reader::classfile::CpEntryFacts],
     enum_owner: &[u8],
     access_descriptor: &[u8],
+    parameters: &[crate::enum_constants::EnumUserParameter],
     marker: bool,
     budget: &mut Budget,
 ) -> Result<std::result::Result<PendingEnumConstructorEdge, String>> {
@@ -11799,14 +11825,19 @@ fn prove_enum_physical_constructor(
             branch_target_bci: None,
         });
     }
-    let result =
-        prove_enum_constructor_instructions(&instructions, enum_owner, access_descriptor, marker)
-            .map(|call_bci| PendingEnumConstructorEdge {
-                caller: identity,
-                call_bci,
-                target_owner: enum_owner.to_vec(),
-                target_descriptor: access_descriptor.to_vec(),
-            });
+    let result = prove_enum_constructor_instructions(
+        &instructions,
+        enum_owner,
+        access_descriptor,
+        parameters,
+        marker,
+    )
+    .map(|call_bci| PendingEnumConstructorEdge {
+        caller: identity,
+        call_bci,
+        target_owner: enum_owner.to_vec(),
+        target_descriptor: access_descriptor.to_vec(),
+    });
     Ok(result)
 }
 
@@ -11815,11 +11846,13 @@ fn prove_enum_body_values_factory(
     owner: &[u8],
     constants: &[PendingEnumConstantBodyConstant],
 ) -> std::result::Result<Vec<u32>, String> {
-    use crate::enum_constants::EnumCodeReference;
+    use crate::enum_constants::{EnumCodeReference, int_constant_at};
 
-    let refused = || "$values() does not return the two constructed constants in order".to_owned();
+    let refused = || "$values() does not return the constructed constants in order".to_owned();
     let instructions = &code.instructions;
-    if !code.complete || code.exception_handler_count != 0 || instructions.len() != 11 {
+    let expected_length = 2 + constants.len() * 4 + 1;
+    if !code.complete || code.exception_handler_count != 0 || instructions.len() != expected_length
+    {
         return Err(refused());
     }
     let mut next_bci = 0;
@@ -11832,19 +11865,19 @@ fn prove_enum_body_values_factory(
             .checked_add(instruction.width)
             .ok_or_else(refused)?;
     }
-    if instructions[0].opcode != 0x05
+    if !int_constant_at(instructions, 0, constants.len() as i32)
         || !matches!(&instructions[1].reference,
             Some(EnumCodeReference::Class(actual))
                 if instructions[1].opcode == 0xbd && actual == owner)
-        || instructions[10].opcode != 0xb0
+        || instructions[expected_length - 1].opcode != 0xb0
     {
         return Err(refused());
     }
-    let mut field_read_bcis = Vec::with_capacity(2);
+    let mut field_read_bcis = Vec::with_capacity(constants.len());
     for (ordinal, constant) in constants.iter().enumerate() {
         let start = 2 + ordinal * 4;
         if instructions[start].opcode != 0x59
-            || instructions[start + 1].opcode != 0x03 + ordinal as u8
+            || !int_constant_at(instructions, start + 1, ordinal as i32)
             || !matches!(&instructions[start + 2].reference,
                 Some(EnumCodeReference::Field { owner: field_owner, name, descriptor })
                     if instructions[start + 2].opcode == 0xb2
@@ -11872,7 +11905,7 @@ fn prove_enum_body_initializer_prefix(
     use crate::enum_constants::{EnumCodeInstruction, EnumCodeReference};
 
     let refused = || "the same-run <clinit> constant prefix is not exact".to_owned();
-    if !code.complete || code.exception_handler_count != 0 || constants.len() != 2 {
+    if !code.complete || code.exception_handler_count != 0 || constants.is_empty() {
         return Err(refused());
     }
     let instructions = &code.instructions;
@@ -11921,34 +11954,14 @@ fn prove_enum_body_initializer_prefix(
         actual == i32::try_from(expected).ok()
     };
     let mut cursor = 0;
-    let mut field_write_bcis = Vec::with_capacity(2);
-    let mut source_arguments = Vec::with_capacity(2);
+    let mut field_write_bcis = Vec::with_capacity(constants.len());
+    let mut source_arguments = Vec::with_capacity(constants.len());
     let enum_descriptor = [b"L".as_slice(), owner, b";"].concat();
     for constant in constants {
-        let width = match constant.descriptor_source_argument_count {
-            0 => 6,
-            1 => 7,
-            _ => return Err(refused()),
-        };
+        let width = 6 + constant.source_parameters.len();
         let part = instructions
             .get(cursor..cursor + width)
             .ok_or_else(refused)?;
-        let string_argument = if width == 7 {
-            match &part[4].reference {
-                Some(EnumCodeReference::String(value))
-                    if matches!(part[4].opcode, 0x12 | 0x13)
-                        && part[4].immediate.is_none()
-                        && part[4].local.is_none() =>
-                {
-                    Some(value.clone())
-                }
-                _ => return Err(refused()),
-            }
-        } else {
-            None
-        };
-        let constructor = &part[width - 2];
-        let field_write = &part[width - 1];
         if part[0].bci != constant.allocation_bci
             || !matches!(&part[0].reference, Some(EnumCodeReference::Class(actual))
                 if part[0].opcode == 0xbb && actual == &constant.allocation_owner)
@@ -11956,6 +11969,27 @@ fn prove_enum_body_initializer_prefix(
             || !matches!(&part[2].reference, Some(EnumCodeReference::String(actual))
                 if matches!(part[2].opcode, 0x12 | 0x13) && actual == &constant.field_name)
             || !ordinal(Some(&part[3]), constant.expected_ordinal)
+        {
+            return Err(refused());
+        }
+        // Each user argument sits at its own step position, proved exactly as the constructor's
+        // parameter descriptor classifies it (the shared arbitrary-argument channel).
+        let mut arguments = Vec::with_capacity(constant.source_parameters.len());
+        let mut argument_offset = 4;
+        for parameter in &constant.source_parameters {
+            let Some((length, argument)) = crate::enum_constants::prove_user_source_argument(
+                instructions,
+                cursor + argument_offset,
+                crate::enum_constants::EnumUserArgumentExpectation::of_parameter(parameter),
+            ) else {
+                return Err(refused());
+            };
+            arguments.push(argument);
+            argument_offset += length;
+        }
+        let constructor = &part[width - 2];
+        let field_write = &part[width - 1];
+        if argument_offset != width - 2
             || constructor.bci != constant.constructor_bci
             || !matches!(&constructor.reference,
                 Some(EnumCodeReference::Method { owner: actual_owner, name, descriptor, interface: false })
@@ -11963,15 +11997,12 @@ fn prove_enum_body_initializer_prefix(
                         && actual_owner == &constant.constructor_owner
                         && name == b"<init>"
                         && descriptor == &constant.constructor_descriptor)
-            || (width == 7
-                && constant.constructor_descriptor != b"(Ljava/lang/String;ILjava/lang/String;)V")
-            || (width == 6 && constant.constructor_descriptor != b"(Ljava/lang/String;I)V")
             || !field(Some(field_write), &constant.field_name, &enum_descriptor)
         {
             return Err(refused());
         }
         field_write_bcis.push(field_write.bci);
-        source_arguments.push(string_argument.unwrap_or_default());
+        source_arguments.push(arguments);
         cursor += width;
     }
     let factory_call = instructions.get(cursor).ok_or_else(refused)?;
@@ -12032,6 +12063,7 @@ fn resolve_enum_constant_body_relations(
     enum_access_flags: u16,
     enum_interfaces: &[Vec<u8>],
     fields: &[jarde_reader::classfile::MemberHeader],
+    source_fields: &[class_source::ClassSourceField],
     methods: &[jarde_reader::classfile::MemberHeader],
     code_candidates: &[crate::enum_constants::EnumMethodCodeCandidate],
     allocation_scans: &[(
@@ -12083,16 +12115,19 @@ fn resolve_enum_constant_body_relations(
         return Ok(Vec::new());
     }
 
+    // The scan lists every same-run `new` instruction (its `complete` flag states that); whether
+    // its own construction-site plan verified each site is not an obligation of this proof — the
+    // constant-step proof below re-derives and re-proves each construction from the same Code.
     let allocations: Vec<_> = scan
         .allocations
         .iter()
-        .filter(|allocation| allocation.member == *clinit_identity && allocation.verified)
+        .filter(|allocation| allocation.member == *clinit_identity)
         .collect();
     budget.charge(
         CountedBudgetDimension::AnalysisSteps,
         u64::try_from(allocations.len()).unwrap_or(u64::MAX),
     )?;
-    if allocations.len() != 2
+    if allocations.is_empty()
         || !allocations
             .iter()
             .any(|allocation| allocation.class.as_bytes() != enum_owner)
@@ -12115,12 +12150,12 @@ fn resolve_enum_constant_body_relations(
                 && field.descriptor.raw().0 == format!("L{owner_text};").as_bytes()
         })
         .collect();
-    if constants.len() != 2
+    if constants.len() < 2
         || fields
             .iter()
             .filter(|field| field.access_flags & ACC_ENUM != 0)
             .count()
-            != 2
+            != constants.len()
         || constants.iter().any(|(_, field)| {
             field.access_flags != (0x0001 | ACC_STATIC | ACC_FINAL | ACC_ENUM)
                 || !field.attributes.is_empty()
@@ -12139,9 +12174,11 @@ fn resolve_enum_constant_body_relations(
     let mut constructions = Vec::with_capacity(constants.len());
     for allocation in allocations {
         budget.poll()?;
-        let Some(constructor_bci) = allocation.constructor_bci else {
-            return Ok(Vec::new());
-        };
+        // The scan shortlists every same-run `new` instruction; whether its construction-site plan
+        // verified the arguments is not an obligation here. The constant-step proof below owns
+        // the argument shapes, so the constructor call is re-derived from the same-run Code:
+        // every admitted argument kind is one instruction, so the first `invokespecial` after the
+        // allocation head is this construction's call, and the step proof binds it exactly.
         if !code.instructions.iter().any(|instruction| {
             instruction.bci == allocation.head_bci
                 && instruction.opcode == 0xbb
@@ -12152,10 +12189,19 @@ fn resolve_enum_constant_body_relations(
         }) {
             return Ok(Vec::new());
         }
-        let Some(constructor_position) = code
+        let head_position = code
             .instructions
             .iter()
-            .position(|instruction| instruction.bci == constructor_bci)
+            .position(|instruction| instruction.bci == allocation.head_bci)
+            .expect("the allocation head instruction exists");
+        let Some((constructor_position, constructor_bci)) = code
+            .instructions
+            .iter()
+            .enumerate()
+            .skip(head_position + 1)
+            .find_map(|(position, instruction)| {
+                (instruction.opcode == 0xb7).then_some((position, instruction.bci))
+            })
         else {
             return Ok(Vec::new());
         };
@@ -12218,11 +12264,19 @@ fn resolve_enum_constant_body_relations(
         ((field_index, field), (constructed_field_index, allocation, constructor_bci, descriptor)),
     ) in constants.iter().zip(&constructions).enumerate()
     {
-        if *field_index != *constructed_field_index
-            || !matches!(descriptor.as_slice(), BASE_CTOR | STRING_CTOR)
-        {
+        if *field_index != *constructed_field_index {
             return Ok(Vec::new());
         }
+        // The shared constructor descriptor's user tail: the fixed zero-argument shape, or the
+        // arbitrary grammar the ordinary channel already established. Anything else refuses.
+        let source_parameters = if descriptor.as_slice() == BASE_CTOR {
+            Vec::new()
+        } else {
+            match crate::enum_constants::parse_arbitrary_ctor_descriptor(descriptor) {
+                Some(parameters) => parameters,
+                None => return Ok(Vec::new()),
+            }
+        };
         let Some(constructor_owner) = code
             .instructions
             .iter()
@@ -12247,9 +12301,9 @@ fn resolve_enum_constant_body_relations(
             allocation_owner: allocation.class.as_bytes().to_vec(),
             constructor_owner,
             constructor_descriptor: descriptor.clone(),
-            // This count describes only the constructor descriptor after the VM-injected
+            // This tail describes only the constructor descriptor after the VM-injected
             // name/ordinal pair; it does not prove the values passed at this call site.
-            descriptor_source_argument_count: u8::from(descriptor.as_slice() == STRING_CTOR),
+            source_parameters,
         });
     }
 
@@ -12303,19 +12357,16 @@ fn resolve_enum_constant_body_relations(
         has_code: false,
         access_marker_owner: None,
     }];
-    let source_ctor = if constant_shape
+    // Every constant of one enum invokes the same source constructor, so the shared descriptor
+    // is the group's source constructor: the fixed zero-argument shape or one arbitrary tail.
+    let source_ctor: Vec<u8> = constant_shape[0].constructor_descriptor.clone();
+    if constant_shape
         .iter()
-        .all(|constant| constant.descriptor_source_argument_count == 1)
+        .any(|constant| constant.constructor_descriptor != source_ctor)
     {
-        STRING_CTOR
-    } else if constant_shape
-        .iter()
-        .all(|constant| constant.descriptor_source_argument_count == 0)
-    {
-        BASE_CTOR
-    } else {
         return Ok(Vec::new());
-    };
+    }
+    let shared_source_parameters = constant_shape[0].source_parameters.clone();
     for (name, descriptor, flags) in [
         (b"<clinit>".as_slice(), b"()V".as_slice(), ACC_STATIC),
         (
@@ -12333,7 +12384,7 @@ fn resolve_enum_constant_body_relations(
             array_descriptor.as_slice(),
             ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
         ),
-        (b"<init>".as_slice(), source_ctor, ACC_PRIVATE),
+        (b"<init>".as_slice(), source_ctor.as_slice(), ACC_PRIVATE),
     ] {
         let Some(member) = unique_method_record(name, descriptor) else {
             return Ok(Vec::new());
@@ -12522,21 +12573,59 @@ fn resolve_enum_constant_body_relations(
             .iter()
             .find(|member| member.descriptor == source_ctor)
             .ok_or_else(|| "the unique private enum constructor is absent".to_owned())?;
-        let private_edge = if source_ctor == STRING_CTOR {
-            prove_enum_string_constructor_candidate(
-                code_candidates,
-                private,
-                &constructor_identity(private),
-                enum_owner,
-            )?
+        let (private_edge, user_tail) = if shared_source_parameters.is_empty() {
+            (
+                prove_enum_constructor_candidate(
+                    code_candidates,
+                    private,
+                    &constructor_identity(private),
+                    b"java/lang/Enum",
+                    crate::enum_constants::ENUM_CTOR_DESCRIPTOR,
+                    &[],
+                )?,
+                None,
+            )
+        } else if source_ctor == STRING_CTOR {
+            (
+                prove_enum_string_constructor_candidate(
+                    code_candidates,
+                    private,
+                    &constructor_identity(private),
+                    enum_owner,
+                )?,
+                None,
+            )
         } else {
-            prove_enum_constructor_candidate(
-                code_candidates,
-                private,
-                &constructor_identity(private),
-                b"java/lang/Enum",
-                BASE_CTOR,
-            )?
+            // The shared arbitrary tail: the private constructor keeps the unchanged Enum super
+            // call and stores each user parameter into its own instance field.
+            let matching: Vec<_> = code_candidates
+                .iter()
+                .filter(|candidate| candidate.table_index == private.table_index)
+                .collect();
+            let [code] = matching.as_slice() else {
+                return Err(
+                    "the selected private constructor has no unique same-run Code".to_owned(),
+                );
+            };
+            let (tail, super_call_bci) = crate::enum_constants::prove_arbitrary_user_constructor(
+                code,
+                enum_owner,
+                &shared_source_parameters,
+                fields,
+                source_fields,
+                budget,
+            )
+            .map_err(|error| format!("the arbitrary enum constructor proof stopped: {error}"))?
+            .map_err(|reason| format!("the arbitrary enum constructor body refused: {reason}"))?;
+            (
+                PendingEnumConstructorEdge {
+                    caller: constructor_identity(private),
+                    call_bci: super_call_bci,
+                    target_owner: b"java/lang/Enum".to_vec(),
+                    target_descriptor: crate::enum_constants::ENUM_CTOR_DESCRIPTOR.to_vec(),
+                },
+                Some(tail),
+            )
         };
         let mut edges = vec![private_edge];
         if needs_bridge {
@@ -12549,11 +12638,16 @@ fn resolve_enum_constant_body_relations(
                 access,
                 &constructor_identity(access),
                 enum_owner,
-                source_ctor,
+                &source_ctor,
+                &shared_source_parameters,
             )?);
         }
-        Ok(edges)
+        Ok((edges, user_tail))
     })();
+    let (constructor_chain, constructor_user_tail) = match constructor_chain {
+        Ok((edges, user_tail)) => (Ok(edges), user_tail),
+        Err(reason) => (Err(reason), None),
+    };
     let direct_constant_bcis = (|| {
         initializer_prefix.as_ref().map_err(Clone::clone)?;
         constructor_chain.as_ref().map_err(Clone::clone)?;
@@ -12571,6 +12665,7 @@ fn resolve_enum_constant_body_relations(
         interface_methods,
         constructors,
         constructor_chain,
+        constructor_user_tail,
         direct_constant_bcis,
         initializer_prefix,
     };
@@ -12722,6 +12817,7 @@ fn resolve_enum_constant_body_relations(
                 &child_pool,
                 enum_owner,
                 &access.descriptor,
+                &shared_source_parameters,
                 true,
                 budget,
             )?
@@ -13032,26 +13128,36 @@ fn prove_enum_constant_body_group(
             "the pending initializer or constructor chain refused",
         ));
     };
-    if shape.constants.len() != 2
+    if shape.constants.is_empty()
         || shape.implicit_members.len() != 6
         || chain.is_empty()
-        || prefix.constant_field_write_bcis.len() != 2
-        || prefix.source_arguments.len() != 2
+        || prefix.constant_field_write_bcis.len() != shape.constants.len()
+        || prefix.source_arguments.len() != shape.constants.len()
         || relations
             .iter()
             .any(|relation| relation.group_shape != *shape)
     {
-        return Ok(refuse("the pending two-constant group is incomplete"));
+        return Ok(refuse("the pending constant-body group is incomplete"));
     }
-    let string_arguments = shape.constants.iter().all(|constant| {
-        constant.descriptor_source_argument_count == 1
-            && constant.constructor_descriptor == b"(Ljava/lang/String;ILjava/lang/String;)V"
-    });
-    let zero_arguments = shape.constants.iter().all(|constant| {
-        constant.descriptor_source_argument_count == 0
-            && constant.constructor_descriptor == b"(Ljava/lang/String;I)V"
-    });
-    if !string_arguments && !zero_arguments {
+    // The two fixed two-constant slices keep their proven scope; the mixed group covers the
+    // remaining shapes where every constant carries its proved arbitrary user tail.
+    let string_arguments = shape.constants.len() == 2
+        && shape.constants.iter().all(|constant| {
+            constant.source_parameters.len() == 1
+                && constant.constructor_descriptor == b"(Ljava/lang/String;ILjava/lang/String;)V"
+        });
+    let zero_arguments = shape.constants.len() == 2
+        && shape.constants.iter().all(|constant| {
+            constant.source_parameters.is_empty()
+                && constant.constructor_descriptor == b"(Ljava/lang/String;I)V"
+        });
+    let arbitrary = !string_arguments
+        && !zero_arguments
+        && shape
+            .constants
+            .iter()
+            .all(|constant| !constant.source_parameters.is_empty());
+    if !string_arguments && !zero_arguments && !arbitrary {
         return Ok(refuse(
             "the constants do not share one supported constructor shape",
         ));
@@ -13068,26 +13174,8 @@ fn prove_enum_constant_body_group(
             "the String-argument slice requires two abstract-enum anonymous bodies",
         ));
     }
-    let source_argument_texts: Option<Vec<String>> = if string_arguments {
-        prefix
-            .source_arguments
-            .iter()
-            .map(|raw| {
-                raw.is_ascii()
-                    .then(|| String::from_utf8(raw.clone()).ok())
-                    .flatten()
-            })
-            .collect()
-    } else if prefix.source_arguments.iter().all(Vec::is_empty) {
-        Some(Vec::new())
-    } else {
-        None
-    };
-    let Some(source_argument_texts) = source_argument_texts else {
-        return Ok(refuse(
-            "a source argument is not an exact ASCII String literal",
-        ));
-    };
+    // The single-String slice's ASCII gate lives in the constant-step proof: its proved
+    // argument is exactly one ASCII-decoded String literal or the group refuses there.
 
     let code_at = |index: u64| -> Option<&crate::enum_constants::EnumMethodCodeCandidate> {
         let matching: Vec<_> = codes
@@ -13189,15 +13277,16 @@ fn prove_enum_constant_body_group(
         return Ok(refuse("the initializer has no unique structured sidecar"));
     };
     if sidecar.has_exception_handlers
-        || sidecar.steps.len() != 4
-        || !matches!(&sidecar.steps[3],
+        || sidecar.steps.len() != shape.constants.len() + 2
+        || !matches!(&sidecar.steps[shape.constants.len() + 1],
             jarde_java::report::ClassInitializerStep::Other {
-                order: 3, bci,
+                order,
+                bci,
                 kind: jarde_java::report::ClassInitializerStatementKind::Return,
-            } if *bci == prefix.prefix_end_bci)
+            } if *order == shape.constants.len() + 1 && *bci == prefix.prefix_end_bci)
     {
         return Ok(refuse(
-            "the initializer sidecar does not close after three writes",
+            "the initializer sidecar does not close after the constant writes",
         ));
     }
     for (order, bci) in prefix
@@ -13211,12 +13300,12 @@ fn prove_enum_constant_body_group(
         else {
             return Ok(refuse("the initializer sidecar omits a field write"));
         };
-        let name = if order < 2 {
+        let name = if order < shape.constants.len() {
             &shape.constants[order].field_name
         } else {
             &backing.name
         };
-        let descriptor = if order < 2 {
+        let descriptor = if order < shape.constants.len() {
             [b"L".as_slice(), owner, b";"].concat()
         } else {
             [b"[L".as_slice(), owner, b";"].concat()
@@ -13286,7 +13375,7 @@ fn prove_enum_constant_body_group(
         }
     }
 
-    let mut proved = Vec::with_capacity(2);
+    let mut proved = Vec::with_capacity(shape.constants.len());
     let mut selected_children = std::collections::HashSet::new();
     for (ordinal, constant) in shape.constants.iter().enumerate() {
         budget.poll()?;
@@ -13305,18 +13394,10 @@ fn prove_enum_constant_body_group(
             || !field.markers.is_empty()
             || !jarde_java::is_java_identifier(&name)
             || constant.expected_ordinal != ordinal as u32
-            || constant.descriptor_source_argument_count != if string_arguments { 1 } else { 0 }
-            || constant.constructor_descriptor
-                != if string_arguments {
-                    b"(Ljava/lang/String;ILjava/lang/String;)V".as_slice()
-                } else {
-                    b"(Ljava/lang/String;I)V".as_slice()
-                }
+            || constant.constructor_descriptor != shape.constants[0].constructor_descriptor
             || constant.constructor_owner != constant.allocation_owner
         {
-            return Ok(refuse(
-                "an ordered zero-argument constant is not presentable",
-            ));
+            return Ok(refuse("an ordered constant is not presentable"));
         }
         let matching: Vec<_> = relations
             .iter()
@@ -13374,7 +13455,7 @@ fn prove_enum_constant_body_group(
             allocation_bci: constant.allocation_bci,
             constructor_bci: constant.constructor_bci,
             field_write_bci: prefix.constant_field_write_bcis[ordinal],
-            string_argument: string_arguments.then(|| source_argument_texts[ordinal].clone()),
+            source_arguments: prefix.source_arguments[ordinal].clone(),
             subclass,
             methods,
         });
@@ -13456,9 +13537,64 @@ fn prove_enum_constant_body_group(
     } else {
         None
     };
+    // The arbitrary tail's own proof owns the constructor shape; this gate only certifies that
+    // the constructor record can be presented without inventing annotations or markers, exactly
+    // like the ordinary user-tail projection.
+    let constructor_user_tail = if arbitrary {
+        let Some(tail) = shape.constructor_user_tail.clone() else {
+            return Ok(refuse(
+                "the arbitrary constructor tail is absent from the pending shape",
+            ));
+        };
+        let constructor = shape
+            .constructors
+            .iter()
+            .find(|member| member.descriptor == shape.constants[0].constructor_descriptor);
+        let Some(constructor) = constructor else {
+            return Ok(refuse("the source constructor is absent"));
+        };
+        let Some(source) = usize::try_from(constructor.table_index)
+            .ok()
+            .and_then(|index| source_methods.get(index))
+        else {
+            return Ok(refuse("the source constructor record is absent"));
+        };
+        let has_arbitrary_signature_marker = source.markers.len() <= 1
+            && source
+                .markers
+                .first()
+                .is_none_or(|marker| marker.contains("jvm_signature_erasure_mismatch"));
+        if source.item.index != constructor.table_index
+            || source.item.name.raw().0 != b"<init>"
+            || source.declaration.is_none()
+            || !has_arbitrary_signature_marker
+            || !source.annotations.refusals.is_empty()
+            || !source.annotations.uses.is_empty()
+            || !source.parameter_annotations.refusals.is_empty()
+            || source
+                .parameter_annotations
+                .uses_by_position
+                .iter()
+                .any(|uses| !uses.is_empty())
+            || !source.type_annotations.refusals.is_empty()
+            || source
+                .type_annotations
+                .parameter_uses
+                .iter()
+                .any(|uses| !uses.is_empty())
+        {
+            return Ok(refuse(
+                "the source constructor signature is not safely presentable",
+            ));
+        }
+        Some(tail)
+    } else {
+        None
+    };
     Ok(Ok(ProvedEnumConstantBodyGroup {
         constants: proved,
         constructor_text,
+        constructor_user_tail,
     }))
 }
 
@@ -13712,19 +13848,29 @@ fn census_enum_constant_body_uses(
 }
 
 fn enum_access_constructor_marker_owner(descriptor: &[u8]) -> Option<Vec<u8>> {
+    use crate::enum_constants::EnumUserParameter;
     let tail = descriptor.strip_prefix(b"(Ljava/lang/String;I")?;
-    let parameter = tail
-        .strip_prefix(b"Ljava/lang/String;")
-        .or(Some(tail))?
-        .strip_suffix(b";)V")?;
-    if parameter.is_empty() {
-        return None;
+    // The descriptor is the proved user parameter tail plus one final marker parameter. Skip the
+    // user parameters; the last one must be a plain `L…;` object type — the synthetic marker.
+    let mut rest = tail;
+    let mut last_marker: Option<Vec<u8>> = None;
+    loop {
+        if rest == b")V" {
+            return last_marker;
+        }
+        let (parameter, remainder) = EnumUserParameter::parse(rest)?;
+        last_marker = match &parameter {
+            EnumUserParameter::Object { descriptor } => {
+                let owner = descriptor.strip_prefix(b"L")?.strip_suffix(b";")?;
+                if owner.is_empty() || owner.contains(&b';') || owner.contains(&b'[') {
+                    return None;
+                }
+                Some(owner.to_vec())
+            }
+            _ => None,
+        };
+        rest = remainder;
     }
-    let owner = parameter.strip_prefix(b"L")?;
-    if owner.is_empty() || owner.contains(&b';') || owner.contains(&b'[') {
-        return None;
-    }
-    Some(owner.to_vec())
 }
 
 fn enum_constant_constructor_matches(
@@ -13735,10 +13881,9 @@ fn enum_constant_constructor_matches(
 ) -> bool {
     constructor_owner == allocation_owner
         && constructor_name == b"<init>"
-        && matches!(
-            constructor_descriptor,
-            b"(Ljava/lang/String;I)V" | b"(Ljava/lang/String;ILjava/lang/String;)V"
-        )
+        && (constructor_descriptor == b"(Ljava/lang/String;I)V"
+            || crate::enum_constants::parse_arbitrary_ctor_descriptor(constructor_descriptor)
+                .is_some())
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -21777,6 +21922,146 @@ mod enum_constant_body_relation_tests {
         "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Holder3.java"
     );
 
+    /// The mixed shape the patrol froze as `fam.jar`: two int-argument constant bodies plus one
+    /// ordinary int-argument constant, all on one shared `(Ljava/lang/String;II)V` constructor.
+    const MIXED_COMBO_ENUM: &str = r#"package p;
+
+public enum Combo {
+    ADD(1) {
+        @Override
+        public int apply(int a, int b) {
+            return a + b;
+        }
+    },
+    MUL(2) {
+        @Override
+        public int apply(int a, int b) {
+            return a * b;
+        }
+    },
+    ID(0);
+
+    private final int code;
+
+    Combo(int code) {
+        this.code = code;
+    }
+
+    public int apply(int a, int b) {
+        return code;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(ADD.apply(3, 4));
+        System.out.println(MUL.apply(3, 4));
+        System.out.println(ID.apply(3, 4));
+    }
+}
+"#;
+
+    /// Three user parameters per body constant: int, String, and a narrowed `(byte)` literal.
+    const MIXED_TRIO_ENUM: &str = r#"package p;
+
+public enum Trio {
+    ONE(1, "one", (byte) 4) {
+        @Override
+        public String describe(int extra) {
+            return "ONE:" + extra;
+        }
+    },
+    TWO(2, "two", (byte) 5) {
+        @Override
+        public String describe(int extra) {
+            return "TWO:" + extra;
+        }
+    };
+
+    private final int code;
+    private final String label;
+    private final byte small;
+
+    Trio(int code, String label, byte small) {
+        this.code = code;
+        this.label = label;
+        this.small = small;
+    }
+
+    public abstract String describe(int extra);
+
+    public static void main(String[] args) {
+        System.out.println(ONE.describe(10));
+        System.out.println(TWO.describe(20));
+    }
+}
+"#;
+
+    /// One static-field-reference argument per body constant. The constant-body obligations
+    /// parameterize for it, but the initializer-sidecar witness still refuses: the initializer
+    /// recovery cannot yet model a `getstatic` construction argument, so the group stays
+    /// field-by-field. This boundary is registered, not silently widened.
+    const MIXED_STATIC_FIELD_ENUM: &str = r#"package p;
+
+public enum Gs {
+    ONE(Simple.A) {
+        @Override
+        public int id() {
+            return 11;
+        }
+    },
+    TWO(Simple.B) {
+        @Override
+        public int id() {
+            return 22;
+        }
+    };
+
+    private final Simple s;
+
+    Gs(Simple s) {
+        this.s = s;
+    }
+
+    public abstract int id();
+
+    public Simple owner() {
+        return s;
+    }
+}
+"#;
+
+    /// The nested mixed shape the patrol registered: a nested enum whose constants mix
+    /// int-argument bodies with one ordinary int-argument constant.
+    const NESTED_MIXED_ENUM: &str = r#"package p;
+
+public class Holder {
+    public enum Op {
+        PLUS(1) {
+            @Override
+            public int apply(int a, int b) {
+                return a + b;
+            }
+        },
+        MUL(2) {
+            @Override
+            public int apply(int a, int b) {
+                return a * b;
+            }
+        },
+        ID(0);
+
+        private final int k;
+
+        Op(int k) {
+            this.k = k;
+        }
+
+        public int apply(int a, int b) {
+            return k;
+        }
+    }
+}
+"#;
+
     #[test]
     fn nested_enum_constant_bodies_fold_with_the_same_structural_obligations() {
         let entries = compiled_default_package_entries("N2.java", NESTED_IFACE_ENUM);
@@ -21817,6 +22102,158 @@ mod enum_constant_body_relation_tests {
             "the physical constant field is not presented twice: {}",
             report.text
         );
+    }
+
+    #[test]
+    fn mixed_argument_constant_bodies_fold_as_one_ordered_group() {
+        let entries = compiled_p_entries(&[("Combo.java", MIXED_COMBO_ENUM)]);
+        let report = report(&entries, "p/Combo");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &report.enum_constant_proof
+        else {
+            panic!(
+                "the mixed three-constant group must fold: {:?}",
+                report.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 3);
+        assert_eq!(report.enum_constant_body_relations.len(), 2);
+        assert_eq!(group.constants[2].subclass, None);
+        // The argument spellings are the arbitrary-argument channel's own narrowings.
+        assert!(report.text.contains("ADD(1) {"), "{}", report.text);
+        assert!(report.text.contains("MUL(2) {"));
+        assert!(report.text.contains("    ID(0);"));
+        // The shared constructor spells its user tail through the one shared spelling.
+        assert!(
+            report
+                .text
+                .contains("private Combo(int arg0) {\n        this.code = arg0;\n    }"),
+            "{}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("public static final p.Combo ADD;"),
+            "the folded constant is not presented twice: {}",
+            report.text
+        );
+        assert!(report.text.contains("return arg1 + arg2;"));
+        assert!(report.text.contains("return arg1 * arg2;"));
+        assert!(report.text.contains("return this.code;"));
+    }
+
+    #[test]
+    fn three_argument_constant_bodies_fold_with_narrowed_literals() {
+        let entries = compiled_p_entries(&[("Trio.java", MIXED_TRIO_ENUM)]);
+        let report = report(&entries, "p/Trio");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &report.enum_constant_proof
+        else {
+            panic!(
+                "the three-argument body group must fold: {:?}",
+                report.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 2);
+        assert!(
+            report.text.contains("ONE(1, \"one\", (byte) 4) {"),
+            "{}",
+            report.text
+        );
+        assert!(report.text.contains("TWO(2, \"two\", (byte) 5) {"));
+        assert!(
+            report
+                .text
+                .contains("private Trio(int arg0, java.lang.String arg1, byte arg2) {"),
+            "{}",
+            report.text
+        );
+    }
+
+    #[test]
+    fn nested_mixed_constant_bodies_fold_with_the_same_obligations() {
+        let entries = compiled_p_entries(&[("Holder.java", NESTED_MIXED_ENUM)]);
+        let report = report(&entries, "p/Holder$Op");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &report.enum_constant_proof
+        else {
+            panic!(
+                "the nested mixed group must fold: {:?}",
+                report.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 3);
+        assert!(report.text.contains("PLUS(1) {"), "{}", report.text);
+        assert!(report.text.contains("MUL(2) {"));
+        assert!(report.text.contains("    ID(0);"));
+    }
+
+    #[test]
+    fn static_field_argument_constant_bodies_stay_field_by_field() {
+        let entries = compiled_p_entries(&[
+            (
+                "Simple.java",
+                "package p;\n\npublic enum Simple {\n    A,\n    B\n}\n",
+            ),
+            ("Gs.java", MIXED_STATIC_FIELD_ENUM),
+        ]);
+        let report = report(&entries, "p/Gs");
+        assert!(
+            matches!(
+                &report.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason }
+                    if reason.contains("initializer")
+            ),
+            "the getstatic body group stays field-by-field: {:?}",
+            report.enum_constant_proof
+        );
+        assert!(
+            report.text.contains("public static final p.Gs ONE;"),
+            "{}",
+            report.text
+        );
+    }
+
+    /// Byte-patch one selected child's constructor forwarding (`iload_3` → `iconst_2`): the
+    /// result stays `java -Xverify:all`-valid, but the constructor no longer forwards its own
+    /// parameter, so the whole group must refuse instead of folding unfaithfully.
+    fn break_child_argument_forwarding(bytes: &[u8]) -> Vec<u8> {
+        let pattern: &[u8] = &[0x2a, 0x2b, 0x1c, 0x1d, 0x01, 0xb7];
+        let index = bytes
+            .windows(pattern.len())
+            .position(|window| window == pattern)
+            .expect("the selected child constructor forwarding sequence exists");
+        let mut changed = bytes.to_vec();
+        changed[index + 3] = 0x05;
+        changed
+    }
+
+    #[test]
+    fn broken_constructor_argument_forwarding_refuses_the_whole_group() {
+        let entries = compiled_p_entries(&[("Combo.java", MIXED_COMBO_ENUM)]);
+        let patched: Vec<(Vec<u8>, Vec<u8>)> = entries
+            .into_iter()
+            .map(|(name, bytes)| {
+                if name == b"p/Combo$1.class" {
+                    (name, break_child_argument_forwarding(&bytes))
+                } else {
+                    (name, bytes)
+                }
+            })
+            .collect();
+        let report = report(&patched, "p/Combo");
+        assert!(matches!(
+            &report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(
+            report.text.contains("public static final p.Combo ADD;"),
+            "the broken group stays field-by-field: {}",
+            report.text
+        );
+        assert!(!report.text.contains("ADD(1) {"));
     }
 
     #[test]
@@ -22142,11 +22579,21 @@ public class Probe {
                     source_report.enum_constant_proof
                 );
             };
+            fn string_argument(
+                constant: &crate::enum_constants::ProvedEnumBodyConstant,
+            ) -> Option<&str> {
+                match constant.source_arguments.as_slice() {
+                    [crate::enum_constants::ProvedEnumUserArgument::StringLiteral(literal)] => {
+                        Some(literal.value.as_str())
+                    }
+                    _ => None,
+                }
+            }
             assert_eq!(
                 group
                     .constants
                     .iter()
-                    .map(|constant| constant.string_argument.as_deref())
+                    .map(|constant| string_argument(constant))
                     .collect::<Vec<_>>(),
                 vec![Some("*"), Some("/")]
             );
@@ -22956,7 +23403,7 @@ public class Probe {
                     vec![(0, 0), (1, 1)]
                 );
                 assert!(first_shape.constants.iter().all(|constant| {
-                    constant.descriptor_source_argument_count == 0
+                    constant.source_parameters.is_empty()
                         && constant.constructor_descriptor == b"(Ljava/lang/String;I)V"
                         && constant.constructor_owner == constant.allocation_owner
                 }));
@@ -23844,6 +24291,7 @@ public class Probe {
                     &pool,
                     b"java/lang/Enum",
                     BASE,
+                    &[],
                     false,
                     &mut read_budget,
                 )
@@ -24013,6 +24461,7 @@ public class Probe {
                 &pool,
                 b"demo/Op",
                 b"(Ljava/lang/String;ILdemo/Op$1;)V",
+                &[],
                 true,
                 &mut bounded,
             ),
@@ -24030,6 +24479,7 @@ public class Probe {
                 &pool,
                 b"demo/Op",
                 b"(Ljava/lang/String;ILdemo/Op$1;)V",
+                &[],
                 true,
                 &mut cancelled,
             ),
