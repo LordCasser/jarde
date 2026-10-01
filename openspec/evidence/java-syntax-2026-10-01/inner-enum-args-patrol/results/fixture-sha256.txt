@@ -1,4 +1,13 @@
 12624bc7c6e42aa640999d5597f3a25e37bd605c5c1241a39e294488e1411cc7  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.class
 639b24d7acc1c2c966e6499645916b303d00570cf61e4efa53706b0a8d7178ec  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N1.class
+4d1cc74b6891ae19cda58c35b7631f7bf3e5c2865a085909f8714e3881ddb39a  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N1$Numbers.class
+dc52d7db9dc4876605d01aca036ef61faec8e6f32bd6a18d4af3aecd00d2fa7e  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N1$Numbers$NumString.class
 c8d374e723775e20d4c838d786def3bdf8e8045777a14a9e577966cbc4fce407  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2.class
+2bdba278fd653848a58199decae2cce324133fdecf925a25b73030b8648bd739  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2$1.class
+c3f22271c38ef03cd0f8f5a136c99fdf36ce5c76d8b19ea5d06f9f7307f2fb74  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2$IOperation.class
+0c90ed3e0056c861d3ecbd431f6a211590bce75dc6f2d0017f78157596cb284d  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2$Operation.class
+c8765aa7c3176ce88641b734113ddbf34763238084c23365e3c2aa7ccf5c7cf0  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2$Operation$1.class
+b9dcfd7ca7ffa97dcbdce987b34e4aa1cda89c963bd1854e3de2d71445f2131e  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2$Operation$2.class
 dbba22f7d2cdbd0d1c41809ae791290a34fc1ae98743544ab1a42a637754aa6e  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N3.class
+fb54e0b0408c4bf7ba4390928806aa13332675e26f3c9d5eba5b339e8cc4b98a  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N3$Refs.class
+b456f1b02dcf1dfb67662106d8cc1ccc174e8fccbffebec005f9d78156c85728  openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N3$Simple.class
