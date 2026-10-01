@@ -1,0 +1,6 @@
+3cce0a3436fd8bb4aec22e7ebc3859f828718f215117e141801b13215794e49c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1.class
+389bdb7709ad565f3dc3e158b90e373fbd1749f11f72cf9258616fbb2725432f  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$1.class
+8b4083fee127c74522880f2d611b565f86ae6f198e4390d296f0d88e22a99799  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$2.class
+d7abf1249c518a436b524c8df9a4aa4ff9919db4172d7e3f32838c86d064fa7c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$Op.class
+8580df0d92d81c10a7a05b92f5147bcd7b4b49befea767e08fa1efa1858a3de5  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C2.class
+d919039fe47ff5efd1c88532e77656e3a0a1ac0cc527555b5f0df2716e4c11c1  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C2$Inner.class
