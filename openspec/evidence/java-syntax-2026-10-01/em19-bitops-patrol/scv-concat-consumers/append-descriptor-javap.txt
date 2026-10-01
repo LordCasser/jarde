@@ -1,0 +1,91 @@
+# append descriptor determination (javap, frozen B5 fixture + the scv-concat-consumers variant probes)
+#
+# Determination: javac 8 lowers every boolean-local concat operand to the primitive
+# overload StringBuilder.append:(Z)Ljava/lang/StringBuilder; (StringBuffer likewise for a
+# StringBuffer chain). The boxed append:(Ljava/lang/Object;) form never reads a boolean
+# local's value directly: the verifier requires the value boxed (Boolean.valueOf) first, so
+# the direct reader of the local stays the primitive append (or the box call), and no boxed
+# matching arm is added. B5.s1's consumer BCI 17 (istore_1) is consumed at BCI 26:
+
+## B5.s1 (frozen patrol fixture, SHA fccfb351...) -- chain 3-16, istore_1@17, append:(Z)@26
+17: istore_1
+        18: new           #7                  // class java/lang/StringBuilder
+        21: dup
+        22: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+        25: iload_1
+        26: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        29: ldc           #14                 // String :
+        31: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        34: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        37: 
+
+## plain(int) -- the same shape in the frozen variant fixture
+istore_1
+        18: new           #7                  // class java/lang/StringBuilder
+        21: dup
+        22: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+        25: iload_1
+        26: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        29: ldc           #14                 // String :
+        31: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        34: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        37: 
+
+## boxedHead(int) -- "" + hasA + ":": the head operand is the constant "" (append(String));
+# hasA still lowers to the primitive append:(Z) -- no boxed lowering for a boolean local
+istore_1
+        18: new           #7                  // class java/lang/StringBuilder
+        21: dup
+        22: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+        25: ldc           #23                 // String
+        27: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        30: iload_1
+        31: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        34: ldc           #14                 // String :
+        36: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        39: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        42: 
+
+## doubleChain(int) -- the second chain's first test (ifeq@21) lives in the first chain's
+# consumer block (17-21); the first chain's append:(Z) is at 45, the second at 54
+17: istore_1
+        18: iload_0
+        19: iconst_4
+        20: iand
+        21: ifne          31
+        24: iload_0
+        25: bipush        8
+        27: iand
+        28: ifeq          35
+        31: iconst_1
+        32: goto          36
+        35: iconst_0
+        36: istore_2
+        37: new           #7                  // class java/lang/StringBuilder
+        40: dup
+        41: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+        44: iload_1
+        45: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        48: ldc           #14                 // String :
+        50: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        53: iload_2
+        54: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        57: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        60: 
+
+## ScvConcatReReadControls.reRead(int) -- flags[0] = hasA reads the local through a bastore
+# before the concatenation; that read is not an explicit Boolean consumer (degradation kept)
+17: istore_1
+        18: getstatic     #7                  // Field flags:[Z
+        21: iconst_0
+        22: iload_1
+        23: bastore
+        24: new           #13                 // class java/lang/StringBuilder
+        27: dup
+        28: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+        31: iload_1
+        32: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        35: ldc           #20                 // String :
+        37: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        40: invokevirtual #25                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        43: 
