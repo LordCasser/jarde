@@ -10,4 +10,8 @@
 
 `recover-enum-mixed-constant-bodies`：常量体义务证明参数化——子类/桥 ctor descriptor 接受任意实参 grammar（arbitrary-arguments 已建立的参数集），委托链逐参转发证明；常量呈现 `NAME(<args>) { <body> }`。普通带参常量与纯带体常量（两已闭合能力）逐字不变。属两个既有证书的交叠组合，无新机制。
 
+## 更新（2026-10-01，`recover-enum-mixed-constant-bodies` 实施后）
+
+`p.Combo` 三常量混合全量折叠为 `ADD(1) { … }, MUL(2) { … }, ID(0);`（[combo-mix.jarde.java](combo-mix.jarde.java)），三方重编 `java -Xverify:all` 逐路径 `7`/`12`/`0` 与原 class 一致（[threeway-mix.md](threeway-mix.md)）。首个拒绝点为关系解析层的二元数量门，同层还有描述符白名单、零参桥 marker 名解析两处（定位与参数化落点见 [refusal-point-mix.md](refusal-point-mix.md)）。四个 verifier 有效负例/变体的前后行为见 [variants-before-after-mix.md](variants-before-after-mix.md)：嵌套+混合、三参带体翻转为折叠（Jarde 的 `(byte)` 窄化拼写使 Trio 重编可过而 JADX 输出拒编）；getstatic 参带体按边界保持逐字段（structured initializer 见解层尚未建模 getstatic 构造实参，登记不放宽）；转发链断参整组拒绝。
+
 原 class 为行为基准。
