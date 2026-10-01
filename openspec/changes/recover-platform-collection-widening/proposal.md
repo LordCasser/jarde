@@ -4,9 +4,9 @@
 
 ## What Changes
 
-- `platform_reference_argument_widens` 的 java.util 集合闭集：JDK 8 固定层级直接边（ArrayList/LinkedList/Vector→List；HashMap/TreeMap/LinkedHashMap/Hashtable→Map；HashSet/TreeSet/LinkedHashSet→Set；ArrayDeque→Deque；接口链 List/Set/Queue→Collection→Iterable，含 List→Queue 之外的既有精确对），同款传递闭包 walk；逐对以 JDK 运行时反射机械核对。
-- G1.use 完整恢复（`max(local0)` 呈现，结果局部可用）；`List→Iterable` 既有行为不变；用户类与非 java.util 不放宽。
-- 以 G1 与变体族（Map/Set/Queue 各型、嵌套泛型调用、接口形参多重上转型 `ArrayList→Collection`）验收。
+- `platform_reference_argument_widens` 的 java.util 集合闭集：JDK 8 固定层级**直接边** 40 行（class 的 `extends`/`implements`、interface 的 `extends`：`ArrayList`/`LinkedList`/`Vector`/`Stack`→`List` 及其 `Abstract*` 骨架；`HashMap`/`TreeMap`/`LinkedHashMap`/`Hashtable`/`Properties`→`Map`；`HashSet`/`TreeSet`/`LinkedHashSet`→`Set` 及 `SortedSet`/`NavigableSet` 链；`ArrayDeque`→`Deque`→`Queue`；接口链 `List`/`Set`/`Queue`→`Collection`→`Iterable`），同款传递闭包 walk（java.util 超类型图为 DAG，walk 用分层 BFS + 行数上界）；逐对以 JDK 运行时反射机械核对（A 直接边/B 包边界/C 域内可达性一致/D 行集恰为域内直接边/E 域外类型不入 walk）。
+- G1.use 完整恢复（`max((java.util.List) local0)` 呈现，结果局部可用）；`List→Iterable` 既有行为不变；用户类、用户子类与非 java.util（含 `java.util.concurrent`、`EnumSet`/`IdentityHashMap`、`Date`）不放宽。
+- 以 G1 与变体族（Map/Set/List/Deque 各型、双跳 `ArrayList→Collection→Iterable`、嵌套泛型调用、接口形参多重上转型 `List/Set/Queue→Collection`）验收。
 
 ## Capabilities
 

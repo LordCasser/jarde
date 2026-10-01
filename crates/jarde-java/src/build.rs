@@ -24380,11 +24380,96 @@ fn array_reference_widens(presented: &str, required: &str) -> bool {
     }
 }
 
-/// The one Java 8 platform class relation proved for invocation arguments without reading a
-/// runtime classpath. Keep this exact: a descriptor or a similar-looking type name is not a general
-/// class-hierarchy proof.
+/// The Java 8 `java.util` collection hierarchy one invocation argument may cross, stated as the
+/// fixed direct edges of the release-8 tree. A class row is a javadoc `extends` (one superclass) or
+/// `implements` (one interface) relation of that class; an interface row is a javadoc `extends`
+/// relation of that interface. The walk follows the rows to their roots, so the answer is exactly
+/// the ancestors this closed set reaches — `List -> Collection -> Iterable`, `TreeSet ->
+/// NavigableSet -> SortedSet -> Set -> Collection`, and the like — and nothing outside the
+/// enumerated `java.util` collection types (`java.util.concurrent`, the `Collections`/`Arrays`
+/// factories, `EnumSet`/`IdentityHashMap`/`PriorityQueue` and the non-collection `java.util` types
+/// such as `Dictionary`/`Date`, plus every user class) widens until a resolution-environment
+/// hierarchy proof exists. The same channel already states the `java.lang` Throwable tree
+/// ([`java_lang_throwable_widens`]); this is its `java.util` counterpart.
 fn platform_reference_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
-    java_release == 8 && presented == "java.util.List" && required == "java.lang.Iterable"
+    // One row per documented direct `extends`/`implements` of the release-8 `java.util` collection
+    // tree. A row's two names are the javadoc's own declaration of that type.
+    const DIRECT_EDGES: &[(&str, &str)] = &[
+        // The `Abstract*` skeletons the concrete classes are built on.
+        ("java.util.AbstractCollection", "java.util.Collection"),
+        ("java.util.AbstractList", "java.util.AbstractCollection"),
+        ("java.util.AbstractList", "java.util.List"),
+        ("java.util.AbstractSequentialList", "java.util.AbstractList"),
+        ("java.util.AbstractSet", "java.util.AbstractCollection"),
+        ("java.util.AbstractSet", "java.util.Set"),
+        ("java.util.AbstractMap", "java.util.Map"),
+        // The `List` implementations.
+        ("java.util.ArrayList", "java.util.AbstractList"),
+        ("java.util.ArrayList", "java.util.List"),
+        ("java.util.LinkedList", "java.util.AbstractSequentialList"),
+        ("java.util.LinkedList", "java.util.List"),
+        ("java.util.LinkedList", "java.util.Deque"),
+        ("java.util.Vector", "java.util.AbstractList"),
+        ("java.util.Vector", "java.util.List"),
+        ("java.util.Stack", "java.util.Vector"),
+        // The `Set` implementations.
+        ("java.util.HashSet", "java.util.AbstractSet"),
+        ("java.util.HashSet", "java.util.Set"),
+        ("java.util.LinkedHashSet", "java.util.HashSet"),
+        ("java.util.LinkedHashSet", "java.util.Set"),
+        ("java.util.TreeSet", "java.util.AbstractSet"),
+        ("java.util.TreeSet", "java.util.NavigableSet"),
+        // The `Map` implementations. `Hashtable`'s other javadoc parent is `java.util.Dictionary`,
+        // which is not a collection type: no row states it, so a `Dictionary` slot stays refused.
+        ("java.util.HashMap", "java.util.AbstractMap"),
+        ("java.util.HashMap", "java.util.Map"),
+        ("java.util.LinkedHashMap", "java.util.HashMap"),
+        ("java.util.LinkedHashMap", "java.util.Map"),
+        ("java.util.Hashtable", "java.util.Map"),
+        ("java.util.Properties", "java.util.Hashtable"),
+        ("java.util.TreeMap", "java.util.AbstractMap"),
+        ("java.util.TreeMap", "java.util.NavigableMap"),
+        // The `Deque` implementation and its skeleton.
+        ("java.util.ArrayDeque", "java.util.AbstractCollection"),
+        ("java.util.ArrayDeque", "java.util.Deque"),
+        // The interface chain itself, down to the `Iterable` root.
+        ("java.util.Collection", "java.lang.Iterable"),
+        ("java.util.List", "java.util.Collection"),
+        ("java.util.Queue", "java.util.Collection"),
+        ("java.util.Deque", "java.util.Queue"),
+        ("java.util.Set", "java.util.Collection"),
+        ("java.util.SortedSet", "java.util.Set"),
+        ("java.util.NavigableSet", "java.util.SortedSet"),
+        ("java.util.SortedMap", "java.util.Map"),
+        ("java.util.NavigableMap", "java.util.SortedMap"),
+    ];
+    // The rows are one acyclic superclass/interface graph, so the walk from the presented type
+    // reaches every ancestor the table proves; the step cap only bounds a corrupted table the same
+    // way the array walk bounds a corrupted rank, and each parent is compared as it is appended, so
+    // the answer is the widening relation alone — a presented type equal to the required one is the
+    // dispatch's same-name answer, never this table's.
+    if java_release != 8 {
+        return false;
+    }
+    let mut frontier: Vec<&str> = vec![presented];
+    for _ in 0..DIRECT_EDGES.len() {
+        let mut next: Vec<&str> = Vec::new();
+        for current in &frontier {
+            for (child, parent) in DIRECT_EDGES {
+                if child == current {
+                    if *parent == required {
+                        return true;
+                    }
+                    next.push(parent);
+                }
+            }
+        }
+        if next.is_empty() {
+            return false;
+        }
+        frontier = next;
+    }
+    false
 }
 
 /// The JDK 8 `java.lang` Throwable family one invocation argument may cross. The JVM verifier
@@ -27025,25 +27110,101 @@ mod tests {
     }
 
     #[test]
-    fn platform_reference_argument_widening_is_one_java_8_relation() {
-        assert!(platform_reference_argument_widens(
-            8,
-            "java.util.List",
-            "java.lang.Iterable"
-        ));
+    fn platform_reference_argument_widening_reaches_exactly_the_java_util_table_ancestors() {
+        // One positive per direct row of the release-8 `java.util` collection tree, including the
+        // multi-level walks (a `TreeSet` value reaches `Set` through `NavigableSet` and `SortedSet`,
+        // an `ArrayDeque` value reaches `Iterable` through `Deque`/`Queue`/`Collection`, and a
+        // `Properties` value reaches `Map` through `Hashtable`) and every intermediate ancestor a
+        // descriptor can name. `List -> Iterable` also stays the walk's own answer.
+        for (presented, required) in [
+            ("java.util.List", "java.lang.Iterable"),
+            ("java.util.List", "java.util.Collection"),
+            ("java.util.Set", "java.util.Collection"),
+            ("java.util.Queue", "java.util.Collection"),
+            ("java.util.Queue", "java.lang.Iterable"),
+            ("java.util.Deque", "java.util.Queue"),
+            ("java.util.Deque", "java.util.Collection"),
+            ("java.util.SortedSet", "java.util.Set"),
+            ("java.util.SortedSet", "java.util.Collection"),
+            ("java.util.NavigableSet", "java.util.SortedSet"),
+            ("java.util.NavigableSet", "java.util.Set"),
+            ("java.util.SortedMap", "java.util.Map"),
+            ("java.util.NavigableMap", "java.util.SortedMap"),
+            ("java.util.NavigableMap", "java.util.Map"),
+            ("java.util.AbstractCollection", "java.lang.Iterable"),
+            ("java.util.AbstractList", "java.util.List"),
+            ("java.util.AbstractSequentialList", "java.util.List"),
+            ("java.util.AbstractSet", "java.util.Set"),
+            ("java.util.AbstractMap", "java.util.Map"),
+            ("java.util.ArrayList", "java.util.List"),
+            ("java.util.ArrayList", "java.util.Collection"),
+            ("java.util.ArrayList", "java.lang.Iterable"),
+            ("java.util.LinkedList", "java.util.List"),
+            ("java.util.LinkedList", "java.util.Deque"),
+            ("java.util.LinkedList", "java.util.Queue"),
+            ("java.util.Vector", "java.util.List"),
+            ("java.util.Vector", "java.util.Collection"),
+            ("java.util.Stack", "java.util.List"),
+            ("java.util.Stack", "java.util.Vector"),
+            ("java.util.HashSet", "java.util.Set"),
+            ("java.util.HashSet", "java.util.Collection"),
+            ("java.util.LinkedHashSet", "java.util.Set"),
+            ("java.util.LinkedHashSet", "java.util.HashSet"),
+            ("java.util.TreeSet", "java.util.NavigableSet"),
+            ("java.util.TreeSet", "java.util.SortedSet"),
+            ("java.util.TreeSet", "java.util.Set"),
+            ("java.util.HashMap", "java.util.Map"),
+            ("java.util.LinkedHashMap", "java.util.Map"),
+            ("java.util.LinkedHashMap", "java.util.HashMap"),
+            ("java.util.Hashtable", "java.util.Map"),
+            ("java.util.Properties", "java.util.Map"),
+            ("java.util.Properties", "java.util.Hashtable"),
+            ("java.util.TreeMap", "java.util.NavigableMap"),
+            ("java.util.TreeMap", "java.util.SortedMap"),
+            ("java.util.TreeMap", "java.util.Map"),
+            ("java.util.ArrayDeque", "java.util.Deque"),
+            ("java.util.ArrayDeque", "java.util.Queue"),
+            ("java.util.ArrayDeque", "java.util.Collection"),
+        ] {
+            assert!(
+                platform_reference_argument_widens(8, presented, required),
+                "{presented} must widen to {required} from the java.util table"
+            );
+        }
+
+        // The refusals the closed set exists for: every release other than 8, the subpackages and
+        // the non-collection `java.util` types (the `Dictionary` parent of `Hashtable`, the
+        // `EnumSet`/`IdentityHashMap`/`PriorityQueue` implementations, the factories and `Date`),
+        // the user classes, the downward and sibling directions, and the primitive/array shapes.
         for (release, presented, required) in [
+            (7, "java.util.ArrayList", "java.util.List"),
+            (9, "java.util.ArrayList", "java.util.List"),
             (7, "java.util.List", "java.lang.Iterable"),
             (9, "java.util.List", "java.lang.Iterable"),
-            (8, "java.util.ArrayList", "java.lang.Iterable"),
-            (8, "java.util.Collection", "java.lang.Iterable"),
-            (8, "java.util.List<String>", "java.lang.Iterable"),
             (8, "java.util.List", "java.lang.Object"),
             (8, "java.lang.Iterable", "java.util.List"),
+            (8, "java.util.Collection", "java.util.List"),
+            (8, "java.util.Map", "java.util.HashMap"),
+            (8, "java.util.Set", "java.util.AbstractList"),
             (8, "example.List", "java.lang.Iterable"),
+            (8, "java.util.List<String>", "java.lang.Iterable"),
+            (8, "java.util.Dictionary", "java.util.Map"),
+            (8, "java.util.Hashtable", "java.util.Dictionary"),
+            (8, "java.util.EnumSet", "java.util.Set"),
+            (8, "java.util.IdentityHashMap", "java.util.Map"),
+            (8, "java.util.PriorityQueue", "java.util.Queue"),
+            (8, "java.util.Collections", "java.util.List"),
+            (8, "java.util.Date", "java.lang.Comparable"),
+            (8, "java.util.concurrent.ConcurrentHashMap", "java.util.Map"),
+            (8, "example.ArrayList", "java.util.List"),
+            (8, "java.util.ArrayList", "java.util.Set"),
+            (8, "java.util.ArrayList[]", "java.util.List[]"),
+            (8, "int", "java.util.List"),
+            (8, "java.util.ArrayList", "int"),
         ] {
             assert!(
                 !platform_reference_argument_widens(release, presented, required),
-                "release {release}: {presented} must not widen to {required} from this proof"
+                "release {release}: {presented} must not widen to {required} from this table"
             );
         }
     }

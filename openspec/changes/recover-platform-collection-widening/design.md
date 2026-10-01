@@ -8,11 +8,12 @@
 
 ## Decisions
 
-1. **表 + walk 复用 throwable 模式**：直接边按 JDK 8 javadoc（实现类的 `implements`、接口的 `extends`）；walk 沿边到根（Collection→Iterable 兜底），步长上界 = 边数；同名不属上转型（分派前分支既有）。逐对机械核对脚本产物入证据。
+1. **表 + walk 复用 throwable 模式，口径为严表（root 裁定）**：每行是 JDK 8 javadoc 声明的**一条直接边**（class 的 `extends` 父类或 `implements` 接口、interface 的 `extends`），含 `Abstract*` 骨架、`Stack extends Vector`、`Properties extends Hashtable`、`Deque extends Queue`、`SortedSet`/`NavigableSet` 与 `SortedMap`/`NavigableMap` 链——同族真边不裁剪为「15 对」。java.util 超类型图是 DAG（`ArrayList` 同时有 `AbstractList` 与 `List` 两个直接父），throwable 的线性链 walk 不适用，故 walk 改为按层 frontier BFS，步长上界 = 行数，每个父在入队时即与要求类型比较；同名不属上转型（分派前同名分支既有）。逐对机械核对脚本产物入证据（A–E 五项断言）。
 2. **呈现沿用 `cast_argument`**：保留要求类型拼写（防重载重定向），与既有平台对一致。
-3. **验收锚定**：G1（`zeta:a`）+ 变体（HashMap→Map 传参、HashSet→Set、ArrayList→Collection 双跳、嵌套泛型 `List<List<String>>` 传 `ArrayList<ArrayList<String>>`）编译运行对照；负例（用户类 `MyList implements List` → List：保持拒绝，升级路径未启用）。
+3. **验收锚定**：G1（`zeta:a`）+ 变体（HashMap→Map 传参、HashSet→Set、ArrayList→Collection 双跳、嵌套泛型 `List<List<String>>` 传 `ArrayList<List<String>>`、接口链 List/Set/Queue→Collection、Collection→Iterable）编译运行对照；负例（用户类 `MyList implements List` → List、用户子类、`java.util.concurrent`、`EnumSet`/`IdentityHashMap`、`Date`：保持拒绝，升级路径未启用）。
 
 ## Risks / Trade-offs
 
-- **表错对** → javadoc 逐对来源注释 + JDK 反射机械核对全过；表外类型回退拒绝。
-- **集合工厂/子类复杂化** → 只收固定 JDK 8 java.util 类名；`java.util.concurrent` 等子包不收。
+- **表错对** → javadoc 逐对来源注释 + JDK 反射机械核对全过（A 直接边、B 包边界、C 域内 812 对 walk≡`isAssignableFrom`、D 行集恰为域内直接边、E 域外类型不入 walk）；表外类型回退拒绝。
+- **集合工厂/子类复杂化** → 只收固定 JDK 8 java.util 集合类名与接口名；`EnumSet`/`IdentityHashMap`/`PriorityQueue` 等域外实现、`Collections`/`Arrays` 工厂、`java.util.concurrent` 等子包、`Dictionary`/`Date` 等非集合 java.util 类型不收。
+- **发布版漂移** → 表按 JDK 8 层书写，`java_release != 8` 直接拒绝；机械核对脚本在 JDK 23 上于 A 处预期失败（`LinkedHashSet → SequencedSet`），该分歧记录为门禁依据。

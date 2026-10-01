@@ -1,0 +1,15 @@
+== JDK 8 (Corretto 1.8.0_432): the release-8 rows ==
+openjdk version "1.8.0_432"
+read 40 rows over 29 types
+A ok: every row is a direct superclass/interface edge of the runtime
+B ok: every row stays in java.util (with the one Collection -> Iterable root)
+C ok: over 812 domain pairs, the walk equals the runtime's own assignability
+D ok: the 40 rows are exactly the domain-internal direct edges, none missing, none extra
+E ok: 12 table-out types never enter the walk (348 from-domain pairs), and Hashtable -> Dictionary stays refused though the runtime allows it
+ALL CHECKS PASSED
+
+== JDK 23 (openjdk 23.0.1): expected divergence, the java_release==8 gate ==
+openjdk version "23.0.1" 2024-10-15
+read 40 rows over 29 types
+Exception in thread "main" java.lang.AssertionError: not a direct edge of this JDK: java.util.LinkedHashSet -> java.util.Set (runtime: [java.util.HashSet, java.util.SequencedSet, java.lang.Cloneable, java.io.Serializable])
+	at CollectionTableCheck.main(Unknown Source)

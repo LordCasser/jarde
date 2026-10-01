@@ -1,0 +1,19 @@
+# three-way comparison, java -Xverify:all stdout SHA-256 (2026-10-02)
+# G1
+79f6081d3d87c5f4b90fc4ebef4fc1eb654adc8d0a8cf0ae62c647d248bf74ce  results/G1-original-run.txt
+79f6081d3d87c5f4b90fc4ebef4fc1eb654adc8d0a8cf0ae62c647d248bf74ce  results/G1-jarde-run.txt
+79f6081d3d87c5f4b90fc4ebef4fc1eb654adc8d0a8cf0ae62c647d248bf74ce  results/jadx-G1-run.txt
+# CWV
+5e38f1ab5c27ec4ab5472ecce3f4e9cb3ce01575f38b7214646081605514eaa5  widen/results/CWV-original-run.txt
+5e38f1ab5c27ec4ab5472ecce3f4e9cb3ce01575f38b7214646081605514eaa5  widen/results/CWV-jarde-run.txt
+5e38f1ab5c27ec4ab5472ecce3f4e9cb3ce01575f38b7214646081605514eaa5  widen/results/jadx-CWV-run.txt
+# CWN (original only; nested classes are not independently compilable in JADX output)
+1533df3fde12d95a460a8fa4f8fbec61af861a3ffe6301f2839c96a4bb0271a3  widen/results/CWN-original-run.txt
+# recovered/frozen sources
+32a1eceb5dcb539f93f6c7b457fd3df9474b9d8552981051749edee7726a13be  results/G1-widen.recovered.txt
+573459433038a32df8d16f580a5646a1d71ff8631d1e1d2bc34baca65253ffb2  widen/results/CWV.jarde.java
+6aad2e6220fd5f39c22c6cdcea9eb4401714fb7cfd6644a7649b24a2446c3295  widen/results/CWN.jarde.java
+# frozen inputs
+fabbfd8e7301f29eaeb5b7786ff578a78b53dab6a9cdad12c9223fac7eeae825  fixture/G1.class
+5900a21a17c17d1a5dc198f6c160c71537d7d736661380166e6a0a3f367e53f4  widen/original/CWV.class
+70b1826baa923523b77f5d0a24b8f550895dd9f0362899f48357ddd59056b7d1  widen/original/CWN.class
