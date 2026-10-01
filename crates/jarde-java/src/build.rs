@@ -7518,6 +7518,23 @@ pub(crate) fn build(
             }
         }
     }
+    // A constructor whose pre-super statement prefix is the compiler's certified synthetic
+    // capture group (`this$0`, `val$x`) is presented prologue-first — `super(…)` as the first
+    // statement, the group after it — because the byte order the layer above presented is legal
+    // JVM but not legal Java source. Everything that prefix is not (a user field's write, a
+    // computed value, an interleaved effect) is left exactly where the bytes put it.
+    crate::ctor_order::present_prologue_first(
+        &mut builder.stmts,
+        builder.ssa,
+        builder.operations,
+        builder.fields,
+        inputs.class_fields,
+        inputs.declaring_class,
+        inputs.prologues,
+        inputs.parameters,
+        inputs.has_receiver,
+        builder.budget,
+    )?;
     Ok(Program {
         field_increments,
         statements: builder.statements,
