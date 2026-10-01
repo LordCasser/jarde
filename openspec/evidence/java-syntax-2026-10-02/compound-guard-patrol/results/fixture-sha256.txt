@@ -1,0 +1,1 @@
+d0507434e5fe142eba178a35018b2e4c6c874b716f37ddb394092d6873dad5f4  openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/fixture/T4.class
