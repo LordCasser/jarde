@@ -17,4 +17,6 @@ EM-05 字符串域扩验（主线 `4b782a68`）。固定转录 [fixture](fixture
 
 `recover-ref-eq-boolean-argument`（窄切片）：`if_acmpXX` + iconst_0/1 模式的引用相等值在**调用实参位**按 boolean 呈现（`t == t.intern()` 直译），复用既有布尔分支值的 SSA 证明形态（布尔上下文切片已建），落点在实参位转换判定而非新证明机制。同模式数值相等（`if_icmpXX`）若同病一并覆盖并在报告区分。
 
+**已实现**（见 [repeq-variants/](repeq-variants/README.md)：判定点定位、变体前后、三方对照与 SHA）：S1 完整恢复、行为一致；序分支/零测试边界保持拒绝。
+
 原 class 为行为基准。
