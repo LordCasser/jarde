@@ -1,0 +1,10 @@
+# falsifiability: the new test suite with the table reverted to the single List->Iterable pair
+# command: revert platform_reference_argument_widens body, then
+#   cargo test --locked --test p3_platform_collection_widening
+
+g1_use_recovers_the_collection_argument_and_its_result_local ... FAILED
+collection_family_recovers_every_row_with_the_required_spelling ... FAILED
+recovered_g1_runtime_matches_the_original_class ... FAILED
+table_out_presentations_keep_the_refusal_and_the_original_runtime ... ok  (pins unchanged refusal behavior)
+collection_recovery_stops_and_cancels_before_any_published_output ... ok  (pins unchanged budget/cancel behavior)
+test result: FAILED. 2 passed; 3 failed

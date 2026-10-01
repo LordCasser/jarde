@@ -1,0 +1,298 @@
+// jarde: presentation of `CWV` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CWV extends java.lang.Object {
+    public CWV() {
+        // @method <init>()V
+        // @declaration a constructor of `CWV`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `mapValue(Ljava/util/Map;)Ljava/lang/String;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static java.lang.String mapValue(java.util.Map arg0) {
+        // @method mapValue(Ljava/util/Map;)Ljava/lang/String;
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) arg0.get((java.lang.Object) "k");
+    }
+
+    // jarde: generic Signature projection refused for `mapSize(Ljava/util/Map;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int mapSize(java.util.Map arg0) {
+        // @method mapSize(Ljava/util/Map;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.size();
+    }
+
+    // jarde: generic Signature projection refused for `setSize(Ljava/util/Set;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int setSize(java.util.Set arg0) {
+        // @method setSize(Ljava/util/Set;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.size();
+    }
+
+    // jarde: generic Signature projection refused for `collectionSize(Ljava/util/Collection;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int collectionSize(java.util.Collection arg0) {
+        // @method collectionSize(Ljava/util/Collection;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.size();
+    }
+
+    // jarde: generic Signature projection refused for `iterableSize(Ljava/lang/Iterable;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int iterableSize(java.lang.Iterable arg0) {
+        // @method iterableSize(Ljava/lang/Iterable;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        java.util.Iterator local2;
+        local1 = 0;
+        local2 = arg0.iterator();
+        while (local2.hasNext()) {
+            java.lang.String local3 = (java.lang.String) local2.next();
+            if (local3 != null) {
+                local1 = local1 + 1;
+            }
+        }
+        return local1;
+    }
+
+    // jarde: generic Signature projection refused for `queueSize(Ljava/util/Queue;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int queueSize(java.util.Queue arg0) {
+        // @method queueSize(Ljava/util/Queue;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.size();
+    }
+
+    // jarde: generic Signature projection refused for `sortedSetSize(Ljava/util/SortedSet;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int sortedSetSize(java.util.SortedSet arg0) {
+        // @method sortedSetSize(Ljava/util/SortedSet;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.size();
+    }
+
+    // jarde: generic Signature projection refused for `sortedMapValue(Ljava/util/SortedMap;)Ljava/lang/String;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static java.lang.String sortedMapValue(java.util.SortedMap arg0) {
+        // @method sortedMapValue(Ljava/util/SortedMap;)Ljava/lang/String;
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) arg0.get((java.lang.Object) "k");
+    }
+
+    // jarde: generic Signature projection refused for `listValue(Ljava/util/List;)Ljava/lang/String;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static java.lang.String listValue(java.util.List arg0) {
+        // @method listValue(Ljava/util/List;)Ljava/lang/String;
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) arg0.get(0);
+    }
+
+    // jarde: generic Signature projection refused for `nestedListSize(Ljava/util/List;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int nestedListSize(java.util.List arg0) {
+        // @method nestedListSize(Ljava/util/List;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.size() + ((java.util.List) arg0.get(0)).size();
+    }
+
+    // jarde: generic Signature projection refused for `dequeSize(Ljava/util/Deque;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int dequeSize(java.util.Deque arg0) {
+        // @method dequeSize(Ljava/util/Deque;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.size();
+    }
+
+    // jarde: generic Signature projection refused for `dequeToQueue(Ljava/util/Deque;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int dequeToQueue(java.util.Deque arg0) {
+        // jarde: not recovered: the recovery run for `dequeToQueue(Ljava/util/Deque;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method dequeToQueue(Ljava/util/Deque;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.util.Queue` presents `java.util.Deque` but the invocation requires `java.util.Queue` and this layer has no safe reference conversion evidence
+    }
+
+    // jarde: generic Signature projection refused for `sortedSetToSet(Ljava/util/SortedSet;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int sortedSetToSet(java.util.SortedSet arg0) {
+        // jarde: not recovered: the recovery run for `sortedSetToSet(Ljava/util/SortedSet;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method sortedSetToSet(Ljava/util/SortedSet;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.util.Set` presents `java.util.SortedSet` but the invocation requires `java.util.Set` and this layer has no safe reference conversion evidence
+    }
+
+    // jarde: generic Signature projection refused for `navigableSetToSortedSet(Ljava/util/NavigableSet;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int navigableSetToSortedSet(java.util.NavigableSet arg0) {
+        // jarde: not recovered: the recovery run for `navigableSetToSortedSet(Ljava/util/NavigableSet;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method navigableSetToSortedSet(Ljava/util/NavigableSet;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.util.SortedSet` presents `java.util.NavigableSet` but the invocation requires `java.util.SortedSet` and this layer has no safe reference conversion evidence
+    }
+
+    // jarde: generic Signature projection refused for `navigableMapToSortedMap(Ljava/util/NavigableMap;)Ljava/lang/String;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static java.lang.String navigableMapToSortedMap(java.util.NavigableMap arg0) {
+        // jarde: not recovered: the recovery run for `navigableMapToSortedMap(Ljava/util/NavigableMap;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method navigableMapToSortedMap(Ljava/util/NavigableMap;)Ljava/lang/String;
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.util.SortedMap` presents `java.util.NavigableMap` but the invocation requires `java.util.SortedMap` and this layer has no safe reference conversion evidence
+    }
+
+    // jarde: generic Signature projection refused for `listToCollection(Ljava/util/List;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int listToCollection(java.util.List arg0) {
+        // jarde: not recovered: the recovery run for `listToCollection(Ljava/util/List;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method listToCollection(Ljava/util/List;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.util.Collection` presents `java.util.List` but the invocation requires `java.util.Collection` and this layer has no safe reference conversion evidence
+    }
+
+    // jarde: generic Signature projection refused for `setToCollection(Ljava/util/Set;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int setToCollection(java.util.Set arg0) {
+        // jarde: not recovered: the recovery run for `setToCollection(Ljava/util/Set;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method setToCollection(Ljava/util/Set;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.util.Collection` presents `java.util.Set` but the invocation requires `java.util.Collection` and this layer has no safe reference conversion evidence
+    }
+
+    // jarde: generic Signature projection refused for `queueToCollection(Ljava/util/Queue;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int queueToCollection(java.util.Queue arg0) {
+        // jarde: not recovered: the recovery run for `queueToCollection(Ljava/util/Queue;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method queueToCollection(Ljava/util/Queue;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.util.Collection` presents `java.util.Queue` but the invocation requires `java.util.Collection` and this layer has no safe reference conversion evidence
+    }
+
+    // jarde: generic Signature projection refused for `collectionToIterable(Ljava/util/Collection;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static int collectionToIterable(java.util.Collection arg0) {
+        // jarde: not recovered: the recovery run for `collectionToIterable(Ljava/util/Collection;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method collectionToIterable(Ljava/util/Collection;)I
+        // @declaration a static method of `CWV`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1 0
+        // the parameter 0 of the invocation at BCI 1 is declared `java.lang.Iterable` presents `java.util.Collection` but the invocation requires `java.lang.Iterable` and this layer has no safe reference conversion evidence
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `CWV`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.HashMap local1 = new java.util.HashMap();
+        local1.put((java.lang.Object) "k", (java.lang.Object) "hashmap");
+        // @bytecode 42 17 32
+        // the parameter 0 of the invocation at BCI 33 is declared `java.util.Map` presents `java.util.HashMap` but the invocation requires `java.util.Map` and this layer has no safe reference conversion evidence
+        java.util.TreeMap local2 = new java.util.TreeMap();
+        local2.put((java.lang.Object) "k", (java.lang.Object) "treemap");
+        // @bytecode 87 62 77
+        // the parameter 0 of the invocation at BCI 78 is declared `java.util.Map` presents `java.util.TreeMap` but the invocation requires `java.util.Map` and this layer has no safe reference conversion evidence
+        java.util.LinkedHashMap local3 = new java.util.LinkedHashMap();
+        local3.put((java.lang.Object) "k", (java.lang.Object) "linkedmap");
+        // @bytecode 132 107 122
+        // the parameter 0 of the invocation at BCI 123 is declared `java.util.Map` presents `java.util.LinkedHashMap` but the invocation requires `java.util.Map` and this layer has no safe reference conversion evidence
+        java.util.Hashtable local4 = new java.util.Hashtable();
+        local4.put((java.lang.Object) "k", (java.lang.Object) "hashtable");
+        // @bytecode 180 154 169
+        // the parameter 0 of the invocation at BCI 171 is declared `java.util.Map` presents `java.util.Hashtable` but the invocation requires `java.util.Map` and this layer has no safe reference conversion evidence
+        java.util.Properties local5 = new java.util.Properties();
+        local5.setProperty("k", "properties");
+        // @bytecode 228 202 217
+        // the parameter 0 of the invocation at BCI 219 is declared `java.util.Map` presents `java.util.Properties` but the invocation requires `java.util.Map` and this layer has no safe reference conversion evidence
+        java.util.HashSet local6 = new java.util.HashSet();
+        local6.add((java.lang.Object) "hashset");
+        // @bytecode 274 248 263
+        // the parameter 0 of the invocation at BCI 265 is declared `java.util.Set` presents `java.util.HashSet` but the invocation requires `java.util.Set` and this layer has no safe reference conversion evidence
+        java.util.TreeSet local7 = new java.util.TreeSet();
+        local7.add((java.lang.Object) "treeset");
+        // @bytecode 320 294 309
+        // the parameter 0 of the invocation at BCI 311 is declared `java.util.Set` presents `java.util.TreeSet` but the invocation requires `java.util.Set` and this layer has no safe reference conversion evidence
+        java.util.LinkedHashSet local8 = new java.util.LinkedHashSet();
+        local8.add((java.lang.Object) "linkedhashset");
+        // @bytecode 366 340 355
+        // the parameter 0 of the invocation at BCI 357 is declared `java.util.Set` presents `java.util.LinkedHashSet` but the invocation requires `java.util.Set` and this layer has no safe reference conversion evidence
+        java.util.ArrayList local9 = new java.util.ArrayList();
+        local9.add((java.lang.Object) "coll");
+        local9.add((java.lang.Object) "two");
+        // @bytecode 420 394 409
+        // the parameter 0 of the invocation at BCI 411 is declared `java.util.Collection` presents `java.util.ArrayList` but the invocation requires `java.util.Collection` and this layer has no safe reference conversion evidence
+        // @bytecode 449 423 438
+        // the parameter 0 of the invocation at BCI 440 is declared `java.util.List` presents `java.util.ArrayList` but the invocation requires `java.util.List` and this layer has no safe reference conversion evidence
+        // @bytecode 478 452 467
+        // the parameter 0 of the invocation at BCI 469 is declared `java.lang.Iterable` presents `java.util.ArrayList` but the invocation requires `java.lang.Iterable` and this layer has no safe reference conversion evidence
+        java.util.LinkedList local10 = new java.util.LinkedList();
+        local10.add((java.lang.Object) "linked");
+        // @bytecode 524 498 513
+        // the parameter 0 of the invocation at BCI 515 is declared `java.util.List` presents `java.util.LinkedList` but the invocation requires `java.util.List` and this layer has no safe reference conversion evidence
+        java.util.Vector local11 = new java.util.Vector();
+        local11.add((java.lang.Object) "vector");
+        // @bytecode 570 544 559
+        // the parameter 0 of the invocation at BCI 561 is declared `java.util.Collection` presents `java.util.Vector` but the invocation requires `java.util.Collection` and this layer has no safe reference conversion evidence
+        java.util.Stack local12 = new java.util.Stack();
+        local12.push((java.lang.Object) "stack");
+        // @bytecode 616 590 605
+        // the parameter 0 of the invocation at BCI 607 is declared `java.util.List` presents `java.util.Stack` but the invocation requires `java.util.List` and this layer has no safe reference conversion evidence
+        java.util.ArrayList local13 = new java.util.ArrayList();
+        java.util.ArrayList local14 = new java.util.ArrayList();
+        local14.add((java.lang.Object) "inner");
+        local13.add((java.lang.Object) local14);
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("nestedList:").append((java.lang.String) listValue((java.util.List) local13.get(0))).toString());
+        java.util.ArrayList local15 = new java.util.ArrayList();
+        local15.add((java.lang.Object) local14);
+        // @bytecode 732 706 721
+        // the parameter 0 of the invocation at BCI 723 is declared `java.util.List` presents `java.util.ArrayList` but the invocation requires `java.util.List` and this layer has no safe reference conversion evidence
+        java.util.ArrayDeque local16 = new java.util.ArrayDeque();
+        local16.add((java.lang.Object) "deque");
+        // @bytecode 778 752 767
+        // the parameter 0 of the invocation at BCI 769 is declared `java.util.Deque` presents `java.util.ArrayDeque` but the invocation requires `java.util.Deque` and this layer has no safe reference conversion evidence
+        // @bytecode 808 781 797
+        // the parameter 0 of the invocation at BCI 799 is declared `java.util.Collection` presents `java.util.ArrayDeque` but the invocation requires `java.util.Collection` and this layer has no safe reference conversion evidence
+        java.util.ArrayList local17 = new java.util.ArrayList();
+        local17.add((java.lang.Object) "listinterface");
+        local17.add((java.lang.Object) "second");
+        // @bytecode 869 842 858
+        // the parameter 0 of the invocation at BCI 860 is declared `java.util.List` presents `java.util.ArrayList` but the invocation requires `java.util.List` and this layer has no safe reference conversion evidence
+        java.util.HashSet local18 = new java.util.HashSet();
+        local18.add((java.lang.Object) "setinterface");
+        // @bytecode 919 892 908
+        // the parameter 0 of the invocation at BCI 910 is declared `java.util.Set` presents `java.util.HashSet` but the invocation requires `java.util.Set` and this layer has no safe reference conversion evidence
+        java.util.LinkedList local19 = new java.util.LinkedList();
+        local19.add((java.lang.Object) "queueinterface");
+        // @bytecode 969 942 958
+        // the parameter 0 of the invocation at BCI 960 is declared `java.util.Queue` presents `java.util.LinkedList` but the invocation requires `java.util.Queue` and this layer has no safe reference conversion evidence
+        java.util.ArrayList local20 = new java.util.ArrayList();
+        local20.add((java.lang.Object) "collectioninterface");
+        local20.add((java.lang.Object) "another");
+        // @bytecode 1030 1003 1019
+        // the parameter 0 of the invocation at BCI 1021 is declared `java.util.Collection` presents `java.util.ArrayList` but the invocation requires `java.util.Collection` and this layer has no safe reference conversion evidence
+        java.util.ArrayDeque local21 = new java.util.ArrayDeque();
+        local21.add((java.lang.Object) "dequeinterface");
+        // @bytecode 1080 1053 1069
+        // the parameter 0 of the invocation at BCI 1071 is declared `java.util.Deque` presents `java.util.ArrayDeque` but the invocation requires `java.util.Deque` and this layer has no safe reference conversion evidence
+        java.util.TreeSet local22 = new java.util.TreeSet();
+        local22.add((java.lang.Object) "sortedsetinterface");
+        // @bytecode 1130 1103 1119
+        // the parameter 0 of the invocation at BCI 1121 is declared `java.util.SortedSet` presents `java.util.TreeSet` but the invocation requires `java.util.SortedSet` and this layer has no safe reference conversion evidence
+        java.util.TreeSet local23 = new java.util.TreeSet();
+        local23.add((java.lang.Object) "navigablesetinterface");
+        // @bytecode 1180 1153 1169
+        // the parameter 0 of the invocation at BCI 1171 is declared `java.util.NavigableSet` presents `java.util.TreeSet` but the invocation requires `java.util.NavigableSet` and this layer has no safe reference conversion evidence
+        java.util.TreeMap local24 = new java.util.TreeMap();
+        local24.put((java.lang.Object) "k", (java.lang.Object) "navigablemapinterface");
+        // @bytecode 1232 1205 1221
+        // the parameter 0 of the invocation at BCI 1223 is declared `java.util.NavigableMap` presents `java.util.TreeMap` but the invocation requires `java.util.NavigableMap` and this layer has no safe reference conversion evidence
+        return;
+    }
+}
