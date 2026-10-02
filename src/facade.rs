@@ -1400,8 +1400,16 @@ impl Engine {
             false,
             budget,
         )?;
+        // The direct static member rows wait for the fold step below the enum and annotation
+        // channels: those narrower projections keep their priority, and the fold only ever
+        // replaces a text none of them claimed.
+        let mut static_fold_rows = None;
         report.member_family = match family_scan {
             crate::member_inner::FamilyRootScan::Absent => {
+                class_source::ClassSourceMemberFamily::Absent
+            }
+            crate::member_inner::FamilyRootScan::StaticMembers(rows) => {
+                static_fold_rows = Some(rows);
                 class_source::ClassSourceMemberFamily::Absent
             }
             crate::member_inner::FamilyRootScan::Refused(reason) => {
@@ -1745,6 +1753,157 @@ impl Engine {
                 }
             }
         }
+        // The static member fold is the last family projection: the narrow member-family,
+        // nested-enum and nested-annotation channels above have stated their claims on this
+        // text, and the fold replaces only a text none of them claimed. Two roads reach it —
+        // the scan's own direct static rows, and the one static child whose narrow projection
+        // refused (that child is already prepared, so its physical report is reused as-is and
+        // the narrow channel's family stays untouched unless the fold succeeds).
+        //
+        // A synthetic member row of the root's own family — the anonymous `X$1` forms, a local
+        // class — keeps the flat `$`-named units it is presented under, and a fold that
+        // re-spells the named members beside them would state two resolutions of one family.
+        // Such a root keeps the separated presentation the flat convention serves.
+        let root_binary_name = report
+            .declaration
+            .as_ref()
+            .map(|declaration| declaration.item.declaration.this_class.raw().0.clone());
+        let root_has_synthetic_member_rows = root_binary_name.is_some_and(|root_binary| {
+            root_nesting.resolved_inner_classes.iter().any(|row| {
+                row.class
+                    .strip_prefix(root_binary.as_slice())
+                    .is_some_and(|tail| {
+                        tail.starts_with(b"$")
+                            && (!jarde_java::names::is_java_identifier(
+                                String::from_utf8_lossy(&tail[1..]).trim(),
+                            ) || row.inner_name.is_none())
+                    })
+            })
+        });
+        let scanned_static_rows = static_fold_rows.is_some();
+        let static_fold = if root_has_synthetic_member_rows {
+            None
+        } else if let Some(rows) = static_fold_rows.take() {
+            match self.prepare_class_source_static_member_fold(
+                content,
+                request,
+                evidence,
+                &environment,
+                snapshot,
+                &report,
+                &rows,
+                budget,
+            ) {
+                Ok((family, fold_execution)) => {
+                    merge_execution(&mut report.execution, fold_execution);
+                    Some(family)
+                }
+                Err(error) => {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
+                    Some(class_source::ClassSourceMemberFamily::RefusedPair {
+                        reason: format!("static member family preparation stopped: {error}"),
+                        children: Vec::new(),
+                    })
+                }
+            }
+        } else if let class_source::ClassSourceMemberFamily::Prepared {
+            relation,
+            child,
+            projection,
+            ..
+        } = &report.member_family
+            && relation.access_flags & 0x0008 != 0
+            && matches!(
+                projection,
+                class_source::ClassSourceMemberProjection::Refused { .. }
+            )
+        {
+            Some(class_source::ClassSourceMemberFamily::PreparedStatic {
+                members: vec![class_source::ClassSourceMemberChild {
+                    relation: relation.clone(),
+                    child: child.clone(),
+                }],
+                projection: class_source::ClassSourceMemberProjection::Refused {
+                    reason: "static member family projection has not completed".to_owned(),
+                },
+            })
+        } else {
+            None
+        };
+        if let Some(mut family) = static_fold {
+            let members = match &family {
+                class_source::ClassSourceMemberFamily::PreparedStatic { members, .. } => {
+                    Some(members.clone())
+                }
+                _ => None,
+            };
+            let mut projected_text = None;
+            if let Some(members) = members {
+                let mut projection_execution = ExecutionReport::Complete {
+                    usage: budget.usage(),
+                };
+                let projected = project_class_source_static_member_fold(
+                    content,
+                    &environment,
+                    &report,
+                    &members,
+                    &mut projection_execution,
+                    budget,
+                );
+                merge_execution(&mut report.execution, projection_execution);
+                match projected {
+                    Ok(Ok((text, derived))) => {
+                        if let class_source::ClassSourceMemberFamily::PreparedStatic {
+                            projection,
+                            ..
+                        } = &mut family
+                        {
+                            *projection =
+                                class_source::ClassSourceMemberProjection::Projected { derived };
+                        }
+                        projected_text = Some(text);
+                    }
+                    Ok(Err(reason)) => {
+                        if let class_source::ClassSourceMemberFamily::PreparedStatic {
+                            projection,
+                            ..
+                        } = &mut family
+                        {
+                            *projection =
+                                class_source::ClassSourceMemberProjection::Refused { reason };
+                        }
+                    }
+                    Err(error) => {
+                        merge_execution(&mut report.execution, stop_execution(&error, budget));
+                        report.diagnostics.push(stop_diagnostic(
+                            &error,
+                            Some(definition_provenance(&report.class)),
+                        ));
+                        if let class_source::ClassSourceMemberFamily::PreparedStatic {
+                            projection,
+                            ..
+                        } = &mut family
+                        {
+                            *projection = class_source::ClassSourceMemberProjection::Refused {
+                                reason: format!("static member family projection stopped: {error}"),
+                            };
+                        }
+                    }
+                }
+            }
+            // The scan's own rows always state their fold outcome; a refused fallback leaves
+            // the narrow channel's prepared family — and its refusal reasons — as they were.
+            if scanned_static_rows || projected_text.is_some() {
+                if let Some(text) = projected_text {
+                    report.text = text;
+                }
+                report.member_family = family;
+            }
+        }
         if matches!(
             report.member_family,
             class_source::ClassSourceMemberFamily::Absent
@@ -1880,7 +2039,8 @@ impl Engine {
                     candidate.simple_name,
                     candidate.access_flags,
                 ),
-                crate::member_inner::FamilyRootScan::DeclarationPair(_) => {
+                crate::member_inner::FamilyRootScan::DeclarationPair(_)
+                | crate::member_inner::FamilyRootScan::StaticMembers(_) => {
                     return Ok((Family::Absent, execution));
                 }
             };
@@ -2125,7 +2285,8 @@ impl Engine {
                     candidate.simple_name,
                     candidate.access_flags,
                 ),
-                crate::member_inner::FamilyRootScan::DeclarationPair(_) => {
+                crate::member_inner::FamilyRootScan::DeclarationPair(_)
+                | crate::member_inner::FamilyRootScan::StaticMembers(_) => {
                     return Ok((Family::Absent, execution));
                 }
             };
@@ -2649,7 +2810,7 @@ impl Engine {
         let mut execution = ExecutionReport::Complete {
             usage: budget.usage(),
         };
-        let mut prepared: Vec<class_source::ClassSourcePairMember> = Vec::with_capacity(2);
+        let mut prepared: Vec<class_source::ClassSourceMemberChild> = Vec::with_capacity(2);
         for candidate in candidates {
             budget.poll()?;
             let mut child_execution = ExecutionReport::Complete {
@@ -2758,7 +2919,7 @@ impl Engine {
                     execution,
                 ));
             }
-            prepared.push(class_source::ClassSourcePairMember {
+            prepared.push(class_source::ClassSourceMemberChild {
                 relation: Relation {
                     root: root.class.clone(),
                     child: definition,
@@ -2776,6 +2937,164 @@ impl Engine {
                 members,
                 projection: class_source::ClassSourceMemberProjection::Refused {
                     reason: "declaration-pair projection has not completed".to_owned(),
+                },
+            },
+            execution,
+        ))
+    }
+
+    /// Prepare every direct static member the scan collected: one full physical preparation per
+    /// child, exactly the way the one-child and pair channels prepare theirs. The children stay
+    /// independent physical reports; only the projection below decides whether the root's text
+    /// carries them as nested declarations.
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_class_source_static_member_fold(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root: &ClassSourceReport,
+        rows: &[crate::member_inner::FamilyRootCandidate],
+        budget: &mut Budget,
+    ) -> Result<(class_source::ClassSourceMemberFamily, ExecutionReport)> {
+        use class_source::{
+            ClassSourceMemberChild, ClassSourceMemberFamily as Family,
+            ClassSourceMemberRelation as Relation,
+        };
+        let root_name = root
+            .declaration
+            .as_ref()
+            .expect("fold requires a published root declaration")
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0
+            .clone();
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let mut prepared: Vec<ClassSourceMemberChild> = Vec::with_capacity(rows.len());
+        for candidate in rows {
+            budget.poll()?;
+            let mut child_execution = ExecutionReport::Complete {
+                usage: budget.usage(),
+            };
+            let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+                content,
+                environment,
+                None,
+                &candidate.child_name,
+                &mut child_execution,
+                budget,
+            )?
+            else {
+                merge_execution(&mut execution, child_execution);
+                return Ok((
+                    Family::RefusedPair {
+                        reason: "one static member child has no unique selected definition"
+                            .to_owned(),
+                        children: prepared.into_iter().map(|member| member.child).collect(),
+                    },
+                    execution,
+                ));
+            };
+            let pool = class_constant_pool(&read.bytes, budget)?;
+            let shells: Vec<_> = read
+                .facts
+                .attributes
+                .iter()
+                .filter(|attribute| {
+                    matches!(
+                        attribute.name.raw().0.as_slice(),
+                        b"InnerClasses" | b"EnclosingMethod"
+                    )
+                })
+                .cloned()
+                .collect();
+            let nesting = class_source::read_class_source_assembly_context(
+                &read.bytes,
+                &shells,
+                &pool,
+                budget,
+            )?;
+            let relation_agrees = crate::member_inner::child_relation_agrees(
+                &root_name,
+                candidate,
+                &read.facts,
+                &nesting,
+                &pool,
+                budget,
+            )?;
+            let facts = read.facts.clone();
+            charge_item(budget)?;
+            let class_item = Some(read.class.clone());
+            let mut child_diagnostics = Vec::new();
+            publish_diagnostics(read.diagnostics.clone(), &mut child_diagnostics, budget)?;
+            let child_request = ClassSourceRequest {
+                class: ClassRef::Definition {
+                    definition: definition.clone(),
+                },
+                environment: request.environment.clone(),
+            };
+            let (child, _, _, _, _, _) = self.prepare_physical_class_source(
+                content,
+                &child_request,
+                evidence,
+                environment,
+                snapshot,
+                root.view.clone(),
+                root.stages.clone(),
+                BoundClass {
+                    read,
+                    search_coverage: None,
+                    class_item,
+                },
+                child_execution,
+                child_diagnostics,
+                false,
+                budget,
+            )?;
+            merge_execution(&mut execution, child.execution.clone());
+            let complete = matches!(child.execution, ExecutionReport::Complete { .. })
+                && matches!(root.execution, ExecutionReport::Complete { .. })
+                && child.diagnostics.is_empty()
+                && facts.stopped_at.is_none()
+                && facts.methods.len() as u64 == facts.method_count;
+            if !relation_agrees || !complete || child.declaration.is_none() {
+                let mut children: Vec<_> =
+                    prepared.into_iter().map(|member| member.child).collect();
+                children.push(Box::new(child));
+                return Ok((
+                    Family::RefusedPair {
+                        reason: if relation_agrees {
+                            "one static member child did not complete its physical preparation"
+                        } else {
+                            "one static member child has no matching unique self relation"
+                        }
+                        .to_owned(),
+                        children,
+                    },
+                    execution,
+                ));
+            }
+            prepared.push(ClassSourceMemberChild {
+                relation: Relation {
+                    root: root.class.clone(),
+                    child: definition,
+                    simple_name: candidate.simple_name.clone(),
+                    access_flags: candidate.access_flags,
+                },
+                child: Box::new(child),
+            });
+        }
+        Ok((
+            Family::PreparedStatic {
+                members: prepared,
+                projection: class_source::ClassSourceMemberProjection::Refused {
+                    reason: "static member family projection has not completed".to_owned(),
                 },
             },
             execution,
@@ -17776,6 +18095,658 @@ fn project_class_source_nested_annotation(
         .unwrap_or(u64::MAX);
     budget.charge(CountedBudgetDimension::OutputBytes, added_output)?;
     Ok(Ok((text, derived)))
+}
+
+/// One member the fold declares inside the root's own source unit: the physical child beside the
+/// two spellings its pool name takes in a recovered text.
+struct StaticFoldTarget<'a> {
+    binary: Vec<u8>,
+    pool_dotted: String,
+    dotted: String,
+    simple: String,
+    relation: &'a class_source::ClassSourceMemberRelation,
+}
+
+/// The rewritten member texts of one physical class in the fold: staged field declarations and
+/// staged method texts, both indexed by the physical member's own table position.
+struct StaticFoldOwnerTexts {
+    fields: Vec<class_source::MemberFamilyMethodText>,
+    methods: Vec<class_source::MemberFamilyMethodText>,
+}
+
+/// The static member fold projection. Every direct static member becomes one nested declaration
+/// of the root's source unit — the root's own `InnerClasses` order — and every reference to a
+/// folded member inside that unit is re-spelled with the source nesting the declaration states:
+/// the pool `$` name of a member the fold declares is not a name Java source can resolve once the
+/// declaration is nested, so the fold owns both spellings. The machinery is the nested-enum
+/// projection's: body tokens are anchored through their source maps to the bytecode that names
+/// the class, declaration tokens to the member's own descriptor or `Exceptions` attribute, and
+/// field tokens to the field's own descriptor. Grandchildren stay in the pool spelling the child
+/// text already carries: the fold does not declare them, so their flattened physical names remain
+/// exactly what a project of the remaining units resolves.
+#[allow(clippy::too_many_arguments)]
+fn project_class_source_static_member_fold(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    members: &[class_source::ClassSourceMemberChild],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
+{
+    let Some(declaration) = root.declaration.as_ref() else {
+        return Ok(Err("static fold root has no source declaration".to_owned()));
+    };
+    let root_binary = declaration.item.declaration.this_class.raw().0.clone();
+    if !matches!(root.execution, ExecutionReport::Complete { .. })
+        || members.iter().any(|member| {
+            !matches!(member.child.execution, ExecutionReport::Complete { .. })
+                || member.child.declaration.is_none()
+        })
+    {
+        return Ok(Err(
+            "static fold physical preparation is incomplete".to_owned()
+        ));
+    }
+    // A generic member class is outside this slice: the nested header this fold writes is the
+    // row's own flags, and a child `Signature` is a projection of its own the fold does not
+    // carry. Such a family keeps the separated presentation the narrow channels already state.
+    if members.iter().any(|member| {
+        member
+            .child
+            .declaration
+            .as_ref()
+            .is_some_and(|declaration| declaration.generic_signature.is_some())
+    }) {
+        return Ok(Err(
+            "static fold member has a class Signature this slice does not project".to_owned(),
+        ));
+    }
+    let context = class_source::ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: root.methods.len() as u64,
+        member_table: None,
+        execution: &root.execution,
+        enum_projection: None,
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    if class_source::source_text(declaration, &root.fields, &root.methods, &context) != root.text {
+        return Ok(Err(
+            "root class has another source projection outside the static member fold".to_owned(),
+        ));
+    }
+    let mut targets = Vec::with_capacity(members.len());
+    for member in members {
+        let child_declaration = member
+            .child
+            .declaration
+            .as_ref()
+            .expect("completeness checked above");
+        let binary = child_declaration
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0
+            .clone();
+        let source = match std::str::from_utf8(&binary) {
+            Ok(name) => name,
+            Err(_) => {
+                return Ok(Err(
+                    "static fold member has no exact UTF-8 identity".to_owned()
+                ));
+            }
+        };
+        let child_context = class_source::ClassSourceTextContext {
+            initializer_field_order: None,
+            declared_methods: member.child.methods.len() as u64,
+            member_table: None,
+            execution: &member.child.execution,
+            enum_projection: None,
+            array_helper_indices: None,
+            array_method_texts: None,
+            array_helper_markers: None,
+        };
+        if class_source::source_text(
+            child_declaration,
+            &member.child.fields,
+            &member.child.methods,
+            &child_context,
+        ) != member.child.text
+        {
+            return Ok(Err(
+                "one static member child has another physical source projection".to_owned(),
+            ));
+        }
+        // The fold spelling this unit states: the member is declared directly in this text, so
+        // the reference drops the unit's own prefix and keeps the member's own name.
+        let spelling = source
+            .rsplit_once('$')
+            .map_or(member.relation.simple_name.clone(), |(_, tail)| {
+                tail.to_owned()
+            });
+        if spelling != member.relation.simple_name {
+            return Ok(Err(
+                "static fold member row and binary name disagree on the source name".to_owned(),
+            ));
+        }
+        targets.push(StaticFoldTarget {
+            pool_dotted: source.replace('/', "."),
+            dotted: source.replace(['/', '$'], "."),
+            binary,
+            simple: spelling,
+            relation: &member.relation,
+        });
+    }
+    let root_texts = match project_static_fold_owner_texts(
+        content,
+        environment,
+        root,
+        &root_binary,
+        &targets,
+        execution,
+        budget,
+    )? {
+        Ok(texts) => texts,
+        Err(reason) => return Ok(Err(reason)),
+    };
+    let mut nested = Vec::with_capacity(members.len());
+    for member in members {
+        let child_declaration = member
+            .child
+            .declaration
+            .as_ref()
+            .expect("completeness checked above");
+        let child_binary = child_declaration
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0
+            .clone();
+        let child_texts = match project_static_fold_owner_texts(
+            content,
+            environment,
+            member.child.as_ref(),
+            &child_binary,
+            &targets,
+            execution,
+            budget,
+        )? {
+            Ok(texts) => texts,
+            Err(reason) => return Ok(Err(reason)),
+        };
+        let block = match class_source::nested_static_member_source_text(
+            &member.relation.simple_name,
+            member.relation.access_flags,
+            child_declaration,
+            &member.child.fields,
+            &child_texts.fields,
+            &member.child.methods,
+            &child_texts.methods,
+            &targets
+                .iter()
+                .map(|target| (target.pool_dotted.as_str(), target.simple.as_str()))
+                .collect::<Vec<_>>(),
+            member.relation.child.clone(),
+            member.relation.root.clone(),
+        ) {
+            Some(block) => block,
+            None => {
+                return Ok(Err(
+                    "static member records could not be rendered atomically".to_owned(),
+                ));
+            }
+        };
+        nested.push(block);
+    }
+    let (text, derived) = class_source::source_text_with_nested_declarations(
+        declaration,
+        &root.fields,
+        &root_texts.fields,
+        &root.methods,
+        &context,
+        &root_texts.methods,
+        &nested,
+    );
+    budget.poll()?;
+    let added_output = text
+        .len()
+        .saturating_sub(root.text.len())
+        .try_into()
+        .unwrap_or(u64::MAX);
+    budget.charge(CountedBudgetDimension::OutputBytes, added_output)?;
+    Ok(Ok((text, derived)))
+}
+
+/// Re-spell every fold-target reference in one physical class's member texts. Field declarations
+/// are staged through their own descriptors; method declarations through the member's descriptor
+/// or its own `Exceptions` attribute (the `throws` clause is the one declaration position a
+/// descriptor does not state); method bodies through the source-map anchored scan the nested-enum
+/// projection established, generalized to every instruction whose constant-pool entry names the
+/// folded class and to the exception handler a catch clause's type names.
+fn project_static_fold_owner_texts(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    owner: &ClassSourceReport,
+    owner_binary: &[u8],
+    targets: &[StaticFoldTarget<'_>],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<StaticFoldOwnerTexts, String>> {
+    let mut staged_fields = Vec::new();
+    for field in &owner.fields {
+        budget.poll()?;
+        let Some(declaration) = field.declaration.as_ref() else {
+            continue;
+        };
+        let mut edits = Vec::new();
+        for target in targets {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                declaration.len() as u64,
+            )?;
+            let descriptor_entry = format!("L{};", String::from_utf8_lossy(&target.binary));
+            if !field
+                .item
+                .descriptor
+                .raw()
+                .0
+                .windows(descriptor_entry.len())
+                .any(|window| window == descriptor_entry.as_bytes())
+            {
+                continue;
+            }
+            let Some(spans) = java_code_name_spans(declaration, &target.pool_dotted) else {
+                return Ok(Err("static fold field declaration is malformed".to_owned()));
+            };
+            for (start, end) in spans {
+                budget.poll()?;
+                edits.push((
+                    start,
+                    end,
+                    target.simple.clone(),
+                    target.relation.root.clone(),
+                    target.relation.child.clone(),
+                    field.item.identity.clone(),
+                    field.item.index,
+                ));
+            }
+        }
+        if edits.is_empty() {
+            continue;
+        }
+        edits.sort_by_key(|(start, ..)| *start);
+        if edits.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+            return Ok(Err(
+                "static fold field declaration states overlapping name tokens".to_owned(),
+            ));
+        }
+        let mut declaration = declaration.clone();
+        // The staged text is `declaration_member`'s own form — one indented marker line per
+        // marker, then the four-space declaration — so every edit offset shifts by that prefix.
+        let staged_prefix = field
+            .markers
+            .iter()
+            .map(|marker| marker.len() + "    \n".len())
+            .sum::<usize>()
+            + "    ".len();
+        let mut derived = Vec::new();
+        let mut prefix_delta = 0isize;
+        for (start, end, spelling, root_definition, child_definition, identity, index) in &edits {
+            let final_start = start
+                .checked_add_signed(prefix_delta)
+                .and_then(|offset| offset.checked_add(staged_prefix))
+                .ok_or_else(|| Error::invalid_input("static_fold_offset", "span overflow"))?;
+            let final_end = final_start + spelling.len();
+            declaration.replace_range(start..end, spelling);
+            derived.push(class_source::MemberFamilyDerivedProjection {
+                kind: class_source::MemberFamilyDerivedKind::StaticMemberTypeReference,
+                start: final_start,
+                end: final_end,
+                anchors: vec![
+                    class_source::MemberFamilyPhysicalAnchor::Field {
+                        field: identity.clone(),
+                        index: *index,
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: root_definition.clone(),
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: child_definition.clone(),
+                    },
+                ],
+            });
+            prefix_delta += spelling.len() as isize - (end - start) as isize;
+        }
+        staged_fields.push(class_source::MemberFamilyMethodText {
+            index: field.item.index,
+            text: class_source::field_member_text(&field, &declaration),
+            derived,
+        });
+    }
+    let mut staged_methods = Vec::new();
+    for method in &owner.methods {
+        let class_source::ClassSourceOutcome::Recovered {
+            report: recovery, ..
+        } = &method.outcome
+        else {
+            continue;
+        };
+        // The lazily re-read member table of this owner: only a declaration whose `throws` clause
+        // might name a fold target pays for it.
+        let mut owner_read: Option<(Vec<u8>, Vec<jarde_reader::classfile::MemberHeader>)> = None;
+        let mut edits = Vec::new();
+        for target in targets {
+            // The lexical scan examines every byte even when it finds no candidate. Charge that
+            // work before scanning so a large recovered method cannot bypass the request budget.
+            budget.poll()?;
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                recovery.text.len() as u64,
+            )?;
+            let (pool_name, dotted_name) = (&target.pool_dotted, &target.dotted);
+            let mut spans = match java_code_name_spans(&recovery.text, pool_name) {
+                Some(spans) => spans,
+                None => return Ok(Err("static fold source artifact is malformed".to_owned())),
+            };
+            if dotted_name != pool_name {
+                let dotted_spans = match java_code_name_spans(&recovery.text, dotted_name) {
+                    Some(spans) => spans,
+                    None => return Ok(Err("static fold source artifact is malformed".to_owned())),
+                };
+                spans.extend(dotted_spans);
+                spans.sort();
+            };
+            if spans.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+                return Ok(Err(
+                    "static fold source artifact states overlapping name tokens".to_owned(),
+                ));
+            }
+            for (start, end) in spans {
+                budget.poll()?;
+                // Every segment of this method that covers the token contributes its bcis: the
+                // token of a synthesized cast or receiver qualifier is covered by the enclosing
+                // expression's segments, and the instruction that names the class — the cast's
+                // own checkcast, the invoked member's owner — is among them.
+                let mut source_bcis = std::collections::BTreeSet::new();
+                for segment in recovery.source_map.segments() {
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if segment.start() > start
+                        || segment.end() < end
+                        || segment.origin().primary().method() != Some(&method.item.identity)
+                    {
+                        continue;
+                    }
+                    source_bcis.extend(segment.origin().bcis());
+                }
+                if source_bcis.is_empty() {
+                    return Ok(Err(format!(
+                        "static fold token in method {} has no exact source-map origin",
+                        method.item.index
+                    )));
+                }
+                edits.push((start, end, target, source_bcis));
+            }
+        }
+        // The declaration line names a folded member wherever the member's own descriptor does,
+        // and its `throws` clause wherever the `Exceptions` attribute does. A member whose
+        // declaration names no target keeps it verbatim.
+        let mut declaration_edits = Vec::new();
+        if let Some(declaration) = method.declaration.as_ref() {
+            for target in targets {
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    declaration.len() as u64,
+                )?;
+                let descriptor_entry = format!("L{};", String::from_utf8_lossy(&target.binary));
+                let descriptor_names = method
+                    .item
+                    .descriptor
+                    .raw()
+                    .0
+                    .windows(descriptor_entry.len())
+                    .any(|window| window == descriptor_entry.as_bytes());
+                if !descriptor_names {
+                    if owner_read.is_none() {
+                        let Some((_, read)) = resolve_class_source_dependency_read_raw(
+                            content,
+                            environment,
+                            None,
+                            owner_binary,
+                            execution,
+                            budget,
+                        )?
+                        else {
+                            return Ok(Err(
+                                "static fold owner re-read did not uniquely resolve".to_owned()
+                            ));
+                        };
+                        let headers = read.facts.methods.clone();
+                        owner_read = Some((read.bytes, headers));
+                    }
+                    let Some((bytes, headers)) = owner_read.as_ref() else {
+                        unreachable!("the owner read is established above")
+                    };
+                    let Some(header) = headers.get(
+                        usize::try_from(method.item.index)
+                            .expect("a member index is a table position"),
+                    ) else {
+                        return Ok(Err(
+                            "static fold member is missing from its own class read".to_owned()
+                        ));
+                    };
+                    let pool = class_constant_pool(bytes, budget)?;
+                    let attributes =
+                        class_source::declared_member_attributes(bytes, header, &pool, budget)?;
+                    if !attributes
+                        .throws_raw
+                        .iter()
+                        .any(|name| name == &target.binary)
+                    {
+                        continue;
+                    }
+                }
+                let Some(spans) = java_code_name_spans(declaration, &target.pool_dotted) else {
+                    return Ok(Err("static fold source declaration is malformed".to_owned()));
+                };
+                declaration_edits.extend(spans.into_iter().map(|(start, end)| {
+                    (start, end, target.simple.clone(), target.relation.clone())
+                }));
+            }
+        }
+        declaration_edits.sort_by_key(|(start, ..)| *start);
+        if declaration_edits
+            .windows(2)
+            .any(|pair| pair[0].1 > pair[1].0)
+        {
+            return Ok(Err(
+                "static fold source declaration states overlapping name tokens".to_owned(),
+            ));
+        }
+        let rewritten_declaration = (!declaration_edits.is_empty()).then(|| {
+            let mut declaration = method.declaration.as_ref().expect("checked above").clone();
+            for (start, end, spelling, _) in declaration_edits.iter().rev() {
+                declaration.replace_range(start..end, spelling);
+            }
+            declaration
+        });
+        if edits.is_empty() && declaration_edits.is_empty() {
+            continue;
+        }
+        // The body rewrite needs the member's own bytecode to anchor every token it changes; a
+        // member whose declaration alone names the fold skips that half entirely.
+        let mut replacements = Vec::new();
+        if !edits.is_empty() {
+            let analyzed = match jarde_jvm::analyze_method_ir(
+                content,
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: method.item.identity.clone(),
+                    stages: MethodOperation::Analysis.stages().to_vec(),
+                },
+                budget,
+            ) {
+                Ok(analyzed) => analyzed,
+                Err(error) => {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    return Err(error);
+                }
+            };
+            merge_execution(execution, analyzed.report().execution.clone());
+            if analyzed.report().method != method.item.identity
+                || !matches!(
+                    analyzed.report().execution,
+                    ExecutionReport::Complete { .. }
+                )
+            {
+                return Ok(Err(
+                    "static fold source reference analysis did not complete".to_owned(),
+                ));
+            }
+            let Some(code) = analyzed.ir().code() else {
+                return Ok(Err(
+                    "static fold source reference has no complete bytecode".to_owned()
+                ));
+            };
+            for (start, end, target, source_bcis) in edits {
+                // One proved class reference: an instruction whose constant-pool entry names the
+                // folded class, or the exception handler a catch clause's own type selected.
+                let mut matching = Vec::new();
+                for bci in source_bcis.iter().copied() {
+                    let Some(instruction) = code.instructions.iter().find(|insn| insn.bci == bci)
+                    else {
+                        continue;
+                    };
+                    let Some(index) = instruction.constant_pool_index else {
+                        continue;
+                    };
+                    let Ok(entry) =
+                        jarde_reader::classfile::cp_entry(analyzed.ir().constant_pool(), index)
+                    else {
+                        continue;
+                    };
+                    let names_target = match &entry.kind {
+                        jarde_reader::classfile::CpEntryKind::Class { name, .. } => {
+                            name.0 == target.binary
+                        }
+                        jarde_reader::classfile::CpEntryKind::FieldRef { owner, .. }
+                        | jarde_reader::classfile::CpEntryKind::MethodRef { owner, .. } => {
+                            owner.0 == target.binary
+                        }
+                        _ => false,
+                    };
+                    if names_target {
+                        matching.push(bci);
+                    }
+                }
+                let anchor_bci = if let Some(bci) = matching.first().copied() {
+                    bci
+                } else {
+                    let handler = code.exception_handlers.iter().find(|handler| {
+                        source_bcis.contains(&handler.handler_bci)
+                            && handler
+                                .catch_type_index
+                                .is_some_and(|index| {
+                                    jarde_reader::classfile::cp_entry(
+                                        analyzed.ir().constant_pool(),
+                                        index,
+                                    )
+                                    .is_ok_and(|entry| {
+                                        matches!(&entry.kind, jarde_reader::classfile::CpEntryKind::Class { name, .. } if name.0 == target.binary)
+                                    })
+                                })
+                    });
+                    let Some(handler) = handler else {
+                        return Ok(Err(format!(
+                            "static fold token in method {} is not tied to one proved class reference",
+                            method.item.index
+                        )));
+                    };
+                    handler.handler_bci
+                };
+                replacements.push((
+                    start,
+                    end,
+                    target.simple.clone(),
+                    anchor_bci,
+                    target.relation.root.clone(),
+                    target.relation.child.clone(),
+                ));
+            }
+        }
+        replacements.sort_by_key(|replacement| replacement.0);
+        if replacements.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+            return Ok(Err("static fold source references overlap".to_owned()));
+        }
+        let mut rewritten = recovery.clone();
+        for (start, end, replacement, ..) in replacements.iter().rev() {
+            rewritten.text.replace_range(start..end, replacement);
+        }
+        let mut adjusted = Vec::new();
+        let mut prefix_delta = 0isize;
+        for (start, end, replacement, bci, root_definition, child_definition) in &replacements {
+            let final_start = start
+                .checked_add_signed(prefix_delta)
+                .ok_or_else(|| Error::invalid_input("static_fold_offset", "span overflow"))?;
+            let final_end = final_start + replacement.len();
+            let Some((local_start, local_end)) =
+                class_source::member_family_recovered_span_with_declaration(
+                    method,
+                    &rewritten,
+                    rewritten_declaration.as_deref(),
+                    final_start,
+                    final_end,
+                )
+            else {
+                return Ok(Err(
+                    "static fold source-map span does not survive method placement".to_owned(),
+                ));
+            };
+            adjusted.push(class_source::MemberFamilyDerivedProjection {
+                kind: class_source::MemberFamilyDerivedKind::StaticMemberTypeReference,
+                start: local_start,
+                end: local_end,
+                anchors: vec![
+                    class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                        method: method.item.identity.clone(),
+                        bci: *bci,
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: root_definition.clone(),
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: child_definition.clone(),
+                    },
+                ],
+            });
+            prefix_delta += replacement.len() as isize - (end - start) as isize;
+        }
+        // Declaration rewrites carry no derived record, exactly as the nested-enum projection:
+        // the recovery map anchors body tokens only, and the declaration rewrite stays gated on
+        // the member's own descriptor or `Exceptions` attribute.
+        let Some(text) = class_source::member_family_recovered_method_text_with_declaration(
+            method,
+            &rewritten,
+            rewritten_declaration.as_deref(),
+        ) else {
+            return Ok(Err(
+                "static fold source method cannot be reassembled".to_owned()
+            ));
+        };
+        staged_methods.push(class_source::MemberFamilyMethodText {
+            index: method.item.index,
+            text,
+            derived: adjusted,
+        });
+    }
+    Ok(Ok(StaticFoldOwnerTexts {
+        fields: staged_fields,
+        methods: staged_methods,
+    }))
 }
 
 fn project_class_source_nested_enum(

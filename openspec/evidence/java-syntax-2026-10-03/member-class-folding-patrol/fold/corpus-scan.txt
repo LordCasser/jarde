@@ -1,0 +1,45 @@
+# corpus 双腿扫描（change `recover-member-class-static-folding`）
+
+主线基线 `4da1fe84`（临时 worktree 构建）vs 本片实现，逐 jar 逐类 `class-source --format text`。
+范围：`openspec/evidence` 全部 80 个 jar、341 个类。
+
+- 扫描类数：341
+- 文本变化类数：19（全部为折叠家族形态：新增 `static class`/`static interface` 嵌套声明 + 折叠域内引用改写）
+- 其余 322 类逐字一致
+
+## 变化类清单
+
+```
+java-syntax-2026-09-25/mixed-short-circuit-instance-field/sample.jar:MixedShortCircuitField   (×3 同 jar 副本)
+java-syntax-2026-10-02/super-default-patrol/sd/sd-variants.jar:SDAbstract
+java-syntax-2026-10-02/super-default-patrol/sd/sd-variants.jar:SDIndirect
+java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-patched.jar:SDAbstract
+java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-patched.jar:SDIndirect
+java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/vn4.jar:Other
+java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN2/vn2.jar:p/A
+java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN2/vn2.jar:p/VN2
+java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/vn1.jar:Other
+java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-neg.jar:H2
+java-syntax-2026-10-03/member-class-folding-patrol/fixture/solo.jar:M2
+java-syntax-2026-10-03/member-class-folding-patrol/fixture/fam.jar:M1
+java-syntax-2026-10-03/member-class-folding-patrol/fold/fixture-variants/FV5.jar:VGRef
+java-syntax-2026-10-03/member-class-folding-patrol/fold/fixture-variants/FV1.jar:VIface
+java-syntax-2026-10-03/member-class-folding-patrol/fold/fixture-variants/FV2.jar:VSib
+java-syntax-2026-10-03/member-class-folding-patrol/fold/fixture-variants/FV3.jar:VGrand
+java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar:dt29/SamePackageParentFamily
+```
+
+## 变化类重编核查（`javac --release 8`，原 jar 作 classpath）
+
+可编：`Other`(VN4)、`p.A`(VN2)、`dt29.SamePackageParentFamily`、`MixedShortCircuitField`、
+M1、M2、FV1、FV2、FV3。
+
+不可编（均为登记缺口形态，非回归）：
+
+- `p.VN2`：折叠域内孙代引用 `p.VN2$Mid$Leaf` 保留池拼写（实现前旧文本同样 4 处符号错；新文本
+  仅剩 1 处——`Mid` 引用已获源码拼写）。
+- `SDAbstract`/`SDIndirect`：子类 `Use` 的 `name()` 恢复仅引注（接口默认绑定无证明），空体方法
+  不可编；实现前该子类单类输出同样不可编。design 决策 3：带引注子类照常折叠，引注不隐藏。
+- `H2`(hier-neg 负例 jar)：子类 `Ext extends Helper` 的超类在该负例 jar 中缺失；实现前该子类
+  单类输出同样不可编。
+- `VGRef`(FV5)：孙代参数位引用保留池拼写（登记缺口的固定展示记录）。

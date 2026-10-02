@@ -51,6 +51,22 @@ fn report_from_named(bytes: Vec<u8>, name: &str, limits: Limits) -> ClassSourceR
     report_from_named_with_evidence(bytes, name, limits, &RecoveryEvidenceRequest::essential())
 }
 
+/// The same report with the source-map evidence a family fold's provenance anchors need: the
+/// static member fold (like the nested-enum fold before it) re-spells body tokens through their
+/// source maps, so a request that does not ask for them keeps the separated presentation.
+fn report_from_named_source_mapped(
+    bytes: Vec<u8>,
+    name: &str,
+    limits: Limits,
+) -> ClassSourceReport {
+    report_from_named_with_evidence(
+        bytes,
+        name,
+        limits,
+        &RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+    )
+}
+
 fn report_from_named_with_evidence(
     bytes: Vec<u8>,
     name: &str,
@@ -876,21 +892,38 @@ fn declaration_only_static_abstract_member_projects_once_with_physical_anchors()
         ClassSourceMemberFamily::Refused { .. }
     ));
 
-    for source in [
-        SOURCE.replace("    }\n}", "        int state;\n    }\n}"),
-        SOURCE.replace("class A {", "class A<T> {"),
-        SOURCE.replace("abstract int test2();", "abstract <T> int test2();"),
-        SOURCE.replace(
-            "public static abstract class A",
-            "@Deprecated public static abstract class A",
+    // The static member fold (change `recover-member-class-static-folding`) widened the family
+    // these near misses belong to: a single static child whose narrow certificate refused used
+    // to keep the separated presentation, and now folds with the child's full physical text.
+    // A generic child class is the one near miss that still refuses — the fold writes the
+    // row's own header flags and does not carry a child `Signature`.
+    for (source, folds) in [
+        (
+            SOURCE.replace("    }\n}", "        int state;\n    }\n}"),
+            true,
         ),
-        SOURCE.replace(
-            "    public static abstract class A",
-            "    static A echo(A value) { return value; }\n    public static abstract class A",
+        (SOURCE.replace("class A {", "class A<T> {"), false),
+        (
+            SOURCE.replace("abstract int test2();", "abstract <T> int test2();"),
+            true,
+        ),
+        (
+            SOURCE.replace(
+                "public static abstract class A",
+                "@Deprecated public static abstract class A",
+            ),
+            true,
+        ),
+        (
+            SOURCE.replace(
+                "    public static abstract class A",
+                "    static A echo(A value) { return value; }\n    public static abstract class A",
+            ),
+            true,
         ),
     ] {
         let (_, root, child) = compile(&source);
-        let report = report_from_named(
+        let report = report_from_named_source_mapped(
             jar_of(&[
                 (b"em01/SingleAbstract.class", &root),
                 (b"em01/SingleAbstract$A.class", &child),
@@ -898,16 +931,31 @@ fn declaration_only_static_abstract_member_projects_once_with_physical_anchors()
             "em01/SingleAbstract",
             task_limits(&[]).unwrap(),
         );
-        assert!(
-            !report.text.contains("static abstract class A"),
-            "{}",
-            report.text
-        );
+        if folds {
+            assert!(
+                report.text.contains("public static abstract class A"),
+                "{}",
+                report.text
+            );
+            assert!(matches!(
+                &report.member_family,
+                ClassSourceMemberFamily::PreparedStatic {
+                    projection: ClassSourceMemberProjection::Projected { .. },
+                    ..
+                }
+            ));
+        } else {
+            assert!(
+                !report.text.contains("static abstract class A"),
+                "{}",
+                report.text
+            );
+        }
     }
     let second = SOURCE.replace("    }\n}", "    }\n    static class B {}\n}");
     let (extra, root, child) = compile(&second);
     let other = std::fs::read(extra.path().join("em01/SingleAbstract$B.class")).unwrap();
-    let report = report_from_named(
+    let report = report_from_named_source_mapped(
         jar_of(&[
             (b"em01/SingleAbstract.class", &root),
             (b"em01/SingleAbstract$A.class", &child),
@@ -916,7 +964,17 @@ fn declaration_only_static_abstract_member_projects_once_with_physical_anchors()
         "em01/SingleAbstract",
         task_limits(&[]).unwrap(),
     );
-    assert!(!report.text.contains("static abstract class A"));
+    // A sibling beside the abstract member is a two-row static family: the fold states both
+    // nested declarations where the one-child certificate used to refuse the whole root.
+    assert!(report.text.contains("public static abstract class A"));
+    assert!(report.text.contains("static class B"));
+    assert!(matches!(
+        &report.member_family,
+        ClassSourceMemberFamily::PreparedStatic {
+            projection: ClassSourceMemberProjection::Projected { .. },
+            ..
+        }
+    ));
 
     let mut low = task_limits(&[]).unwrap();
     low.output_bytes = report_from_named(
@@ -1097,15 +1155,24 @@ fn declaration_pair_near_misses_never_publish_half_a_root() {
             "em01/Shape",
             task_limits(&[]).unwrap(),
         );
-        assert!(!report.text.contains("class A extends"), "{}", report.text);
-        assert!(!report.text.contains("interface I {"), "{}", report.text);
+        if index != 5 {
+            assert!(!report.text.contains("class A extends"), "{}", report.text);
+            assert!(!report.text.contains("interface I {"), "{}", report.text);
+        }
         match index {
             0..=4 => assert!(matches!(&report.member_family,
                 ClassSourceMemberFamily::RefusedPair { children, .. } if children.len() == 2)),
-            5 => assert!(matches!(
-                report.member_family,
-                ClassSourceMemberFamily::Refused { .. }
-            )),
+            // A third direct row breaks the exact pair, and the static fold owns the three-row
+            // family — but this jar does not carry the third child's definition, so the fold
+            // refuses exactly as the one-child certificate did: no definition, no fold.
+            5 => {
+                assert!(!report.text.contains("class A extends"), "{}", report.text);
+                assert!(!report.text.contains("interface I {"), "{}", report.text);
+                assert!(matches!(
+                    &report.member_family,
+                    ClassSourceMemberFamily::RefusedPair { .. }
+                ));
+            }
             6 => assert!(matches!(
                 report.member_family,
                 ClassSourceMemberFamily::PreparedPair {
@@ -1208,6 +1275,10 @@ fn static_member_incomplete_targets_never_publish_partial_nested_source() {
         (jar_of(&entries), owned)
     };
 
+    // The static member fold (change `recover-member-class-static-folding`) took over the
+    // single-static-child shapes the narrow certificate refused: the child's full physical text
+    // becomes one nested declaration, where these negatives used to keep the separated
+    // presentation. The `missing` half below keeps its old refusal: no child definition, no fold.
     for (name, source) in [
         (
             "StaticFieldNegative",
@@ -1219,17 +1290,12 @@ fn static_member_incomplete_targets_never_publish_partial_nested_source() {
         ),
     ] {
         let (jar, compiled) = compile(name, source, &["Leaf"], &[]);
-        let report = report_from_named(jar.clone(), name, task_limits(&[]).unwrap());
-        assert!(
-            !report.text.contains("static class Leaf"),
-            "{}",
-            report.text
-        );
+        let report = report_from_named_source_mapped(jar.clone(), name, task_limits(&[]).unwrap());
+        assert!(report.text.contains("static class Leaf"), "{}", report.text);
         assert!(matches!(
             report.member_family,
-            ClassSourceMemberFamily::Prepared {
-                capture: ClassSourceMemberCapture::Refused { .. },
-                projection: ClassSourceMemberProjection::Refused { .. },
+            ClassSourceMemberFamily::PreparedStatic {
+                projection: ClassSourceMemberProjection::Projected { .. },
                 ..
             }
         ));
@@ -1252,21 +1318,23 @@ fn static_member_incomplete_targets_never_publish_partial_nested_source() {
         &["Leaf"],
         &[],
     );
-    let report = report_from_named(
+    let report = report_from_named_source_mapped(
         extra_type_use,
         "StaticEchoNegative",
         task_limits(&[]).unwrap(),
     );
+    // A second use no longer prevents the nested projection: the fold owns every reference the
+    // unit states, and each one is re-spelled inside the scope that declares the member.
+    assert!(report.text.contains("static class Leaf"), "{}", report.text);
     assert!(
-        !report.text.contains("static class Leaf"),
-        "a second, unproved source use must prevent the whole nested projection: {}",
+        report.text.contains("static Leaf echo(Leaf arg0)"),
+        "{}",
         report.text
     );
-    assert!(report.text.contains("StaticEchoNegative$Leaf echo("));
     assert!(matches!(
         report.member_family,
-        ClassSourceMemberFamily::Prepared {
-            projection: ClassSourceMemberProjection::Refused { .. },
+        ClassSourceMemberFamily::PreparedStatic {
+            projection: ClassSourceMemberProjection::Projected { .. },
             ..
         }
     ));
@@ -1277,11 +1345,16 @@ fn static_member_incomplete_targets_never_publish_partial_nested_source() {
         &["Leaf", "Other"],
         &[],
     );
-    let report = report_from_named(multiple, "StaticPairNegative", task_limits(&[]).unwrap());
-    assert!(!report.text.contains("static class Leaf"));
+    let report =
+        report_from_named_source_mapped(multiple, "StaticPairNegative", task_limits(&[]).unwrap());
+    assert!(report.text.contains("static class Leaf"));
+    assert!(report.text.contains("static class Other"));
     assert!(matches!(
         report.member_family,
-        ClassSourceMemberFamily::Refused { .. }
+        ClassSourceMemberFamily::PreparedStatic {
+            projection: ClassSourceMemberProjection::Projected { .. },
+            ..
+        }
     ));
 
     const ROOT: &[u8] = include_bytes!(
