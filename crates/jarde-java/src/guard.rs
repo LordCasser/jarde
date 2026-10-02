@@ -198,6 +198,55 @@ impl InnerMonitor {
     }
 }
 
+/// The one explicit `finally` a `try (…)` body holds inside itself: the inner
+/// `try (…) { … } finally { … }` a source `try (outer) { try (…) { … } finally { … } }` writes
+/// into the guarded body. The lowering is proved in the TWR's own body context — the inner
+/// two-row catch-all table self-consistent inside the body interval, the mid cleanup on both
+/// exit paths inside it, the exits rejoining the enclosing statement's own close chain — and it
+/// is presented as that nested statement inside the braces, exactly the `finally` region
+/// presentation a proved copy's is ([`Shape::Finally`]'s `StmtKind::Try` with a `finally` body).
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct InnerTwrFinally {
+    /// How many of the header's resources belong to the **enclosing** statement: `resources`
+    /// `[..split]` are the outer `try (…)`'s own and `[split..]` the inner statement's — the
+    /// levels the inner try's own header declares. `split == resources.len()` is the inner
+    /// statement a plain `try { … } finally { … }` writes (no resources of its own).
+    split: usize,
+    /// The catch-all row whose handler is the finally's exceptional copy: its protected range
+    /// is the inner try's whole own statement, from its first resource's initialisation (or
+    /// its body's first instruction) through the end of its own close chain.
+    row_ordinal: u32,
+    /// The handler's self-protection row over its own binding store, when the table states one
+    /// (the TWR-inside-finally lowering emits it; the plain inner try does not).
+    self_row_ordinal: Option<u32>,
+    /// The exact companion row routing the copy's own exception into the enclosing level's
+    /// handler, when that level's own row does not already cover the copy (the layout whose
+    /// normal completion returns).
+    companion_ordinal: Option<u32>,
+    /// The mid cleanup's **normal** copy, as the span its own statements render from: the code
+    /// the handler's copy repeats, without its trailing transfer.
+    normal_cleanup: (u32, u32),
+    /// The mid cleanup's **exceptional** copy: the handler's entry store through its rethrow.
+    handler_cleanup: (u32, u32),
+}
+
+impl InnerTwrFinally {
+    /// How many of the header's resources the enclosing statement keeps.
+    pub fn split(&self) -> usize {
+        self.split
+    }
+
+    /// The mid cleanup's normal copy, as a BCI range.
+    pub fn normal_cleanup(&self) -> (u32, u32) {
+        self.normal_cleanup
+    }
+
+    /// The mid cleanup's exceptional copy, as a BCI range.
+    pub fn handler_cleanup(&self) -> (u32, u32) {
+        self.handler_cleanup
+    }
+}
+
 /// Which guarded statement a region is.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Shape {
@@ -209,6 +258,15 @@ pub enum Shape {
         /// Exact instruction starts of normal and exceptional cleanup that a source TWR header
         /// implicitly reconstructs. These instructions are proof evidence, not source locals.
         cleanup: Vec<u32>,
+        /// The explicit inner `try { … } finally { … }` the guarded body holds, when it holds
+        /// one ([`InnerTwrFinally`]): `None` is the ordinary body, presented as one run of
+        /// statements between the braces.
+        inner_finally: Option<Box<InnerTwrFinally>>,
+        /// The instructions the statement's own claimed block holds **past** its close chain —
+        /// the run the canonical graph fused with the last close group because nothing else
+        /// enters it, ending the method. The statement renders them after itself; `None` is
+        /// every shape whose continuation begins a block of its own.
+        trail: Option<(u32, u32)>,
     },
     /// `synchronized (lock) { body }`, with the BCI of the `monitorenter` the header reads its lock
     /// from.
@@ -2165,9 +2223,18 @@ fn monitor_handler(
     })
 }
 
+/// The physical pieces of one `finally` copy handler: the entry block, the store that binds the
+/// primary, the cleanup code both copies run, and the rethrow that ends the exceptional one.
+struct FinallyCopyShape {
+    entry: CanonicalBlockId,
+    primary_store: u32,
+    cleanup: Vec<u32>,
+    rethrow: u32,
+}
+
 /// Whether the row's handler is the `finally` copy: store the exception, run code, rethrow it — and
 /// nothing anywhere in the handler that closes, suppresses or leaves a monitor.
-fn finally_copy(facts: &Facts<'_>, row: &ExceptionHandlerFact) -> Option<u32> {
+fn finally_copy_shape(facts: &Facts<'_>, row: &ExceptionHandlerFact) -> Option<FinallyCopyShape> {
     // javac emits the exceptional copy of a `finally` only for an any row. A named handler can
     // have the same store/body/load/throw shape while being an ordinary catch (including precise
     // rethrow), so its type must be checked before classifying the handler's bytecode shape.
@@ -2229,7 +2296,211 @@ fn finally_copy(facts: &Facts<'_>, row: &ExceptionHandlerFact) -> Option<u32> {
             Some(Operation::Monitor { .. }) => true,
             _ => false,
         });
-    (!closes).then_some(entry.bci())
+    if closes {
+        return None;
+    }
+    Some(FinallyCopyShape {
+        entry,
+        primary_store: first.bci(),
+        cleanup: body.iter().map(|instruction| instruction.bci()).collect(),
+        rethrow: last.bci(),
+    })
+}
+
+/// The entry BCI of the row's `finally`-copy handler, when the handler is one.
+fn finally_copy(facts: &Facts<'_>, row: &ExceptionHandlerFact) -> Option<u32> {
+    finally_copy_shape(facts, row).map(|shape| shape.entry.bci())
+}
+
+/// The inner explicit `finally` a TWR body holds, before the close chain places it: the candidate
+/// row, the split of the header's resources the inner statement owns, and the handler's own pieces.
+struct InnerFinallyParts<'a> {
+    /// The catch-all row whose protected range is the inner statement's own span.
+    row: &'a ExceptionHandlerFact,
+    /// How many of the TWR's resources stay with the **enclosing** statement (`chain.len()` for a
+    /// plain inner `try { … } finally { … }`, which declares none of its own).
+    split: usize,
+    /// The handler's copy shape: the primary's binding store, the cleanup both copies run, and
+    /// the rethrow that ends the exceptional copy.
+    shape: FinallyCopyShape,
+    /// The handler's self-protection row over its own binding store, when the table states one.
+    self_row: Option<&'a ExceptionHandlerFact>,
+}
+
+/// The placed inner finally: the normal copy's span and where the run continues past it.
+struct PlacedFinally {
+    copy: (u32, u32),
+    continuation: u32,
+}
+
+/// Finds the inner explicit `finally` of one TWR body: a catch-all row whose handler is a
+/// `finally` copy and whose protected range begins exactly where the **inner** statement does —
+/// at the first inner resource's own initialisation, or at the innermost level's protected body
+/// when the inner statement declares no resource of its own — with the inner levels' whole
+/// exceptional cleanup inside that range. `None` is every body without one, and the answer does
+/// not by itself claim anything: [`place_inner_finally`] reads the normal copy in the close
+/// chain's own context, and only a copy that proves there too reaches a plan.
+fn inner_finally_parts<'a>(
+    facts: &mut Facts<'a>,
+    chain: &[&'a ExceptionHandlerFact],
+    resources: &[Resource],
+) -> Result<Option<InnerFinallyParts<'a>>, StopReason> {
+    let handlers: &'a [ExceptionHandlerFact] = facts.handlers;
+    for row in handlers {
+        if row.catch_type_index.is_some()
+            || row.start_bci >= row.end_bci
+            || chain.iter().any(|level| level.ordinal == row.ordinal)
+        {
+            continue;
+        }
+        facts.charge(row.start_bci)?;
+        let Some(shape) = finally_copy_shape(facts, row) else {
+            continue;
+        };
+        // The inner statement's own first instruction: the resource whose initialisation the
+        // inner header writes, or the innermost level's protected body when the inner statement
+        // is a plain `try`. A row that begins anywhere else protects something this rule does
+        // not read as a statement of the body.
+        let split = if let Some(position) = (1..chain.len()).find(|position| {
+            resources
+                .get(*position)
+                .is_some_and(|resource| resource.init().0 == row.start_bci)
+        }) {
+            position
+        } else if chain
+            .last()
+            .is_some_and(|level| level.start_bci == row.start_bci)
+        {
+            chain.len()
+        } else {
+            continue;
+        };
+        // The inner levels' own exceptional cleanup lives inside the finally's protected range:
+        // an inner handler that ran past it would be a statement the `finally` did not wrap, and
+        // one the enclosing proof cannot place either.
+        let inner_cleanups = &chain[split..];
+        let mut spans = Vec::with_capacity(inner_cleanups.len());
+        for level in inner_cleanups {
+            let Some(handler) = facts.row_handler(level) else {
+                continue;
+            };
+            facts.charge(handler.bci())?;
+            spans.push((handler.bci(), facts.end_of(&handler)));
+        }
+        if spans
+            .iter()
+            .any(|(entry, end)| *entry < row.start_bci || *end > row.end_bci)
+        {
+            continue;
+        }
+        // The self-protection row: at most one other row may share the copy's handler, and it
+        // protects only the binding store (the TWR-inside-finally lowering emits it; a plain
+        // inner `try` emits none). A wider one overlaps machinery this proof does not own — the
+        // resource suppression rows among it — and the shape keeps its refusal.
+        let self_rows = handlers
+            .iter()
+            .filter(|other| other.ordinal != row.ordinal && other.handler_bci == row.handler_bci)
+            .collect::<Vec<_>>();
+        let self_row = match self_rows.as_slice() {
+            [] => None,
+            [only] => {
+                if only.catch_type_index.is_some()
+                    || only.start_bci != shape.entry.bci()
+                    || only.end_bci != facts.span_end(shape.primary_store)
+                {
+                    continue;
+                }
+                for bci in facts.bcis((only.start_bci, only.end_bci)) {
+                    facts.charge(bci)?;
+                }
+                Some(*only)
+            }
+            _ => continue,
+        };
+        return Ok(Some(InnerFinallyParts {
+            row,
+            split,
+            shape,
+            self_row,
+        }));
+    }
+    Ok(None)
+}
+
+/// Reads the inner finally's **normal** copy where the close chain reached it: the code the
+/// handler's copy repeats, then the exit that rejoins the enclosing statement's own run — the
+/// transfer that bridges to the next outer close group, or the fall-through into it. `at` is
+/// where the inner statement's own lowering ended, and the copy proves only when the row's own
+/// range ends exactly there.
+fn place_inner_finally(
+    facts: &mut Facts<'_>,
+    parts: &InnerFinallyParts<'_>,
+    at: u32,
+) -> Result<PlacedFinally, TwrFailure> {
+    let end = parts.row.end_bci;
+    if at != end {
+        return Err((Unproven::FinallyCopy, at).into());
+    }
+    // The copy repeats the handler's cleanup instruction for instruction, and it is ordinary
+    // statement code: the two copies agree ([`cleanup_sequence`], the same equivalence the
+    // standalone certificate reads) and every instruction is one the guarded body's own subset
+    // carries.
+    let mut copy: Vec<u32> = Vec::with_capacity(parts.shape.cleanup.len());
+    let mut cursor = end;
+    for _ in 0..parts.shape.cleanup.len() {
+        facts.charge(cursor)?;
+        if facts.step(cursor).is_none() {
+            return Err(TwrFailure::Proof((Unproven::FinallyCopy, cursor)));
+        }
+        copy.push(cursor);
+        cursor = facts
+            .next_bci(cursor)
+            .ok_or(TwrFailure::Proof((Unproven::FinallyCopy, cursor)))?;
+    }
+    let expected = cleanup_sequence(facts, &parts.shape.cleanup, false).ok_or(
+        TwrFailure::Proof((Unproven::FinallyCopy, parts.shape.cleanup[0])),
+    )?;
+    let actual = cleanup_sequence(facts, &copy, false)
+        .ok_or(TwrFailure::Proof((Unproven::FinallyCopy, copy[0])))?;
+    if expected != actual
+        || !copy
+            .iter()
+            .all(|bci| facts.statement_carried(*bci) || facts.discarded_call_pop(*bci))
+    {
+        return Err((Unproven::FinallyCopy, copy[0]).into());
+    }
+    facts.charge(cursor)?;
+    // The exit: a `goto` whose own block carries the run to the next outer close group — or
+    // stayed inside the block the canonical graph fused with its single-predecessor
+    // continuation — or the fall-through into the close group itself.
+    let transferred = matches!(facts.op(cursor), Some(Operation::Transfer));
+    let continuation = if transferred {
+        let transfer_end = facts.span_end(cursor);
+        let block = facts
+            .block_of(cursor)
+            .ok_or(TwrFailure::Proof((Unproven::FinallyCopy, cursor)))?;
+        match facts.view.successor_ids(&block).as_slice() {
+            [only] => only.bci(),
+            [] => facts
+                .in_block(&block)
+                .iter()
+                .map(|instruction| instruction.bci())
+                .find(|bci| *bci >= transfer_end)
+                .ok_or(TwrFailure::Proof((Unproven::FinallyCopy, cursor)))?,
+            _ => return Err(TwrFailure::Proof((Unproven::FinallyCopy, cursor))),
+        }
+    } else {
+        cursor
+    };
+    let copy_end = if transferred {
+        facts.span_end(cursor)
+    } else {
+        cursor
+    };
+    Ok(PlacedFinally {
+        copy: (end, copy_end),
+        continuation,
+    })
 }
 
 /// The physical pieces read by the narrow copy proof. No region owns them until a later step
@@ -11320,6 +11591,36 @@ mod finally_copy_tests {
             Err(StopReason::Cancelled { .. })
         ));
     }
+
+    #[test]
+    fn the_inner_finally_composite_propagates_the_budget_and_cancellation_stops() {
+        // The compound guard shape (`recover-twr-inner-finally`): the examination of the TWR
+        // whose body holds an inner explicit `finally` obeys the same stops every other proof
+        // does — a stopped run claims nothing.
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/TF.class"
+        );
+        assert!(matches!(
+            examine_probe_labelled(
+                "TF",
+                class,
+                b"nested",
+                b"()Ljava/lang/String;",
+                Some("budget")
+            ),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            examine_probe_labelled(
+                "TF",
+                class,
+                b"nested",
+                b"()Ljava/lang/String;",
+                Some("cancel")
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
 }
 
 #[cfg(test)]
@@ -13385,7 +13686,12 @@ fn resources(
         return Ok(Verdict::NotGuarded);
     }
     // A catch-all copy is only a candidate. Claim it after the complete certificate and the
-    // straight-body presentation gate both pass; otherwise preserve the original refusal.
+    // straight-body presentation gate both pass; otherwise preserve the original refusal — unless
+    // the row is the inner explicit `finally` of a `try (…)` body, which the header's own levels
+    // below prove in their body context. The deferral keeps the first failing copy's refusal for
+    // the shapes no level claims, so every presentation this rule does not make keeps the code it
+    // had.
+    let mut deferred_finally: Option<Cause> = None;
     for row in &candidates {
         if let Some(at) = finally_copy(facts, row) {
             // The lead the protected range follows admits the shape's own readings, one of
@@ -13404,7 +13710,10 @@ fn resources(
                 None
             };
             let Some(proof) = proof else {
-                return Ok(Verdict::refused(None, Unproven::FinallyCopy, at));
+                if deferred_finally.is_none() {
+                    deferred_finally = Some((Unproven::FinallyCopy, at));
+                }
+                break;
             };
             if proof.row_ordinal != row.ordinal
                 || start > proof.protected.0
@@ -13680,19 +13989,25 @@ fn resources(
     // initialisation of this block's own run is what a header would be read from, so nothing of the
     // shape's own is here. The walk states its own reason for the edge it cannot leave and no `try`
     // header is claimed — which is what lets the rows that name `catch` types be read as clauses.
-    if !header {
+    // A deferred finally-copy candidate keeps its own refusal: the row was examined as this rule's
+    // shape even where no level of a header claimed it, and the rule that states it stays the one
+    // that stated it before.
+    if !header && deferred_finally.is_none() {
         return Ok(Verdict::NotGuarded);
     }
-    let (unproven, at) = failure.unwrap_or((Unproven::Handler, start));
-    Ok(Verdict::refused(Some(&TWR), unproven, at))
+    let deferred = deferred_finally.is_some();
+    let (unproven, at) = deferred_finally
+        .or(failure)
+        .unwrap_or((Unproven::Handler, start));
+    Ok(Verdict::refused((!deferred).then_some(&TWR), unproven, at))
 }
 
 /// One proved `try`-with-resources, from the shape's innermost row outwards.
-fn twr(
-    facts: &mut Facts<'_>,
+fn twr<'a>(
+    facts: &mut Facts<'a>,
     profile: &crate::pass::RecoveryProfile,
     current: &CanonicalBlockId,
-    innermost: &ExceptionHandlerFact,
+    innermost: &'a ExceptionHandlerFact,
 ) -> Result<Plan, TwrFailure> {
     let start = current.bci();
     if !TWR.admits(profile) {
@@ -13746,18 +14061,34 @@ fn twr(
     }
     let innermost_level = *chain.last().expect("the chain holds the innermost row");
     let innermost_handler = handlers.last().expect("one handler per level");
-    let body = (innermost_level.start_bci, innermost_level.end_bci);
+    // The explicit inner `finally` the body holds, when it holds one: read before the body, so
+    // the plain inner `try`'s own protected range **is** the body this statement presents.
+    let inner = inner_finally_parts(facts, &chain, &resources)?;
+    let body = match &inner {
+        Some(parts) if parts.split == chain.len() => (parts.row.start_bci, parts.row.end_bci),
+        _ => (innermost_level.start_bci, innermost_level.end_bci),
+    };
     if body.0 >= body.1 || !facts.statement_free_with_discarded_calls(body) {
         return Err((Unproven::Body, body.0).into());
     }
     // The normal path closes the resources in the reverse order of the header: the chain is matched
     // against the declarations from the last one back, and a chain that closes them in any other
     // order (or misses one) is refused. This is what makes the order the header writes the order the
-    // bytecode ran.
+    // bytecode ran. An inner explicit `finally` interposes exactly once — after the inner
+    // statement's own closes complete, before the enclosing statement's next one — and its copy
+    // has to rejoin that chain where the copy's exit lands.
     let mut at = body.1;
     let mut closes = vec![0u32; resources.len()];
     let mut close_starts = vec![0u32; resources.len()];
     let mut pieces: Vec<(u32, u32)> = Vec::new();
+    let mut placed: Option<(PlacedFinally, usize)> = None;
+    if let Some(parts) = &inner
+        && parts.split == resources.len()
+    {
+        let copy = place_inner_finally(facts, parts, at)?;
+        at = copy.continuation;
+        placed = Some((copy, parts.split));
+    }
     for (position, resource) in resources.iter().enumerate().rev() {
         close_starts[position] = at;
         let Some((close_at, next)) = normal_close(facts, at, resource.slot) else {
@@ -13766,6 +14097,13 @@ fn twr(
         closes[position] = close_at;
         pieces.push((at, next));
         at = next;
+        if let Some(parts) = &inner
+            && position == parts.split
+        {
+            let copy = place_inner_finally(facts, parts, at)?;
+            at = copy.continuation;
+            placed = Some((copy, parts.split));
+        }
     }
     // A level's main row ends at the first instruction of that resource's normal close group. Prove
     // the close chain first: the endpoint is meaningful only after that group has been tied to this
@@ -13821,14 +14159,123 @@ fn twr(
         companions.push(companion.clone());
         rows.push(companion.ordinal);
     }
+    // The placed inner finally's own rows and exceptional copy: the copy's handler runs after its
+    // normal twin starts and never overlaps the enclosing statement's own close chain or tail,
+    // every instruction it holds is protected by a row this proof owns — its own two, the
+    // enclosing level's, or the exact companion that routes the copy's own exception into that
+    // level's handler — and its span is a piece of the statement like any close group's is.
+    let mut inner_finally: Option<Box<InnerTwrFinally>> = None;
+    if let Some((placed, split)) = &placed
+        && let Some(parts) = &inner
+    {
+        let handler_span = (parts.shape.entry.bci(), facts.span_end(parts.shape.rethrow));
+        let entry = handler_span.0;
+        let rethrow_end = handler_span.1;
+        for bci in facts.bcis(handler_span) {
+            facts.charge(bci)?;
+        }
+        if entry < placed.copy.0
+            || rethrow_end <= entry
+            || (entry < at && rethrow_end > placed.continuation)
+        {
+            return Err((Unproven::FinallyCopy, entry).into());
+        }
+        rows.push(parts.row.ordinal);
+        if let Some(self_row) = parts.self_row {
+            rows.push(self_row.ordinal);
+        }
+        // An instruction of the copy no owned row protects is the companion's to explain: the
+        // layout whose normal completion returns leaves the enclosing level's own row short of
+        // the copy, and javac adds one exact row for it.
+        let enclosing = chain[split.saturating_sub(1)];
+        let mut companion_ordinal = None;
+        let uncovered = facts.bcis(handler_span).into_iter().any(|bci| {
+            facts
+                .covering(bci)
+                .iter()
+                .any(|other| !rows.contains(&other.ordinal))
+        });
+        if uncovered {
+            let mut exact = Vec::new();
+            for candidate in facts.handlers {
+                facts.charge(candidate.start_bci)?;
+                if candidate.start_bci == entry
+                    && candidate.end_bci == rethrow_end
+                    && candidate.catch_type_index == enclosing.catch_type_index
+                    && candidate.handler_bci == enclosing.handler_bci
+                    && !rows.contains(&candidate.ordinal)
+                {
+                    exact.push(candidate.ordinal);
+                }
+            }
+            let [companion] = exact.as_slice() else {
+                return Err((Unproven::FinallyCopy, entry).into());
+            };
+            rows.push(*companion);
+            if facts.bcis(handler_span).into_iter().any(|bci| {
+                facts
+                    .covering(bci)
+                    .iter()
+                    .any(|other| !rows.contains(&other.ordinal))
+            }) {
+                return Err((Unproven::FinallyCopy, entry).into());
+            }
+            companion_ordinal = Some(*companion);
+        }
+        pieces.push(placed.copy);
+        pieces.push(handler_span);
+        inner_finally = Some(Box::new(InnerTwrFinally {
+            split: *split,
+            row_ordinal: parts.row.ordinal,
+            self_row_ordinal: parts.self_row.map(|row| row.ordinal),
+            companion_ordinal,
+            normal_cleanup: placed.copy,
+            handler_cleanup: handler_span,
+        }));
+    }
     // The join is where the run continues after the statement. `javac` writes a `goto` there
     // whenever the statement is followed by code of its own method — the target is then a block —
     // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
     // continue at all: the row itself ends where the close chain does.
-    let join = return_tail.is_none().then(|| facts.block_at(at)).flatten();
+    //
+    // A third layout exists: the continuation stays **inside** a block the statement already
+    // claimed, because the canonical graph fused the last close group with its single-predecessor
+    // continuation (no other run enters it, and the group's own block carries no exception edge).
+    // The walk cannot continue at an instruction, so the statement renders the continuation's own
+    // statements after itself — admitted only where that fused block ends the method and every
+    // instruction from the continuation on is one the builder writes: ordinary statements closed
+    // by the method's own `return`. Anything else — a continuation that branches onward, or one
+    // inside the statement's *own* first block, whose tail the walk has never been able to place —
+    // keeps the refusal below.
+    let mut trail: Option<(u32, u32)> = None;
+    let join = if return_tail.is_some() {
+        None
+    } else if let Some(block) = facts.block_at(at) {
+        Some(block)
+    } else if let Some(block) = facts
+        .block_of(at)
+        .filter(|block| at > block.bci() && **block != *current)
+    {
+        let end = facts.end_of(&block);
+        let presentable = facts.bcis((at, end)).into_iter().all(|bci| {
+            facts.statement_carried(bci) || matches!(facts.op(bci), Some(Operation::Return))
+        });
+        for bci in facts.bcis((at, end)) {
+            facts.charge(bci)?;
+        }
+        if presentable && facts.view.successor_ids(&block).is_empty() && at < end {
+            trail = Some((at, end));
+            None
+        } else {
+            return Err((Unproven::Continuation, at).into());
+        }
+    } else {
+        None
+    };
     // The clause a whole-construct row presents ends where **both** paths converge: a join that is
     // one pure `goto` is the compiler's own bridge to that block, and the handler's one normal
     // successor is what the bridge reaches, not the bridge itself.
+    let claimed_end = trail.map(|(_, end)| end).unwrap_or(claimed_end);
     let continuation = join.as_ref().map(|join| continuation_of(facts, join));
     let enclosure = enclosing_clauses(
         facts,
@@ -13858,7 +14305,7 @@ fn twr(
             return Err((Unproven::Unexplained, row.start_bci).into());
         }
     }
-    if return_tail.is_none() && join.is_none() && at < facts.end_of(current) {
+    if return_tail.is_none() && join.is_none() && trail.is_none() && at < facts.end_of(current) {
         // The close chain runs into the rest of the statement's own block, and no block begins
         // where it continues: the instructions after the statement are those of a block this shape
         // has already claimed, and the walk can present neither them nor a place to continue at.
@@ -13889,6 +14336,9 @@ fn twr(
     if let Some((load_bci, _, _)) = return_tail.as_ref() {
         pieces.push((*load_bci, claimed_end));
     }
+    if let Some(span) = trail {
+        pieces.push(span);
+    }
     explained(facts, start, claimed_end, &pieces)?;
     // The normal closes live in the statement's main span. Exceptional cleanup can live after the
     // return and is owned only when every instruction in each added canonical block is one of the
@@ -13899,6 +14349,10 @@ fn twr(
     for handler in &handlers {
         cleanup_spans.push(handler.span);
         cleanup_spans.push((handler.guard.start_bci, handler.guard.end_bci));
+    }
+    if let Some(finally) = inner_finally.as_ref() {
+        cleanup_spans.push(finally.normal_cleanup);
+        cleanup_spans.push(finally.handler_cleanup);
     }
     for span in cleanup_spans {
         for bci in facts.bcis(span) {
@@ -13972,6 +14426,8 @@ fn twr(
             resources,
             returns: return_tail.as_ref().map(|(_, return_bci, _)| *return_bci),
             cleanup: cleanup_bcis.into_iter().collect(),
+            inner_finally,
+            trail,
         },
         lead,
         body,
@@ -14189,10 +14645,26 @@ fn normal_close(facts: &Facts<'_>, at: u32, slot: u16) -> Option<(u32, u32)> {
         if matches!(facts.op(after), Some(Operation::Transfer)) {
             let leaving = facts.block_of(second.instruction.bci())?;
             let jump = facts.view.successor_ids(leaving);
-            let [continuation] = jump.as_slice() else {
-                return None;
-            };
-            return Some((second.instruction.bci(), continuation.bci()));
+            if let [continuation] = jump.as_slice() {
+                return Some((second.instruction.bci(), continuation.bci()));
+            }
+            // The transfer stayed inside its own block: the canonical graph fused the close group
+            // with its single-predecessor continuation (nothing else enters it, and the group's
+            // own block carries no exception edge), so the run continues at the first instruction
+            // past the transfer — the block the statement claims still holds it, and the TWR's
+            // own trail reading places what runs there.
+            if jump.is_empty() {
+                let transfer_end = facts.span_end(after);
+                let continued = facts
+                    .in_block(leaving)
+                    .iter()
+                    .map(|instruction| instruction.bci())
+                    .find(|bci| *bci >= transfer_end);
+                if continued.is_some_and(|bci| bci > after) {
+                    return Some((second.instruction.bci(), continued.expect("just checked")));
+                }
+            }
+            return None;
         }
         return Some((second.instruction.bci(), after));
     }
