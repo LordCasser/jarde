@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿、fmt、CI 完整 `-A` 清单 clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。
 - [x] 3.2 L5/D1 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核恢复归类、闭合不变量与三方行为，更新 CF 账本与巡查记录。
+- [x] 3.3 root 独立复核恢复归类、闭合不变量与三方行为，更新 CF 账本与巡查记录。（root 于合并主线 8140c76d 复核：D1（`early:5/d3/f2`）与 L5（含 `early`）整类重编行为逐字一致——**三处静默错编面全消**〔L5 形、D1.retInDoWhile（dj 后主线亦静默化）、D1.retInIf（巡查时未验行为的既有静默面 `end`≠`f2`〕〕；闭合不变量守卫（throw 面整方法拒绝、完成性门槛 JLS 14.22）与守卫测试复核认可；2851/0、fmt/openspec 249/249。**边界翻转裁决接受**：cf07/cf08 两负例有意泛化（叶证明脱离单一值形状，断言可追溯）、retInIf/retInPlainDo 恢复优于 spec 字面"逐字不变"——该场景书写时误以为两形态健康，行为正确性优先。字面 do-while 包装、语句级引注闭合、return 臂 concat 折叠登记后续。）
