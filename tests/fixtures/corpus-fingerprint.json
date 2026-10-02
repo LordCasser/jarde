@@ -5862,6 +5862,76 @@
       "path": "tests/fixtures/proved-varargs-calls/v8/VarargsCalls.class"
     },
     {
+      "blake3": "904a3f0f397551b60feeb903a2b5cc7a1011c5972eea75f1a2c8a3c31abc0519",
+      "bytes": 1313,
+      "path": "tests/fixtures/qualified-super-default/NestedSuper.java"
+    },
+    {
+      "blake3": "4ca959d79d8659330920be9794d33efd08b630408044a2bfc8e53b8be1d28550",
+      "bytes": 305,
+      "path": "tests/fixtures/qualified-super-default/pkg/PackedSuper.java"
+    },
+    {
+      "blake3": "a83137000b59a2862612da1679c51dba5bc1456e935d30840dcb894d5dd1de65",
+      "bytes": 653,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$A.class"
+    },
+    {
+      "blake3": "4e35647efc5ef87b66feb9de830ef596bb533de57d8b71d51a4e2a7c22f433b5",
+      "bytes": 159,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$Abs.class"
+    },
+    {
+      "blake3": "b7bb9aed3406c4e5dee606d19f6417e5efb6003409317f177032194e0477286f",
+      "bytes": 335,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$Abstract.class"
+    },
+    {
+      "blake3": "fef6dc70f75855286ab3ac7ab0e1f373788891e831bf00108a1603d2679241a2",
+      "bytes": 186,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$B.class"
+    },
+    {
+      "blake3": "72a967e160668aadf6d24e6541d262c57e5cef4a9eb9fa5ead51b0ecd6635af1",
+      "bytes": 476,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$Diamond.class"
+    },
+    {
+      "blake3": "0d9da7c6f73f0ba3a090be7b8af7039a1a55b1ad037c3e0ce98c8b4751496e1d",
+      "bytes": 369,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$Indirect.class"
+    },
+    {
+      "blake3": "9dfc0806ff468482aa2b657ac9045d110fc5022a57cc4dacf312682d51b9fed7",
+      "bytes": 618,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$Single.class"
+    },
+    {
+      "blake3": "2316a9acc84ad34e1ea74d340d2a85c6c6faa04cd3b52653c6a14fc75dba371a",
+      "bytes": 154,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper$Sub.class"
+    },
+    {
+      "blake3": "1ff9967c75cda63f81359bd57477094eee73c77df5730cc7bde70617402aa897",
+      "bytes": 850,
+      "path": "tests/fixtures/qualified-super-default/v8/NestedSuper.class"
+    },
+    {
+      "blake3": "826bed1a5b6bf76da18fa8168e07469a3a766770e31576e073d7e4904dbc281a",
+      "bytes": 199,
+      "path": "tests/fixtures/qualified-super-default/v8/pkg/PackedSuper$I.class"
+    },
+    {
+      "blake3": "92b553372e9d73e13aedad27e17cdb96caa948ad4ee3b89da45697bb5447794c",
+      "bytes": 300,
+      "path": "tests/fixtures/qualified-super-default/v8/pkg/PackedSuper$Use.class"
+    },
+    {
+      "blake3": "9da08caa9ba4847d3116e310a8cf143e494e9115297ba82d4697d0ed23007b31",
+      "bytes": 478,
+      "path": "tests/fixtures/qualified-super-default/v8/pkg/PackedSuper.class"
+    },
+    {
       "blake3": "fa7ad1d72c352a790a5807113f03ee0f1c7c2e9e1abf5c95eafd52cff2d39029",
       "bytes": 194,
       "path": "tests/fixtures/r2-annotation-positions/CodeOnly.java"
