@@ -1,0 +1,16 @@
+  static {};
+    Code:
+       0: ldc           #61                 // String boom
+       2: invokestatic  #63                 // Method java/lang/Boolean.getBoolean:(Ljava/lang/String;)Z
+       5: ifeq          18
+       8: new           #69                 // class java/lang/IllegalStateException
+      11: dup
+      12: ldc           #71                 // String clinit-fail
+      14: invokespecial #73                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      17: athrow
+      18: iconst_5
+      19: putstatic     #33                 // Field value:I
+      22: invokestatic  #75                 // Method init:()I
+      25: putstatic     #48                 // Field other:I
+      28: return
+}

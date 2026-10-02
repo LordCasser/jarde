@@ -1,0 +1,28 @@
+  static {};
+    Code:
+       0: iconst_1
+       1: putstatic     #16                 // Field a:I
+       4: iconst_2
+       5: putstatic     #31                 // Field b:I
+       8: ldc           #47                 // String ibr-multi-boom
+      10: invokestatic  #49                 // Method java/lang/Boolean.getBoolean:(Ljava/lang/String;)Z
+      13: ifeq          26
+      16: new           #55                 // class java/lang/IllegalStateException
+      19: dup
+      20: ldc           #57                 // String multi-fail
+      22: invokespecial #59                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      25: athrow
+      26: getstatic     #16                 // Field a:I
+      29: getstatic     #31                 // Field b:I
+      32: iadd
+      33: putstatic     #16                 // Field a:I
+      36: getstatic     #16                 // Field a:I
+      39: iconst_3
+      40: imul
+      41: putstatic     #34                 // Field c:I
+      44: getstatic     #16                 // Field a:I
+      47: getstatic     #34                 // Field c:I
+      50: iadd
+      51: putstatic     #31                 // Field b:I
+      54: return
+}
