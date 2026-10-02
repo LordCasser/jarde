@@ -1,0 +1,5 @@
+# TF per-path three-way (v1/v2/v3/nested) — original / JADX / Jarde:
+bodymid[a]	bodymid[a]	bodymid[a]
+body[b][a]	body[b][a]	body[b][a]
+4	4	4
+body[b]mid[a]	body[b]mid[a]	body[b]mid[a]
