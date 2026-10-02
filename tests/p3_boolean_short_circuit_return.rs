@@ -161,42 +161,55 @@ fn return_consumers_use_short_circuit_operators_and_keep_all_origins() {
 
 #[test]
 fn integer_return_or_non_boolean_leaves_keep_the_numeric_conversion() {
-    let mut int_return = CLASS.to_vec();
-    let bool_descriptor = b"(II)Z";
-    let positions = int_return
-        .windows(bool_descriptor.len())
-        .enumerate()
-        .filter_map(|(index, bytes)| (bytes == bool_descriptor).then_some(index))
-        .collect::<Vec<_>>();
-    let [position] = positions.as_slice() else {
-        panic!("the `and` method descriptor must occur once: {positions:?}");
-    };
-    int_return[*position + 4] = b'I';
-    let int_report = class_source(&int_return);
-    let int_body = recovered_body(&int_report, "and");
-    assert!(!int_body.text.contains("&&"), "{}", int_body.text);
-    assert!(!int_body.text.contains("||"), "{}", int_body.text);
+    // The same deep value rendering the first test mitigated runs here too (`render_value`'s
+    // bounded recursion costs tens of kilobytes of stack per level in debug builds), and the
+    // layout of any code movement can flip it past the test runner's default thread stack. Run
+    // the assertions on a thread with an explicit, adequate stack: nothing about them changes,
+    // and the bounded recursion's own depth cap remains the limit that matters.
+    std::thread::Builder::new()
+        .stack_size(16 << 20)
+        .spawn(|| {
+            let mut int_return = CLASS.to_vec();
+            let bool_descriptor = b"(II)Z";
+            let positions = int_return
+                .windows(bool_descriptor.len())
+                .enumerate()
+                .filter_map(|(index, bytes)| (bytes == bool_descriptor).then_some(index))
+                .collect::<Vec<_>>();
+            let [position] = positions.as_slice() else {
+                panic!("the `and` method descriptor must occur once: {positions:?}");
+            };
+            int_return[*position + 4] = b'I';
+            let int_report = class_source(&int_return);
+            let int_body = recovered_body(&int_report, "and");
+            assert!(!int_body.text.contains("&&"), "{}", int_body.text);
+            assert!(!int_body.text.contains("||"), "{}", int_body.text);
 
-    // The verifier's int-shaped producer values 2 and 3 both flow into `ireturn Z`. Their low bit
-    // still decides the returned boolean, so the exact-0/1 projection must decline this tree.
-    let mut non_boolean_leaves = CLASS.to_vec();
-    let bytecode = [
-        0x1a, 0x9e, 0x00, 0x0b, 0x1b, 0x9e, 0x00, 0x07, 0x04, 0xa7, 0x00, 0x04, 0x03, 0xac,
-    ];
-    let starts = non_boolean_leaves
-        .windows(bytecode.len())
-        .enumerate()
-        .filter_map(|(index, bytes)| (bytes == bytecode).then_some(index))
-        .collect::<Vec<_>>();
-    let [start] = starts.as_slice() else {
-        panic!("the `and` bytecode must occur once: {starts:?}");
-    };
-    non_boolean_leaves[*start + 8] = 0x05; // iconst_2
-    non_boolean_leaves[*start + 12] = 0x06; // iconst_3
-    let raw_report = class_source(&non_boolean_leaves);
-    let raw_body = recovered_body(&raw_report, "and");
-    assert!(!raw_body.text.contains("&&"), "{}", raw_body.text);
-    assert!(!raw_body.text.contains("||"), "{}", raw_body.text);
+            // The verifier's int-shaped producer values 2 and 3 both flow into `ireturn Z`. Their
+            // low bit still decides the returned boolean, so the exact-0/1 projection must decline
+            // this tree.
+            let mut non_boolean_leaves = CLASS.to_vec();
+            let bytecode = [
+                0x1a, 0x9e, 0x00, 0x0b, 0x1b, 0x9e, 0x00, 0x07, 0x04, 0xa7, 0x00, 0x04, 0x03, 0xac,
+            ];
+            let starts = non_boolean_leaves
+                .windows(bytecode.len())
+                .enumerate()
+                .filter_map(|(index, bytes)| (bytes == bytecode).then_some(index))
+                .collect::<Vec<_>>();
+            let [start] = starts.as_slice() else {
+                panic!("the `and` bytecode must occur once: {starts:?}");
+            };
+            non_boolean_leaves[*start + 8] = 0x05; // iconst_2
+            non_boolean_leaves[*start + 12] = 0x06; // iconst_3
+            let raw_report = class_source(&non_boolean_leaves);
+            let raw_body = recovered_body(&raw_report, "and");
+            assert!(!raw_body.text.contains("&&"), "{}", raw_body.text);
+            assert!(!raw_body.text.contains("||"), "{}", raw_body.text);
+        })
+        .expect("the wide-stack thread spawns")
+        .join()
+        .expect("the numeric conversion assertions hold");
 }
 
 fn source_map_shape(map: &SourceMap) -> Vec<(usize, usize, u32, Vec<u32>)> {
