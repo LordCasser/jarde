@@ -1,0 +1,4 @@
+4ef20f2f2fbf91efd2108595b9f0136178dc6fc05fb6c93641fd30c93ad1484e  openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/catchcall-17c/original/W17c.class
+e0f2deaa2a0aad433f95d6f1d28e4731a3d0cc11b75a5bf82f22720e0c94c27c  openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/catchcall-17c/original/N17c.class
+35f0801c2220e8f1d92cbb011f118b6f5acc23792e837079ff2b14f24ff70885  openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P2.class
+e88b7707bcb1952446cda3e7661c004ddc8dbe383cdf847e793653d9516aaa30  openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P3.class
