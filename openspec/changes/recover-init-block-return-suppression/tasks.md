@@ -12,4 +12,4 @@
 
 - [x] 3.1 全仓测试全绿、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。
 - [x] 3.2 F2 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核语境过滤边界与三方行为，更新账本与巡查记录。
+- [x] 3.3 root 独立复核语境过滤边界与三方行为，更新账本与巡查记录。（root 于合并主线 53e80673 复核：F2 整类重编通过、运行 `5:42` 一致，`<clinit>` 内 return 消除而方法/构造器 return 保留；2854/0、fmt/openspec 249/249。emit.rs 语境抑制（沿 `DeclarationForm::StaticInitializer` 分派、commit/replay 两遍一致）与其余 `<clinit>` 通道逐一核对（enum 组重发射自动继承）复核认可；462 工件 before/after 扫描仅 3 处预期差异为实现者自证。）
