@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 17a/17b/17 系列全部既有测试）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。
 - [x] 3.2 P2/P3 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核白名单边界与三方行为，更新账本与巡查记录。
+- [x] 3.3 root 独立复核白名单边界与三方行为，更新账本与巡查记录。（root 于合并主线 1f41135d 复核：P3 整类零引用、`catch (… local0) { P3.log.append("E"); }` 呈现；2825/0、fmt/openspec 245/245、磁盘达标。单谓词接入（`discarded_call_pop` 于 enclosing_clause 循环）与普通 catch 通道既有支持的边界取证均复核认可；17b 冻结家族逐字节不变。）
