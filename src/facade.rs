@@ -1403,7 +1403,21 @@ impl Engine {
         // The direct static member rows wait for the fold step below the enum and annotation
         // channels: those narrower projections keep their priority, and the fold only ever
         // replaces a text none of them claimed.
+        //
+        // A mixed family decomposes at this seam exactly the way its two channels consume it:
+        // the non-static candidate keeps the narrow one-child channel below (the shared
+        // `Candidate` arm), and its direct static rows take the same fold road a pure static
+        // family's rows take — neither member blocks the other.
+        let mixed_static_fold = matches!(
+            family_scan,
+            crate::member_inner::FamilyRootScan::StaticMembersWithInstance { .. }
+        );
         let mut static_fold_rows = None;
+        if let crate::member_inner::FamilyRootScan::StaticMembersWithInstance { statics, .. } =
+            &family_scan
+        {
+            static_fold_rows = Some(statics.clone());
+        }
         report.member_family = match family_scan {
             crate::member_inner::FamilyRootScan::Absent => {
                 class_source::ClassSourceMemberFamily::Absent
@@ -1457,7 +1471,10 @@ impl Engine {
                     }
                 }
             }
-            crate::member_inner::FamilyRootScan::Candidate(candidate) => {
+            crate::member_inner::FamilyRootScan::Candidate(candidate)
+            | crate::member_inner::FamilyRootScan::StaticMembersWithInstance {
+                candidate, ..
+            } => {
                 let root_name = report
                     .declaration
                     .as_ref()
@@ -1897,7 +1914,11 @@ impl Engine {
             }
             // The scan's own rows always state their fold outcome; a refused fallback leaves
             // the narrow channel's prepared family — and its refusal reasons — as they were.
-            if scanned_static_rows || projected_text.is_some() {
+            // A mixed family's fold is refused beside a narrow family the scan itself also
+            // selected, so it follows the same rule: the fold claims the report exactly when
+            // it claims the text, and a fold that did not finish leaves the non-static
+            // candidate's prepared family — and its refusal reasons — as they were.
+            if projected_text.is_some() || (scanned_static_rows && !mixed_static_fold) {
                 if let Some(text) = projected_text {
                     report.text = text;
                 }
@@ -2040,7 +2061,8 @@ impl Engine {
                     candidate.access_flags,
                 ),
                 crate::member_inner::FamilyRootScan::DeclarationPair(_)
-                | crate::member_inner::FamilyRootScan::StaticMembers(_) => {
+                | crate::member_inner::FamilyRootScan::StaticMembers(_)
+                | crate::member_inner::FamilyRootScan::StaticMembersWithInstance { .. } => {
                     return Ok((Family::Absent, execution));
                 }
             };
@@ -2286,7 +2308,8 @@ impl Engine {
                     candidate.access_flags,
                 ),
                 crate::member_inner::FamilyRootScan::DeclarationPair(_)
-                | crate::member_inner::FamilyRootScan::StaticMembers(_) => {
+                | crate::member_inner::FamilyRootScan::StaticMembers(_)
+                | crate::member_inner::FamilyRootScan::StaticMembersWithInstance { .. } => {
                     return Ok((Family::Absent, execution));
                 }
             };
