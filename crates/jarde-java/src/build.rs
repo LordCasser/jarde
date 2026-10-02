@@ -13963,7 +13963,11 @@ impl Builder<'_> {
                 self.range(plan.lead())?;
                 match plan.shape() {
                     guard::Shape::Resources {
-                        resources, returns, ..
+                        resources,
+                        returns,
+                        inner_finally,
+                        trail,
+                        ..
                     } => {
                         let mut declarations = Vec::with_capacity(resources.len());
                         for resource in resources {
@@ -13981,6 +13985,9 @@ impl Builder<'_> {
                         // here — the compiler writes them for the resource the header declares,
                         // which is what makes each close run exactly once per path.
                         let mut body = self.body_range(plan.body())?;
+                        // The body's own `return`, when the normal path ends the method in one:
+                        // written inside the braces — the inner statement's own when the body
+                        // holds a proved `finally`, the statement's own otherwise.
                         if let Some(return_bci) = returns {
                             let statement = match self.guarded_return(*return_bci) {
                                 Ok(statement) => statement,
@@ -13990,6 +13997,39 @@ impl Builder<'_> {
                                 }
                             };
                             body.push(statement);
+                        }
+                        // The explicit inner `finally`: the body's statement list is one nested
+                        // `try { … } finally { … }` — the resources the inner statement's own
+                        // header declares inside its braces, the enclosing header keeping the
+                        // rest — written with the same `StmtKind::Try` a proved copy's own
+                        // presentation is, the mid cleanup as its `finally` body.
+                        if let Some(finally) = inner_finally {
+                            let finally_body = match self.body_range(finally.normal_cleanup()) {
+                                Ok(statements) => statements,
+                                Err(stop) => return Err(stop),
+                            };
+                            let split = finally.split().min(declarations.len());
+                            let inner_resources = declarations.split_off(split);
+                            let inner_origin = plan
+                                .facts()
+                                .iter()
+                                .filter(|bci| {
+                                    finally.normal_cleanup().0 <= **bci
+                                        && **bci < finally.handler_cleanup().1
+                                })
+                                .fold(
+                                    OriginSet::new(Origin::direct(plan.body().0)),
+                                    |origin, bci| origin.plus_derived(Origin::derived(*bci)),
+                                );
+                            body = vec![Stmt::new(
+                                StmtKind::Try {
+                                    resources: inner_resources,
+                                    catches: Vec::new(),
+                                    body,
+                                    finally_body: Some(finally_body),
+                                },
+                                inner_origin,
+                            )];
                         }
                         // The clause the proof carried: the `catch` a compiler wound around the
                         // whole lowering. Its header spells the row's class and the name the
@@ -14044,7 +14084,7 @@ impl Builder<'_> {
                             // proof's own readings, the way a `try`/`catch` clause's is.
                             origin = origin.plus_derived(Origin::derived(clause.body().0));
                         }
-                        self.push(Stmt::new(
+                        let pushed = self.push(Stmt::new(
                             StmtKind::Try {
                                 resources: declarations,
                                 // The one clause the proof carried: a `catch` whose whole-construct
@@ -14056,7 +14096,18 @@ impl Builder<'_> {
                                 finally_body: None,
                             },
                             origin,
-                        ))
+                        ));
+                        // The fused continuation the statement claims with its own last close
+                        // group: ordinary statements the block holds past the chain, rendered
+                        // after the statement in the order the run reaches them. The proof
+                        // admitted them only where the block ends the method there, so nothing
+                        // else of the method's own follows.
+                        if pushed.is_ok()
+                            && let Some((trail_start, trail_end)) = trail
+                        {
+                            self.range((*trail_start, *trail_end))?;
+                        }
+                        pushed
                     }
                     guard::Shape::Monitor {
                         enter_bci,
