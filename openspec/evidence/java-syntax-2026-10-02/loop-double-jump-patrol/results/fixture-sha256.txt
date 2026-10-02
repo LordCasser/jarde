@@ -1,0 +1,5 @@
+538a551413509655fe7aefa2661a0f59a6097d714e9a26058ab2780bdad4db97  openspec/evidence/java-syntax-2026-10-02/loop-double-jump-patrol/fixture/L1.class
+54080c587e19b40044927a10c4cf677734830179a940f25bf01e2f65de68acbc  openspec/evidence/java-syntax-2026-10-02/loop-double-jump-patrol/fixture/L2.class
+688c8fb801131f09afc10c57357b128334120ecf4b8a37e3e3e51413b6c1bbc5  openspec/evidence/java-syntax-2026-10-02/loop-double-jump-patrol/fixture/L3.class
+76fee1c5618b009dbcbc32e21aea36135470066acce0645b1f65bb721a66561a  openspec/evidence/java-syntax-2026-10-02/loop-double-jump-patrol/fixture/L4.class
+baaf9a55831bad8e2f1d40b183899aac015fefb86171f41e40a753aa62ed1d55  openspec/evidence/java-syntax-2026-10-02/loop-double-jump-patrol/fixture/L5.class
