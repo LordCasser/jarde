@@ -192,6 +192,12 @@ pub struct MethodDeclaration {
     identity: PhysicalMethodId,
     class_name: JvmBytes,
     class_access_flags: u16,
+    /// The member classes the declaring class's own `InnerClasses` attribute states, by their
+    /// internal names. This is the one fact that separates a nested binary name from a **top
+    /// level** name that merely carries `$` (JVMS §4.7.6: a class file that references a member
+    /// names it in this attribute), and the presentation layer needs exactly that distinction to
+    /// spell a reference as source nesting.
+    inner_class_members: Vec<JvmBytes>,
 }
 
 impl MethodDeclaration {
@@ -209,6 +215,7 @@ impl MethodDeclaration {
         identity: PhysicalMethodId,
         class_name: JvmBytes,
         class_access_flags: u16,
+        inner_class_members: Vec<JvmBytes>,
     ) -> Option<Self> {
         let parameter_slots = parameter_slots(&descriptor.0, access_flags & ACC_STATIC != 0)?;
         Some(Self {
@@ -219,6 +226,7 @@ impl MethodDeclaration {
             identity,
             class_name,
             class_access_flags,
+            inner_class_members,
         })
     }
 
@@ -278,6 +286,12 @@ impl MethodDeclaration {
     /// presented beside it.
     pub fn class_access_flags(&self) -> u16 {
         self.class_access_flags
+    }
+
+    /// The member classes the declaring class's own `InnerClasses` attribute states, by their
+    /// internal names. Empty when the class file declares no such attribute.
+    pub fn inner_class_members(&self) -> &[JvmBytes] {
+        &self.inner_class_members
     }
 }
 
