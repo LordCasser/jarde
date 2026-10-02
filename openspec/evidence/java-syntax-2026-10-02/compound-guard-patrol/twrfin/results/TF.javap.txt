@@ -1,0 +1,323 @@
+public class TF implements java.lang.AutoCloseable {
+  static java.lang.StringBuilder log;
+
+  java.lang.String name;
+
+  TF(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #7                  // Field name:Ljava/lang/String;
+       9: return
+
+  public void close();
+    Code:
+       0: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+       3: bipush        91
+       5: invokevirtual #17                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+       8: aload_0
+       9: getfield      #7                  // Field name:Ljava/lang/String;
+      12: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      15: bipush        93
+      17: invokevirtual #17                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      20: pop
+      21: return
+
+  public static java.lang.String v1() throws java.lang.Exception;
+    Code:
+       0: new           #8                  // class TF
+       3: dup
+       4: ldc           #26                 // String a
+       6: invokespecial #28                 // Method "<init>":(Ljava/lang/String;)V
+       9: astore_0
+      10: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      13: ldc           #31                 // String body
+      15: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      18: pop
+      19: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      22: ldc           #33                 // String mid
+      24: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: pop
+      28: goto          43
+      31: astore_1
+      32: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      35: ldc           #33                 // String mid
+      37: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      40: pop
+      41: aload_1
+      42: athrow
+      43: aload_0
+      44: invokevirtual #35                 // Method close:()V
+      47: goto          66
+      50: astore_1
+      51: aload_0
+      52: invokevirtual #35                 // Method close:()V
+      55: goto          64
+      58: astore_2
+      59: aload_1
+      60: aload_2
+      61: invokevirtual #40                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      64: aload_1
+      65: athrow
+      66: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      69: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      72: areturn
+    Exception table:
+       from    to  target type
+          10    19    31   any
+          10    43    50   Class java/lang/Throwable
+          51    55    58   Class java/lang/Throwable
+
+  public static java.lang.String v2() throws java.lang.Exception;
+    Code:
+       0: new           #8                  // class TF
+       3: dup
+       4: ldc           #26                 // String a
+       6: invokespecial #28                 // Method "<init>":(Ljava/lang/String;)V
+       9: astore_0
+      10: new           #8                  // class TF
+      13: dup
+      14: ldc           #48                 // String b
+      16: invokespecial #28                 // Method "<init>":(Ljava/lang/String;)V
+      19: astore_1
+      20: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      23: ldc           #31                 // String body
+      25: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      28: pop
+      29: aload_1
+      30: invokevirtual #35                 // Method close:()V
+      33: goto          52
+      36: astore_2
+      37: aload_1
+      38: invokevirtual #35                 // Method close:()V
+      41: goto          50
+      44: astore_3
+      45: aload_2
+      46: aload_3
+      47: invokevirtual #40                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      50: aload_2
+      51: athrow
+      52: aload_0
+      53: invokevirtual #35                 // Method close:()V
+      56: goto          75
+      59: astore_1
+      60: aload_0
+      61: invokevirtual #35                 // Method close:()V
+      64: goto          73
+      67: astore_2
+      68: aload_1
+      69: aload_2
+      70: invokevirtual #40                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      73: aload_1
+      74: athrow
+      75: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      78: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      81: areturn
+    Exception table:
+       from    to  target type
+          20    29    36   Class java/lang/Throwable
+          37    41    44   Class java/lang/Throwable
+          10    52    59   Class java/lang/Throwable
+          60    64    67   Class java/lang/Throwable
+
+  public static int v3() throws java.lang.Exception;
+    Code:
+       0: new           #8                  // class TF
+       3: dup
+       4: ldc           #26                 // String a
+       6: invokespecial #28                 // Method "<init>":(Ljava/lang/String;)V
+       9: astore_0
+      10: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      13: ldc           #31                 // String body
+      15: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      18: pop
+      19: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      22: invokevirtual #50                 // Method java/lang/StringBuilder.length:()I
+      25: istore_1
+      26: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      29: ldc           #33                 // String mid
+      31: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: pop
+      35: aload_0
+      36: invokevirtual #35                 // Method close:()V
+      39: iload_1
+      40: ireturn
+      41: astore_2
+      42: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      45: ldc           #33                 // String mid
+      47: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: pop
+      51: aload_2
+      52: athrow
+      53: astore_1
+      54: aload_0
+      55: invokevirtual #35                 // Method close:()V
+      58: goto          67
+      61: astore_2
+      62: aload_1
+      63: aload_2
+      64: invokevirtual #40                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      67: aload_1
+      68: athrow
+    Exception table:
+       from    to  target type
+          10    26    41   any
+          10    35    53   Class java/lang/Throwable
+          41    53    53   Class java/lang/Throwable
+          54    58    61   Class java/lang/Throwable
+
+  public static java.lang.String nested() throws java.lang.Exception;
+    Code:
+       0: new           #8                  // class TF
+       3: dup
+       4: ldc           #26                 // String a
+       6: invokespecial #28                 // Method "<init>":(Ljava/lang/String;)V
+       9: astore_0
+      10: new           #8                  // class TF
+      13: dup
+      14: ldc           #48                 // String b
+      16: invokespecial #28                 // Method "<init>":(Ljava/lang/String;)V
+      19: astore_1
+      20: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      23: ldc           #31                 // String body
+      25: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      28: pop
+      29: aload_1
+      30: invokevirtual #35                 // Method close:()V
+      33: goto          52
+      36: astore_2
+      37: aload_1
+      38: invokevirtual #35                 // Method close:()V
+      41: goto          50
+      44: astore_3
+      45: aload_2
+      46: aload_3
+      47: invokevirtual #40                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      50: aload_2
+      51: athrow
+      52: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      55: ldc           #33                 // String mid
+      57: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: pop
+      61: goto          78
+      64: astore        4
+      66: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      69: ldc           #33                 // String mid
+      71: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      74: pop
+      75: aload         4
+      77: athrow
+      78: aload_0
+      79: invokevirtual #35                 // Method close:()V
+      82: goto          101
+      85: astore_1
+      86: aload_0
+      87: invokevirtual #35                 // Method close:()V
+      90: goto          99
+      93: astore_2
+      94: aload_1
+      95: aload_2
+      96: invokevirtual #40                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      99: aload_1
+     100: athrow
+     101: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+     104: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     107: areturn
+    Exception table:
+       from    to  target type
+          20    29    36   Class java/lang/Throwable
+          37    41    44   Class java/lang/Throwable
+          10    52    64   any
+          64    66    64   any
+          10    78    85   Class java/lang/Throwable
+          86    90    93   Class java/lang/Throwable
+
+  public static java.lang.String solo() throws java.lang.Exception;
+    Code:
+       0: new           #8                  // class TF
+       3: dup
+       4: ldc           #48                 // String b
+       6: invokespecial #28                 // Method "<init>":(Ljava/lang/String;)V
+       9: astore_0
+      10: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      13: ldc           #31                 // String body
+      15: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      18: pop
+      19: aload_0
+      20: invokevirtual #35                 // Method close:()V
+      23: goto          42
+      26: astore_1
+      27: aload_0
+      28: invokevirtual #35                 // Method close:()V
+      31: goto          40
+      34: astore_2
+      35: aload_1
+      36: aload_2
+      37: invokevirtual #40                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      40: aload_1
+      41: athrow
+      42: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      45: ldc           #33                 // String mid
+      47: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: pop
+      51: goto          66
+      54: astore_3
+      55: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      58: ldc           #33                 // String mid
+      60: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: pop
+      64: aload_3
+      65: athrow
+      66: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      69: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      72: areturn
+    Exception table:
+       from    to  target type
+          10    19    26   Class java/lang/Throwable
+          27    31    34   Class java/lang/Throwable
+           0    42    54   any
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    Code:
+       0: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+       3: iconst_0
+       4: invokevirtual #54                 // Method java/lang/StringBuilder.setLength:(I)V
+       7: getstatic     #58                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      10: invokestatic  #64                 // Method v1:()Ljava/lang/String;
+      13: invokevirtual #67                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      16: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      19: iconst_0
+      20: invokevirtual #54                 // Method java/lang/StringBuilder.setLength:(I)V
+      23: getstatic     #58                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      26: invokestatic  #72                 // Method v2:()Ljava/lang/String;
+      29: invokevirtual #67                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      32: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      35: iconst_0
+      36: invokevirtual #54                 // Method java/lang/StringBuilder.setLength:(I)V
+      39: getstatic     #58                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      42: invokestatic  #75                 // Method v3:()I
+      45: invokevirtual #78                 // Method java/io/PrintStream.println:(I)V
+      48: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      51: iconst_0
+      52: invokevirtual #54                 // Method java/lang/StringBuilder.setLength:(I)V
+      55: getstatic     #58                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      58: invokestatic  #80                 // Method nested:()Ljava/lang/String;
+      61: invokevirtual #67                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      64: getstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      67: iconst_0
+      68: invokevirtual #54                 // Method java/lang/StringBuilder.setLength:(I)V
+      71: getstatic     #58                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      74: invokestatic  #83                 // Method solo:()Ljava/lang/String;
+      77: invokevirtual #67                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      80: return
+
+  static {};
+    Code:
+       0: new           #18                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #86                 // Method java/lang/StringBuilder."<init>":()V
+       7: putstatic     #13                 // Field log:Ljava/lang/StringBuilder;
+      10: return
+}
