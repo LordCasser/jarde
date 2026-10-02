@@ -1,0 +1,26 @@
+  static {};
+    Code:
+       0: ldc           #44                 // String ibr-branch-boom
+       2: invokestatic  #46                 // Method java/lang/Boolean.getBoolean:(Ljava/lang/String;)Z
+       5: ifeq          18
+       8: new           #52                 // class java/lang/IllegalStateException
+      11: dup
+      12: ldc           #54                 // String branch-fail
+      14: invokespecial #56                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      17: athrow
+      18: bipush        7
+      20: putstatic     #16                 // Field low:I
+      23: ldc           #58                 // String ibr-branch-guard
+      25: invokestatic  #46                 // Method java/lang/Boolean.getBoolean:(Ljava/lang/String;)Z
+      28: ifeq          41
+      31: new           #52                 // class java/lang/IllegalStateException
+      34: dup
+      35: ldc           #60                 // String branch-guard
+      37: invokespecial #56                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      40: athrow
+      41: getstatic     #16                 // Field low:I
+      44: iconst_2
+      45: iadd
+      46: putstatic     #31                 // Field high:I
+      49: return
+}
