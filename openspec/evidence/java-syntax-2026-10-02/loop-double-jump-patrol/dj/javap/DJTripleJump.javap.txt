@@ -1,0 +1,67 @@
+public class DJTripleJump {
+  public DJTripleJump();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static java.lang.String tripleJump(int);
+    Code:
+       0: new           #7                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+       7: astore_1
+       8: iconst_0
+       9: istore_2
+      10: iload_2
+      11: iload_0
+      12: if_icmpge     94
+      15: iconst_0
+      16: istore_3
+      17: iload_3
+      18: iload_0
+      19: if_icmpge     88
+      22: iconst_0
+      23: istore        4
+      25: iload         4
+      27: iload_0
+      28: if_icmpge     82
+      31: iload         4
+      33: iconst_1
+      34: if_icmpne     40
+      37: goto          82
+      40: iload         4
+      42: ifne          48
+      45: goto          76
+      48: iload_3
+      49: iconst_2
+      50: if_icmpne     56
+      53: goto          94
+      56: aload_1
+      57: iload_2
+      58: invokevirtual #10                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      61: iload_3
+      62: invokevirtual #10                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      65: iload         4
+      67: invokevirtual #10                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      70: bipush        32
+      72: invokevirtual #14                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      75: pop
+      76: iinc          4, 1
+      79: goto          25
+      82: iinc          3, 1
+      85: goto          17
+      88: iinc          2, 1
+      91: goto          10
+      94: aload_1
+      95: invokevirtual #17                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      98: areturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #21                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: iconst_3
+       4: invokestatic  #27                 // Method tripleJump:(I)Ljava/lang/String;
+       7: invokevirtual #33                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      10: return
+}
