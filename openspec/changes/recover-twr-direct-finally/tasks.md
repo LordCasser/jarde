@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 TWR 全家族、finally 全家族、twr-inner-finally、nested-monitor）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘纪律：每轮构建前查 `df -h /`，轮间与完成必 `cargo clean`。
 - [x] 3.2 P1/P3 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核锚点判据、副本等价与三方行为，更新账本与巡查记录。
+- [x] 3.3 root 独立复核锚点判据、副本等价与三方行为，更新账本与巡查记录。（root 于合并主线 c5a3de3f 复核：P3/P1 呈现 `try (…) { … } finally { … }`、2818/0、fmt/openspec 244/244、磁盘纪律达标（worktree 已清）。`place_finally_copy` 共享重构（一份副本判据、行几何锚点互斥）复核认可；`TF.solo` 随片翻转为其切片测试同步属自然推进。三子句显式拒绝、finReturn/inner×trailing 复合登记现状；B 形态归下一片。）
