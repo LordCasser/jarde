@@ -13966,6 +13966,7 @@ impl Builder<'_> {
                         resources,
                         returns,
                         inner_finally,
+                        trailing_finally,
                         trail,
                         ..
                     } => {
@@ -14031,6 +14032,15 @@ impl Builder<'_> {
                                 inner_origin,
                             )];
                         }
+                        // The `finally` clause the statement itself carries: the header keeps its
+                        // own resources and the clause's body renders after the braces, from the
+                        // normal copy the lowering placed past the close chain — the same
+                        // `StmtKind::Try` a proved copy's own presentation is, no new
+                        // presentation function.
+                        let mut finally_body = None;
+                        if let Some(finally) = trailing_finally {
+                            finally_body = Some(self.body_range(finally.normal_cleanup())?);
+                        }
                         // The clause the proof carried: the `catch` a compiler wound around the
                         // whole lowering. Its header spells the row's class and the name the
                         // parameter's slot carries; its body is the handler's one straight block,
@@ -14093,7 +14103,7 @@ impl Builder<'_> {
                                 // only written where that proof succeeded.
                                 catches,
                                 body,
-                                finally_body: None,
+                                finally_body,
                             },
                             origin,
                         ));
