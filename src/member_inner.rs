@@ -1073,6 +1073,15 @@ pub(crate) enum FamilyRootScan {
     /// rows reach this arm; a single static row still selects through [`Self::Candidate`], where
     /// the proved narrow channels keep their priority and a refused projection falls back here.
     StaticMembers(Vec<FamilyRootCandidate>),
+    /// The mixed family: the direct static member rows that fold beside one non-static
+    /// candidate. The static subset no longer waits for the non-static candidate's absence —
+    /// each static row that meets the per-row criteria takes the same fold road a pure static
+    /// family's rows do, while the candidate keeps the separated narrow channel exactly as
+    /// before; neither member blocks the other.
+    StaticMembersWithInstance {
+        statics: Vec<FamilyRootCandidate>,
+        candidate: FamilyRootCandidate,
+    },
 }
 
 /// Find the one Java 8 nested enum slice this class-source writer supports. The typed row supplies
@@ -1377,21 +1386,28 @@ pub(crate) fn scan_family_root(
         ]));
     }
     // The static rows are one member family now: a fold projection renders any number of them as
-    // nested declarations. The two selection gates below are the exact old one-child boundaries,
-    // kept for the shapes that still select a single child through them.
-    if static_members.len() == 1 && static_members[0].access_flags & 0x0400 != 0 && direct_rows != 1
+    // nested declarations. The selection gate below is the exact old one-child boundary, kept for
+    // the one shape that still selects a single static child through [`FamilyRootScan::Candidate`]
+    // — a mixed family's static rows travel the fold instead, where the sibling non-static
+    // candidate is no reason to refuse them.
+    if candidate.is_none()
+        && static_members.len() == 1
+        && static_members[0].access_flags & 0x0400 != 0
+        && direct_rows != 1
     {
         return Ok(FamilyRootScan::Refused(
             "declaration-only static abstract member requires one direct child row".to_owned(),
         ));
     }
-    if candidate.is_some() && static_members.len() >= 2 {
-        return Ok(FamilyRootScan::Refused(
-            "multiple direct static member rows are outside the one-child family subset".to_owned(),
-        ));
-    }
     if let Some(selected) = candidate {
-        return Ok(FamilyRootScan::Candidate(selected));
+        return Ok(if static_members.is_empty() {
+            FamilyRootScan::Candidate(selected)
+        } else {
+            FamilyRootScan::StaticMembersWithInstance {
+                statics: static_members,
+                candidate: selected,
+            }
+        });
     }
     if static_members.len() >= 2 {
         return Ok(FamilyRootScan::StaticMembers(static_members));
@@ -2873,7 +2889,16 @@ mod tests {
                 &mut budget,
             )
             .unwrap(),
-            FamilyRootScan::Candidate(found) if found == candidate
+            // The mixed family keeps both members: the non-static candidate stays the narrow
+            // channel's selection while the static sibling takes the fold road beside it —
+            // where this row set used to select the candidate alone and drop the static row.
+            FamilyRootScan::StaticMembersWithInstance {
+                statics,
+                candidate: found,
+            } if found == candidate
+                && statics.len() == 1
+                && statics[0].simple_name == "Static"
+                && statics[0].access_flags & 0x0008 != 0
         ));
         let mut dollar_pool = root_pool.clone();
         let child_entry = dollar_pool
@@ -2963,6 +2988,126 @@ mod tests {
             )
             .unwrap()
         );
+    }
+
+    #[test]
+    fn mixed_family_scan_collects_the_static_subset_beside_the_instance_candidate() {
+        let root_bytes = family_bytes(b"NamedMemberFamilyStage1.class");
+        let mut budget = budget();
+        let (_, root_pool, root_nesting) = family_facts(&root_bytes, &mut budget);
+        let member_row = root_nesting.inner_classes[0].clone();
+        // One more named static sibling beside the root's own non-static member row, built the
+        // way the relation test builds its `Static` sibling: a fresh Class entry and a row whose
+        // name, owner and source spelling all agree.
+        let add_static_sibling = |pool: &mut Vec<CpEntryFacts>,
+                                  nesting: &mut crate::class_source::ClassSourceAssemblyContext,
+                                  simple: &[u8],
+                                  flags: u16| {
+            let mut sibling = pool
+                .iter()
+                .find(|entry| entry.index == member_row.class_index)
+                .unwrap()
+                .clone();
+            sibling.index = pool.iter().map(|entry| entry.index).max().unwrap() + 1;
+            let CpEntryKind::Class { name, .. } = &mut sibling.kind else {
+                unreachable!("InnerClasses class index names a Class entry")
+            };
+            name.0 = [b"NamedMemberFamilyStage1$", simple].concat();
+            let class_index = sibling.index;
+            pool.push(sibling);
+            let mut row = member_row.clone();
+            row.class_index = class_index;
+            row.inner_name = Some(jarde_reader::model::JvmBytes(simple.to_vec()));
+            row.access_flags = flags;
+            nesting.inner_classes.push(row);
+        };
+        // The pure static pair keeps its own family arm: two static rows, no candidate.
+        let mut pair_pool = root_pool.clone();
+        let mut pair_nesting = root_nesting.clone();
+        pair_nesting.inner_classes.clear();
+        add_static_sibling(&mut pair_pool, &mut pair_nesting, b"One", 0x0008);
+        add_static_sibling(&mut pair_pool, &mut pair_nesting, b"Two", 0x0008);
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &pair_nesting,
+                &pair_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::StaticMembers(rows) if rows.len() == 2
+        ));
+        // The three-child mixed family — two static rows beside the non-static candidate — used
+        // to refuse the whole scan ("multiple direct static member rows are outside the one-child
+        // family subset"); the subset now folds beside the candidate instead of blocking it.
+        let mut mixed_pool = root_pool.clone();
+        let mut mixed_nesting = root_nesting.clone();
+        add_static_sibling(&mut mixed_pool, &mut mixed_nesting, b"One", 0x0008);
+        add_static_sibling(&mut mixed_pool, &mut mixed_nesting, b"Two", 0x0008);
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &mixed_nesting,
+                &mixed_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::StaticMembersWithInstance {
+                statics,
+                candidate,
+            } if statics.len() == 2
+                && candidate.simple_name == "Member"
+                && candidate.access_flags & 0x0008 == 0
+        ));
+        // A declaration-only static abstract member beside the non-static candidate used to
+        // refuse the scan through the one-child gate; its fold road does not select through
+        // `Candidate`, so the gate keeps guarding only the pure static single-child shape.
+        let mut abstract_mixed_pool = root_pool.clone();
+        let mut abstract_mixed_nesting = root_nesting.clone();
+        add_static_sibling(
+            &mut abstract_mixed_pool,
+            &mut abstract_mixed_nesting,
+            b"Base",
+            0x0408,
+        );
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &abstract_mixed_nesting,
+                &abstract_mixed_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::StaticMembersWithInstance { statics, .. }
+                if statics.len() == 1 && statics[0].access_flags & 0x0400 != 0
+        ));
+        // The gate itself stays for the pure static shape it still guards: one declaration-only
+        // static abstract member beside a direct enum row (counted, never collected) refuses.
+        let mut enum_beside_pool = root_pool.clone();
+        let mut enum_beside_nesting = root_nesting.clone();
+        enum_beside_nesting.inner_classes.clear();
+        add_static_sibling(
+            &mut enum_beside_pool,
+            &mut enum_beside_nesting,
+            b"Base",
+            0x0408,
+        );
+        add_static_sibling(
+            &mut enum_beside_pool,
+            &mut enum_beside_nesting,
+            b"Color",
+            0x4019,
+        );
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &enum_beside_nesting,
+                &enum_beside_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Refused(reason) if reason.contains("declaration-only static abstract")
+        ));
     }
 
     #[test]
