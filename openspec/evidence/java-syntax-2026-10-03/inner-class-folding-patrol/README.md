@@ -20,7 +20,7 @@
 
 ## 处置方向（MVP 分层，按依赖序）
 
-- **`recover-inner-class-static-mixed-folding`（先）**：混合族中**静态成员类**先行折叠（`StaticMembers` 判定从"纯静态族"扩为"族内静态子集"）——机械全复用上片，零新证明。
+- **`recover-inner-class-static-mixed-folding`（先，已实现）**：混合族中**静态成员类**先行折叠（`StaticMembers` 判定从"纯静态族"扩为"族内静态子集"）——机械全复用上片，零新证明。实现与验收证据见 [`fold-mix/`](fold-mix/README.md)（分支取证、三变体前后、折叠输出 SHA、corpus 双腿扫描、N1 剩余唯一编译缺口=第二片限定 new）。
 - **`recover-inner-class-instance-folding`（后）**：非静态成员类折叠——this$0 消参（ctor 首参与字段声明隐藏）、`outer.new` 限定呈现、access$000 消桥、捕获字段经桥引用还原为直接 `outer.base` 语境。第二片依赖第一片落地后的族装配序。
 
 原 class 为行为基准。
