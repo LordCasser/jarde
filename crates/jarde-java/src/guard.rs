@@ -247,6 +247,39 @@ impl InnerTwrFinally {
     }
 }
 
+/// The `finally` clause a `try (…)` statement carries **directly** — `try (r) { … } finally { … }`
+/// with no clause between them. The lowering is two copy tables in series: the TWR's own (the
+/// close chain and its handlers) followed by the finally's (a normal copy right after the close
+/// chain ends, an exceptional copy the whole construct's catch-all row reaches), and this
+/// certificate owns both — the anchor that tells it from [`InnerTwrFinally`] is the row's own
+/// position: the inner form's row starts at a resource initialisation **inside** the body, while
+/// this one starts at the statement's own first instruction (the header's first resource) and ends
+/// exactly where the close chain landed.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TrailingTwrFinally {
+    /// The catch-all row whose protected range is the whole statement, from the first resource's
+    /// initialisation through the end of the close chain, and whose handler is the finally's
+    /// exceptional copy.
+    row_ordinal: u32,
+    /// The finally's **normal** copy, as the span its own statements render from: the code the
+    /// handler's copy repeats, without its trailing transfer.
+    normal_cleanup: (u32, u32),
+    /// The finally's **exceptional** copy: the handler's entry store through its rethrow.
+    handler_cleanup: (u32, u32),
+}
+
+impl TrailingTwrFinally {
+    /// The finally's normal copy, as a BCI range.
+    pub fn normal_cleanup(&self) -> (u32, u32) {
+        self.normal_cleanup
+    }
+
+    /// The finally's exceptional copy, as a BCI range.
+    pub fn handler_cleanup(&self) -> (u32, u32) {
+        self.handler_cleanup
+    }
+}
+
 /// Which guarded statement a region is.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Shape {
@@ -262,6 +295,10 @@ pub enum Shape {
         /// one ([`InnerTwrFinally`]): `None` is the ordinary body, presented as one run of
         /// statements between the braces.
         inner_finally: Option<Box<InnerTwrFinally>>,
+        /// The `finally` clause the statement itself carries directly
+        /// ([`TrailingTwrFinally`]): `try (r) { … } finally { … }` with no clause between
+        /// them. `None` is every statement the walk presents without one.
+        trailing_finally: Option<Box<TrailingTwrFinally>>,
         /// The instructions the statement's own claimed block holds **past** its close chain —
         /// the run the canonical graph fused with the last close group because nothing else
         /// enters it, ending the method. The statement renders them after itself; `None` is
@@ -2427,27 +2464,25 @@ fn inner_finally_parts<'a>(
     Ok(None)
 }
 
-/// Reads the inner finally's **normal** copy where the close chain reached it: the code the
-/// handler's copy repeats, then the exit that rejoins the enclosing statement's own run — the
-/// transfer that bridges to the next outer close group, or the fall-through into it. `at` is
-/// where the inner statement's own lowering ended, and the copy proves only when the row's own
-/// range ends exactly there.
-fn place_inner_finally(
+/// Reads a `finally` copy's **normal** twin where the enclosing construct's own run reached it:
+/// the code the handler's copy repeats, then the exit that rejoins that run — for the inner
+/// statement the transfer that bridges to the next outer close group or falls through into it,
+/// for a clause the whole statement carries the transfer that carries the run past the copy (or
+/// the fall-through into what follows it). `row_end` is where the construct's own lowering ended,
+/// and the copy proves only when the row's own range ends exactly there.
+///
+/// This is the one copy criterion both sub-certificates read: the two copies agree
+/// instruction for instruction ([`cleanup_sequence`], the same equivalence the standalone
+/// certificate reads) and every instruction is one the guarded body's own subset carries.
+fn place_finally_copy(
     facts: &mut Facts<'_>,
-    parts: &InnerFinallyParts<'_>,
-    at: u32,
+    row_end: u32,
+    shape: &FinallyCopyShape,
 ) -> Result<PlacedFinally, TwrFailure> {
-    let end = parts.row.end_bci;
-    if at != end {
-        return Err((Unproven::FinallyCopy, at).into());
-    }
-    // The copy repeats the handler's cleanup instruction for instruction, and it is ordinary
-    // statement code: the two copies agree ([`cleanup_sequence`], the same equivalence the
-    // standalone certificate reads) and every instruction is one the guarded body's own subset
-    // carries.
-    let mut copy: Vec<u32> = Vec::with_capacity(parts.shape.cleanup.len());
+    let end = row_end;
+    let mut copy: Vec<u32> = Vec::with_capacity(shape.cleanup.len());
     let mut cursor = end;
-    for _ in 0..parts.shape.cleanup.len() {
+    for _ in shape.cleanup.iter() {
         facts.charge(cursor)?;
         if facts.step(cursor).is_none() {
             return Err(TwrFailure::Proof((Unproven::FinallyCopy, cursor)));
@@ -2457,9 +2492,8 @@ fn place_inner_finally(
             .next_bci(cursor)
             .ok_or(TwrFailure::Proof((Unproven::FinallyCopy, cursor)))?;
     }
-    let expected = cleanup_sequence(facts, &parts.shape.cleanup, false).ok_or(
-        TwrFailure::Proof((Unproven::FinallyCopy, parts.shape.cleanup[0])),
-    )?;
+    let expected = cleanup_sequence(facts, &shape.cleanup, false)
+        .ok_or_else(|| TwrFailure::Proof((Unproven::FinallyCopy, shape.cleanup[0])))?;
     let actual = cleanup_sequence(facts, &copy, false)
         .ok_or(TwrFailure::Proof((Unproven::FinallyCopy, copy[0])))?;
     if expected != actual
@@ -2470,9 +2504,9 @@ fn place_inner_finally(
         return Err((Unproven::FinallyCopy, copy[0]).into());
     }
     facts.charge(cursor)?;
-    // The exit: a `goto` whose own block carries the run to the next outer close group — or
-    // stayed inside the block the canonical graph fused with its single-predecessor
-    // continuation — or the fall-through into the close group itself.
+    // The exit: a `goto` whose own block carries the run onward — or stayed inside the block the
+    // canonical graph fused with its single-predecessor continuation — or the fall-through into
+    // the continuation itself.
     let transferred = matches!(facts.op(cursor), Some(Operation::Transfer));
     let continuation = if transferred {
         let transfer_end = facts.span_end(cursor);
@@ -2501,6 +2535,64 @@ fn place_inner_finally(
         copy: (end, copy_end),
         continuation,
     })
+}
+
+/// Reads the inner finally's **normal** copy where the close chain reached it: the code the
+/// handler's copy repeats, then the exit that rejoins the enclosing statement's own run — the
+/// transfer that bridges to the next outer close group, or the fall-through into it. `at` is
+/// where the inner statement's own lowering ended, and the copy proves only when the row's own
+/// range ends exactly there.
+fn place_inner_finally(
+    facts: &mut Facts<'_>,
+    parts: &InnerFinallyParts<'_>,
+    at: u32,
+) -> Result<PlacedFinally, TwrFailure> {
+    place_finally_copy(facts, parts.row.end_bci, &parts.shape).and_then(|placed| {
+        if at == parts.row.end_bci {
+            Ok(placed)
+        } else {
+            Err((Unproven::FinallyCopy, at).into())
+        }
+    })
+}
+
+/// The `finally` clause a `try (…)` statement carries directly, before the close chain places it:
+/// the whole construct's catch-all row and the handler's own copy shape. The anchor is the
+/// table's own geometry — the row starts at the statement's first resource initialisation
+/// (`resources[0]`, the header's own first instruction) and ends exactly where the close chain
+/// landed (`at`) — which is what keeps it from the inner form: an inner finally's row starts at
+/// a position **inside** the body, and a row that begins anywhere else protects something this
+/// certificate does not read as the statement's own clause.
+struct TrailingFinallyParts<'a> {
+    row: &'a ExceptionHandlerFact,
+    shape: FinallyCopyShape,
+}
+
+fn trailing_finally_parts<'a>(
+    facts: &mut Facts<'a>,
+    chain: &[&'a ExceptionHandlerFact],
+    resources: &[Resource],
+    at: u32,
+) -> Result<Option<TrailingFinallyParts<'a>>, StopReason> {
+    let Some(anchor) = resources.first().map(|resource| resource.init().0) else {
+        return Ok(None);
+    };
+    for row in facts.handlers {
+        if row.catch_type_index.is_some()
+            || row.start_bci >= row.end_bci
+            || row.start_bci != anchor
+            || row.end_bci != at
+            || chain.iter().any(|level| level.ordinal == row.ordinal)
+        {
+            continue;
+        }
+        facts.charge(row.start_bci)?;
+        let Some(shape) = finally_copy_shape(facts, row) else {
+            continue;
+        };
+        return Ok(Some(TrailingFinallyParts { row, shape }));
+    }
+    Ok(None)
 }
 
 /// The physical pieces read by the narrow copy proof. No region owns them until a later step
@@ -11621,6 +11713,36 @@ mod finally_copy_tests {
             Err(StopReason::Cancelled { .. })
         ));
     }
+
+    #[test]
+    fn the_trailing_finally_composite_propagates_the_budget_and_cancellation_stops() {
+        // The direct clause shape (`recover-twr-direct-finally`): the examination of the TWR
+        // that itself carries a `finally` obeys the same stops every other proof does — a
+        // stopped run claims nothing.
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PD.class"
+        );
+        assert!(matches!(
+            examine_probe_labelled(
+                "PD",
+                class,
+                b"soloFin",
+                b"()Ljava/lang/String;",
+                Some("budget")
+            ),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            examine_probe_labelled(
+                "PD",
+                class,
+                b"soloFin",
+                b"()Ljava/lang/String;",
+                Some("cancel")
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
 }
 
 #[cfg(test)]
@@ -14117,6 +14239,19 @@ fn twr<'a>(
         resource.close_bci = closes[index];
     }
     let normal_cleanup = pieces.clone();
+    // The `finally` clause the statement itself carries, when it carries one: the whole
+    // construct's catch-all row, anchored where the close chain landed — the row's own range
+    // spans the statement from its first resource's initialisation to exactly there, and the
+    // copy pair follows the chain. Placed before the return tail, so the saved value's own
+    // load/return pair — which the lowering writes after the copy — proves where the run
+    // actually continues.
+    let trailing = trailing_finally_parts(facts, &chain, &resources, at)?;
+    let mut placed_trailing: Option<(PlacedFinally, TrailingFinallyParts<'_>)> = None;
+    if let Some(parts) = trailing {
+        let placed_finally = place_finally_copy(facts, parts.row.end_bci, &parts.shape)?;
+        at = placed_finally.continuation;
+        placed_trailing = Some((placed_finally, parts));
+    }
     let return_tail = twr_return_tail(facts, body, at)?;
     let claimed_end = return_tail
         .as_ref()
@@ -14233,6 +14368,81 @@ fn twr<'a>(
             handler_cleanup: handler_span,
         }));
     }
+    // The trailing finally's own rows and copies. The whole construct's catch-all row owns the
+    // clause; every other row that reaches the same handler is one of the splits javac writes
+    // around it — the handler's self-protection over its binding store, the protection of a close
+    // handler the main row's range does not reach — and each is claimed only where its whole range
+    // lies inside the statement's own machinery: the close handlers, their guard rows, the close
+    // chain, the header's initialisations and the guarded body. A row that reaches past that —
+    // into the copies' own code, or the continuation the statement hands the run to — is a table
+    // this certificate does not read as the clause, and the shape keeps its refusal. The
+    // exceptional copy itself runs after its normal twin starts and never spans the run's own
+    // continuation, and no row of the statement's own lowering may overlap the code either copy
+    // repeats: the resources are closed before the clause runs, and the compiler's own rows
+    // protect none of the copies' mid statements.
+    let mut trailing_finally: Option<Box<TrailingTwrFinally>> = None;
+    if let Some((placed_finally, parts)) = &placed_trailing {
+        let handler_span = (parts.shape.entry.bci(), facts.span_end(parts.shape.rethrow));
+        let entry = handler_span.0;
+        let rethrow_end = handler_span.1;
+        for bci in facts.bcis(handler_span) {
+            facts.charge(bci)?;
+        }
+        if entry < placed_finally.copy.0 || rethrow_end <= entry {
+            return Err((Unproven::FinallyCopy, entry).into());
+        }
+        if entry < at && rethrow_end > placed_finally.continuation {
+            return Err((Unproven::FinallyCopy, entry).into());
+        }
+        let binding_end = facts.span_end(parts.shape.primary_store);
+        let mut machinery_spans = pieces.clone();
+        machinery_spans.push(body);
+        machinery_spans.extend(resources.iter().map(|resource| resource.init()));
+        for handler in handlers.iter() {
+            machinery_spans.push(handler.span);
+            machinery_spans.push((handler.guard.start_bci, handler.guard.end_bci));
+        }
+        let mut machinery = BTreeSet::new();
+        for span in machinery_spans {
+            machinery.extend(facts.bcis(span));
+        }
+        machinery.insert(parts.shape.primary_store);
+        for other in facts.handlers {
+            if other.ordinal == parts.row.ordinal || other.handler_bci != parts.row.handler_bci {
+                continue;
+            }
+            facts.charge(other.start_bci)?;
+            if other.catch_type_index.is_some()
+                || !facts
+                    .bcis((other.start_bci, other.end_bci))
+                    .into_iter()
+                    .all(|bci| machinery.contains(&bci))
+            {
+                return Err((Unproven::FinallyCopy, entry).into());
+            }
+            rows.push(other.ordinal);
+        }
+        let overlapped = chain
+            .iter()
+            .copied()
+            .chain(companions.iter())
+            .chain(handlers.iter().map(|handler| &handler.guard))
+            .any(|row| {
+                (row.start_bci < placed_finally.copy.1 && placed_finally.copy.0 < row.end_bci)
+                    || (row.start_bci < rethrow_end && binding_end < row.end_bci)
+            });
+        if overlapped {
+            return Err((Unproven::FinallyCopy, entry).into());
+        }
+        rows.push(parts.row.ordinal);
+        pieces.push(placed_finally.copy);
+        pieces.push(handler_span);
+        trailing_finally = Some(Box::new(TrailingTwrFinally {
+            row_ordinal: parts.row.ordinal,
+            normal_cleanup: placed_finally.copy,
+            handler_cleanup: handler_span,
+        }));
+    }
     // The join is where the run continues after the statement. `javac` writes a `goto` there
     // whenever the statement is followed by code of its own method — the target is then a block —
     // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
@@ -14284,6 +14494,12 @@ fn twr<'a>(
         handlers[0].span.1,
         continuation.as_ref(),
     );
+    // A clause beside a trailing `finally` is the three-clause form — `try (…) { … } catch (…)
+    // { … } finally { … }` — whose presentation this build does not state: presenting the clause
+    // would drop the clause the trailing certificate owns. The whole method keeps its refusal.
+    if enclosure.is_some() && trailing_finally.is_some() {
+        return Err((Unproven::FinallyCopy, at).into());
+    }
     for row in facts.handlers {
         if rows.contains(&row.ordinal) {
             continue;
@@ -14351,6 +14567,10 @@ fn twr<'a>(
         cleanup_spans.push((handler.guard.start_bci, handler.guard.end_bci));
     }
     if let Some(finally) = inner_finally.as_ref() {
+        cleanup_spans.push(finally.normal_cleanup);
+        cleanup_spans.push(finally.handler_cleanup);
+    }
+    if let Some(finally) = trailing_finally.as_ref() {
         cleanup_spans.push(finally.normal_cleanup);
         cleanup_spans.push(finally.handler_cleanup);
     }
@@ -14427,6 +14647,7 @@ fn twr<'a>(
             returns: return_tail.as_ref().map(|(_, return_bci, _)| *return_bci),
             cleanup: cleanup_bcis.into_iter().collect(),
             inner_finally,
+            trailing_finally,
             trail,
         },
         lead,
