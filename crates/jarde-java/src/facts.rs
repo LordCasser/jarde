@@ -807,6 +807,11 @@ pub enum FieldAccess {
 pub struct DeclaringClass {
     name: String,
     access_flags: u16,
+    /// The member classes this class's own `InnerClasses` attribute states, in the source spelling
+    /// (`V1$Op`, `p.A$B$C`). The row set is what separates a nested binary name from a top-level
+    /// name that merely carries `$`, and the presentation layer's nested source spelling reads
+    /// exactly this fact; a class that states no attribute states no members.
+    inner_class_members: Vec<String>,
 }
 
 impl DeclaringClass {
@@ -816,7 +821,15 @@ impl DeclaringClass {
         Self {
             name: name.into(),
             access_flags,
+            inner_class_members: Vec::new(),
         }
+    }
+
+    /// The member classes the class's own `InnerClasses` attribute states, by their internal
+    /// names, spelled the source way (`/` becomes `.`).
+    pub fn with_inner_class_members(mut self, members: impl IntoIterator<Item = String>) -> Self {
+        self.inner_class_members = members.into_iter().collect();
+        self
     }
 
     /// The class's name in internal form, as `this_class` spells it.
@@ -827,6 +840,11 @@ impl DeclaringClass {
     /// The class's own access flags.
     pub fn access_flags(&self) -> u16 {
         self.access_flags
+    }
+
+    /// The member classes the class's own `InnerClasses` attribute states, in the source spelling.
+    pub fn inner_class_members(&self) -> &[String] {
+        &self.inner_class_members
     }
 
     /// Whether the class declares itself an interface (or an annotation type, which JVMS 4.1 makes

@@ -181,6 +181,11 @@ pub(crate) struct Declaration {
     /// The class that declares the member, when the caller stated it. A constructor or a static
     /// initializer is decided without it: neither form depends on what kind of class declares it.
     pub(crate) declaring_class: Option<String>,
+    /// The member classes that declaring class's own `InnerClasses` attribute states, in the
+    /// source spelling. The emitter spells nested type references of the body against the class
+    /// and gates that spelling on this row set ([`crate::names::nested_member_reference_spelling`]),
+    /// which is the one fact that separates a nested binary name from a top-level `$` name.
+    pub(crate) nested_class_members: Vec<String>,
     /// Whether that class is an interface, when the caller stated a class at all.
     pub(crate) interface: Option<bool>,
     /// The member's own flags, exactly as the class declared them.
@@ -252,6 +257,10 @@ pub(crate) fn plan(method: &MethodFacts) -> Plan {
             declaring_class: method
                 .declaring_class()
                 .map(|class| class.name().to_string()),
+            nested_class_members: method
+                .declaring_class()
+                .map(|class| class.inner_class_members().to_vec())
+                .unwrap_or_default(),
             interface: method.declaring_class().map(DeclaringClass::is_interface),
             member_flags: flags,
         }),

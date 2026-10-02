@@ -107,7 +107,14 @@ pub(crate) fn emit(
     member: Option<&PhysicalMethodId>,
     budget: &mut Budget,
 ) -> Result<Emitted, StopReason> {
-    let mut emitter = Emitter::commit(budget, member);
+    let (current_class, nested_class_members): (Option<&str>, &[String]) = match declaration {
+        Some(declaration) => (
+            declaration.declaring_class.as_deref(),
+            &declaration.nested_class_members,
+        ),
+        None => (None, &[]),
+    };
+    let mut emitter = Emitter::commit(budget, member, current_class, nested_class_members);
     match emitter
         .envelope(facts, declaration)
         .and_then(|()| emitter.body(stmts, declaration))
@@ -130,9 +137,11 @@ pub(crate) fn emit(
 pub(crate) fn emit_class_initializer_value(
     value: &Expr,
     member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member));
+    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
     let at = Some(value.origin.primary().bci());
     match emitter.put(" = ", at).and_then(|()| emitter.expr(value)) {
         Ok(()) => Ok(emitter.finish().text),
@@ -150,9 +159,11 @@ pub(crate) fn emit_class_initializer_value(
 pub(crate) fn emit_class_enum_constructor_statements(
     statements: &[Stmt],
     member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member));
+    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
     match emitter.stmts(statements, 2) {
         Ok(()) => Ok(emitter.finish().text),
         Err(Halt::Stop(stop)) => Err(stop),
@@ -166,10 +177,12 @@ pub(crate) fn emit_class_enum_constructor_statements(
 pub(crate) fn emit_class_source_statements(
     statements: &[Stmt],
     member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     indentation: usize,
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member));
+    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
     match emitter.stmts(statements, indentation) {
         Ok(()) => Ok(emitter.finish().text),
         Err(Halt::Stop(stop)) => Err(stop),
@@ -181,6 +194,8 @@ pub(crate) fn emit_class_source_statements(
 pub(crate) fn emit_class_source_anonymous_return(
     statements: &[Stmt],
     member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     indentation: usize,
     allocation_bci: u32,
     allocation_type: &str,
@@ -190,7 +205,7 @@ pub(crate) fn emit_class_source_anonymous_return(
     closing_indent: &str,
     budget: &mut Budget,
 ) -> Result<(String, bool, Option<(usize, usize)>), StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member));
+    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
     emitter.anonymous_override = Some(AnonymousOverride {
         allocation_bci,
         allocation_type,
@@ -251,7 +266,22 @@ pub(crate) fn emit_source_map(
     phase: &mut EvidencePhase,
     budget: &mut Budget,
 ) -> Result<(SourceMap, Materialized), StopReason> {
-    let mut emitter = Emitter::replay(budget, member, &artifact.text, publication, phase);
+    let (current_class, nested_class_members): (Option<&str>, &[String]) = match declaration {
+        Some(declaration) => (
+            declaration.declaring_class.as_deref(),
+            &declaration.nested_class_members,
+        ),
+        None => (None, &[]),
+    };
+    let mut emitter = Emitter::replay(
+        budget,
+        member,
+        current_class,
+        nested_class_members,
+        &artifact.text,
+        publication,
+        phase,
+    );
     let halt = emitter
         .envelope(facts, declaration)
         .and_then(|()| emitter.body(stmts, declaration))
@@ -345,6 +375,13 @@ struct Emitter<'a> {
     limit: u64,
     /// The member body every anchor of this emission belongs to, when the payload stated one.
     member: Option<&'a PhysicalMethodId>,
+    /// The class this body belongs to, in the source spelling (`p.Outer`), when the run stated
+    /// one. It is the class a nested type reference is spelled against
+    /// ([`Self::put_type`]): `V1$Op` is `Op` in `V1`'s own text and `Other.Inner` everywhere else.
+    current_class: Option<String>,
+    /// The member classes that class's own `InnerClasses` attribute states, in the source
+    /// spelling — the evidence a `$` name must have before it is spelled as nesting at all.
+    nested_class_members: Vec<String>,
     /// How many statements of the body have been written as Java so far: the fact
     /// [`Emitted::statements`] publishes once every write succeeded.
     statements: usize,
@@ -386,7 +423,12 @@ struct Replay<'a> {
 
 impl<'a> Emitter<'a> {
     /// The committing pass: text, checked at every write entry.
-    fn commit(budget: &'a mut Budget, member: Option<&'a PhysicalMethodId>) -> Self {
+    fn commit(
+        budget: &'a mut Budget,
+        member: Option<&'a PhysicalMethodId>,
+        current_class: Option<&str>,
+        nested_class_members: &[String],
+    ) -> Self {
         let limit = budget.limits().output_bytes;
         Self {
             budget,
@@ -396,6 +438,8 @@ impl<'a> Emitter<'a> {
             written: 0,
             limit,
             member,
+            current_class: current_class.map(|class| class.replace('/', ".")),
+            nested_class_members: nested_class_members.to_vec(),
             statements: 0,
             initializer: false,
             anonymous_override: None,
@@ -408,6 +452,8 @@ impl<'a> Emitter<'a> {
     fn replay(
         budget: &'a mut Budget,
         member: Option<&'a PhysicalMethodId>,
+        current_class: Option<&str>,
+        nested_class_members: &[String],
         artifact: &'a str,
         publication: SegmentPublication,
         phase: &'a mut EvidencePhase,
@@ -426,6 +472,8 @@ impl<'a> Emitter<'a> {
             written: 0,
             limit,
             member,
+            current_class: current_class.map(|class| class.replace('/', ".")),
+            nested_class_members: nested_class_members.to_vec(),
             statements: 0,
             initializer: false,
             anonymous_override: None,
@@ -585,10 +633,10 @@ impl<'a> Emitter<'a> {
                 name,
                 value: Some(value),
             } => {
-                self.put(
-                    source_type_name.as_deref().unwrap_or_else(|| ty.spell()),
-                    at,
-                )?;
+                match source_type_name {
+                    Some(source) => self.put(source, at)?,
+                    None => self.put_type(ty.spell(), at)?,
+                }
                 self.put(" ", at)?;
                 self.put(name, at)?;
                 self.put(" = ", at)?;
@@ -639,10 +687,10 @@ impl<'a> Emitter<'a> {
                 value,
             } => {
                 self.put(&pad, at)?;
-                self.put(
-                    source_type_name.as_deref().unwrap_or_else(|| ty.spell()),
-                    at,
-                )?;
+                match source_type_name {
+                    Some(source) => self.put(source, at)?,
+                    None => self.put_type(ty.spell(), at)?,
+                }
                 self.put(" ", at)?;
                 self.put(name, at)?;
                 if let Some(value) = value {
@@ -829,7 +877,7 @@ impl<'a> Emitter<'a> {
                     self.put(": ", at)?;
                 }
                 self.put("for (", at)?;
-                self.put(ty.spell(), at)?;
+                self.put_type(ty.spell(), at)?;
                 self.put(" ", at)?;
                 self.put(name, at)?;
                 self.put(" : ", at)?;
@@ -874,7 +922,7 @@ impl<'a> Emitter<'a> {
                         // produced: the header is the only place that initialisation runs, and the
                         // segment says which instruction it came from.
                         self.node(&resource.value.origin, |emitter| {
-                            emitter.put(resource.ty.spell(), at)?;
+                            emitter.put_type(resource.ty.spell(), at)?;
                             emitter.put(" ", at)?;
                             emitter.put(&resource.name, at)?;
                             emitter.put(" = ", at)?;
@@ -891,7 +939,7 @@ impl<'a> Emitter<'a> {
                     // the type is the row's own class and the parameter the local the handler stores
                     // into, both stated by the node the builder made from the table.
                     self.put(" catch (", at)?;
-                    self.put(&clause.ty, at)?;
+                    self.put_type(&clause.ty, at)?;
                     self.put(" ", at)?;
                     self.put(&clause.name, at)?;
                     self.put(") {\n", at)?;
@@ -1019,17 +1067,17 @@ impl<'a> Emitter<'a> {
             ExprKind::Str(value) => emitter.put(&format!("\"{}\"", escape_string(value)), at),
             ExprKind::Null => emitter.put("null", at),
             ExprKind::ClassLiteral { ty } => {
-                emitter.put(ty, at)?;
+                emitter.put_type(ty, at)?;
                 emitter.put(".class", at)
             }
-            ExprKind::Path(path) => emitter.put(path, at),
+            ExprKind::Path(path) => emitter.put_type(path, at),
             ExprKind::QualifiedThis { qualifier } => {
                 emitter.put(qualifier, at)?;
                 emitter.put(".this", at)
             }
             ExprKind::Super { qualifier } => {
                 if let Some(qualifier) = qualifier {
-                    emitter.put(qualifier, at)?;
+                    emitter.put_type(qualifier, at)?;
                     emitter.put(".", at)?;
                 }
                 emitter.put("super", at)
@@ -1105,7 +1153,7 @@ impl<'a> Emitter<'a> {
                     }
                 } else {
                     emitter.put("new ", at)?;
-                    emitter.put(ty, at)?;
+                    emitter.put_type(ty, at)?;
                     if *diamond {
                         emitter.put("<>", at)?;
                     }
@@ -1128,7 +1176,7 @@ impl<'a> Emitter<'a> {
                     if index > 0 {
                         emitter.put(", ", at)?;
                     }
-                    emitter.put(param.ty.spell(), at)?;
+                    emitter.put_type(param.ty.spell(), at)?;
                     emitter.put(" ", at)?;
                     emitter.put(&param.name, at)?;
                 }
@@ -1186,7 +1234,7 @@ impl<'a> Emitter<'a> {
                 total_dimensions,
             } => {
                 emitter.put("new ", at)?;
-                emitter.put(element.spell(), at)?;
+                emitter.put_type(element.spell(), at)?;
                 if let Some(initializers) = initializers {
                     for _ in 0..*total_dimensions {
                         emitter.put("[]", at)?;
@@ -1266,14 +1314,14 @@ impl<'a> Emitter<'a> {
                 // cast's own (JLS 15.16 — a cast applies to a unary expression), so a looser operand
                 // keeps its group (`(int) (a + b)` and never `(int) a + b`).
                 emitter.put("(", at)?;
-                emitter.put(ty.spell(), at)?;
+                emitter.put_type(ty.spell(), at)?;
                 emitter.put(") ", at)?;
                 emitter.operand(value, UNARY)
             }
             ExprKind::InstanceOf { value, ty } => {
                 emitter.operand(value, binary_binding(BinaryOp::Less))?;
                 emitter.put(" instanceof ", at)?;
-                emitter.put(ty, at)
+                emitter.put_type(ty, at)
             }
             ExprKind::Not { value } => {
                 // The operand of `!` is at the unary level, so a looser value keeps its own group:
@@ -1409,6 +1457,35 @@ impl<'a> Emitter<'a> {
         self.written += bytes;
         self.text.push_str(text);
         Ok(())
+    }
+
+    /// Writes one type name a **reference** states, the way Java source spells it in this body.
+    ///
+    /// This is the single point a type name reaches the text of a recovered body: every position
+    /// the subset writes — a declaration's type, a parameter, a cast, an `instanceof`, a `new`,
+    /// a class literal, a static call's or field's qualifier — goes through here, and nowhere
+    /// else in this emitter spells a type. The nested-name rule itself is
+    /// [`crate::names::nested_reference_spelling`]'s: this method only supplies the one class the
+    /// body belongs to and writes what comes back, so a name with no `$` (a platform name, a
+    /// package-level simple name, a name another rule already dotted) is written exactly as it
+    /// arrived, and the synthetic families the presentation keeps verbatim (`C1$1`) keep their
+    /// pool spelling in the text as they do everywhere else. A `$` name the class's own
+    /// `InnerClasses` rows do not state is a **top-level** name that merely carries `$`
+    /// (`Named$Top` is one class, not `Named`'s member), and it keeps the pool spelling too.
+    ///
+    /// Names that are not type references — a member name, a local's name, the annotation
+    /// comments of the envelope — never go through here; `put` writes them as they are.
+    fn put_type(&mut self, name: &str, at: Option<u32>) -> Result<(), Halt> {
+        if !name.contains('$') {
+            return self.put(name, at);
+        }
+        let current = self.current_class.clone();
+        let spelled = crate::names::nested_member_reference_spelling(
+            name,
+            current.as_deref(),
+            Some(&self.nested_class_members),
+        );
+        self.put(spelled.as_ref(), at)
     }
 
     /// Throws away everything this emission wrote, so that no partial artifact can be handed out.
@@ -1767,6 +1844,7 @@ mod tests {
         Declaration {
             form,
             declaring_class: Some("Test".to_string()),
+            nested_class_members: Vec::new(),
             interface: Some(false),
             member_flags: 0,
         }
@@ -2349,7 +2427,7 @@ mod tests {
         // observed: the buffer itself holds nothing after a refusal, so no consumer that ever gets
         // hold of an emitter can read a half-written node out of it.
         let mut budget = budget_with(32);
-        let mut emitter = Emitter::commit(&mut budget, None);
+        let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
         emitter
             .put("// a first line\n", None)
             .expect("within the bound");
