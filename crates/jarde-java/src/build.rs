@@ -9463,6 +9463,39 @@ impl ArrayInitializers {
         (sources == members && sources.contains(&allocation)).then_some(members)
     }
 
+    /// The complete physical interval of a proved inline array initializer whose sole consumer is
+    /// an invocation inside a construction's argument run — the varargs lowering
+    /// `anewarray; [dup; index; value; aastore]×n; invoke` whose result (directly or through
+    /// further argument production) the constructor call reads. The element production, the closed
+    /// interval and the single-use judgements are the ones this plan already proved; this accessor
+    /// only states the chain's BCIs, and the caller decides which consumers its construction
+    /// accepts. The consumer and every source must sit between the construction's copy and its
+    /// call, so the initializer is written exactly where the bytecode evaluated it. A chain the
+    /// constructor itself consumes directly stays its own slice's boundary (`new@1` embeds it only
+    /// for the Java 8 `String(char[])` shape), and multi-dimensional chains (proved children) and
+    /// local postfix elements are not argument-position shapes.
+    pub(crate) fn inline_argument_chain_bcis(
+        &self,
+        allocation: u32,
+        dup: u32,
+        constructor: u32,
+        serves_argument: impl Fn(u32) -> bool,
+    ) -> Option<BTreeSet<u32>> {
+        let initializer = self.allocations.get(&allocation)?;
+        let consumer = initializer.consumer;
+        let within = |bci: u32| dup < bci && bci < constructor;
+        if !within(consumer)
+            || !serves_argument(consumer)
+            || !initializer
+                .sources
+                .iter()
+                .all(|bci| *bci == consumer || within(*bci))
+        {
+            return None;
+        }
+        Some(initializer.sources.iter().copied().collect())
+    }
+
     fn owns(&self, at: u32) -> bool {
         self.owned.contains(&at)
     }
