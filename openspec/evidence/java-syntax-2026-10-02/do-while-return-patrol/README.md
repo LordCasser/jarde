@@ -15,7 +15,7 @@ do-while(false) 降低体（javac 一次通过 + break/return 出边）中的 **
 
 ## 处置方向
 
-`recover-return-in-do-while-false`（恢复 + 失败闭合双义务）：
+`recover-return-in-do-while-false`（恢复 + 失败闭合双义务）——已实现，取证与验收见 [`dw/`](dw/README.md)：
 1. **恢复**：do-while(false) 体的语句集（含条件 return 与 break）由该区域拥有并按 `do { … } while (false);` 呈现（region 归属扩展，与 dj 切片的边归类相邻）；
 2. **失败闭合（不变量）**：区域证明失败时**必须整方法拒绝**——呈现层不得产出"引注区含控制流改变语句（return/throw/break/continue）且剥引注后仍可编译"的部分体；此不变量以 L5 形回归测试钉死（修前=可编译静默错编，修后=恢复或整方法拒绝）。
 
