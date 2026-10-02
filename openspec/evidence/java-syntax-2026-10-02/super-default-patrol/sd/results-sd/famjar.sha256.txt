@@ -1,0 +1,1 @@
+92847a38aee9f0a875373b29d75ab07186ad6cf04f048ddad3917b20daf5ed29  fixture/fam.jar

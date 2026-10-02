@@ -1,0 +1,6 @@
+// jarde: presentation of `F1$Reabstract$C` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+interface F1$Reabstract$C extends F1$A {
+    // jarde: no body: the member `name()Ljava/lang/String;` is declared abstract and its declaration carries no Code attribute
+    public abstract java.lang.String name();
+}

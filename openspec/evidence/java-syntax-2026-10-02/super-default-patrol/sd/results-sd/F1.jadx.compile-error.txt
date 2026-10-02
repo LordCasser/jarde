@@ -1,0 +1,8 @@
+F1.jadx.java:4: 错误: 类 F1 是公共的, 应在名为 F1.java 的文件中声明
+public class F1 {
+       ^
+F1.jadx.java:27: 错误: 找不到符号
+            return super.name() + super.name();
+                        ^
+  符号: 方法 name()
+F1.jadx.java:27: 错误: 找不到符号
