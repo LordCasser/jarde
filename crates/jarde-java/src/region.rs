@@ -2429,7 +2429,17 @@ impl Walker<'_> {
             // can prove (an arm that jumps back, an irreducible cycle) stays the stated fallback
             // below.
             if self.view.is_loop_header(node) && frame.own_loop != Some(node) {
-                if prefix.is_empty() {
+                // Arriving at the header of the loop this frame is inside — an arm walk, a
+                // protected body or any nested frame following the loop's own latch edge — is
+                // that back edge (`continue`'s target), not a nested loop entry: the run ends
+                // here and the caller continues at the header. Entering the loop *again* would
+                // build a second region over the same blocks and the completed tree would own
+                // them twice. A header no enclosing loop target names stays a fresh entry.
+                let latch_edge_of_own_loop = frame
+                    .loop_targets
+                    .last()
+                    .is_some_and(|target| target.header == node);
+                if prefix.is_empty() && !latch_edge_of_own_loop {
                     return self.loop_region(&current, node, frame);
                 }
                 return Ok(one(Region::Straight { blocks: prefix }, Some(current)));
@@ -2986,8 +2996,29 @@ impl Walker<'_> {
                             .into_iter()
                             .flatten()
                             .any(|arm| blocks.contains(&arm) && self.view.reaches(arm, boundary));
-                        (frame.switch_join.is_none() && through_bridge && through_latch)
-                            .then_some(boundary)
+                        (frame.switch_join.is_none() && through_bridge && through_latch).then(
+                            || {
+                                // A body that holds two loop-jump edges — one breaking out, one
+                                // keeping the loop — has no single graph join: the post-dominator
+                                // was an enclosing loop's continue target and the bridge proof is
+                                // what classified the arms. When a proved for-header owns an
+                                // update block apart from the header, the loop-side arm's
+                                // statements end there and the join is that block, so the walk
+                                // stops at the update instead of absorbing it. A loop whose
+                                // continue target *is* its header — a `while`/endless loop, where
+                                // the update is the body's own last statement — keeps the
+                                // boundary: the header is where the loop's arms regroup, and a
+                                // join placed on it would end the body walk early.
+                                if target.continue_target != target.header
+                                    && target.continue_target != boundary
+                                    && blocks.contains(&target.continue_target)
+                                {
+                                    target.continue_target
+                                } else {
+                                    boundary
+                                }
+                            },
+                        )
                     });
                     let fragmented_handler_join = self.fragmented.as_ref().and_then(|proof| {
                         let boundary = frame.boundary?;
@@ -3033,6 +3064,137 @@ impl Walker<'_> {
                         None
                     };
                     let join_node = join_node.or(shared_join);
+                    // A branch inside a loop body whose join none of the readings above states
+                    // still states its own edges: the second loop jump pulled the arms' meeting
+                    // point past an enclosing loop's continue target (the post-dominator was
+                    // filtered) and no exit bridge exists. One arm that is a single `goto` onto
+                    // *this* loop's own continue target is a `continue` edge, and the other arm
+                    // staying a block of the loop is the loop-side continuation: the continue
+                    // target is the join both arms route to — the same reading the one-jump body
+                    // takes from its post-dominator, stated here from the edge itself.
+                    let continue_target_join = join_node
+                        .is_none()
+                        .then(|| {
+                            frame.loop_targets.last().and_then(|target| {
+                                let blocks =
+                                    self.view.loop_entered_at(target.header)?.blocks().clone();
+                                [then_node, else_node]
+                                    .into_iter()
+                                    .flatten()
+                                    .find(|arm| {
+                                        self.loop_continue_bridge(
+                                            node,
+                                            *arm,
+                                            target.continue_target,
+                                            &blocks,
+                                        ) || frame.loop_targets[..frame.loop_targets.len() - 1]
+                                            .iter()
+                                            .any(|enclosing| {
+                                                [
+                                                    enclosing.break_target,
+                                                    Some(enclosing.continue_target),
+                                                ]
+                                                .into_iter()
+                                                .flatten()
+                                                .any(|destination| {
+                                                    // A bare transfer onto an *enclosing*
+                                                    // loop's break or continue destination —
+                                                    // a labeled `continue outer`/`break outer`
+                                                    // edge of this two-edge body, whose
+                                                    // destination leaves this loop entirely.
+                                                    !blocks.contains(&destination)
+                                                        && self.loop_break_transfer(
+                                                            node,
+                                                            *arm,
+                                                            destination,
+                                                            &blocks,
+                                                        )
+                                                })
+                                            })
+                                    })
+                                    .filter(|arm| {
+                                        // The sibling arm stays the loop's continuation: each of
+                                        // its routes ends at a destination this frame's loops own
+                                        // — this loop's continue target, or the break/continue
+                                        // destination of an enclosing one (the second jump of a
+                                        // two-edge body) — and none runs off the method, which is
+                                        // a `return`'s shape and not this dispatch's.
+                                        let welcome: BTreeSet<usize> = frame
+                                            .loop_targets
+                                            .iter()
+                                            .flat_map(|target| {
+                                                target
+                                                    .break_target
+                                                    .into_iter()
+                                                    .chain([target.continue_target])
+                                            })
+                                            .chain([target.continue_target])
+                                            .collect();
+                                        [then_node, else_node].into_iter().flatten().any(|other| {
+                                            other != *arm
+                                                && blocks.contains(&other)
+                                                && self.loop_side_routes(other, &welcome)
+                                        })
+                                    })
+                                    .map(|_| target.continue_target)
+                            })
+                        })
+                        .flatten();
+                    let join_node = join_node.or(continue_target_join);
+                    // The last two-edge reading: the graph's join already left the loop (the
+                    // breaking arm's route exits it), one successor is the proved exit transfer
+                    // of a loop this frame knows, and the other successor stays in the loop and
+                    // its continuation reaches a *nested* loop header before this loop's own
+                    // header. The in-loop successor is then where the body's statements continue
+                    // — the one-armed shape the existing join reading below writes when a
+                    // successor *is* the join — and electing it keeps the nested loop and the
+                    // code around it inside the body walk instead of dropping them after a join
+                    // no block of the loop holds.
+                    let in_loop_successor_join = (|| {
+                        let target = frame.loop_targets.last()?;
+                        let join_leaves_loop = join_node.is_none_or(|join| {
+                            frame
+                                .scope
+                                .as_ref()
+                                .is_some_and(|scope| !scope.contains(&join))
+                        });
+                        if !join_leaves_loop {
+                            return None;
+                        }
+                        let blocks = self.view.loop_entered_at(target.header)?.blocks().clone();
+                        [then_node, else_node]
+                            .into_iter()
+                            .flatten()
+                            .find(|stay| {
+                                blocks.contains(stay)
+                                    && self.nested_loop_ahead(*stay, target.header, &blocks)
+                            })
+                            .and_then(|stay| {
+                                [then_node, else_node]
+                                    .into_iter()
+                                    .flatten()
+                                    .find(|exit| {
+                                        *exit != stay
+                                            && frame.loop_targets.iter().any(|known| {
+                                                known.break_target.is_some_and(|destination| {
+                                                    self.loop_break_transfer(
+                                                        node,
+                                                        *exit,
+                                                        destination,
+                                                        &blocks,
+                                                    )
+                                                })
+                                            })
+                                    })
+                                    .map(|_| stay)
+                            })
+                    })();
+                    // This reading **overrides** a join the graph stated outside the loop: a
+                    // join no block of the body holds cannot close a statement inside it, while
+                    // the stay successor is a block the body walk continues at. The readings
+                    // that elected a join *inside* the loop (an exit bridge's boundary, a
+                    // continue target) return `None` above and keep their join.
+                    let join_node = in_loop_successor_join.or(join_node);
                     // A successor that *is* the join is the whole arm: the branch arrives at the
                     // place its structure ends at directly, so that arm holds no block of its own —
                     // the block starting there belongs to whatever follows the `if` — and the other
@@ -3226,17 +3388,79 @@ impl Walker<'_> {
                     } else {
                         false
                     };
+                    // A two-edge body branch whose elected join is the loop's own header or
+                    // continue target: the jump arm never returns there, and the continuing
+                    // arm's own nested `if` already ended at its join — a block of this loop
+                    // the body walk resumes at. Electing that block keeps the rest of the body
+                    // (the nested loop, and the update after it) inside the walk instead of
+                    // ending it at the loop's header with those blocks unclaimed.
+                    let continuing_join = (|| {
+                        let then_jump = then_next.is_none()
+                            && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
+                        let else_jump = else_next.is_none()
+                            && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
+                        if then_jump == else_jump {
+                            return None;
+                        }
+                        let (run, next) = if then_jump {
+                            (&else_run, &else_next)
+                        } else {
+                            (&then_run, &then_next)
+                        };
+                        let elected = join_node?;
+                        let last = frame.loop_targets.last()?;
+                        if elected != last.header && elected != last.continue_target {
+                            return None;
+                        }
+                        let Region::If {
+                            join: Some(nested), ..
+                        } = run.last()?
+                        else {
+                            return None;
+                        };
+                        if next.as_ref() != Some(nested) {
+                            return None;
+                        }
+                        let nested_node = self.view.index_of(nested)?;
+                        if nested_node == elected
+                            || nested_node == last.header
+                            || self.visited.contains(&nested_node)
+                            || frame.boundary == Some(nested_node)
+                        {
+                            return None;
+                        }
+                        let blocks = self.view.loop_entered_at(last.header)?.blocks();
+                        if !blocks.contains(&nested_node)
+                            || !self.nested_loop_ahead(nested_node, last.header, blocks)
+                        {
+                            return None;
+                        }
+                        Some(nested.clone())
+                    })();
+                    let continuing_join_elected = continuing_join.is_some();
+                    let join = continuing_join.or(join);
+                    let join_node = join.as_ref().and_then(|join| self.view.index_of(join));
                     // A nested value can meet at its own join before this arm meets the outer
                     // join. Keep that intervening straight run inside the *same* arm and frame.
                     // The helper refuses a partial or multiply entered continuation before any
                     // of its visited nodes can become a published owner.
-                    let then_continued = self.continue_inner_join_arm(
-                        &mut then_run,
-                        then_next.as_ref(),
-                        &arm_frame,
-                    )?;
+                    let then_at_join =
+                        continuing_join_elected && then_next.as_ref() == join.as_ref();
+                    let then_continued = then_at_join
+                        || self.continue_inner_join_arm(
+                            &mut then_run,
+                            then_next.as_ref(),
+                            &arm_frame,
+                        )?;
+                    let else_at_join =
+                        continuing_join_elected && else_next.as_ref() == join.as_ref();
                     let else_continued = if then_continued {
-                        self.continue_inner_join_arm(&mut else_run, else_next.as_ref(), &arm_frame)?
+                        else_at_join
+                            || self.continue_inner_join_arm(
+                                &mut else_run,
+                                else_next.as_ref(),
+                                &arm_frame,
+                            )?
                     } else {
                         false
                     };
@@ -3270,10 +3494,6 @@ impl Walker<'_> {
                             then_node.is_some_and(|node| self.view.reaches(node, join_node));
                         let else_meets =
                             else_node.is_some_and(|node| self.view.reaches(node, join_node));
-                        let then_breaks = then_next.is_none()
-                            && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
-                        let else_breaks = else_next.is_none()
-                            && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
                         let certified_continue = fragmented_handler_join == Some(join_node)
                             && ((then_meets
                                 && else_next.is_none()
@@ -3286,13 +3506,63 @@ impl Walker<'_> {
                                     )));
                         let both_end = !then_meets && !else_meets;
                         let local_switch_join = frame.switch_join == Some(join_node);
+                        // The arm that took a loop-jump edge outright: its walk ended (no
+                        // continuation block) in a proved `LoopBreak`, or in nothing but the
+                        // `goto` block whose one transfer is the join — the `continue` edge the
+                        // goto spells when the join is this loop's own continue target.
+                        let takes_loop_edge = |run: &[Region]| -> bool {
+                            if matches!(run.last(), Some(Region::LoopBreak { .. })) {
+                                return true;
+                            }
+                            let [Region::Straight { blocks }] = run else {
+                                return false;
+                            };
+                            blocks.len() == 1
+                                && self.view.index_of(&blocks[0]).is_some_and(|bridge| {
+                                    self.view.successors(bridge) == [join_node]
+                                })
+                        };
+                        let then_breaks = then_next.is_none()
+                            && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
+                        let else_breaks = else_next.is_none()
+                            && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
+                        // A proved `continue` transfer ends its arm the same way a `break` does:
+                        // the edge left for its target loop's destination and never comes back to
+                        // this join. It is the loop-side jump of a two-edge body whose other arm
+                        // is the one that meets the join.
+                        let then_jumps = then_next.is_none()
+                            && matches!(
+                                then_run.last(),
+                                Some(Region::LoopBreak { .. } | Region::LoopContinue { .. })
+                            );
+                        let else_jumps = else_next.is_none()
+                            && matches!(
+                                else_run.last(),
+                                Some(Region::LoopBreak { .. } | Region::LoopContinue { .. })
+                            );
+                        let then_edge = then_next.is_none() && takes_loop_edge(&then_run);
+                        let else_edge = else_next.is_none() && takes_loop_edge(&else_run);
                         if !(then_meets && else_meets)
                             && !certified_continue
                             && !both_end
                             && !(frame.loop_targets.last().is_some_and(|target| {
-                                frame.boundary == Some(join_node)
-                                    && target.continue_target == join_node
-                                    && ((then_meets && else_breaks) || (else_meets && then_breaks))
+                                // The join is this loop's own continue target and one arm left by
+                                // a proved loop-jump edge while the other meets it — the two-edge
+                                // body's shape. The continue target is the join whether the loop
+                                // spells `while` (it *is* the header this frame ends at) or `for`
+                                // (a proved update block the arms stop at instead), and the
+                                // meeting arm may end *at* the join rather than routing through
+                                // it, its own walk having stopped exactly there.
+                                let then_at_join = then_next.as_ref().is_some_and(|next| {
+                                    self.view.index_of(next) == Some(join_node)
+                                });
+                                let else_at_join = else_next.as_ref().is_some_and(|next| {
+                                    self.view.index_of(next) == Some(join_node)
+                                });
+                                target.continue_target == join_node
+                                    && (((then_meets && else_jumps) || (else_meets && then_jumps))
+                                        || (then_edge && else_at_join)
+                                        || (else_edge && then_at_join))
                             }))
                             && !(local_switch_join
                                 && ((then_meets && else_breaks) || (else_meets && then_breaks)))
@@ -3693,6 +3963,24 @@ impl Walker<'_> {
         if self.view.index_of(next) == Some(boundary) {
             return Ok(true);
         }
+        // The inner `if` finished at a nested loop's header — or at the header or continue
+        // target of the loop this frame walks a body of. The continuation is a region of its
+        // own, never the straight tail this helper attaches: the arm keeps exactly the run it
+        // walked and the caller resumes at that block, the loop's own walk claiming it next.
+        if let Some(node) = self.view.index_of(next)
+            && !self.visited.contains(&node)
+            && (self.view.is_loop_header(node)
+                || frame
+                    .loop_targets
+                    .last()
+                    .is_some_and(|target| target.continue_target == node))
+            && frame
+                .scope
+                .as_ref()
+                .is_none_or(|scope| scope.contains(&node))
+        {
+            return Ok(true);
+        }
         let Some(Region::If {
             branch,
             then_arm,
@@ -3710,9 +3998,29 @@ impl Walker<'_> {
             Region::Straight { blocks } => blocks.last().cloned(),
             _ => None,
         };
+        // An arm that ends in a proved loop transfer never enters the join: its own edge left
+        // for the target loop's break destination, so only the sibling arm's tail block is a
+        // predecessor of the continuation.
+        fn ends_in_loop_break(arm: &Region) -> bool {
+            match arm {
+                Region::LoopBreak { .. } => true,
+                Region::Sequence { regions } => {
+                    matches!(regions.last(), Some(Region::LoopBreak { .. }))
+                }
+                _ => false,
+            }
+        }
         let sources = match (then_arm.as_ref(), else_arm.as_ref()) {
             (Region::Straight { .. }, Region::Straight { .. }) => {
                 vec![straight_end(then_arm), straight_end(else_arm)]
+            }
+            (Region::LoopBreak { .. }, Region::Straight { .. }) => vec![straight_end(else_arm)],
+            (Region::Straight { .. }, Region::LoopBreak { .. }) => vec![straight_end(then_arm)],
+            (arm, Region::Straight { .. }) if ends_in_loop_break(arm) => {
+                vec![straight_end(else_arm)]
+            }
+            (Region::Straight { .. }, arm) if ends_in_loop_break(arm) => {
+                vec![straight_end(then_arm)]
             }
             (Region::Loop { .. }, Region::Straight { .. }) => vec![
                 self.loop_arm_join_source(then_arm, branch, next, frame)?,
@@ -10356,6 +10664,170 @@ impl Walker<'_> {
         if !exact_normal_predecessors(&incoming, &[source_id.clone()])
             || outgoing != [(CanonicalEdgeKind::Normal, exit.clone())]
         {
+            return false;
+        }
+        self.leaving_edge(id).is_none()
+            && self.ssa.block(id).is_some_and(|block| {
+                matches!(block.instructions(), [instruction]
+                    if matches!(instruction.opcode(), 0xa7 | 0xc8)
+                        && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
+            })
+    }
+
+    /// Whether every route leaving one block ends at a destination `welcome` names — this loop's
+    /// own continue target or the break/continue destination of an enclosing one — before any of
+    /// them reaches a block with no successors: a `return`'s or an `athrow`'s leaf, a route the
+    /// frame's loops do not own. The walk expands each block once, like [`NormalFlowView::reaches`]
+    /// whose bounded-work question this answers for loop transfers instead of one join.
+    fn loop_side_routes(&self, from: usize, welcome: &BTreeSet<usize>) -> bool {
+        let mut seen = BTreeSet::new();
+        let mut worklist = vec![from];
+        while let Some(current) = worklist.pop() {
+            if welcome.contains(&current) {
+                continue;
+            }
+            if !seen.insert(current) {
+                continue;
+            }
+            let successors = self.view.successors(current);
+            if successors.is_empty() {
+                return false;
+            }
+            worklist.extend(successors);
+        }
+        true
+    }
+
+    /// Whether one block's continuation inside this loop reaches the header of a **nested** loop
+    /// before this loop's own header: the body still holds a region of its own after the block,
+    /// and a join placed anywhere but that continuation would leave it unclaimed. The walk stays
+    /// inside `blocks` and stops at this loop's header — the latch edge back to it is the loop's
+    /// own, not a continuation.
+    fn nested_loop_ahead(&self, from: usize, header: usize, blocks: &BTreeSet<usize>) -> bool {
+        let mut seen = BTreeSet::new();
+        let mut worklist = vec![from];
+        while let Some(current) = worklist.pop() {
+            if current == header || !seen.insert(current) {
+                continue;
+            }
+            if self.view.is_loop_header(current) {
+                return true;
+            }
+            worklist.extend(
+                self.view
+                    .successors(current)
+                    .into_iter()
+                    .filter(|successor| blocks.contains(successor)),
+            );
+        }
+        false
+    }
+
+    /// A body branch exclusively owns a one-instruction normal transfer onto **this loop's own
+    /// continue target** — the edge a `continue` spells. The mirror of [`Self::loop_exit_bridge`]
+    /// for the loop-side target: the transfer block is *inside* the natural loop (it reaches the
+    /// latch by taking the update), and its one successor is the update block a proved for-header
+    /// owns, or the header of a loop no such proof covers. The same exclusive-ownership checks
+    /// apply: exact normal predecessors from the branch alone, one normal successor, no leaving
+    /// edge, and a decoded `goto` as the block's only instruction.
+    fn loop_continue_bridge(
+        &self,
+        source: usize,
+        bridge: usize,
+        continue_target: usize,
+        blocks: &BTreeSet<usize>,
+    ) -> bool {
+        let Some(target_id) = self.view.id_of(continue_target).cloned() else {
+            return false;
+        };
+        if !blocks.contains(&source)
+            || !blocks.contains(&bridge)
+            || bridge == continue_target
+            || self.view.successors(bridge) != [continue_target]
+            || !self.view.successors(source).contains(&bridge)
+            || self.view.successors(source).len() != 2
+        {
+            return false;
+        }
+        let (Some(id), Some(source_id)) = (self.view.id_of(bridge), self.view.id_of(source)) else {
+            return false;
+        };
+        if !self
+            .terminal_bci(source_id)
+            .and_then(|bci| self.operations.get(bci))
+            .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return false;
+        }
+        let incoming: Vec<_> = self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.to() == id)
+            .map(|edge| (edge.kind(), edge.from().clone()))
+            .collect();
+        let outgoing: Vec<_> = self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == id)
+            .map(|edge| (edge.kind(), edge.to().clone()))
+            .collect();
+        if !exact_normal_predecessors(&incoming, &[source_id.clone()])
+            || outgoing != [(CanonicalEdgeKind::Normal, target_id)]
+        {
+            return false;
+        }
+        self.leaving_edge(id).is_none()
+            && self.ssa.block(id).is_some_and(|block| {
+                matches!(block.instructions(), [instruction]
+                    if matches!(instruction.opcode(), 0xa7 | 0xc8)
+                        && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
+            })
+    }
+
+    /// A body branch's successor that is nothing but the `break` edge itself: a block **inside**
+    /// this loop whose single decoded `goto` transfers to the break destination of an enclosing
+    /// loop, with the branch as its only normal predecessor. Unlike [`Self::loop_exit_bridge`]
+    /// the transfer block stays inside the natural loop — a labeled break of an *enclosing*
+    /// loop never crosses this loop's header, so the natural-loop walk keeps the block — and
+    /// what classifies the edge is the destination it names, not the block's position.
+    fn loop_break_transfer(
+        &self,
+        source: usize,
+        exit: usize,
+        destination: usize,
+        blocks: &BTreeSet<usize>,
+    ) -> bool {
+        // The transfer block itself may sit **outside** this loop's natural set: a labeled
+        // break of an enclosing loop never comes back to this loop's latch, so the
+        // natural-loop walk does not hold it. What classifies the edge is the destination
+        // it names and its exclusive ownership by the branch — not the block's membership.
+        if !blocks.contains(&source)
+            || self.view.successors(exit) != [destination]
+            || !self.view.successors(source).contains(&exit)
+            || self.view.successors(source).len() != 2
+        {
+            return false;
+        }
+        let (Some(id), Some(source_id)) = (self.view.id_of(exit), self.view.id_of(source)) else {
+            return false;
+        };
+        if !self
+            .terminal_bci(source_id)
+            .and_then(|bci| self.operations.get(bci))
+            .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return false;
+        }
+        let incoming: Vec<_> = self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.to() == id)
+            .map(|edge| (edge.kind(), edge.from().clone()))
+            .collect();
+        if !exact_normal_predecessors(&incoming, &[source_id.clone()]) {
             return false;
         }
         self.leaving_edge(id).is_none()
