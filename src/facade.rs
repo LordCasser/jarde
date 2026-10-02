@@ -14040,9 +14040,13 @@ fn interface_reaches(
 }
 
 fn interface_source_type_accessible(current: &[u8], owner: &[u8], flags: u16) -> bool {
-    // Nested source names need InnerClasses evidence; this first slice leaves them mapped to the
-    // existing refusal path instead of treating a binary `$` name as a source qualifier.
-    !owner.contains(&b'$') && (flags & 0x0001 != 0 || package_name(current) == package_name(owner))
+    // A nested interface qualifier is spelled by the binary name the bytes carry — the same name
+    // the class-source header writes in its own `implements` clause (`implements F1$A`), because
+    // that presentation keeps `$` as an identifier character rather than inventing a nesting
+    // structure the class file does not state. So a `$` in the owner is not itself a refusal; the
+    // accessibility criterion still is: the qualifier must be public or in the calling class's own
+    // package, which are the shapes a Java 8 source can name.
+    flags & 0x0001 != 0 || package_name(current) == package_name(owner)
 }
 
 fn package_name(owner: &[u8]) -> &[u8] {
