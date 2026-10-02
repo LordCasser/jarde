@@ -174,8 +174,9 @@ fn source_with(jar: &[u8], class: &str, limits: Limits) -> ClassSourceReport {
 /// Compile one family's recovered units as one `--release 8` set — the folded root beside the
 /// separated sibling units a mixed family still states (a pool-spelled `X$Inner` reference
 /// resolves against the sibling unit's own top-level declaration, never the binary classpath) —
-/// then run the set under `-Xverify:all` and return what the run printed. The original family
-/// jar stays on the classpath, the same convention every fold acceptance uses.
+/// then run the recompiled set itself under `-Xverify:all` and return what the run printed: the
+/// runtime classpath puts the recompiled classes first, so the run executes the recovered text's
+/// own binary and not the original class the compile used for symbol resolution.
 fn recompile_family_set_and_run(
     label: &str,
     units: &[(&str, &str)],
@@ -217,7 +218,7 @@ fn recompile_family_set_and_run(
         .args([
             "-Xverify:all",
             "-cp",
-            &format!("{}:.", deps.join("family.jar").display()),
+            &format!(".:{}", deps.join("family.jar").display()),
         ])
         .arg(main_class)
         .current_dir(temp.path())
