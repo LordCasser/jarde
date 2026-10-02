@@ -1,0 +1,2 @@
+558e3bd76c2fb63454a9c01dace35722460185c43f51532d141b54e0a665289d  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/V1.class
+5ecd3eb6fcff7fe992b60182a3b839423ac267f470bed17e80e05d4397d42138  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/V1$Op.class
