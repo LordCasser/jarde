@@ -1,0 +1,2 @@
+5726a17b2f38c86d2af2359802efb3d4082353f04c947695e1d25ec4404ecab3  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/do-while-return-patrol/fixture/D1.class
+baaf9a55831bad8e2f1d40b183899aac015fefb86171f41e40a753aa62ed1d55  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/do-while-return-patrol/fixture/L5.class
