@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 monitor 全部既有测试：split-monitor-slot、synchronized-multi-exit 等）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 T4 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核配对判据、呈现与三方行为，更新账本与巡查记录。
+- [x] 3.3 root 独立复核配对判据、呈现与三方行为，更新账本与巡查记录。（root 于合并主线 58d629d7 复核：T4.sync 呈现嵌套双 synchronized + 循环 + 返回，2807/0、fmt/openspec 242/242；NM 纯 fixture 三方一致覆盖本片行为，T4 首行（nested，第二片目标）证据口径为原类腿已在其 README 区分。既有测试改动复核：p3_boolean_short_circuit_return 断言集逐字未变、仅以 16MiB 显式栈线程承载——render_value 深递归的既有余量债务登记（MAX_VALUE_DEPTH 不变）。同锁可重入按设计登记为接受；三层/空内层/monitor×finally 复合继续拒绝。）
