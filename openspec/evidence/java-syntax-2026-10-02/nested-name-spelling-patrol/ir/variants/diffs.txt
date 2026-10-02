@@ -1,0 +1,99 @@
+=== p.VN2.single.java
+14c14
+<     static int deep(p.A$B$C arg0, int arg1) {
+---
+>     static int deep(p.A.B.C arg0, int arg1) {
+20c20
+<         return p.A$B$C.three(arg1);
+---
+>         return p.A.B.C.three(arg1);
+34c34
+<         java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(deep(new p.A$B$C(), 4)).append(":").append(own(new p.VN2$Mid$Leaf(), 4)).toString());
+---
+>         java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(deep(new p.A.B.C(), 4)).append(":").append(own(new p.VN2$Mid$Leaf(), 4)).toString());
+=== V1.jar.java
+46c46
+<     public static int enumSwitch(V1$Op arg0, int arg1) {
+---
+>     public static int enumSwitch(Op arg0, int arg1) {
+90c90
+<         java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(enumSwitch(V1.Op.MUL, 7)).append(":").append(enumSwitch(V1.Op.ADD, 7)).toString());
+---
+>         java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(enumSwitch(Op.MUL, 7)).append(":").append(enumSwitch(Op.ADD, 7)).toString());
+=== V1.single.java
+=== VN1.jar.java
+4c4
+<     static Other$Inner box = new Other$Inner();
+---
+>     static Other.Inner box = new Other.Inner();
+14c14
+<     static int use(Other$Inner arg0, int arg1) {
+---
+>     static int use(Other.Inner arg0, int arg1) {
+18,21c18,21
+<         Other$Inner local2 = new Other$Inner();
+<         boolean local3 = (java.lang.Object) local2 instanceof Other$Inner;
+<         int local4 = ((Other$Inner) local2).id(arg1);
+<         int local5 = Other$Inner.twice(arg1);
+---
+>         Other.Inner local2 = new Other.Inner();
+>         boolean local3 = (java.lang.Object) local2 instanceof Other.Inner;
+>         int local4 = ((Other.Inner) local2).id(arg1);
+>         int local5 = Other.Inner.twice(arg1);
+33c33
+<         java.lang.System.out.println(use(new Other$Inner(), 21));
+---
+>         java.lang.System.out.println(use(new Other.Inner(), 21));
+=== VN1.single.java
+4c4
+<     static Other$Inner box = new Other$Inner();
+---
+>     static Other.Inner box = new Other.Inner();
+14c14
+<     static int use(Other$Inner arg0, int arg1) {
+---
+>     static int use(Other.Inner arg0, int arg1) {
+18,21c18,21
+<         Other$Inner local2 = new Other$Inner();
+<         boolean local3 = (java.lang.Object) local2 instanceof Other$Inner;
+<         int local4 = ((Other$Inner) local2).id(arg1);
+<         int local5 = Other$Inner.twice(arg1);
+---
+>         Other.Inner local2 = new Other.Inner();
+>         boolean local3 = (java.lang.Object) local2 instanceof Other.Inner;
+>         int local4 = ((Other.Inner) local2).id(arg1);
+>         int local5 = Other.Inner.twice(arg1);
+33c33
+<         java.lang.System.out.println(use(new Other$Inner(), 21));
+---
+>         java.lang.System.out.println(use(new Other.Inner(), 21));
+=== VN3.jar.java
+=== VN3.single.java
+=== VN4.jar.java
+12c12
+<     static int area(Other$Box arg0) {
+---
+>     static int area(Other.Box arg0) {
+23c23
+<         return arg0 instanceof Other$Mark;
+---
+>         return arg0 instanceof Other.Mark;
+30,31c30,31
+<         Other$Tagged local1 = new Other$Tagged();
+<         java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(area((Other$Box) local1)).append(":").append(marked((java.lang.Object) local1)).append(":").append((java.lang.String) ((Other$Mark) local1).tag()).toString());
+---
+>         Other.Tagged local1 = new Other.Tagged();
+>         java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(area((Other.Box) local1)).append(":").append(marked((java.lang.Object) local1)).append(":").append((java.lang.String) ((Other.Mark) local1).tag()).toString());
+=== VN4.single.java
+12c12
+<     static int area(Other$Box arg0) {
+---
+>     static int area(Other.Box arg0) {
+23c23
+<         return arg0 instanceof Other$Mark;
+---
+>         return arg0 instanceof Other.Mark;
+30c30
+<         Other$Tagged local1 = new Other$Tagged();
+---
+>         Other.Tagged local1 = new Other.Tagged();
