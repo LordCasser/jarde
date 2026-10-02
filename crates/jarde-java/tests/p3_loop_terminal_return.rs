@@ -186,11 +186,15 @@ fn cf07_loop_return_leaf_has_one_owner_and_source() {
 
 #[test]
 fn cf07_unproved_terminal_candidates_keep_source_and_quote() {
+    // `otherValue` left this list when the terminal-return classification generalized past the
+    // `iload; ireturn` pair (`recover-return-in-do-while-false`): its `return array[i]` leaf is
+    // an exclusive-predecessor terminal return like any other, so it is proved now and the
+    // method recovers — see `cf07_computed_terminal_returns_recover` below. The shapes that
+    // stay unproved keep their quote.
     for (class, method, leaf) in [
         (EXTRA_ENTRY, "extraEntry", 26),
         (NEGATIVES, "sharedLeaf", 27),
         (NEGATIVES, "exceptionalLeaf", 19),
-        (NEGATIVES, "otherValue", 19),
     ] {
         let report = recover_class_method_with_budget(
             class,
@@ -216,6 +220,37 @@ fn cf07_unproved_terminal_candidates_keep_source_and_quote() {
                 && region.rule.is_some_and(|rule| rule.rule() == "loop")),
             "{method} falsely assigned the leaf to a loop: {:?}",
             report.regions
+        );
+    }
+}
+
+#[test]
+fn cf07_computed_terminal_returns_recover() {
+    // `otherValue`'s leaf is `aload_0; iload_4; iaload; ireturn` — a terminal return whose
+    // value is computed rather than loaded straight from a local. The CF-07 slice proved the
+    // `iload; ireturn` pair alone; `recover-return-in-do-while-false` generalized the edge to
+    // any decoded `return` (the do-while(false) family's `return "early"` leaves have the same
+    // shape class), so this method recovers with the return in its arm and no quote.
+    let report = recover_class_method_with_budget(
+        NEGATIVES,
+        "cf07/LoopTerminalNegatives",
+        "otherValue",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        report.text.contains("return arg0[local4];"),
+        "{}",
+        report.text
+    );
+    for bci in [19u32, 20, 22, 23] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} lost source: {}",
+            report.text
         );
     }
 }

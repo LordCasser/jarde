@@ -750,9 +750,11 @@ impl Billing {
         // The 2026-10-01 array-slot-retype split re-measured the row on the same path: the reuse
         // planner's third narrow proof bills the writes it examines before declining a slot whose
         // writes state no array spelling (+6 `AnalysisSteps` over this case's reused primitive
-        // slots), and no other dimension moved.
+        // slots), and no other dimension moved. The 2026-10-02 do-while return slice re-measured
+        // again: the failure-closure classification bills the edges it scans for the corpus's
+        // quoted bodies (+6 `AnalysisSteps`), and no other dimension moved.
         ir_items: 20327,
-        analysis_steps: 10533,
+        analysis_steps: 10539,
         result_items: 122,
         output_bytes: 23229,
     };
@@ -827,8 +829,10 @@ impl Billing {
         // +23 with the 2026-10-01 array-slot-retype split: the reuse planner's third narrow
         // proof bills each write it examines before declining a slot whose writes state no
         // array spelling (the corpus's reused primitive slots), and no other dimension moved.
+        // +6 with the 2026-10-02 do-while return slice: the failure-closure classification
+        // bills the edges it scans for the corpus's quoted bodies.
         ir_items: 33780,
-        analysis_steps: 17318,
+        analysis_steps: 17324,
         result_items: 1378,
         output_bytes: 39513,
     };
@@ -861,8 +865,9 @@ impl Billing {
         // +50/+34/−51 with the whole-construct catch — the work is the same work the direct arm
         // records, and retention still touches only the read dimensions.
         // +23 with the 2026-10-01 array-slot-retype split, the same work the direct arm records.
+        // +6 with the 2026-10-02 do-while return slice, the same work the direct arm records.
         ir_items: 33780,
-        analysis_steps: 17318,
+        analysis_steps: 17324,
         result_items: 26,
         output_bytes: 39513,
     };

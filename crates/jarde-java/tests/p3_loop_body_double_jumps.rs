@@ -295,10 +295,12 @@ fn single_jump_matrix_is_unchanged_text() {
 }
 
 #[test]
-fn break_and_return_channel_keeps_its_quote() {
-    // L5.dblJumpDoWhilePlain pairs a `break` with a `return`: the existing channel's
-    // presentation — structured loop with the early-return block quoted — is this slice's
-    // zero-regression boundary and must not move.
+fn break_and_return_channel_recovers_the_return_arm() {
+    // L5.dblJumpDoWhilePlain pairs a `break` with a `return`: the do-while(false) body's return
+    // leaf is an exclusive-predecessor terminal return, so the region owns the arm and the
+    // presentation keeps the early return (`recover-return-in-do-while-false`). Before that
+    // slice the return block was quoted after a compilable partial body — the silent
+    // miscompilation the slice exists to remove — pinned here as the recovery's zero point.
     let report = recover_class_method(
         L5,
         "L5",
@@ -308,7 +310,34 @@ fn break_and_return_channel_keeps_its_quote() {
         None,
     );
     assert!(report.produced(), "{:?}", report.outcome);
-    assert!(report.text.contains("@bytecode 26 28"), "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert!(report.text.contains("return \"early\";"), "{}", report.text);
+    // The break arm keeps the shape the two-edge slice gave it: the empty `then` arm of the
+    // `if` whose `else` holds the return, straight into the enclosing `while`'s next test.
+    // (This harness names the one slot `arg0`; the class-source presentation of the same
+    // method names it `local0` — the shape, not the name, is what is pinned.)
+    assert!(
+        report
+            .text
+            .contains("if (arg0 % 3 == 0) {\n        } else if (arg0 > 7) {"),
+        "{}",
+        report.text
+    );
+    assert_eq!(report.text.matches("return").count(), 2, "{}", report.text);
+    for bci in [26u32, 28] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} lost source: {}",
+            report.text
+        );
+    }
+    let owners: Vec<_> = report
+        .regions
+        .iter()
+        .filter(|region| region.blocks.contains(&26))
+        .collect();
+    assert_eq!(owners.len(), 1, "{:?}", report.regions);
+    assert!(owners[0].structured, "{:?}", report.regions);
 }
 
 #[test]
