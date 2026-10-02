@@ -11867,7 +11867,9 @@ mod tests {
             // variants, twenty-three bodies) moved it again.
             // The 2026-10-01 scv-concat-consumers fixtures (two classes, nine bodies, the
             // concatenation-consumed short-circuit locals) moved it again.
-            (440, 2118, 249, 1665, 8),
+            // The 2026-10-02 qualified-super-default fixtures (the nested diamond/single family
+            // and the packaged qualifier, twelve classes, twenty-one bodies) moved it again.
+            (452, 2139, 249, 1665, 8),
             "fixture population changed: re-measure these counts"
         );
     }
