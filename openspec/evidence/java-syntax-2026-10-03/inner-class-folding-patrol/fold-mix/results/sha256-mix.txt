@@ -1,0 +1,41 @@
+# 折叠输出 SHA256（change `recover-inner-class-static-mixed-folding`）
+
+实现后（`results/*-mix-after.jarde.java`）：
+
+```
+ba321ad59e963054183a4fe4a7b371e4643e2d44e3300f36787b4f2c9ffb3680  MV1_Inner-mix-after.jarde.java
+e90f65c0301089c567b55dea5c4d94ba9723be7f1d8e0be14299678a490731c2  MV1-mix-after.jarde.java
+773da69096429430ed42ae093decc8bd547a5992929d44c2d446d6d899bae23c  MV2_Inner-mix-after.jarde.java
+455b94bf19661f4e30bb9f617502ae04d8f0c1676f306f1af24cca799754359a  MV2-mix-after.jarde.java
+fc7f854d5b24fe7c942c8f75baadf7ea88e5d7c604e95ee5052945e51202deb1  MV3_Inner-mix-after.jarde.java
+5297f8ddc888208ae12a5e28135dc7abaf4d849f4ca7c6ca9e12bd970a05207a  MV3-mix-after.jarde.java
+3647cee1852800a80d44b86ae3aecb9e3d9681f41ad78bb10b628ecc76ab028e  N1_Inner-mix-after.jarde.java
+8a0103308e06cf7a673e89076902aa2a4989931bc86596d98cba68332140bc2b  N1_Stat-mix-after.jarde.java
+ab110aced14eab70c7bcd2bad7942ed4bb008c2f565e823f015fda0093530476  N1-mix-after.jarde.java
+```
+
+对照实现前（`before/*-mix-before.txt`，同仓同文件名替换后缀）：
+
+- **分离单元逐字节不变**：`N1$Inner`、`N1$Stat`、`MV1`、`MV1$Inner`、`MV2$Inner`、`MV3$Inner`
+  的 before/after diff 为空——非静态成员分离路径与本片无关的纯非静态族零回退。
+- **变化的只有混合族根单元**：`N1`、`MV2`、`MV3`（新增 `static class` 嵌套声明 + 域内静态
+  引用改写；非折叠成员引用保持池拼写）。
+
+重编与运行（`javac --release 8`，家族类集 = 折叠根 + 分离 Inner 单元，原 jar 在 classpath；
+`java -Xverify:all`）：
+
+| 家族 | 原 class | 固定 JADX 重编 | Jarde 家族集重编 |
+| --- | --- | --- | --- |
+| MV3 | `6`/`6` | `6`/`6` | `6`/`6` |
+| MV2 | `11`/`8` | `11`/`8` | `11`/`8` |
+| MV1 | `9` | `9` | `9` |
+| N1 | `10`/`7`/`13` | `10`/`7`/`13` | 见下 |
+
+**N1 登记缺口（非本片回归）**：`Stat.use` 的 `outer.new Inner(9)`（参数限定符 +
+`Objects.requireNonNull` 空检查舞蹈的限定 new 形状）恢复层无证明——折叠按合同原样携带未恢复
+体（引注不隐藏，与上片 SDAbstract 先例同规则）。家族集重编恰好 1 个错误
+（`N1.java:77 缺少返回语句`）；实现前的分离家族集（N1 + N1$Inner + N1$Stat 三单元）同样是恰好
+1 个错误（`Stat_unit.java:32 缺少返回语句`，同一 `use`）——折叠不新增任何编译缺口、少一个单元。
+将该唯一缺口以透明形（`return new N1$Inner(arg1, 9).total();`，即巡查登记的第二片合成首参
+透传形）替换后，家族集重编 + `-Xverify:all` 运行得 `10`/`7`/`13`，与原 class 逐字一致——折叠
+单元在第二片缺口之外行为完备。限定 new 恢复属 `recover-inner-class-instance-folding`（第二片）。

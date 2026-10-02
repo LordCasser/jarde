@@ -1,0 +1,37 @@
+// jarde: presentation of `MV3` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class MV3 extends java.lang.Object {
+    private int base;
+
+    public MV3() {
+        // @method <init>()V
+        // @declaration a constructor of `MV3`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.base = 4;
+        return;
+    }
+
+    MV3$Inner make(int arg1) {
+        // @method make(I)LMV3$Inner;
+        // @declaration an instance method of `MV3`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return new MV3$Inner(this, arg1);
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `MV3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(new MV3$StatB().b());
+        java.lang.System.out.println(new MV3().make(2).total());
+        return;
+    }
+
+    static int access$000(MV3 arg0) {
+        // @method access$000(LMV3;)I
+        // @declaration a static method of `MV3`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.base;
+    }
+}

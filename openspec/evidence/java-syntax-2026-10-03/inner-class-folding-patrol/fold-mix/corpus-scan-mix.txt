@@ -1,0 +1,29 @@
+# corpus 双腿扫描（change `recover-inner-class-static-mixed-folding`）
+
+主线基线 `438e1a2d`（临时 worktree `detached` 构建，扫描后已删除）vs 本片实现（worktree
+`c3c9bcf8`），逐 jar 逐类 `class-source --format text` 的 SHA256 对比。
+
+- 扫描 jar 数：84（`openspec/evidence` 下全部 `.jar`）
+- 扫描类数：353（两腿各 353，查询失败 0）
+- 文本变化类数：**3**（全部为混合族根单元——本片折叠目标形态）
+- 其余 **350** 类逐字一致（含 M1/M2 纯静态族全部成员、enum/注解折叠通道、分离呈现、
+  上片 FV* 变体、cross-class presenter）
+
+## 变化类清单
+
+```
+java-syntax-2026-10-03/inner-class-folding-patrol/fixture/fam.jar:N1
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-mix/fixture-variants/MV2.jar:MV2
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-mix/fixture-variants/MV3.jar:MV3
+```
+
+变化内容（对照 `results/*-mix-after.jarde.java` 与 `before/`）均为：新增 `static class` 嵌套
+声明 + 域内静态引用源码拼写改写；非折叠成员引用保持池拼写。`MV1`（纯非静态负例）两腿一致
+——不折叠。
+
+## 复核说明
+
+- 混合族形态在既有巡查证据里的存量：上一片扫描的 19 个变化类均为纯静态族；本片新增的 3 个
+  变化类全部来自本片新增 fixture（N1 为巡查固定 fixture，MV2/MV3 为本片冻结变体）——即
+  **既有 corpus 无任何类因本片改变文本**，与"混合族此前整族分离、无中间态"的取证一致。
+- `member_family.state` 层面的变化（prepared → prepared_static）只发生在上述 3 类。
