@@ -348,6 +348,14 @@ struct Emitter<'a> {
     /// How many statements of the body have been written as Java so far: the fact
     /// [`Emitted::statements`] publishes once every write succeeded.
     statements: usize,
+    /// Whether the body this emission presents is a class initializer's. A `return` statement has
+    /// no legal Java spelling there (JLS §8.7: "It is a compile-time error if a static initializer
+    /// contains a return statement"), so [`Self::body`] projects the body's own terminator onto
+    /// the block's closing brace and [`Self::stmts`] skips every nested void `return` the region
+    /// structure placed inside the block. Every other emission — a constructor, a method — spells
+    /// `return` faithfully, and an emission that states no declaration is one of those rather than
+    /// a guessed initializer.
+    initializer: bool,
     anonymous_override: Option<AnonymousOverride<'a>>,
     anonymous_override_matched: bool,
     anonymous_override_range: Option<(usize, usize)>,
@@ -389,6 +397,7 @@ impl<'a> Emitter<'a> {
             limit,
             member,
             statements: 0,
+            initializer: false,
             anonymous_override: None,
             anonymous_override_matched: false,
             anonymous_override_range: None,
@@ -418,6 +427,7 @@ impl<'a> Emitter<'a> {
             limit,
             member,
             statements: 0,
+            initializer: false,
             anonymous_override: None,
             anonymous_override_matched: false,
             anonymous_override_range: None,
@@ -518,8 +528,20 @@ impl<'a> Emitter<'a> {
     }
 
     /// Appends the statements of one body at one indentation depth.
+    ///
+    /// A class initializer's nested void `return`s are skipped here, for the same reason the
+    /// terminator is projected in [`Self::body`]: Java has no spelling for a `return` inside an
+    /// initializer block (JLS §8.7), and the region structure routinely places the bytecode's one
+    /// terminator inside the block it ends — the `else` arm a guard's fall-through tail became —
+    /// so leaving it in would make the whole class fail to compile. Nothing else is dropped: the
+    /// statement is not written at all, counted as none, and anchored by no span, in both passes
+    /// of this formatter alike. A `return` with a value is never a `<clinit>()V` statement and
+    /// stays where the analysis placed it.
     fn stmts(&mut self, stmts: &[Stmt], indent: usize) -> Result<(), Halt> {
         for stmt in stmts {
+            if self.initializer && matches!(stmt.kind, StmtKind::Return { value: None }) {
+                continue;
+            }
             self.node(&stmt.origin, |emitter| emitter.stmt(stmt, indent))?;
         }
         Ok(())
@@ -528,13 +550,15 @@ impl<'a> Emitter<'a> {
     /// Writes one body and its closing brace. A class initializer's final void return is the
     /// bytecode terminator, but Java spells that normal completion with the block's closing brace.
     /// The return's origin is retained on that brace so commit and replay publish the same source
-    /// span. Only the top-level final statement is eligible; nested and non-final returns remain
-    /// ordinary statements.
+    /// span. Only the top-level final statement is eligible this way; a nested return — including
+    /// the same terminator after the region structure moved it inside a block — is skipped by
+    /// [`Self::stmts`], which is what keeps every other statement of the body in place.
     fn body(&mut self, stmts: &[Stmt], declaration: Option<&Declaration>) -> Result<(), Halt> {
-        let projected_return = declaration
-            .is_some_and(|declaration| {
-                declaration.form == crate::declaration::DeclarationForm::StaticInitializer
-            })
+        self.initializer = declaration.is_some_and(|declaration| {
+            declaration.form == crate::declaration::DeclarationForm::StaticInitializer
+        });
+        let projected_return = self
+            .initializer
             .then(|| stmts.last())
             .flatten()
             .filter(|stmt| matches!(&stmt.kind, StmtKind::Return { value: None }));
@@ -1832,7 +1856,10 @@ mod tests {
     }
 
     #[test]
-    fn a_nested_return_is_kept_when_the_static_initializer_tail_is_projected() {
+    fn a_nested_return_is_suppressed_when_the_static_initializer_tail_is_projected() {
+        // The region structure places the bytecode's terminator inside the block it ends — the
+        // `else` arm a guard's fall-through tail became (the F2 shape) — so the terminator is
+        // skipped wherever it sits, not only as the body's own last statement.
         let stmts = vec![
             Stmt::new(
                 StmtKind::If {
@@ -1860,15 +1887,156 @@ mod tests {
             SegmentPublication::Whole,
             &mut budget,
         );
+        assert!(!emitted.text.contains("return;"), "{}", emitted.text);
+        // The `if` itself is still written, with an empty arm: suppressing the return does not
+        // take the statement that held it out of the body.
+        assert!(emitted.text.contains("if ("), "{}", emitted.text);
+        assert_eq!(emitted.statements, 1, "{}", emitted.text);
+        assert!(map.text_of_bci(&emitted.text, 2).is_empty());
+        assert_eq!(map.text_of_bci(&emitted.text, 8), vec!["}\n"]);
+    }
+
+    #[test]
+    fn a_deeply_nested_initializer_return_is_suppressed_at_every_depth() {
+        // Two guards make the same terminator land two `else` arms deep, which is the IBRBranch
+        // shape: the skip is at the statement-list level, so depth changes nothing about it.
+        let stmts = vec![Stmt::new(
+            StmtKind::If {
+                cond: Expr::direct(ExprKind::Boolean(true), 1),
+                then_body: vec![Stmt::new(
+                    StmtKind::Throw {
+                        value: Expr::direct(ExprKind::Str("guard".to_string()), 2),
+                    },
+                    OriginSet::new(Origin::direct(2)),
+                )],
+                else_body: vec![
+                    Stmt::new(
+                        StmtKind::Assign {
+                            name: "value".to_string(),
+                            value: Expr::direct(ExprKind::Integer(7), 4),
+                        },
+                        OriginSet::new(Origin::direct(4)),
+                    ),
+                    Stmt::new(
+                        StmtKind::If {
+                            cond: Expr::direct(ExprKind::Boolean(true), 5),
+                            then_body: vec![Stmt::new(
+                                StmtKind::Throw {
+                                    value: Expr::direct(ExprKind::Str("inner".to_string()), 6),
+                                },
+                                OriginSet::new(Origin::direct(6)),
+                            )],
+                            else_body: vec![Stmt::new(
+                                StmtKind::Return { value: None },
+                                OriginSet::new(Origin::direct(9)),
+                            )],
+                        },
+                        OriginSet::new(Origin::direct(5)),
+                    ),
+                ],
+            },
+            OriginSet::new(Origin::direct(1)),
+        )];
+        let static_initializer = declaration(DeclarationForm::StaticInitializer);
+        let mut budget = budget_with(1 << 20);
+        let (emitted, map) = artifact(
+            &stmts,
+            &facts(),
+            Some(&static_initializer),
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        );
+        assert!(!emitted.text.contains("return;"), "{}", emitted.text);
+        assert!(emitted.text.contains("value = 7;"), "{}", emitted.text);
+        assert!(
+            emitted.text.contains("throw \"guard\";") && emitted.text.contains("throw \"inner\";"),
+            "{}",
+            emitted.text
+        );
+        // Five statements remain — the `if`s, both throws and the assignment — and the skipped
+        // return anchors no span of the artifact.
+        assert_eq!(emitted.statements, 5, "{}", emitted.text);
+        assert!(map.text_of_bci(&emitted.text, 9).is_empty());
+    }
+
+    #[test]
+    fn an_initializer_return_with_a_value_stays_an_ordinary_statement() {
+        // Only the void form is illegal in an initializer block, and a `<clinit>()V` body cannot
+        // hold a valued one; a valued return that ever reaches this emitter is therefore written
+        // as the analysis placed it rather than dropped on a guess.
+        let stmts = vec![Stmt::new(
+            StmtKind::Return {
+                value: Some(Expr::direct(ExprKind::Integer(3), 2)),
+            },
+            OriginSet::new(Origin::direct(2)),
+        )];
+        let static_initializer = declaration(DeclarationForm::StaticInitializer);
+        let mut budget = budget_with(1 << 20);
+        let (emitted, map) = artifact(
+            &stmts,
+            &facts(),
+            Some(&static_initializer),
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        );
+        assert!(emitted.text.contains("return 3;"), "{}", emitted.text);
+        assert_eq!(emitted.statements, 1, "{}", emitted.text);
+        assert_eq!(
+            map.text_of_bci(&emitted.text, 2),
+            // The literal's own span nests inside the statement's, as every span it anchors does.
+            vec!["3", "    return 3;\n"]
+        );
+    }
+
+    #[test]
+    fn a_constructor_keeps_its_nested_return() {
+        // The constructor is where an instance initializer's code actually runs, and a `return`
+        // there is legal source (JLS §14.17): the IBRInst shape, spelled faithfully.
+        let stmts = vec![Stmt::new(
+            StmtKind::If {
+                cond: Expr::direct(ExprKind::Boolean(true), 1),
+                then_body: vec![Stmt::new(
+                    StmtKind::Throw {
+                        value: Expr::direct(ExprKind::Str("never".to_string()), 2),
+                    },
+                    OriginSet::new(Origin::direct(2)),
+                )],
+                else_body: vec![
+                    Stmt::new(
+                        StmtKind::Assign {
+                            name: "x".to_string(),
+                            value: Expr::direct(ExprKind::Integer(4), 4),
+                        },
+                        OriginSet::new(Origin::direct(4)),
+                    ),
+                    Stmt::new(
+                        StmtKind::Return { value: None },
+                        OriginSet::new(Origin::direct(8)),
+                    ),
+                ],
+            },
+            OriginSet::new(Origin::direct(1)),
+        )];
+        let constructor = declaration(DeclarationForm::Constructor);
+        let mut budget = budget_with(1 << 20);
+        let (emitted, map) = artifact(
+            &stmts,
+            &facts(),
+            Some(&constructor),
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        );
         assert_eq!(
             emitted.text.matches("return;").count(),
             1,
             "{}",
             emitted.text
         );
-        assert_eq!(emitted.statements, 2, "{}", emitted.text);
-        assert_eq!(map.text_of_bci(&emitted.text, 2), vec!["        return;\n"]);
-        assert_eq!(map.text_of_bci(&emitted.text, 8), vec!["}\n"]);
+        assert_eq!(emitted.statements, 4, "{}", emitted.text);
+        assert_eq!(map.text_of_bci(&emitted.text, 8), vec!["        return;\n"]);
     }
 
     fn assignment(name: &str, value: i64, bci: u32) -> Stmt {
