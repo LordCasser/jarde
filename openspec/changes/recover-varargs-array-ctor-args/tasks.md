@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 varargs 切片、nested-ctor-argument-sites、new@1 全家族）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。
 - [x] 3.2 W1/W3 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核判据同源性、区间边界与三方行为，更新账本与巡查记录。
+- [x] 3.3 root 独立复核判据同源性、区间边界与三方行为，更新账本与巡查记录。（root 于合并主线 e2db102c 复核：W3 呈现 `new ArrayList((Collection) Arrays.asList((Object[]) new Integer[]{…}))`、W1.use 零引用、2832/0、fmt/openspec 245/245、磁盘达标。`ArrayInitializers::inline_argument_chain_bcis` 访问器（事实陈述、语义走查闭包）为正确的同源复用接口；直接数组实参与 `String([C)V` 除外沿用既有切片边界、LUB 混合装箱与裸位同口径拒绝——三个边界决定复核认可。）
