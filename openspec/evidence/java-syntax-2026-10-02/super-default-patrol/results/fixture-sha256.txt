@@ -1,0 +1,7 @@
+8bb928b4688927ee20910143283f0a8ed9ce5f9ca4563268e98ded62071e4738  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/F1.class
+551faa5dd6ee64e3d3d7c303f767f8847a6b81823eb6b1d51c823deba3a23f9a  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/F1$A.class
+cf7a0ab3354eee1affb296cb4ba828dc884bfb8206e671db115985b2504d8711  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/F1$B.class
+8dcf4ba406f7494a7fd5df641f26a9b0ae2bdc8702b9ee13b2e9cc3682d3f612  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/F1$Diamond.class
+cdf94e3809784ed563f7e5163c44d5c52440d730af63ea82006ac47584398871  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/F1$Reabstract$C.class
+00ff22b56f3e8314ae628c664522f3f92a269278465f4f11507f9177224f77b9  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/F1$Reabstract$Impl.class
+1efb8fadb4d433935c2ea5f81c373997cbebd4774fec0e051b7d9ce3d4a6abe4  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/F2.class
