@@ -103,47 +103,60 @@ fn run_class_source(source: &str, label: &str) -> String {
 
 #[test]
 fn return_consumers_use_short_circuit_operators_and_keep_all_origins() {
-    let first = class_source(CLASS);
-    let second = class_source(CLASS);
-    assert_eq!(
-        first.text, second.text,
-        "fresh-budget replay is deterministic"
-    );
-    for (name, expected, bcis) in [
-        ("and", "return arg0 > 0 && arg1 > 0;", [1, 5, 8, 12, 13]),
-        ("or", "return arg0 > 0 || arg1 > 0;", [1, 5, 8, 12, 13]),
-        (
-            "effectfulAnd",
-            "return positive(arg0) && positive(arg1);",
-            [4, 11, 14, 18, 19],
-        ),
-        (
-            "effectfulOr",
-            "return positive(arg0) || positive(arg1);",
-            [4, 11, 14, 18, 19],
-        ),
-    ] {
-        let body = recovered_body(&first, name);
-        let replay = recovered_body(&second, name);
-        assert_eq!(body.text, replay.text, "{name} text changed on replay");
-        assert_eq!(
-            source_map_shape(&body.source_map),
-            source_map_shape(&replay.source_map),
-            "{name} mappings changed on replay"
-        );
-        assert!(body.text.contains(expected), "{name}: {}", body.text);
-        assert!(!body.text.contains("?"), "{name}: {}", body.text);
-        assert!(!body.text.contains("% 2 != 0"), "{name}: {}", body.text);
-        for bci in bcis {
-            assert!(
-                !body.source_map.of_bci(bci).is_empty(),
-                "{name} has no source mapping for BCI {bci}: {:?}",
-                body.source_map.segments()
+    // `main`'s recovered expression is one deeply chained `append` call, and the presentation's
+    // bounded value recursion (`MAX_VALUE_DEPTH` levels of `render_value`) costs tens of kilobytes
+    // of stack per level in debug builds — its worst case sits within a frame or two of the test
+    // runner's default thread stack. Run the recovery on a thread with an explicit, adequate
+    // stack: nothing about the assertions changes, and the bounded recursion's own depth cap
+    // remains the limit that matters.
+    std::thread::Builder::new()
+        .stack_size(16 << 20)
+        .spawn(|| {
+            let first = class_source(CLASS);
+            let second = class_source(CLASS);
+            assert_eq!(
+                first.text, second.text,
+                "fresh-budget replay is deterministic"
             );
-        }
-    }
-    assert_eq!(run_original_class(), EXPECTED);
-    assert_eq!(run_class_source(&first.text, "recovered"), EXPECTED);
+            for (name, expected, bcis) in [
+                ("and", "return arg0 > 0 && arg1 > 0;", [1, 5, 8, 12, 13]),
+                ("or", "return arg0 > 0 || arg1 > 0;", [1, 5, 8, 12, 13]),
+                (
+                    "effectfulAnd",
+                    "return positive(arg0) && positive(arg1);",
+                    [4, 11, 14, 18, 19],
+                ),
+                (
+                    "effectfulOr",
+                    "return positive(arg0) || positive(arg1);",
+                    [4, 11, 14, 18, 19],
+                ),
+            ] {
+                let body = recovered_body(&first, name);
+                let replay = recovered_body(&second, name);
+                assert_eq!(body.text, replay.text, "{name} text changed on replay");
+                assert_eq!(
+                    source_map_shape(&body.source_map),
+                    source_map_shape(&replay.source_map),
+                    "{name} mappings changed on replay"
+                );
+                assert!(body.text.contains(expected), "{name}: {}", body.text);
+                assert!(!body.text.contains("?"), "{name}: {}", body.text);
+                assert!(!body.text.contains("% 2 != 0"), "{name}: {}", body.text);
+                for bci in bcis {
+                    assert!(
+                        !body.source_map.of_bci(bci).is_empty(),
+                        "{name} has no source mapping for BCI {bci}: {:?}",
+                        body.source_map.segments()
+                    );
+                }
+            }
+            assert_eq!(run_original_class(), EXPECTED);
+            assert_eq!(run_class_source(&first.text, "recovered"), EXPECTED);
+        })
+        .expect("the wide-stack thread spawns")
+        .join()
+        .expect("the recovery assertions hold");
 }
 
 #[test]

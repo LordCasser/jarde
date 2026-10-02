@@ -186,7 +186,7 @@ fn essential_and_all_evidence_keep_the_same_member_body() {
 }
 
 #[test]
-fn independent_effects_and_unproved_nested_monitors_do_not_receive_the_exit_exemption() {
+fn independent_effects_keep_their_refusal_and_a_proved_nested_monitor_presents() {
     let report = class_source_of(&open(EFFECTS), "GuardReturnEffects");
     let effect = method_of(&report, "effect");
     assert!(
@@ -200,15 +200,20 @@ fn independent_effects_and_unproved_nested_monitors_do_not_receive_the_exit_exem
         effect.text
     );
 
+    // `nested` — a proved inner pair — is the one shape `recover-nested-monitor-regions` lifted:
+    // the inner `synchronized (LOCK)` presents as the block it is inside the outer statement, the
+    // `return` the exemption writes stays inside the outer braces, and no instruction stays
+    // quoted. The exemption itself is unchanged: `effect`'s independent call keeps its refusal.
     let nested = method_of(&report, "nested");
     assert!(
-        nested.text.contains("@bytecode 0 28 31 38 45"),
-        "a nested monitor not proved by the single-monitor rule remains anchored:\n{}",
+        !nested.text.contains("@bytecode"),
+        "the nested synchronized pair is proved and anchors every instruction it read:\n{}",
         nested.text
     );
     assert!(
-        !nested.text.contains("synchronized (this)"),
-        "an unproved nested monitor cannot borrow another Guard's exit identity:\n{}",
+        nested.text.contains("synchronized (this)")
+            && nested.text.matches("synchronized (").count() == 2,
+        "the outer and inner synchronized blocks both present:\n{}",
         nested.text
     );
 }

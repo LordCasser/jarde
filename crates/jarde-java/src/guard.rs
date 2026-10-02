@@ -150,6 +150,54 @@ impl Resource {
     }
 }
 
+/// The one paired monitor pair a `synchronized` body holds inside itself: the inner
+/// `synchronized (inner) { … }` a source `synchronized (outer) { … synchronized (inner) { … } … }`
+/// writes. The pair is proved by the same reading the outer's own pair is — one header
+/// expression whose duplicated value the inner `monitorenter` locks, one normal exit and one
+/// handler that both load the header's own slot, all inside the outer's protected range — and it
+/// is presented as that inner block inside the statement the outer plan writes.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct InnerMonitor {
+    /// The inner statement's whole span: its header's first instruction through its handler's
+    /// rethrow. The outer body's own statements resume after it.
+    span: (u32, u32),
+    /// The BCI of the inner `monitorenter`.
+    enter_bci: u32,
+    /// The inner pair's unique normal-path `monitorexit`.
+    normal_exit_bci: u32,
+    /// The inner body, as a BCI range: the instructions written between the inner braces. They
+    /// are recovered as the region tree the walk builds — the inner synchronized's own body may
+    /// hold structure (a loop, a branch) the guarded body's straight-statement subset cannot
+    /// carry, exactly the way a proved `finally` body is.
+    body: (u32, u32),
+    /// The inner handler's entry block: claimed with the statement because the inner block took
+    /// its place, exactly as the outer's own handler's entry is.
+    handler_entry: CanonicalBlockId,
+}
+
+impl InnerMonitor {
+    /// The inner statement's whole span, from its header's first instruction through its
+    /// handler's rethrow.
+    pub fn span(&self) -> (u32, u32) {
+        self.span
+    }
+
+    /// The BCI of the inner `monitorenter`.
+    pub fn enter_bci(&self) -> u32 {
+        self.enter_bci
+    }
+
+    /// The inner pair's unique normal-path `monitorexit`.
+    pub fn normal_exit_bci(&self) -> u32 {
+        self.normal_exit_bci
+    }
+
+    /// The inner body, as a BCI range.
+    pub fn body(&self) -> (u32, u32) {
+        self.body
+    }
+}
+
 /// Which guarded statement a region is.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Shape {
@@ -180,6 +228,11 @@ pub enum Shape {
         /// region returns the value the body left on the stack — the return is written *inside* the
         /// braces, and the statement continues nowhere.
         returns: Option<u32>,
+        /// The one paired `monitorenter`/`monitorexit` pair the body holds **inside** itself — the
+        /// inner `synchronized` block a source `synchronized (outer) { … synchronized (inner) { … }
+        /// … }` writes, proved by the same pairing the outer's own pair is and presented as that
+        /// block. `None` is the ordinary single-monitor body.
+        nested: Option<Box<InnerMonitor>>,
     },
     /// One conditional whose two straight arms each leave this monitor and return their own value.
     /// This deliberately records a closed, two-arm mapping rather than a nested general region.
@@ -12532,16 +12585,21 @@ fn monitor(
     if !MONITOR.admits(profile) {
         return Ok(Some(refuse(Unproven::Profile, enter)));
     }
-    // One enter in the whole body, and the header holds the lock's own value and nothing else.
+    // The whole body holds one `monitorenter` — or two, the second the **inner** synchronized a
+    // source `synchronized (outer) { … synchronized (inner) { … } … }` writes inside the outer's
+    // region. Anything else (three or more, a second enter before this one) is not a shape this
+    // rule presents, and the pair itself is proved below the header checks the outer passes.
     let enters: Vec<u32> = facts
         .order
         .iter()
         .copied()
         .filter(|bci| matches!(facts.op(*bci), Some(Operation::Monitor { enter: true })))
         .collect();
-    if enters != vec![enter] {
-        return Ok(Some(refuse(Unproven::Monitor, enter)));
-    }
+    let nested_enter = match enters.as_slice() {
+        [only] if *only == enter => None,
+        [outer, inner] if *outer == enter && *inner > enter => Some(*inner),
+        _ => return Ok(Some(refuse(Unproven::Monitor, enter))),
+    };
     let Some(store_bci) = facts.previous_bci(enter) else {
         return Ok(Some(refuse(Unproven::Monitor, enter)));
     };
@@ -12552,40 +12610,10 @@ fn monitor(
     if !facts.one_expression((start, store_bci), enter) {
         return Ok(Some(refuse(Unproven::Monitor, start)));
     }
-    // The enter locks the value the header's own store filled: either the very value that store
-    // wrote, or — the idiom javac emits, `dup; astore slot; monitorenter` — the other output of the
-    // duplication that produced both. Without that tie, "the exits leave the monitor the body
-    // entered" would be a guess, and a `synchronized` block that leaves another object is a
-    // different program.
-    let entered_read = facts.step(enter).map(|step| {
-        step.instruction
-            .reads()
-            .iter()
-            .map(|(_, value)| *value)
-            .collect::<Vec<ValueId>>()
-    });
-    let Some(entered_read) = entered_read else {
-        return Ok(Some(refuse(Unproven::Monitor, enter)));
-    };
-    let [entered] = entered_read.as_slice() else {
-        return Ok(Some(refuse(Unproven::Monitor, enter)));
-    };
-    let produced = facts.ssa.value(*entered).def().clone();
-    let filled = facts.step(store_bci).is_some_and(|store| {
-        store
-            .instruction
-            .writes()
-            .iter()
-            .any(|(_, written)| facts.same(*written, *entered))
-            || store.instruction.reads().iter().any(|(_, read)| {
-                facts.same(*read, *entered) || *facts.ssa.value(*read).def() == produced
-            })
-    });
-    let duplicated = match &produced {
-        Definition::Instruction { bci, .. } => matches!(facts.op(*bci), Some(Operation::Duplicate)),
-        _ => false,
-    };
-    if !filled || !duplicated {
+    // The enter locks the value the header's own store filled: the `dup; astore slot;
+    // monitorenter` idiom javac emits. The tie is the same one the inner pair below is proved
+    // by, stated once in [`header_lock_ties`].
+    if !header_lock_ties(facts, store_bci, enter) {
         return Ok(Some(refuse(Unproven::Monitor, enter)));
     }
     let monitor_exits: Vec<u32> = facts
@@ -12594,7 +12622,7 @@ fn monitor(
         .copied()
         .filter(|bci| matches!(facts.op(*bci), Some(Operation::Monitor { enter: false })))
         .collect();
-    if monitor_exits.len() == 3 {
+    if nested_enter.is_none() && monitor_exits.len() == 3 {
         return Ok(Some(
             match monitor_branches(facts, start, enter, lock, &monitor_exits)? {
                 Ok(plan) => Verdict::Claimed(plan),
@@ -12620,18 +12648,64 @@ fn monitor(
     if row.start_bci != after {
         return Ok(Some(refuse(Unproven::RangeStart, after)));
     }
-    // The exits of the whole body: exactly two, the normal path's and the handler's.
+    // The exits of the whole body: exactly two, the normal path's and the handler's — or, where a
+    // nested pair was found, four, of which the inner pair proved below takes its two and the
+    // outer's own remain.
     let exits: Vec<u32> = facts
         .order
         .iter()
         .copied()
         .filter(|bci| matches!(facts.op(*bci), Some(Operation::Monitor { enter: false })))
         .collect();
-    let [normal_exit, handler_exit] = exits.as_slice() else {
-        return Ok(Some(refuse(Unproven::Monitor, enter)));
+    let (normal_exit, handler_exit, nested, nested_facts) = match nested_enter {
+        None => {
+            let [normal_exit, handler_exit] = exits.as_slice() else {
+                return Ok(Some(refuse(Unproven::Monitor, enter)));
+            };
+            (*normal_exit, *handler_exit, None, Vec::new())
+        }
+        Some(inner_enter) => {
+            // The inner pair's own proof: the header idiom, the slot its exits read, the row that
+            // protects its body, and the handler that leaves its monitor before rethrowing — the
+            // same pairing the outer's own pair is proved by, read inside the outer's region.
+            let Some(pair) = inner_monitor_pair(facts, &row, after, lock, inner_enter, &exits)?
+            else {
+                return Ok(Some(refuse(Unproven::Monitor, enter)));
+            };
+            let remaining: Vec<u32> = exits
+                .iter()
+                .copied()
+                .filter(|bci| *bci != pair.normal_exit_bci && *bci != pair.handler_exit_bci)
+                .collect();
+            let [normal_exit, handler_exit] = remaining.as_slice() else {
+                return Ok(Some(refuse(Unproven::Monitor, enter)));
+            };
+            // The inner synchronized completes inside the outer's own body: its normal exit
+            // precedes the outer's, so the outer never leaves first on the path both take. The
+            // inner handler may lie past the outer's own exit — the `return` shape's layout puts
+            // every handler after the return — exactly as the outer's own handler does.
+            if pair.normal_exit_bci >= *normal_exit {
+                return Ok(Some(refuse(Unproven::Monitor, enter)));
+            }
+            let nested_facts = vec![
+                inner_enter,
+                pair.exit_load,
+                pair.normal_exit_bci,
+                pair.handler_entry.bci(),
+                pair.handler_exit_bci,
+            ];
+            let nested = Box::new(InnerMonitor {
+                span: (pair.header_start, pair.handler_end),
+                enter_bci: inner_enter,
+                normal_exit_bci: pair.normal_exit_bci,
+                body: (pair.body_start, pair.exit_load),
+                handler_entry: pair.handler_entry.clone(),
+            });
+            (*normal_exit, *handler_exit, Some(nested), nested_facts)
+        }
     };
-    let Some(exit_load) = facts.previous_bci(*normal_exit) else {
-        return Ok(Some(refuse(Unproven::Monitor, *normal_exit)));
+    let Some(exit_load) = facts.previous_bci(normal_exit) else {
+        return Ok(Some(refuse(Unproven::Monitor, normal_exit)));
     };
     if facts.op(exit_load) != Some(&Operation::Load { slot: lock }) {
         return Ok(Some(refuse(Unproven::Monitor, exit_load)));
@@ -12641,8 +12715,8 @@ fn monitor(
     // range a monitor's row declares ends between the exit and that instruction in both shapes: the
     // exit is protected (it may raise), the instruction after it is not. Any other instruction, and
     // a `return` whose own links the proof below cannot read, is a shape this rule does not present.
-    let Some(after) = facts.next_bci(*normal_exit) else {
-        return Ok(Some(refuse(Unproven::Monitor, *normal_exit)));
+    let Some(after) = facts.next_bci(normal_exit) else {
+        return Ok(Some(refuse(Unproven::Monitor, normal_exit)));
     };
     let returns: Option<u32> = match facts.op(after) {
         // Today's shape: the statement's run continues at the transfer's own target.
@@ -12708,11 +12782,11 @@ fn monitor(
         Ok(handler) => handler,
         Err((unproven, at)) => return Ok(Some(refuse(unproven, at))),
     };
-    if handler.exit_bci != *handler_exit {
-        return Ok(Some(refuse(Unproven::Monitor, *handler_exit)));
+    if handler.exit_bci != handler_exit {
+        return Ok(Some(refuse(Unproven::Monitor, handler_exit)));
     }
     let guarded_rows: BTreeSet<u32> = facts
-        .covering(*handler_exit)
+        .covering(handler_exit)
         .iter()
         .filter_map(|row| {
             (row.catch_type_index.is_none()
@@ -12721,13 +12795,17 @@ fn monitor(
         })
         .collect();
     if guarded_rows.is_empty() {
-        return Ok(Some(refuse(Unproven::Monitor, *handler_exit)));
+        return Ok(Some(refuse(Unproven::Monitor, handler_exit)));
     }
     let mut cleanup_rows = guarded_rows;
     cleanup_rows.insert(row.ordinal);
-    // The body: the instructions the region protects, between the enter and the normal exit's load.
+    // The body: the instructions the region protects, between the enter and the normal exit's
+    // load. The single-monitor body is the straight run of statements this subset carries. A
+    // nested pair's body is a **structured** one — it may hold the loop or branch that surrounds
+    // or fills the inner block — and the region tree the walk builds from it is its presentation,
+    // bounded exactly the way a proved `finally` body's is.
     let body = (row.start_bci, exit_load);
-    if body.0 >= body.1 || !facts.statement_free(body) {
+    if body.0 >= body.1 || (nested.is_none() && !facts.statement_free(body)) {
         return Ok(Some(refuse(Unproven::Body, body.0)));
     }
     // Everything between the statement's own start and where it ends belongs to it: its own run,
@@ -12741,7 +12819,14 @@ fn monitor(
     // The handler's block is claimed even where it lies *outside* the statement's own range — after
     // a `return` that ends the method — because the statement writes the handler's exit: a block the
     // statement claimed and did not write would drop the statements it holds, and one it does not
-    // claim at all is quoted as an uncovered block.
+    // claim at all is quoted as an uncovered block. The inner pair's handler is claimed for the same
+    // reason: the inner statement took its place.
+    if let Some(nested) = nested.as_deref() {
+        let entry = nested.handler_entry.clone();
+        if !owned.contains(&entry) {
+            owned.push(entry);
+        }
+    }
     if !owned.contains(&handler.entry) {
         owned.push(handler.entry.clone());
     }
@@ -12750,22 +12835,26 @@ fn monitor(
     let mut facts_read: Vec<u32> = vec![
         enter,
         exit_load,
-        *normal_exit,
+        normal_exit,
         handler.entry.bci(),
         handler.exit_bci,
     ];
+    // The inner pair's own readings are anchors of the inner statement's text the same way: the
+    // header, the exits and the handler it took the place of.
+    facts_read.extend(nested_facts);
     if let Some(return_bci) = returns {
         // The `return` the normal path ends in is an instruction the proof read, and an anchor of
         // the statement's own text: the value it returns is the one the body's read produced.
         facts_read.push(return_bci);
-        facts_read.sort_unstable();
     }
+    facts_read.sort_unstable();
     Ok(Some(Verdict::Claimed(Plan {
         shape: Shape::Monitor {
             enter_bci: enter,
-            normal_exit_bci: *normal_exit,
+            normal_exit_bci: normal_exit,
             cleanup_rows,
             returns,
+            nested,
         },
         lead: (start, start),
         body,
@@ -12774,6 +12863,212 @@ fn monitor(
         enclosing: None,
         facts: facts_read,
     })))
+}
+
+/// The inner pair a nested `synchronized` body holds, as the proof read it: the exits and anchors
+/// the outer proof pairs on, beside the record the shape itself carries.
+struct ProvedInnerPair {
+    /// The inner pair's unique normal-path `monitorexit`.
+    normal_exit_bci: u32,
+    /// The load in front of it: the instruction that names the slot the header stored.
+    exit_load: u32,
+    /// The inner pair's handler exit, proved by the handler's own sequence.
+    handler_exit_bci: u32,
+    /// The inner handler's entry block, and the end of its rethrow.
+    handler_entry: CanonicalBlockId,
+    handler_end: u32,
+    /// The first instruction of the inner header's own expression.
+    header_start: u32,
+    /// The first instruction of the inner body: where the inner row begins.
+    body_start: u32,
+}
+
+/// Proves the one paired inner monitor pair an outer `synchronized` body may hold: the inner
+/// `synchronized (inner) { … }` of `synchronized (outer) { … synchronized (inner) { … } … }`.
+///
+/// The pairing is the outer's own, read inside the outer's region:
+///
+/// * the inner header is the one idiom — the value the inner `monitorenter` locks is the one the
+///   header's own `dup; astore slot` produced, and the header expression begins where the last
+///   statement of the outer body ends, derived backwards over exactly the instructions whose
+///   written values the header consumes;
+/// * the inner row begins right after the inner enter and stays inside the outer's own row — the
+///   inner region never crosses out of the outer's protected range;
+/// * the inner pair's normal exit is the one `monitorexit` whose load reads the inner slot inside
+///   the inner row, and its handler leaves the inner monitor before rethrowing, protected by its
+///   own catch-all row.
+///
+/// `None` is every way this reading falls short; the caller keeps the refusal it had.
+fn inner_monitor_pair(
+    facts: &mut Facts<'_>,
+    row: &ExceptionHandlerFact,
+    outer_after: u32,
+    outer_lock: u16,
+    inner_enter: u32,
+    exits: &[u32],
+) -> Result<Option<ProvedInnerPair>, StopReason> {
+    // The header's own store, on its own slot: two monitors one slot shares is not a shape this
+    // rule can pair — the exits' loads could not tell the pair's apart.
+    let Some(inner_store) = facts.previous_bci(inner_enter) else {
+        return Ok(None);
+    };
+    let Some(Operation::Store { slot: inner_lock }) = facts.op(inner_store) else {
+        return Ok(None);
+    };
+    let inner_lock = *inner_lock;
+    if inner_lock == outer_lock {
+        return Ok(None);
+    }
+    if !header_lock_ties(facts, inner_store, inner_enter) {
+        return Ok(None);
+    }
+    // The header is one expression that begins where the outer body's last statement ends. The
+    // start is derived backwards from the store: an instruction joins the header only by a value
+    // it writes that the header consumes, so a store, a branch or a discarded call's `pop` — a
+    // statement of the body — ends the walk, and the header never reaches behind the outer's own
+    // protected range.
+    let header_end = facts.span_end(inner_enter);
+    let mut header_start = inner_store;
+    while header_start > outer_after {
+        let Some(previous) = facts.previous_bci(header_start) else {
+            break;
+        };
+        facts.charge(previous)?;
+        let Some(step) = facts.step(previous) else {
+            break;
+        };
+        if matches!(
+            facts.op(previous),
+            Some(Operation::Store { .. }) | Some(Operation::Increment { .. })
+        ) || step.instruction.writes().is_empty()
+        {
+            break;
+        }
+        let consumed = step.instruction.writes().iter().all(|(_, written)| {
+            facts.bcis((previous, header_end)).iter().any(|reader| {
+                facts.step(*reader).is_some_and(|read| {
+                    read.instruction
+                        .reads()
+                        .iter()
+                        .any(|(_, value)| facts.same(*value, *written))
+                })
+            })
+        });
+        if !consumed {
+            break;
+        }
+        header_start = previous;
+    }
+    if !facts.one_expression((header_start, inner_store), inner_enter) {
+        return Ok(None);
+    }
+    // The inner row: it begins right after the inner enter, as the outer's own does, and it lies
+    // wholly inside the outer's protected range.
+    let Some(inner_after) = facts.next_bci(inner_enter) else {
+        return Ok(None);
+    };
+    let Some(inner_row) = facts.innermost(inner_after) else {
+        return Ok(None);
+    };
+    if inner_row.start_bci != inner_after
+        || inner_row.start_bci <= row.start_bci
+        || inner_row.end_bci > row.end_bci
+    {
+        return Ok(None);
+    }
+    // The inner pair's normal exit: the one exit inside the inner row whose load reads the slot
+    // the inner header stored. Exits the outer row also covers stay the outer's own to pair.
+    let mut normal: Option<(u32, u32)> = None;
+    for exit in exits {
+        let Some(load) = facts.previous_bci(*exit) else {
+            continue;
+        };
+        facts.charge(*exit)?;
+        if facts.op(load) == Some(&Operation::Load { slot: inner_lock })
+            && inner_row.start_bci <= *exit
+            && *exit < inner_row.end_bci
+        {
+            if normal.is_some() {
+                return Ok(None);
+            }
+            normal = Some((*exit, load));
+        }
+    }
+    let Some((normal_exit_bci, exit_load)) = normal else {
+        return Ok(None);
+    };
+    // The inner handler: it leaves the inner monitor before rethrowing, and its own exit is one
+    // of the body's — protected by its own catch-all row, the way the outer's handler is. Its
+    // block lies past its protected range, where javac writes it: inside the outer's region in
+    // the `goto` shape, past the shared `return` in the `return` shape, beside the outer's own.
+    let Ok(handler) = monitor_handler(facts, inner_row, inner_lock) else {
+        return Ok(None);
+    };
+    if !exits.contains(&handler.exit_bci)
+        || handler.span.0 < inner_row.end_bci
+        || facts
+            .covering(handler.exit_bci)
+            .iter()
+            .filter(|guard| {
+                guard.catch_type_index.is_none()
+                    && facts.row_handler(guard).as_ref() == Some(&handler.entry)
+            })
+            .count()
+            == 0
+    {
+        return Ok(None);
+    }
+    // The inner body begins where the inner row does and ends at the normal exit's load: the
+    // instructions between the inner braces. An empty body is not a region the walk can recover,
+    // and the pair keeps the refusal rather than present a block that holds nothing.
+    if inner_row.start_bci >= exit_load {
+        return Ok(None);
+    }
+    Ok(Some(ProvedInnerPair {
+        normal_exit_bci,
+        exit_load,
+        handler_exit_bci: handler.exit_bci,
+        handler_entry: handler.entry.clone(),
+        handler_end: handler.span.1,
+        header_start,
+        body_start: inner_row.start_bci,
+    }))
+}
+
+/// The tie every `synchronized` header states, outer or inner: the value the `monitorenter` locks
+/// is the one the header's own store filled — either the very value that store wrote, or, the
+/// idiom javac emits (`dup; astore slot; monitorenter`), the other output of the duplication that
+/// produced both. Without that tie, "the exits leave the monitor the body entered" would be a
+/// guess, and a `synchronized` block that leaves another object is a different program.
+fn header_lock_ties(facts: &Facts<'_>, store_bci: u32, enter: u32) -> bool {
+    let Some(entered_read) = facts.step(enter).map(|step| {
+        step.instruction
+            .reads()
+            .iter()
+            .map(|(_, value)| *value)
+            .collect::<Vec<ValueId>>()
+    }) else {
+        return false;
+    };
+    let [entered] = entered_read.as_slice() else {
+        return false;
+    };
+    let produced = facts.ssa.value(*entered).def().clone();
+    let Some(store) = facts.step(store_bci).map(|step| step.instruction) else {
+        return false;
+    };
+    let filled = store
+        .writes()
+        .iter()
+        .any(|(_, written)| facts.same(*written, *entered))
+        || store.reads().iter().any(|(_, read)| {
+            facts.same(*read, *entered) || *facts.ssa.value(*read).def() == produced
+        });
+    let duplicated = match &produced {
+        Definition::Instruction { bci, .. } => matches!(facts.op(*bci), Some(Operation::Duplicate)),
+        _ => false,
+    };
+    filled && duplicated
 }
 
 /// Proves the one bounded two-return monitor shape carried by `Shape::MonitorBranches`.
