@@ -122,7 +122,7 @@ pub use facts::{
 pub use guard::{Plan as GuardPlan, Resource as GuardResource, Shape as GuardShape};
 pub use names::{
     AliasReason, DebugLocal, LocalVariable, NameTable, RenderedName, SlotEvidence, alias_for,
-    is_java_identifier,
+    is_java_identifier, nested_member_reference_spelling, nested_reference_spelling,
 };
 pub use normal_flow::{ExcludedEdges, NormalFlowView};
 pub use region::{FallbackReason, Recovered, Region};

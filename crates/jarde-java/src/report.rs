@@ -583,6 +583,8 @@ pub fn emit_class_source_method_ast(
     crate::emit::emit_class_source_statements(
         &ast.projection.program.stmts,
         &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
         indentation,
         budget,
     )
@@ -808,6 +810,8 @@ pub fn project_class_source_integer_constants(
     let body = crate::emit::emit_class_source_statements(
         &program.stmts,
         &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
         1,
         budget,
     )?;
@@ -845,6 +849,8 @@ pub fn emit_class_source_anonymous_constructor_initializer(
     crate::emit::emit_class_source_statements(
         std::slice::from_ref(statement),
         &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
         4,
         budget,
     )
@@ -1253,6 +1259,8 @@ pub fn emit_class_source_anonymous_return_at(
     let (text, matched, range) = crate::emit::emit_class_source_anonymous_return(
         &ast.projection.program.stmts,
         &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
         indentation,
         allocation_bci,
         allocation_type,
@@ -1276,6 +1284,14 @@ pub fn emit_class_source_anonymous_return_at(
 pub(crate) struct ClassSourceMethodAstSource {
     pub(crate) program: crate::build::Program,
     pub(crate) member: jarde_reader::model::PhysicalMethodId,
+    /// The class this run's body belongs to, in the source spelling (`p.Outer`), when the run
+    /// stated one. Every emitter that re-emits this retained AST spells nested type references
+    /// against it ([`crate::names::nested_member_reference_spelling`]), so a fragment written by
+    /// the class-source adapter and the body of a plain recovery nest the same class the same way.
+    pub(crate) current_class: Option<String>,
+    /// The member classes that class's own `InnerClasses` attribute states, in the source
+    /// spelling: the row set the nested source spelling is gated on.
+    pub(crate) nested_class_members: Vec<String>,
     /// The presentation name assigned to each descriptor parameter slot, in descriptor order.
     /// `None` means a reused slot did not have one unambiguous whole-slot name.
     pub(crate) parameter_names: Vec<Option<String>>,
@@ -1679,9 +1695,11 @@ pub struct ClassSourceEnumSwitchFieldUse {
 pub fn emit_class_initializer_value(
     value: &crate::ast::Expr,
     member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    emit_initializer_value(value, member, budget)
+    emit_initializer_value(value, member, current_class, nested_class_members, budget)
 }
 
 /// Emits only statement nodes selected by a completed enum suffix certificate.
@@ -1689,9 +1707,18 @@ pub fn emit_class_initializer_value(
 pub fn emit_class_enum_initializer_statements(
     statements: &[crate::ast::Stmt],
     member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    crate::emit::emit_class_source_statements(statements, member, 2, budget)
+    crate::emit::emit_class_source_statements(
+        statements,
+        member,
+        current_class,
+        nested_class_members,
+        2,
+        budget,
+    )
 }
 
 /// Re-emits the two user statements of a proved enum terminal constructor after mapping the
@@ -1704,6 +1731,8 @@ pub fn emit_class_enum_initializer_statements(
 pub fn emit_class_enum_constructor_body(
     candidate: &ClassEnumConstructorCandidates,
     member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     budget: &mut Budget,
 ) -> Result<Option<String>, StopReason> {
     use crate::ast::{AssignOp, ConstructorTarget, ExprKind, Stmt, StmtKind};
@@ -1808,7 +1837,14 @@ pub fn emit_class_enum_constructor_body(
             field_step.source.clone(),
         ),
     ];
-    crate::emit::emit_class_enum_constructor_statements(&statements, member, budget).map(Some)
+    crate::emit::emit_class_enum_constructor_statements(
+        &statements,
+        member,
+        current_class,
+        nested_class_members,
+        budget,
+    )
+    .map(Some)
 }
 
 /// Re-emits one same-run method AST with a proved enum selector and constant labels.
@@ -4494,6 +4530,17 @@ fn recover_inner(
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program: program.clone(),
                 member,
+                current_class: request
+                    .facts
+                    .method()
+                    .declaring_class()
+                    .map(|declaring| declaring.name().replace('/', ".")),
+                nested_class_members: request
+                    .facts
+                    .method()
+                    .declaring_class()
+                    .map(|declaring| declaring.inner_class_members().to_vec())
+                    .unwrap_or_default(),
                 parameter_names,
                 complete_code: request.ir.code().is_some_and(|code| {
                     matches!(code.execution, ExecutionReport::Complete { .. })
@@ -6432,6 +6479,8 @@ mod lambda_helper_instruction_coverage_tests {
         ClassSourceMethodAstSource {
             program,
             member,
+            current_class: None,
+            nested_class_members: Vec::new(),
             parameter_names: Vec::new(),
             complete_code: true,
             has_exception_handlers: false,
@@ -6520,6 +6569,8 @@ mod anonymous_capture_projection_tests {
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program,
                 member,
+                current_class: None,
+                nested_class_members: Vec::new(),
                 parameter_names: Vec::new(),
                 complete_code: false,
                 has_exception_handlers: false,

@@ -1280,6 +1280,27 @@ fn finish_driver_read(
         }
         None => Vec::new(),
     };
+    // The member classes the declaring class's own `InnerClasses` attribute states, read once from
+    // the same bytes the bootstrap table came from. This row set is the only fact that tells a
+    // nested binary name from a top-level name that merely carries `$`, which is what the recovery
+    // layer's nested source spelling needs; a class file that declares no attribute states none.
+    let inner_class_members = match facts
+        .attributes
+        .iter()
+        .find(|shell| shell.name.raw().0.as_slice() == b"InnerClasses")
+    {
+        Some(shell) => jarde_reader::classfile::attribute_facts(
+            bytes,
+            &[shell.clone()],
+            &facts.constant_pool,
+            budget,
+        )?
+        .inner_classes
+        .iter()
+        .map(|row| jarde_reader::classfile::cp_class_name(&facts.constant_pool, row.class_index))
+        .collect::<std::result::Result<Vec<_>, _>>()?,
+        None => Vec::new(),
+    };
     // The declaration facts the `frame` pass reads beside the body and the graph. The class's own
     // facts stay the shared bundle the read produced; only the member's own flags and the class's
     // declared name are this run's own values.
@@ -1311,6 +1332,7 @@ fn finish_driver_read(
             identity,
             this_class,
             access_flags,
+            inner_class_members,
         )
         .map(Box::new),
         class_read,

@@ -602,10 +602,18 @@ fn derived_facts(analysis: &MethodIrAnalysis, method: &PhysicalMethodId) -> Reco
             declaration.parameter_slots(),
         )
         .with_access_flags(declaration.access_flags())
-        .with_declaring_class(DeclaringClass::new(
-            String::from_utf8_lossy(&declaration.class_name().0).into_owned(),
-            declaration.class_access_flags(),
-        )),
+        .with_declaring_class(
+            DeclaringClass::new(
+                String::from_utf8_lossy(&declaration.class_name().0).into_owned(),
+                declaration.class_access_flags(),
+            )
+            .with_inner_class_members(
+                declaration
+                    .inner_class_members()
+                    .iter()
+                    .map(|member| String::from_utf8_lossy(&member.0).replace('/', ".")),
+            ),
+        ),
     )
     .with_debug_locals(debug)
 }
