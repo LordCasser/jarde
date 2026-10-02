@@ -24,3 +24,7 @@ javac 拒编（"return Outside method"）→ 含静态块的类**整类不可重
 `recover-init-block-return-suppression`（窄呈现切片）：静态初始化块（`<clinit>`）与实例初始化块语境的语句发射抑制尾随（及块内冗余）`return;`——只影响初始化块呈现通道，方法/构造器零变化。F2 整类可重编；既有 `<clinit>` 家族（enum `<clinit>` 折叠等）diff 逐字核对。
 
 原 class 为行为基准。
+
+## 实现收口（2026-10-02，主线 `352a87d7` 之上）
+
+`recover-init-block-return-suppression` 已实现并通过验收（tasks 1.1–3.2 勾选；3.3 root 复核待做）。发射点取证、三个变体前后、三方对照与全量 462 工件 diff 守护见 [ir/](ir/)。要点：`emit.rs` 既有静态初始化器顶层末 return → 闭括号投影沿同一 `DeclarationForm::StaticInitializer` 分派扩展到**嵌套** void return（区域构建器把字节码顶层终结符随 fall-through 尾部结构化进 else 臂，是 F2 违例根因）；构造器/方法通道逐字不变（IBRInst 前后逐字节相同）。
