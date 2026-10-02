@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 labeled-loop-tail-coverage、switch-loop-join、enclosing-named-catch、loop 系全部既有测试）、fmt、CI 完整 29 项 allowlist clippy（`.github/workflows/ci.yml` 实有清单）、`openspec validate --all --strict`（246 项）、diff check；磁盘纪律同前。（结果见 [dj/README §4](../../evidence/java-syntax-2026-10-02/loop-double-jump-patrol/dj/README.md)）
 - [x] 3.2 L1/L2/L5 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。（五类 JADX 腿全部与原类一致；Jarde 腿 L1/L2/DJLoops 全一致、L5 除既有 dblJumpDoWhilePlain 引用路径外一致；SHA 见 `dj/results-dj/sha256.txt`）
-- [ ] 3.3 root 独立复核边归类判据、归属分派与三方行为，更新 CF 账本与巡查记录。
+- [x] 3.3 root 独立复核边归类判据、归属分派与三方行为，更新 CF 账本与巡查记录。（root 于合并主线 d1d7e976 复核：brkSelfContSelf/dblJumpDoWhile 双最小复现恢复、L5 整类重编与基线逐行一致（含此前被引方法翻正）、2839/0、fmt/openspec 247/247。实现者判别修正复核认可：真缺失族为"同体组合含 continue 边"（双 break 不同目标/break+labeled continue 主线本有）；期间两真实回归（endless 误伤、LoopContinue 边臂权重）已修并回归测试钉死。**附带发现立案**：L5.dblJumpDoWhilePlain（do-while(false) 体内 return）为既有静默行为偏差（重编 `i=10`≠原类 `early`，方法带 BCI 引注但类可编译）——独立切片处理，见 do-while-return-patrol。）
