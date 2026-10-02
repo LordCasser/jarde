@@ -1,0 +1,3 @@
+cb79d5e1ce945cc41034900ae85e3987e79dd9f55cdc3aa4714b97267b310521  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1.class
+45058f87bea142df5f67994054a4db27d58ec3796e014aee6950e9ae34e2a5a4  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Inner.class
+fa5d9277b108e8f68b4459925ea92954aed29147dc2f7bf806ec4d4ca23eec99  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Stat.class
