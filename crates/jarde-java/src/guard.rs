@@ -14762,12 +14762,14 @@ fn enclosing_clauses<'a>(
 ///
 /// The handler is one canonical block, the row's entry instruction is the binding store that names
 /// the clause's parameter, and the rest of the block is the statement whitelist plus the value
-/// `return` — the statements a clause body presents as ordinary code, and nothing a branch, a loop
-/// or a second block would need (complex bodies follow [`catches`]' extension path in a later
-/// slice). The block's only normal continuation is the statement's own: a body that ends in a
-/// `return` has none, and one that falls through joins the code after the statement, where both
-/// paths converge. Anything else keeps the whole shape at the unexplained-row refusal the row held
-/// before this reading existed.
+/// `return` and the one discarded call ([`Facts::discarded_call_pop`]) — the statements a clause
+/// body presents as ordinary code, the call whose result the source drops (`log.append("E");`)
+/// among them exactly as the guarded body's own subset carries it, and nothing a branch, a loop or
+/// a second block would need (complex bodies follow [`catches`]' extension path in a later slice).
+/// The block's only normal continuation is the statement's own: a body that ends in a `return` has
+/// none, and one that falls through joins the code after the statement, where both paths converge.
+/// Anything else keeps the whole shape at the unexplained-row refusal the row held before this
+/// reading existed.
 fn enclosing_clause(
     facts: &Facts<'_>,
     row: &ExceptionHandlerFact,
@@ -14787,7 +14789,8 @@ fn enclosing_clause(
     }
     for step in steps.iter().skip(1) {
         let carried = facts.statement_carried(step.bci())
-            || matches!(facts.op(step.bci()), Some(Operation::Return));
+            || matches!(facts.op(step.bci()), Some(Operation::Return))
+            || facts.discarded_call_pop(step.bci());
         if !carried {
             return None;
         }
