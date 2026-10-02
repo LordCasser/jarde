@@ -1,0 +1,12 @@
+9f6749fe2bf8ea628c503978c0c1160d616cfa3211d172c2a4279b3566525c2a  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1.class
+d19f52961c4e3895df9ee794e851bd1e6a21ec9f429a352f3608ee1a7a2064cd  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1$Base.class
+41d289dd3155bf5a4fcaecf056d09c1fc14a94d8aa40874a94356c4a9e3e6037  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1$Ctrl.class
+8d86749dd982ee6807bee97d63153bafeb7fa163f43a65c265c8cf39ee3c03ec  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1$Deep.class
+425c5caab60d035c3f531a100355c40fe05d8789a900faee8b4e75943bc4f1a6  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1$Err.class
+f27e56efa734b31b56d88ade04c1659633552947e3a49797f7dd68e68d644738  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1$Inner.class
+afb4ac6813a87af1f8a746e11a488b202ee93c67367cbc53ed4ef85e0ae1b752  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1$Inner$Leaf.class
+64d735359cc7431b99b2124d38f5c56c93e2e1106681d327b9a74d7006ee35b7  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M1User.class
+2e7e1edb4d9a9dacfb9507eefca849816e4e79ce8dd5354e72f63eb9ee86f8f3  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M2.class
+b7eb03fd7562f97d25aa67afdc4060536d9a89cbeabe217828737fda2bc2a228  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/M2$Solo.class
+7dbe006d7a8b6889c539b82a0a8dca524fde4755671af15f8ded23cc7f154e9d  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/fam.jar
+59a54dcf3bb5f94403cc7b9b47e194238525c88331007ec2c64265bfcb981ac3  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/member-class-folding-patrol/fixture/solo.jar
