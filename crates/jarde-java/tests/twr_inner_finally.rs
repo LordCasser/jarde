@@ -160,7 +160,7 @@ fn the_patrols_t4_nested_presents_the_inner_try_finally_in_order() {
 }
 
 #[test]
-fn the_frozen_variants_present_their_forms_and_the_solo_stays_refused() {
+fn the_frozen_variants_present_their_forms_and_the_solo_is_the_direct_form() {
     // v1: the inner statement declares no resource of its own. v2: no finally at all — the flat
     // multi-resource presentation, which the fused-continuation reading now completes. v3: the
     // inner finally's guarded body returns; the saved value's declaration stays inside the
@@ -186,13 +186,14 @@ fn the_frozen_variants_present_their_forms_and_the_solo_stays_refused() {
         "the T4 form presents nested in its own class:\n{nested}"
     );
     assert!(!nested.contains("@bytecode"), "{nested}");
-    // A TWR with a `finally` of its own — no enclosing `try (…)` body around it — is a compound
-    // this slice does not claim (the finally is the TWR's own clause, not a body form): the
-    // method keeps the refusal it had.
+    // A TWR with a `finally` of its own — no enclosing `try (…)` body around it — is the
+    // **direct** form `recover-twr-direct-finally` claims (the trailing sub-certificate): it
+    // left this slice refused and now presents as the statement this family's test pins in
+    // `twr_direct_finally.rs`.
     let solo = recovered_text(TF, "solo", "()Ljava/lang/String;", 0);
-    assert!(
-        solo.contains("@bytecode") && !solo.contains("finally {"),
-        "the TWR-own finally stays quoted:\n{solo}"
+    assert_eq!(
+        solo,
+        "// @method solo()Ljava/lang/String;\n// @declaration a static method of `TF`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    try (TF local0 = new TF(\"b\")) {\n        TF.log.append(\"body\");\n    } finally {\n        TF.log.append(\"mid\");\n    }\n    return TF.log.toString();\n}\n"
     );
 }
 
