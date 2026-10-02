@@ -1,0 +1,3 @@
+1ffe8132c577f2ee80b3a5d5e4b2eaec856f05b4a204262e406081245c35af5b  openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P1.class
+35f0801c2220e8f1d92cbb011f118b6f5acc23792e837079ff2b14f24ff70885  openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P2.class
+e88b7707bcb1952446cda3e7661c004ddc8dbe383cdf847e793653d9516aaa30  openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P3.class
