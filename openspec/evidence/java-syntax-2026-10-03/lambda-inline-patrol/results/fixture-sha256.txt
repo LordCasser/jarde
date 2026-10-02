@@ -1,0 +1,2 @@
+fdc6a6dee98ffa03b1ecfcd2d861f2feb059ca9982e9dcf2997a08ed86cd3f5b  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/lambda-inline-patrol/fixture/Y1.class
+e7bab1f1d09e9f43ad12c6b986625bfa020ce8c20970cfdb14823b8439fe8f90  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/lambda-inline-patrol/fixture/Y1$StrFn.class
