@@ -712,13 +712,22 @@ pub enum ClassSourceMemberFamily {
     },
     PreparedPair {
         /// The root's InnerClasses order, retained with each selected physical child.
-        members: [ClassSourcePairMember; 2],
+        members: [ClassSourceMemberChild; 2],
+        projection: ClassSourceMemberProjection,
+    },
+    /// The direct static member family a fold projection renders: every child stays its own
+    /// physical report, and only `projection: Projected` states that the root's text carries
+    /// the nested declarations. The members are in the root's InnerClasses row order.
+    PreparedStatic {
+        members: Vec<ClassSourceMemberChild>,
         projection: ClassSourceMemberProjection,
     },
 }
 
+/// One selected physical child retained beside its proved relation, in the order the root's
+/// own `InnerClasses` table states. The declaration pair and the static fold family share it.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-pub struct ClassSourcePairMember {
+pub struct ClassSourceMemberChild {
     pub relation: ClassSourceMemberRelation,
     pub child: Box<ClassSourceReport>,
 }
@@ -834,6 +843,10 @@ pub enum MemberFamilyDerivedKind {
     HiddenCaptureWrite,
     HiddenOuterSuperBridge,
     NestedAnonymousExpression,
+    /// One reference a static member fold re-spelled: a pool `$` name of a folded member became
+    /// the nested source spelling inside the fold's own text. The anchors name the physical
+    /// evidence (field, method point, or member signature) beside both class definitions.
+    StaticMemberTypeReference,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -5701,6 +5714,12 @@ fn declaration_member(declaration: &str, markers: &[String]) -> String {
     out
 }
 
+/// One field's written form with a projection's own declaration: the same markers the physical
+/// member carries, beside the re-spelled declaration a static member fold states.
+pub(crate) fn field_member_text(field: &ClassSourceField, declaration: &str) -> String {
+    declaration_member(declaration, &field.markers)
+}
+
 /// One member written as its markers alone: nothing else about it can be spelled.
 fn comment_member(markers: &[String]) -> String {
     let mut out = String::new();
@@ -7799,11 +7818,12 @@ pub(crate) fn source_text(
     source_text_with_member(
         declaration,
         fields,
+        &[],
         methods,
         context,
         None,
         &[],
-        None,
+        &[],
         &mut Vec::new(),
     )
     .expect("ordinary class writer has no derived ranges to translate")
@@ -7817,18 +7837,42 @@ pub(crate) fn source_text_with_nested_declaration(
     method_texts: &[MemberFamilyMethodText],
     nested: &NestedClassSourceText,
 ) -> (String, Vec<MemberFamilyDerivedProjection>) {
+    source_text_with_nested_declarations(
+        declaration,
+        fields,
+        &[],
+        methods,
+        context,
+        method_texts,
+        std::slice::from_ref(nested),
+    )
+}
+
+/// The same assembly with any number of sibling nested declarations: the fold's children are
+/// appended in the order the caller states (the root's own `InnerClasses` row order), one
+/// blank line apart, before the unit's closing brace.
+pub(crate) fn source_text_with_nested_declarations(
+    declaration: &ClassSourceDeclaration,
+    fields: &[ClassSourceField],
+    field_texts: &[MemberFamilyMethodText],
+    methods: &[ClassSourceMethod],
+    context: &ClassSourceTextContext<'_>,
+    method_texts: &[MemberFamilyMethodText],
+    nested: &[NestedClassSourceText],
+) -> (String, Vec<MemberFamilyDerivedProjection>) {
     let mut derived = Vec::new();
     let text = source_text_with_member(
         declaration,
         fields,
+        field_texts,
         methods,
         context,
         None,
         method_texts,
-        Some(nested),
+        nested,
         &mut derived,
     )
-    .expect("nested enum source writer has no member-family ranges to translate");
+    .expect("nested declaration writer has no member-family ranges to translate");
     (text, derived)
 }
 
@@ -7857,11 +7901,12 @@ pub(crate) fn source_text_with_method_projections(
     let text = source_text_with_member(
         declaration,
         &root.fields,
+        &[],
         &root.methods,
         &context,
         None,
         method_texts,
-        None,
+        &[],
         &mut derived,
     )?;
     let expected = method_texts
@@ -8195,11 +8240,12 @@ pub(crate) fn member_family_source_text(
     let text = source_text_with_member(
         declaration,
         &root.fields,
+        &[],
         &root.methods,
         &context,
         Some(member),
         &[],
-        None,
+        &[],
         &mut derived,
     )?;
     let expected = 1
@@ -8232,7 +8278,7 @@ pub(crate) fn member_family_source_text(
 /// The physical root remains the equality baseline, and neither child's text is published alone.
 pub(crate) fn declaration_pair_source_text(
     root: &ClassSourceReport,
-    members: &[ClassSourcePairMember; 2],
+    members: &[ClassSourceMemberChild; 2],
 ) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
     let declaration = root.declaration.as_ref()?;
     let context = ClassSourceTextContext {
@@ -8309,11 +8355,12 @@ pub(crate) fn declaration_pair_source_text(
     let text = source_text_with_member(
         declaration,
         &root.fields,
+        &[],
         &root.methods,
         &context,
         None,
         &[],
-        Some(&nested),
+        std::slice::from_ref(&nested),
         &mut derived,
     )?;
     if derived.len() != 6
@@ -8331,11 +8378,12 @@ pub(crate) fn declaration_pair_source_text(
 fn source_text_with_member(
     declaration: &ClassSourceDeclaration,
     fields: &[ClassSourceField],
+    field_texts: &[MemberFamilyMethodText],
     methods: &[ClassSourceMethod],
     context: &ClassSourceTextContext<'_>,
     member_family: Option<&MemberFamilyTextProjection<'_>>,
     method_texts: &[MemberFamilyMethodText],
-    nested_class: Option<&NestedClassSourceText>,
+    nested_classes: &[NestedClassSourceText],
     derived: &mut Vec<MemberFamilyDerivedProjection>,
 ) -> Option<String> {
     let initializer_field_order = context.initializer_field_order;
@@ -8445,11 +8493,29 @@ fn source_text_with_member(
         for annotation in &field.annotations.uses {
             out.push_str(&indent(&format!("{annotation}\n"), 1));
         }
-        match (&field.declaration, field.markers.is_empty()) {
-            (Some(declaration), _) => {
-                out.push_str(&declaration_member(declaration, &field.markers))
+        if let Some(projected) = field_texts
+            .iter()
+            .find(|projected| projected.index == field.item.index)
+        {
+            let offset = out.len();
+            out.push_str(&projected.text);
+            for entry in &projected.derived {
+                let source_span = projected.text.get(entry.start..entry.end)?;
+                let mut translated = entry.clone();
+                translated.start += offset;
+                translated.end += offset;
+                if out.get(translated.start..translated.end) != Some(source_span) {
+                    return None;
+                }
+                derived.push(translated);
             }
-            (None, _) => out.push_str(&comment_member(&field.markers)),
+        } else {
+            match (&field.declaration, field.markers.is_empty()) {
+                (Some(declaration), _) => {
+                    out.push_str(&declaration_member(declaration, &field.markers))
+                }
+                (None, _) => out.push_str(&comment_member(&field.markers)),
+            }
         }
     }
     if let Some(projection) = enum_projection
@@ -8561,7 +8627,7 @@ fn source_text_with_member(
             entry
         }));
     }
-    if let Some(nested) = nested_class {
+    for nested in nested_classes {
         if !first {
             out.push('\n');
         }
@@ -8787,6 +8853,184 @@ fn append_family_method(
         derived.push(entry);
     }
     Some(())
+}
+
+/// Render one direct static member as a nested declaration of the fold's own source unit, from the
+/// child's typed declaration and member records. The child's physical report text is never parsed
+/// or sliced: the header is rebuilt from the row's own flags with the fold's spelling of the types
+/// it names, staged field and method texts carry the re-spelled references, and every physical
+/// constructor is renamed to the member's own source name — the pool's `$` name it came in with is
+/// not a name the nested unit can resolve. The staged texts' derived ranges are translated through
+/// this writer's placement, exactly as the family method writer does.
+pub(crate) fn nested_static_member_source_text(
+    simple_name: &str,
+    access_flags: u16,
+    declaration: &ClassSourceDeclaration,
+    fields: &[ClassSourceField],
+    field_texts: &[MemberFamilyMethodText],
+    methods: &[ClassSourceMethod],
+    method_texts: &[MemberFamilyMethodText],
+    fold_targets: &[(&str, &str)],
+    child_definition: PhysicalDefinitionId,
+    root_definition: PhysicalDefinitionId,
+) -> Option<NestedClassSourceText> {
+    const SOURCE_CLASS_FLAGS: u16 = ACC_PUBLIC
+        | ACC_PRIVATE
+        | ACC_PROTECTED
+        | ACC_ABSTRACT
+        | ACC_FINAL
+        | ACC_STRICT
+        | ACC_STATIC;
+    let rewrite = |name: &str| -> String {
+        fold_targets
+            .iter()
+            .find_map(|(pool, spelling)| (name == *pool).then(|| (*spelling).to_owned()))
+            .unwrap_or_else(|| name.to_owned())
+    };
+    let mut facts = declaration.item.declaration.clone();
+    facts.access_flags =
+        (facts.access_flags & !SOURCE_CLASS_FLAGS) | (access_flags & SOURCE_CLASS_FLAGS);
+    let superclass = facts
+        .super_class
+        .as_ref()
+        .map(|super_class| rewrite(&class_name(&super_class.raw().0)));
+    let interfaces = facts
+        .interfaces
+        .iter()
+        .map(|interface| rewrite(&class_name(&interface.raw().0)))
+        .collect::<Vec<_>>();
+    let mut class_header_declaration = class_declaration_with_types(
+        simple_name,
+        &facts,
+        None,
+        superclass.as_deref(),
+        Some(&interfaces),
+    );
+    if access_flags & ACC_STATIC != 0 {
+        let visibility_len = ["public ", "protected ", "private "]
+            .iter()
+            .find(|prefix| class_header_declaration.starts_with(**prefix))
+            .map_or(0, |prefix| prefix.len());
+        class_header_declaration.insert_str(visibility_len, "static ");
+    }
+    let mut text = String::new();
+    let mut derived = Vec::new();
+    for annotation in &declaration.annotation_uses {
+        text.push_str(&indent(&format!("{annotation}\n"), 1));
+    }
+    for refusal in &declaration.annotation_refusals {
+        text.push_str(&indent(
+            &format!("// jarde: class annotation refused: {refusal}\n"),
+            1,
+        ));
+    }
+    let header_line = indent(&format!("{class_header_declaration} {{\n"), 1);
+    let own_start = text.len() + "    ".len();
+    text.push_str(&header_line);
+    derived.push(MemberFamilyDerivedProjection {
+        kind: MemberFamilyDerivedKind::MemberClassDeclaration,
+        start: own_start,
+        end: text.len() - 1,
+        anchors: vec![
+            MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: child_definition.clone(),
+            },
+            MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: root_definition.clone(),
+            },
+        ],
+    });
+    let mut first = true;
+    for field in fields {
+        if !first {
+            text.push('\n');
+        }
+        first = false;
+        for annotation in &field.annotations.uses {
+            text.push_str(&indent(&format!("{annotation}\n"), 2));
+        }
+        if let Some(projected) = field_texts
+            .iter()
+            .find(|projected| projected.index == field.item.index)
+        {
+            let offset = text.len();
+            text.push_str(&indent(&projected.text, 1));
+            for entry in &projected.derived {
+                let source_span = projected.text.get(entry.start..entry.end)?;
+                let start = indented_offset(&projected.text, entry.start, 1, false)?;
+                let end = indented_offset(&projected.text, entry.end, 1, true)?;
+                let mut translated = entry.clone();
+                translated.start = offset + start;
+                translated.end = offset + end;
+                if text.get(translated.start..translated.end) != Some(source_span) {
+                    return None;
+                }
+                derived.push(translated);
+            }
+        } else {
+            let member = match &field.declaration {
+                Some(declaration) => declaration_member(declaration, &field.markers),
+                None => comment_member(&field.markers),
+            };
+            text.push_str(&indent(&member, 1));
+        }
+    }
+    for method in methods {
+        if !first {
+            text.push('\n');
+        }
+        first = false;
+        let mut staged = method_texts
+            .iter()
+            .find(|projected| projected.index == method.item.index)
+            .cloned()
+            .unwrap_or_else(|| MemberFamilyMethodText {
+                index: method.item.index,
+                text: method.text.clone(),
+                derived: Vec::new(),
+            });
+        if method.item.identity.name.0 == b"<init>" {
+            let old_name = &declaration.name;
+            let old_token = format!("{old_name}(");
+            let Some(local_start) = staged.text.find(&old_token) else {
+                return None;
+            };
+            let local_end = local_start + old_name.len();
+            staged
+                .text
+                .replace_range(local_start..local_end, simple_name);
+            staged.derived.push(MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::MemberConstructorName,
+                start: local_start,
+                end: local_start + simple_name.len(),
+                anchors: vec![
+                    MemberFamilyPhysicalAnchor::MethodPoint {
+                        method: method.item.identity.clone(),
+                        bci: 0,
+                    },
+                    MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: child_definition.clone(),
+                    },
+                ],
+            });
+        }
+        let offset = text.len();
+        text.push_str(&indent(&staged.text, 1));
+        for entry in &staged.derived {
+            let source_span = staged.text.get(entry.start..entry.end)?;
+            let start = indented_offset(&staged.text, entry.start, 1, false)?;
+            let end = indented_offset(&staged.text, entry.end, 1, true)?;
+            let mut translated = entry.clone();
+            translated.start = offset + start;
+            translated.end = offset + end;
+            if text.get(translated.start..translated.end) != Some(source_span) {
+                return None;
+            }
+            derived.push(translated);
+        }
+    }
+    text.push_str("    }\n");
+    Some(NestedClassSourceText { text, derived })
 }
 
 /// Render a proved enum as a lexical member using the child's typed declaration and member
