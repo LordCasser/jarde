@@ -1068,6 +1068,11 @@ pub(crate) enum FamilyRootScan {
     Refused(String),
     Candidate(FamilyRootCandidate),
     DeclarationPair([FamilyRootCandidate; 2]),
+    /// Every direct static member row, in InnerClasses order: the family a static fold
+    /// projection renders as nested `static class`/`static interface` declarations. Two or more
+    /// rows reach this arm; a single static row still selects through [`Self::Candidate`], where
+    /// the proved narrow channels keep their priority and a refused projection falls back here.
+    StaticMembers(Vec<FamilyRootCandidate>),
 }
 
 /// Find the one Java 8 nested enum slice this class-source writer supports. The typed row supplies
@@ -1237,7 +1242,8 @@ pub(crate) fn scan_nested_annotation_root(
 const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0200 | 0x2000 | 0x4000;
 const FAMILY_VISIBILITY_FLAGS: u16 = 0x0001 | 0x0002 | 0x0004;
 
-/// Discover one direct named child, or the bounded interface/abstract declaration pair.
+/// Discover one direct named child, the bounded interface/abstract declaration pair, or the
+/// direct static member family a fold projection renders as nested declarations.
 /// No binary-name search is used: the class index in the row supplies the exact symbolic target.
 pub(crate) fn scan_family_root(
     root: &[u8],
@@ -1251,7 +1257,7 @@ pub(crate) fn scan_family_root(
         ));
     }
     let mut candidate = None;
-    let mut static_candidate = None;
+    let mut static_members = Vec::new();
     let mut declaration_pair = Vec::new();
     let mut static_names = Vec::new();
     let mut direct_rows = 0usize;
@@ -1305,9 +1311,22 @@ pub(crate) fn scan_family_root(
                 "direct member has no UTF-8 source name".to_owned(),
             ));
         };
+        // A member interface is what javac always writes for one: implicitly `static abstract`
+        // plus at most one visibility bit, never `final` and never synthetic. A static row of
+        // exactly that shape is source-spellable as a nested `static interface` declaration and
+        // enters the same member family as a class row; every other interface row — a non-static
+        // one, a final or synthetic one — stays a row this presentation cannot write.
+        let interface_row = row.access_flags & 0x0200 != 0;
+        let source_spellable = if interface_row {
+            row.access_flags & 0x0008 != 0
+                && row.access_flags & (0x0010 | 0x1000) == 0
+                && row.access_flags & !(FAMILY_VISIBILITY_FLAGS | 0x0008 | 0x0200 | 0x0400) == 0
+        } else {
+            row.access_flags & FAMILY_FORBIDDEN_FLAGS == 0
+        };
         if !jarde_java::names::is_java_identifier(simple)
             || child.0 != [root, b"$", simple.as_bytes()].concat()
-            || (row.access_flags & FAMILY_FORBIDDEN_FLAGS != 0 && row.access_flags != 0x0609)
+            || !source_spellable
             || (row.access_flags & FAMILY_VISIBILITY_FLAGS).count_ones() > 1
             || row.access_flags & (0x0010 | 0x0400) == (0x0010 | 0x0400)
         {
@@ -1323,17 +1342,9 @@ pub(crate) fn scan_family_root(
         if row.access_flags == 0x0609 || row.access_flags == 0x0409 {
             declaration_pair.push(next.clone());
         }
-        if row.access_flags == 0x0609 {
-            continue;
-        }
         if row.access_flags & 0x0008 != 0 {
             static_names.push(next.child_name.clone());
-            if static_candidate.replace(next).is_some() {
-                return Ok(FamilyRootScan::Refused(
-                    "multiple direct static member rows are outside the one-child family subset"
-                        .to_owned(),
-                ));
-            }
+            static_members.push(next);
             continue;
         }
         if candidate.replace(next).is_some() {
@@ -1365,24 +1376,28 @@ pub(crate) fn scan_family_root(
             declaration_pair.remove(0),
         ]));
     }
-    if declaration_pair
-        .iter()
-        .any(|member| member.access_flags == 0x0609)
-    {
-        return Ok(FamilyRootScan::Refused(
-            "interface member is outside the exact two-declaration family subset".to_owned(),
-        ));
-    }
-    if static_candidate
-        .as_ref()
-        .is_some_and(|selected| selected.access_flags & 0x0400 != 0 && direct_rows != 1)
+    // The static rows are one member family now: a fold projection renders any number of them as
+    // nested declarations. The two selection gates below are the exact old one-child boundaries,
+    // kept for the shapes that still select a single child through them.
+    if static_members.len() == 1 && static_members[0].access_flags & 0x0400 != 0 && direct_rows != 1
     {
         return Ok(FamilyRootScan::Refused(
             "declaration-only static abstract member requires one direct child row".to_owned(),
         ));
     }
-    Ok(candidate
-        .or(static_candidate)
+    if candidate.is_some() && static_members.len() >= 2 {
+        return Ok(FamilyRootScan::Refused(
+            "multiple direct static member rows are outside the one-child family subset".to_owned(),
+        ));
+    }
+    if let Some(selected) = candidate {
+        return Ok(FamilyRootScan::Candidate(selected));
+    }
+    if static_members.len() >= 2 {
+        return Ok(FamilyRootScan::StaticMembers(static_members));
+    }
+    Ok(static_members
+        .pop()
         .map_or(FamilyRootScan::Absent, FamilyRootScan::Candidate))
 }
 
