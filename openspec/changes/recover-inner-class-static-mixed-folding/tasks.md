@@ -12,4 +12,4 @@
 
 - [x] 3.1 全仓测试全绿（含上片 member_class_static_folding 全部测试）、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。
 - [x] 3.2 N1 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核子集边界、互引锚定与三方行为，更新 DT 账本与巡查记录。
+- [x] 3.3 root 独立复核子集边界、互引锚定与三方行为，更新 DT 账本与巡查记录。（root 于合并主线 728f3f1c 复核：N1 `static class Stat` 折叠、`new Stat()` 源码拼写、Inner 分离路径逐字节不变；全仓 2875/0、fmt/openspec 252/252；corpus 扫描恰 3 类变化全为混合族根。两条披露复核认可：(a) `outer.new Inner(9)` 限定 new 为既有恢复缺口——分离/折叠两态同错不加重，第二片范围；(b) 任务书"整 jar 重编"字面不可达的编译集口径修正（池拼写需分离单元在编译集）——实现者以第二片透明形替换后 `10/7/13` 全一致，验收口径按此。`StaticMembersWithInstance` 分解与 `declaration-only` 门收窄（candidate.is_none）复核认可。）
