@@ -729,7 +729,30 @@ fn nested_effectful_certificate_stops_without_partial_source() {
 
 #[test]
 fn non_matching_edges_effects_and_handler_do_not_publish_endless_loop() {
-    for name in ["extraCall", "differentTarget", "extraLatch", "withHandler"] {
+    // `differentTarget` recovered when the terminal-return classification stopped demanding the
+    // `iload; ireturn` pair (`recover-return-in-do-while-false`): its `goto 38` arm is an
+    // exclusive-predecessor return leaf of the loop body, so the body owns the `return v +
+    // calls` arm and the loop presents with both of its real exits — never as `while (true)`.
+    let report = recover_class_method_with_budget(
+        NEGATIVES,
+        "cf08effects/EffectfulExitNegatives",
+        "differentTarget",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("while (true)"), "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        report
+            .text
+            .contains("return local1 + cf08effects.EffectfulExitNegatives.calls;"),
+        "{}",
+        report.text
+    );
+
+    for name in ["extraCall", "extraLatch", "withHandler"] {
         let report = recover_class_method_with_budget(
             NEGATIVES,
             "cf08effects/EffectfulExitNegatives",

@@ -1447,6 +1447,11 @@ pub(crate) fn recover(
         .regions;
         walker.visited.clear();
     }
+    // The failure-closure invariant runs at the quote landing point in [`crate::build`], where
+    // the built statement tree — not the region tree — can answer whether a body that dropped
+    // the quote's comment lines would still compile (`quoted_control_flow_exit` below is the
+    // classification it consults). P3-R7's unaccounted check stays last, so bytes the graph
+    // does not account for keep their own naming beside whatever that refusal states.
     // P3-R7, last: the graph has to be an account of the body it stands for **before** any region of
     // it is presented as that body. Every instruction the same read decoded is either covered by a
     // canonical block or named as unreachable; an instruction that is in neither is one the
@@ -1514,6 +1519,115 @@ fn overlapping_owner(
             if !seen.insert(block) {
                 return Ok(Some(block.clone()));
             }
+        }
+    }
+    Ok(None)
+}
+
+/// The first control-flow-changing exit a quoted fallback region holds, when the completed tree
+/// also presents structure the quote is reachable from — the failure-closure invariant's
+/// classification, consulted by [`crate::build`] at the quote landing point
+/// (`recover-return-in-do-while-false`).
+///
+/// A partial body publishes statements for the regions it proved and quotes the rest. That is
+/// acceptable only while nothing the quote holds can change what the method does: a reader who
+/// strips the quote's comment lines must not be left with a method that still compiles while
+/// silently dropping an edge's execution. The exits that change control flow are exactly
+///
+/// * a `return` — the method exit,
+/// * an `athrow` — the exceptional method exit, and
+/// * a decoded transfer whose one normal destination no region of the completed tree owns —
+///   the `break`/`continue` escape a quoted loop-jump would spell.
+///
+/// The classification runs over the completed tree, over every fallback region at once — never
+/// per region kind: whichever refusal produced the quote, the edge it holds is the same fact.
+/// Two guard rails keep it from naming edges the invariant does not protect:
+///
+/// * a tree that presents **no** structure is already a whole-body refusal — there is no
+///   partial body left whose stripped quote could compile, so nothing is classified;
+/// * the quote must be reached from the presented structure through a **normal** edge. A
+///   handler body its exception row alone enters is not on any path the presentation states;
+///   the partial body claims nothing about the exceptional path, so its quote stays.
+///
+/// Whether the method is then refused is **not** this function's question: the answer depends
+/// on whether the built body without the quote would still compile, and that is the statement
+/// layer's fact (a `try`/`catch` whose empty clause falls off the end does not, an explicit
+/// `return` at the tail does). [`crate::build`] holds both halves and refuses there.
+pub(crate) fn quoted_control_flow_exit(
+    regions: &[Region],
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Option<(u32, u32)>, StopReason> {
+    if !regions.iter().any(Region::is_structured) {
+        return Ok(None);
+    }
+    let presented: BTreeSet<CanonicalBlockId> = regions
+        .iter()
+        .filter(|region| region.is_structured())
+        .flat_map(Region::blocks)
+        .cloned()
+        .collect();
+    let quoted: BTreeSet<CanonicalBlockId> = regions
+        .iter()
+        .filter(|region| !region.is_structured())
+        .flat_map(Region::blocks)
+        .cloned()
+        .collect();
+    if presented.is_empty() || quoted.is_empty() {
+        return Ok(None);
+    }
+    let owned: BTreeSet<CanonicalBlockId> =
+        regions.iter().flat_map(Region::blocks).cloned().collect();
+    poll(budget, quoted.iter().next().map(|block| block.bci()))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(canonical.edges().len()).unwrap_or(u64::MAX),
+        quoted.iter().next().map(|block| block.bci()),
+    )?;
+    // The seed: a normal edge from a presented block into a quoted one. A branch arm, a
+    // fall-through, a transfer — the paths the published statements state — are the only ways
+    // the executed method can arrive inside the quote, so they are the only ways stripping it
+    // can silently change what those statements do.
+    let reached_from_presented = canonical.edges().iter().any(|edge| {
+        edge.kind() == CanonicalEdgeKind::Normal
+            && presented.contains(edge.from())
+            && quoted.contains(edge.to())
+    });
+    if !reached_from_presented {
+        return Ok(None);
+    }
+    for block in &quoted {
+        poll(budget, Some(block.bci()))?;
+        let Some(at) = ssa
+            .block(block)
+            .and_then(|block| block.instructions().last().map(|last| last.bci()))
+        else {
+            continue;
+        };
+        match operations.get(at) {
+            Some(Operation::Return | Operation::Throw) => return Ok(Some((block.bci(), at))),
+            Some(Operation::Transfer) => {
+                // A decoded `goto` whose one normal destination leaves both the presented
+                // structure and this quote's own blocks: a `break`/`continue` escape whose
+                // destination no presented region owns. A transfer back into the presented
+                // structure is a plain continuation the quote spells, and a transfer that
+                // stays inside its own quote (a refused loop's own latch) is internal to the
+                // system the quote names — neither is an edge that leaves what the
+                // presentation states.
+                let destinations: Vec<_> = canonical
+                    .edges()
+                    .iter()
+                    .filter(|edge| edge.from() == block && edge.kind() == CanonicalEdgeKind::Normal)
+                    .map(|edge| edge.to())
+                    .collect();
+                if destinations.len() == 1 && !owned.contains(destinations[0]) {
+                    return Ok(Some((block.bci(), at)));
+                }
+            }
+            _ => {}
         }
     }
     Ok(None)
@@ -10968,9 +11082,14 @@ impl Walker<'_> {
             .collect()
     }
 
-    /// A terminal `iload; ireturn` leaf can belong to a loop despite having no back edge. Its
-    /// only entry must be one comparison in the natural loop, and its only exit must return from
-    /// this method. The SSA load-to-return relation is checked before widening the body scope.
+    /// A terminal return leaf can belong to a loop despite having no back edge. Its only entry
+    /// must be one comparison in the natural loop, and its only exit must return from this
+    /// method (`do { if (…) return …; … } while (false);` compiles to exactly that: the constant
+    /// false test leaves no loop, so the body's statement set — the conditional return's leaf
+    /// included — is what the region has to own). The leaf's terminal instruction is checked
+    /// against the decode before widening the body scope: a `return` edge is a method exit, not
+    /// a loop edge, which keeps this classification orthogonal to the `break`/`continue`
+    /// transfer proofs.
     fn loop_terminal_returns(
         &mut self,
         blocks: &BTreeSet<usize>,
@@ -11042,29 +11161,24 @@ impl Walker<'_> {
                 let Some(ssa_block) = self.ssa.block(id) else {
                     continue;
                 };
-                let [load, returned] = ssa_block.instructions() else {
-                    continue;
-                };
-                let Some(Operation::Load { slot }) = self.operations.get(load.bci()) else {
-                    continue;
-                };
-                if !matches!(load.opcode(), 0x15 | 0x1a..=0x1d)
-                    || returned.opcode() != 0xac
-                    || !matches!(self.operations.get(returned.bci()), Some(Operation::Return))
-                    || load.reads().len() != 1
-                    || load.reads()[0].0 != Slot::Local(*slot)
-                    || load.writes().len() != 1
-                    || !matches!(load.writes()[0].0, Slot::Stack(_))
-                    || returned.reads() != load.writes()
-                    || !returned.writes().is_empty()
-                    || self.ssa.value(load.writes()[0].1).uses().len() != 1
-                {
+                // The leaf's terminal instruction must be a decoded `return` — any of the seven
+                // return opcodes, with any value shape the statement layer can present (`return
+                // local`, `return "literal"`, `return "a" + f`, …). The CF-07 slice first proved
+                // the `iload; ireturn` pair alone; a leaf whose value is computed before it
+                // returns is the same edge — the method exit — and its statements are the
+                // branch arm's own, so the value's shape is the statement layer's question, not
+                // this classification's. A leaf that ends in anything else (an `athrow` site, a
+                // transfer) is not this edge: the guard rules and the loop-jump classifications
+                // own those.
+                if !ssa_block.instructions().last().is_some_and(|returned| {
+                    matches!(self.operations.get(returned.bci()), Some(Operation::Return))
+                }) {
                     continue;
                 }
                 leaves.insert(candidate);
             }
         }
-        if leaves.len() == 1 {
+        if !leaves.is_empty() {
             Ok(leaves)
         } else {
             Ok(BTreeSet::new())
