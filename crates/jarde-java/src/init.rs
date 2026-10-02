@@ -526,6 +526,7 @@ fn verify(
     }
     let mut embedded_concat = false;
     let mut embedded_array = BTreeSet::new();
+    let mut inline_arrays = BTreeSet::new();
     let arguments = if let Some(member) = &member {
         member.arguments.clone()
     } else {
@@ -553,14 +554,55 @@ fn verify(
         // reached at all.
         let argument_dependencies =
             value_dependency_bcis(ssa, block, operands.iter().skip(1).map(|(_, value)| *value));
-        if java_release == 8
+        // The restricted Java 8 `String(char[])` shape keeps its own slice: its argument run's
+        // inline `char[]` chains — direct or through an intervening call — are embedded only under
+        // that slice's exact conditions, and the general inline array acceptance below never
+        // applies to this constructor.
+        let string_char_array_ctor = java_release == 8
             && ty == "java/lang/String"
             && matches!(operations.get(at), Some(Operation::Invoke(call)) if call.descriptor() == "([C)V")
-            && operands.len() == 2
-        {
+            && operands.len() == 2;
+        if string_char_array_ctor {
             embedded_array = arrays
                 .inline_char_argument_bcis(ssa, operations, block, operands[1].1, dup.bci(), at)
                 .unwrap_or_default();
+        }
+        // The inline anonymous array chains of this construction's argument run — the varargs
+        // lowering `new T; dup; …; anewarray; [dup; index; value; aastore]×n; invoke` that a
+        // collection-copy constructor reads through a factory call such as `Arrays.asList(…)`.
+        // The chain's own proof (element production, closed interval, single use of every value) is
+        // `array@1`'s, read here rather than restated: a construction accepts the chain only when
+        // its sole consumer is an invocation this call's own argument dependency walk reaches, so
+        // the initializer is written exactly where the bytecode evaluated it and serves exactly
+        // this argument. A bare `new T[n]` allocation with no element stores (the empty varargs
+        // call) is its own complete chain under the same consumer judgement. A chain the
+        // constructor consumes directly is not this shape: `new@1` embeds it only for the
+        // `String(char[])` slice, and every other owner keeps the refusal that slice froze.
+        let array_serves_argument = |consumer: u32| {
+            matches!(operations.get(consumer), Some(Operation::Invoke(_)))
+                && argument_dependencies.contains(&consumer)
+        };
+        if !string_char_array_ctor {
+            for instruction in block.iter().skip(index + 2) {
+                if instruction.bci() >= at {
+                    break;
+                }
+                let bci = instruction.bci();
+                if let Some(members) =
+                    arrays.inline_argument_chain_bcis(bci, dup.bci(), at, array_serves_argument)
+                {
+                    inline_arrays.extend(members);
+                    continue;
+                }
+                if matches!(operations.get(bci), Some(Operation::NewArray { .. }))
+                    && let Some((Slot::Stack(_), value)) = instruction.writes().first().copied()
+                    && let [use_site] = ssa.value(value).uses()
+                    && let Some(consumer) = use_site.bci()
+                    && array_serves_argument(consumer)
+                {
+                    inline_arrays.insert(bci);
+                }
+            }
         }
         let nested_concat = verify_concat_arguments(
             head,
@@ -583,6 +625,7 @@ fn verify(
                 Some(_) if nested_expression.contains(&instruction.bci()) => {}
                 Some(_) if nested_concat.contains(&instruction.bci()) => {}
                 Some(_) if embedded_array.contains(&instruction.bci()) => {}
+                Some(_) if inline_arrays.contains(&instruction.bci()) => {}
                 Some(
                     Operation::Push(_)
                     | Operation::Load { .. }
@@ -686,11 +729,16 @@ fn verify(
             ),
         ));
     }
-    if embedded_concat || !embedded_array.is_empty() || !nested_expression.is_empty() {
+    if embedded_concat
+        || !embedded_array.is_empty()
+        || !inline_arrays.is_empty()
+        || !nested_expression.is_empty()
+    {
         // A Java expression runs under one exception region. Moving a proved inner run — a
-        // concatenation chain, an inline char[] initializer, a nested construction — into the
-        // outer construction is sound only when every instruction in the construction and its
-        // sole consumer has the same handler coverage as the outer allocation.
+        // concatenation chain, an inline char[] initializer, an inline array argument chain, a
+        // nested construction — into the outer construction is sound only when every instruction
+        // in the construction and its sole consumer has the same handler coverage as the outer
+        // allocation.
         let coverage = |bci: u32| -> Vec<u32> {
             facts
                 .code
@@ -714,6 +762,8 @@ fn verify(
                     "jre_new_inline_char_array_exception_boundary",
                     "inline char[]",
                 )
+            } else if !inline_arrays.is_empty() {
+                ("jre_new_inline_array_exception_boundary", "inline array")
             } else {
                 ("jre_new_nested_exception_boundary", "nested construction")
             };
@@ -1662,6 +1712,15 @@ mod tests {
     );
     const INLINE_CHAR_ARRAY: &[u8] =
         include_bytes!("../../../tests/fixtures/em27-inline-string/em27/Probe.class");
+    const VARARGS_CTOR_W3: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W3.class"
+    );
+    const VARARGS_V1: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V1.class"
+    );
+    const VARARGS_V2: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V2.class"
+    );
     const NESTED_PROBE: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
     );
@@ -2314,6 +2373,50 @@ mod tests {
         )
     }
 
+    /// The construction sites of a body whose argument run holds a varargs inline array chain:
+    /// the same read as [`nested_sites`], with the body's own `array@1` plan proved first, the
+    /// way the run's real order proves it.
+    fn varargs_sites(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+        handler_range: Option<(u32, u32)>,
+    ) -> Sites {
+        let (analysis, _) = analyzed_caller(class, name, descriptor);
+        let ir = analysis.ir();
+        let mut code = ir.code().expect("code").clone();
+        if let Some((start_bci, end_bci)) = handler_range {
+            code.exception_handlers
+                .push(jarde_reader::classfile::ExceptionHandlerFact {
+                    ordinal: 0,
+                    start_bci,
+                    end_bci,
+                    handler_bci: 0,
+                    catch_type_index: None,
+                });
+        }
+        let ssa = ir.ssa().expect("ssa");
+        let operations = Operations::of(&code, ir.constant_pool());
+        let fields = field::Plan::empty();
+        let mut budget = proof_budget();
+        let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
+            .expect("array proof completes");
+        let chains = crate::concat::Plan::empty();
+        let method_facts = crate::facts::MethodFacts::new(name, descriptor, 0);
+        sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &arrays,
+            8,
+            &[],
+            &method_facts,
+            &code,
+        )
+    }
+
     /// The two sites of one nested construction and the one text they share: the outer call's own
     /// argument run is the inner site's complete closed run, and neither site owns the other's
     /// instructions (P3 2.3 — one expression per allocation, wherever it is consumed).
@@ -2438,6 +2541,148 @@ mod tests {
         assert!(cross.site_at_head(0).is_none());
         assert!(cross.site_at_head(10).is_none());
         assert!(cross.site_at_head(22).is_none());
+    }
+
+    /// The varargs inline array chain of a construction's argument run — `new ArrayList<>(Arrays
+    /// .asList(1, 2, 3))` and its empty, boxed, `HashSet` and call-element forms — proves as one
+    /// site whose argument is the factory call, and the chain's own proof is the `array@1` plan the
+    /// walk reads (P3 2.3, `new@1`; the chain and the bare-position spelling are that rule's).
+    #[test]
+    fn varargs_inline_array_argument_sites_present_the_complete_chain() {
+        let w3 = varargs_sites(VARARGS_CTOR_W3, "viaArrays", "()I", None);
+        let site = w3
+            .site_at_head(0)
+            .expect("the collection-copy construction proves");
+        assert_eq!((site.head, site.dup, site.constructor), (0, 3, 32));
+        assert_eq!(site.arguments, [29]);
+        assert!(site.expression.contains(&5) && site.expression.contains(&28));
+        assert!(w3.refusals().next().is_none());
+        assert!(
+            w3.allocation_candidates()
+                .iter()
+                .all(|candidate| candidate.verified)
+        );
+
+        // The empty varargs call is a bare allocation whose single use is the factory call.
+        let empty = varargs_sites(VARARGS_CTOR_W3, "viaArraysEmpty", "()I", None);
+        let site = empty
+            .site_at_head(0)
+            .expect("the empty varargs construction proves");
+        assert_eq!((site.head, site.dup, site.constructor), (0, 3, 11));
+        assert_eq!(site.arguments, [8]);
+        assert!(empty.refusals().next().is_none());
+
+        for name in [
+            "viaEmptyCall",
+            "viaBoxedMix",
+            "viaHashSet",
+            "viaCallElements",
+        ] {
+            let plan = varargs_sites(VARARGS_V1, name, "()I", None);
+            let site = plan
+                .site_at_head(0)
+                .unwrap_or_else(|| panic!("{name} proves"));
+            assert!(
+                site.expression.contains(&5),
+                "{name}: the chain allocation belongs to the expression"
+            );
+            assert!(plan.refusals().next().is_none(), "{name}");
+            assert!(
+                plan.allocation_candidates()
+                    .iter()
+                    .all(|candidate| candidate.verified),
+                "{name}"
+            );
+            assert!(
+                site.arguments.len() == 1
+                    && site.arguments[0] > 5
+                    && site.arguments[0] < site.constructor,
+                "{name}: the sole argument is the factory call after the chain"
+            );
+        }
+    }
+
+    /// The negatives the patrol froze: a store statement inside the element run and an array that
+    /// escapes to a second purpose both keep the construction's refusal — the chain is not a
+    /// closed expression, and the ordinary walk quotes the bytecode exactly as before (the refusal
+    /// message stays the pre-change interleaved-effect text).
+    #[test]
+    fn incomplete_or_double_purpose_array_chains_stay_refused() {
+        for name in ["midStatement", "doubleUse"] {
+            let plan = varargs_sites(VARARGS_V2, name, "()I", None);
+            assert!(plan.site_at_head(0).is_none(), "{name}");
+            assert_eq!(
+                plan.refusals()
+                    .next()
+                    .unwrap_or_else(|| panic!("{name} refusal registers"))
+                    .code(),
+                "jre_new_interleaved_effect",
+                "{name}"
+            );
+        }
+    }
+
+    /// A handler region that covers the outer allocation but not the array chain keeps the
+    /// construction refused: writing the initializer inside the `new` expression would move the
+    /// chain into a different exception region.
+    #[test]
+    fn a_handler_boundary_inside_the_array_chain_keeps_the_refusal() {
+        let crossed = varargs_sites(VARARGS_CTOR_W3, "viaArrays", "()I", Some((0, 4)));
+        assert!(crossed.site_at_head(0).is_none());
+        assert_eq!(
+            crossed.refusals().next().expect("boundary refusal").code(),
+            "jre_new_inline_array_exception_boundary"
+        );
+    }
+
+    /// The chain certificate the walk consumes states exactly the proved interval and its own
+    /// consumer: another consumer judgement or a shorter argument interval states nothing.
+    #[test]
+    fn the_array_chain_certificate_requires_the_argument_consumer_interval() {
+        let (analysis, _) = analyzed_caller(VARARGS_CTOR_W3, "viaArrays", "()I");
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let operations = Operations::of(ir.code().expect("code"), ir.constant_pool());
+        let arrays = crate::build::ArrayInitializers::prove(
+            ssa,
+            &operations,
+            &field::Plan::empty(),
+            &mut proof_budget(),
+        )
+        .expect("complete array certificate");
+        let block = ssa.blocks()[0].instructions();
+        let constructor = block
+            .iter()
+            .find(|instruction| instruction.bci() == 32)
+            .expect("constructor");
+        let argument = stack_operands(constructor)[1].1;
+        let dependencies = value_dependency_bcis(ssa, block, [argument]);
+        let serves = |consumer: u32| dependencies.contains(&consumer);
+        assert!(
+            arrays
+                .inline_argument_chain_bcis(5, 3, 32, serves)
+                .is_some()
+        );
+        // The factory call is the chain's consumer: a judgement that does not reach it states no
+        // argument chain.
+        assert!(
+            arrays
+                .inline_argument_chain_bcis(5, 3, 32, |consumer| consumer == 32)
+                .is_none()
+        );
+        // The length push at BCI 4 belongs to the chain: an interval that starts after it is not
+        // the closed run the proof stated.
+        assert!(
+            arrays
+                .inline_argument_chain_bcis(5, 5, 32, serves)
+                .is_none()
+        );
+        // A constructor bound at the chain's own consumer leaves the invocation outside the run.
+        assert!(
+            arrays
+                .inline_argument_chain_bcis(5, 3, 29, serves)
+                .is_none()
+        );
     }
 
     #[test]

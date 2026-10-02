@@ -20,3 +20,7 @@
 `recover-varargs-array-ctor-args`：走查接受实参位的内联匿名数组链（元素链与既有 varargs 内联数组证明判据同源——W4 显示该判据在调用位已建）；呈现复用 `new T[]{…}` 初始器拼写于实参位。W3 两形/W1.use 恢复；裸调用位与嵌套构造位逐字不变；链不完整/双用途保持拒绝。
 
 原 class 为行为基准。
+
+## 实施结果（`recover-varargs-array-ctor-args`）
+
+走查已扩展：构造区间扫描遇数组分配起始的完整链时经 `ArrayInitializers::inline_argument_chain_bcis` 复用既有证明（consumer 为实参依赖走查到达的 invoke、源区间封闭于 `(dup, ctor)`、单用途），空 varargs 裸分配同判据；接受集进入区间与异常边界检查（`jre_new_inline_array_exception_boundary`）。W3 两形/W1.use 及变体前后、三方对照与门禁记录见 [results-vca/varargs-replay.md](results-vca/varargs-replay.md)（变体源与 SHA 在 [variants-vca/](variants-vca/)）。跨类型 LUB 混合装箱（`Number[]` 组件）与裸位同口径拒绝（`array@1` 元素兼容性边界，独立切片面）；`String.<init>([C)V` 与直接数组实参形态保持既有边界。
