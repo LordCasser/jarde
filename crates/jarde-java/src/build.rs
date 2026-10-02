@@ -7520,6 +7520,47 @@ pub(crate) fn build(
         };
         builder.fallback(bcis, reason, at)?;
     }
+    // The failure-closure invariant (`recover-return-in-do-while-false`): a quote the presented
+    // structure reaches through a normal edge may not hold a control-flow-changing exit — a
+    // `return`, an `athrow`, or a transfer whose destination no region owns — while the body
+    // without that quote would still compile. A reader who strips the quote's comment lines
+    // would then be left with a method that compiles while silently dropping that exit's
+    // execution, which is the one partial presentation this layer never publishes. The
+    // classification is the region layer's ([`crate::region::quoted_control_flow_exit`]); the
+    // compilability is this layer's, because only the built statement tree answers it (a
+    // `try`/`catch` whose emptied clause falls off the end does not compile without a `return`
+    // after it, an explicit tail `return` does).
+    if let Some((block_bci, at)) = crate::region::quoted_control_flow_exit(
+        regions,
+        builder.canonical,
+        builder.ssa,
+        builder.operations,
+        builder.budget,
+    )? && (builder.return_type.is_none() || !completes_normally(&builder.stmts))
+    {
+        let bcis = builder
+            .canonical
+            .blocks()
+            .iter()
+            .flat_map(|block| block.blocks().iter().copied())
+            .chain(
+                builder
+                    .canonical
+                    .unreachable()
+                    .iter()
+                    .flat_map(|block| builder.covered_bcis(block)),
+            )
+            .chain(regions.iter().flat_map(unaccounted_region_bcis))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        let reason = format!(
+            "the quoted block at BCI {block_bci} ends in a control-flow exit at BCI {at} (a return, a throw, or a transfer whose destination the presented structure does not own), the presented structure reaches that quote, and the body without it would still compile and silently change what the method does; the whole method is quoted"
+        );
+        builder.stmts.clear();
+        builder.statements = 0;
+        builder.fallback(bcis, &reason, at)?;
+    }
     let mut field_increments = BTreeMap::new();
     if let Some(plan) = builder.increments.get() {
         for increment in plan.statements.values() {
@@ -7581,6 +7622,80 @@ pub(crate) fn build(
         accessor_refusals: builder.accessor_refusals,
         lambdas_presented: builder.lambdas_presented,
         accessors_presented: builder.accessors_presented,
+    })
+}
+
+/// Whether the built statement tree can complete normally with its fallback quotes read as
+/// their stripped form — the lines a reader who deleted the quote comments is left with — the
+/// JLS 14.22 reading `javac`'s missing-return check applies.
+///
+/// The reading mirrors the emitter's own completion model ([`crate::emit`]'s break-omission
+/// test): only the last statement of a body decides, an `if` completes when either arm can,
+/// and a switch's rule is the emitter's. The two this layer adds are the ones the closure
+/// needs and the emitter never asks about: a `try` completes when its body or any clause can
+/// (a `finally` that cannot complete ends the whole statement), and a fallback quote stripped
+/// is a comment — the flow continues past it, exactly what deleting the lines would leave.
+fn completes_normally(body: &[Stmt]) -> bool {
+    // A trailing fallback quote stripped is a comment after the real code: the last statement
+    // that would remain is the one that decides, and a body of quotes alone remains empty.
+    let Some(statement) = body
+        .iter()
+        .rev()
+        .find(|statement| !matches!(statement.kind, StmtKind::Fallback { .. }))
+    else {
+        return true;
+    };
+    match &statement.kind {
+        StmtKind::Return { .. } | StmtKind::Throw { .. } => false,
+        StmtKind::Break { .. } | StmtKind::Continue { .. } => false,
+        StmtKind::If {
+            then_body,
+            else_body,
+            ..
+        } => completes_normally(then_body) || completes_normally(else_body),
+        StmtKind::Switch { arms, .. } => {
+            !arms.iter().any(|arm| arm.default)
+                || arms.iter().any(|arm| {
+                    arm.body.is_empty()
+                        || switch_arm_breaks(&arm.body)
+                        || (!arm.fall_through && completes_normally(&arm.body))
+                })
+        }
+        StmtKind::Try {
+            body,
+            catches,
+            finally_body,
+            ..
+        } => {
+            if finally_body
+                .as_ref()
+                .is_some_and(|finally| !completes_normally(finally))
+            {
+                false
+            } else {
+                completes_normally(body)
+                    || catches
+                        .iter()
+                        .any(|clause| completes_normally(&clause.body))
+            }
+        }
+        StmtKind::Synchronized { body, .. } => completes_normally(body),
+        StmtKind::Fallback { .. } => true,
+        _ => true,
+    }
+}
+
+/// An explicit unlabelled break completes the nearest switch, including through either arm of
+/// a final `if`. A labelled break leaves an outer statement and does not complete this switch.
+fn switch_arm_breaks(body: &[Stmt]) -> bool {
+    body.last().is_some_and(|statement| match &statement.kind {
+        StmtKind::Break { label: None } => true,
+        StmtKind::If {
+            then_body,
+            else_body,
+            ..
+        } => switch_arm_breaks(then_body) || switch_arm_breaks(else_body),
+        _ => false,
     })
 }
 
