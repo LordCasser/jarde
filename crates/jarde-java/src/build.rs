@@ -809,6 +809,26 @@ fn declarations(
             live_uses.insert(*variable, filtered);
         }
     }
+    // The stores and loads that are a monitor statement's own machinery: the slot store whose
+    // next instruction is the `monitorenter` it feeds, and the slot load whose next instruction
+    // is the `monitorexit` it leaves by. A variable whose every access is one of these is a
+    // lock's own temporary — the statement renders its lock expression in the header and its
+    // exits beside the body, and no declaration is the text's to write for the slot. A slot the
+    // body reuses later keeps its later uses, so the reuse plan's own splitting decides those.
+    let mut monitor_machinery: BTreeSet<u32> = BTreeSet::new();
+    let mut previous_bci: Option<u32> = None;
+    for (bci, operation) in operations.iter() {
+        if matches!(operation, Operation::Monitor { .. })
+            && let Some(previous) = previous_bci
+            && matches!(
+                operations.get(previous),
+                Some(Operation::Store { .. }) | Some(Operation::Load { .. })
+            )
+        {
+            monitor_machinery.insert(previous);
+        }
+        previous_bci = Some(*bci);
+    }
     for (variable, variable_uses) in &live_uses {
         if plan.this_aliases.contains_key(variable) {
             continue;
@@ -857,6 +877,17 @@ fn declarations(
                     variable.slot()
                 )
             });
+            continue;
+        }
+        // A monitor statement's lock slot — the outer's own, or the nested pair's — whose every
+        // access is the statement's machinery: the statement renders its lock expression in the
+        // header and its exits beside the body, no text ever reads or writes the slot, and no
+        // declaration is the text's to write — exactly as a single `synchronized`'s lock slot
+        // never declares one.
+        if variable_uses
+            .iter()
+            .all(|use_| monitor_machinery.contains(&use_.bci))
+        {
             continue;
         }
         let mut escaping_catch = None;
@@ -7397,7 +7428,8 @@ pub(crate) fn build(
         labeled_loop_headers: BTreeSet::new(),
         loop_labels: BTreeMap::new(),
         switch_depth: 0,
-        finally_span: None,
+        body_span: None,
+        nested_pair: None,
         finally_return: None,
         multi_return_finally: None,
         segmented_null_lead: None,
@@ -8177,8 +8209,13 @@ struct Builder<'a> {
     loop_labels: BTreeMap<u32, String>,
     /// A switch intercepts an unlabelled break, so a loop break from one of its arms is labeled.
     switch_depth: usize,
-    /// Physical slice of the protected body while its internal Region is written.
-    finally_span: Option<(u32, u32)>,
+    /// Physical slice of the structured guard body while its internal Region is written — a
+    /// proved `finally`'s or a nested `synchronized`'s: instructions the block holds outside the
+    /// slice produce no statement of their own, exactly the way the statement's header does not.
+    body_span: Option<(u32, u32)>,
+    /// The nested synchronized pair whose braces the instruction walk opens and closes while the
+    /// outer body's region tree renders. `None` everywhere else.
+    nested_pair: Option<NestedPairBraces>,
     /// The unique save instruction and physical return of that bounded body.
     finally_return: Option<(u32, u32)>,
     /// Two proved saves in separate arms of the one bounded Test5 body.
@@ -8217,6 +8254,29 @@ struct SharedFinallyBuild {
     segmented: Option<((u32, u32), u32)>,
     empty_catch: bool,
     two_catch: Option<((u32, u32), (u32, u32))>,
+}
+
+/// The nested synchronized pair whose braces the instruction walk opens and closes while a
+/// monitor body's region tree renders. The pair is not a region of its own — its header may sit
+/// mid-block, anywhere in the body the outer statement protects — so its braces are a span of the
+/// walk: the header's first instruction opens them, the first instruction past the pair closes
+/// them, and the pair's own machinery (its header's duplication, its exits, its handler) renders
+/// no statement between.
+struct NestedPairBraces {
+    /// The pair's whole span: its header's first instruction through its handler's rethrow.
+    span: (u32, u32),
+    /// The instructions that belong between the braces.
+    body: (u32, u32),
+    /// The lock expression, rendered before the tree walk began.
+    lock: Expr,
+    /// The inner statement's origin anchors.
+    origin: OriginSet,
+    /// The enclosing run's statements while the braces collect theirs; `None` until the walk
+    /// reaches the header.
+    opened: Option<Vec<Stmt>>,
+    /// Whether the walk ever reached the header: the close may have happened inside the walk
+    /// (the first instruction past the pair), so `opened` alone cannot say the pair engaged.
+    engaged_once: bool,
 }
 
 /// State that a speculative structured finally body may change before its enclosing Try exists.
@@ -11110,7 +11170,7 @@ impl Builder<'_> {
         self.labeled_loop_headers = checkpoint.labeled_loop_headers;
         self.loop_labels = checkpoint.loop_labels;
         self.switch_depth = checkpoint.switch_depth;
-        self.finally_span = None;
+        self.body_span = None;
         self.finally_return = None;
         self.multi_return_finally = None;
         self.segmented_null_lead = None;
@@ -13999,7 +14059,10 @@ impl Builder<'_> {
                         ))
                     }
                     guard::Shape::Monitor {
-                        enter_bci, returns, ..
+                        enter_bci,
+                        returns,
+                        nested,
+                        ..
                     } => {
                         let lock = match self.lock_expr(*enter_bci) {
                             Ok(lock) => lock,
@@ -14008,7 +14071,87 @@ impl Builder<'_> {
                                 return self.fallback(bcis, &reason, *enter_bci);
                             }
                         };
-                        let mut body = self.body_range(plan.body())?;
+                        // The nested pair: the whole body — its own statements, the structure
+                        // around the inner block and the inner block itself — is one region
+                        // tree, rendered with the pair's braces opened and closed where its
+                        // span sits in the walk ([`NestedPairBraces`]). The lock is the same
+                        // `lock_expr` reading the outer's is; no new presentation.
+                        let mut body = match (nested.as_deref(), structured_body.as_deref()) {
+                            (None, _) => self.body_range(plan.body())?,
+                            (Some(pair), Some(tree)) => {
+                                let inner_lock = match self.lock_expr(pair.enter_bci()) {
+                                    Ok(lock) => lock,
+                                    Err(reason) => {
+                                        let bcis = self.region_quote(region, pair.enter_bci());
+                                        return self.fallback(bcis, &reason, pair.enter_bci());
+                                    }
+                                };
+                                let mut origin = OriginSet::new(Origin::direct(pair.enter_bci()));
+                                for bci in plan.facts() {
+                                    if pair.span().0 <= *bci && *bci < pair.span().1 {
+                                        origin = origin.plus_derived(Origin::derived(*bci));
+                                    }
+                                }
+                                let checkpoint = self.finally_checkpoint();
+                                let enclosing = std::mem::take(&mut self.stmts);
+                                self.body_span = Some(plan.body());
+                                self.nested_pair = Some(NestedPairBraces {
+                                    span: pair.span(),
+                                    body: pair.body(),
+                                    lock: inner_lock,
+                                    origin,
+                                    opened: None,
+                                    engaged_once: false,
+                                });
+                                let walked = self.region(tree, &child(path, 0));
+                                // A pair whose header the walk never reached is not presented
+                                // unbraced: the close is either the first instruction past the
+                                // span or this one, and a body that rendered no header at all is
+                                // a shape this arm does not write.
+                                let engaged = self
+                                    .nested_pair
+                                    .as_ref()
+                                    .is_some_and(|pair| pair.engaged_once);
+                                let closed = if engaged {
+                                    self.close_nested_pair()
+                                } else {
+                                    Ok(())
+                                };
+                                let rendered = self.nested_pair.take();
+                                self.body_span = None;
+                                let body = std::mem::replace(&mut self.stmts, enclosing);
+                                if let Err(stop) = walked.or(closed) {
+                                    self.restore_finally(checkpoint);
+                                    return Err(stop);
+                                }
+                                if rendered.is_none()
+                                    || !engaged
+                                    || (self.ragged && !checkpoint.ragged)
+                                {
+                                    self.restore_finally(checkpoint);
+                                    let at = pair.enter_bci();
+                                    let bcis = self.region_quote(region, at);
+                                    return self.fallback(
+                                        bcis,
+                                        "the nested synchronized body rendered no complete \
+                                         statement",
+                                        at,
+                                    );
+                                }
+                                body
+                            }
+                            // A plan with a nested pair always carries its body tree: the walk
+                            // built it before the region was published, or the claim fell back.
+                            (Some(pair), None) => {
+                                let at = pair.enter_bci();
+                                let bcis = self.region_quote(region, at);
+                                return self.fallback(
+                                    bcis,
+                                    "the nested synchronized body has no region tree",
+                                    at,
+                                );
+                            }
+                        };
                         // The `return` shape: the normal path returns the value the body's own
                         // instructions left on the stack, and the statement has to end with that
                         // `return` **inside** its braces — the field read it names is written here,
@@ -14185,7 +14328,7 @@ impl Builder<'_> {
                         let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
                         let body = if let Some(inner) = structured_body {
                             let outer = std::mem::take(&mut self.stmts);
-                            self.finally_span = Some(plan.body());
+                            self.body_span = Some(plan.body());
                             self.finally_return = saved_return;
                             self.finally_catch_pop = match completion {
                                 guard::FinallyCompletion::Joined { catch_pop, .. } => {
@@ -14195,7 +14338,7 @@ impl Builder<'_> {
                                 | guard::FinallyCompletion::Void { .. } => None,
                             };
                             let walked = self.region(inner, &child(path, 0));
-                            self.finally_span = None;
+                            self.body_span = None;
                             self.finally_return = None;
                             self.finally_catch_pop = None;
                             let body = std::mem::replace(&mut self.stmts, outer);
@@ -14371,9 +14514,9 @@ impl Builder<'_> {
                             );
                         };
                         let outer = std::mem::take(&mut self.stmts);
-                        self.finally_span = Some(plan.body());
+                        self.body_span = Some(plan.body());
                         let built_body = self.region(body_region, &child(path, 0));
-                        self.finally_span = None;
+                        self.body_span = None;
                         let body = std::mem::replace(&mut self.stmts, outer);
                         if let Err(stop) = built_body {
                             self.restore_finally(
@@ -14410,10 +14553,10 @@ impl Builder<'_> {
                             normal_cleanup, ..
                         } = plan.shape()
                         {
-                            self.finally_span = Some(*normal_cleanup);
+                            self.body_span = Some(*normal_cleanup);
                         }
                         let built_cleanup = self.region(cleanup_region, &child(path, 1));
-                        self.finally_span = None;
+                        self.body_span = None;
                         let finally_body = std::mem::replace(&mut self.stmts, outer);
                         if let Err(stop) = built_cleanup {
                             self.restore_finally(
@@ -14479,10 +14622,10 @@ impl Builder<'_> {
                             );
                         };
                         let outer = std::mem::take(&mut self.stmts);
-                        self.finally_span = Some(plan.body());
+                        self.body_span = Some(plan.body());
                         self.multi_return_finally = Some(*returns);
                         let walked = self.region(inner, &child(path, 0));
-                        self.finally_span = None;
+                        self.body_span = None;
                         self.multi_return_finally = None;
                         let body = std::mem::replace(&mut self.stmts, outer);
                         if let Err(stop) = walked {
@@ -14566,14 +14709,14 @@ impl Builder<'_> {
                             );
                         };
                         let outer = std::mem::take(&mut self.stmts);
-                        self.finally_span = Some(plan.body());
+                        self.body_span = Some(plan.body());
                         self.segmented_null_lead = Some(SegmentedNullLeadCompletion {
                             early_cleanup: *early_cleanup,
                             early_return: *early_return,
                             returns: *returns,
                         });
                         let built_body = self.region(body_region, &child(path, 0));
-                        self.finally_span = None;
+                        self.body_span = None;
                         self.segmented_null_lead = None;
                         let body = std::mem::replace(&mut self.stmts, outer);
                         if let Err(stop) = built_body {
@@ -14585,9 +14728,9 @@ impl Builder<'_> {
                             return Err(stop);
                         }
                         let outer = std::mem::take(&mut self.stmts);
-                        self.finally_span = Some(*normal_cleanup);
+                        self.body_span = Some(*normal_cleanup);
                         let built_cleanup = self.region(cleanup_region, &child(path, 1));
-                        self.finally_span = None;
+                        self.body_span = None;
                         let finally_body = std::mem::replace(&mut self.stmts, outer);
                         if let Err(stop) = built_cleanup {
                             self.restore_finally(
@@ -15070,9 +15213,9 @@ impl Builder<'_> {
                 }
                 let mut body_statements = Vec::new();
                 let outer = std::mem::replace(&mut self.settled, lead);
-                let previous_finally = (self.finally_span, self.finally_return);
+                let previous_finally = (self.body_span, self.finally_return);
                 if let Some(shared) = &shared {
-                    self.finally_span = Some(shared.protected);
+                    self.body_span = Some(shared.protected);
                     self.finally_return = match &shared.completion {
                         Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
                             Some(returns[0])
@@ -15083,7 +15226,7 @@ impl Builder<'_> {
                     };
                 }
                 let walked = self.arm(body, &mut body_statements, &child(path, 0));
-                self.finally_span = previous_finally.0;
+                self.body_span = previous_finally.0;
                 self.finally_return = previous_finally.1;
                 self.settled = outer;
                 walked?;
@@ -15097,14 +15240,14 @@ impl Builder<'_> {
                         .insert(LocalVariable::whole(clause.parameter()));
                     self.clause_parameters.insert(clause.handler().bci());
                     let mut handler = Vec::new();
-                    let previous_finally = (self.finally_span, self.finally_return);
+                    let previous_finally = (self.body_span, self.finally_return);
                     if let Some(shared) = &shared {
                         if let Some((empty, saved)) = shared.two_catch {
-                            self.finally_span =
+                            self.body_span =
                                 Some(if index == 0 { empty } else { shared.catch_body });
                             self.finally_return = (index == 1).then_some(saved);
                         } else {
-                            self.finally_span = Some(shared.catch_body);
+                            self.body_span = Some(shared.catch_body);
                             self.finally_return = match &shared.completion {
                                 Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
                                     Some(returns[1])
@@ -15127,7 +15270,7 @@ impl Builder<'_> {
                             &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
                         )
                     };
-                    self.finally_span = previous_finally.0;
+                    self.body_span = previous_finally.0;
                     self.finally_return = previous_finally.1;
                     walked?;
                     // P3 2.2's third negative: a clause whose body walk wrote **no** statement
@@ -15663,6 +15806,25 @@ impl Builder<'_> {
         let mark = self.stmts.len();
         self.range(span)?;
         Ok(self.stmts.split_off(mark))
+    }
+
+    /// Closes a nested synchronized pair's braces: the statements collected since the header are
+    /// the inner block's body, and the statement — the same `synchronized (lock) { … }` node the
+    /// outer one is — takes its place in the enclosing run.
+    fn close_nested_pair(&mut self) -> Result<(), StopReason> {
+        let Some(pair) = self.nested_pair.as_mut() else {
+            return Ok(());
+        };
+        let Some(outer) = pair.opened.take() else {
+            return Ok(());
+        };
+        let lock = pair.lock.clone();
+        let origin = pair.origin.clone();
+        let inner = std::mem::replace(&mut self.stmts, outer);
+        self.push(Stmt::new(
+            StmtKind::Synchronized { lock, body: inner },
+            origin,
+        ))
     }
 
     /// The lock expression one verified `synchronized` header reads.
@@ -17955,10 +18117,27 @@ impl Builder<'_> {
             return Ok(());
         }
         if self
-            .finally_span
+            .body_span
             .is_some_and(|span| at < span.0 || at >= span.1)
         {
             return Ok(());
+        }
+        // The nested synchronized's braces: the pair's header opens the inner statement — its
+        // lock was rendered before this walk began — and the first instruction past the pair
+        // closes it. Between the two, the pair's own machinery (the header's duplication, the
+        // exits, the handler) is no statement of any body: the statement took its place.
+        if let Some(pair) = self.nested_pair.as_mut() {
+            if pair.opened.is_none() && at == pair.span.0 {
+                pair.engaged_once = true;
+                pair.opened = Some(std::mem::take(&mut self.stmts));
+            } else if pair.opened.is_some() && at >= pair.span.1 {
+                self.close_nested_pair()?;
+            }
+        }
+        if let Some(pair) = self.nested_pair.as_ref() {
+            if pair.span.0 <= at && at < pair.span.1 && !(pair.body.0 <= at && at < pair.body.1) {
+                return Ok(());
+            }
         }
         if self.multi_return_finally.is_some() && (34..44).contains(&at) {
             return Ok(());

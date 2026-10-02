@@ -1337,6 +1337,7 @@ pub(crate) fn recover(
         excluded_edge_nodes,
         visited: BTreeSet::new(),
         depth: 0,
+        own_monitor: None,
         unclosed_tail_at: None,
     };
     let mut regions = Vec::new();
@@ -1847,6 +1848,14 @@ struct LoopTarget {
     continue_target: usize,
 }
 
+/// The nested synchronized body a frame is the walk of: every block the enclosing monitor plan
+/// owns — its own handler and the inner pair's included, whose exception rows account the body's
+/// throwing edges while the walk writes the statements it protects.
+#[derive(Clone, Debug)]
+struct MonitorBody {
+    owned: Vec<CanonicalBlockId>,
+}
+
 struct HeaderTestChain {
     tests: Vec<(CanonicalBlockId, u32, Continuation)>,
     operator: crate::ast::BinaryOp,
@@ -2077,6 +2086,12 @@ struct Walker<'a> {
     /// A reachable arm successor that could not be owned. Refuse the whole method so a later
     /// unconditional return cannot turn an incomplete quote into executable wrong behavior.
     unclosed_tail_at: Option<u32>,
+    /// The nested synchronized body the walk is currently inside, if any: set for the bounded
+    /// walk of a claimed monitor plan's structured body ([`Walker::monitor_nested_body`]), where
+    /// no guarded rule is examined and the body's throwing edges are accounted by the monitor
+    /// statement's own rows. The walker field — and not a frame's — because the state belongs to
+    /// exactly one bounded walk, saved and restored around it.
+    own_monitor: Option<MonitorBody>,
     /// How many [`Walker::region_at`] calls are on the stack: the region walk's own recursion
     /// depth, checked against [`MAX_REGION_DEPTH`] before the walk descends.
     depth: usize,
@@ -2222,6 +2237,23 @@ fn closed_transfer_edges<Id: Ord>(
 /// A run of one region: the ordinary case, said once.
 fn one(region: Region, next: Option<CanonicalBlockId>) -> Run {
     (vec![region], next)
+}
+
+/// The region kinds a nested synchronized body may hold: the ordinary statement structure the
+/// walk proves — straight runs, branches and loops. No guarded shape of its own (a `try`, a
+/// `finally` or another monitor inside a monitor body is a compound this slice does not present)
+/// and no fallback quote: a quoted block inside the braces would present a `synchronized` whose
+/// body is not the one the bytecode runs.
+fn monitor_body_supported(region: &Region) -> bool {
+    match region {
+        Region::Straight { .. } => true,
+        Region::Sequence { regions } => regions.iter().all(monitor_body_supported),
+        Region::If {
+            then_arm, else_arm, ..
+        } => monitor_body_supported(then_arm) && monitor_body_supported(else_arm),
+        Region::Loop { body, .. } => body.iter().all(monitor_body_supported),
+        _ => false,
+    }
 }
 
 fn finally_body_supported(region: &Region, nested_catch: bool) -> bool {
@@ -2552,6 +2584,7 @@ impl Walker<'_> {
             });
             let mut guard_verdict = if (leaving.is_some() || monitor_entry)
                 && frame.own_finally.is_none()
+                && self.own_monitor.is_none()
                 && !self.visited.contains(&node)
                 && !(frame.own_try == Some(node)
                     && self.handlers.len() == 1
@@ -2666,6 +2699,43 @@ impl Walker<'_> {
                     None,
                 ));
             }
+            // A monitor whose body holds a proved inner pair is a **structured** body: the walk
+            // builds its region tree — the loop or branch around the inner block included — the
+            // same way a proved `finally` body's is, and nothing is claimed until that tree
+            // covered the exact blocks the body's own instructions occupy. The inner pair's
+            // braces are placed where its span sits in that tree, by the builder.
+            if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
+                if matches!(plan.shape(), crate::guard::Shape::Monitor { nested: Some(_), .. }))
+            {
+                let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
+                    unreachable!("the nested monitor verdict was just matched")
+                };
+                if let Some(body) = self.monitor_nested_body(&plan, frame)? {
+                    for block in plan.owned() {
+                        if let Some(node) = self.view.index_of(block) {
+                            self.visited.insert(node);
+                        }
+                    }
+                    let join = plan.join().cloned();
+                    return Ok(one(
+                        Region::Guard {
+                            prefix,
+                            plan,
+                            body: Some(Box::new(body)),
+                            finally_body: None,
+                        },
+                        join,
+                    ));
+                }
+                let reason = FallbackReason::Guard {
+                    pass: None,
+                    code: "jre_guard_body",
+                    at: current.bci(),
+                    message: "the nested synchronized body has no complete bounded structure"
+                        .into(),
+                };
+                return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+            }
             if !self.visited.insert(node) {
                 // The block is already part of the recovered structure: the walk has re-entered one
                 // it is building, which is no shape this subset proves. The prefix keeps its
@@ -2741,6 +2811,10 @@ impl Walker<'_> {
                     && frame.multi_return_finally_rows.is_none_or(|rows| {
                         !self.multi_return_finally_edges_accounted(&current, rows)
                     })
+                    && self
+                        .own_monitor
+                        .as_ref()
+                        .is_none_or(|body| !self.monitor_edges_accounted(&current, &body.owned))
                     && (frame.own_try.is_none()
                         || !self.edges_accounted_by_catches(&current, frame))
                 {
@@ -4519,6 +4593,167 @@ impl Walker<'_> {
         Ok(Some(body))
     }
 
+    /// The structured body of a claimed monitor plan that holds a nested pair: the region tree
+    /// the outer body becomes. The walk is bounded to the blocks the outer body's instructions
+    /// occupy and the normal flow reaches, exactly the way a proved `finally` body's is; the
+    /// pair's own machinery — its header, its exits, its handler — renders no statement of its
+    /// own, and the inner synchronized is presented where its body sits in the tree.
+    fn monitor_nested_body(
+        &mut self,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::Monitor {
+            nested: Some(_), ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let span = plan.body();
+        let Some(start) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() <= span.0 && span.0 < block.end_bci())
+            .map(|block| block.id().clone())
+        else {
+            return Ok(None);
+        };
+        let Some(start_node) = self.view.index_of(&start) else {
+            return Ok(None);
+        };
+        // The blocks the outer body's instructions occupy, as the normal flow reaches them: the
+        // pair's handler blocks are part of the statement but no normal path runs them, and the
+        // walk's own coverage check below is what holds the tree to exactly this set.
+        let mut expected: BTreeSet<usize> = BTreeSet::new();
+        let mut pending = vec![start_node];
+        while let Some(node) = pending.pop() {
+            poll(self.budget, None)?;
+            charge(self.budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+            if !expected.insert(node) {
+                continue;
+            }
+            if let Some(block) = self.view.id_of(node) {
+                let holds_body = self.ssa.block(block).is_some_and(|names| {
+                    names.instructions().iter().any(|instruction| {
+                        span.0 <= instruction.bci() && instruction.bci() < span.1
+                    })
+                });
+                if !holds_body {
+                    expected.remove(&node);
+                    continue;
+                }
+            }
+            for successor in self.view.successors(node) {
+                pending.push(successor);
+            }
+        }
+        if !expected.contains(&start_node)
+            || expected.iter().any(|node| {
+                self.visited.contains(node)
+                    || outer
+                        .scope
+                        .as_ref()
+                        .is_some_and(|scope| !scope.contains(node))
+            })
+        {
+            return Ok(None);
+        }
+        let previous = self.visited.clone();
+        let mut frame = outer.clone();
+        frame.scope = Some(expected.clone());
+        frame.boundary = None;
+        frame.own_try = None;
+        frame.own_finally = None;
+        let enclosing_monitor = self.own_monitor.replace(MonitorBody {
+            owned: plan.owned().to_vec(),
+        });
+        let walked = self.monitor_body_walk(&start, &frame, &expected);
+        let (regions, next) = match walked {
+            Ok(Some(result)) => result,
+            Ok(None) => {
+                self.own_monitor = enclosing_monitor;
+                self.visited = previous;
+                return Ok(None);
+            }
+            Err(stop) => {
+                self.own_monitor = enclosing_monitor;
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let body = if regions.len() == 1 {
+            regions.into_iter().next().unwrap()
+        } else {
+            Region::Sequence { regions }
+        };
+        let blocks = body.blocks();
+        let actual: BTreeSet<usize> = blocks
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect();
+        if next.as_ref().is_some_and(|at| {
+            self.view
+                .index_of(at)
+                .is_some_and(|node| expected.contains(&node))
+        }) || !monitor_body_supported(&body)
+            || actual != expected
+            || actual.len() != blocks.len()
+            || self
+                .visited
+                .difference(&previous)
+                .copied()
+                .collect::<BTreeSet<_>>()
+                != expected
+        {
+            self.own_monitor = enclosing_monitor;
+            self.visited = previous;
+            return Ok(None);
+        }
+        self.own_monitor = enclosing_monitor;
+        Ok(Some(body))
+    }
+
+    /// The bounded walk of a nested synchronized body, with the walker's monitor state held for
+    /// exactly its duration: the run the frame starts, and the runs its continuation blocks take.
+    /// `None` is a walk that covered less than the body's exact blocks or ended still inside them.
+    fn monitor_body_walk(
+        &mut self,
+        start: &CanonicalBlockId,
+        frame: &Frame,
+        expected: &BTreeSet<usize>,
+    ) -> Result<Option<(Vec<Region>, Option<CanonicalBlockId>)>, StopReason> {
+        let (mut regions, mut next) = match self.region_at(start, frame) {
+            Ok(result) => result,
+            Err(stop) => return Err(stop),
+        };
+        for _ in 0..expected.len() {
+            let Some(at) = next.as_ref() else {
+                break;
+            };
+            if !self
+                .view
+                .index_of(at)
+                .is_some_and(|node| expected.contains(&node))
+            {
+                break;
+            }
+            let (tail, following) = match self.region_at(at, frame) {
+                Ok(result) => result,
+                Err(stop) => return Err(stop),
+            };
+            if following.as_ref() == Some(at) || tail.is_empty() {
+                return Ok(None);
+            }
+            regions.extend(tail);
+            next = following;
+        }
+        if regions.is_empty() {
+            return Ok(None);
+        }
+        Ok(Some((regions, next)))
+    }
+
     /// Walk the protected body and the normal cleanup as two bounded regions. The Guard plan is
     /// their sole physical owner; the second tree supplies the lexical `if` written in `finally`.
     fn conditional_finally_regions(
@@ -5745,6 +5980,48 @@ impl Walker<'_> {
                                         })
                                     })
                             });
+                    if !matches {
+                        return false;
+                    }
+                    accounted = true;
+                }
+                CanonicalEdgeKind::Call { .. } => return false,
+                CanonicalEdgeKind::Normal | CanonicalEdgeKind::Return { .. } => {}
+            }
+        }
+        accounted
+    }
+
+    /// Whether every edge a block of a nested synchronized body leaves the normal flow through is
+    /// an exception edge the monitor statement's own table states: a row that covers an
+    /// instruction of the block and names a handler the enclosing monitor plan owns. Those edges
+    /// are the statement's own cleanup machinery — the outer row's, and the inner pair's — so the
+    /// walk writes the statements the body protects without quoting them for handlers the plan
+    /// already owns. A subroutine entry edge is never accounted.
+    fn monitor_edges_accounted(
+        &self,
+        block: &CanonicalBlockId,
+        owned: &[CanonicalBlockId],
+    ) -> bool {
+        let mut accounted = false;
+        for edge in self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block)
+        {
+            match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    let matches = self.handlers.iter().any(|row| {
+                        row.ordinal == handler_ordinal
+                            && owned.contains(edge.to())
+                            && self.ssa.block(block).is_some_and(|names| {
+                                names.instructions().iter().any(|instruction| {
+                                    row.start_bci <= instruction.bci()
+                                        && instruction.bci() < row.end_bci
+                                })
+                            })
+                    });
                     if !matches {
                         return false;
                     }
