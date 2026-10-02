@@ -1,0 +1,12 @@
+# per-path three-way — original / JADX / Jarde (java -Xverify:all each)
+
+| path | original | JADX | Jarde | verdict |
+| --- | --- | --- | --- | --- |
+| PD.soloFin | t[c]f | t[c]f | t[c]f | OK |
+| PD.finReturn | t[c] | t[c] | (stub: not recovered, excluded) | OK |
+| PD.multiFin | t[c][c]f | t[c][c]f | t[c][c]f | OK |
+| PD.bodyReturn | t | t | t | OK |
+| PD.threeClauses | t[c]f | (stub: jadx dev output uncompilable, excluded) | (stub: not recovered, excluded) | excluded (both registered) |
+| P1.soloFinally | b[c]f | b[c]f | b[c]f | OK |
+| P3.voidBodyBranch | t[c] | t[c] | t[c] | OK |
+| P3.voidBodySoloFin | t[c]f | t[c]f | t[c]f | OK |
