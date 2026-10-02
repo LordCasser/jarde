@@ -76,7 +76,8 @@ use jarde_java::report::TypedFunctionalKind;
 use jarde_java::report::{GenericConstructorCandidate, GenericReturnCandidate, GenericReturnValue};
 use jarde_java::{
     LocalVariable, NameTable, RecoveryContent, RecoveryFacts, RecoveryReport, SlotEvidence,
-    alias_for, comment_text, escape_string, is_java_identifier, type_of_component,
+    alias_for, comment_text, escape_string, is_java_identifier, nested_member_reference_spelling,
+    type_of_component,
 };
 use jarde_jvm::method_ir::parameter_positions;
 use jarde_reader::budget::CountedBudgetDimension;
@@ -5043,6 +5044,8 @@ pub(crate) fn spell_method(
     facts: Option<&RecoveryFacts>,
     recovered_parameter_names: Option<&[Option<String>]>,
     class: &str,
+    class_internal: &[u8],
+    nested_class_members: &[String],
     class_flags: u16,
     attributes: Option<&MemberAttributes>,
     annotations: &MemberAnnotationFacts,
@@ -5080,6 +5083,8 @@ pub(crate) fn spell_method(
         facts,
         recovered_parameter_names,
         class,
+        class_internal,
+        nested_class_members,
         class_flags,
         attributes,
         &parameter_annotations.uses_by_position,
@@ -5107,11 +5112,17 @@ fn spell_method_declaration(
     facts: Option<&RecoveryFacts>,
     recovered_parameter_names: Option<&[Option<String>]>,
     class: &str,
+    class_internal: &[u8],
+    nested_class_members: &[String],
     class_flags: u16,
     attributes: Option<&MemberAttributes>,
     parameter_annotations: &[Vec<String>],
     type_annotations: &TypeAnnotationUses,
 ) -> Spelled {
+    // The class a nested reference in this declaration is spelled against — the class whose text
+    // the declaration is written into — together with the `InnerClasses` row set that gates the
+    // spelling at all.
+    let current = std::str::from_utf8(class_internal).ok();
     let (default, throws) = attributes.map_or((None, &[][..]), |attributes| {
         (attributes.default.as_ref(), attributes.throws.as_slice())
     });
@@ -5150,6 +5161,8 @@ fn spell_method_declaration(
                 facts,
                 recovered_parameter_names,
                 &signature,
+                current,
+                nested_class_members,
                 parameter_annotations,
                 &type_annotations.parameter_uses,
                 attributes.and_then(|attributes| attributes.parameters.as_deref()),
@@ -5205,11 +5218,12 @@ fn spell_method_declaration(
         words.push("default");
     }
     let returns = signature.returns.as_deref().unwrap_or("void");
+    let returns =
+        nested_member_reference_spelling(returns, current, Some(nested_class_members)).into_owned();
     let returns = if type_annotations.return_uses.is_empty() {
-        returns.to_owned()
+        returns
     } else {
-        decorate_qualified_type(returns, &type_annotations.return_uses)
-            .unwrap_or_else(|| returns.to_owned())
+        decorate_qualified_type(&returns, &type_annotations.return_uses).unwrap_or(returns)
     };
     let mut declaration = String::new();
     for word in words {
@@ -5223,6 +5237,8 @@ fn spell_method_declaration(
         facts,
         recovered_parameter_names,
         &signature,
+        current,
+        nested_class_members,
         parameter_annotations,
         &type_annotations.parameter_uses,
         attributes.and_then(|attributes| attributes.parameters.as_deref()),
@@ -5250,8 +5266,16 @@ fn spell_method_declaration(
 /// a field that declares no such attribute — or one whose value this presentation has no literal
 /// for — is written without an initializer at all. Nothing is inferred from a `<clinit>` or a use
 /// site, so the one `=` this presentation writes is the one the field's own attribute states.
-fn spell_field_declaration(item: &FieldItem, constant: Option<&MemberDefault>) -> Spelled {
-    let Some(field_type) = field_type(&item.descriptor.raw().0) else {
+fn spell_field_declaration(
+    item: &FieldItem,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
+    constant: Option<&MemberDefault>,
+) -> Spelled {
+    let Some(field_type) = field_type(&item.descriptor.raw().0).map(|ty| {
+        nested_member_reference_spelling(&ty, current_class, Some(nested_class_members))
+            .into_owned()
+    }) else {
         return Spelled {
             declaration: None,
             marker: Some(not_a_descriptor_field(item)),
@@ -5463,6 +5487,8 @@ fn arguments(
     facts: Option<&RecoveryFacts>,
     recovered_parameter_names: Option<&[Option<String>]>,
     signature: &Signature,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
     parameter_annotations: &[Vec<String>],
     type_annotations: &[Vec<String>],
     proved: Option<&[ProvedMethodParameter]>,
@@ -5498,11 +5524,13 @@ fn arguments(
                 .cloned()
                 .unwrap_or_else(|| format!("arg{slot}"));
             let varargs = signature.varargs && position + 1 == signature.parameters.len();
+            let ty =
+                nested_member_reference_spelling(ty, current_class, Some(nested_class_members));
             let ty = type_annotations
                 .get(position)
                 .filter(|items| !items.is_empty())
-                .and_then(|items| decorate_qualified_type(ty, items))
-                .unwrap_or_else(|| ty.clone());
+                .and_then(|items| decorate_qualified_type(ty.as_ref(), items))
+                .unwrap_or_else(|| ty.into_owned());
             let ty = varargs_type(&ty, varargs);
             let annotations = parameter_annotations
                 .get(position)
@@ -6538,11 +6566,14 @@ impl ClassSourceField {
     /// field's own `ConstantValue` attribute states one.
     pub(crate) fn of(
         item: FieldItem,
+        current_class: Option<&str>,
+        nested_class_members: &[String],
         constant: Option<&MemberDefault>,
         annotations: MemberAnnotationFacts,
         pool: &[CpEntryFacts],
     ) -> Self {
-        let mut spelled = spell_field_declaration(&item, constant);
+        let mut spelled =
+            spell_field_declaration(&item, current_class, nested_class_members, constant);
         let mut member_annotations =
             spell_member_annotation_uses(annotations.declaration.clone(), pool);
         let type_annotations = spell_type_annotation_uses(
@@ -6556,11 +6587,21 @@ impl ClassSourceField {
         );
         if let Some(declaration) = &spelled.declaration
             && let (Some(ty), Some(decorated)) = (
-                field_type(&item.descriptor.raw().0),
-                decorate_qualified_type(
-                    &field_type(&item.descriptor.raw().0).unwrap_or_default(),
-                    &type_annotations.field_uses,
-                ),
+                field_type(&item.descriptor.raw().0).map(|ty| {
+                    nested_member_reference_spelling(&ty, current_class, Some(nested_class_members))
+                        .into_owned()
+                }),
+                field_type(&item.descriptor.raw().0).and_then(|ty| {
+                    decorate_qualified_type(
+                        nested_member_reference_spelling(
+                            &ty,
+                            current_class,
+                            Some(nested_class_members),
+                        )
+                        .as_ref(),
+                        &type_annotations.field_uses,
+                    )
+                }),
             )
             && !type_annotations.field_uses.is_empty()
         {
@@ -7881,7 +7922,20 @@ pub(crate) fn member_family_recovered_span(
     start: usize,
     end: usize,
 ) -> Option<(usize, usize)> {
-    let declaration = method.declaration.as_ref()?;
+    member_family_recovered_span_with_declaration(method, recovery, None, start, end)
+}
+
+/// The span mapping of [`member_family_recovered_method_text_with_declaration`]: the same
+/// declaration override, so a fold's declaration rewrite moves the spans it publishes by exactly
+/// the bytes that rewrite changed.
+pub(crate) fn member_family_recovered_span_with_declaration(
+    method: &ClassSourceMethod,
+    recovery: &RecoveryReport,
+    declaration_override: Option<&str>,
+    start: usize,
+    end: usize,
+) -> Option<(usize, usize)> {
+    let declaration = declaration_override.unwrap_or(method.declaration.as_ref()?);
     let body = artifact(&recovery.text)?;
     let source = recovery.text.get(start..end)?;
     if source.is_empty() || source.contains('\n') {
@@ -7921,7 +7975,11 @@ pub(crate) fn member_family_recovered_span(
     };
     let mapped_start = prefix + indented_offset(part, local_start, depth, false)?;
     let mapped_end = prefix + indented_offset(part, local_end, depth, true)?;
-    let text = member_family_recovered_method_text(method, recovery)?;
+    let text = member_family_recovered_method_text_with_declaration(
+        method,
+        recovery,
+        declaration_override,
+    )?;
     (text.get(mapped_start..mapped_end)? == source).then_some((mapped_start, mapped_end))
 }
 
@@ -7953,7 +8011,19 @@ pub(crate) fn member_family_recovered_method_text(
     method: &ClassSourceMethod,
     recovery: &RecoveryReport,
 ) -> Option<String> {
-    let declaration = method.declaration.as_ref()?;
+    member_family_recovered_method_text_with_declaration(method, recovery, None)
+}
+
+/// The same reassembly with one projection's own spelling of the declaration: a family fold that
+/// renders a nested declaration in this text rewrites the member's declaration line to the source
+/// name of the class it folds ([`Self::declaration`]), and both the text and every span the
+/// projection publishes have to be computed against that same line or the two drift apart.
+pub(crate) fn member_family_recovered_method_text_with_declaration(
+    method: &ClassSourceMethod,
+    recovery: &RecoveryReport,
+    declaration_override: Option<&str>,
+) -> Option<String> {
+    let declaration = declaration_override.unwrap_or(method.declaration.as_ref()?);
     let body = artifact(&recovery.text)?;
     let markers = if method.has_only_explanation_marker() {
         &[][..]
@@ -9442,11 +9512,29 @@ mod tests {
             jarde_java::DebugLocal::named(2, "number"),
         ]);
         assert_eq!(
-            arguments(Some(&facts), None, &signature, &[], &[], Some(&parameters)),
+            arguments(
+                Some(&facts),
+                None,
+                &signature,
+                None,
+                &[],
+                &[],
+                &[],
+                Some(&parameters)
+            ),
             "(java.lang.String paramStr, final int number)"
         );
         assert_eq!(
-            arguments(None, None, &signature, &[], &[], Some(&parameters)),
+            arguments(
+                None,
+                None,
+                &signature,
+                None,
+                &[],
+                &[],
+                &[],
+                Some(&parameters)
+            ),
             "(java.lang.String arg1, int arg2)"
         );
         let lvt = facts.clone().with_debug_locals(vec![
@@ -9454,7 +9542,16 @@ mod tests {
             jarde_java::DebugLocal::over(2, "number", 0, 4),
         ]);
         assert_eq!(
-            arguments(Some(&lvt), None, &signature, &[], &[], Some(&parameters)),
+            arguments(
+                Some(&lvt),
+                None,
+                &signature,
+                None,
+                &[],
+                &[],
+                &[],
+                Some(&parameters)
+            ),
             "(java.lang.String paramStr, int number)"
         );
     }
@@ -9474,7 +9571,7 @@ mod tests {
         );
         assert!(ints.varargs);
         assert_eq!(
-            arguments(None, None, &ints, &[], &[], None),
+            arguments(None, None, &ints, None, &[], &[], &[], None),
             "(int arg0, int... arg1)"
         );
 
@@ -9482,7 +9579,7 @@ mod tests {
         // it has and the parameter is written `byte[]...`, never `byte[][]` or `byte...`.
         let grid = method_descriptor(b"([[B)V", true, true).expect("a method descriptor");
         assert_eq!(
-            arguments(None, None, &grid, &[], &[], None),
+            arguments(None, None, &grid, None, &[], &[], &[], None),
             "(byte[]... arg0)"
         );
 
@@ -9492,13 +9589,13 @@ mod tests {
             method_descriptor(b"(I[I)V", true, false).expect("a method descriptor");
         assert!(!without_the_flag.varargs);
         assert_eq!(
-            arguments(None, None, &without_the_flag, &[], &[], None),
+            arguments(None, None, &without_the_flag, None, &[], &[], &[], None),
             "(int arg0, int[] arg1)"
         );
         let not_an_array = method_descriptor(b"(II)V", true, true).expect("a method descriptor");
         assert!(!not_an_array.varargs, "no `...` is invented for an `int`");
         assert_eq!(
-            arguments(None, None, &not_an_array, &[], &[], None),
+            arguments(None, None, &not_an_array, None, &[], &[], &[], None),
             "(int arg0, int arg1)"
         );
         let no_parameters = method_descriptor(b"()V", true, true).expect("a method descriptor");
@@ -9506,13 +9603,16 @@ mod tests {
             !no_parameters.varargs,
             "there is no last parameter to reach"
         );
-        assert_eq!(arguments(None, None, &no_parameters, &[], &[], None), "()");
+        assert_eq!(
+            arguments(None, None, &no_parameters, None, &[], &[], &[], None),
+            "()"
+        );
 
         // The flag reaches the descriptor's last parameter and not the slot the receiver holds: an
         // instance member's `this` is no position of the list, so the dots land on slot 1 here.
         let instance = method_descriptor(b"([I)V", false, true).expect("a method descriptor");
         assert_eq!(
-            arguments(None, None, &instance, &[], &[], None),
+            arguments(None, None, &instance, None, &[], &[], &[], None),
             "(int... arg1)"
         );
     }
@@ -9522,7 +9622,16 @@ mod tests {
         let signature = method_descriptor(b"(JI)I", true, false).expect("a method descriptor");
         let recovered = [Some("arg0_2".to_owned()), None, Some("arg2_2".to_owned())];
         assert_eq!(
-            arguments(None, Some(&recovered), &signature, &[], &[], None),
+            arguments(
+                None,
+                Some(&recovered),
+                &signature,
+                None,
+                &[],
+                &[],
+                &[],
+                None
+            ),
             "(long arg0_2, int arg2_2)"
         );
     }

@@ -135,6 +135,109 @@ pub fn is_java_identifier(text: &str) -> bool {
         && !JAVA_KEYWORDS.contains(&text)
 }
 
+/// The Java source spelling of one class-file nested name, as the **reference** a body of
+/// `current_class` writes in a type position.
+///
+/// A binary name spells nesting with `$` (`V1$Op`), and Java source cannot write that token in a
+/// type position. This function is the presentation layer of the **cross-class** half of that
+/// rule: a nested name whose top-level owner is a *different* class than the one whose text is
+/// being written is spelled with the nesting dotted (`Other.Inner` from `VN1`, `p.A.B.C` for a
+/// deeper chain), which is legal source wherever the owner is resolvable — the same situation a
+/// package-level reference is in, and deliberately not this layer's problem.
+///
+/// The **self-nested** half — a reference to a member of the class's own top-level owner
+/// (`V1$Op` inside `V1`, `N1$Numbers$NumString` inside `N1$Numbers`) — is **not** converted here,
+/// and that is a decision, not an omission. A recovery text states such a member's declaration
+/// only when a family projection folds it into the same text (the nested-enum fold, the proved
+/// static member writer); the member is otherwise presented as its own physical unit under the
+/// pool's `$` name, and a project built from those units resolves exactly that name. The simple
+/// source spelling (`Op`) is therefore written by the projection that renders the nested
+/// declaration, never by this generic rule — the two spellings must not diverge from the
+/// declaration the text actually carries.
+///
+/// `current_class` is the class whose text the reference is written into, in either the internal
+/// (`p/Outer`) or the source (`p.Outer`) spelling; its top-level owner is everything before the
+/// first `$`. The conversion is refused, and the name returned exactly as it is, in every case
+/// this layer cannot spell better than the bytes: a name with no `$`, a name whose `$`-separated
+/// tail has a segment that is not a Java identifier (javac's synthetic families: the anonymous
+/// `X$1`, the local `X$1Local`), a self-nested name as defined above, and `current_class` of
+/// `None` — a run that stated no declaring class has no owner to compare against.
+///
+/// An array suffix (`V1$Op[]`) is not part of the nesting: it is split off, the element name is
+/// spelled, and the suffix is written back after it.
+pub fn nested_reference_spelling<'n>(
+    name: &'n str,
+    current_class: Option<&str>,
+) -> std::borrow::Cow<'n, str> {
+    use std::borrow::Cow;
+    // The fast path is also the guarantee the no-`$` families keep byte-identical text: platform
+    // names, simple names and already-dotted names never allocate and never change.
+    if !name.contains('$') {
+        return Cow::Borrowed(name);
+    }
+    let Some(current) = current_class else {
+        return Cow::Borrowed(name);
+    };
+    let current = current.replace('/', ".");
+    // The `[]` of an array type is a suffix of the whole spelling, so the element name is
+    // everything before its first occurrence and the suffix is the rest of the text unchanged.
+    let (element, suffix) = match name.split_once("[]") {
+        Some((element, _)) => (element, &name[element.len()..]),
+        None => (name, ""),
+    };
+    let Some((head, tail)) = element.split_once('$') else {
+        return Cow::Borrowed(name);
+    };
+    // Both sides of the split must be names Java can write: the head is a package prefix plus a
+    // top-level class (`p.Outer`, `V1`), and every segment of the tail is a nested member's own
+    // name. A name that fails this is one the pool states in a form source cannot improve on —
+    // the synthetic families above, or a hostile spelling — and it keeps the pool's form.
+    if head.is_empty()
+        || !head.split('.').all(is_java_identifier)
+        || !tail.split('$').all(is_java_identifier)
+    {
+        return Cow::Borrowed(name);
+    }
+    // The self-nested boundary: the name's top-level owner is the class whose text this is, so
+    // the member's declaration belongs to this unit's own family and only a fold projection may
+    // spell it as source nesting (see this function's doc). Everything else keeps the pool name.
+    let owner = current.split('$').next().unwrap_or(&current);
+    if head == owner {
+        return Cow::Borrowed(name);
+    }
+    let nested = tail.split('$').collect::<Vec<&str>>();
+    let mut spelled = format!("{head}.{}", nested.join("."));
+    spelled.push_str(suffix);
+    Cow::Owned(spelled)
+}
+
+/// The source spelling of one nested class name, as a **member of the class whose own
+/// `InnerClasses` attribute is `members`** writes it.
+///
+/// This is [`nested_reference_spelling`] behind the one piece of evidence the rule cannot invent:
+/// a `$` alone does not state a nesting relation, because `$` is a legal character of a **top
+/// level** class's own name (`Named$Top` is one class, not `Named`'s member `Top`), and JVMS
+/// §4.7.6 states the fact that does — a class file that references a member class carries an
+/// `InnerClasses` row naming it. `members` is that row set of the class whose text is being
+/// written, each name in the source spelling this module compares with (`V1$Op`, `p.A$B$C`); a
+/// name that is not one of them keeps the pool's own spelling exactly, and so does every name
+/// when the run stated no rows at all.
+pub fn nested_member_reference_spelling<'n>(
+    name: &'n str,
+    current_class: Option<&str>,
+    members: Option<&[String]>,
+) -> std::borrow::Cow<'n, str> {
+    let element = match name.split_once("[]") {
+        Some((element, _)) => element,
+        None => name,
+    };
+    let stated = members.is_some_and(|members| members.iter().any(|member| member == element));
+    if !stated {
+        return std::borrow::Cow::Borrowed(name);
+    }
+    nested_reference_spelling(name, current_class)
+}
+
 /// The deterministic alias of a raw name Java cannot spell.
 ///
 /// The result is a function of `raw` alone, so two runs that read the same evidence write the same
@@ -595,6 +698,129 @@ fn invented_name(slot: u16, parameters: u16) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cross_class_nested_references_spell_dotted_and_self_nested_stays_pool() {
+        // Cross-class: the tail is dotted onto the head, package included, however deep.
+        assert_eq!(
+            nested_reference_spelling("Other$Inner", Some("V1")).as_ref(),
+            "Other.Inner"
+        );
+        assert_eq!(
+            nested_reference_spelling("p.A$B$C", Some("p/VN2")).as_ref(),
+            "p.A.B.C"
+        );
+        assert_eq!(
+            nested_reference_spelling("p.A$B$C", Some("VN2")).as_ref(),
+            "p.A.B.C",
+            "the owner comparison is whole-name: a same-named class in another package is another class"
+        );
+        // The head is compared as a whole: a same-named class in another package is another class.
+        assert_eq!(
+            nested_reference_spelling("q.Outer$Inner", Some("p/Outer")).as_ref(),
+            "q.Outer.Inner"
+        );
+        // An array's element carries the nesting; the brackets are written back.
+        assert_eq!(
+            nested_reference_spelling("Other$Inner[]", Some("V1")).as_ref(),
+            "Other.Inner[]"
+        );
+        // Self-nested — the name's top-level owner is the class whose text this is — keeps the
+        // pool spelling: only a family projection that declares the member in this text may spell
+        // it as source nesting, and this generic rule never does.
+        assert_eq!(
+            nested_reference_spelling("V1$Op", Some("V1")).as_ref(),
+            "V1$Op",
+            "the enum fold owns the simple spelling of its own child"
+        );
+        assert_eq!(
+            nested_reference_spelling("V1$Op", Some("V1$Op")).as_ref(),
+            "V1$Op",
+            "a member's own text keeps the pool spelling of itself and its siblings"
+        );
+        assert_eq!(
+            nested_reference_spelling("p.VN2$Mid$Leaf", Some("p/VN2")).as_ref(),
+            "p.VN2$Mid$Leaf",
+            "a deep self-nested chain keeps the pool spelling"
+        );
+        assert_eq!(
+            nested_reference_spelling("N1$Numbers$NumString", Some("N1$Numbers")).as_ref(),
+            "N1$Numbers$NumString",
+            "a grandchild keeps the pool spelling inside its owner's own text"
+        );
+    }
+
+    #[test]
+    fn names_source_already_spells_or_cannot_improve_stay_verbatim() {
+        for name in ["java.util.List", "Other", "V1.Op", "int", ""] {
+            assert_eq!(
+                nested_reference_spelling(name, Some("V1")).as_ref(),
+                name,
+                "`{name}` is already a source spelling"
+            );
+        }
+        // The synthetic families: an anonymous capture class and javac's local-class spellings,
+        // including the one whose tail would pass an identifier check if the head were not checked.
+        for name in [
+            "C1$1",
+            "C1$12",
+            "More17$1",
+            "Outer$1Local",
+            "A$1$B",
+            "$Op",
+            "A$",
+            "p.$Op",
+        ] {
+            assert_eq!(
+                nested_reference_spelling(name, Some("A")).as_ref(),
+                name,
+                "`{name}` keeps the pool's own spelling"
+            );
+        }
+        // No class to nest against: the pool spelling, never a guess.
+        assert_eq!(nested_reference_spelling("V1$Op", None).as_ref(), "V1$Op");
+        // A nested class referencing itself whole: the reference's top-level owner is the owner
+        // of the text itself, so it is self-nested and keeps the pool spelling.
+        assert_eq!(
+            nested_reference_spelling("V1$Op", Some("V1$Op")).as_ref(),
+            "V1$Op"
+        );
+    }
+
+    #[test]
+    fn a_dollar_top_level_class_is_a_member_of_nothing_the_rows_do_not_state() {
+        let members = vec!["V1$Op".to_owned(), "p.A$B$C".to_owned(), "V1$1".to_owned()];
+        // A top-level class whose own name carries `$` is not nested, and no rule of this module
+        // may turn it into a nesting: the pool spelling is the only faithful one.
+        assert_eq!(
+            nested_member_reference_spelling(
+                "Named$Top",
+                Some("StaticMemberBasic"),
+                Some(&members)
+            )
+            .as_ref(),
+            "Named$Top"
+        );
+        // A cross-class name the class's own rows state converts; the same name without that
+        // evidence keeps the pool spelling, and so does a run that stated no rows at all.
+        assert_eq!(
+            nested_member_reference_spelling("p.A$B$C", Some("p/VN2"), Some(&members)).as_ref(),
+            "p.A.B.C"
+        );
+        assert_eq!(
+            nested_member_reference_spelling("p.A$B$C", Some("p/VN2"), Some(&[])).as_ref(),
+            "p.A$B$C"
+        );
+        assert_eq!(
+            nested_member_reference_spelling("p.A$B$C", Some("p/VN2"), None).as_ref(),
+            "p.A$B$C"
+        );
+        // The row set gates the whole name, arrays included by their element.
+        assert_eq!(
+            nested_member_reference_spelling("p.A$B$C[]", Some("p/VN2"), Some(&members)).as_ref(),
+            "p.A.B.C[]"
+        );
+    }
 
     #[test]
     fn a_keyword_becomes_a_deterministic_alias_and_never_an_error() {

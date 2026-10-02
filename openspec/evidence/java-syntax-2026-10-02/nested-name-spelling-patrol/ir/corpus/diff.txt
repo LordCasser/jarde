@@ -1,0 +1,20 @@
+diff -r nn-corpus-before/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.txt nn-corpus-after/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.txt
+15c15
+<     public static java.lang.Object make(matrix.Outer$A arg0, int arg1) {
+---
+>     public static java.lang.Object make(matrix.Outer.A arg0, int arg1) {
+diff -r nn-corpus-before/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.txt nn-corpus-after/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.txt
+15c15
+<     public static matrix.Outer$A$Generic make(matrix.Outer$A arg0, int arg1) {
+---
+>     public static matrix.Outer.A.Generic make(matrix.Outer.A arg0, int arg1) {
+diff -r nn-corpus-before/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlain.txt nn-corpus-after/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlain.txt
+15c15
+<     public static java.lang.Object make(matrix.Outer$A arg0, int arg1) {
+---
+>     public static java.lang.Object make(matrix.Outer.A arg0, int arg1) {
+diff -r nn-corpus-before/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.txt nn-corpus-after/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.txt
+14c14
+<     public static java.lang.Object make(matrix.Outer$A arg0, int arg1) {
+---
+>     public static java.lang.Object make(matrix.Outer.A arg0, int arg1) {

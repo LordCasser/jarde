@@ -5194,6 +5194,15 @@ impl Engine {
                 }
             }
         }
+        // The member names this class's own `InnerClasses` rows state, in the source spelling:
+        // the evidence every nested source spelling below is gated on. Computed once from the
+        // same typed read the family scans consumed, so a fragment, a field initializer and a
+        // member body all nest against the same row set.
+        let nested_class_members: Vec<String> = assembly_context
+            .resolved_inner_classes
+            .iter()
+            .map(|row| String::from_utf8_lossy(&row.class).replace('/', "."))
+            .collect();
         if let crate::member_inner::FamilyRootScan::Candidate(candidate) = &family_scan
             && candidate.access_flags & 0x0008 != 0
         {
@@ -5345,8 +5354,14 @@ impl Engine {
                     annotation_stop = Some(error.clone());
                 }
             }
-            let mut source_field =
-                ClassSourceField::of(item, constant.as_ref(), annotation_read.facts, &pool);
+            let mut source_field = ClassSourceField::of(
+                item,
+                std::str::from_utf8(&read.facts.this_class.raw().0).ok(),
+                &nested_class_members,
+                constant.as_ref(),
+                annotation_read.facts,
+                &pool,
+            );
             if annotation_stop.is_some() {
                 fields.push(source_field);
                 ended = true;
@@ -5440,6 +5455,8 @@ impl Engine {
                     None,
                     None,
                     &declaration.name,
+                    &read.facts.this_class.raw().0,
+                    &nested_class_members,
                     read.facts.access_flags,
                     None,
                     &annotation_read.facts,
@@ -5500,6 +5517,8 @@ impl Engine {
                             None,
                             None,
                             &declaration.name,
+                            &read.facts.this_class.raw().0,
+                            &nested_class_members,
                             read.facts.access_flags,
                             None,
                             &annotation_read.facts,
@@ -5559,6 +5578,8 @@ impl Engine {
                 None,
                 None,
                 &declaration.name,
+                &read.facts.this_class.raw().0,
+                &nested_class_members,
                 read.facts.access_flags,
                 Some(&attributes),
                 &annotation_read.facts,
@@ -5713,6 +5734,8 @@ impl Engine {
                                     Some(recovered.facts()),
                                     Some(&recovered.recovery().parameter_names),
                                     &declaration.name,
+                                    &read.facts.this_class.raw().0,
+                                    &nested_class_members,
                                     read.facts.access_flags,
                                     Some(&attributes),
                                     &annotation_read.facts,
@@ -6760,6 +6783,8 @@ impl Engine {
         };
         let initializer_field_order = match project_static_initializer_group(
             &initializer_proof,
+            &declaration.item.declaration.this_class.raw().0,
+            &nested_class_members,
             &mut fields,
             &methods,
             &initializer_candidate_runs,
@@ -7057,6 +7082,11 @@ impl Engine {
                         match jarde_java::report::emit_class_initializer_value(
                             &suffix.value,
                             &suffix.initializer_member,
+                            std::str::from_utf8(
+                                declaration.item.declaration.this_class.raw().0.as_slice(),
+                            )
+                            .ok(),
+                            &nested_class_members,
                             budget,
                         ) {
                             Ok(fragment) => {
@@ -7105,6 +7135,11 @@ impl Engine {
                                 match jarde_java::report::emit_class_enum_initializer_statements(
                                     &suffix.statements,
                                     &suffix.initializer_member,
+                                    std::str::from_utf8(
+                                        declaration.item.declaration.this_class.raw().0.as_slice(),
+                                    )
+                                    .ok(),
+                                    &nested_class_members,
                                     budget,
                                 ) {
                                     Ok(statements) => {
@@ -7166,6 +7201,11 @@ impl Engine {
                     match jarde_java::report::emit_class_enum_constructor_body(
                         &body.candidate,
                         &method.item.identity,
+                        std::str::from_utf8(
+                            declaration.item.declaration.this_class.raw().0.as_slice(),
+                        )
+                        .ok(),
+                        &nested_class_members,
                         budget,
                     ) {
                         Ok(text) => terminal_constructor_body = text,
@@ -7873,6 +7913,8 @@ enum InitializerProjectionFailure {
 /// The returned indices are source order; the `fields` vector itself stays in classfile order.
 fn project_static_initializer_group(
     proof: &ClassSourceInitializerProof,
+    class_internal: &[u8],
+    nested_class_members: &[String],
     fields: &mut [ClassSourceField],
     methods: &[ClassSourceMethod],
     candidate_runs: &[jarde_java::report::ClassInitializerCandidates],
@@ -7983,6 +8025,8 @@ fn project_static_initializer_group(
         let fragment = jarde_java::report::emit_class_initializer_value(
             &write.value,
             &clinit_method.item.identity,
+            std::str::from_utf8(class_internal).ok(),
+            nested_class_members,
             budget,
         )
         .map_err(InitializerProjectionFailure::Stopped)?;
@@ -17763,6 +17807,7 @@ fn project_class_source_nested_enum(
         content,
         environment,
         root,
+        &owner_source_name,
         &targets,
         execution,
         budget,
@@ -17924,6 +17969,7 @@ fn render_nested_enum_at(
         content,
         environment,
         child,
+        &child_source_name,
         &descendants,
         execution,
         budget,
@@ -17939,9 +17985,18 @@ fn render_nested_enum_at(
         else {
             return Ok(Err("nested enum constructor record is missing".to_owned()));
         };
+        let owner_internal = owner
+            .declaration
+            .as_ref()
+            .and_then(|owner| std::str::from_utf8(&owner.item.declaration.this_class.raw().0).ok());
+        // The child's own `InnerClasses` rows are not carried by the prepared report, and no row
+        // set of the owner may stand in for them: the nested spelling stays gated on evidence, so
+        // a terminal constructor body re-emitted here keeps the pool spelling of a `$` name.
         let emitted = jarde_java::report::emit_class_enum_constructor_body(
             &body.candidate,
             &method.item.identity,
+            owner_internal,
+            &[],
             budget,
         )
         .map_err(|stop| {
@@ -18049,10 +18104,23 @@ fn prove_nested_enum_method_texts(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
     owner: &ClassSourceReport,
+    owner_source_name: &str,
     targets: &[NestedEnumSourceTarget<'_>],
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Result<std::result::Result<Vec<class_source::MemberFamilyMethodText>, String>> {
+    // The source spelling a reference to one of these targets takes **inside this text**: the fold
+    // renders the target's declaration nested in this very unit, so the reference drops the unit's
+    // own prefix and keeps the member path (`Op` for `V1$Op` in `V1`; `Numbers.NumString` for a
+    // grandchild from `N1`). A target whose prefix does not strip keeps its full source name.
+    let own_prefix = format!("{owner_source_name}.");
+    let fold_spelling = |target: &NestedEnumSourceTarget<'_>| {
+        target
+            .source_name
+            .strip_prefix(&own_prefix)
+            .unwrap_or(&target.source_name)
+            .to_owned()
+    };
     let mut projected = Vec::new();
     for method in &owner.methods {
         let class_source::ClassSourceOutcome::Recovered {
@@ -18070,13 +18138,27 @@ fn prove_nested_enum_method_texts(
                 CountedBudgetDimension::AnalysisSteps,
                 recovery.text.len() as u64,
             )?;
-            let binary_name = match std::str::from_utf8(&target.binary_name) {
-                Ok(name) => name.replace('/', "."),
+            let (pool_name, dotted_name) = match std::str::from_utf8(&target.binary_name) {
+                Ok(name) => (name.replace('/', "."), name.replace(['/', '$'], ".")),
                 Err(_) => return Ok(Err("nested enum name is not UTF-8".to_owned())),
             };
-            let Some(spans) = java_code_name_spans(&recovery.text, &binary_name) else {
+            // The body states the class as the pool spells it or as an enum-switch plan already
+            // dotted it; both spell the class this fold declares, and both become the fold's own
+            // nested spelling below.
+            let Some(dotted_spans) = java_code_name_spans(&recovery.text, &dotted_name) else {
                 return Ok(Err("nested enum source artifact is malformed".to_owned()));
             };
+            let Some(pool_spans) = java_code_name_spans(&recovery.text, &pool_name) else {
+                return Ok(Err("nested enum source artifact is malformed".to_owned()));
+            };
+            let mut spans = dotted_spans;
+            spans.extend(pool_spans);
+            spans.sort();
+            if spans.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+                return Ok(Err(
+                    "nested enum source artifact states overlapping name tokens".to_owned(),
+                ));
+            }
             for (start, end) in spans {
                 budget.poll()?;
                 let mut smallest = usize::MAX;
@@ -18106,116 +18188,172 @@ fn prove_nested_enum_method_texts(
                 edits.push((start, end, target, source_bcis));
             }
         }
-        if edits.is_empty() {
-            continue;
-        }
-        let analyzed = match jarde_jvm::analyze_method_ir(
-            content,
-            &crate::ir::MethodAnalysisRequest {
-                environment: environment.clone(),
-                method: method.item.identity.clone(),
-                stages: MethodOperation::Analysis.stages().to_vec(),
-            },
-            budget,
-        ) {
-            Ok(analyzed) => analyzed,
-            Err(error) => {
-                merge_execution(execution, stop_execution(&error, budget));
-                return Err(error);
+        // The declaration line names the folded class wherever the member's own descriptor does
+        // (`enumSwitch(V1$Op arg0, …)`), and the fold renders that class as a nested declaration
+        // of this text — so the declaration is re-spelled with the same fold spelling the body
+        // tokens take. A member whose descriptor names no target keeps its declaration verbatim.
+        let mut declaration_edits = Vec::new();
+        if let Some(declaration) = method.declaration.as_ref() {
+            for target in targets {
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    declaration.len() as u64,
+                )?;
+                let descriptor_entry =
+                    format!("L{};", String::from_utf8_lossy(&target.binary_name));
+                if !method
+                    .item
+                    .descriptor
+                    .raw()
+                    .0
+                    .windows(descriptor_entry.len())
+                    .any(|window| window == descriptor_entry.as_bytes())
+                {
+                    continue;
+                }
+                let pool_name = String::from_utf8_lossy(&target.binary_name).replace('/', ".");
+                let Some(spans) = java_code_name_spans(declaration, &pool_name) else {
+                    return Ok(Err("nested enum source declaration is malformed".to_owned()));
+                };
+                let spelling = fold_spelling(target);
+                declaration_edits.extend(
+                    spans
+                        .into_iter()
+                        .map(|(start, end)| (start, end, spelling.clone())),
+                );
             }
-        };
-        merge_execution(execution, analyzed.report().execution.clone());
-        if analyzed.report().method != method.item.identity
-            || !matches!(
-                analyzed.report().execution,
-                ExecutionReport::Complete { .. }
-            )
+        }
+        declaration_edits.sort_by_key(|(start, ..)| *start);
+        if declaration_edits
+            .windows(2)
+            .any(|pair| pair[0].1 > pair[1].0)
         {
             return Ok(Err(
-                "nested enum source reference analysis did not complete".to_owned(),
+                "nested enum source declaration states overlapping name tokens".to_owned(),
             ));
         }
-        let Some(code) = analyzed.ir().code() else {
-            return Ok(Err(
-                "nested enum source reference has no complete bytecode".to_owned()
-            ));
-        };
+        let rewritten_declaration = (!declaration_edits.is_empty()).then(|| {
+            let mut declaration = method.declaration.as_ref().expect("checked above").clone();
+            for (start, end, spelling) in declaration_edits.iter().rev() {
+                declaration.replace_range(start..end, spelling);
+            }
+            declaration
+        });
+        if edits.is_empty() && declaration_edits.is_empty() {
+            continue;
+        }
+        // The body rewrite needs the member's own bytecode to anchor every token it changes; a
+        // member whose declaration alone names the fold skips that half entirely.
         let mut replacements = Vec::new();
-        for (start, end, target, source_bcis) in edits {
-            let child_internal = &target.binary_name;
-            let Some(crate::enum_constants::ClassSourceEnumConstantProof::Proved(
-                crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
-            )) = Some(&target.child.enum_constant_proof)
-            else {
+        if !edits.is_empty() {
+            let analyzed = match jarde_jvm::analyze_method_ir(
+                content,
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: method.item.identity.clone(),
+                    stages: MethodOperation::Analysis.stages().to_vec(),
+                },
+                budget,
+            ) {
+                Ok(analyzed) => analyzed,
+                Err(error) => {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    return Err(error);
+                }
+            };
+            merge_execution(execution, analyzed.report().execution.clone());
+            if analyzed.report().method != method.item.identity
+                || !matches!(
+                    analyzed.report().execution,
+                    ExecutionReport::Complete { .. }
+                )
+            {
                 return Ok(Err(
-                    "nested enum reference target has no ordinary enum proof".to_owned(),
+                    "nested enum source reference analysis did not complete".to_owned(),
+                ));
+            }
+            let Some(code) = analyzed.ir().code() else {
+                return Ok(Err(
+                    "nested enum source reference has no complete bytecode".to_owned()
                 ));
             };
-            let mut matching = Vec::new();
-            for bci in source_bcis {
-                let Some(instruction) = code.instructions.iter().find(|insn| insn.bci == bci)
+            for (start, end, target, source_bcis) in edits {
+                let child_internal = &target.binary_name;
+                let Some(crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                    crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
+                )) = Some(&target.child.enum_constant_proof)
                 else {
-                    continue;
+                    return Ok(Err(
+                        "nested enum reference target has no ordinary enum proof".to_owned(),
+                    ));
                 };
-                if instruction.opcode != 0xb2 {
-                    continue;
-                }
-                let Some(index) = instruction.constant_pool_index else {
-                    continue;
-                };
-                let Ok(entry) =
-                    jarde_reader::classfile::cp_entry(analyzed.ir().constant_pool(), index)
-                else {
-                    continue;
-                };
-                let jarde_reader::classfile::CpEntryKind::FieldRef {
-                    owner: field_owner,
-                    name,
-                    descriptor,
-                    ..
-                } = &entry.kind
-                else {
-                    continue;
-                };
-                if field_owner.0 != *child_internal {
-                    continue;
-                }
-                let Some(field) = target.child.fields.iter().find(|field| {
-                    let jarde_reader::model::MemberKey::Field {
-                        name: physical_name,
-                        descriptor: physical_descriptor,
-                    } = &field.item.identity.member
+                let mut matching = Vec::new();
+                for bci in source_bcis {
+                    let Some(instruction) = code.instructions.iter().find(|insn| insn.bci == bci)
                     else {
-                        return false;
+                        continue;
                     };
-                    physical_name.0 == name.0
-                        && physical_descriptor.0 == descriptor.0
-                        && group
-                            .constants
-                            .iter()
-                            .any(|constant| constant.field_index == field.item.index)
-                }) else {
-                    continue;
-                };
-                matching.push((bci, field));
+                    if instruction.opcode != 0xb2 {
+                        continue;
+                    }
+                    let Some(index) = instruction.constant_pool_index else {
+                        continue;
+                    };
+                    let Ok(entry) =
+                        jarde_reader::classfile::cp_entry(analyzed.ir().constant_pool(), index)
+                    else {
+                        continue;
+                    };
+                    let jarde_reader::classfile::CpEntryKind::FieldRef {
+                        owner: field_owner,
+                        name,
+                        descriptor,
+                        ..
+                    } = &entry.kind
+                    else {
+                        continue;
+                    };
+                    if field_owner.0 != *child_internal {
+                        continue;
+                    }
+                    let Some(field) = target.child.fields.iter().find(|field| {
+                        let jarde_reader::model::MemberKey::Field {
+                            name: physical_name,
+                            descriptor: physical_descriptor,
+                        } = &field.item.identity.member
+                        else {
+                            return false;
+                        };
+                        physical_name.0 == name.0
+                            && physical_descriptor.0 == descriptor.0
+                            && group
+                                .constants
+                                .iter()
+                                .any(|constant| constant.field_index == field.item.index)
+                    }) else {
+                        continue;
+                    };
+                    matching.push((bci, field));
+                }
+                if matching.len() != 1 {
+                    return Ok(Err(format!(
+                        "nested enum token in method {} is not tied to one proved enum constant reference",
+                        method.item.index
+                    )));
+                }
+                let (bci, field) = matching[0];
+                replacements.push((
+                    start,
+                    end,
+                    fold_spelling(target),
+                    bci,
+                    field.item.identity.clone(),
+                    field.item.index,
+                    target.owner.class.clone(),
+                    target.child.class.clone(),
+                ));
             }
-            if matching.len() != 1 {
-                return Ok(Err(format!(
-                    "nested enum token in method {} is not tied to one proved enum constant reference",
-                    method.item.index
-                )));
-            }
-            let (bci, field) = matching[0];
-            replacements.push((
-                start,
-                end,
-                target.source_name.clone(),
-                bci,
-                field.item.identity.clone(),
-                field.item.index,
-                target.owner.class.clone(),
-                target.child.class.clone(),
-            ));
         }
         replacements.sort_by_key(|replacement| replacement.0);
         if replacements.windows(2).any(|pair| pair[0].1 > pair[1].0) {
@@ -18223,14 +18361,8 @@ fn prove_nested_enum_method_texts(
         }
         let mut rewritten = recovery.clone();
         for (start, end, replacement, ..) in replacements.iter().rev() {
-            rewritten.text.replace_range(start..end, &replacement);
+            rewritten.text.replace_range(start..end, replacement);
         }
-        let Some(text) = class_source::member_family_recovered_method_text(method, &rewritten)
-        else {
-            return Ok(Err(
-                "nested enum source method cannot be reassembled".to_owned()
-            ));
-        };
         let mut adjusted = Vec::new();
         let mut prefix_delta = 0isize;
         for (start, end, replacement, bci, field, index, owner_definition, child_definition) in
@@ -18240,12 +18372,15 @@ fn prove_nested_enum_method_texts(
                 Error::invalid_input("nested_enum_source_offset_invalid", "source span overflow")
             })?;
             let final_end = final_start + replacement.len();
-            let Some((local_start, local_end)) = class_source::member_family_recovered_span(
-                method,
-                &rewritten,
-                final_start,
-                final_end,
-            ) else {
+            let Some((local_start, local_end)) =
+                class_source::member_family_recovered_span_with_declaration(
+                    method,
+                    &rewritten,
+                    rewritten_declaration.as_deref(),
+                    final_start,
+                    final_end,
+                )
+            else {
                 return Ok(Err(
                     "nested enum source-map span does not survive method placement".to_owned(),
                 ));
@@ -18273,6 +18408,15 @@ fn prove_nested_enum_method_texts(
             });
             prefix_delta += replacement.len() as isize - (end - start) as isize;
         }
+        let Some(text) = class_source::member_family_recovered_method_text_with_declaration(
+            method,
+            &rewritten,
+            rewritten_declaration.as_deref(),
+        ) else {
+            return Ok(Err(
+                "nested enum source method cannot be reassembled".to_owned()
+            ));
+        };
         projected.push(class_source::MemberFamilyMethodText {
             index: method.item.index,
             text,
@@ -19991,8 +20135,8 @@ fn project_family_signature_record(
         ));
     }
     let pool = pool;
-    let attributes = class_source::declared_member_attributes(&read.bytes, member, pool, budget)?;
     let class_internal = &read.facts.this_class.raw().0;
+    let attributes = class_source::declared_member_attributes(&read.bytes, member, pool, budget)?;
     let class_superclass = read
         .facts
         .super_class
@@ -27564,10 +27708,18 @@ fn recovery_facts(
     jarde_java::RecoveryFacts::new(
         jarde_java::MethodFacts::new(name, descriptor, declaration.parameter_slots())
             .with_access_flags(declaration.access_flags())
-            .with_declaring_class(jarde_java::DeclaringClass::new(
-                lossy_jvm_name(declaration.class_name()),
-                declaration.class_access_flags(),
-            )),
+            .with_declaring_class(
+                jarde_java::DeclaringClass::new(
+                    lossy_jvm_name(declaration.class_name()),
+                    declaration.class_access_flags(),
+                )
+                .with_inner_class_members(
+                    declaration
+                        .inner_class_members()
+                        .iter()
+                        .map(|member| String::from_utf8_lossy(&member.0).replace('/', ".")),
+                ),
+            ),
     )
     .with_debug_locals(debug)
 }

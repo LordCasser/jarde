@@ -1,0 +1,31 @@
+// jarde: presentation of `matrix/UsePlain` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package matrix;
+
+public final class UsePlain extends java.lang.Object {
+    public UsePlain() {
+        // @method <init>()V
+        // @declaration a constructor of `matrix.UsePlain`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `make(Lmatrix/Outer$A;I)Ljava/lang/Object;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    public static java.lang.Object make(matrix.Outer.A arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `make(Lmatrix/Outer$A;I)Ljava/lang/Object;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method make(Lmatrix/Outer$A;I)Ljava/lang/Object;
+        // @declaration a static method of `matrix.UsePlain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 5
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6 9 4
+        // the copy at BCI 5 has no proved local assignment
+        // @bytecode 17 14 11 4 10
+        // the copy at BCI 3 has no proved local assignment
+    }
+}
