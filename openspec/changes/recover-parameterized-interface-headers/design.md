@@ -22,7 +22,9 @@
 - reader 的 `prove_class_signature_erasure`（`crates/jarde-reader/src/signature.rs:263`）**已接受 `interfaces: &[Vec<u8>]` 并逐个校验擦除**（315–340：`class_internal_name(interface)` 与物理项比对，不符即 `erasure_mismatch("interface {index}")`），且 `ClassSignatureErasureProof.interfaces: Vec<Vec<u8>>`（225 行）已被填充。**故 reader 侧无需扩展**——取证义务 (b) 关闭。
 - 本片缺的只是"让参数化接口能走到既有拼写循环"的**准入放行**（上述三道门）+ **facade 侧一个并列的接口可解析证明器**（下述）。
 
-**第一个取证义务（收敛后，仅两项）**：(a) 确认 `spell_ordinary_signature_type` 对 `Comparable<LImpl;>` 的输出形态（应得 `java.lang.Comparable<BR$Impl>`）与嵌套类名作用域处理——`spell_ordinary_signature_type_with_member_path`（class_source.rs:4335）已处理 `$` 嵌套段与 depth，大概率直接可用；(c) 确认新增第四条路径与 `recover-nested-generic-class-headers`（类自有类型参数形）的互斥边界——本片 Non-Goals 已排除自有类型参数形，须验证新路径不会误纳（6349 的 `parsed.type_parameters.is_empty()` 前置应已保证，须测试钉死）。
+**第一个取证义务（收敛后，仅剩一项）**：(c) 确认新增第四条路径与 `recover-nested-generic-class-headers`（类自有类型参数形）的互斥边界——本片 Non-Goals 已排除自有类型参数形，须验证新路径不会误纳（6349 的 `parsed.type_parameters.is_empty()` 前置应已保证，须测试钉死）。
+
+**取证义务 (a) 已由 root 关闭**：`spell_ordinary_signature_type_with_member_path`（class_source.rs:4335）**已处理类型实参**——4465 行 `if !segment.arguments.is_empty()` 递归拼每个 `TypeArgument`（`Exact`/`Extends`/`Any`）并以 `<…>` 连接，`TypeArgument::Exact(Class(Impl))` 经同一函数拼为 `BR$Impl`。这正是既有 `direct_parent_candidate` 为 `Parent<String>` 用的同一路径（已验收），故 `Comparable<LImpl;>` 会拼为 `java.lang.Comparable<BR$Impl>`（单 segment 走 `simple_generic_class_name` 得全限定名 + `<…>`）。**拼写侧确认可直接复用，无需扩展。**
 
 **facade 侧接口证明器**：`prove_direct_generic_superclass_parent`（facade.rs:13013）不可复用（13042 显式拒 `ACC_INTERFACE`）。本片需一个并列证明器，同样走 `resolve_class_source_dependency_read_raw` 取接口定义，但判据改为：`ACC_INTERFACE` 置位（而非要求非接口）、形参个数 == Signature 实参个数、擦除与物理 `interfaces` 对应项一致（此项已由 reader 的 `prove_class_signature_erasure` 覆盖，证明器只需确认接口定义可解析且 arity 相符）。**不改父类闭包判据**（那会放宽 `recover-proved-direct-parameterized-superclass` 已验收的边界）。
 
