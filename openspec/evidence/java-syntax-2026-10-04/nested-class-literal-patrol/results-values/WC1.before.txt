@@ -1,0 +1,32 @@
+// jarde: presentation of `WC1$Top` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class WC1$Top extends java.lang.Object {
+    public WC1$Top() {
+        // @method <init>()V
+        // @declaration a constructor of `WC1$Top`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String self() {
+        // jarde: not recovered: the recovery run for `self()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method self()Ljava/lang/String;
+        // @declaration a static method of `WC1$Top`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the dependency chain from BCI 2 to final consumer 5 is not bounded
+        // @bytecode 5 2
+        // the value at BCI 5 was produced by a saved declaration this run could not commit
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `WC1$Top`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) self());
+        return;
+    }
+}

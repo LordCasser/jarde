@@ -1,0 +1,52 @@
+// jarde: presentation of `WV1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class WV1 extends java.lang.Object {
+    public WV1() {
+        // @method <init>()V
+        // @declaration a constructor of `WV1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String elem() {
+        // @method elem()Ljava/lang/String;
+        // @declaration a static method of `WV1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return Nested.class.getSimpleName();
+    }
+
+    public static java.lang.String array() {
+        // @method array()Ljava/lang/String;
+        // @declaration a static method of `WV1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return Nested[].class.getName();
+    }
+
+    public static int arrayLen() {
+        // @method arrayLen()I
+        // @declaration a static method of `WV1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return Nested[].class.getName().length();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `WV1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) elem());
+        java.lang.System.out.println((java.lang.String) array());
+        java.lang.System.out.println(arrayLen());
+        return;
+    }
+
+    static class Nested extends java.lang.Object {
+        Nested() {
+            // @method <init>()V
+            // @declaration a constructor of `WV1$Nested`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+}

@@ -1,0 +1,31 @@
+// jarde: presentation of `LC` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class LC extends java.lang.Object {
+    public LC() {
+        // @method <init>()V
+        // @declaration a constructor of `LC`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    void m() {
+        // @method m()V
+        // @declaration an instance method of `LC`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+        return;
+    }
+
+    void n() {
+        // @method n()V
+        // @declaration an instance method of `LC`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        LC$1 local1 = new LC$1(this);
+        java.lang.Class local2 = local1.getClass();
+        return;
+    }
+}

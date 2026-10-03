@@ -346,6 +346,15 @@ pub(crate) struct Inputs<'a> {
     pub(crate) snapshot_hierarchy_widenings: &'a [crate::report::ProvedSnapshotHierarchyWidening],
     pub(crate) captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
     pub(crate) outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
+    /// The member classes the declaring class's own `InnerClasses` attribute states, in the
+    /// dotted spelling the presentation compares with (`A12$Nested`, `p.A$B$C`). The fact that
+    /// separates a class literal of a really-nested class from one of a top-level `$` name: the
+    /// structural-reflection refusal below fires only for the former.
+    pub(crate) nested_class_members: &'a [String],
+    /// Whether this presentation keeps member classes pool-spelled (no fold will rewrite them to
+    /// source nesting): under it even a direct member's literal is refused in the structural
+    /// reads, because its text is a top-level class however the run proves the relation.
+    pub(crate) pool_spelled_members: bool,
     pub(crate) physical_method: Option<&'a jarde_reader::model::PhysicalMethodId>,
     /// The class that declares this member, in the class file's own internal form
     /// (`java/lang/Integer`), as the run's own member declaration states it.
@@ -7370,6 +7379,8 @@ pub(crate) fn build(
         snapshot_hierarchy_widenings: inputs.snapshot_hierarchy_widenings,
         captured_outer_reads: inputs.captured_outer_reads,
         outer_super_calls: inputs.outer_super_calls,
+        nested_class_members: inputs.nested_class_members,
+        pool_spelled_members: inputs.pool_spelled_members,
         declaring_class: inputs.declaring_class,
         direct_super_class: inputs.direct_super_class,
         direct_interfaces: inputs.direct_interfaces,
@@ -8173,6 +8184,13 @@ struct Builder<'a> {
     snapshot_hierarchy_widenings: &'a [crate::report::ProvedSnapshotHierarchyWidening],
     captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
     outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
+    /// The declaring class's own `InnerClasses` member names, in the dotted spelling the
+    /// structural-reflection refusal compares the literal's class against.
+    nested_class_members: &'a [String],
+    /// Whether this presentation keeps member classes pool-spelled: under it the refusal covers
+    /// the direct members too, whose literals would otherwise read as their own pool-spelled
+    /// top-level spelling (see [`Inputs::pool_spelled_members`]).
+    pool_spelled_members: bool,
     /// The class this body belongs to, in internal form, when the run's own member declaration
     /// states it: the fact a static call's pool owner is compared against (P3 4.4).
     declaring_class: Option<&'a str>,
@@ -21179,6 +21197,16 @@ impl Builder<'_> {
                 } else {
                     rendered
                 };
+                if let Some(refusal) = structural_reflection_over_pool_spelled_literal(
+                    &rendered,
+                    target,
+                    self.declaring_class,
+                    self.nested_class_members,
+                    self.pool_spelled_members,
+                    bci,
+                ) {
+                    return Err(refusal.into());
+                }
                 (Some(Box::new(rendered)), args)
             }
         };
@@ -24469,6 +24497,66 @@ fn narrow_numeric_conditional_arm(argument: &Expr, required: &Type, bci: u32) ->
         return Some(cast_argument(argument.clone(), required, bci));
     }
     None
+}
+
+/// Whether the class literal `rendered` may be the receiver of one structural-reflection read.
+///
+/// The answer the text gives must be the answer the class file gives. Where the presentation
+/// spells the literal's class in the pool's `$` form, the text declares a top-level class, so a
+/// structural read over it — `getSimpleName`, `getEnclosingClass` — would answer from nesting
+/// metadata the text does not state; publishing the call would be a compilable text that behaves
+/// differently, and the call is refused instead. What keeps this exact is the row set: a class
+/// whose own row the declaring class's `InnerClasses` attribute states is really nested, so its
+/// pool spelling really is unfaithful; a top-level `$` name states no row anywhere, its pool
+/// spelling is exact, and the read is written as it is (`WC1$Top.class.getSimpleName()`). A
+/// folded member's literal arrives here in the pool's own form too — the fold re-spells the
+/// committed text afterwards — so the direct members of a folding presentation are decided by the
+/// caller's `pool_spelled_members` flag, which only a presentation that will not rewrite names
+/// states.
+fn structural_reflection_over_pool_spelled_literal(
+    rendered: &Expr,
+    target: &CallTarget,
+    declaring_class: Option<&str>,
+    nested_class_members: &[String],
+    pool_spelled_members: bool,
+    bci: u32,
+) -> Option<String> {
+    if target.owner() != "java/lang/Class" {
+        return None;
+    }
+    if !crate::facts::STRUCTURAL_REFLECTION_METHODS.contains(&target.name()) {
+        return None;
+    }
+    let ExprKind::ClassLiteral { ty } = &rendered.kind else {
+        return None;
+    };
+    // An array literal's nesting is its element's: `Nested[].class.getSimpleName()` answers from
+    // the element's metadata (`Nested[]`), so the element's own row decides.
+    let element = match ty.split_once("[]") {
+        Some((element, _)) => element,
+        None => ty.as_str(),
+    };
+    let stated = nested_class_members.iter().any(|member| member == element);
+    if !stated {
+        return None;
+    }
+    // The one member the fold's own spelling rewrites: the presenting class's direct member, whose
+    // binary name is exactly this class plus one identifier. Every deeper member stays pool-spelled
+    // in every presentation, so only this shape waits on the caller's flag.
+    let direct = declaring_class.is_some_and(|declaring| {
+        element
+            .strip_prefix(&declaring.replace('/', "."))
+            .and_then(|tail| tail.strip_prefix('$'))
+            .is_some_and(|segment| !segment.contains('$'))
+    });
+    if direct && !pool_spelled_members {
+        return None;
+    }
+    Some(format!(
+        "the call at BCI {bci} reads `{}` of the class literal `{ty}`, which this text spells in the pool's form: a pool-spelled `{element}` is a top-level class here, so `{}` would answer from nesting metadata the text does not state",
+        target.name(),
+        target.name(),
+    ))
 }
 
 /// Gives a direct LambdaMetafactory expression its Java target type when it is consumed as a call

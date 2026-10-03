@@ -1,0 +1,6 @@
+corpus double-leg scan (tests/fixtures/**/*.class, 465 classes)
+baseline: jarde-cli @ d4bf6325 (gate refuses $-names)
+new: gate admits nested/array literal names
+policy: single-class; per-class class-source text outputs, byte-compared
+
+result: 465 classes scanned, 0 differing files

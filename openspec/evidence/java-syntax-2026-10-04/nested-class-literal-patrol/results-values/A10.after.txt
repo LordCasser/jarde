@@ -1,0 +1,67 @@
+// jarde: presentation of `A10` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class A10 extends java.lang.Object {
+    public A10() {
+        // @method <init>()V
+        // @declaration a constructor of `A10`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `nameOf(Ljava/lang/Class;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.lang.String nameOf(java.lang.Class arg0) {
+        // @method nameOf(Ljava/lang/Class;)Ljava/lang/String;
+        // @declaration a static method of `A10`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.getSimpleName();
+    }
+
+    public static java.lang.String asArg() {
+        // @method asArg()Ljava/lang/String;
+        // @declaration a static method of `A10`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return nameOf(A10.class);
+    }
+
+    public static java.lang.String asReceiver() {
+        // @method asReceiver()Ljava/lang/String;
+        // @declaration a static method of `A10`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return A10.class.getName();
+    }
+
+    public static java.lang.String asReceiver2() {
+        // @method asReceiver2()Ljava/lang/String;
+        // @declaration a static method of `A10`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return A10.class.getSimpleName() + "!";
+    }
+
+    public static int asReceiverLen() {
+        // @method asReceiverLen()I
+        // @declaration a static method of `A10`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return A10.class.getName().length();
+    }
+
+    public static java.lang.String viaLocal() {
+        // @method viaLocal()Ljava/lang/String;
+        // @declaration a static method of `A10`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.Class local0 = A10.class;
+        return local0.getSimpleName();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `A10`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) asArg());
+        java.lang.System.out.println((java.lang.String) asReceiver());
+        java.lang.System.out.println((java.lang.String) asReceiver2());
+        java.lang.System.out.println(asReceiverLen());
+        java.lang.System.out.println((java.lang.String) viaLocal());
+        return;
+    }
+}

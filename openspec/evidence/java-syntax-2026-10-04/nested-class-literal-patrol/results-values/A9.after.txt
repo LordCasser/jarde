@@ -1,0 +1,60 @@
+// jarde: presentation of `A9` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class A9 extends java.lang.Object {
+    public A9() {
+        // @method <init>()V
+        // @declaration a constructor of `A9`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public java.lang.String toString() {
+        // @method toString()Ljava/lang/String;
+        // @declaration an instance method of `A9`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return "t";
+    }
+
+    static java.util.List rawList() {
+        // @method rawList()Ljava/util/List;
+        // @declaration a static method of `A9`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(1), java.lang.Integer.valueOf(2)});
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `A9`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        A9$Meta local1 = (A9$Meta) Target.class.getAnnotation(A9$Meta.class);
+        java.lang.System.out.println(local1.value() + ":" + local1.n() + ":" + java.util.Arrays.toString((java.lang.Object[]) local1.tags()));
+        java.lang.System.out.println(Target.class.isAnnotationPresent(java.lang.Deprecated.class));
+        java.lang.System.out.println((java.lang.String) ((A9$Meta) DefTarget.class.getAnnotation(A9$Meta.class)).value());
+        java.lang.System.out.println(rawList().size());
+        return;
+    }
+
+    @java.lang.Deprecated
+    @A9$Meta(value = "m", n = 7, tags = {"a", "b"})
+    static class Target extends java.lang.Object {
+        Target() {
+            // @method <init>()V
+            // @declaration a constructor of `A9$Target`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+
+    @A9$Meta
+    static class DefTarget extends java.lang.Object {
+        DefTarget() {
+            // @method <init>()V
+            // @declaration a constructor of `A9$DefTarget`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+}
