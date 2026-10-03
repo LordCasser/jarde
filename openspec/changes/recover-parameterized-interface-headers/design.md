@@ -2,13 +2,29 @@
 
 [桥准入实证](../../evidence/java-syntax-2026-10-04/bridge-method-patrol/README.md)：`BR$Impl implements Comparable`（裸）+ 桥隐藏 → javac 报 `未覆盖Comparable中的抽象方法compareTo(Object)`；`implements Comparable<ParamI>` + 桥隐藏 → javac 重建桥、exit=0。判据范围的 2×2 对照见 [header-invariant/README.md](../../evidence/java-syntax-2026-10-04/bridge-method-patrol/header-invariant/README.md)（root 实测四形，确认唯一失败形是"接口边 ∧ 参数 cast 形"）。
 
-### 精确落点（root 已定位——本片是接线，无需扩展 reader）
+### 精确落点（root 已定位：reader 与拼写侧无需扩展，但需三道门放行 + facade 并列证明器）
 
 - **类头投影处**：`src/class_source.rs:6349` 的 `parameterized_superclass`（由 `parsed.superclass.segments` 是否带 `arguments` 判定）与 6354 的 `direct_parent_candidate`（当前**硬编码** `java/lang/String` 单形参父类）。6360 的 `if parsed.type_parameters.is_empty() && !parameterized_superclass { return Ok(None) }` 是当前"无泛型即不投影"的总门。
-- **接口事实已就绪**：`crates/jarde-reader/src/signature.rs` 的 `parse_class_signature`（134 行）**已完整解析** `ClassSignature.interfaces: Vec<ClassType>`（结构定义 22 行、填充 139–148 行），且 `class_references()`（27 行起）已把 interfaces 纳入引用收集。故本片**只需在 class_source.rs 消费 `parsed.interfaces`**，不新增解析器、不改 reader。
-- **既有父类通道的可复用件**：`ClassSignatureErasureProof`（signature.rs:222，含 `type_parameters: Vec<TypeParameterErasure>`）与 6340 的 `attribute_facts` 擦除核对——接口投影应复用同一擦除证明结构（每个接口的擦除须与物理 `interfaces` 项一致）。
+- **接口事实已就绪**：`crates/jarde-reader/src/signature.rs` 的 `parse_class_signature`（134 行）**已完整解析** `ClassSignature.interfaces: Vec<ClassType>`（结构定义 22 行、填充 139–148 行），且 `class_references()`（27 行起）已把 interfaces 纳入引用收集。
+- **擦除证明已就绪**：`ClassSignatureErasureProof`（signature.rs:222）**已含** `interfaces: Vec<Vec<u8>>`（225 行），且 `prove_class_signature_erasure`（263 行）已接受 `interfaces` 参数并逐个校验擦除（详见下节）。
 
-**第一个取证义务**：确认 `ClassSignatureErasureProof` 是否已含 interfaces 的擦除项（若只含 superclass，需按同一结构扩展擦除证明，仍不新建解析器）；并确认 6354 的 `direct_parent_candidate` 硬编码 `java/lang/String` 是否为既有片的刻意窄边界（本片不得顺手放宽父类边界，只加接口边界）。
+### 修正：接口投影**不能复用**父类闭包（root 2026-10-04 三次取证后确认）
+
+先前本片被描述为"接线"，实测**不成立**，三处阻塞：
+
+1. **注入闭包显式排除接口**：`prove_direct_generic_superclass_parent`（`src/facade.rs:13013`）的准入条件含 `facts.access_flags & (ACC_INTERFACE | ACC_ANNOTATION | 0x4000) != 0 → false`（13042 行），并要求 `super_class == java/lang/Object` 且 `facts.interfaces.is_empty()`（13045–13047）——即它只证"单参数普通父类"，对接口一律返回 `false`。故本片需要一个**并列的接口证明器**（同样走 `resolve_class_source_dependency_read_raw`，但判据改为：`ACC_INTERFACE` 置位、形参个数与 Signature 实参个数相符、擦除与物理 `interfaces` 项一致），不能改父类闭包的判据（那会放宽已验收片的边界）。
+2. **总门不看 interfaces**：`class_source.rs:6360` 是 `if parsed.type_parameters.is_empty() && !parameterized_superclass { return Ok(None) }`——**只看 `type_parameters` 与 `parameterized_superclass`**，故 `implements Comparable<Impl>` 且无自有类型参数、父类非参数化时，在总门就返回 `Ok(None)`，根本到不了拼写循环。需增加"参数化接口"这一条进入条件。
+3. **`direct_parent_candidate` 分支互斥拒绝接口**：6422–6428 明写 `if !parsed.interfaces.is_empty() || !physical_interfaces.is_empty() → Err("direct parameterized superclass projection does not include interfaces")`；而 6437–6451 的 else 分支要求**全部** `parsed.interfaces` 的 `arguments.is_empty()`。即现有三条路径都把"参数化接口"排除在外，本片须新增第四条路径（无自有类型参数、父类非参数化、但接口参数化），并保持前三条逐字不变。
+
+**拼写侧与 reader 擦除侧均已就绪（root 三次取证确认，本片工作量因此收窄）**：
+
+- 6504–6511 的循环已对 `parsed.interfaces` 逐项调用 `spell_ordinary_signature_type` 并交给 `class_declaration_with_types`（6513）——接口拼写机制已存在。
+- reader 的 `prove_class_signature_erasure`（`crates/jarde-reader/src/signature.rs:263`）**已接受 `interfaces: &[Vec<u8>]` 并逐个校验擦除**（315–340：`class_internal_name(interface)` 与物理项比对，不符即 `erasure_mismatch("interface {index}")`），且 `ClassSignatureErasureProof.interfaces: Vec<Vec<u8>>`（225 行）已被填充。**故 reader 侧无需扩展**——取证义务 (b) 关闭。
+- 本片缺的只是"让参数化接口能走到既有拼写循环"的**准入放行**（上述三道门）+ **facade 侧一个并列的接口可解析证明器**（下述）。
+
+**第一个取证义务（收敛后，仅两项）**：(a) 确认 `spell_ordinary_signature_type` 对 `Comparable<LImpl;>` 的输出形态（应得 `java.lang.Comparable<BR$Impl>`）与嵌套类名作用域处理——`spell_ordinary_signature_type_with_member_path`（class_source.rs:4335）已处理 `$` 嵌套段与 depth，大概率直接可用；(c) 确认新增第四条路径与 `recover-nested-generic-class-headers`（类自有类型参数形）的互斥边界——本片 Non-Goals 已排除自有类型参数形，须验证新路径不会误纳（6349 的 `parsed.type_parameters.is_empty()` 前置应已保证，须测试钉死）。
+
+**facade 侧接口证明器**：`prove_direct_generic_superclass_parent`（facade.rs:13013）不可复用（13042 显式拒 `ACC_INTERFACE`）。本片需一个并列证明器，同样走 `resolve_class_source_dependency_read_raw` 取接口定义，但判据改为：`ACC_INTERFACE` 置位（而非要求非接口）、形参个数 == Signature 实参个数、擦除与物理 `interfaces` 对应项一致（此项已由 reader 的 `prove_class_signature_erasure` 覆盖，证明器只需确认接口定义可解析且 arity 相符）。**不改父类闭包判据**（那会放宽 `recover-proved-direct-parameterized-superclass` 已验收的边界）。
 
 ## Goals / Non-Goals
 
@@ -17,11 +33,11 @@
 ## Decisions
 
 1. **复用既有类头投影通道**：与 `recover-proved-direct-parameterized-superclass` 同一选定环境、同一"擦除 == 物理 header"核对、同一原子性（整个类头一次决定，不从调用或局部猜类型）。接口列表逐个投影：任一接口不满足判据则该接口保持裸类型（不整体回退已可证的其它接口，除非既有通道的原子性要求整体一致——**按既有实现的原子性口径执行，并在报告中说明选择依据**）。实现上是在 `class_source.rs:6349/6360` 的既有门处并列加入 `parsed.interfaces` 的判定，而非新建一条类头装配路径。
-2. **消隐前置不变量（本片与 bridge-admission-gates 的共享契约）**：擦除桥的可重建性来自类头类型实参。故桥投影准入 MUST 检查"该桥擦除契约所属父类型在类头文本已带类型实参"；未带 → 拒绝桥投影、保持桥可见。**本片提供类头投影，该前置由 `recover-bridge-admission-gates` 实现**（owner 分离：类头文本的 owner 是类头投影，消隐决策的 owner 是桥准入）。
-3. **验收锚定**：`BR$Impl`（`implements Comparable<BR$Impl>`）类头投影 + 桥投影 → 整类 `javac --release 8` 通过、`-Xverify:all` 运行与原 class 一致（`0`，含经接口引用的 `compareTo` 调用）；多接口形（`implements A<X>, B`）部分可证时按决策 1 的原子性口径呈现；负例（接口不可解析、arity 不符、擦除不一致）保留裸类型且桥可见。
+2. **消隐前置不变量（跨切面共享契约，已由 bridge 片实现）**：擦除桥的可重建性来自类头类型实参。`recover-bridge-admission-gates`（**已验收合入** `5f07e13c`）已实现该前置：参数 cast 形桥若其契约属主为接口边、且类自身 `Signature` 把该接口拼为带类型实参（=泛型接口）而投影头未携带，则**拒绝桥投影、保持桥可见**（`bridge_interface_contract_generic`，验收记录见其 tasks 3.3）。**本片不改该前置**，只提供它依赖的类头投影——即让 `BR$Impl` 的类头呈现 `implements java.lang.Comparable<BR$Impl>`，从而使 bridge 片的拒绝分支转为准入分支（owner 分离：类头文本 owner 是本片，消隐决策 owner 是桥准入片）。
+3. **验收锚定**：`BR$Impl`（`implements Comparable<BR$Impl>`）类头投影 → 桥投影随之启用 → 整类 `javac --release 8` 通过、`-Xverify:all` 运行与原 class 一致（`0`，含经接口引用的 `compareTo` 调用）；多接口形（`implements A<X>, B`）部分可证时按决策 1 的原子性口径呈现；负例（接口不可解析、arity 不符、擦除不一致）保留裸类型且桥**保持可见**（bridge 片前置的现行为，不得回退）。
 
 ## Risks / Trade-offs
 
-- **与 bridge-admission-gates 的实施顺序**：本片是其前置依赖（无类头投影则 Impl 无法安全隐藏桥）。两片**串行**实施（bridge 先落地其两门与 A 三项，本片随后提供类头投影并启用其消隐前置），共享契约是"类头是否带类型实参"这一事实的读取方式——由本片 owner 定义、bridge 片消费。
-- **裸类型保留的信息损失**：接口不可解析时类头仍是裸类型（现行为），但此后桥**必须**可见（决策 2），故不会出现"契约丢失 + 桥隐藏"的双重损失。
+- **与 bridge 片的接缝回归**：bridge 片已合入并以 `BR$Impl` 桥**可见**为验收态（前置拒绝）。本片使类头带类型实参后，同一 fixture 的桥将转为**隐藏**——这是预期变化，但须确认 bridge 片的 `br_family_negative_shapes_keep_their_refusals` 等负例测试不被本片意外翻转（若某负例断言"桥可见"依赖于头是裸类型，本片须同步更新该断言并说明，不得静默放宽）。实施顺序上本片在 bridge 之后，接缝由本片负责验证。
+- **裸类型保留的信息损失**：接口不可解析时类头仍是裸类型（现行为），且桥**必须**可见（bridge 片前置已保证），故不会出现"契约丢失 + 桥隐藏"的双重损失。
 - **corpus 面变化**：类头文本变化会波及所有参数化接口实现类的输出——双腿扫描，差异应仅类头与桥家族；既有父类投影与成员参数化测试零回退。
