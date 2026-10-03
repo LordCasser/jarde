@@ -12,4 +12,4 @@
 
 - [x] 3.1 全仓测试全绿、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。（`--tests` 口径 294 result 行全 ok 0 失败；`--all-targets --all-features` 口径 299 ok，两个失败 `p4_plugins` 与 `ordinary_generic_projection` 均为 handoff 记录 flake 家族、各复跑 3/3 绿；fmt 过；clippy 按 `ci.yml` 实有 29 项 `-A` 零警告；openspec strict 261/0 fail；fixture 计数与 corpus fingerprint 按流程重测更新。）
 - [x] 3.2 A1 与变体三方对照：原 class（两态）/固定 JADX Java-input/Jarde 重编逐路径一致；记录输出 SHA。（见 [asg/results/README.md](../../evidence/java-syntax-2026-10-03/assert-stmt-patrol/asg/results/README.md)：两态逐字节一致、输出 SHA、corpus 双腿清单。）
-- [ ] 3.3 root 独立复核判据、消隐语境与两态行为，更新账本与巡查记录。
+- [x] 3.3 root 独立复核判据、消隐语境与两态行为，更新账本与巡查记录。（root 于合并主线 e227aa82 复核：A1 呈现三处 `assert`（两形+嵌套）、合成物零残留、两 `<clinit>` 整体省略；重编后**两态逐字节一致**——默认 `10/25/2/-2`、`-ea` `10/25/2`+`AssertionError: positive: -1`；全仓 2910/0、fmt/openspec 261/261。all-or-nothing census（Fieldref 物理操作闭合全字段）、wrong-owner 补丁类拒绝（最外层外围类校验）、与其它投影通道互锁保守拒绝且收紧到 assert 消隐类均复核认可。续作自纠三处 debug eprintln 残留——好例。）
