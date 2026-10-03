@@ -895,14 +895,15 @@ fn declaration_only_static_abstract_member_projects_once_with_physical_anchors()
     // The static member fold (change `recover-member-class-static-folding`) widened the family
     // these near misses belong to: a single static child whose narrow certificate refused used
     // to keep the separated presentation, and now folds with the child's full physical text.
-    // A generic child class is the one near miss that still refuses — the fold writes the
-    // row's own header flags and does not carry a child `Signature`.
+    // A generic child class folds too since `recover-nested-generic-class-headers`: the
+    // nested header carries the child's proved type parameters (`A<T>`), so the fold's own
+    // text states the complete Signature projection.
     for (source, folds) in [
         (
             SOURCE.replace("    }\n}", "        int state;\n    }\n}"),
             true,
         ),
-        (SOURCE.replace("class A {", "class A<T> {"), false),
+        (SOURCE.replace("class A {", "class A<T> {"), true),
         (
             SOURCE.replace("abstract int test2();", "abstract <T> int test2();"),
             true,

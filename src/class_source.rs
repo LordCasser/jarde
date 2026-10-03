@@ -261,6 +261,12 @@ pub struct ClassSourceDeclaration {
     pub generic_signature: Option<JvmBytes>,
     /// Why the class Signature could not be published as a complete Java header.
     pub generic_refusal: Option<String>,
+    /// The type-parameter header text a **successful** projection spelled (`U`,
+    /// `U, V`, `N extends java.lang.Number`). It is the one Signature projection the member
+    /// fold's own nested header can carry verbatim; `None` with a `generic_signature` states a
+    /// projection the fold does not have. Deliberately absent from the JSON view.
+    #[serde(skip)]
+    pub(crate) generic_type_parameters: Option<String>,
     /// The exact class Signature erasure scope that published this header. It is kept for the
     /// separately proved member-family pass and is deliberately absent from the JSON view.
     #[serde(skip)]
@@ -5373,6 +5379,7 @@ pub(crate) fn project_field_signature(
     class_internal: &[u8],
     class_flags: u16,
     class_scope: &[TypeParameterErasure],
+    class_header_projected: bool,
     constant: Option<&MemberDefault>,
     budget: &mut Budget,
 ) -> Result<()> {
@@ -5408,7 +5415,10 @@ pub(crate) fn project_field_signature(
                     | ACC_VOLATILE
                     | ACC_TRANSIENT)
                 != 0
-            || class_internal.contains(&b'$')
+            // A `$`-nested class's field keeps a source position only inside the nesting its
+            // own header proof published; without that header the position is unproved and the
+            // field stays on its physical descriptor.
+            || (class_internal.contains(&b'$') && !class_header_projected)
             || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
             || !record.type_annotations.attributes.is_empty()
             || !record.type_annotations.refusals.is_empty()
@@ -5845,18 +5855,22 @@ impl ClassSourceDeclaration {
             annotation_refusals: Vec::new(),
             generic_signature: None,
             generic_refusal: None,
+            generic_type_parameters: None,
             generic_scope: None,
         }
     }
 
     /// Project the class's own Signature only after its parent identities and variable erasures
-    /// agree with the physical header. The returned scope is handed to member signatures only
-    /// when the complete class header was published.
+    /// agree with the physical header — and, for a `$`-nested name, after its own
+    /// `InnerClasses` self row proves the member position (the fold's row criteria). The
+    /// returned scope is handed to member signatures only when the complete class header was
+    /// published.
     pub(crate) fn project_generic_signature(
         &mut self,
         bytes: &[u8],
         shells: &[AttributeShell],
         pool: &[CpEntryFacts],
+        nesting: &ClassSourceAssemblyContext,
         budget: &mut Budget,
         mut prove_direct_parent: impl FnMut(&[u8], &mut Budget) -> Result<bool>,
     ) -> Result<Option<ClassSignatureErasureProof>> {
@@ -5896,13 +5910,30 @@ impl ClassSourceDeclaration {
             let facts = &self.item.declaration;
             if facts.access_flags & (ACC_ANNOTATION | ACC_ENUM) != 0
                 || !is_java_identifier(&self.name)
-                || self.name.contains('$')
                 || shells.iter().any(|shell| {
                     matches!(
                         shell.name.raw().0.as_slice(),
                         b"RuntimeVisibleTypeAnnotations" | b"RuntimeInvisibleTypeAnnotations"
                     )
                 })
+            {
+                return Err(Error::unsupported(
+                    "class_generic_source_unproved",
+                    "class kind, nesting, name, or type-use annotations lack a faithful generic header position",
+                ));
+            }
+            // A `$` in the class's own name states a nesting claim the header cannot spell on
+            // its own: only the class's own InnerClasses self row proves the member position
+            // (the same row criteria the member fold requires of a child). The refusal keeps
+            // the chain head's exact code and message, so a row that does not join, a local or
+            // anonymous shape, or a synthetic `$`-spelled top-level class stays blocked.
+            if self.name.contains('$')
+                && !crate::member_inner::prove_nested_member_position(
+                    &facts.this_class.raw().0,
+                    facts.access_flags,
+                    nesting,
+                    budget,
+                )?
             {
                 return Err(Error::unsupported(
                     "class_generic_source_unproved",
@@ -6037,6 +6068,9 @@ impl ClassSourceDeclaration {
                 CountedBudgetDimension::OutputBytes,
                 u64::try_from(declaration.len()).unwrap_or(u64::MAX),
             )?;
+            // Recorded only past the last fallible step of the closure, so a stop never
+            // leaves a carried header beside a refusal.
+            self.generic_type_parameters = type_parameters;
             Ok(Some((declaration, proof)))
         })();
         match result {
@@ -8562,6 +8596,8 @@ fn source_text_with_member(
             comment_text(&String::from_utf8_lossy(&signature.0)),
             if declaration.generic_refusal.is_some() {
                 "not projected"
+            } else if declaration.name.contains('$') {
+                "projected after physical parent erasure and nested member proof"
             } else {
                 "projected after physical parent erasure proof"
             },
@@ -9059,10 +9095,13 @@ pub(crate) fn nested_static_member_source_text(
         .iter()
         .map(|interface| rewrite(&class_name(&interface.raw().0)))
         .collect::<Vec<_>>();
+    // A child whose own run projected its type-parameter header carries it verbatim: that
+    // projection is the one Signature position this nested rebuild already spells every other
+    // part of (row flags, physical parents), so the two spellings cannot diverge.
     let mut class_header_declaration = class_declaration_with_types(
         simple_name,
         &facts,
-        None,
+        declaration.generic_type_parameters.as_deref(),
         superclass.as_deref(),
         Some(&interfaces),
     );
