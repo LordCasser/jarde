@@ -2,6 +2,20 @@
 
 [巡查证据](../../evidence/java-syntax-2026-10-04/shared-latch-patrol/README.md)：S5 `outerContinueInner` 字节码锚——外层 header@4/latch@35/退出@41，内层 header@20/latch@29，**latch 35 被内层退出边（`if_icmpge 35`）与外层 continue 边（`goto 15→35`）共享**。既有相邻片：`recover-loop-body-double-jumps`（同体两跳转边归类，`loop_break_transfer`/`loop_continue_bridge`/`loop_side_routes`）、`recover-labeled-loop-tail-coverage`（next-guard 与标签通道）。**第一个取证义务**：读 `region.rs` 循环形状证明的 latch 归属判定（"a test, an exit or a latch this subset does not prove" 的产生点），确认它如何枚举 latch 候选与归属检查；再确认 dj 片的边语义归类能否复用为"内层退出边 → 外层 latch 语义"的分派。
 
+### 与既有 change 的关系（立项查重，2026-10-04）
+
+loop 域共 19 个 change，其中已验收的相邻片经逐读其 Why 段确认**均不覆盖跨层 latch 共享**：
+
+| 已验收片 | 覆盖形态 | 与本片的关系 |
+| --- | --- | --- |
+| `recover-loop-body-double-jumps`（7/7） | **同一循环体内**两条独立循环跳转（break+continue，`if(k==1) break; if(k==0) continue;` 为最小复现） | 最近邻但不同层：本片处理**嵌套两循环共享 latch**，其判据（内层退出边目标 == 外层 latch）不在 dj 片的边归类范围 |
+| `recover-proved-loop-exit-gateways`（5/5） | 同一循环的**双 break 出口**闭合（CF-08 `while(true)` 双 break） | 单循环多出口，无嵌套关系 |
+| `recover-effectful-dual-loop-exits`（5/5） | 带效果的双出口（循环头越界执行 `cost(7)` 后跳共同后继） | 同上，单循环 |
+| `recover-switch-local-join-before-loop-continue`（6/6） | 循环内 switch 两 case 汇合后共享语句、另一 case 直跳外层循环更新 | 汇合归属问题，非 latch 共享 |
+| `recover-loop-arm-join-continuation`（6/6） | 外层 `if` 两臂汇合后需执行 `value += 1`（臂内一臂含单出口循环） | 汇合后续语句，非 latch 归属 |
+
+即本片的判别（外层 `continue` ∧ 同体内嵌套循环 → latch 被两条语义边共享）是**上述五片均未触及的独立边界**，不重复立项。`recover-labeled-loop-tail-coverage`（next-guard 与标签通道）亦为不同机制。
+
 ## Goals / Non-Goals
 
 **Goals:** 外层 continue 与内层循环退出共享 latch 的双层循环恢复；带标签 `continue outer` 同形恢复；真实业务形（Map.Entry 双层 + 前缀过滤）体恢复。**Non-Goals:** 泛型 Signature 投影（`Svc.lookup` 的返回 `List<String>` 投影属 same-class/nested-headers 域，本片只锚体恢复，投影按既有通道如实呈现或拒绝）；三层以上共享 latch（验一形登记）；irreducible 图（CF-18 硬前沿，不碰）；同体双跳转（dj 片已闭合，不动）。
