@@ -12,4 +12,4 @@
 
 - [x] 3.1 全仓测试全绿、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。（2880 通过 + 1 flake 复跑绿；fmt/clippy(29 项 -A) 绿；openspec 256/0；真实命令与结果见 `ngh/results/gates.txt`）
 - [x] 3.2 Z1 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。（Z1 子单元替换运行 `b`/`[1, 1]`/`x` 与原 class 逐字一致含 lambda；NG2/NG3/NG4 子单元替换、NG5 折叠根整编全部一致；固定 JADX(dev) 六家族 `--release 8` 重编均败于其泛型 lambda 投影缺口（lambda 片 Y1 同族）如实归档；NG1 非静态子单元替换腿因 javac 内部类仿真不适用，行为锚=原 class + 回归测试反射核对；SHA 见 `ngh/results/three-way/`）
-- [ ] 3.3 root 独立复核位证明、scope 链与三方行为，更新 DT/EM 账本与巡查记录。
+- [x] 3.3 root 独立复核位证明、scope 链与三方行为，更新 DT/EM 账本与巡查记录。（root 于合并主线 c93ced53 复核：分离口径 `class Z1$Box<U>` + `U value;` 呈现、替换重编 `-Xverify:all` 运行 `b`/`[1, 1]`/`x` 与原 class 逐字一致；全仓 2887/0〔`p3_two_exit_return` 目录碰撞 flake 单测绿〕、fmt/openspec 257/257〔一次瞬时竞态重跑排除〕；corpus 2135/2138 逐字同、3 差异全归类。`prove_nested_member_position`（自表行+行/头 flags 对应）与共享谓词 `source_spellable_member_row` 复核认可；Signature 防线精确化（不携带未投影 Signature）接受。**两项裁决**：(a) type-use 注解头位保持整头拒绝——无正例需求不建第二套，登记债务待真实案例；(b) 折叠路径的外围局部变量声明 token 锚定层为独立既有缺口（非泛型，`Solo` 同拒实证）——另片登记。同类绑定链归用户的 same-class-generic-bindings。）
