@@ -1,0 +1,69 @@
+############ LEG=before
+== F1
+   SIFDBG direct token="F1$Diamond" target=F1$Diamond anchor_bci=0 covers=bci=0 op=0xbb cp=Class[F1$Diamond] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[F1$Diamond#<init>] | bci=7 op=0xb6 cp=MethodRef[F1$Diamond#name] | bci=10 op=0xb0 cp=none
+   SIFDBG refused token="F1$B" target=F1$B method=1 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[F1$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[F1$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+== SDAbstract
+   SIFDBG direct token="SDAbstract$Use" target=SDAbstract$Use anchor_bci=3 covers=bci=3 op=0xbb cp=Class[SDAbstract$Use] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[SDAbstract$Use#<init>] | bci=10 op=0xb6 cp=MethodRef[SDAbstract$Use#name] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+   SIFDBG refused token="SDAbstract$SDB" target=SDAbstract$SDB method=1 covers=bci=0 op=0x2a cp=none | bci=1 op=0xb7 cp=InterfaceMethodRef[SDAbstract$SDB#name] | bci=4 op=0xb0 cp=none
+== SDIndirect
+   SIFDBG direct token="SDIndirect$Use" target=SDIndirect$Use anchor_bci=3 covers=bci=3 op=0xbb cp=Class[SDIndirect$Use] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[SDIndirect$Use#<init>] | bci=10 op=0xb6 cp=MethodRef[SDIndirect$Use#name] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+   SIFDBG refused token="SDIndirect$SDA" target=SDIndirect$SDA method=1 covers=bci=0 op=0x2a cp=none | bci=1 op=0xb7 cp=InterfaceMethodRef[SDIndirect$SDA#name] | bci=4 op=0xb0 cp=none
+== SDDiamond
+   SIFDBG producer token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=4 covers=bci=7 op=0x4c cp=none
+   SIFDBG direct token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=0 covers=bci=0 op=0xbb cp=Class[SDDiamond$Use] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[SDDiamond$Use#<init>] | bci=7 op=0x4c cp=none
+   SIFDBG refused token="SDDiamond$B" target=SDDiamond$B method=1 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[SDDiamond$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+== SDDiamond
+   SIFDBG producer token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=4 covers=bci=7 op=0x4c cp=none
+   SIFDBG direct token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=0 covers=bci=0 op=0xbb cp=Class[SDDiamond$Use] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[SDDiamond$Use#<init>] | bci=7 op=0x4c cp=none
+   SIFDBG refused token="SDDiamond$B" target=SDDiamond$B method=1 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[SDDiamond$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+== pkg.SDPacked
+   SIFDBG direct token="pkg.SDPacked$Use" target=pkg/SDPacked$Use anchor_bci=3 covers=bci=3 op=0xbb cp=Class[pkg/SDPacked$Use] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[pkg/SDPacked$Use#<init>] | bci=10 op=0xb6 cp=MethodRef[pkg/SDPacked$Use#name] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+   SIFDBG refused token="pkg.SDPacked$I" target=pkg/SDPacked$I method=1 covers=bci=0 op=0x2a cp=none | bci=1 op=0xb7 cp=InterfaceMethodRef[pkg/SDPacked$I#name] | bci=4 op=0xb0 cp=none
+== H3
+   SIFDBG refused token="H3$Sig" target=H3$Sig method=2 covers=bci=3 op=0xbb cp=Class[H3$L7] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[H3$L7#<init>] | bci=10 op=0xb8 cp=MethodRef[H3#via] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+== WCallI
+   SIFDBG refused token="WCallI$M" target=WCallI$M method=1 covers=bci=3 op=0xb8 cp=InterfaceMethodRef[WCallI$M#sv] | bci=6 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+== WCallC
+   SIFDBG direct token="WCallC$M" target=WCallC$M anchor_bci=3 covers=bci=3 op=0xb8 cp=MethodRef[WCallC$M#sv] | bci=6 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+== Z1
+   SIFDBG producer token="Z1$Box" target=Z1$Box anchor_bci=4 covers=bci=7 op=0x4c cp=none
+   SIFDBG direct token="Z1$Box" target=Z1$Box anchor_bci=0 covers=bci=0 op=0xbb cp=Class[Z1$Box] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[Z1$Box#<init>] | bci=7 op=0x4c cp=none
+############ LEG=after
+== F1
+   SIFDBG direct token="F1$Diamond" target=F1$Diamond anchor_bci=0 covers=bci=0 op=0xbb cp=Class[F1$Diamond] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[F1$Diamond#<init>] | bci=7 op=0xb6 cp=MethodRef[F1$Diamond#name] | bci=10 op=0xb0 cp=none
+   SIFDBG direct token="F1$B" target=F1$B anchor_bci=15 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[F1$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[F1$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+   SIFDBG direct token="F1$A" target=F1$A anchor_bci=8 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[F1$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[F1$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+== SDAbstract
+   SIFDBG direct token="SDAbstract$Use" target=SDAbstract$Use anchor_bci=3 covers=bci=3 op=0xbb cp=Class[SDAbstract$Use] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[SDAbstract$Use#<init>] | bci=10 op=0xb6 cp=MethodRef[SDAbstract$Use#name] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+   SIFDBG direct token="SDAbstract$SDB" target=SDAbstract$SDB anchor_bci=1 covers=bci=0 op=0x2a cp=none | bci=1 op=0xb7 cp=InterfaceMethodRef[SDAbstract$SDB#name] | bci=4 op=0xb0 cp=none
+== SDIndirect
+   SIFDBG direct token="SDIndirect$Use" target=SDIndirect$Use anchor_bci=3 covers=bci=3 op=0xbb cp=Class[SDIndirect$Use] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[SDIndirect$Use#<init>] | bci=10 op=0xb6 cp=MethodRef[SDIndirect$Use#name] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+   SIFDBG direct token="SDIndirect$SDA" target=SDIndirect$SDA anchor_bci=1 covers=bci=0 op=0x2a cp=none | bci=1 op=0xb7 cp=InterfaceMethodRef[SDIndirect$SDA#name] | bci=4 op=0xb0 cp=none
+== SDDiamond
+   SIFDBG producer token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=4 covers=bci=7 op=0x4c cp=none
+   SIFDBG direct token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=0 covers=bci=0 op=0xbb cp=Class[SDDiamond$Use] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[SDDiamond$Use#<init>] | bci=7 op=0x4c cp=none
+   SIFDBG direct token="SDDiamond$B" target=SDDiamond$B anchor_bci=15 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[SDDiamond$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=8 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[SDDiamond$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=8 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x12 cp=other(String { utf8_index: 27, value: JvmBytes([33]) }) | bci=16 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=19 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=22 op=0xb0 cp=none
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=3 covers=bci=0 op=0x2a cp=none | bci=3 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#log]
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=3 covers=bci=0 op=0x2a cp=none | bci=3 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#greet] | bci=6 op=0xb0 cp=none
+== SDDiamond
+   SIFDBG producer token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=4 covers=bci=7 op=0x4c cp=none
+   SIFDBG direct token="SDDiamond$Use" target=SDDiamond$Use anchor_bci=0 covers=bci=0 op=0xbb cp=Class[SDDiamond$Use] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[SDDiamond$Use#<init>] | bci=7 op=0x4c cp=none
+   SIFDBG direct token="SDDiamond$B" target=SDDiamond$B anchor_bci=15 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[SDDiamond$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=8 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x2a cp=none | bci=15 op=0xb7 cp=InterfaceMethodRef[SDDiamond$B#name] | bci=18 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=21 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=24 op=0xb0 cp=none
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=8 covers=bci=0 op=0xbb cp=Class[java/lang/StringBuilder] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[java/lang/StringBuilder#<init>] | bci=7 op=0x2a cp=none | bci=8 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#name] | bci=11 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=14 op=0x12 cp=other(String { utf8_index: 27, value: JvmBytes([33]) }) | bci=16 op=0xb6 cp=MethodRef[java/lang/StringBuilder#append] | bci=19 op=0xb6 cp=MethodRef[java/lang/StringBuilder#toString] | bci=22 op=0xb0 cp=none
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=3 covers=bci=0 op=0x2a cp=none | bci=3 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#log]
+   SIFDBG direct token="SDDiamond$A" target=SDDiamond$A anchor_bci=3 covers=bci=0 op=0x2a cp=none | bci=3 op=0xb7 cp=InterfaceMethodRef[SDDiamond$A#greet] | bci=6 op=0xb0 cp=none
+== pkg.SDPacked
+   SIFDBG direct token="pkg.SDPacked$Use" target=pkg/SDPacked$Use anchor_bci=3 covers=bci=3 op=0xbb cp=Class[pkg/SDPacked$Use] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[pkg/SDPacked$Use#<init>] | bci=10 op=0xb6 cp=MethodRef[pkg/SDPacked$Use#name] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+   SIFDBG direct token="pkg.SDPacked$I" target=pkg/SDPacked$I anchor_bci=1 covers=bci=0 op=0x2a cp=none | bci=1 op=0xb7 cp=InterfaceMethodRef[pkg/SDPacked$I#name] | bci=4 op=0xb0 cp=none
+== H3
+   SIFDBG refused token="H3$Sig" target=H3$Sig method=2 covers=bci=3 op=0xbb cp=Class[H3$L7] | bci=6 op=0x59 cp=none | bci=7 op=0xb7 cp=MethodRef[H3$L7#<init>] | bci=10 op=0xb8 cp=MethodRef[H3#via] | bci=13 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+== WCallI
+   SIFDBG direct token="WCallI$M" target=WCallI$M anchor_bci=3 covers=bci=3 op=0xb8 cp=InterfaceMethodRef[WCallI$M#sv] | bci=6 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+== WCallC
+   SIFDBG direct token="WCallC$M" target=WCallC$M anchor_bci=3 covers=bci=3 op=0xb8 cp=MethodRef[WCallC$M#sv] | bci=6 op=0xb6 cp=MethodRef[java/io/PrintStream#println]
+== Z1
+   SIFDBG producer token="Z1$Box" target=Z1$Box anchor_bci=4 covers=bci=7 op=0x4c cp=none
+   SIFDBG direct token="Z1$Box" target=Z1$Box anchor_bci=0 covers=bci=0 op=0xbb cp=Class[Z1$Box] | bci=3 op=0x59 cp=none | bci=4 op=0xb7 cp=MethodRef[Z1$Box#<init>] | bci=7 op=0x4c cp=none

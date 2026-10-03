@@ -1,0 +1,8 @@
+original run exit=0
+jarde javac exit=1
+jadx javac exit=0
+jadx run exit=1
+original stdout sha256: a4fb621495a0122493b2203591c448903c472e306a1ede54fabad829e01075c0
+jadx stdout sha256:     ed7a78099df384002a05ed44a2a286293e963621478e7da9353f7fa7fc53d4e3
+VERDICT jarde-stdout!=original-stdout
+VERDICT jadx-stdout!=original-stdout
