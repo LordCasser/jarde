@@ -1,0 +1,33 @@
+// jarde: presentation of `SCGA` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class SCGA<T extends java.lang.Comparable<T>> extends java.lang.Object {
+    public SCGA() {
+        // @method <init>()V
+        // @declaration a constructor of `SCGA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void note(T arg1) {
+        // jarde: generic Signature `(TT;)V` projected after descriptor erasure and same-run AST/Code/SSA straight-line void body proof; same-class call binding proved
+        // @method note(Ljava/lang/Comparable;)V
+        // @declaration an instance method of `SCGA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.Collections.singletonList((java.lang.Object) arg1);
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `SCGA`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        SCGA local1 = new SCGA();
+        java.lang.String local2 = "b";
+        // @bytecode 13 11 12
+        // the parameter 0 of the invocation at BCI 13 is declared `java.lang.Comparable` presents `java.lang.String` but the invocation requires `java.lang.Comparable` and this layer has no safe reference conversion evidence
+        java.lang.System.out.println("note:" + local2.equals((java.lang.Object) "b"));
+        return;
+    }
+}

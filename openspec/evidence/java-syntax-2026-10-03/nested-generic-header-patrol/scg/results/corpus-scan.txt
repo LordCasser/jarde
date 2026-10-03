@@ -1,0 +1,33 @@
+# corpus 双腿扫描（stash 基线 vs recover-same-class-generic-bindings）
+
+corpus = tests/fixtures + fuzz/corpus + openspec/evidence 全部 .class（2140 个，剔除
+`nested-generic-header-patrol/ngh/` 与本目录 `nested-generic-header-patrol/scg/`）；
+双腿各用 release 版 `examples/class_source_file` 转写（腿 1 = `git stash` 后基线构建，
+腿 2 = 本片构建），逐字节比较 stdout 的 SHA256。脚本见 [scan_corpus.sh](scan_corpus.sh)。
+
+- same = 2120（OK 逐字一致 + 双侧一致拒绝的损坏 fixture）
+- text-diff = 20
+- exit-diff = 0
+
+20 处差异全部属于两个家族（抽查前后全文核对，`diff` 于 /tmp 会话记录）：
+
+**家族 A：拒绝推进（绑定已证，形状门诚实拒绝；声明保持擦除，保守不变）**——17 个类：
+`boolean-field-stores/…/ZFieldStoresRunner`×6（`call`/`callInstance`：`generic_call_binding_unproved`
+→ `ordinary_generic_source_unproved`）、`typed-iterable-foreach`×2、`2026-09-26/Patrol`
+（`listCtor`/`arrayCtor`）、`boxed-sam-adaptations`（`supplier`/`minimumSupplier`）、
+`cf10-foreach/ForeachCases`（`join`）、`collection-widening CWN/CWV`、`varargs-ctor-arg W1/W3`、
+`lambda-inline-patrol/Y1`（`viaStream`）、`single-interface-fold-patrol/Y1`（`viaStream`）、
+`p3-class-literals/ClassLiteralProbe`（`touch`）、`nested-generic-header-patrol/Z1`
+（`first`/`map`/`named`；同文件内含家族 B）。
+这些成员此前因常量池同名条目被门整项拒绝；本片证明其绑定后，既有形状判据接手并按各自
+真实原因拒绝——文本变化仅为拒绝码归因推进，物理声明与行为不变。
+
+**家族 B：新投影（预期）**——3 处：
+- `nested-generic-header-patrol/fixture/Z1.class`：`index` 字段 + `add` 方法（本片锚，见 README §3）；
+- `collection-widening-patrol/fixture/G1.class`：`pick(Object,Object)Object` → `<T> T pick(T,T)`
+  （参数返回候选 + 无同名兄弟；同文件 `max` 拒绝码归因推进属家族 A）。
+
+实现过程中的中间腿曾出现第 21 处差异（`lambda-body-inline/LambdaBodyInline.class` 的
+`events` 静态字段被错误投影）：使用点扫描最初把 getstatic/putstatic 误写为 0xc2/0xc3
+（monitorenter/monitorexit），静态字段使用位未被记录；修正为 0xb2/0xb3 后该类回到与基线
+逐字一致（其 `events` 的 getstatic 接收者位读保持拒绝），终腿 20 处差异如上。
