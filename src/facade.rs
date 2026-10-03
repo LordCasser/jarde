@@ -5815,6 +5815,16 @@ impl Engine {
         let mut constant_value_spellable = Vec::new();
         let mut integer_constant_candidates = Vec::new();
         let mut ended = class_signature_stop;
+        // A class that declares javac's assert switch field may fold its guards into `assert`
+        // statements later in this pass; that proof walks every member's retained AST, so the
+        // ordinary-class field shape is the retention trigger, exactly as the array-helper census
+        // is for its own projection.
+        let capture_assert_asts = read.facts.access_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000)
+            == 0
+            && read.facts.fields.iter().any(|field| {
+                field.name.raw().0 == jarde_java::report::ASSERT_SWITCH_FIELD_NAME.as_bytes()
+                    && field.access_flags & (0x0008 | 0x0010 | 0x1000) == (0x0008 | 0x0010 | 0x1000)
+            });
         for (index, field) in read.facts.fields.iter().enumerate() {
             if ended {
                 break;
@@ -6180,6 +6190,7 @@ impl Engine {
                                 array_helper_census_needed,
                                 capture_array_helper_use_table: array_helper_use_runs.is_empty(),
                                 capture_anonymous_child_asts,
+                                capture_assert_asts,
                                 capture_integer_constant_asts: !integer_constant_candidates
                                     .is_empty(),
                                 capture_member_uses: same_class_census_needed,
@@ -8354,6 +8365,53 @@ impl Engine {
             array_projection_members
                 .retain(|(helper_index, _)| !invalid_array_helpers.contains(helper_index));
         }
+        // The javac assert pattern, proved and folded whole: every guard of the switch field
+        // becomes `assert`, the field and its `<clinit>` line go, and the staged texts travel in
+        // the member-text and omitted-method channels below. A refused proof (any unmet
+        // conjunct) keeps every member exactly as the recovery wrote it; a stop merges like the
+        // other projections and stages nothing.
+        let mut hidden_assert_fields: Vec<u64> = Vec::new();
+        {
+            let assert_asts: Vec<(PhysicalMethodId, jarde_java::report::ClassSourceMethodAst)> =
+                method_asts
+                    .iter()
+                    .map(|(member, ast, _, _)| (member.clone(), ast.clone()))
+                    .collect();
+            // The anonymous-interface channel rebuilds the root from unretained inputs, so any
+            // direct-return anonymous allocation this class holds (the precise site selection
+            // happens after assembly) keeps the physical presentation.
+            let anonymous_candidate = assert_asts.iter().any(|(_, ast)| {
+                jarde_java::report::class_source_anonymous_return_site(ast).is_some()
+            });
+            let prior_staged_texts = array_projection_method_texts.clone();
+            match project_class_source_assert_statements(
+                read.facts.access_flags,
+                &read.facts.this_class.raw().0,
+                &fields,
+                &mut methods,
+                &assert_asts,
+                &enum_switch_field_use_runs,
+                &assembly_context,
+                initializer_field_order.as_deref(),
+                enum_projection.is_some(),
+                anonymous_candidate,
+                &integer_constant_candidates,
+                &prior_staged_texts,
+                structure_complete,
+                &execution,
+                &mut array_projection_method_texts,
+                &mut staged_member_emissions,
+                &mut array_helper_method_indices,
+                budget,
+            ) {
+                Ok(Some(assert)) => hidden_assert_fields.push(assert.field_index),
+                Ok(None) => {}
+                Err(error) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                }
+            }
+        }
         let text_context = class_source::ClassSourceTextContext {
             initializer_field_order: initializer_field_order.as_deref(),
             declared_methods: read.facts.method_count,
@@ -8363,6 +8421,7 @@ impl Engine {
             array_helper_indices: Some(&array_helper_method_indices),
             array_method_texts: Some(&array_projection_method_texts),
             array_helper_markers: Some(&array_projection_markers),
+            hidden_fields: Some(&hidden_assert_fields),
         };
         let mut text = class_source::source_text(&declaration, &fields, &methods, &text_context);
         if read.facts.this_class.raw().0.ends_with(b"/package-info") {
@@ -8479,6 +8538,7 @@ impl Engine {
                 initializer_proof,
                 projection_inputs: class_source::ClassSourceProjectionInputs {
                     omitted_methods: array_helper_method_indices.clone(),
+                    hidden_fields: hidden_assert_fields.clone(),
                     markers: array_projection_markers.clone(),
                     member_texts: array_projection_method_texts
                         .iter()
@@ -8519,6 +8579,325 @@ impl Engine {
             static_target,
         ))
     }
+}
+
+/// One class's proved javac assert pattern: the synthetic switch field this projection hides.
+struct AssertSugarProjection {
+    /// The physical `field_info` table index of `$assertionsDisabled`.
+    field_index: u64,
+}
+
+/// Proves one class's javac assert pattern and stages the `assert` rewrite of every member that
+/// holds a use site.
+///
+/// The pattern is the three conjuncts of the change's design, each proved before any text
+/// changes: the field (name `$assertionsDisabled`, `ACC_SYNTHETIC` with static final, descriptor
+/// `Z`), the one `<clinit>` initialization line whose `desiredAssertionStatus()` receiver is the
+/// class's own outermost enclosing class (a hand-patched line that reads any other class keeps
+/// the physical presentation, because folding it would move the switch), and a census that
+/// closes the whole field — every physical read is a guard this fold rewrote and the one write
+/// is the line itself. The rewrite is all-or-nothing for the class: a class that keeps any
+/// explicit use of the field keeps all of them, because a source that mixed `assert` statements
+/// with an explicit `$assertionsDisabled` field would not recompile into this class file.
+///
+/// Staged texts land in the member-text and omitted-method channels the existing projections
+/// use, and the hidden field index travels back for the assembled text's field loop. `Ok(None)`
+/// keeps the class exactly as the recovery wrote it; `Err` is a stop the caller merges, which
+/// leaves the class exactly as it was too.
+#[allow(clippy::too_many_arguments)]
+fn project_class_source_assert_statements(
+    class_flags: u16,
+    this_class: &[u8],
+    fields: &[class_source::ClassSourceField],
+    methods: &mut [class_source::ClassSourceMethod],
+    method_asts: &[(PhysicalMethodId, jarde_java::report::ClassSourceMethodAst)],
+    field_uses: &[jarde_java::report::ClassSourceEnumSwitchFieldUse],
+    nesting: &class_source::ClassSourceAssemblyContext,
+    initializer_field_order: Option<&[usize]>,
+    enum_projection_taken: bool,
+    anonymous_candidate: bool,
+    integer_constant_candidates: &[class_source::ProvedIntegerConstant],
+    staged_member_texts: &[(u64, String)],
+    structure_complete: bool,
+    execution: &ExecutionReport,
+    member_texts: &mut Vec<(u64, String)>,
+    member_emissions: &mut Vec<(
+        u64,
+        String,
+        Vec<String>,
+        Vec<class_source::ClassSourceBodySegment>,
+    )>,
+    omitted_methods: &mut Vec<u64>,
+    budget: &mut Budget,
+) -> Result<Option<AssertSugarProjection>> {
+    const ACC_SYNTHETIC: u16 = 0x1000;
+    const ACC_STATIC_FINAL: u16 = 0x0008 | 0x0010;
+    // The channels that would re-assemble this class's text from unretained inputs (the narrow
+    // member family, a declaration pair, a nested enum or annotation, an anonymous interface
+    // child, integer-constant names) each refuse beside a staged projection, which would drop a
+    // child the text carries today. The static member fold — the A1 shape — rebuilds from the
+    // retained channels instead and carries the projection through.
+    // A member text another projection already composed (a lambda companion rewrite) is not this
+    // AST's own emission, and a family writer that refuses beside staged texts would drop a
+    // child the text carries — so a staged first pass keeps the physical presentation.
+    if class_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000) != 0
+        || !structure_complete
+        || !matches!(execution, ExecutionReport::Complete { .. })
+        || initializer_field_order.is_some()
+        || enum_projection_taken
+        || anonymous_candidate
+        || !integer_constant_candidates.is_empty()
+        || !staged_member_texts.is_empty()
+    {
+        return Ok(None);
+    }
+    match crate::member_inner::scan_nested_enum_root(this_class, nesting, budget) {
+        Ok(crate::member_inner::FamilyRootScan::Absent)
+        | Ok(crate::member_inner::FamilyRootScan::Refused(_)) => {}
+        _ => return Ok(None),
+    }
+    match crate::member_inner::scan_nested_annotation_root(this_class, nesting, budget) {
+        Ok(crate::member_inner::FamilyRootScan::Absent)
+        | Ok(crate::member_inner::FamilyRootScan::Refused(_)) => {}
+        _ => return Ok(None),
+    }
+    // The field: exactly one synthetic static final boolean `$assertionsDisabled`.
+    let switch_fields: Vec<_> = fields
+        .iter()
+        .filter(|field| {
+            field.item.name.raw().0 == jarde_java::report::ASSERT_SWITCH_FIELD_NAME.as_bytes()
+                && field.item.descriptor.raw().0 == b"Z"
+                && field.item.access_flags & (ACC_STATIC_FINAL | ACC_SYNTHETIC)
+                    == (ACC_STATIC_FINAL | ACC_SYNTHETIC)
+        })
+        .collect();
+    let [switch_field] = switch_fields.as_slice() else {
+        return Ok(None);
+    };
+    let field_name = jarde_java::report::ASSERT_SWITCH_FIELD_NAME;
+    // The one `<clinit>` with a retained AST and its proved initialization line. The index, not
+    // the record: the commit at the end mutates the records this pass has only read.
+    let clinit_index = methods.iter().position(|method| {
+        method.item.identity.name.0 == b"<clinit>" && method.item.identity.descriptor.0 == b"()V"
+    });
+    let Some(clinit_index) = clinit_index else {
+        return Ok(None);
+    };
+    let clinit = &methods[clinit_index];
+    if !matches!(
+        &clinit.outcome,
+        class_source::ClassSourceOutcome::Recovered { report, .. } if report.produced()
+    ) {
+        return Ok(None);
+    }
+    let clinit_identity = clinit.item.identity.clone();
+    let Some((_, clinit_ast)) = method_asts
+        .iter()
+        .find(|(member, _)| *member == clinit_identity)
+    else {
+        return Ok(None);
+    };
+    let Some(line) =
+        jarde_java::report::class_source_assert_switch_line(clinit_ast, field_name, budget)
+            .map_err(assert_projection_stop)?
+    else {
+        return Ok(None);
+    };
+    // The switch reads the outermost enclosing class's own status: javac emits the outermost
+    // class's literal in every nested class's `<clinit>` (verified for two nesting levels), and
+    // any other receiver is a shape this proof refuses — a patched line would move the switch
+    // when recompiled. The walk uses only this class's own `InnerClasses` rows, which state the
+    // whole enclosing chain.
+    let mut outermost = this_class.to_vec();
+    while let Some(outer) = nesting
+        .resolved_inner_classes
+        .iter()
+        .find(|row| row.class == outermost && row.outer_class.is_some())
+        .and_then(|row| row.outer_class.clone())
+    {
+        outermost = outer;
+    }
+    if line.class_literal != String::from_utf8_lossy(&outermost).replace('/', ".") {
+        return Ok(None);
+    }
+    // The census: every member's own recovery named the field instructions it holds. A read the
+    // fold did not consume — or a fold's read the records do not state — keeps the class
+    // physical, and so does the `<clinit>` holding anything but the one line's write.
+    let internal = String::from_utf8_lossy(this_class).into_owned();
+    let mut folds: Vec<(
+        &jarde_java::report::ClassSourceMethodAst,
+        jarde_java::report::ClassSourceAssertMemberFold,
+        usize,
+    )> = Vec::new();
+    for (method_index, method) in methods.iter().enumerate() {
+        let class_source::ClassSourceOutcome::Recovered { .. } = &method.outcome else {
+            continue;
+        };
+        // The census reads the run's own Fieldref operations — the physical record of every field
+        // instruction this body holds, independent of what the presentation layer claimed.
+        let mut reads = Vec::new();
+        let mut writes = Vec::new();
+        for record in field_uses
+            .iter()
+            .filter(|record| record.member.as_ref() == Some(&method.item.identity))
+        {
+            if record.owner != internal || record.name != field_name || !record.is_static {
+                continue;
+            }
+            if record.write {
+                writes.push(record.bci);
+            } else {
+                reads.push(record.bci);
+            }
+        }
+        if reads.is_empty() && writes.is_empty() {
+            continue;
+        }
+        if method_index == clinit_index {
+            if reads.is_empty() && writes.as_slice() == [line.write_bci] {
+                continue;
+            }
+            return Ok(None);
+        }
+        let Some((_, ast)) = method_asts
+            .iter()
+            .find(|(member, _)| *member == method.item.identity)
+        else {
+            return Ok(None);
+        };
+        let Some(fold) =
+            jarde_java::report::class_source_assert_member_fold(ast, field_name, budget)
+                .map_err(assert_projection_stop)?
+        else {
+            return Ok(None);
+        };
+        let mut consumed = fold.reads.clone();
+        let mut stated = reads.clone();
+        consumed.sort_unstable();
+        stated.sort_unstable();
+        if !writes.is_empty() || consumed != stated {
+            return Ok(None);
+        }
+        folds.push((ast, fold, method_index));
+    }
+    if folds.is_empty() {
+        return Ok(None);
+    }
+    // Stage every rewritten member and the stripped `<clinit>`, paid for before any record
+    // changes; a refused stage keeps the class exactly as the recovery wrote it. The commit
+    // replaces each member record's placed text — the channel the first-pass assembly and the
+    // family writers read — and stages the same body through the projected-member channel, the
+    // one a static member fold re-spells from instead of the physical recovery text.
+    let mut staged: Vec<(u64, String, String)> = Vec::new();
+    for (ast, fold, method_index) in &folds {
+        let method = &methods[*method_index];
+        let emitted = jarde_java::report::class_source_assert_member_current(ast, budget)
+            .map_err(assert_projection_stop)?;
+        let own_artifact = match &method.outcome {
+            class_source::ClassSourceOutcome::Recovered { report, .. } => report.text.clone(),
+            _ => return Ok(None),
+        };
+        if !method.matches_current_text(&own_artifact) || !lines_match(&own_artifact, &emitted) {
+            // Another projection replaced this member's body, or this run's own statements
+            // re-emit differently than the artifact it placed: either way the fold has no text
+            // of this AST's own to stand in for.
+            return Ok(None);
+        }
+        let folded =
+            jarde_java::report::emit_class_source_assert_statements(ast, &fold.statements, budget)
+                .map_err(assert_projection_stop)?;
+        let Some(text) = method.assert_projection_text(&folded) else {
+            return Ok(None);
+        };
+        budget.charge(
+            CountedBudgetDimension::OutputBytes,
+            u64::try_from(text.len()).unwrap_or(u64::MAX),
+        )?;
+        staged.push((method.item.index, text, folded));
+    }
+    let emitted = jarde_java::report::class_source_assert_member_current(clinit_ast, budget)
+        .map_err(assert_projection_stop)?;
+    let clinit_artifact = match &methods[clinit_index].outcome {
+        class_source::ClassSourceOutcome::Recovered { report, .. } => report.text.clone(),
+        _ => return Ok(None),
+    };
+    if !methods[clinit_index].matches_current_text(&clinit_artifact)
+        || !lines_match(&clinit_artifact, &emitted)
+    {
+        return Ok(None);
+    }
+    let mut omit_clinit = false;
+    if let Some(statements) =
+        jarde_java::report::class_source_assert_clinit_without_line(clinit_ast, field_name, budget)
+            .map_err(assert_projection_stop)?
+    {
+        let stripped_text = jarde_java::report::emit_class_source_assert_statements(
+            clinit_ast,
+            &statements,
+            budget,
+        )
+        .map_err(assert_projection_stop)?;
+        if stripped_text.trim().is_empty() {
+            // Everything the `<clinit>` held was the switch line (its terminator is the return
+            // the initializer context never writes): the member itself goes, exactly as the
+            // enum-constant projection omits the physical initializer it replaced.
+            omit_clinit = true;
+        } else {
+            let Some(text) = methods[clinit_index].assert_projection_text(&stripped_text) else {
+                return Ok(None);
+            };
+            budget.charge(
+                CountedBudgetDimension::OutputBytes,
+                u64::try_from(text.len()).unwrap_or(u64::MAX),
+            )?;
+            staged.push((methods[clinit_index].item.index, text, stripped_text));
+        }
+    }
+    for (index, text, body) in staged {
+        let Some(method) = methods.iter_mut().find(|method| method.item.index == index) else {
+            return Ok(None);
+        };
+        method.text = text.clone();
+        member_texts.push((index, text));
+        member_emissions.push((index, body, Vec::new(), Vec::new()));
+    }
+    if omit_clinit {
+        omitted_methods.push(methods[clinit_index].item.index);
+    }
+    Ok(Some(AssertSugarProjection {
+        field_index: switch_field.item.index,
+    }))
+}
+
+/// Whether one member's own artifact and its retained AST's statement emission write the same
+/// body lines — the assert projection's baseline check that the placed text is this AST's own.
+fn lines_match(artifact_text: &str, emitted_statements: &str) -> bool {
+    let artifact_statements = artifact_text
+        .split_once("\n{\n")
+        .and_then(|(_, rest)| rest.rsplit_once("\n}"))
+        .map(|(statements, _)| statements);
+    let Some(artifact_statements) = artifact_statements else {
+        return false;
+    };
+    let artifact_lines: Vec<&str> = artifact_statements
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect();
+    let emitted_lines: Vec<&str> = emitted_statements
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect();
+    artifact_lines == emitted_lines
+}
+
+/// The stop a stopped assert projection states, in the vocabulary the enum projections use.
+fn assert_projection_stop(stop: jarde_java::StopReason) -> Error {
+    Error::unsupported(
+        "assert_projection_stopped",
+        format!("the assert projection stopped before it changed any text: {stop:?}"),
+    )
 }
 
 /// One physical field and the facts needed to join static writes to a same-run `<clinit>`.
@@ -11378,6 +11757,7 @@ struct PreparedMemberOptions<'a> {
     array_helper_census_needed: bool,
     capture_array_helper_use_table: bool,
     capture_anonymous_child_asts: bool,
+    capture_assert_asts: bool,
     capture_integer_constant_asts: bool,
     capture_member_uses: bool,
     capture_member_use_bootstrap: bool,
@@ -11488,6 +11868,7 @@ fn recover_prepared_member(
         options.capture_enum_constructor_ast,
         options.capture_anonymous_child_asts
             || options.array_helper_census_needed
+            || options.capture_assert_asts
             || integer_switch_ast,
         budget,
     )?;
@@ -19173,6 +19554,7 @@ fn project_class_source_nested_annotation(
         array_helper_indices: None,
         array_method_texts: None,
         array_helper_markers: None,
+        hidden_fields: None,
     };
     if class_source::source_text(
         child_declaration,
@@ -19214,6 +19596,7 @@ fn project_class_source_nested_annotation(
         array_helper_indices: None,
         array_method_texts: None,
         array_helper_markers: None,
+        hidden_fields: None,
     };
     if class_source::source_text(root_declaration, &root.fields, &root.methods, &context)
         != root.text
@@ -19722,6 +20105,17 @@ fn prepare_class_source_instance_member_fold(
             "instance fold physical preparation is incomplete".to_owned()
         ));
     }
+    // The joint fold re-runs the root methods its census ties to the instance child, and a
+    // re-run presents the physical assert guard the root's own projection folded away — beside a
+    // switch field this fold would then leave half-hidden. An assert-projected root or child
+    // keeps the separated presentation instead, where the fold's own byte-equal guard holds.
+    if !root.projection_inputs.hidden_fields.is_empty()
+        || !child_report.projection_inputs.hidden_fields.is_empty()
+    {
+        return Ok(Err(
+            "the instance fold re-runs members beside an assert projection".to_owned(),
+        ));
+    }
     let Some((definition, read)) = resolve_class_source_dependency_read_raw(
         content,
         environment,
@@ -19992,6 +20386,7 @@ fn project_class_source_member_fold(
         array_helper_indices: Some(&root.projection_inputs.omitted_methods),
         array_method_texts: Some(retained_member_texts.as_slice()),
         array_helper_markers: Some(&root.projection_inputs.markers),
+        hidden_fields: Some(&root.projection_inputs.hidden_fields),
     };
     if class_source::source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return Ok(Err(
@@ -20046,6 +20441,7 @@ fn project_class_source_member_fold(
             array_helper_indices: Some(&member.child.projection_inputs.omitted_methods),
             array_method_texts: Some(child_member_texts.as_slice()),
             array_helper_markers: Some(&member.child.projection_inputs.markers),
+            hidden_fields: Some(&member.child.projection_inputs.hidden_fields),
         };
         if class_source::source_text(
             child_declaration,
@@ -20266,6 +20662,7 @@ fn project_class_source_member_fold(
                 omitted_methods: &member.child.projection_inputs.omitted_methods,
                 markers: &member.child.projection_inputs.markers,
                 member_texts: &member.child.projection_inputs.member_texts,
+                hidden_fields: &member.child.projection_inputs.hidden_fields,
             },
         ) {
             Some(block) => block,
@@ -21481,6 +21878,7 @@ fn project_class_source_nested_enum(
         array_helper_indices: None,
         array_method_texts: None,
         array_helper_markers: None,
+        hidden_fields: None,
     };
     if class_source::source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return Ok(Err(
@@ -21683,6 +22081,7 @@ fn render_nested_enum_at(
         array_helper_indices: None,
         array_method_texts: None,
         array_helper_markers: None,
+        hidden_fields: None,
     };
     if class_source::source_text(declaration, &child.fields, &child.methods, &context) != child.text
     {
@@ -27759,6 +28158,7 @@ public class Probe {
                 array_helper_indices: None,
                 array_method_texts: None,
                 array_helper_markers: None,
+                hidden_fields: None,
             },
         );
         assert!(!physical.contains("ADD {"));
