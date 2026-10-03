@@ -21266,7 +21266,13 @@ fn project_static_fold_owner_texts(
                     };
                     let names_target = match &entry.kind {
                         jarde_reader::classfile::CpEntryKind::Class { name, .. } => {
+                            // The class's own name, or the array descriptor whose element is this
+                            // class: the array class literal the text spells (`Nested[].class`)
+                            // carries the element's name inside the descriptor, and the token it
+                            // re-spells is that element's name.
                             name.0 == target.binary
+                                || String::from_utf8_lossy(&name.0)
+                                    == format!("[L{};", String::from_utf8_lossy(&target.binary))
                         }
                         jarde_reader::classfile::CpEntryKind::FieldRef { owner, .. }
                         | jarde_reader::classfile::CpEntryKind::MethodRef { owner, .. }
@@ -31935,7 +31941,15 @@ fn recovery_from_with_class_candidates(
         .with_member_inner_targets(&member_inner_targets)
         .with_interface_super_calls(&interface_super_calls)
         .with_reference_overload_calls(&reference_overload_calls)
-        .with_snapshot_hierarchy_widenings(&snapshot_hierarchy_widenings);
+        .with_snapshot_hierarchy_widenings(&snapshot_hierarchy_widenings)
+        // A standalone-CLASS root resolves no member child, so no fold ever re-spells a nested
+        // name here: every member class this presentation writes is pool-spelled, and the
+        // structural-reflection reads over such literals are refused by the build rather than
+        // published as a compilable text that answers from metadata the text does not state.
+        .with_pool_spelled_members(matches!(
+            request.environment.runtime.load_domain.roots.as_slice(),
+            [jarde_reader::view::LoadRoot::StandaloneClass { .. }]
+        ));
     let request = request.with_superclass_field_writes(&superclass_field_writes);
     let request = if let Some(target) = static_member_target {
         request.with_static_member_target(target)
