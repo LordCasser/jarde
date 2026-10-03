@@ -20,3 +20,5 @@
 ## Impact
 
 呈现/装配层（模式识别+回写）及测试；无证明层改动。既有 `<clinit>`/字段呈现零回退。
+
+> **2026-10-04 root 账本核对**：本片与既有 [project-proved-assert-statements](../project-proved-assert-statements/)（2026-09-26 立，范围高度重叠）构成立项重复——本片立项前未先查既有 change，属流程失误（与同日 bridge 域先查后立、避免重复的做法相反）。功能已交付并验收，不回滚；既有 change 的残留范围已在其 tasks.md 收窄记录（预算/取消测试、定向测试粒度、root 验收）。教训已记入 handoff.md：立新 spec 前必须先 `ls openspec/changes | grep -i <域>` 并读同域 change 的 proposal 与 tasks 状态。

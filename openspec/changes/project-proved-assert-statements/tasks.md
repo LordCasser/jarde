@@ -21,3 +21,5 @@
 
 - [ ] 4.1 root 在独立目录从冻结 Java 8 源重编，对原/JADX/Jarde 完整类分别运行 `javac --release 8` 和 `java -Xverify:all` 三种断言模式；逐项比较 guard/detail 次数、消息/异常身份和合成字段反射，并复跑 1.2 每条有效反例，确认未错误写 `assert`。
 - [ ] 4.2 root 审读全类闭包、来源、预算及物理/投影分离；运行相邻条件值、字段初始化、类源码、reader census/fingerprint 定向回归、`cargo fmt --all -- --check`、适用严格 Clippy 与 `openspec validate project-proved-assert-statements --strict`，只在证据满足后勾选任务。
+
+> **2026-10-04 root 账本核对（重复立项记录）**：本片（2026-09-26 立）的 2.1–3.1 功能实质已由后立的 `recover-assert-statement-sugar`（root 验收 30e54613，证据 `evidence/java-syntax-2026-10-03/assert-stmt-patrol/asg/`）实现并验收：合成开关判据（字段名+ACC_SYNTHETIC+`<clinit>` 标准取反形+最外层外围类校验）、每条断言的条件/消息/抛出与求值序、类级 all-or-nothing census（每成员 Fieldref 物理操作闭合全字段）、原子投影（隐藏字段与 clinit 行、剩余为空则整 `<clinit>` 省略）、两断言态三方对照与 corpus 双腿。**本片 tasks 不因此代勾**：其要求更细的定向测试粒度（2.1 的"真实 BCI/flags/按需读取数"、2.2 的"认领 BCI 与来源"比较）与 **3.2 预算计费/取消（asg 无对应测试）** 仍未满足，4.1/4.2 的 root 复核亦按本片口径未做。**残留范围收窄为**：(a) 3.2 预算/取消的半投影禁止测试；(b) 2.1/2.2 的定向测试粒度补齐；(c) 4.1/4.2 验收。立项失误记入 handoff（新立 assert 片前未先查既有 change，与 bridge 域的成功规避相反）。
