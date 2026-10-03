@@ -1,15 +1,15 @@
 ## ADDED Requirements
 
-### Requirement: 单直接静态接口子按嵌套声明折叠呈现
+### Requirement: 接口方法引用的 owner 参与折叠成员名锚定
 
-系统 SHALL 将外围类唯一的直接静态接口子（InnerClasses 0x0608 形态）按嵌套 `interface` 声明折叠呈现，域内引用为源码拼写。单静态类子、多子族与非静态候选 SHALL 与本变更前逐字一致；非静态单子保持不折叠。
+系统 SHALL 在 token 锚定匹配器中接受 `InterfaceMethodRef` 条目的 owner 类名作为折叠成员名的匹配源（健全性校验不变）。既有 Fieldref/Methodref owner 命中、覆盖段不含 CP 索引的形状 SHALL 与本变更前逐字一致。
 
-#### Scenario: 单接口子折叠
+#### Scenario: 接口调用形折叠
 
-- **WHEN** Y1 形（唯一 `interface StrFn` 子）家族三方 Java 8 重编
-- **THEN** `interface StrFn` 嵌套呈现、`StrFn` 源码拼写，运行与原 class 一致
+- **WHEN** 家族成员经接口方法引用被外围调用（WCallI 形）三方 Java 8 重编
+- **THEN** 家族折叠呈现，`java -Xverify:all` 逐路径与原 class 一致
 
-#### Scenario: 既有家族不变
+#### Scenario: 既有锚定不变
 
-- **WHEN** 输入为 M1/M2 多子或类形态家族
+- **WHEN** 输入为既有 owner 命中形或覆盖段不含 CP 索引
 - **THEN** 输出与本变更前逐字一致
