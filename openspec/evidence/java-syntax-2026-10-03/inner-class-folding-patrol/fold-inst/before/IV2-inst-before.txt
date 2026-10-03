@@ -1,0 +1,60 @@
+// jarde: presentation of `IV2` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class IV2 extends java.lang.Object {
+    private int count;
+
+    public IV2() {
+        // @method <init>()V
+        // @declaration a constructor of `IV2`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.count = 10;
+        return;
+    }
+
+    int get() {
+        // @method get()I
+        // @declaration an instance method of `IV2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.count;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `IV2`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        IV2 local1 = new IV2();
+        // @bytecode 8
+        // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 11
+        // the instruction at BCI 11 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 13
+        // the instruction at BCI 13 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 14 17 12
+        // the copy at BCI 13 has no proved local assignment
+        // @bytecode 21 18 12
+        // the copy at BCI 11 has no proved local assignment
+        java.lang.System.out.println(local1.get());
+        return;
+    }
+
+    static int access$002(IV2 arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `access$002(LIV2;I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$002(LIV2;I)I
+        // @declaration a static method of `IV2`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static int access$000(IV2 arg0) {
+        // @method access$000(LIV2;)I
+        // @declaration a static method of `IV2`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.count;
+    }
+}

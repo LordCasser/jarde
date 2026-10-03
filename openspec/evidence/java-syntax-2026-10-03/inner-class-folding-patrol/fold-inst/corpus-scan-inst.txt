@@ -1,0 +1,35 @@
+# corpus 双腿扫描（change `recover-inner-class-instance-folding`）
+
+主线基线 `c7b7b767`（stash 重建，同 target 目录增量编译）vs 本片实现，逐 jar 逐类
+`class-source --format text` 的 SHA256 对比。方法：`corpus_leg.py`（list-classes 枚举
+`openspec/evidence` 下每个 `.jar` 的类，逐类 `class-source --format text`，SHA256 记入
+manifest）；manifest：`results/corpus-inst-before.sha` / `results/corpus-inst-after.sha`。
+
+- 扫描 jar 数：88（`openspec/evidence` 下全部 `.jar`）
+- 扫描类数：362（两腿各 362，查询失败 0）
+- 文本变化类数：**7**（全部为本片折叠目标形态——非静态成员族的根单元）
+- 其余 **355** 类逐字一致（含 M1/M2 纯静态族全部成员、enum/注解折叠通道、分离呈现、
+  上片 FV* 变体的其余成员、cross-class presenter）。
+
+## 变化类清单
+
+```
+java-syntax-2026-10-03/inner-class-folding-patrol/fixture/fam.jar:N1
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-inst/fixture-variants-inst/IV1/IV1.jar:IV1
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-inst/fixture-variants-inst/IV2/IV2.jar:IV2
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-inst/fixture-variants-inst/IV4/IV4.jar:IV4
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-mix/fixture-variants/MV1.jar:MV1
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-mix/fixture-variants/MV2.jar:MV2
+java-syntax-2026-10-03/inner-class-folding-patrol/fold-mix/fixture-variants/MV3.jar:MV3
+java-syntax-2026-10-03/member-class-folding-patrol/fold/fixture-variants/FV4.jar:VInner
+```
+
+（第 8 项 `FV4:VInner` 为纯非静态族根单元——上片"纯非静态不折叠"负例正是本片目标形态，
+现按本片合同折叠；其分离子单元 `VInner$Member` 两腿一致。）
+
+## 复核说明
+
+- 变化内容全部为：非静态成员并入既有（或新建）嵌套装配 + this$0 消参消字段消写 +
+  读桥消隐与调用位重写 + 构造限定形。**IV3（孙代链）根单元两腿一致**——保守拒绝生效。
+- 全部 child 分离单元（`N1$Inner`/`N1$Stat`/`MV*`/`IV*` 子类）两腿逐字节一致（负例：
+  分离呈现零回退）；`before/` 与 `results/` 的逐类快照即双腿样本。

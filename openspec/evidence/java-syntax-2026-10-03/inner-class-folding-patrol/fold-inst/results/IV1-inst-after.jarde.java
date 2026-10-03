@@ -1,0 +1,52 @@
+// jarde: presentation of `IV1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class IV1 extends java.lang.Object {
+    private int base;
+
+    private int bonus;
+
+    public IV1() {
+        // @method <init>()V
+        // @declaration a constructor of `IV1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.base = 4;
+        this.bonus = 3;
+        return;
+    }
+
+    Inner make(int arg1) {
+        // @method make(I)LIV1$Inner;
+        // @declaration an instance method of `IV1`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return new Inner(arg1);
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `IV1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(new IV1().make(5).total());
+        return;
+    }
+
+    class Inner extends java.lang.Object {
+        private int tag;
+
+        Inner(int arg2) {
+            // @method <init>(LIV1;I)V
+            // @declaration a constructor of `IV1$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            this.tag = arg2;
+            return;
+        }
+
+        int total() {
+            // @method total()I
+            // @declaration an instance method of `IV1$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return this.tag + IV1.this.base + IV1.this.bonus;
+        }
+    }
+}
