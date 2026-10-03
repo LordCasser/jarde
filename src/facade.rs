@@ -29682,6 +29682,7 @@ fn prove_class_source_bridges(
             continue;
         }
         let mut inherited = false;
+        let mut inherited_owner: Option<(jarde_reader::model::JvmBytes, ReferenceUse)> = None;
         let mut saw_unresolved = false;
         let mut reloaded_current = false;
         let mut stopped = false;
@@ -29760,6 +29761,7 @@ fn prove_class_source_bridges(
                     && provided.candidates.is_empty()
                 {
                     inherited = true;
+                    inherited_owner = Some((owner.clone(), use_kind));
                     break;
                 }
             }
@@ -29825,6 +29827,7 @@ fn prove_class_source_bridges(
                 })
             {
                 inherited = true;
+                inherited_owner = Some((owner.clone(), use_kind));
                 break;
             }
             if resolution.state == Some(ResolutionState::UnresolvedDependency)
@@ -29852,6 +29855,47 @@ fn prove_class_source_bridges(
             }
             proofs.push(refuse(reason));
             continue;
+        }
+        // The rebuildability precondition for the parameter-cast form over an *interface*
+        // contract: the projected class header must carry the contract's own type arguments,
+        // because a generic interface spelled raw does not see the narrowed source parameter as
+        // implementing the erased contract at all — javac would refuse the class instead of
+        // regenerating the hidden bridge (a covariant-*return* bridge still implements the raw
+        // contract and comes back, which is why only the narrowing form is questioned here).
+        // The class's own `Signature` is the criterion's source (`implements
+        // Comparable<LImpl;>` is stated right there, so the parent needs no reading); a class
+        // without one states no generic parent. No projection spells a parameterized interface
+        // yet, so a generic interface contract keeps its bridge visible exactly as before this
+        // change; when the header projection learns that spelling, its success is this
+        // branch's admit path. A *superclass* contract is different: the raw header degrades
+        // the narrowed override into an ordinary overload, which still compiles, which is why
+        // superclass edges are not questioned here.
+        if let Some((owner, use_kind)) = &inherited_owner
+            && *use_kind == ReferenceUse::InvokeInterface
+            && parameter_cast_form
+        {
+            let owner_generic = match bridge_interface_contract_generic(
+                class_bytes,
+                facts,
+                owner.0.as_slice(),
+                budget,
+            ) {
+                Ok(generic) => generic,
+                Err(error) => {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    proofs.clear();
+                    proofs.push(refuse(
+                        "the class Signature stopped before it proved the erased contract's header",
+                    ));
+                    return proofs;
+                }
+            };
+            if owner_generic {
+                proofs.push(refuse(
+                    "the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge",
+                ));
+                continue;
+            }
         }
         proofs.push(class_source::ClassSourceBridgeProof {
             member: member.clone(),
@@ -29974,6 +30018,49 @@ fn internal_reference_name(return_descriptor: &[u8]) -> Option<&[u8]> {
     return_descriptor
         .strip_prefix(b"L")
         .and_then(|name| name.strip_suffix(b";"))
+}
+
+/// Whether one interface contract's owner is generic, read from the class's own `Signature`
+/// attribute: the interface entry that owns the contract, spelled with arguments there, is
+/// generic — and a header that spells it raw would keep the source method from implementing the
+/// contract at all. A class without a `Signature` states no generic parent, and an interface the
+/// signature spells without arguments is not generic.
+fn bridge_interface_contract_generic(
+    class_bytes: &[u8],
+    facts: &ClassMemberFacts,
+    owner: &[u8],
+    budget: &mut Budget,
+) -> Result<bool> {
+    let Some(shell) = facts
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name.raw().0.as_slice() == b"Signature")
+    else {
+        return Ok(false);
+    };
+    let Some(index) = facts
+        .interfaces
+        .iter()
+        .position(|name| name.raw().0.as_slice() == owner)
+    else {
+        return Ok(false);
+    };
+    let pool = class_constant_pool(class_bytes, budget)?;
+    let raw = attribute_facts(class_bytes, std::slice::from_ref(shell), &pool, budget)?
+        .signature
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "jvm_signature_missing",
+                "class Signature attribute did not resolve",
+            )
+        })?;
+    let parsed = jarde_reader::signature::parse_class_signature(raw.0.as_slice(), budget)?;
+    Ok(parsed.interfaces.get(index).is_some_and(|interface| {
+        interface
+            .segments
+            .first()
+            .is_some_and(|segment| !segment.arguments.is_empty())
+    }))
 }
 
 /// The bridge admission's own view of one class header: the prepared class's already-read facts,

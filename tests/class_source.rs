@@ -63,6 +63,10 @@ const PAIR_RUNNER_SOURCE: &str =
     include_str!("fixtures/p3-bridge-projection/br-family/v8/PairRunner.java");
 const ORIGINAL_PAIR_RUNNER_SOURCE: &str =
     include_str!("fixtures/p3-bridge-projection/br-family/v8/OriginalPairRunner.java");
+const IMPL_RUNNER_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/ImplRunner.java");
+const ORIGINAL_IMPL_RUNNER_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/OriginalImplRunner.java");
 /// The multilevel covariant variant: `Base2 implements Mid extends Node2`, whose bridge return
 /// the hierarchy walk reaches over two interface edges.
 const BR2_CLASS: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR2.class");
@@ -7388,9 +7392,13 @@ fn br_family_bridges_admit_through_the_extended_gates() {
     assert!(base.text.contains("public BR$Base next()"));
     assert!(!base.text.contains("BR$Node next()"));
 
-    // `BR$Impl`: the bridge narrows its parameter through a cast to exactly the source parameter
-    // (gate 2), carries javac's mandated `MethodParameters`, and implements a `Comparable` this
-    // snapshot does not carry — the erased contract the platform fact states.
+    // `BR$Impl`: the bridge passes the whole shape-and-contract admission, and then the
+    // rebuildability precondition refuses its projection: the class header spells
+    // `implements Comparable` raw while the erased contract comes from a generic interface, so
+    // the projected source could not regenerate the bridge (and javac would refuse the class
+    // for not implementing the contract at all). The bridge stays visible, exactly as before
+    // this change; spelling the parameterized interface is the separate header-projection
+    // slice's debt.
     let impl_report = bridge_class_source(
         &jar,
         "BR$Impl",
@@ -7399,21 +7407,24 @@ fn br_family_bridges_admit_through_the_extended_gates() {
     );
     assert_eq!(impl_report.bridge_proofs.len(), 1);
     let impl_proof = &impl_report.bridge_proofs[0];
-    assert!(impl_proof.admitted, "{:?}", impl_proof.refusal);
-    assert!(impl_proof.projected);
+    assert!(!impl_proof.admitted);
+    assert!(!impl_proof.projected);
+    assert_eq!(
+        impl_proof.refusal.as_deref(),
+        Some(
+            "the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge"
+        )
+    );
     assert_eq!(
         impl_proof.member.descriptor.0.as_slice(),
         b"(Ljava/lang/Object;)I" as &[u8]
     );
-    assert_eq!(
-        impl_proof.target.as_ref().unwrap().descriptor.0.as_slice(),
-        b"(LBR$Impl;)I" as &[u8]
-    );
     assert!(impl_report.text.contains("public int compareTo(BR$Impl"));
     assert!(
-        !impl_report
+        impl_report
             .text
-            .contains("public int compareTo(java.lang.Object")
+            .contains("public int compareTo(java.lang.Object"),
+        "the bridge stays visible: the raw header cannot regenerate it"
     );
 
     // `BR$StrBox`: two bridges, one per member — the covariant `get` and the void
@@ -7513,26 +7524,72 @@ fn br_family_recovered_source_recompiles_and_runs_like_the_original() {
     let recovered_trace = String::from_utf8(run.stdout).expect("the trace is UTF-8");
     assert_eq!(recovered_trace, original_trace);
 
-    // `BR$Impl` is admitted and its bridge hidden, but its whole-class recompile is a separate
-    // mechanism's debt: the class-level parameterized-interface projection is deliberately
-    // unproved, so the recovered source spells a raw `Comparable` and javac refuses it loudly
-    // (the abstract `compareTo(Object)` stays unimplemented). The refusal is the honest state
-    // until that projection exists; this pins it so the gap cannot become silent.
-    let impl_report = class_source_of(&jar, "BR$Impl", EnvironmentPolicy::PlainJar);
-    fs::write(recovered.join("BR$Impl.java"), impl_report.text)
-        .expect("write the recovered Impl source");
-    let compile = Command::new("javac")
-        .args(["--release", "8", "-Xlint:-options", "-d"])
-        .arg(scratch.child("impl-classes"))
-        .arg(recovered.join("BR$Impl.java"))
-        .output()
-        .expect("JDK javac is available");
-    assert!(
-        !compile.status.success(),
-        "the raw-Comparable reconstruction must stay a loud javac refusal until the parameterized-interface projection exists"
+    // `BR$Impl` keeps its bridge visible: the rebuildability precondition refuses the
+    // projection (a generic interface contract the raw class header cannot carry), so every
+    // member stays spelled — `compareTo(BR$Impl)` as the source override and the erased
+    // `compareTo(Object)` beside it as an ordinary overload. The family therefore recompiles
+    // and dispatches like the original: the overload call and the raw-`Comparable` call both
+    // reach the same member and print `0`. (The recovered `BR` itself is not part of this leg:
+    // its nested source names collide with the top-level sibling spellings, which is the
+    // documented cost of binary-name recovery and not a bridge question.)
+    for name in ["BR$Impl"] {
+        let report = class_source_of(&jar, name, EnvironmentPolicy::PlainJar);
+        fs::write(recovered.join(format!("{name}.java")), report.text)
+            .expect("write the recovered class source");
+    }
+    fs::write(recovered.join("ImplRunner.java"), IMPL_RUNNER_SOURCE)
+        .expect("write the recovered runner");
+    compile_bridge_runner(
+        &recovered,
+        &[
+            "BR$Node.java",
+            "BR$Box.java",
+            "BR$Base.java",
+            "BR$StrBox.java",
+            "BR$Impl.java",
+            "ImplRunner.java",
+        ],
     );
-    let stderr = String::from_utf8_lossy(&compile.stderr);
-    assert!(stderr.contains("compareTo"), "{stderr}");
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&recovered)
+        .arg("ImplRunner")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(run.stdout).expect("the trace is UTF-8"),
+        "0\n0\n"
+    );
+    // The original's own trace through the same two dispatches, for the record.
+    let original_impl = scratch.child("original-impl");
+    fs::write(original_impl.join("BR.java"), BR_REFERENCE_SOURCE)
+        .expect("write the reference source");
+    fs::write(
+        original_impl.join("OriginalImplRunner.java"),
+        ORIGINAL_IMPL_RUNNER_SOURCE,
+    )
+    .expect("write the reference runner");
+    compile_bridge_runner(&original_impl, &["BR.java", "OriginalImplRunner.java"]);
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&original_impl)
+        .arg("OriginalImplRunner")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(run.stdout).expect("the trace is UTF-8"),
+        "0\n0\n"
+    );
 }
 
 #[test]
@@ -7976,7 +8033,10 @@ fn the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges(
     assert!(set_proof.admitted, "{:?}", set_proof.refusal);
 
     // A provided `java/lang/Comparable` decides the contract through its own definition: the
-    // platform fact does not short-circuit a definition the environment carries. javac refuses
+    // platform fact does not short-circuit a definition the environment carries, and the
+    // contract requirement is what it proves. The projection itself is then refused by the
+    // rebuildability precondition — the raw class header cannot spell the generic interface —
+    // so the bridge stays visible; the refusal text names the link that failed. javac refuses
     // the `java.lang` package, so the stand-in's own name is patched to the binary name its
     // entry spells (a labeled patch, like every other one here).
     let provided = patch_provided_comparable_name(PROVIDED_COMPARABLE);
@@ -7996,10 +8056,12 @@ fn the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges(
         &RecoveryEvidenceRequest::essential(),
     );
     assert_eq!(report.bridge_proofs.len(), 1);
-    assert!(
-        report.bridge_proofs[0].admitted,
-        "{:?}",
-        report.bridge_proofs[0].refusal
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some(
+            "the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge"
+        )
     );
 
     // The same provided definition that does *not* declare the contract is the decision: no
