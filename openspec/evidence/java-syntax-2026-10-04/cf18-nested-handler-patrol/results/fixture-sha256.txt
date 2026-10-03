@@ -1,0 +1,1 @@
+6cbf7030a81402fbe07468a18afe94456a3c9346ce85ce09204e67c2e7e79532  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/cf18-nested-handler-patrol/fixture/R1.class
