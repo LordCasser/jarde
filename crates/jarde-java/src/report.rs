@@ -1307,170 +1307,6 @@ pub(crate) struct ClassSourceMethodAstSource {
         Option<ClassSourceAnonymousConstructorInitializer>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum LambdaHelperCaptureBinding {
-    This,
-    IntParameter { slot: u16, name: String },
-}
-
-fn prove_lambda_helper_captures(
-    ir: &jarde_jvm::method_ir::MethodIr,
-    facts: &crate::facts::RecoveryFacts,
-    names: &NameTable,
-    site: &build::LambdaSite,
-    candidate: &crate::lambda::SyntheticLambdaHelperCandidate,
-    budget: &mut Budget,
-) -> Result<Result<Vec<LambdaHelperCaptureBinding>, String>, crate::stop::StopReason> {
-    use jarde_jvm::method_ir::{Definition, Slot};
-
-    if candidate.capture_count == 0 {
-        return Ok(Ok(Vec::new()));
-    }
-    let Some(code) = ir.code() else {
-        return Ok(Err("complete enclosing Code attribute is absent".into()));
-    };
-    if !matches!(code.execution, ExecutionReport::Complete { .. }) || code.stopped_at.is_some() {
-        return Ok(Err("enclosing method scan is incomplete".into()));
-    }
-    let Some(ssa) = ir.ssa() else {
-        return Ok(Err("enclosing SSA table is absent".into()));
-    };
-    let Some(instruction) = ssa
-        .blocks()
-        .iter()
-        .flat_map(|block| block.instructions())
-        .find(|instruction| instruction.bci() == candidate.call_site)
-    else {
-        return Ok(Err(
-            "invokedynamic site has no same-run SSA instruction".into()
-        ));
-    };
-    if site.use_site != candidate.call_site
-        || site.site_cp != candidate.site_cp
-        || site.bootstrap_index != candidate.bootstrap_index
-        || site.captures.len() != candidate.capture_count
-    {
-        return Ok(Err(
-            "capture record does not match exact bootstrap site".into()
-        ));
-    }
-    let operands = build::stack_operands(instruction);
-    if operands.len() != candidate.capture_count {
-        return Ok(Err(
-            "SSA capture arity differs from the site descriptor".into()
-        ));
-    }
-    crate::stop::charge(
-        budget,
-        jarde_reader::budget::CountedBudgetDimension::IrItems,
-        u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
-        Some(candidate.call_site),
-    )?;
-    crate::stop::poll(budget, Some(candidate.call_site))?;
-    let operations = Operations::of(code, ir.constant_pool());
-    let entry_slot = |value_id| -> Option<u16> {
-        match ssa.value(value_id).def() {
-            Definition::Entry {
-                slot: Slot::Local(slot),
-                ..
-            } => Some(*slot),
-            Definition::Instruction { bci, .. } => {
-                let instruction = ssa
-                    .blocks()
-                    .iter()
-                    .flat_map(|block| block.instructions())
-                    .find(|instruction| instruction.bci() == *bci)?;
-                let Operation::Load { slot } = operations.get(*bci)? else {
-                    return None;
-                };
-                let mut reads = instruction
-                    .reads()
-                    .iter()
-                    .filter(|(read_slot, _)| *read_slot == Slot::Local(*slot));
-                let (_, read_id) = reads.next()?;
-                if reads.next().is_some()
-                    || !matches!(
-                        ssa.value(*read_id).def(),
-                        Definition::Entry {
-                            slot: Slot::Local(entry),
-                            ..
-                        } if entry == slot
-                    )
-                {
-                    return None;
-                }
-                Some(*slot)
-            }
-            _ => None,
-        }
-    };
-    let method = facts.method();
-    let is_static = method
-        .access_flags()
-        .is_some_and(|flags| flags & crate::facts::ACC_STATIC != 0);
-    let parameter_types = method.parameter_types();
-    let expected_instance = candidate.implementation_kind == 7;
-    if expected_instance && is_static {
-        return Ok(Err(
-            "captured receiver shape disagrees with enclosing method flags".into(),
-        ));
-    }
-    let mut bindings = Vec::with_capacity(operands.len());
-    let mut parameter_slot = None;
-    for (index, (_, value_id)) in operands.iter().enumerate() {
-        let Some(slot) = entry_slot(*value_id) else {
-            return Ok(Err(format!(
-                "capture {index} is not a direct parameter load"
-            )));
-        };
-        if expected_instance && index == 0 {
-            if slot != 0 {
-                return Ok(Err("instance capture receiver is not direct this".into()));
-            }
-            bindings.push(LambdaHelperCaptureBinding::This);
-            continue;
-        }
-        if parameter_types.get(&slot) != Some(&Type::Int) {
-            return Ok(Err(format!(
-                "capture {index} is not a direct int parameter"
-            )));
-        }
-        if parameter_slot.replace(slot).is_some() {
-            return Ok(Err(
-                "more than one int parameter capture is unsupported".into()
-            ));
-        }
-        let Some(name) = names.whole(slot).map(|name| name.text().to_owned()) else {
-            return Ok(Err(
-                "captured int parameter has no unique whole-slot name".into()
-            ));
-        };
-        bindings.push(LambdaHelperCaptureBinding::IntParameter { slot, name });
-    }
-    if bindings.len() != candidate.capture_count
-        || (candidate.implementation_kind == 6 && bindings.len() != 1)
-        || (candidate.implementation_kind == 7
-            && (bindings.len() != 2
-                || !matches!(bindings.first(), Some(LambdaHelperCaptureBinding::This))))
-    {
-        return Ok(Err(
-            "captured parameters do not match the admitted static/instance form".into(),
-        ));
-    }
-
-    for (bci, operation) in operations.iter() {
-        crate::stop::poll(budget, Some(*bci))?;
-        if let Some(slot) = parameter_slot
-            && matches!(operation, Operation::Store { slot: written } | Operation::Increment { slot: written, .. } if *written == slot)
-        {
-            return Ok(Err(format!(
-                "captured int parameter slot {slot} is written at BCI {bci}"
-            )));
-        }
-    }
-    Ok(Ok(bindings))
-}
-
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassSourceArrayConstructorCandidate {
@@ -1494,8 +1330,6 @@ pub struct ClassSourceLambdaHelperCandidate {
     pub use_site: u32,
     pub site_cp: u16,
     pub(crate) implementation_kind: u8,
-    pub(crate) capture_bindings: Option<Vec<LambdaHelperCaptureBinding>>,
-    pub(crate) capture_refusal: Option<String>,
     pub(crate) projection: std::sync::Arc<LambdaHelperProjectionSource>,
 }
 
@@ -1503,12 +1337,6 @@ impl ClassSourceLambdaHelperCandidate {
     /// The implementation MethodHandle reference kind read from this site's bootstrap row.
     pub fn implementation_kind(&self) -> u8 {
         self.implementation_kind
-    }
-
-    /// Why capture binding was refused, when the site's shape was recognized but its source was
-    /// not proved safe to move into the lambda body.
-    pub fn capture_refusal(&self) -> Option<&str> {
-        self.capture_refusal.as_deref()
     }
 }
 
@@ -2188,80 +2016,113 @@ pub fn emit_class_source_array_constructors(
     Ok(Some(emitted.text))
 }
 
-/// Inlines one same-class, no-capture primitive lambda helper only after class-source has proved
-/// its exact bootstrap ownership and unique use. The helper AST must be a complete one-return
-/// arithmetic body; its physical method report is retained by the caller.
-pub fn emit_class_source_lambda_helper(
+/// The presentation name of every descriptor parameter slot of one retained class-source AST,
+/// in descriptor order. `None` entries are slots without one unambiguous whole-slot name.
+#[doc(hidden)]
+pub fn class_source_parameter_names(ast: &ClassSourceMethodAst) -> Vec<Option<String>> {
+    ast.projection.parameter_names.clone()
+}
+
+/// One caller-member site edit the class-source lambda-body channel decided (change
+/// `recover-lambda-inline-bodies`).
+///
+/// Every edit is located by the site it applies to — the `invokedynamic` instruction's own BCI and
+/// constant-pool entry — so a member with several lambda sites takes all of its edits in one
+/// re-emission and no edit can attach itself to a site it was not proved from.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ClassSourceLambdaSiteEdit {
+    /// The companion's single-return body, substituted onto the site's parameters, replaces the
+    /// call inside the lambda expression.
+    Inline {
+        use_site: u32,
+        site_cp: u16,
+        params: Vec<crate::ast::LambdaParam>,
+        body: crate::ast::Expr,
+    },
+    /// The call inside the lambda keeps its shape and names the companion's renamed member.
+    RenameCall {
+        use_site: u32,
+        site_cp: u16,
+        to: String,
+    },
+}
+
+/// The proved inline plan for one site: the donor body with every parameter read substituted, and
+/// the lambda parameters the inlined expression is bound under.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceLambdaInline {
+    pub params: Vec<crate::ast::LambdaParam>,
+    pub body: crate::ast::Expr,
+}
+
+/// Plans one companion-body inline: the helper's single `return` expression, with every parameter
+/// read substituted by the call-site argument the presentation already writes there.
+///
+/// `None` is a stated refusal, not a stop: the companion takes the rename branch instead. What
+/// this proof requires, each item a structural fact of the two retained same-run ASTs:
+///
+/// * the helper's own run is complete, handler-free, not ragged, and exactly one `return`
+///   statement whose anchors cover every physical instruction of its body — the body this proof
+///   moves is the whole body the class file states;
+/// * the caller's run is not ragged and holds exactly one lambda expression at the candidate's
+///   own site whose body is the plain companion call the `lambda@1` rule writes;
+/// * the companion's declared parameters line up with the call's arguments by position — captured
+///   arguments first, then one argument per lambda parameter, each the (possibly cast) lambda
+///   parameter itself, so substitution is a rebinding and never a reordering;
+/// * the donor holds no node the inline would change the meaning of: no nested lambda (its own
+///   sites belong to the omitted member), no conditional, no short-circuit operator, no local
+///   write, and no local that is not one of the companion's own parameters — `this` excepted for
+///   an instance companion whose site binds the caller's own `this`;
+/// * the chosen lambda parameter names — the companion's own, or the site's when the companion's
+///   shadow anything in the caller's scope — bind every read the substituted body makes.
+///
+/// A captured argument is embedded exactly where the call already wrote it, so an effectful
+/// capture producer only matters when the donor reads that parameter more than once; that one
+/// case is refused here rather than rewritten.
+pub fn plan_class_source_lambda_inline(
     candidate: &ClassSourceLambdaHelperCandidate,
     helper_ast: &ClassSourceMethodAst,
+    caller_parameter_names: &[Option<String>],
     budget: &mut Budget,
-) -> Result<Option<String>, crate::stop::StopReason> {
+) -> Result<Option<ClassSourceLambdaInline>, crate::stop::StopReason> {
     let caller = &candidate.projection;
     let helper = &helper_ast.projection;
-    if caller.member != candidate.member
-        || helper.member != candidate.helper
-        || candidate.capture_refusal.is_some()
-        || candidate.capture_bindings.is_none()
-        || !helper.complete_code
-        || helper.has_exception_handlers
-        || caller.program.ragged
-        || caller.program.stmts.len() != 1
-        || helper.program.ragged
-        || helper.program.stmts.len() != 1
-    {
+    if caller.program.ragged || helper.program.ragged {
+        return Ok(None);
+    }
+    let [statement] = helper.program.stmts.as_slice() else {
+        return Ok(None);
+    };
+    let crate::ast::StmtKind::Return { value: Some(donor) } = &statement.kind else {
+        return Ok(None);
+    };
+    if !helper.complete_code || helper.has_exception_handlers {
         return Ok(None);
     }
     let helper_nodes = program_node_count(&helper.program);
     let caller_nodes = program_node_count(&caller.program);
-    let nodes = helper_nodes.saturating_add(caller_nodes);
     crate::stop::charge(
         budget,
         jarde_reader::budget::CountedBudgetDimension::IrItems,
-        nodes,
+        helper_nodes.saturating_add(caller_nodes),
         Some(candidate.use_site),
     )?;
     crate::stop::poll(budget, Some(candidate.use_site))?;
     if helper_nodes > MAX_LAMBDA_HELPER_AST_NODES || caller_nodes > MAX_LAMBDA_HELPER_AST_NODES {
         return Ok(None);
     }
-    let Ok(descriptor) = std::str::from_utf8(&candidate.helper.descriptor.0) else {
-        return Ok(None);
-    };
-    let Some((parameters, Some(Type::Int))) = crate::lambda::parse_method(descriptor) else {
-        return Ok(None);
-    };
-    let captures = candidate.capture_bindings.as_deref().unwrap_or_default();
-    let lambda_parameter_count = match candidate.implementation_kind {
-        6 => parameters.len().saturating_sub(captures.len()),
-        7 => 0,
-        _ => return Ok(None),
-    };
-    if !(parameters.is_empty()
-        || parameters.as_slice() == [Type::Int]
-        || parameters.as_slice() == [Type::Int, Type::Int])
-        || (candidate.implementation_kind == 6
-            && !((captures.is_empty() && parameters.len() <= 2)
-                || (captures.len() == 1
-                    && lambda_parameter_count == 1
-                    && parameters.as_slice() == [Type::Int, Type::Int])))
-        || (candidate.implementation_kind == 7
-            && (captures.len() != 2
-                || !matches!(captures.first(), Some(LambdaHelperCaptureBinding::This))
-                || parameters.as_slice() != [Type::Int]))
-        || helper.parameter_names.len() != parameters.len()
-        || helper.parameter_names.iter().any(Option::is_none)
-    {
-        return Ok(None);
-    }
-    let crate::ast::StmtKind::Return { value: Some(donor) } = &helper.program.stmts[0].kind else {
-        return Ok(None);
-    };
     if !lambda_helper_instruction_coverage(helper) {
         return Ok(None);
     }
-    let crate::ast::StmtKind::Return {
-        value: Some(lambda),
-    } = &caller.program.stmts[0].kind
+    if helper.parameter_names.iter().any(Option::is_none) {
+        return Ok(None);
+    }
+    let helper_name = String::from_utf8_lossy(&candidate.helper.name.0).to_string();
+    let helper_owner = String::from_utf8_lossy(&candidate.helper_owner.0).replace('/', ".");
+    let Some(lambda) =
+        locate_lambda_expression(&caller.program.stmts, candidate.use_site, candidate.site_cp)
     else {
         return Ok(None);
     };
@@ -2280,136 +2141,1275 @@ pub fn emit_class_source_lambda_helper(
     else {
         return Ok(None);
     };
-    let helper_name = String::from_utf8_lossy(&candidate.helper.name.0);
-    let helper_owner = String::from_utf8_lossy(&candidate.helper_owner.0).replace('/', ".");
-    let (receiver_matches, expected_args) = match candidate.implementation_kind {
-        6 => (
-            matches!(&receiver.kind, crate::ast::ExprKind::Path(owner) if owner == &helper_owner),
-            captures
-                .iter()
-                .filter_map(|capture| match capture {
-                    LambdaHelperCaptureBinding::IntParameter { name, .. } => Some(name.as_str()),
-                    LambdaHelperCaptureBinding::This => None,
-                })
-                .chain(lambda_params.iter().map(|param| param.name.as_str()))
-                .collect::<Vec<_>>(),
-        ),
-        7 => (
-            matches!(&receiver.kind, crate::ast::ExprKind::Local(name) if name == "this"),
-            captures
-                .iter()
-                .filter_map(|capture| match capture {
-                    LambdaHelperCaptureBinding::IntParameter { name, .. } => Some(name.as_str()),
-                    LambdaHelperCaptureBinding::This => None,
-                })
-                .collect::<Vec<_>>(),
-        ),
-        _ => (false, Vec::new()),
+    let receiver_matches = match candidate.implementation_kind {
+        6 => matches!(&receiver.kind, crate::ast::ExprKind::Path(owner) if owner == &helper_owner),
+        7 => matches!(&receiver.kind, crate::ast::ExprKind::Local(local) if local == "this"),
+        _ => false,
     };
-    if lambda.origin.primary().bci() != candidate.use_site
-        || lambda.origin.primary().cp() != Some(candidate.site_cp)
-        || lambda_params.len() != lambda_parameter_count
-        || args.len() != expected_args.len()
-        || name != helper_name.as_ref()
-        || !receiver_matches
-        || !args.iter().zip(expected_args).all(|(arg, expected)| matches!(&arg.kind, crate::ast::ExprKind::Local(local) if local == expected))
-        || (candidate.implementation_kind == 7 && !lambda_params.is_empty())
+    if !receiver_matches
+        || name != &helper_name
+        || helper.parameter_names.len() != args.len()
+        || helper.parameter_names.len() < lambda_params.len()
     {
         return Ok(None);
     }
-    let mut substitutions: std::collections::BTreeMap<String, String> = helper
+    let trailing = lambda_params.len();
+    let capture_args = &args[..args.len() - trailing];
+    let parameter_args = &args[args.len() - trailing..];
+    // Each trailing argument must be the lambda's own parameter, possibly behind the casts the
+    // site's adaptation proof wrote: substituting it is a rebinding of that one parameter.
+    for (arg, param) in parameter_args.iter().zip(lambda_params) {
+        let mut inner = arg;
+        while let crate::ast::ExprKind::Cast { value, .. } = &inner.kind {
+            inner = value;
+        }
+        if !matches!(&inner.kind, crate::ast::ExprKind::Local(local) if local == &param.name) {
+            return Ok(None);
+        }
+    }
+    let companion_names: Vec<String> = helper.parameter_names
+        [helper.parameter_names.len() - trailing..]
+        .iter()
+        .map(|name| name.clone().expect("checked parameter name"))
+        .collect();
+    if companion_names
+        .iter()
+        .any(|name| lambda_params.iter().any(|param| &param.name == name))
+    {
+        // The companion's own names reappearing as site parameter names would make the
+        // substitution map ambiguous; the site spelling stays untouched instead.
+        return Ok(None);
+    }
+    // The lambda parameter names the inlined body binds under: the companion's own when they
+    // shadow nothing the caller's scope names — javac rejects a lambda parameter that shadows an
+    // enclosing local, and the caller's parameters, declared locals and free reads are that
+    // scope — and the site's own otherwise; the site's names were derived to be free of exactly
+    // those collisions.
+    let mut caller_scope: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
+    caller_scope.extend(caller_parameter_names.iter().flatten().cloned());
+    collect_caller_scope_names(&caller.program.stmts, &mut caller_scope);
+    for arg in capture_args {
+        collect_free_locals(arg, &mut caller_scope);
+    }
+    let companion_policy = companion_names
+        .iter()
+        .all(|name| !caller_scope.contains(name));
+    let site_policy = lambda_params
+        .iter()
+        .all(|param| !caller_scope.contains(&param.name));
+    let params: Vec<crate::ast::LambdaParam> = if companion_policy {
+        lambda_params
+            .iter()
+            .zip(&companion_names)
+            .map(|(param, name)| crate::ast::LambdaParam {
+                ty: param.ty.clone(),
+                name: name.clone(),
+            })
+            .collect()
+    } else if site_policy {
+        lambda_params.clone()
+    } else {
+        return Ok(None);
+    };
+    // Every companion parameter binds to the argument the call already writes: the captured
+    // expressions verbatim, the trailing ones as the chosen names behind the site's own
+    // conversion chain.
+    let mut bindings: Vec<(String, crate::ast::Expr)> = helper
         .parameter_names
         .iter()
         .zip(args)
-        .map(|(name, param)| {
-            (
-                name.clone().expect("checked parameter name"),
-                match &param.kind {
-                    crate::ast::ExprKind::Local(name) => name.clone(),
-                    _ => String::new(),
-                },
-            )
-        })
+        .map(|(name, arg)| (name.clone().expect("checked parameter name"), arg.clone()))
         .collect();
-    if substitutions.values().any(String::is_empty) {
-        return Ok(None);
+    let capture_count = bindings.len() - trailing;
+    if companion_policy {
+        for (index, binding) in bindings.iter_mut().skip(capture_count).enumerate() {
+            binding.1 = rebind_site_parameter(
+                &binding.1,
+                lambda_params[index].name.as_str(),
+                params[index].name.as_str(),
+                lambda_params[index].ty.clone(),
+            );
+        }
     }
-    for (parameter, lambda_parameter) in helper
-        .parameter_names
-        .iter()
-        .skip(captures.len())
-        .zip(lambda_params)
-    {
-        substitutions.insert(
-            parameter.clone().expect("checked parameter name"),
-            lambda_parameter.name.clone(),
-        );
+    // No two parameters may bind the same expression: a duplicated producer would run twice in
+    // the inlined body where the call evaluated it once.
+    for (index, (_, left)) in bindings.iter().enumerate() {
+        if bindings
+            .iter()
+            .skip(index + 1)
+            .any(|(_, right)| left == right)
+        {
+            return Ok(None);
+        }
     }
-    let helper_owner_internal = String::from_utf8_lossy(&candidate.helper_owner.0);
-    let allow_instance_call = candidate.implementation_kind == 7
-        && helper.call_targets.len() == 1
-        && helper.call_targets.iter().all(|(bci, target)| {
-            target.kind() == crate::facts::InvokeKind::Virtual
-                && target.owner() == helper_owner_internal.as_ref()
-                && target.name() == "number"
-                && target.descriptor() == "()I"
-                && !target.is_interface_reference()
-                && lambda_helper_instance_call_at(donor, *bci)
-        });
-    if candidate.implementation_kind == 7 && !allow_instance_call {
-        return Ok(None);
+    let map: std::collections::BTreeMap<String, crate::ast::Expr> = bindings.into_iter().collect();
+    // An effectful captured producer may be embedded once; a second read duplicates its effect.
+    let mut read_counts = std::collections::BTreeMap::<String, usize>::new();
+    count_parameter_reads(donor, &map, &mut read_counts);
+    for (name, count) in read_counts {
+        if count > 1 && !map.get(&name).is_some_and(|expr| is_pure_read(&expr.kind)) {
+            return Ok(None);
+        }
     }
-    let mut inlined = donor.clone();
-    if !rewrite_lambda_arithmetic(&mut inlined, &substitutions, allow_instance_call) {
-        return Ok(None);
-    }
-    let mut program = caller.program.clone();
-    let crate::ast::StmtKind::Return {
-        value: Some(lambda),
-    } = &mut program.stmts[0].kind
+    let this_is_bound = candidate.implementation_kind == 7;
+    let Some(body) =
+        substitute_lambda_donor(donor, &map, this_is_bound, candidate.use_site, budget)?
     else {
         return Ok(None);
     };
-    let crate::ast::ExprKind::Lambda { body, .. } = &mut lambda.kind else {
-        return Ok(None);
+    Ok(Some(ClassSourceLambdaInline { params, body }))
+}
+
+/// The same expression node with another shape, keeping the origin and the presented type the
+/// proof found the node under.
+fn rekind(expression: &crate::ast::Expr, kind: crate::ast::ExprKind) -> crate::ast::Expr {
+    let mut rebuilt = expression.clone();
+    rebuilt.kind = kind;
+    rebuilt
+}
+
+/// Rebinds one site parameter name to its chosen inlined name inside the cast chain the site's
+/// adaptation wrote, preserving the conversions the lambda's own proof produced.
+fn rebind_site_parameter(
+    arg: &crate::ast::Expr,
+    from: &str,
+    to: &str,
+    declared: crate::ast::Type,
+) -> crate::ast::Expr {
+    match &arg.kind {
+        crate::ast::ExprKind::Cast { ty, value } => rekind(
+            arg,
+            crate::ast::ExprKind::Cast {
+                ty: ty.clone(),
+                value: Box::new(rebind_site_parameter(value, from, to, declared)),
+            },
+        ),
+        crate::ast::ExprKind::Local(local) if local == from => crate::ast::Expr::new(
+            crate::ast::ExprKind::Local(to.to_string()),
+            arg.origin.clone(),
+        )
+        .presenting(declared),
+        _ => arg.clone(),
+    }
+}
+
+/// Substitutes every parameter read in the donor with its bound expression, refusing the node
+/// kinds whose meaning an inline would change (a nested lambda's own sites, control flow, writes)
+/// and every local that is not one of the companion's parameters. `this` passes through for an
+/// instance companion whose site binds the caller's own `this` — the one receiver shape the plan
+/// admitted.
+fn substitute_lambda_donor(
+    expression: &crate::ast::Expr,
+    bindings: &std::collections::BTreeMap<String, crate::ast::Expr>,
+    this_is_bound: bool,
+    use_site: u32,
+    budget: &mut Budget,
+) -> Result<Option<crate::ast::Expr>, crate::stop::StopReason> {
+    use crate::ast::{BinaryOp, ExprKind};
+    crate::stop::poll(budget, Some(use_site))?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        Some(use_site),
+    )?;
+    let rebuilt: Option<ExprKind> = match &expression.kind {
+        ExprKind::Local(name) => {
+            if this_is_bound && name == "this" {
+                Some(expression.kind.clone())
+            } else {
+                return Ok(bindings.get(name).cloned());
+            }
+        }
+        ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. } => Some(expression.kind.clone()),
+        // Writes, control flow and a nested lambda's own sites are the shapes the rename branch
+        // keeps physical; `super` names a member the lambda's scope cannot reach.
+        ExprKind::LocalAssign { .. }
+        | ExprKind::PostfixUpdate { .. }
+        | ExprKind::Conditional { .. }
+        | ExprKind::Lambda { .. }
+        | ExprKind::Super { .. } => None,
+        ExprKind::InstanceOf { value, ty } => {
+            let rebuilt =
+                substitute_lambda_donor(value, bindings, this_is_bound, use_site, budget)?;
+            rebuilt.map(|value| ExprKind::InstanceOf {
+                value: Box::new(value),
+                ty: ty.clone(),
+            })
+        }
+        ExprKind::Call {
+            receiver,
+            name,
+            args,
+        } => {
+            let mut rebuilt_args = Vec::with_capacity(args.len());
+            for arg in args {
+                let Some(arg) =
+                    substitute_lambda_donor(arg, bindings, this_is_bound, use_site, budget)?
+                else {
+                    return Ok(None);
+                };
+                rebuilt_args.push(arg);
+            }
+            let rebuilt_receiver = match receiver {
+                Some(receiver) => Some(Box::new(
+                    match substitute_lambda_donor(
+                        receiver,
+                        bindings,
+                        this_is_bound,
+                        use_site,
+                        budget,
+                    )? {
+                        Some(receiver) => receiver,
+                        None => return Ok(None),
+                    },
+                )),
+                None => None,
+            };
+            Some(ExprKind::Call {
+                receiver: rebuilt_receiver,
+                name: name.clone(),
+                args: rebuilt_args,
+            })
+        }
+        ExprKind::New {
+            ty,
+            qualifier,
+            member_name,
+            diamond,
+            args,
+        } => {
+            let mut rebuilt_args = Vec::with_capacity(args.len());
+            for arg in args {
+                let Some(arg) =
+                    substitute_lambda_donor(arg, bindings, this_is_bound, use_site, budget)?
+                else {
+                    return Ok(None);
+                };
+                rebuilt_args.push(arg);
+            }
+            let rebuilt_qualifier = match qualifier {
+                Some(qualifier) => Some(Box::new(
+                    match substitute_lambda_donor(
+                        qualifier,
+                        bindings,
+                        this_is_bound,
+                        use_site,
+                        budget,
+                    )? {
+                        Some(qualifier) => qualifier,
+                        None => return Ok(None),
+                    },
+                )),
+                None => None,
+            };
+            Some(ExprKind::New {
+                ty: ty.clone(),
+                qualifier: rebuilt_qualifier,
+                member_name: member_name.clone(),
+                diamond: *diamond,
+                args: rebuilt_args,
+            })
+        }
+        ExprKind::MethodReference { qualifier, name } => {
+            let rebuilt =
+                substitute_lambda_donor(qualifier, bindings, this_is_bound, use_site, budget)?;
+            rebuilt.map(|qualifier| ExprKind::MethodReference {
+                qualifier: Box::new(qualifier),
+                name: name.clone(),
+            })
+        }
+        ExprKind::Field { receiver, name } => {
+            let rebuilt =
+                substitute_lambda_donor(receiver, bindings, this_is_bound, use_site, budget)?;
+            rebuilt.map(|receiver| ExprKind::Field {
+                receiver: Box::new(receiver),
+                name: name.clone(),
+            })
+        }
+        ExprKind::Index { array, index } => {
+            let Some(array) =
+                substitute_lambda_donor(array, bindings, this_is_bound, use_site, budget)?
+            else {
+                return Ok(None);
+            };
+            let Some(index) =
+                substitute_lambda_donor(index, bindings, this_is_bound, use_site, budget)?
+            else {
+                return Ok(None);
+            };
+            Some(ExprKind::Index {
+                array: Box::new(array),
+                index: Box::new(index),
+            })
+        }
+        ExprKind::ArrayLength { array } => {
+            let rebuilt =
+                substitute_lambda_donor(array, bindings, this_is_bound, use_site, budget)?;
+            rebuilt.map(|array| ExprKind::ArrayLength {
+                array: Box::new(array),
+            })
+        }
+        ExprKind::NewArray {
+            element,
+            lengths,
+            initializers,
+            total_dimensions,
+        } => {
+            let mut rebuilt_lengths = Vec::with_capacity(lengths.len());
+            for length in lengths {
+                let Some(length) =
+                    substitute_lambda_donor(length, bindings, this_is_bound, use_site, budget)?
+                else {
+                    return Ok(None);
+                };
+                rebuilt_lengths.push(length);
+            }
+            let rebuilt_initializers = match initializers {
+                Some(initializers) => {
+                    let mut rebuilt = Vec::with_capacity(initializers.len());
+                    for initializer in initializers {
+                        let Some(initializer) = substitute_lambda_donor(
+                            initializer,
+                            bindings,
+                            this_is_bound,
+                            use_site,
+                            budget,
+                        )?
+                        else {
+                            return Ok(None);
+                        };
+                        rebuilt.push(initializer);
+                    }
+                    Some(rebuilt)
+                }
+                None => None,
+            };
+            Some(ExprKind::NewArray {
+                element: element.clone(),
+                lengths: rebuilt_lengths,
+                initializers: rebuilt_initializers,
+                total_dimensions: *total_dimensions,
+            })
+        }
+        ExprKind::Binary { op, left, right } => {
+            if matches!(op, BinaryOp::LogicalAnd | BinaryOp::LogicalOr) {
+                return Ok(None);
+            }
+            let Some(left) =
+                substitute_lambda_donor(left, bindings, this_is_bound, use_site, budget)?
+            else {
+                return Ok(None);
+            };
+            let Some(right) =
+                substitute_lambda_donor(right, bindings, this_is_bound, use_site, budget)?
+            else {
+                return Ok(None);
+            };
+            Some(ExprKind::Binary {
+                op: *op,
+                left: Box::new(left),
+                right: Box::new(right),
+            })
+        }
+        ExprKind::Concat { parts } => {
+            let mut rebuilt = Vec::with_capacity(parts.len());
+            for part in parts {
+                let Some(value) = substitute_lambda_donor(
+                    &part.value,
+                    bindings,
+                    this_is_bound,
+                    use_site,
+                    budget,
+                )?
+                else {
+                    return Ok(None);
+                };
+                rebuilt.push(crate::ast::ConcatPart::new(part.parameter.clone(), value));
+            }
+            Some(ExprKind::Concat { parts: rebuilt })
+        }
+        ExprKind::Cast { ty, value } => {
+            let rebuilt =
+                substitute_lambda_donor(value, bindings, this_is_bound, use_site, budget)?;
+            rebuilt.map(|value| ExprKind::Cast {
+                ty: ty.clone(),
+                value: Box::new(value),
+            })
+        }
+        ExprKind::Not { value } => {
+            let rebuilt =
+                substitute_lambda_donor(value, bindings, this_is_bound, use_site, budget)?;
+            rebuilt.map(|value| ExprKind::Not {
+                value: Box::new(value),
+            })
+        }
+        ExprKind::Neg { value } => {
+            let rebuilt =
+                substitute_lambda_donor(value, bindings, this_is_bound, use_site, budget)?;
+            rebuilt.map(|value| ExprKind::Neg {
+                value: Box::new(value),
+            })
+        }
     };
-    **body = inlined;
-    let emitted = crate::emit::emit(
+    Ok(rebuilt.map(|kind| rekind(expression, kind)))
+}
+
+/// Every name the caller's own scope binds: its declared and assigned locals, its loop, resource
+/// and catch names, its parameters (supplied by the caller), and every local its expressions read
+/// freely. A lambda parameter that shadows any of these is a compile error, so the companion's
+/// parameter names are admitted only outside this set.
+fn collect_caller_scope_names(
+    statements: &[crate::ast::Stmt],
+    names: &mut std::collections::BTreeSet<String>,
+) {
+    use crate::ast::StmtKind;
+    for statement in statements {
+        match &statement.kind {
+            StmtKind::Declare { name, .. }
+            | StmtKind::Assign { name, .. }
+            | StmtKind::ForEach { name, .. } => {
+                names.insert(name.clone());
+            }
+            _ => {}
+        }
+        for_each_statement_value_expression(std::slice::from_ref(statement), &mut |expression| {
+            collect_free_locals(expression, names);
+        });
+        match &statement.kind {
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_caller_scope_names(then_body, names);
+                collect_caller_scope_names(else_body, names);
+            }
+            StmtKind::While { body, .. }
+            | StmtKind::DoWhile { body, .. }
+            | StmtKind::Synchronized { body, .. } => collect_caller_scope_names(body, names),
+            StmtKind::For {
+                init, update, body, ..
+            } => {
+                collect_caller_scope_names(std::slice::from_ref(init), names);
+                collect_caller_scope_names(std::slice::from_ref(update), names);
+                collect_caller_scope_names(body, names);
+            }
+            StmtKind::ForEach { body, .. } => collect_caller_scope_names(body, names),
+            StmtKind::Switch { arms, .. } => {
+                for arm in arms {
+                    collect_caller_scope_names(&arm.body, names);
+                }
+            }
+            StmtKind::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
+                for resource in resources {
+                    names.insert(resource.name.clone());
+                }
+                for catch in catches {
+                    names.insert(catch.name.clone());
+                    collect_caller_scope_names(&catch.body, names);
+                }
+                collect_caller_scope_names(body, names);
+                if let Some(body) = finally_body {
+                    collect_caller_scope_names(body, names);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+/// The locals one expression reads — the names a lambda parameter must not shadow. A nested
+/// lambda's own parameters shadow only inside that lambda, so they are not free names here.
+fn collect_free_locals(
+    expression: &crate::ast::Expr,
+    names: &mut std::collections::BTreeSet<String>,
+) {
+    use crate::ast::ExprKind;
+    match &expression.kind {
+        ExprKind::Local(name) => {
+            names.insert(name.clone());
+        }
+        ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
+        | ExprKind::Super { .. } => {}
+        ExprKind::LocalAssign { name, value, .. } => {
+            names.insert(name.clone());
+            collect_free_locals(value, names);
+        }
+        ExprKind::InstanceOf { value, .. } => collect_free_locals(value, names),
+        ExprKind::Call { receiver, args, .. } => {
+            if let Some(receiver) = receiver {
+                collect_free_locals(receiver, names);
+            }
+            for arg in args {
+                collect_free_locals(arg, names);
+            }
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            if let Some(qualifier) = qualifier {
+                collect_free_locals(qualifier, names);
+            }
+            for arg in args {
+                collect_free_locals(arg, names);
+            }
+        }
+        ExprKind::Lambda { params, body } => {
+            let shadowed: std::collections::BTreeSet<String> =
+                params.iter().map(|param| param.name.clone()).collect();
+            let mut inner = std::collections::BTreeSet::new();
+            collect_free_locals(body, &mut inner);
+            names.extend(inner.difference(&shadowed).cloned());
+        }
+        ExprKind::MethodReference { qualifier, .. } => collect_free_locals(qualifier, names),
+        ExprKind::Field { receiver, .. } => collect_free_locals(receiver, names),
+        ExprKind::ArrayLength { array } => collect_free_locals(array, names),
+        ExprKind::Index { array, index } => {
+            collect_free_locals(array, names);
+            collect_free_locals(index, names);
+        }
+        ExprKind::PostfixUpdate { target, .. } => collect_free_locals(target, names),
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            for length in lengths {
+                collect_free_locals(length, names);
+            }
+            for initializer in initializers.iter().flatten() {
+                collect_free_locals(initializer, names);
+            }
+        }
+        ExprKind::Binary { left, right, .. } => {
+            collect_free_locals(left, names);
+            collect_free_locals(right, names);
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            collect_free_locals(test, names);
+            collect_free_locals(when_true, names);
+            collect_free_locals(when_false, names);
+        }
+        ExprKind::Concat { parts } => {
+            for part in parts {
+                collect_free_locals(&part.value, names);
+            }
+        }
+        ExprKind::Cast { value, .. } => collect_free_locals(value, names),
+        ExprKind::Not { value } | ExprKind::Neg { value } => collect_free_locals(value, names),
+    }
+}
+
+/// Whether an expression only reads a value the enclosing scope already holds — embedding it any
+/// number of times evaluates nothing new.
+fn is_pure_read(kind: &crate::ast::ExprKind) -> bool {
+    use crate::ast::ExprKind;
+    matches!(
+        kind,
+        ExprKind::Local(_)
+            | ExprKind::Integer(_)
+            | ExprKind::Boolean(_)
+            | ExprKind::Long(_)
+            | ExprKind::Float(_)
+            | ExprKind::Double(_)
+            | ExprKind::Str(_)
+            | ExprKind::Null
+            | ExprKind::Path(_)
+            | ExprKind::QualifiedThis { .. }
+    )
+}
+
+/// How many times the donor reads each bound parameter.
+fn count_parameter_reads(
+    expression: &crate::ast::Expr,
+    bindings: &std::collections::BTreeMap<String, crate::ast::Expr>,
+    counts: &mut std::collections::BTreeMap<String, usize>,
+) {
+    use crate::ast::ExprKind;
+    if let ExprKind::Local(name) = &expression.kind
+        && bindings.contains_key(name)
+    {
+        *counts.entry(name.clone()).or_default() += 1;
+    }
+    match &expression.kind {
+        ExprKind::Local(_)
+        | ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
+        | ExprKind::Super { .. } => {}
+        ExprKind::LocalAssign { value, .. } => {
+            count_parameter_reads(value, bindings, counts);
+        }
+        ExprKind::InstanceOf { value, .. } => count_parameter_reads(value, bindings, counts),
+        ExprKind::Call { receiver, args, .. } => {
+            if let Some(receiver) = receiver {
+                count_parameter_reads(receiver, bindings, counts);
+            }
+            for arg in args {
+                count_parameter_reads(arg, bindings, counts);
+            }
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            if let Some(qualifier) = qualifier {
+                count_parameter_reads(qualifier, bindings, counts);
+            }
+            for arg in args {
+                count_parameter_reads(arg, bindings, counts);
+            }
+        }
+        ExprKind::Lambda { body, .. } => count_parameter_reads(body, bindings, counts),
+        ExprKind::MethodReference { qualifier, .. } => {
+            count_parameter_reads(qualifier, bindings, counts)
+        }
+        ExprKind::Field { receiver, .. } => count_parameter_reads(receiver, bindings, counts),
+        ExprKind::ArrayLength { array } => count_parameter_reads(array, bindings, counts),
+        ExprKind::Index { array, index } => {
+            count_parameter_reads(array, bindings, counts);
+            count_parameter_reads(index, bindings, counts);
+        }
+        ExprKind::PostfixUpdate { target, .. } => count_parameter_reads(target, bindings, counts),
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            for length in lengths {
+                count_parameter_reads(length, bindings, counts);
+            }
+            for initializer in initializers.iter().flatten() {
+                count_parameter_reads(initializer, bindings, counts);
+            }
+        }
+        ExprKind::Binary { left, right, .. } => {
+            count_parameter_reads(left, bindings, counts);
+            count_parameter_reads(right, bindings, counts);
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            count_parameter_reads(test, bindings, counts);
+            count_parameter_reads(when_true, bindings, counts);
+            count_parameter_reads(when_false, bindings, counts);
+        }
+        ExprKind::Concat { parts } => {
+            for part in parts {
+                count_parameter_reads(&part.value, bindings, counts);
+            }
+        }
+        ExprKind::Cast { value, .. } => count_parameter_reads(value, bindings, counts),
+        ExprKind::Not { value } | ExprKind::Neg { value } => {
+            count_parameter_reads(value, bindings, counts)
+        }
+    }
+}
+
+/// Walks only the expressions a statement holds directly — its own values, conditions and
+/// arguments — without descending into nested expressions. Scope collection uses this so a
+/// nested lambda's own parameters never leak into the caller's scope as free names.
+fn for_each_statement_value_expression<'a>(
+    statements: &'a [crate::ast::Stmt],
+    visit: &mut dyn FnMut(&'a crate::ast::Expr),
+) {
+    use crate::ast::StmtKind;
+    for statement in statements {
+        match &statement.kind {
+            StmtKind::Declare { value, .. } => {
+                if let Some(value) = value {
+                    visit(value);
+                }
+            }
+            StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
+                visit(value)
+            }
+            StmtKind::FieldAssign {
+                receiver, value, ..
+            } => {
+                if let Some(receiver) = receiver {
+                    visit(receiver);
+                }
+                visit(value);
+            }
+            StmtKind::IndexAssign {
+                array,
+                index,
+                value,
+                ..
+            } => {
+                visit(array);
+                visit(index);
+                visit(value);
+            }
+            StmtKind::ConstructorCall { args, .. } => {
+                for arg in args {
+                    visit(arg);
+                }
+            }
+            StmtKind::Return { value } => {
+                if let Some(value) = value {
+                    visit(value);
+                }
+            }
+            StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
+            StmtKind::If { cond, .. } => visit(cond),
+            StmtKind::While { cond, .. } | StmtKind::DoWhile { cond, .. } => visit(cond),
+            StmtKind::For {
+                init, cond, update, ..
+            } => {
+                for_each_statement_value_expression(std::slice::from_ref(init), visit);
+                visit(cond);
+                for_each_statement_value_expression(std::slice::from_ref(update), visit);
+            }
+            StmtKind::ForEach { iterable, .. } => visit(iterable),
+            StmtKind::Switch { value, .. } => visit(value),
+            StmtKind::Try { resources, .. } => {
+                for resource in resources {
+                    visit(&resource.value);
+                }
+            }
+            StmtKind::Synchronized { lock, .. } => visit(lock),
+        }
+    }
+}
+
+/// Locates the lambda expression one site wrote: its primary anchor is the `invokedynamic`
+/// instruction's own BCI and constant-pool entry, which no other node claims as its primary.
+fn locate_lambda_expression<'a>(
+    statements: &'a [crate::ast::Stmt],
+    use_site: u32,
+    site_cp: u16,
+) -> Option<&'a crate::ast::Expr> {
+    let mut found = None;
+    for_each_statement_expression(statements, &mut |expression| {
+        if found.is_none()
+            && matches!(&expression.kind, crate::ast::ExprKind::Lambda { .. })
+            && expression.origin.primary().bci() == use_site
+            && expression.origin.primary().cp() == Some(site_cp)
+        {
+            found = Some(expression);
+        }
+    });
+    found
+}
+
+/// Applies every decided edit to the caller's retained program, returning the re-emitted body text
+/// beside an unmodified re-emission of the same program.
+///
+/// The unmodified emission is the adapter's own safety check: the member's current text must
+/// still be exactly what this same-run AST writes — a member another projection already rewrote
+/// is not a member this channel may re-emit from the same AST, and the adapter keeps such a
+/// helper's physical presentation instead.
+pub fn emit_class_source_lambda_member(
+    candidate: &ClassSourceLambdaHelperCandidate,
+    edits: &[ClassSourceLambdaSiteEdit],
+    budget: &mut Budget,
+) -> Result<Option<(String, String)>, crate::stop::StopReason> {
+    let caller = &candidate.projection;
+    if caller.program.ragged || edits.is_empty() {
+        return Ok(None);
+    }
+    let unmodified = crate::emit::emit(
+        &caller.program.stmts,
+        &caller.facts,
+        caller.declaration.as_ref(),
+        Some(&caller.member),
+        budget,
+    )?
+    .text;
+    let mut program = caller.program.clone();
+    let mut applied = 0;
+    for edit in edits {
+        applied += usize::from(apply_lambda_site_edit(&mut program.stmts, edit));
+    }
+    if applied != edits.len() {
+        return Ok(None);
+    }
+    let edited = crate::emit::emit(
         &program.stmts,
         &caller.facts,
         caller.declaration.as_ref(),
         Some(&caller.member),
         budget,
-    )?;
-    Ok(Some(emitted.text))
+    )?
+    .text;
+    Ok(Some((unmodified, edited)))
 }
 
-fn lambda_helper_instance_call_at(expression: &crate::ast::Expr, bci: u32) -> bool {
-    use crate::ast::ExprKind;
-    match &expression.kind {
-        ExprKind::Call {
-            receiver: Some(receiver),
-            name,
-            args,
-        } => {
-            (expression.origin.primary().bci() == bci
-                && name == "number"
-                && args.is_empty()
-                && matches!(receiver.kind, ExprKind::Local(ref local) if local == "this"))
-                || lambda_helper_instance_call_at(receiver, bci)
-                || args
-                    .iter()
-                    .any(|argument| lambda_helper_instance_call_at(argument, bci))
+/// Applies one edit to the lambda expression whose site matches, reporting whether it did.
+fn apply_lambda_site_edit(
+    statements: &mut [crate::ast::Stmt],
+    edit: &ClassSourceLambdaSiteEdit,
+) -> bool {
+    let mut applied = false;
+    for_each_statement_expression_mut(statements, &mut |expression| {
+        if applied
+            || !matches!(&expression.kind, crate::ast::ExprKind::Lambda { .. })
+            || expression.origin.primary().bci() != edit_site(edit)
+            || expression.origin.primary().cp() != Some(edit_cp(edit))
+        {
+            return;
         }
-        ExprKind::Binary { left, right, .. } => {
-            lambda_helper_instance_call_at(left, bci) || lambda_helper_instance_call_at(right, bci)
+        let crate::ast::ExprKind::Lambda { params, body } = &mut expression.kind else {
+            return;
+        };
+        match edit {
+            ClassSourceLambdaSiteEdit::Inline {
+                params: new_params,
+                body: new_body,
+                ..
+            } => {
+                *params = new_params.clone();
+                *body = Box::new(new_body.clone());
+                applied = true;
+            }
+            ClassSourceLambdaSiteEdit::RenameCall { to, .. } => {
+                if let crate::ast::ExprKind::Call { name, .. } = &mut body.kind {
+                    *name = to.clone();
+                    applied = true;
+                }
+            }
         }
-        ExprKind::Neg { value } => lambda_helper_instance_call_at(value, bci),
-        _ => false,
+    });
+    applied
+}
+
+fn edit_site(edit: &ClassSourceLambdaSiteEdit) -> u32 {
+    match edit {
+        ClassSourceLambdaSiteEdit::Inline { use_site, .. }
+        | ClassSourceLambdaSiteEdit::RenameCall { use_site, .. } => *use_site,
     }
 }
 
-/// Recursive anchor collection and arithmetic rewriting stay safely shallow for this proof.
+fn edit_cp(edit: &ClassSourceLambdaSiteEdit) -> u16 {
+    match edit {
+        ClassSourceLambdaSiteEdit::Inline { site_cp, .. }
+        | ClassSourceLambdaSiteEdit::RenameCall { site_cp, .. } => *site_cp,
+    }
+}
+
+/// Walks every expression of every statement, in a stable order, without mutating anything.
+fn for_each_statement_expression<'a>(
+    statements: &'a [crate::ast::Stmt],
+    visit: &mut dyn FnMut(&'a crate::ast::Expr),
+) {
+    use crate::ast::StmtKind;
+    for statement in statements {
+        match &statement.kind {
+            StmtKind::Declare { value, .. } => {
+                if let Some(value) = value {
+                    for_each_expression(value, visit);
+                }
+            }
+            StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
+                for_each_expression(value, visit)
+            }
+            StmtKind::FieldAssign {
+                receiver, value, ..
+            } => {
+                if let Some(receiver) = receiver {
+                    for_each_expression(receiver, visit);
+                }
+                for_each_expression(value, visit);
+            }
+            StmtKind::IndexAssign {
+                array,
+                index,
+                value,
+                ..
+            } => {
+                for_each_expression(array, visit);
+                for_each_expression(index, visit);
+                for_each_expression(value, visit);
+            }
+            StmtKind::ConstructorCall { args, .. } => {
+                for arg in args {
+                    for_each_expression(arg, visit);
+                }
+            }
+            StmtKind::Return { value } => {
+                if let Some(value) = value {
+                    for_each_expression(value, visit);
+                }
+            }
+            StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
+            StmtKind::If {
+                cond,
+                then_body,
+                else_body,
+            } => {
+                for_each_expression(cond, visit);
+                for_each_statement_expression(then_body, visit);
+                for_each_statement_expression(else_body, visit);
+            }
+            StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                for_each_expression(cond, visit);
+                for_each_statement_expression(body, visit);
+            }
+            StmtKind::For {
+                init,
+                cond,
+                update,
+                body,
+                ..
+            } => {
+                for_each_statement_expression(std::slice::from_ref(init), visit);
+                for_each_expression(cond, visit);
+                for_each_statement_expression(std::slice::from_ref(update), visit);
+                for_each_statement_expression(body, visit);
+            }
+            StmtKind::ForEach { iterable, body, .. } => {
+                for_each_expression(iterable, visit);
+                for_each_statement_expression(body, visit);
+            }
+            StmtKind::Switch { value, arms } => {
+                for_each_expression(value, visit);
+                for arm in arms {
+                    for_each_statement_expression(&arm.body, visit);
+                }
+            }
+            StmtKind::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
+                for resource in resources {
+                    for_each_expression(&resource.value, visit);
+                }
+                for catch in catches {
+                    for_each_statement_expression(&catch.body, visit);
+                }
+                for_each_statement_expression(body, visit);
+                if let Some(body) = finally_body {
+                    for_each_statement_expression(body, visit);
+                }
+            }
+            StmtKind::Synchronized { lock, body } => {
+                for_each_expression(lock, visit);
+                for_each_statement_expression(body, visit);
+            }
+        }
+    }
+}
+
+/// Walks one expression and every expression inside it, without mutating anything.
+fn for_each_expression<'a>(
+    expression: &'a crate::ast::Expr,
+    visit: &mut dyn FnMut(&'a crate::ast::Expr),
+) {
+    use crate::ast::ExprKind;
+    visit(expression);
+    match &expression.kind {
+        ExprKind::Local(_)
+        | ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
+        | ExprKind::Super { .. } => {}
+        ExprKind::LocalAssign { value, .. } => for_each_expression(value, visit),
+        ExprKind::InstanceOf { value, .. } => for_each_expression(value, visit),
+        ExprKind::Call { receiver, args, .. } => {
+            if let Some(receiver) = receiver {
+                for_each_expression(receiver, visit);
+            }
+            for arg in args {
+                for_each_expression(arg, visit);
+            }
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            if let Some(qualifier) = qualifier {
+                for_each_expression(qualifier, visit);
+            }
+            for arg in args {
+                for_each_expression(arg, visit);
+            }
+        }
+        ExprKind::Lambda { body, .. } => for_each_expression(body, visit),
+        ExprKind::MethodReference { qualifier, .. } => for_each_expression(qualifier, visit),
+        ExprKind::Field { receiver, .. } => for_each_expression(receiver, visit),
+        ExprKind::ArrayLength { array } => for_each_expression(array, visit),
+        ExprKind::Index { array, index } => {
+            for_each_expression(array, visit);
+            for_each_expression(index, visit);
+        }
+        ExprKind::PostfixUpdate { target, .. } => for_each_expression(target, visit),
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            for length in lengths {
+                for_each_expression(length, visit);
+            }
+            for initializer in initializers.iter().flatten() {
+                for_each_expression(initializer, visit);
+            }
+        }
+        ExprKind::Binary { left, right, .. } => {
+            for_each_expression(left, visit);
+            for_each_expression(right, visit);
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            for_each_expression(test, visit);
+            for_each_expression(when_true, visit);
+            for_each_expression(when_false, visit);
+        }
+        ExprKind::Concat { parts } => {
+            for part in parts {
+                for_each_expression(&part.value, visit);
+            }
+        }
+        ExprKind::Cast { value, .. } => for_each_expression(value, visit),
+        ExprKind::Not { value } | ExprKind::Neg { value } => for_each_expression(value, visit),
+    }
+}
+
+/// Walks every expression of every statement, mutably, in the same stable order as the read-only
+/// walk so a located site and an edited site are the same node.
+fn for_each_statement_expression_mut(
+    statements: &mut [crate::ast::Stmt],
+    visit: &mut dyn FnMut(&mut crate::ast::Expr),
+) {
+    use crate::ast::StmtKind;
+    for statement in statements {
+        match &mut statement.kind {
+            StmtKind::Declare { value, .. } => {
+                if let Some(value) = value {
+                    for_each_expression_mut(value, visit);
+                }
+            }
+            StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
+                for_each_expression_mut(value, visit)
+            }
+            StmtKind::FieldAssign {
+                receiver, value, ..
+            } => {
+                if let Some(receiver) = receiver {
+                    for_each_expression_mut(receiver, visit);
+                }
+                for_each_expression_mut(value, visit);
+            }
+            StmtKind::IndexAssign {
+                array,
+                index,
+                value,
+                ..
+            } => {
+                for_each_expression_mut(array, visit);
+                for_each_expression_mut(index, visit);
+                for_each_expression_mut(value, visit);
+            }
+            StmtKind::ConstructorCall { args, .. } => {
+                for arg in args {
+                    for_each_expression_mut(arg, visit);
+                }
+            }
+            StmtKind::Return { value } => {
+                if let Some(value) = value {
+                    for_each_expression_mut(value, visit);
+                }
+            }
+            StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
+            StmtKind::If {
+                cond,
+                then_body,
+                else_body,
+            } => {
+                for_each_expression_mut(cond, visit);
+                for_each_statement_expression_mut(then_body, visit);
+                for_each_statement_expression_mut(else_body, visit);
+            }
+            StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                for_each_expression_mut(cond, visit);
+                for_each_statement_expression_mut(body, visit);
+            }
+            StmtKind::For {
+                init,
+                cond,
+                update,
+                body,
+                ..
+            } => {
+                for_each_statement_expression_mut(std::slice::from_mut(init), visit);
+                for_each_expression_mut(cond, visit);
+                for_each_statement_expression_mut(std::slice::from_mut(update), visit);
+                for_each_statement_expression_mut(body, visit);
+            }
+            StmtKind::ForEach { iterable, body, .. } => {
+                for_each_expression_mut(iterable, visit);
+                for_each_statement_expression_mut(body, visit);
+            }
+            StmtKind::Switch { value, arms } => {
+                for_each_expression_mut(value, visit);
+                for arm in arms {
+                    for_each_statement_expression_mut(&mut arm.body, visit);
+                }
+            }
+            StmtKind::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
+                for resource in resources {
+                    for_each_expression_mut(&mut resource.value, visit);
+                }
+                for catch in catches {
+                    for_each_statement_expression_mut(&mut catch.body, visit);
+                }
+                for_each_statement_expression_mut(body, visit);
+                if let Some(body) = finally_body {
+                    for_each_statement_expression_mut(body, visit);
+                }
+            }
+            StmtKind::Synchronized { lock, body } => {
+                for_each_expression_mut(lock, visit);
+                for_each_statement_expression_mut(body, visit);
+            }
+        }
+    }
+}
+
+/// Walks one expression and every expression inside it, mutably.
+fn for_each_expression_mut(
+    expression: &mut crate::ast::Expr,
+    visit: &mut dyn FnMut(&mut crate::ast::Expr),
+) {
+    use crate::ast::ExprKind;
+    visit(expression);
+    match &mut expression.kind {
+        ExprKind::Local(_)
+        | ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
+        | ExprKind::Super { .. } => {}
+        ExprKind::LocalAssign { value, .. } => for_each_expression_mut(value, visit),
+        ExprKind::InstanceOf { value, .. } => for_each_expression_mut(value, visit),
+        ExprKind::Call { receiver, args, .. } => {
+            if let Some(receiver) = receiver {
+                for_each_expression_mut(receiver, visit);
+            }
+            for arg in args {
+                for_each_expression_mut(arg, visit);
+            }
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            if let Some(qualifier) = qualifier {
+                for_each_expression_mut(qualifier, visit);
+            }
+            for arg in args {
+                for_each_expression_mut(arg, visit);
+            }
+        }
+        ExprKind::Lambda { body, .. } => for_each_expression_mut(body, visit),
+        ExprKind::MethodReference { qualifier, .. } => for_each_expression_mut(qualifier, visit),
+        ExprKind::Field { receiver, .. } => for_each_expression_mut(receiver, visit),
+        ExprKind::ArrayLength { array } => for_each_expression_mut(array, visit),
+        ExprKind::Index { array, index } => {
+            for_each_expression_mut(array, visit);
+            for_each_expression_mut(index, visit);
+        }
+        ExprKind::PostfixUpdate { target, .. } => for_each_expression_mut(target, visit),
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            for length in lengths {
+                for_each_expression_mut(length, visit);
+            }
+            for initializer in initializers.iter_mut().flatten() {
+                for_each_expression_mut(initializer, visit);
+            }
+        }
+        ExprKind::Binary { left, right, .. } => {
+            for_each_expression_mut(left, visit);
+            for_each_expression_mut(right, visit);
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            for_each_expression_mut(test, visit);
+            for_each_expression_mut(when_true, visit);
+            for_each_expression_mut(when_false, visit);
+        }
+        ExprKind::Concat { parts } => {
+            for part in parts {
+                for_each_expression_mut(&mut part.value, visit);
+            }
+        }
+        ExprKind::Cast { value, .. } => for_each_expression_mut(value, visit),
+        ExprKind::Not { value } | ExprKind::Neg { value } => for_each_expression_mut(value, visit),
+    }
+}
+
+/// Recursive walks over a retained companion stay safely shallow for this proof.
 const MAX_LAMBDA_HELPER_AST_NODES: u64 = 256;
 
 /// A count of AST nodes can coincide with Code instructions while dropping an effect or opcode.
@@ -2434,52 +3434,6 @@ fn lambda_helper_instruction_coverage(helper: &ClassSourceMethodAstSource) -> bo
         && physical_bcis.len() == helper.instruction_bcis.len()
         && physical_bcis == ast_anchors
         && helper.instruction_bcis.len() == helper.instruction_count
-}
-
-fn rewrite_lambda_arithmetic(
-    expression: &mut crate::ast::Expr,
-    substitutions: &std::collections::BTreeMap<String, String>,
-    allow_instance_call: bool,
-) -> bool {
-    use crate::ast::{BinaryOp, ExprKind};
-    match &mut expression.kind {
-        ExprKind::Local(name) => {
-            let Some(replacement) = substitutions.get(name) else {
-                return false;
-            };
-            *name = replacement.clone();
-            true
-        }
-        ExprKind::Integer(_) => true,
-        ExprKind::Neg { value } => {
-            rewrite_lambda_arithmetic(value, substitutions, allow_instance_call)
-        }
-        ExprKind::Binary { op, left, right }
-            if matches!(
-                op,
-                BinaryOp::Add
-                    | BinaryOp::Subtract
-                    | BinaryOp::Multiply
-                    | BinaryOp::Divide
-                    | BinaryOp::Remainder
-            ) =>
-        {
-            rewrite_lambda_arithmetic(left, substitutions, allow_instance_call)
-                && rewrite_lambda_arithmetic(right, substitutions, allow_instance_call)
-        }
-        ExprKind::Call {
-            receiver: Some(receiver),
-            name,
-            args,
-        } if allow_instance_call
-            && name == "number"
-            && args.is_empty()
-            && matches!(receiver.kind, ExprKind::Local(ref local) if local == "this") =>
-        {
-            true
-        }
-        _ => false,
-    }
 }
 
 impl<'a> RecoveryRequest<'a> {
@@ -4745,18 +5699,6 @@ fn recover_inner(
                 name: helper.name.clone(),
                 descriptor: helper.descriptor.clone(),
             };
-            let (capture_bindings, capture_refusal) = match prove_lambda_helper_captures(
-                request.ir,
-                request.facts,
-                &names,
-                site,
-                helper,
-                budget,
-            ) {
-                Ok(Ok(bindings)) => (Some(bindings), None),
-                Ok(Err(reason)) => (None, Some(reason)),
-                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
-            };
             candidates.push(ClassSourceLambdaHelperCandidate {
                 member: member.clone(),
                 helper: helper_identity,
@@ -4766,8 +5708,6 @@ fn recover_inner(
                 use_site: helper.call_site,
                 site_cp: helper.site_cp,
                 implementation_kind: helper.implementation_kind,
-                capture_bindings,
-                capture_refusal,
                 projection: projection.clone(),
             });
         }

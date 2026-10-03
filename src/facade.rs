@@ -6895,6 +6895,12 @@ impl Engine {
             }
         }
         let mut lambda_projection_stopped = false;
+        // The lambda-body channel: every private synthetic `lambda$…` companion this class
+        // declares takes one of two projections — its single-return body inlined into the lambda
+        // expression that calls it (the physical method then omitted), or, for a body the inline
+        // proof refuses, a renamed non-conflicting declaration with the call rewritten. javac
+        // re-synthesizes the companion's name for the lambda expression itself, so keeping the
+        // physical name beside a lambda expression leaves the whole class uncompilable.
         let relevant_lambda_headers: Vec<_> = read
             .facts
             .methods
@@ -6902,7 +6908,6 @@ impl Engine {
             .filter(|member| {
                 member.name.raw().0.starts_with(b"lambda$")
                     && member.access_flags & 0x1000 != 0
-                    && member.descriptor.raw().0.ends_with(b")I")
                     && code_shell(member).is_some()
             })
             .collect();
@@ -6980,24 +6985,44 @@ impl Engine {
                         by_helper.push((candidate.helper.clone(), vec![candidate]));
                     }
                 }
-                let mut pending = Vec::new();
-                let mut whole_set_accepted = true;
+                // One decision per companion. `omit` marks the body-inlined helper whose
+                // physical method leaves the text; a rename keeps the method under a name javac
+                // never synthesizes, with the lambda's call rewritten to it.
+                struct CompanionProjection {
+                    helper: PhysicalMethodId,
+                    helper_vec_index: usize,
+                    caller_vec_index: usize,
+                    omit: bool,
+                    renamed_declaration: Option<String>,
+                    edit: jarde_java::report::ClassSourceLambdaSiteEdit,
+                    note: String,
+                }
+                let mut projections: Vec<CompanionProjection> = Vec::new();
                 for (helper, candidates) in by_helper {
                     if lambda_projection_stopped {
                         break;
                     }
-                    if let Some(reason) = candidates
+                    let helper_name = String::from_utf8_lossy(&helper.name.0).to_string();
+                    let Some((helper_vec_index, helper_method)) = methods
                         .iter()
-                        .find_map(|candidate| candidate.capture_refusal())
-                    {
+                        .enumerate()
+                        .find(|(_, method)| method.item.identity == helper)
+                    else {
                         diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &String::from_utf8_lossy(&helper.name.0),
+                            &helper_name,
                             candidates.first().map(|candidate| candidate.use_site),
-                            reason,
+                            "the helper's own member record is absent from the presentation",
                             class_provenance.clone(),
                         ));
-                        whole_set_accepted = false;
-                        break;
+                        continue;
+                    };
+                    // A helper the array-constructor channel already projected is not this
+                    // channel's to touch.
+                    if array_projection_members
+                        .iter()
+                        .any(|(index, _)| *index == helper_method.item.index)
+                    {
+                        continue;
                     }
                     let census_sites = candidates
                         .iter()
@@ -7023,19 +7048,61 @@ impl Engine {
                         Err(error) => {
                             merge_execution(&mut execution, stop_execution(&error, budget));
                             diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            whole_set_accepted = false;
+                            lambda_projection_stopped = true;
                             break;
                         }
                     };
                     if let Some(reason) = refusal {
                         diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &String::from_utf8_lossy(&helper.name.0),
+                            &helper_name,
                             candidates.first().map(|candidate| candidate.use_site),
                             &reason,
                             class_provenance.clone(),
                         ));
-                        whole_set_accepted = false;
-                        break;
+                        continue;
+                    }
+                    // Single use is the inline and rename premise alike: a companion two lambdas
+                    // share is a shape javac never writes, and renaming it would make every
+                    // other site's text claim a member the class does not declare.
+                    if candidates.len() != 1 {
+                        diagnostics.push(lambda_helper_refusal_diagnostic(
+                            &helper_name,
+                            candidates.first().map(|candidate| candidate.use_site),
+                            &format!(
+                                "the companion serves {} lambda sites; the physical presentation is kept",
+                                candidates.len()
+                            ),
+                            class_provenance.clone(),
+                        ));
+                        continue;
+                    }
+                    let candidate = &candidates[0];
+                    let Some((caller_vec_index, caller_method)) = methods
+                        .iter()
+                        .enumerate()
+                        .find(|(_, method)| method.item.identity == candidate.member)
+                    else {
+                        diagnostics.push(lambda_helper_refusal_diagnostic(
+                            &helper_name,
+                            Some(candidate.use_site),
+                            "the site's own member record is absent from the presentation",
+                            class_provenance.clone(),
+                        ));
+                        continue;
+                    };
+                    // A member the array-constructor channel already rewrote is not a member this
+                    // channel may re-emit from the same retained AST.
+                    if array_projection_members.iter().any(|(_, members)| {
+                        members.contains(&caller_method.item.index)
+                            || members.contains(&helper_method.item.index)
+                    }) {
+                        diagnostics.push(lambda_helper_refusal_diagnostic(
+                            &helper_name,
+                            Some(candidate.use_site),
+                            "the site's member is already covered by an array-constructor projection",
+                            class_provenance.clone(),
+                        ));
+                        continue;
                     }
                     let Some(helper_ast) = method_asts
                         .iter()
@@ -7043,133 +7110,352 @@ impl Engine {
                         .map(|(_, ast, _, _)| ast)
                     else {
                         diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &String::from_utf8_lossy(&helper.name.0),
-                            candidates.first().map(|candidate| candidate.use_site),
+                            &helper_name,
+                            Some(candidate.use_site),
                             "complete same-run helper AST is absent",
                             class_provenance.clone(),
                         ));
-                        whole_set_accepted = false;
-                        break;
+                        continue;
                     };
-                    let mut staged = Vec::new();
-                    let mut accepted = true;
-                    for candidate in &candidates {
-                        let mut member_matches = methods
-                            .iter()
-                            .enumerate()
-                            .filter(|(_, method)| method.item.identity == candidate.member);
-                        let Some((method_index, method)) = member_matches.next() else {
-                            accepted = false;
-                            break;
-                        };
-                        if member_matches.next().is_some() {
-                            accepted = false;
-                            break;
-                        }
-                        if !method_asts
-                            .iter()
-                            .any(|(member, _, _, _)| member == &candidate.member)
-                        {
-                            accepted = false;
-                            break;
-                        }
-                        let projected = match jarde_java::report::emit_class_source_lambda_helper(
-                            candidate, helper_ast, budget,
-                        ) {
-                            Ok(Some(text)) => text,
-                            Ok(None) => {
-                                diagnostics.push(lambda_helper_refusal_diagnostic(&String::from_utf8_lossy(&helper.name.0), Some(candidate.use_site), "helper or caller AST is outside the bounded straight-line primitive proof", class_provenance.clone()));
-                                accepted = false;
-                                break;
-                            }
-                            Err(stop) => {
-                                diagnostics.push(lambda_helper_refusal_diagnostic(
-                                    &String::from_utf8_lossy(&helper.name.0),
-                                    Some(candidate.use_site),
-                                    &format!("the helper-set projection stopped before atomic commit: {stop:?}"),
-                                    class_provenance.clone(),
-                                ));
-                                let error = enum_projection_stop_error(
-                                    stop,
-                                    "lambda helper projection",
-                                    "lambda_helper_projection_stopped",
-                                );
-                                merge_execution(&mut execution, stop_execution(&error, budget));
-                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                                accepted = false;
-                                lambda_projection_stopped = true;
-                                break;
-                            }
-                        };
-                        let marker = format!(
-                            "// jarde: inlined exact primitive lambda helper {:?} at invokedynamic@{}",
-                            helper.name, candidate.use_site
-                        );
-                        let Some(full_text) = method.array_projection_text(&projected, marker)
-                        else {
-                            accepted = false;
-                            break;
-                        };
-                        if let Err(error) = budget.charge(
-                            CountedBudgetDimension::OutputBytes,
-                            u64::try_from(full_text.len()).unwrap_or(u64::MAX),
-                        ) {
+                    let caller_parameter_names: Vec<Option<String>> = method_asts
+                        .iter()
+                        .find(|(member, _, _, _)| member == &candidate.member)
+                        .map(|(_, ast, _, _)| jarde_java::report::class_source_parameter_names(ast))
+                        .unwrap_or_default();
+                    let plan = match jarde_java::report::plan_class_source_lambda_inline(
+                        candidate,
+                        helper_ast,
+                        &caller_parameter_names,
+                        budget,
+                    ) {
+                        Ok(plan) => plan,
+                        Err(stop) => {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                Some(candidate.use_site),
+                                &format!(
+                                    "the inline projection stopped before atomic commit: {stop:?}"
+                                ),
+                                class_provenance.clone(),
+                            ));
+                            let error = enum_projection_stop_error(
+                                stop,
+                                "lambda helper projection",
+                                "lambda_helper_projection_stopped",
+                            );
                             merge_execution(&mut execution, stop_execution(&error, budget));
                             diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            accepted = false;
                             lambda_projection_stopped = true;
                             break;
                         }
-                        staged.push((method_index, method.item.index, full_text));
+                    };
+                    match plan {
+                        Some(plan) => projections.push(CompanionProjection {
+                            helper: helper.clone(),
+                            helper_vec_index,
+                            caller_vec_index,
+                            omit: true,
+                            renamed_declaration: None,
+                            edit: jarde_java::report::ClassSourceLambdaSiteEdit::Inline {
+                                use_site: candidate.use_site,
+                                site_cp: candidate.site_cp,
+                                params: plan.params,
+                                body: plan.body,
+                            },
+                            note: format!(
+                                "lambda companion body inlined at invokedynamic@{}",
+                                candidate.use_site
+                            ),
+                        }),
+                        None => {
+                            // The rename branch: the companion stays visible under a name javac
+                            // never synthesizes, and the lambda's call names that member.
+                            let new_name = format!("{helper_name}$jarde");
+                            let Some(renamed) =
+                                helper_method.renamed_declaration(&helper_name, &new_name)
+                            else {
+                                diagnostics.push(lambda_helper_refusal_diagnostic(
+                                    &helper_name,
+                                    Some(candidate.use_site),
+                                    "the companion's declaration does not name it exactly once, so no rename is made",
+                                    class_provenance.clone(),
+                                ));
+                                continue;
+                            };
+                            if read
+                                .facts
+                                .methods
+                                .iter()
+                                .any(|member| member.name.raw().0 == new_name.as_bytes())
+                            {
+                                diagnostics.push(lambda_helper_refusal_diagnostic(
+                                    &helper_name,
+                                    Some(candidate.use_site),
+                                    "the renamed companion name is already declared by this class",
+                                    class_provenance.clone(),
+                                ));
+                                continue;
+                            }
+                            projections.push(CompanionProjection {
+                                helper: helper.clone(),
+                                helper_vec_index,
+                                caller_vec_index,
+                                omit: false,
+                                renamed_declaration: Some(renamed),
+                                edit: jarde_java::report::ClassSourceLambdaSiteEdit::RenameCall {
+                                    use_site: candidate.use_site,
+                                    site_cp: candidate.site_cp,
+                                    to: new_name,
+                                },
+                                note: format!(
+                                    "lambda companion call renamed at invokedynamic@{}",
+                                    candidate.use_site
+                                ),
+                            });
+                        }
                     }
-                    let overlap = staged.iter().any(|(_, index, _)| {
-                        array_projection_members
-                            .iter()
-                            .any(|(_, members)| members.contains(index))
-                    });
-                    if accepted && !staged.is_empty() && !overlap {
-                        let marker = format!(
-                            "// jarde: omitted physical lambda helper {:?} after proving all class-wide uses",
-                            helper.name
-                        );
+                }
+                // Re-emit every edited member once, from its own same-run AST. A member whose
+                // current text is not its own AST's emission — another projection already wrote
+                // it — keeps every helper's physical presentation instead.
+                let mut staged_member_texts: Vec<(usize, u64, String)> = Vec::new();
+                let mut dropped_callers: Vec<usize> = Vec::new();
+                let mut caller_order: Vec<usize> = projections
+                    .iter()
+                    .map(|projection| projection.caller_vec_index)
+                    .collect();
+                caller_order.sort_unstable();
+                caller_order.dedup();
+                for caller_vec_index in caller_order {
+                    if lambda_projection_stopped {
+                        break;
+                    }
+                    let edits: Vec<jarde_java::report::ClassSourceLambdaSiteEdit> = projections
+                        .iter()
+                        .filter(|projection| projection.caller_vec_index == caller_vec_index)
+                        .map(|projection| projection.edit.clone())
+                        .collect();
+                    let Some(projection) = projections
+                        .iter()
+                        .find(|projection| projection.caller_vec_index == caller_vec_index)
+                    else {
+                        continue;
+                    };
+                    let Some(candidate) = lambda_helper_candidate_runs.iter().find(|candidate| {
+                        candidate.member == methods[caller_vec_index].item.identity
+                    }) else {
+                        dropped_callers.push(caller_vec_index);
+                        continue;
+                    };
+                    let method = &methods[caller_vec_index];
+                    let emitted = match jarde_java::report::emit_class_source_lambda_member(
+                        candidate, &edits, budget,
+                    ) {
+                        Ok(Some((unmodified, edited))) => {
+                            if !method.matches_current_text(&unmodified) {
+                                diagnostics.push(lambda_helper_refusal_diagnostic(
+                                    &String::from_utf8_lossy(&projection.helper.name.0),
+                                    None,
+                                    "the member's current text is not its own AST's emission, so the physical presentation is kept",
+                                    class_provenance.clone(),
+                                ));
+                                dropped_callers.push(caller_vec_index);
+                                continue;
+                            }
+                            edited
+                        }
+                        Ok(None) => {
+                            dropped_callers.push(caller_vec_index);
+                            continue;
+                        }
+                        Err(stop) => {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &String::from_utf8_lossy(&projection.helper.name.0),
+                                None,
+                                &format!(
+                                    "the member projection stopped before atomic commit: {stop:?}"
+                                ),
+                                class_provenance.clone(),
+                            ));
+                            let error = enum_projection_stop_error(
+                                stop,
+                                "lambda helper projection",
+                                "lambda_helper_projection_stopped",
+                            );
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            lambda_projection_stopped = true;
+                            break;
+                        }
+                    };
+                    let notes: Vec<String> = projections
+                        .iter()
+                        .filter(|projection| projection.caller_vec_index == caller_vec_index)
+                        .map(|projection| format!("// jarde: {}", projection.note))
+                        .collect();
+                    let Some(full_text) = method.lambda_projection_text(&emitted, &notes) else {
+                        dropped_callers.push(caller_vec_index);
+                        continue;
+                    };
+                    staged_member_texts.push((caller_vec_index, method.item.index, full_text));
+                }
+                // A renamed helper's own member text is composed on top of its staged body — a
+                // helper may itself hold a projected site — or of its current text.
+                for projection in &projections {
+                    let Some(renamed_declaration) = &projection.renamed_declaration else {
+                        continue;
+                    };
+                    let method = &methods[projection.helper_vec_index];
+                    let marker = format!(
+                        "// jarde: renamed physical lambda helper {:?} to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)",
+                        String::from_utf8_lossy(&projection.helper.name.0)
+                    );
+                    let base = staged_member_texts
+                        .iter()
+                        .find(|(_, index, _)| *index == method.item.index)
+                        .map(|(_, _, text)| text.clone());
+                    let Some(text) =
+                        method.lambda_rename_text(renamed_declaration, &marker, base.as_deref())
+                    else {
+                        continue;
+                    };
+                    match base {
+                        Some(_) => {
+                            if let Some(entry) = staged_member_texts
+                                .iter_mut()
+                                .find(|(_, index, _)| *index == method.item.index)
+                            {
+                                entry.2 = text;
+                            }
+                        }
+                        None => staged_member_texts.push((
+                            projection.helper_vec_index,
+                            method.item.index,
+                            text,
+                        )),
+                    }
+                }
+                // Pay for every staged text and every marker before any member changes; a
+                // refusal or a stop leaves the class exactly as the recovery wrote it.
+                let mut commit_ready = !lambda_projection_stopped;
+                if commit_ready {
+                    for (_, _, text) in &staged_member_texts {
+                        if let Err(error) = budget.charge(
+                            CountedBudgetDimension::OutputBytes,
+                            u64::try_from(text.len()).unwrap_or(u64::MAX),
+                        ) {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            commit_ready = false;
+                            break;
+                        }
+                    }
+                }
+                let mut commit_plan: Vec<(String, u64, bool, Vec<u64>)> = Vec::new();
+                if commit_ready {
+                    'plan: for projection in &projections {
+                        let helper_index = methods[projection.helper_vec_index].item.index;
+                        let caller_index = methods[projection.caller_vec_index].item.index;
+                        let staged_of = |member_index: u64| {
+                            staged_member_texts
+                                .iter()
+                                .find(|(_, index, _)| *index == member_index)
+                        };
+                        let helper_name = String::from_utf8_lossy(&projection.helper.name.0);
+                        if dropped_callers.contains(&projection.caller_vec_index) {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                None,
+                                "the companion's site member could not take its projection; the physical presentation is kept",
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        }
+                        let (marker, group_members): (String, Vec<u64>) = if projection.omit {
+                            (
+                                format!(
+                                    "// jarde: omitted physical lambda helper {helper_name:?} after proving its single class-wide use"
+                                ),
+                                vec![caller_index],
+                            )
+                        } else if staged_of(helper_index).is_some() {
+                            (
+                                format!(
+                                    "// jarde: renamed physical lambda helper {helper_name:?} after proving its single class-wide use"
+                                ),
+                                vec![helper_index, caller_index],
+                            )
+                        } else {
+                            // The helper member's own rename text could not be composed: every
+                            // physical spelling stays.
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                None,
+                                "the companion's renamed declaration could not be composed; the physical presentation is kept",
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        };
                         if let Err(error) = budget.charge(
                             CountedBudgetDimension::OutputBytes,
                             u64::try_from(marker.len()).unwrap_or(u64::MAX),
                         ) {
                             merge_execution(&mut execution, stop_execution(&error, budget));
                             diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            lambda_projection_stopped = true;
-                            accepted = false;
-                        } else if let Some(helper_method) =
-                            methods.iter().find(|method| method.item.identity == helper)
-                        {
-                            pending.push((helper_method.item.index, marker, staged));
-                        } else {
-                            accepted = false;
+                            commit_ready = false;
+                            break 'plan;
                         }
-                    } else {
-                        accepted = false;
-                    }
-                    if !accepted {
-                        whole_set_accepted = false;
-                        break;
+                        commit_plan.push((marker, helper_index, projection.omit, group_members));
                     }
                 }
-                if whole_set_accepted && !lambda_projection_stopped {
-                    for (helper_index, marker, staged) in pending {
-                        array_projection_method_texts
-                            .extend(staged.iter().map(|(_, index, text)| (*index, text.clone())));
-                        array_helper_method_indices.push(helper_index);
+                if commit_ready && !commit_plan.is_empty() {
+                    let mut committed_members: Vec<u64> = Vec::new();
+                    for (marker, helper_index, omit, group_members) in commit_plan {
+                        let mut group_texts = Vec::new();
+                        let mut complete = true;
+                        for member_index in &group_members {
+                            if committed_members.contains(member_index) {
+                                continue;
+                            }
+                            match staged_member_texts
+                                .iter()
+                                .find(|(_, index, _)| *index == *member_index)
+                            {
+                                Some((vec_index, _, text)) => {
+                                    group_texts.push((*member_index, *vec_index, text.clone()));
+                                }
+                                None => {
+                                    complete = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if !complete {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &String::from_utf8_lossy(
+                                    &methods
+                                        .iter()
+                                        .find(|method| method.item.index == helper_index)
+                                        .map(|method| method.item.identity.name.0.clone())
+                                        .unwrap_or_default(),
+                                ),
+                                None,
+                                "the companion's group text could not be staged; the physical presentation is kept",
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        }
+                        for (member_index, vec_index, text) in group_texts {
+                            array_projection_method_texts.push((member_index, text.clone()));
+                            array_original_member_texts
+                                .push((member_index, methods[vec_index].text.clone()));
+                            committed_members.push(member_index);
+                        }
+                        if omit {
+                            array_helper_method_indices.push(helper_index);
+                        }
                         array_projection_markers.push(marker);
-                        let indices = staged
-                            .iter()
-                            .map(|(method_index, index, _)| {
-                                array_original_member_texts
-                                    .push((*index, methods[*method_index].text.clone()));
-                                *index
-                            })
-                            .collect();
-                        array_projection_members.push((helper_index, indices));
+                        array_projection_members.push((helper_index, group_members));
                     }
                 }
             }

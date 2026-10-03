@@ -6825,6 +6825,111 @@ impl ClassSourceMethod {
         ))
     }
 
+    /// This member's text re-emitted from a projection's own body, with one marker per projected
+    /// site inside the block. Same shape as [`Self::array_projection_text`], for the member-level
+    /// lambda-site rewrites that carry several markers at once.
+    pub(crate) fn lambda_projection_text(
+        &self,
+        recovery_text: &str,
+        markers: &[String],
+    ) -> Option<String> {
+        let declaration = self.declaration.as_ref()?;
+        let artifact = artifact(recovery_text)?;
+        let mut all = self.markers.clone();
+        all.extend(markers.iter().cloned());
+        Some(prefix_method_annotations(
+            block_member(declaration, Placed::Block(artifact), &all),
+            &self.annotations,
+        ))
+    }
+
+    /// Whether a fresh emission of this member's own same-run AST is still exactly the body this
+    /// member shows — the safety check a projection that re-emits the whole body makes before it
+    /// replaces anything. The comparison is the block's own region, line by line without
+    /// indentation, so a marker written beside the declaration does not fail it, while a body
+    /// another projection already rewrote does. Such a member keeps its physical presentation.
+    pub(crate) fn matches_current_text(&self, recovery_text: &str) -> bool {
+        let Some(declaration) = self.declaration.as_deref() else {
+            return false;
+        };
+        let Some(artifact) = artifact(recovery_text) else {
+            return false;
+        };
+        let Some(region) = self.current_body_region(declaration) else {
+            return false;
+        };
+        let expected: Vec<&str> = artifact
+            .envelope
+            .lines()
+            .chain(artifact.statements.lines())
+            .map(str::trim)
+            .filter(|line| !line.is_empty())
+            .collect();
+        expected == region
+    }
+
+    /// The trimmed lines between this member's declaration line and its closing brace: the body
+    /// the current text actually shows.
+    fn current_body_region(&self, declaration: &str) -> Option<Vec<&str>> {
+        let opening = format!("    {declaration} {{");
+        let mut opening_at = None;
+        let mut closing_at = None;
+        for (index, line) in self.text.lines().enumerate() {
+            if line == opening && opening_at.is_none() {
+                opening_at = Some(index);
+            }
+            if line == "    }" {
+                closing_at = Some(index);
+            }
+        }
+        let opening = opening_at?;
+        let closing = closing_at.filter(|closing| *closing > opening)?;
+        Some(
+            self.text
+                .lines()
+                .skip(opening + 1)
+                .take(closing - opening - 1)
+                .map(str::trim)
+                .filter(|line| !line.is_empty())
+                .collect(),
+        )
+    }
+
+    /// This member's declaration with the companion's method name replaced by its renamed,
+    /// non-conflicting spelling. `None` unless the name occurs exactly once in the declaration —
+    /// the rename is surgical or it is not made at all.
+    pub(crate) fn renamed_declaration(&self, old: &str, new: &str) -> Option<String> {
+        let declaration = self.declaration.as_deref()?;
+        let from = format!(" {old}(");
+        let to = format!(" {new}(");
+        if declaration.matches(&from).count() != 1 {
+            return None;
+        }
+        Some(declaration.replacen(&from, &to, 1))
+    }
+
+    /// This member's complete text with a renamed declaration and the rename's own marker inside
+    /// the body block, stating the physical name the class file still declares. The rename is
+    /// composed on `base` — the member's current text, or a staged body projection of it.
+    pub(crate) fn lambda_rename_text(
+        &self,
+        renamed_declaration: &str,
+        marker: &str,
+        base: Option<&str>,
+    ) -> Option<String> {
+        let declaration = self.declaration.as_deref()?;
+        let original_line = format!("    {declaration} {{\n");
+        let renamed_line = format!("    {renamed_declaration} {{\n");
+        let text = base.unwrap_or(&self.text);
+        if text.matches(&original_line).count() != 1 {
+            return None;
+        }
+        let mut text = text.replacen(&original_line, &renamed_line, 1);
+        let marker_line = indent(&format!("{marker}\n"), 2);
+        text.insert_str(renamed_line.len(), &marker_line);
+        Some(text)
+    }
+
     /// Spells one fully recovered method inside a class-source anonymous expression. The method
     /// declaration and annotations come from its own selected physical class; `body` is emitted
     /// from that method's same-run AST at the corresponding nested indentation.
