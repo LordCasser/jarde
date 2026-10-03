@@ -7727,6 +7727,10 @@ fn published_local_assignments(
                 StmtKind::Assign { value, .. }
                 | StmtKind::Expr(value)
                 | StmtKind::Throw { value } => pending.push(Node::Expression(value)),
+                StmtKind::Assert { cond, message } => {
+                    pending.push(Node::Expression(cond));
+                    pending.extend(message.iter().map(Node::Expression));
+                }
                 StmtKind::FieldAssign {
                     receiver, value, ..
                 } => {
@@ -25903,6 +25907,12 @@ fn stated_by_statement(stmt: &Stmt, names: &mut Vec<String>, bcis: &mut Vec<u32>
             stated_by_expression(value, names, bcis);
         }
         StmtKind::Expr(expr) => stated_by_expression(expr, names, bcis),
+        StmtKind::Assert { cond, message } => {
+            stated_by_expression(cond, names, bcis);
+            if let Some(message) = message {
+                stated_by_expression(message, names, bcis);
+            }
+        }
         StmtKind::FieldAssign {
             receiver, value, ..
         } => {

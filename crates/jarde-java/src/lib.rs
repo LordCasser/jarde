@@ -56,6 +56,7 @@
 
 pub mod accessor;
 pub mod artifact;
+mod asserts;
 pub mod ast;
 pub mod bridge;
 pub mod concat;
