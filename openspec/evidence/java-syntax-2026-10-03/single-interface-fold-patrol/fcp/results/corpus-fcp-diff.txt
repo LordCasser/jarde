@@ -1,0 +1,32 @@
+125c125
+< OK c21f3dab8ac1dd7e0375147adeb12615cf6fb34f414037cb3446e56804fc0a39 openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar:NamedMemberFamilyCalls
+---
+> OK a4e4058c5a1546e99dc84d703e227d7ce6b12883641f2795c18b3aa9a6e86662 openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar:NamedMemberFamilyCalls
+344c344
+< OK 862d72066a7d48dbf0e7368fb426c85cfcdea727e54c468fef202af2f4ae5350 openspec/evidence/java-syntax-2026-10-03/lambda-inline-patrol/fixture/fam.jar:Y1
+---
+> OK b3bf9580fa10d460151bf3b96c93355dbb907d1a8109bea0aeaade318871b220 openspec/evidence/java-syntax-2026-10-03/lambda-inline-patrol/fixture/fam.jar:Y1
+373c373
+< OK fa55b47a4a7347978e76fcf13834a13e967157b60866b9952d7bd3c229d404dd openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/fixture/fam.jar:Z1
+---
+> OK a384883188570e54d799082e99b2172e99f4595b7e16ed1c7acabfc24c170ed6 openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/fixture/fam.jar:Z1
+377c377
+< OK 094e70dd51f7ffa9b52ef5af4b1008df1845aa8ed313b740ab7bc7d332bce8bc openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG1.jar:NG1
+---
+> OK 738146b88af07eb3bd7412128d13f0478d773cd30ff17584564aeb93111f4f25 openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG1.jar:NG1
+379c379
+< OK e0854de0054097290e96eef80db7e02c1debd25c3d80f753f24c27211b9c5f53 openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG2.jar:NG2
+---
+> OK f12ebb0a63ec5261e89f98b95a7c12b0d138f73a7704b5dbeee974834a738533 openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG2.jar:NG2
+381c381
+< OK ace4e0e85022995ba5d326bc3c3ee5669f5457df7a788fbf226892ccaaaa3717 openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG3.jar:NG3
+---
+> OK 21cb705f04f1da2913012fd19b6ad4fe38414f0af9b96b14b4fcae528c63c89a openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG3.jar:NG3
+383c383
+< OK a675095106b1dbca38eced97e35d2a332a250ae4291845142e159d9ba0946657 openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG4.jar:NG4
+---
+> OK e4813dcc52997b8d8c6a4bdd0cd729ea2f207d10041eaed465415971bb800e89 openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/NG4.jar:NG4
+387c387
+< OK 862d72066a7d48dbf0e7368fb426c85cfcdea727e54c468fef202af2f4ae5350 openspec/evidence/java-syntax-2026-10-03/single-interface-fold-patrol/fixture/fam.jar:Y1
+---
+> OK b3bf9580fa10d460151bf3b96c93355dbb907d1a8109bea0aeaade318871b220 openspec/evidence/java-syntax-2026-10-03/single-interface-fold-patrol/fixture/fam.jar:Y1
