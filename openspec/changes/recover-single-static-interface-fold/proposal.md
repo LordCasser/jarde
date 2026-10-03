@@ -1,11 +1,11 @@
 ## Why
 
-[单接口子巡查](../../evidence/java-syntax-2026-10-03/single-interface-fold-patrol/README.md)确认窄通道遗漏：单直接静态**接口**子（Y1$StrFn，0x0608）落回旧窄通道 `Candidate`——该通道无接口准入，no-capture 证书判据不匹配接口形态（接口无构造捕获语义）→ 不折叠。类形态（M2$Solo）与多子族（含接口）均折叠；单接口子是 fold/mixed 两片选择交互留下的洞。
+[sif 取证](../../evidence/java-syntax-2026-10-03/single-interface-fold-patrol/sif/README.md)**证伪了本片原前提**：单接口子不折叠的判别量不是"接口子"而是"根文本带 lambda 伴生投影"（2×2 矩阵：单接口/单类子无 lambda 均 FOLD；带 lambda 的类子同样 no-fold）——原巡查归因变量混淆，已更正。真缺口为两处可分离小项，本片取其一：**token 锚定匹配器漏 `CpEntryKind::InterfaceMethodRef` 的 owner 命中**（`WCallI` interface 调用形 no-fold vs `WCallC` 虚调用形 FOLD——接口方法引用的 owner 类型不参与锚定匹配）。agent 最小补丁实测：多折叠 4 个 corpus 类、既有家族逐字不变、`F1` 折叠产物重编运行与原 class 一致。
 
 ## What Changes
 
-- 单静态行改道 `StaticMembers` 折叠通道（行判据同一份，接口 0x0608 准入已在），删除窄通道对静态行的选择（或按取证最小面：窄通道加接口准入——两案以 corpus diff 等价性择一）；非静态候选窄路径不动。
-- Y1 家族 jar 输出 `interface StrFn` 嵌套呈现、域内 `StrFn` 源码拼写、重编行为一致（`hi!`/`45`/`[b, aa]`/`8`）；M2/M1/FV 全部既有家族 diff 逐字不变。
+- 锚定匹配器接受 `InterfaceMethodRef` 条目的 owner 类名作为折叠成员名的匹配源（与 Fieldref/Methodref owner 同一判据位）；不改变锚定健全性要求（覆盖段/CP 索引既有校验）。
+- WCallI 形恢复折叠；WCallC/既有全部家族 diff 逐字不变；Y1 折叠仍受**根重投影门**限制（独立大切片 `recover-fold-context-projection-preservation` 处置，本片不碰）。
 
 ## Capabilities
 
@@ -15,8 +15,8 @@
 
 ### Modified Capabilities
 
-- `java8-recovery`：单直接静态接口子按嵌套声明折叠呈现。
+- `java8-recovery`：接口方法引用的 owner 参与折叠成员名锚定，接口调用形家族可折叠。
 
 ## Impact
 
-`src/member_inner.rs`（扫描分派）及测试；复用既有折叠通道。既有家族/投影零回退。
+`crates/jarde-java`/`src` 锚定匹配器单判据位及测试；无新机制。既有折叠/锚定零回退。
