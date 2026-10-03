@@ -5701,6 +5701,7 @@ impl Engine {
             &read.bytes,
             &read.facts.attributes,
             &pool,
+            &assembly_context,
             budget,
             |parent_name, budget| {
                 prove_direct_generic_superclass_parent(
@@ -5843,6 +5844,7 @@ impl Engine {
                     .as_ref()
                     .map(|proof| proof.type_parameters.as_slice())
                     .unwrap_or(&[]),
+                class_scope.is_some(),
                 constant.as_ref(),
                 budget,
             ) {
@@ -19175,18 +19177,26 @@ fn project_class_source_member_fold(
             "member fold physical preparation is incomplete".to_owned()
         ));
     }
-    // A generic member class is outside this slice: the nested header this fold writes is the
-    // row's own flags, and a child `Signature` is a projection of its own the fold does not
-    // carry. Such a family keeps the separated presentation the narrow channels already state.
+    // A member class whose `Signature` this fold does not carry stays outside it: the nested
+    // header this fold writes is the row's own flags over the physical parents, and the one
+    // Signature position it spells is a child run's proved type-parameter header. A child
+    // whose header projection was refused — or produced a projection with no type parameters,
+    // such as a parameterized parent — keeps the separated presentation the narrow channels
+    // already state.
     if members.iter().any(|member| {
         member
             .child
             .declaration
             .as_ref()
-            .is_some_and(|declaration| declaration.generic_signature.is_some())
+            .is_some_and(|declaration| {
+                declaration.generic_signature.is_some()
+                    && !(declaration.generic_type_parameters.is_some()
+                        && declaration.generic_refusal.is_none())
+            })
     }) {
         return Ok(Err(
-            "member fold member has a class Signature this slice does not project".to_owned(),
+            "member fold member has a class Signature projection this fold does not carry"
+                .to_owned(),
         ));
     }
     let context = class_source::ClassSourceTextContext {
@@ -32684,11 +32694,18 @@ mod direct_generic_superclass_tests {
         let facts = class_member_facts(CHILD, &mut open_budget).unwrap();
         let pool = class_constant_pool(CHILD, &open_budget).unwrap();
         let error = declaration
-            .project_generic_signature(CHILD, &facts.attributes, &pool, &mut open_budget, |_, _| {
-                Err(Error::Cancelled {
-                    reason: "controlled parent-proof stop".to_owned(),
-                })
-            })
+            .project_generic_signature(
+                CHILD,
+                &facts.attributes,
+                &pool,
+                &class_source::ClassSourceAssemblyContext::default(),
+                &mut open_budget,
+                |_, _| {
+                    Err(Error::Cancelled {
+                        reason: "controlled parent-proof stop".to_owned(),
+                    })
+                },
+            )
             .unwrap_err();
         assert!(matches!(error, Error::Cancelled { .. }));
         assert_eq!(declaration.declaration, raw_header);

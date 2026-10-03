@@ -1,0 +1,14 @@
+# 门禁真实结果（recover-nested-generic-class-headers，worktree 主线 a7762a92 之上）
+
+| 门禁 | 命令 | 结果 |
+| --- | --- | --- |
+| 全仓测试 | `cargo test --workspace --tests --locked --no-fail-fast` | 291 套件：290 ok / 1 FAILED→复跑 ok（`p3_two_exit_return::complete_class_compiles_and_matches_eight_verified_paths`，scratch 目录碰撞，handoff.md 已知 flake 家族；单测复跑 7/7 绿）；合计 2880 通过 + 1 flake 复跑绿 |
+| 格式 | `cargo fmt --all` 后 `cargo fmt --all -- --check` | 通过 |
+| clippy | `cargo clippy --workspace --all-targets --all-features --locked -- <CI 完整 -A 清单> -D warnings`（与 `.github/workflows/ci.yml` 逐字一致，29 项 -A） | 通过（无警告） |
+| openspec | `openspec validate --all --strict` | 见下（用户草案目录计入说明） |
+| diff check | 负例/正例前后逐字比较（results/before vs results/after） | 负例 NG4neg 分离子单元输出逐字一致；顶层 `Top<T extends ...>` 与非泛型折叠 `M2` 逐字一致（回归测试断言） |
+| 磁盘纪律 | 每轮构建/测试前 `df -h /`（46→28Gi 区间，未低于 12Gi）；报告前 `cargo clean` | 遵守 |
+
+openspec validate 记录：本片 change 通过 strict；用户未跟踪草案目录
+`openspec/changes/recover-same-class-generic-bindings/` 不属本片，若其 strict 失败按 256+0 计入
+并在最终报告注明，不修改。

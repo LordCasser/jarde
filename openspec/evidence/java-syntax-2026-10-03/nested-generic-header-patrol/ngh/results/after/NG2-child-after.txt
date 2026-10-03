@@ -1,0 +1,22 @@
+// jarde: presentation of `NG2$Pair` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<U:Ljava/lang/Object;V:Ljava/lang/Object;>Ljava/lang/Object;` projected after physical parent erasure and nested member proof
+class NG2$Pair<U, V> extends java.lang.Object {
+    // jarde: field Signature `TU;` projected after descriptor erasure and no same-class Fieldref
+    U first;
+
+    // jarde: field Signature `TV;` projected after descriptor erasure and no same-class Fieldref
+    V second;
+
+    NG2$Pair() {
+        // @method <init>()V
+        // @declaration a constructor of `NG2$Pair`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+}
+member_family.state = refused: selected root has an InnerClasses self row naming an outer class
+declaration.generic_signature = Some("<U:Ljava/lang/Object;V:Ljava/lang/Object;>Ljava/lang/Object;")
+declaration.generic_refusal = None
+declaration.declaration = class NG2$Pair<U, V> extends java.lang.Object

@@ -1,0 +1,23 @@
+// jarde: presentation of `NG2$Pair` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<U:Ljava/lang/Object;V:Ljava/lang/Object;>Ljava/lang/Object;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+class NG2$Pair extends java.lang.Object {
+    // jarde: field Signature projection refused for `firstLjava/lang/Object;`: unsupported (jvm_signature_scope_unproved): type variable `U` is not declared in the available Signature scope
+    java.lang.Object first;
+
+    // jarde: field Signature projection refused for `secondLjava/lang/Object;`: unsupported (jvm_signature_scope_unproved): type variable `V` is not declared in the available Signature scope
+    java.lang.Object second;
+
+    NG2$Pair() {
+        // @method <init>()V
+        // @declaration a constructor of `NG2$Pair`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+}
+member_family.state = refused: selected root has an InnerClasses self row naming an outer class
+declaration.generic_signature = Some("<U:Ljava/lang/Object;V:Ljava/lang/Object;>Ljava/lang/Object;")
+declaration.generic_refusal = Some("unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position")
+declaration.declaration = class NG2$Pair extends java.lang.Object

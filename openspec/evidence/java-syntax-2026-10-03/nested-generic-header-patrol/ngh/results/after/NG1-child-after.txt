@@ -1,0 +1,30 @@
+// jarde: presentation of `NG1$Inner` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<U:Ljava/lang/Object;>Ljava/lang/Object;` projected after physical parent erasure and nested member proof
+class NG1$Inner<U> extends java.lang.Object {
+    // jarde: field Signature projection refused for `valueLjava/lang/Object;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    java.lang.Object value;
+
+    final NG1 this$0;
+
+    NG1$Inner(NG1 arg1) {
+        // @method <init>(LNG1;)V
+        // @declaration a constructor of `NG1$Inner`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.this$0 = arg1;
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `get()Ljava/lang/Object;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    java.lang.Object get() {
+        // @method get()Ljava/lang/Object;
+        // @declaration an instance method of `NG1$Inner`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value;
+    }
+}
+member_family.state = refused: selected root has an InnerClasses self row naming an outer class
+declaration.generic_signature = Some("<U:Ljava/lang/Object;>Ljava/lang/Object;")
+declaration.generic_refusal = None
+declaration.declaration = class NG1$Inner<U> extends java.lang.Object
