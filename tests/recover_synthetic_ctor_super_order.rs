@@ -50,11 +50,6 @@ const C2_INNER: &[u8] = include_bytes!(
 const C1_BASELINE: &str = "25\n6\n";
 const C2_BASELINE: &str = "10\n";
 
-/// The hand-written runner of the C2 family run: the recovered `C2` root keeps its own existing
-/// boundary for the nested construction in its main, so the run exercises the member class the
-/// way the original program did.
-const C2_RUNNER: &str = "public class C2OrderRunner {\n    public static void main(String[] args) {\n        System.out.println(new C2$Inner(new C2(), 6).total());\n    }\n}\n";
-
 #[test]
 fn capture_constructors_are_presented_prologue_first_and_the_family_recompiles() {
     let snapshot = open(zip_of(&[
@@ -155,17 +150,11 @@ fn capture_constructors_are_presented_prologue_first_and_the_family_recompiles()
         None,
         C1_BASELINE,
     );
-    // The C2 root's own main keeps its existing presentation boundary (the nested construction
-    // `new C2$Inner(new C2(), 6)` is quoted, an unrelated recovery gap), so the family run is
-    // driven by a runner that exercises the member class the source did.
-    recompile_and_run(
-        "c2-family",
-        "C2OrderRunner",
-        &["C2", "C2$Inner"],
-        &snapshot,
-        Some(C2_RUNNER),
-        C2_BASELINE,
-    );
+    // The C2 root folds its member class (`recover-inner-class-instance-folding`): the one
+    // unit carries the nested `class Inner` with the synthetic capture elided, and its own
+    // main — the nested construction `new C2().new Inner(6)` — recovers, so the family run
+    // is the recovered root alone, driven by its own main.
+    recompile_and_run("c2-family", "C2", &["C2"], &snapshot, None, C2_BASELINE);
 }
 
 /// Compiles the named classes' recovered texts — plus, when one is supplied, a hand-written
