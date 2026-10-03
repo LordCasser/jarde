@@ -8,9 +8,10 @@
 
 ## Decisions
 
-1. **判据（沿既有证明）**：new@1 构造证明通过 ∧ 全部实参∈{常量、局部/参数直读、已证消费链表达式}→ 呈现 `new X(args);`；任一实参含调用副作用 → 保持原拒绝文本（CST 保护不变）。
-2. **验收锚定**：B5 复合（main 三 new + init 块平铺不变）、B6 四形；变体（多语句 new 混合消费位、静态嵌套类语句 new）；负例（CST 冻结反例逐字不变）。
+1. **判据（沿既有证明）**：new@1 构造证明通过 ∧ 全部实参∈{常量（Push）、局部/参数直读（Load，SSA def=Entry）、已证嵌套构造自身指令（nested-ctor-argument-sites 既有证明）}→ 呈现 `new X(args);`；任一实参含链外 Invoke → 保持原拒绝文本（CST 保护不变，由 `Invoke ∉ argument_dependencies` 分支产生，先于语句位 reader 检查）。
+2. **验收锚定**：B5 复合（main 三 new + init 块平铺不变）、B6 的 argless/withArg（consumed 已恢复不变）；变体（多语句 new 混合消费位、静态嵌套类语句 new）；负例（CST 冻结反例逐字不变且拒绝码不变、**`chained` 形 `new B6(new B6(1).n)` 保持拒绝**——实参含 `getfield` 会触发字段声明类的 `<clinit>`，安全性依赖"声明类已初始化"证明（独立事实），本片不引入；登记为遗留边界）。
 
 ## Risks / Trade-offs
 
-- **消费链实参的序**（`new B6(new B6(1).n);` 内层已证）→ 内层按既有消费链证明，外层仅看自身实参类别；序由内层证明保证。
+- **实参含 `getfield` 的形（chained）**：看似"无副作用读"，实际 getfield 触发声明类初始化——其安全需类初始化状态推理。判定为超本片范围，保持拒绝（宁可少恢复一形，不引入跨类初始化证明）。
+- **语句位 reader 放行 `pop`**（decode 把 0x57 归 `Operation::Other`，`renders_its_reads` 不含）：放行须与 CST 保护正交——CST 拒绝在实参效果扫描阶段先产生，测试钉死其拒绝码不变。

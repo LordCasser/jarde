@@ -5,7 +5,7 @@
 
 ## 2. 语句位呈现
 
-- [ ] 2.1 判据呈现（design 决策 1）；B5.main/B6 四形恢复、整类重编运行与基线逐字一致；CST 反例不变。
+- [ ] 2.1 判据呈现（design 决策 1）；B5.main 与 B6 的 argless/withArg 恢复、整类重编运行与基线逐字一致；CST 反例不变（**含拒绝码不变**——反例拒绝应仍由 `Invoke ∉ argument_dependencies` 分支产生，先于语句位 reader 检查，用测试钉死）；`chained`（实参含 getfield）保持拒绝并登记为遗留边界。
 - [ ] 2.2 消费位构造与既有 new@1 通道 diff 零回退；预算/取消不变。
 
 ## 3. 回归与验收
