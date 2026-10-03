@@ -1,0 +1,1 @@
+7fdddb52de1596098fb20e43ddfe70df3318b9ec5a46769cb59beb24bd662242  openspec/evidence/java-syntax-2026-10-03/single-interface-fold-patrol/fcp/fold-outputs/Y1-fcp.jarde.java
