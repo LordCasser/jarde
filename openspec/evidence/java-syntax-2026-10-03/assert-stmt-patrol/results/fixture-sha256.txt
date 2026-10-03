@@ -1,0 +1,2 @@
+c02d74309da6fd9703468846158a2da8aca67d38eb4d80062e7e78751bd69769  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/fixture/A1.class
+32fbe024a74bb50c99f242b92df251a9f9f96dcea18fb53adcf4a655cdfcf4de  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/fixture/A1$Sub.class
