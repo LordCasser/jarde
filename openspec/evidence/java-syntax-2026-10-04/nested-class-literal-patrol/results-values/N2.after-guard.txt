@@ -1,0 +1,56 @@
+// jarde: presentation of `N2` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class N2 extends java.lang.Object {
+    public N2() {
+        // @method <init>()V
+        // @declaration a constructor of `N2`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String multiLevel() {
+        // jarde: not recovered: the recovery run for `multiLevel()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method multiLevel()Ljava/lang/String;
+        // @declaration a static method of `N2`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5 2 0
+        // the call at BCI 2 reads `getSimpleName` of the class literal `N2$Outer$Mid$Leaf`, which this text spells in the pool's form: a pool-spelled `N2$Outer$Mid$Leaf` is a top-level class here, so `getSimpleName` would answer from nesting metadata the text does not state
+    }
+
+    public static java.lang.String midLevel() {
+        // @method midLevel()Ljava/lang/String;
+        // @declaration a static method of `N2`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return N2$Outer$Mid.class.getName();
+    }
+
+    static java.lang.String recvChain() {
+        // jarde: not recovered: the recovery run for `recvChain()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method recvChain()Ljava/lang/String;
+        // @declaration a static method of `N2`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 8 5 2 0
+        // the call at BCI 2 reads `getEnclosingClass` of the class literal `N2$Outer$Mid$Leaf`, which this text spells in the pool's form: a pool-spelled `N2$Outer$Mid$Leaf` is a top-level class here, so `getEnclosingClass` would answer from nesting metadata the text does not state
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `N2`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) multiLevel());
+        java.lang.System.out.println((java.lang.String) midLevel());
+        java.lang.System.out.println((java.lang.String) recvChain());
+        return;
+    }
+
+    static class Outer extends java.lang.Object {
+        Outer() {
+            // @method <init>()V
+            // @declaration a constructor of `N2$Outer`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+}
