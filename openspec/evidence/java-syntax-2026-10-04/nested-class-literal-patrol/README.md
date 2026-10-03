@@ -24,3 +24,16 @@
 `recover-nested-class-literal-values`（窄证明层切片）：类字面量准入接受嵌套 CP 名——判据沿用既有类型名可拼性事实（nested-spelling 片的 `source_spellable_member_row`/`nested_reference_spelling` 同源），值按既有类字面量呈现通道（呈现拼写由 nested-spelling 片负责：折叠域内 `Nested.class`、分离域 `Outer$Nested.class` 或点分形按该片既有规则）。A12 两形与 A11 三形恢复；顶层类字面量五形逐字不变；不可拼名（本地类 `1$Local`、匿名 `X$1`）保持拒绝。
 
 原 class 为行为基准。
+
+
+## 补强 fixture（2026-10-04，实现者可直接复用）
+
+[N2](fixture/N2.java)（`fn2.jar`，运行基线 `Leaf`/`N2$Outer$Mid`/`Mid`）覆盖三种更深形态，主线全部拒绝：
+
+| 形态 | 源码 | 主线 |
+| --- | --- | --- |
+| 多段嵌套 | `Outer.Mid.Leaf.class.getSimpleName()`（CP 名 `N2$Outer$Mid$Leaf`） | 拒绝（3 引注） |
+| 中层嵌套 | `Outer.Mid.class.getName()` | 拒绝（3 引注） |
+| 链式 receiver | `Outer.Mid.Leaf.class.getEnclosingClass().getSimpleName()` | 拒绝（4 引注） |
+
+三形与 A12 单段形同因（嵌套 CP 名不在可证子集），确认判据须覆盖**任意段数**而非仅一段；链式 receiver 形另需确认准入后依赖链不再触发 "not bounded" 级联（design 已列该风险）。
