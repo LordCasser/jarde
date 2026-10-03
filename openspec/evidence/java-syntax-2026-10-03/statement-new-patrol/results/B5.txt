@@ -1,0 +1,65 @@
+// jarde: presentation of `B5` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class B5 extends java.lang.Object {
+    private int a;
+
+    private int b;
+
+    B5() {
+        // @method <init>()V
+        // @declaration a constructor of `B5`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.b = 10;
+        this.a = this.b + 1;
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("init1:").append(this.a).toString());
+        this.b = this.a * 2;
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("ctor:").append(this.a).append(":").append(this.b).toString());
+        return;
+    }
+
+    B5(int arg1) {
+        // @method <init>(I)V
+        // @declaration a constructor of `B5`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this();
+        java.lang.System.out.println("ctor2:" + arg1);
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `B5`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4 7
+        // the copy at BCI 3 has no proved local assignment
+        // @bytecode 8
+        // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 11
+        // the instruction at BCI 11 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 14 17
+        // the copy at BCI 11 has no proved local assignment
+        // @bytecode 18
+        // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 21
+        // the instruction at BCI 21 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 22 25
+        // the copy at BCI 21 has no proved local assignment
+        return;
+    }
+
+    static class Sub extends B5 {
+        Sub() {
+            // @method <init>()V
+            // @declaration a constructor of `B5$Sub`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super(5);
+            java.lang.System.out.println("sub-init");
+            return;
+        }
+    }
+}

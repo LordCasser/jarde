@@ -1,0 +1,82 @@
+// jarde: presentation of `B6` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class B6 extends java.lang.Object {
+    int n;
+
+    B6() {
+        // @method <init>()V
+        // @declaration a constructor of `B6`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.n = 42;
+        return;
+    }
+
+    B6(int arg1) {
+        // @method <init>(I)V
+        // @declaration a constructor of `B6`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.n = arg1;
+        return;
+    }
+
+    static void argless() {
+        // @method argless()V
+        // @declaration a static method of `B6`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4 7
+        // the copy at BCI 3 has no proved local assignment
+        return;
+    }
+
+    static void withArg() {
+        // @method withArg()V
+        // @declaration a static method of `B6`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6 9
+        // the copy at BCI 3 has no proved local assignment
+        return;
+    }
+
+    static void consumed() {
+        // @method consumed()V
+        // @declaration a static method of `B6`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = new B6(3).n;
+        return;
+    }
+
+    static void chained() {
+        // @method chained()V
+        // @declaration a static method of `B6`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 15 18 12
+        // the copy at BCI 3 has no proved local assignment
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `B6`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        argless();
+        withArg();
+        consumed();
+        chained();
+        java.lang.System.out.println(new B6(9).n);
+        return;
+    }
+}
