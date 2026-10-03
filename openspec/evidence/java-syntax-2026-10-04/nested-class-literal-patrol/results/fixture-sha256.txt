@@ -1,0 +1,6 @@
+729a3b2da666c13b8bf12427dfea245cb655de916980fdf839a22eb01d6ca3ea  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A11.class
+b88eacf4b3661493c1ed1092624a30f45eb0402f277cc884a7cb4a1f9ff61b28  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A11$Marked.class
+70afb03e4f77e9588dd933b078a6df695ec3b24abea17adf17b83d39ec9d95a8  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A11$Tag.class
+219b869d70bba00dd694202564429d6fd7934840f81dd0f4ab8b2b98703fe4a0  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12.class
+dd229f32c2debe3814cfd6c9a903ab3bbca33fac4fda791a99918945ec472d73  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12$Nested.class
+f634e1cc97f940f4ac60f19c132850ddd27f1918225f10b70cba0c369bd0c441  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/Top2.class

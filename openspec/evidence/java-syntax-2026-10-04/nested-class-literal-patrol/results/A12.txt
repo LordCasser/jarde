@@ -1,0 +1,63 @@
+// jarde: presentation of `A12` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class A12 extends java.lang.Object {
+    public A12() {
+        // @method <init>()V
+        // @declaration a constructor of `A12`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String topLevel() {
+        // @method topLevel()Ljava/lang/String;
+        // @declaration a static method of `A12`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return A12.class.getSimpleName();
+    }
+
+    public static java.lang.String nestedLit() {
+        // jarde: not recovered: the recovery run for `nestedLit()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nestedLit()Ljava/lang/String;
+        // @declaration a static method of `A12`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the dependency chain from BCI 2 to final consumer 5 is not bounded
+        // @bytecode 5 2
+        // the value at BCI 5 was produced by a saved declaration this run could not commit
+    }
+
+    public static java.lang.String nestedRecv() {
+        // jarde: not recovered: the recovery run for `nestedRecv()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nestedRecv()Ljava/lang/String;
+        // @declaration a static method of `A12`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the dependency chain from BCI 2 to final consumer 5 is not bounded
+        // @bytecode 5 2
+        // the value at BCI 5 was produced by a saved declaration this run could not commit
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `A12`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) topLevel());
+        java.lang.System.out.println((java.lang.String) nestedLit());
+        return;
+    }
+
+    static class Nested extends java.lang.Object {
+        Nested() {
+            // @method <init>()V
+            // @declaration a constructor of `A12$Nested`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+}
