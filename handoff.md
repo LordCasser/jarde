@@ -49,6 +49,8 @@ sed -n '46,76p' .github/workflows/ci.yml | sed 's/^ *//' | grep -E "^cargo|^-A" 
 
 当前 CI 清单为 **29 项** `-A`（`grep -oE '\-A [a-z_:]+' .github/workflows/ci.yml | sort -u | wc -l` 实测；旧文所载"30 项"已过期，勿再引用）。且 CI 的 1.98.1 与本地 1.98.0 存在 patch 版 lint 差（实例：`iter_cloned_collect`，CI-only 报出，b27e0443 修复）——本地全绿不等于 CI clippy 绿，推送后必须核对 CI。
 
+**冻结行为 fixture 必须有 CI 测试引用（2026-10-04 事故教训，强制）**：`tests/fixtures/proved-java-structure/` 的 16 个 fixture 中 8 个未被任何 CI 测试引用，其行为基线只存在于 README 与**手动** `run.sh`（实测 CI workflow 与全部测试文件都不调用 `run.sh`）。后果已由真实事故证明：ctor 重排使 `anonymous-super-dispatch` 的 `visibleDuringSuper` 由 `true` 翻转为 `false`，CI 全绿（2918 passed），只有 root 手动重放才发现。规则：**新增冻结行为 fixture 时 MUST 同时新增一个引用它的 CI 测试**（模式见 `tests/p3_anonymous_class_facts.rs`：`include_bytes!` + `Engine::open` + `ClassSourceRequest` + 文本断言；需跑 JVM 时用 `recompile_and_run`/`run_class` 先例并按 `p3_execution_comparison` 惯例标 `#[ignore]`）；`run.sh` 定位为**复现工具而非守卫**；`p5_corpus_fingerprint` 只守文件哈希、不守行为（其自述"asserts nothing about whether an acceptance row passes"），不可当作行为覆盖。当前 8 个未守卫 fixture 的补覆盖由 [recover-fixture-behavior-guard-coverage](openspec/changes/recover-fixture-behavior-guard-coverage/) 承担。
+
 **合成成员消隐的前置不变量（2026-10-04 root 以 javac 实证确立，适用全部消隐片）**：隐藏 javac 合成成员（`access$NNN`、lambda 伴生 `lambda$x$N`、擦除桥、`$SwitchMap` 辅助类）的**唯一合法性来源**是"源码自身能让 javac 重新生成同一合成物"，而不是"该成员在字节码里可证是合成的"。故每个消隐片都必须回答：**javac 重编时靠什么重建它？**
 - 擦除桥 → 靠**类头的类型实参投影**（`implements Comparable<Impl>`）。实证：裸 `implements Comparable` + 隐藏桥 → javac 报"未覆盖 compareTo(Object)"；参数化 `implements Comparable<ParamI>` + 隐藏桥 → javac 自行重建桥（`javap -v` 实测 ACC_BRIDGE=1、exit 0）。证据 `openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/header-invariant/`。
 - lambda 伴生 → 靠**调用点的 invokedynamic 站点**仍在源码中（已闭合，`recover-lambda-inline-bodies`）。
