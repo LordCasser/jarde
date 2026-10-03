@@ -124,7 +124,21 @@ NameAndType` 的 descriptor 提及）实测：
   与原 class 逐字一致。
 - **但该补丁不能使 Y1 折叠**（Y1 仍卡在门 1 与门 2 的变量声明 token）；故它不满足本变更的验收。
 
-## 6. 变体/负例前后（任务 1.2）
+## 6. 三方对照（JADX dev 构建）
+
+固定 JADX（`~/workspace/testzone/jadx/…/bin/jadx`，dev）对 `../fixture/fam.jar` 的输出：
+
+- **JADX 的结构性折叠达成**：`interface StrFn { }` 作为 `Y1` 的嵌套声明呈现，域内拼写
+  `Y1.StrFn strFn = str2 -> …`（无 `$` 池拼写）——即变更想要的结构呈现，JADX 已做到。
+- **JADX 输出不可编**：`javac --release 8` 报 `找不到符号: 方法 length()`（lambda 形参被推成
+  `Object`，`v0.length()`/`str.length()` 无法解析）等 ≥6 处错误，无法重编运行。
+- **Jarde 基线（不折叠）可编**：Y1 的物理输出 `javac --release 8` 0 错误（原 jar 作 classpath），
+  故 Jarde 当前在"可编"这一维优于 JADX 在此 fixture 上的表现——**JADX 的文本相似度不构成本变更的
+  行为验收依据**（与 `handoff.md` 的既定口径一致）。
+- 该对照说明：本变更想要的"接口子嵌套呈现"是一个真实能力目标；但达成它需要在 Jarde 的证明面
+  （根重投影 + token 锚）上补足，而不是把 Y1 判成"接口行准入缺失"。
+
+## 7. 变体/负例前后（任务 1.2）
 
 源码见 `fixtures/`，实现在 HEAD 时的前后状态（`4da1fe84` = member-class-staging 片：
 
@@ -147,28 +161,32 @@ NameAndType` 的 descriptor 提及）实测：
 `4da1fe84` = member-class-staging 片；上表 HEAD 与 4da 在这些用例上的折叠判定一致（抽查
 `SDAbstract`/`F1`/`M1` 亦一致），即缺口不是本批折叠片引入。
 
-## 7. 门禁与磁盘
+## 8. 门禁与磁盘
 
 - `cargo test --workspace --tests --locked --no-fail-fast`：**全绿**（HEAD 干净树；
   仅 `ignored` 1 项）。日志 `/tmp/baseline-tests.log`。
+- `cargo fmt --all -- --check`：**通过**。
+- CI `.github/workflows/ci.yml` 的完整 29 项 `-A` 清单 clippy（`--workspace --all-targets
+  --all-features --locked -- -D warnings`）：**通过**。
 - `openspec validate --all --strict`：**258 passed, 0 failed**（HEAD 未新增 change 条目）。
-- `cargo fmt --all -- --check`、CI `-A` clippy：未跑（见 §8 缺口）。
-- 语义：本片未改产品代码（`git status` 仅新增本证据目录），不触发实现面回归。
+- 语义：本片未改产品代码（`git status` 仅新增本证据目录与 tasks.md 说明），上述门禁只证明未引入
+  回归，不构成变更实现验收。
 
-## 8. 遗留与未验证
+## 9. 遗留与未验证
 
 - **未实现**：change `recover-single-static-interface-fold` 的两案均不能达成其验收（Y1 折叠、
   既有家族逐字不变）。真正需要的改动跨出"窄切片"：折叠必须能够重投影根类**已投影**的文本
   （需把 lambda/数组/枚举/初始化器的投影输入保留进 `ClassSourceReport` 这一共享结构，或在折叠
-  内重建同 context），并为"仅由 `LocalVariableTable` 命名的类型 token"提供**健全**锚（现仅
+  内重建同 context），并为"覆盖段不含命名该类型的 CP 条目"的类型 token 提供**健全**锚（现仅
   `Field/ClassDefinition/MethodPoint/MethodSignature/ConstructorParameter` 五类）。这是共享契约
   与证明面变更，超出本实现职责，需架构决策。
-- **未跑门禁**：`cargo fmt --all -- --check`、CI `-A` clippy、三方 JADX 对照（本片无实现交付，
-  没有可对照的折叠产物）；Y1 重编 `java -Xverify:all` 未作为验收（Y1 未折叠，其物理输出重编
-  结果仅作基线参考）。
-- 本片 `fixtures/` 与 `results/` 为新增取证产物；产品源码树保持与 HEAD 干净一致。
+- **未做**：Y1 折叠产物不存在，故无 Y1 的三方行为验收；Y1 的物理输出重编仅作基线参考。接口锚
+  补丁未合入（仅作为 §5 的可行性取证）。
+- **待 root 复核**：tasks.md 3.3 保持未勾选。
+- 本片 `fixtures/`/`fold-outputs/`/`results/`/`reproduce.sh` 为新增取证产物；产品源码树保持与
+  HEAD 干净一致。
 
-## 9. 产物
+## 10. 产物
 
 - `fixtures/`：受控变体源码（Z3/Z6/Q1–Q4/Y1M/Y1X/WCallI/WCallC/V1–V6）。
 - `fold-outputs/`：HEAD 对 Y1/Z3/M1/M2 的 `class-source` 文本。
