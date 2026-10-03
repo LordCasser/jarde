@@ -1,0 +1,1 @@
+diagnostic: lambda_helper_projection_refused physical helper "lambda$first$0" at invokedynamic Some(1) was retained: the companion serves 2 lambda sites; the physical presentation is kept

@@ -1,0 +1,13 @@
+3a4
+>     // jarde: renamed physical lambda helper "lambda$run$0" after proving its single class-wide use
+12a14
+>         // jarde: lambda companion call renamed at invokedynamic@0
+16c18
+<         java.lang.Runnable local0 = () -> LambdaSample.lambda$run$0();
+---
+>         java.lang.Runnable local0 = () -> LambdaSample.lambda$run$0$jarde();
+21c23,24
+<     private static void lambda$run$0() {
+---
+>     private static void lambda$run$0$jarde() {
+>         // jarde: renamed physical lambda helper "lambda$run$0" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)

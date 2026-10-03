@@ -1234,9 +1234,11 @@ pub fn array_helper_candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<Array
     candidates
 }
 
-/// Finds unbound same-class `lambda$` implementations for primitive int SAMs with zero, one or
-/// two parameters. These are candidates only: class-source still proves their declaration, body,
-/// and every class-wide use before changing any output.
+/// Finds same-class `lambda$` implementations behind verified `LambdaMetafactory` sites: any
+/// descriptor, any parameter types, javac's static kind or its captured-`this` special one. These
+/// are candidates only: class-source still proves their declaration, body, single use, and every
+/// class-wide reference before changing any output (the body-inlining and rename channel,
+/// change `recover-lambda-inline-bodies`).
 pub fn synthetic_lambda_helper_candidates(
     ir: &jarde_jvm::method_ir::MethodIr,
 ) -> Vec<SyntheticLambdaHelperCandidate> {
@@ -1270,8 +1272,7 @@ pub fn synthetic_lambda_helper_candidates(
         {
             continue;
         }
-        let Ok((sam_index, implementation_index, instantiated_index)) = arguments_of(entry, pool)
-        else {
+        let Ok((_, implementation_index, _)) = arguments_of(entry, pool) else {
             continue;
         };
         let Some((implementation_kind, implementation_owner, implementation_name, descriptor)) =
@@ -1288,59 +1289,17 @@ pub fn synthetic_lambda_helper_candidates(
         let Ok(descriptor_text) = std::str::from_utf8(&descriptor.0) else {
             continue;
         };
-        let Some((parameters, Some(Type::Int))) = parse_method(descriptor_text) else {
-            continue;
-        };
-        if !(parameters.is_empty()
-            || parameters.as_slice() == [Type::Int]
-            || parameters.as_slice() == [Type::Int, Type::Int])
-        {
+        // The implementation descriptor must parse as a method descriptor at all; the companion's
+        // own proof reads its parameter list back out of this text when the body is inlined.
+        if parse_method(descriptor_text).is_none() {
             continue;
         }
+        // The site's descriptor states the captured values' types and returns the functional
+        // interface; its parameter count is the capture count the record states.
         let Some((site_parameters, Some(Type::Reference(_)))) = parse_method(site.descriptor())
         else {
             continue;
         };
-        let method_type = |index: u16| -> Option<(Vec<Type>, Option<Type>)> {
-            let Ok(CpEntryKind::MethodType { descriptor, .. }) =
-                cp_entry(pool, index).map(|entry| &entry.kind)
-            else {
-                return None;
-            };
-            let text = std::str::from_utf8(&descriptor.0).ok()?;
-            parse_method(text)
-        };
-        let (Some((sam_parameters, Some(Type::Int))), Some((inst_parameters, Some(Type::Int)))) =
-            (method_type(sam_index), method_type(instantiated_index))
-        else {
-            continue;
-        };
-        if sam_parameters != inst_parameters {
-            continue;
-        }
-        let owner_source = std::str::from_utf8(&implementation_owner.0)
-            .ok()
-            .map(source_name);
-        let supported = match implementation_kind {
-            REF_INVOKE_STATIC => {
-                (site_parameters.is_empty() && parameters == sam_parameters)
-                    || (site_parameters.as_slice() == [Type::Int]
-                        && sam_parameters.as_slice() == [Type::Int]
-                        && parameters.as_slice() == [Type::Int, Type::Int])
-            }
-            REF_INVOKE_SPECIAL => {
-                site_parameters.len() == 2
-                    && owner_source.as_ref().is_some_and(|owner| {
-                        site_parameters.as_slice() == [Type::Reference(owner.clone()), Type::Int]
-                    })
-                    && sam_parameters.is_empty()
-                    && parameters.as_slice() == [Type::Int]
-            }
-            _ => false,
-        };
-        if !supported {
-            continue;
-        }
         candidates.push(SyntheticLambdaHelperCandidate {
             call_site: instruction.bci,
             site_cp: site.cp(),

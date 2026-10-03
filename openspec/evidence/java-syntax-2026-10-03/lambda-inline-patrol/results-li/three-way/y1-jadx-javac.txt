@@ -1,0 +1,32 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+jadx-out2/sources/defpackage/Y1.java:29: 错误: 找不到符号
+            return v0.length();
+                     ^
+  符号:   方法 length()
+  位置: 类型为Object的变量 v0
+jadx-out2/sources/defpackage/Y1.java:37: 错误: 找不到符号
+            return str.length() > 2;
+                      ^
+  符号:   方法 length()
+  位置: 类型为Object的变量 str
+jadx-out2/sources/defpackage/Y1.java:40: 错误: 找不到符号
+            return str2.length() - str3.length();
+                       ^
+  符号:   方法 length()
+  位置: 类型为Object的变量 str2
+jadx-out2/sources/defpackage/Y1.java:40: 错误: 找不到符号
+            return str2.length() - str3.length();
+                                       ^
+  符号:   方法 length()
+  位置: 类型为Object的变量 str3
+jadx-out2/sources/defpackage/Y1.java:47: 错误: 找不到符号
+            return Integer.valueOf(num.intValue() + i);
+                                      ^
+  符号:   方法 intValue()
+  位置: 类型为Object的变量 num
+注: jadx-out2/sources/defpackage/Y1.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+5 个错误
+3 个警告

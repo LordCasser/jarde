@@ -1,0 +1,19 @@
+3a4
+>     // jarde: omitted physical lambda helper "lambda$arrayCtor$0" after proving its single class-wide use
+43d43
+<     // jarde: generic Signature projection refused for `arrayCtor()Ljava/util/function/Function;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+44a45,46
+>         // jarde: generic Signature projection refused for `arrayCtor()Ljava/util/function/Function;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+>         // jarde: lambda companion body inlined at invokedynamic@0
+48c50
+<         return (java.lang.Object p0) -> Patrol.lambda$arrayCtor$0((java.lang.Integer) p0);
+---
+>         return (java.lang.Object x$0) -> new int[(java.lang.Integer) x$0];
+177,183d178
+< 
+<     private static int[] lambda$arrayCtor$0(int x$0) {
+<         // @method lambda$arrayCtor$0(I)[I
+<         // @declaration a static method of `Patrol`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return new int[x$0];
+<     }

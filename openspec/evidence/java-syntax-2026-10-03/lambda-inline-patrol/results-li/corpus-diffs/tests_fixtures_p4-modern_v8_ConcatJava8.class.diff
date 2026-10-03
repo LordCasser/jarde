@@ -1,0 +1,13 @@
+3a4
+>     // jarde: renamed physical lambda helper "lambda$lambda$0" after proving its single class-wide use
+19a21
+>         // jarde: lambda companion call renamed at invokedynamic@0
+23c25
+<         return () -> ConcatJava8.lambda$lambda$0();
+---
+>         return () -> ConcatJava8.lambda$lambda$0$jarde();
+26c28,29
+<     private static void lambda$lambda$0() {
+---
+>     private static void lambda$lambda$0$jarde() {
+>         // jarde: renamed physical lambda helper "lambda$lambda$0" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)

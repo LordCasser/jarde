@@ -1,0 +1,72 @@
+3a4,8
+>     // jarde: omitted physical lambda helper "lambda$viaLambda$0" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$viaMethodRef$1" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$viaStream$2" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$viaStream$3" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$captureLambda$4" after proving its single class-wide use
+12a18
+>         // jarde: lambda companion body inlined at invokedynamic@0
+16c22
+<         Y1$StrFn local1 = (java.lang.String p0) -> Y1.lambda$viaLambda$0(p0);
+---
+>         Y1$StrFn local1 = (java.lang.String p0) -> p0 + "!";
+20a27
+>         // jarde: lambda companion body inlined at invokedynamic@0
+24c31
+<         java.util.function.Supplier local0 = () -> Y1.lambda$viaMethodRef$1();
+---
+>         java.util.function.Supplier local0 = () -> 42;
+29d35
+<     // jarde: generic Signature projection refused for `viaStream()Ljava/util/List;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+30a37,39
+>         // jarde: generic Signature projection refused for `viaStream()Ljava/util/List;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+>         // jarde: lambda companion body inlined at invokedynamic@31
+>         // jarde: lambda companion body inlined at invokedynamic@43
+35,36c44,45
+<         local0.removeIf((java.util.function.Predicate) ((java.lang.Object p0) -> Y1.lambda$viaStream$2((java.lang.String) p0)));
+<         local0.sort((java.util.Comparator) ((java.lang.Object p0_, java.lang.Object p1) -> Y1.lambda$viaStream$3((java.lang.String) p0_, (java.lang.String) p1)));
+---
+>         local0.removeIf((java.util.function.Predicate) ((java.lang.Object arg0) -> ((java.lang.String) arg0).length() > 2));
+>         local0.sort((java.util.Comparator) ((java.lang.Object arg0, java.lang.Object arg1) -> ((java.lang.String) arg0).length() - ((java.lang.String) arg1).length()));
+40a50
+>         // jarde: lambda companion body inlined at invokedynamic@1
+44c54
+<         java.util.function.Function local1 = (java.lang.Object p0) -> Y1.lambda$captureLambda$4(arg0, (java.lang.Integer) p0);
+---
+>         java.util.function.Function local1 = (java.lang.Object arg1) -> java.lang.Integer.valueOf(((java.lang.Integer) arg1).intValue() + arg0);
+58,92d67
+< 
+<     private static java.lang.Integer lambda$captureLambda$4(int arg0, java.lang.Integer arg1) {
+<         // @method lambda$captureLambda$4(ILjava/lang/Integer;)Ljava/lang/Integer;
+<         // @declaration a static method of `Y1`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return java.lang.Integer.valueOf(arg1.intValue() + arg0);
+<     }
+< 
+<     private static int lambda$viaStream$3(java.lang.String arg0, java.lang.String arg1) {
+<         // @method lambda$viaStream$3(Ljava/lang/String;Ljava/lang/String;)I
+<         // @declaration a static method of `Y1`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return arg0.length() - arg1.length();
+<     }
+< 
+<     private static boolean lambda$viaStream$2(java.lang.String arg0) {
+<         // @method lambda$viaStream$2(Ljava/lang/String;)Z
+<         // @declaration a static method of `Y1`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return arg0.length() > 2;
+<     }
+< 
+<     private static java.lang.Integer lambda$viaMethodRef$1() {
+<         // @method lambda$viaMethodRef$1()Ljava/lang/Integer;
+<         // @declaration a static method of `Y1`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return 42;
+<     }
+< 
+<     private static java.lang.String lambda$viaLambda$0(java.lang.String arg0) {
+<         // @method lambda$viaLambda$0(Ljava/lang/String;)Ljava/lang/String;
+<         // @declaration a static method of `Y1`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return arg0 + "!";
+<     }

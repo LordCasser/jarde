@@ -1,0 +1,90 @@
+// jarde: presentation of `V1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class V1 extends java.lang.Object {
+    // jarde: omitted physical lambda helper "lambda$byComparator$0" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$captureLocal$1" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$manyInOne$2" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$manyInOne$3" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$wide$4" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$chained$5" after proving its single class-wide use
+    public V1() {
+        // @method <init>()V
+        // @declaration a constructor of `V1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.util.List byComparator(java.util.List arg0) {
+        // jarde: generic Signature projection refused for `byComparator(Ljava/util/List;)Ljava/util/List;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+        // jarde: lambda companion body inlined at invokedynamic@1
+        // @method byComparator(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.sort((java.util.Comparator) ((java.lang.Object p0, java.lang.Object p1) -> ((java.lang.String) p0).compareTo((java.lang.String) p1)));
+        return arg0;
+    }
+
+    static int captureLocal(int arg0) {
+        // jarde: lambda companion body inlined at invokedynamic@5
+        // @method captureLocal(I)I
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0 * 2;
+        java.util.function.IntUnaryOperator local2 = (int arg1) -> arg1 + local1;
+        return local2.applyAsInt(5);
+    }
+
+    static int manyInOne(int arg0, int arg1) {
+        // jarde: lambda companion body inlined at invokedynamic@2
+        // jarde: lambda companion body inlined at invokedynamic@9
+        // @method manyInOne(II)I
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.function.IntSupplier local2 = () -> arg0 + arg1;
+        java.util.function.IntUnaryOperator local3 = (int p0) -> p0 * arg1;
+        return local2.getAsInt() + local3.applyAsInt(3);
+    }
+
+    static long wide(long arg0) {
+        // jarde: lambda companion body inlined at invokedynamic@1
+        // @method wide(J)J
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.function.LongUnaryOperator local2 = (long arg2) -> arg2 + arg0;
+        return local2.applyAsLong(3L);
+    }
+
+    static java.lang.String chained(java.lang.String arg0) {
+        // jarde: lambda companion body inlined at invokedynamic@0
+        // @method chained(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.function.UnaryOperator local1 = (java.lang.Object p0) -> (java.lang.String) p0 + "?";
+        return (java.lang.String) local1.apply((java.lang.Object) arg0);
+    }
+
+    // jarde: generic Signature projection refused for `seed()Ljava/util/List;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    static java.util.List seed() {
+        // @method seed()Ljava/util/List;
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local0 = new java.util.ArrayList();
+        local0.add((java.lang.Object) "pear");
+        local0.add((java.lang.Object) "apple");
+        local0.add((java.lang.Object) "fig");
+        return local0;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `V1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.Object) byComparator((java.util.List) seed()));
+        java.lang.System.out.println(captureLocal(10));
+        java.lang.System.out.println(manyInOne(4, 5));
+        java.lang.System.out.println(wide(40L));
+        java.lang.System.out.println((java.lang.String) chained("ok"));
+        return;
+    }
+}

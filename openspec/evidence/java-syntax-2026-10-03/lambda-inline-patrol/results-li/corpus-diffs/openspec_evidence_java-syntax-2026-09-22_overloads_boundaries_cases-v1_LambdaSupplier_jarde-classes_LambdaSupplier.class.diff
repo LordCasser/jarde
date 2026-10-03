@@ -1,0 +1,16 @@
+3a4
+>     // jarde: omitted physical lambda helper "lambda$run$0" after proving its single class-wide use
+26a28
+>         // jarde: lambda companion body inlined at invokedynamic@0
+30c32
+<         return action((java.util.function.Supplier) (() -> LambdaSupplier.lambda$run$0()));
+---
+>         return action((java.util.function.Supplier) (() -> lambda$run$0()));
+39,45d40
+< 
+<     private static java.lang.Object lambda$run$0() {
+<         // @method lambda$run$0()Ljava/lang/Object;
+<         // @declaration a static method of `LambdaSupplier`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return lambda$run$0();
+<     }

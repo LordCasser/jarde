@@ -1,0 +1,13 @@
+3a4
+>     // jarde: renamed physical lambda helper "lambda$build$0" after proving its single class-wide use
+28a30
+>         // jarde: lambda companion call renamed at invokedynamic@1
+32c34
+<         return (int p0) -> LambdaBodyInline.lambda$build$0(captured, p0);
+---
+>         return (int p0) -> LambdaBodyInline.lambda$build$0$jarde(captured, p0);
+82c84,85
+<     private static int lambda$build$0(int captured, int value) {
+---
+>     private static int lambda$build$0$jarde(int captured, int value) {
+>         // jarde: renamed physical lambda helper "lambda$build$0" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)

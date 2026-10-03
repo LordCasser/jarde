@@ -1,0 +1,19 @@
+3a4
+>     // jarde: omitted physical lambda helper "lambda$captured$0" after proving its single class-wide use
+19d19
+<     // jarde: generic Signature projection refused for `captured()Ljava/util/function/ToIntFunction;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+20a21,22
+>         // jarde: generic Signature projection refused for `captured()Ljava/util/function/ToIntFunction;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+>         // jarde: lambda companion body inlined at invokedynamic@5
+25c27
+<         return (java.lang.Object p0) -> CapturedLambdaAdaptationProbe.lambda$captured$0(local0, (java.lang.String) p0);
+---
+>         return (java.lang.Object arg1) -> LambdaCaptureAdaptationSupport.pickWithPrefix(local0, (java.lang.String) arg1);
+27,33d28
+< 
+<     private static int lambda$captured$0(int arg0, java.lang.String arg1) {
+<         // @method lambda$captured$0(ILjava/lang/String;)I
+<         // @declaration a static method of `CapturedLambdaAdaptationProbe`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return LambdaCaptureAdaptationSupport.pickWithPrefix(arg0, arg1);
+<     }

@@ -1,0 +1,16 @@
+3a4
+>     // jarde: omitted physical lambda helper "lambda$make$0" after proving its single class-wide use
+12a14
+>         // jarde: lambda companion body inlined at invokedynamic@0
+16c18
+<         return (int[]) ((java.util.function.IntFunction) ((int p0) -> DirectArrayCtorRef.lambda$make$0(p0))).apply(n);
+---
+>         return (int[]) ((java.util.function.IntFunction) ((int x$0) -> new int[x$0])).apply(n);
+18,24d19
+< 
+<     private static int[] lambda$make$0(int x$0) {
+<         // @method lambda$make$0(I)[I
+<         // @declaration a static method of `DirectArrayCtorRef`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return new int[x$0];
+<     }
