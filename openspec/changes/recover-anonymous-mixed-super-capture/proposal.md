@@ -2,10 +2,14 @@
 
 `present-proved-java-structure` 5.3（类级匿名语法）的**精确剩余范围**，root 2026-10-04 以代码与 javap 双重实证界定：两个已交付片各覆盖一半、各**明确排除**对方的一半，混合参数形（super 构造实参与捕获值并存）落在二者之间的缝隙中。
 
-代码实证（两门互斥）：
+代码实证（root 2026-10-04 四次取证后的**修正版**——先前描述的两门不完整）：匿名捕获投影的分派入口是 `src/facade.rs::prove_anonymous_capture`（17508，由 3407 与 4161 两处调用），它按**捕获字段描述符**二选一分派，而两条分支都不接受混合形：
 
-- `src/member_inner.rs::prove_family_capture` 第 270 行：`refuse("constructor must invoke the direct zero-argument superclass constructor")` —— 有捕获字段的证明要求父类构造器**零参数**。
-- `src/facade.rs::project_class_source_anonymous_super` 第 4606 行：`child_facts.field_count != 0` 即拒绝 —— 转发父类实参的证明要求**无捕获字段**。
+- `child.fields[0].descriptor == b"D"` → `member_inner::prove_anonymous_double_capture`（541）：要求 `field_count == 1`、字段为 synthetic-final-instance **double**、构造器描述符**恰为 `(D)V`**（577）、6 指令固定形（`anonymous_double_constructor_shape`，759）、且 super invoke 的 descriptor 为 **`()V`**（约 617）。
+- 其它 → `member_inner::prove_family_capture`（158）：要求**唯一**字段是 `this$0` 型（`field.descriptor.raw().0 == outer_descriptor`，179–191，即具名内部类的 enclosing 字段）、构造器首个物理参数为 Outer、且 super invoke descriptor 为 **`()V`**（270）。
+
+混合形 fixture `AnonymousSuperArgs$1` 的字段是 `val$captured: Ljava/lang/String;`（非 `D`、非 `Lroot;`），故落入第二分支并因字段描述符不匹配被拒（"capture requires one synthetic final instance Outer field"）——**即当前根本没有处理 `val$` 型捕获的证明器**（全仓生产代码中 `val$` 只出现在 `ctor_order.rs:247` 的名字模式回退里，`grep -rn 'val\$' --include=*.rs crates src` 实证）。
+
+另一侧的门是 `src/facade.rs::project_class_source_anonymous_super` 第 4606 行：`child_facts.field_count != 0` 即拒绝 —— 转发父类实参的投影要求**无捕获字段**。这正是 `inline-proved-anonymous-super-arguments` 排除"构造参数中混入捕获值"的实现位置。
 
 措辞实证（两片自述排除）：
 
