@@ -1,0 +1,4 @@
+BR$Impl.java:3: 错误: BR$Impl不是抽象的, 并且未覆盖Comparable中的抽象方法compareTo(Object)
+class BR$Impl extends java.lang.Object implements java.lang.Comparable {
+^
+1 个错误

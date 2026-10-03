@@ -1,0 +1,2 @@
+(Ljava/lang/Object;)V -> the physical bridge has modifiers beyond public bridge synthetic that source reconstruction does not prove
+()Ljava/lang/Object; -> the physical bridge has modifiers beyond public bridge synthetic that source reconstruction does not prove
