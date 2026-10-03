@@ -7743,6 +7743,7 @@ impl Engine {
             &environment,
             &request.environment.policy,
             &definition,
+            &read.bytes,
             &read.facts,
             &methods,
             &_bridge_candidate_runs,
@@ -16380,16 +16381,14 @@ fn proved_reference_widening(
 /// carries no further facts, so a walk that reaches the `target` has read a physical definition of
 /// every class between the two, the target included. One charged header read per class, a visited
 /// set against cycles, a depth the caller bounds and `dependency_depth` observed at every step.
-fn snapshot_header_chain_widens(
-    content: &[ArtifactSnapshot],
-    request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
+/// The header reader is the caller's own: the widening proofs read through the analyzed method's
+/// class, the bridge admission through the prepared class's facts and the same dependency reads.
+fn snapshot_header_chain_widens_with(
     source: &[u8],
     target: &[u8],
     max_depth: u64,
-    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
-    execution: &mut ExecutionReport,
     budget: &mut Budget,
+    mut header: impl FnMut(&[u8], &mut Budget) -> Result<Option<ReferenceClassHeader>>,
 ) -> Result<bool> {
     if source == target {
         return Ok(false);
@@ -16403,9 +16402,7 @@ fn snapshot_header_chain_widens(
         if !visited.insert(name.clone()) {
             continue;
         }
-        let Some(header) =
-            selected_reference_header(content, request, ir, &name, cache, execution, budget)?
-        else {
+        let Some(header) = header(&name, budget)? else {
             continue;
         };
         if name == target {
@@ -16427,6 +16424,22 @@ fn snapshot_header_chain_widens(
         );
     }
     Ok(false)
+}
+
+fn snapshot_header_chain_widens(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    source: &[u8],
+    target: &[u8],
+    max_depth: u64,
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<bool> {
+    snapshot_header_chain_widens_with(source, target, max_depth, budget, |owner, budget| {
+        selected_reference_header(content, request, ir, owner, cache, execution, budget)
+    })
 }
 
 /// The class-source path alone may relax the field rule's exact receiver-owner match. Each
@@ -29326,6 +29339,7 @@ fn prove_class_source_bridges(
     environment: &ResolutionEnvironment,
     policy: &EnvironmentPolicy,
     definition: &PhysicalDefinitionId,
+    class_bytes: &[u8],
     facts: &ClassMemberFacts,
     methods: &[ClassSourceMethod],
     candidates: &[jarde_java::bridge::ClassSourceBridgeCandidate],
@@ -29343,6 +29357,9 @@ fn prove_class_source_bridges(
 
     let class_name = facts.this_class.raw().0.as_slice();
     let mut proofs = Vec::new();
+    // One header cache for the whole admission: the covariant-return walk of several candidates
+    // reads the same parent definitions, once each.
+    let mut walk_cache = std::collections::BTreeMap::new();
     for candidate in candidates {
         let Some(member) = candidate.member.as_ref() else {
             continue;
@@ -29369,7 +29386,16 @@ fn prove_class_source_bridges(
             proofs.push(refuse("the bridge member flags were not stated"));
             continue;
         };
-        if flags != RECONSTRUCTIBLE_BRIDGE_FLAGS {
+        // The bridge is reconstructible when its modifiers are `public bridge synthetic` — but the
+        // *public* bit itself follows the overridden contract: javac writes a package-private
+        // bridge for an override of a package-private parent method, and recompiling that source
+        // regenerates exactly that visibility. What must hold is the subset (no modifier beyond
+        // the three) and the bridge identity itself (`bridge` and `synthetic`, the declared fact
+        // this admission never infers from a body); that the bridge never out-views the kept
+        // source method is the source gate's own check below.
+        if flags & !RECONSTRUCTIBLE_BRIDGE_FLAGS != 0
+            || flags & (ACC_BRIDGE | ACC_SYNTHETIC) != (ACC_BRIDGE | ACC_SYNTHETIC)
+        {
             proofs.push(refuse(
                 "the physical bridge has modifiers beyond public bridge synthetic that source reconstruction does not prove",
             ));
@@ -29423,11 +29449,27 @@ fn prove_class_source_bridges(
             ));
             continue;
         }
-        if bridge_header
+        // Beside its one Code body (checked above), the only method metadata a bridge may carry is
+        // the `MethodParameters` record javac writes for a bridge's mandated parameters: one entry
+        // per declared parameter, no name, `synthetic` — the record a recompiled source restates
+        // identically, so copying the member loses nothing. Any other attribute, a second
+        // `MethodParameters`, or an entry with a name, another flag or the wrong count is a fact
+        // the source copy cannot prove.
+        let reconstructible_metadata = bridge_header
             .attributes
             .iter()
-            .any(|attribute| attribute.name.raw().0.as_slice() != b"Code")
-        {
+            .filter(|attribute| attribute.name.raw().0.as_slice() == b"MethodParameters")
+            .count()
+            <= 1
+            && bridge_header.attributes.iter().all(|attribute| {
+                let name = attribute.name.raw().0.as_slice();
+                name == b"Code"
+                    || name == b"MethodParameters"
+                        && bridge_parameter_count(&member.descriptor.0).is_some_and(|count| {
+                            bridge_method_parameters_canonical(class_bytes, attribute, count)
+                        })
+            });
+        if !reconstructible_metadata {
             proofs.push(refuse(
                 "the bridge declares method metadata whose source copying is unproved",
             ));
@@ -29487,18 +29529,78 @@ fn prove_class_source_bridges(
             ));
             continue;
         };
-        if bridge_parameters != target_parameters
-            || target.name().as_bytes() != member.name.0.as_slice()
+        if target.name().as_bytes() != member.name.0.as_slice() {
+            proofs.push(refuse(
+                "the bridge and invoked method do not share a name and parameter descriptor",
+            ));
+            continue;
+        }
+        // The bridge parameters are either already the source method's own (the covariant-return
+        // form) or its erasure, each widened parameter narrowed by one cast whose target is
+        // exactly the source parameter — the canonical parameter-cast form `bridge@1` proved and
+        // stated positionally, and the form a recompiled source regenerates for a specialized
+        // override.
+        let parameter_cast_form = bridge_parameters != target_parameters;
+        if parameter_cast_form
+            && bridge_parameter_casts_mismatch(
+                &candidate.parameter_casts,
+                &member.descriptor.0,
+                target.descriptor().as_bytes(),
+            )
         {
             proofs.push(refuse(
                 "the bridge and invoked method do not share a name and parameter descriptor",
             ));
             continue;
         }
-        if bridge_return == target_return
-            || bridge_return != b"Ljava/lang/Object;"
-            || !(target_return.starts_with(b"L") || target_return.starts_with(b"["))
-        {
+        // The return the forward produces must be the return the erased contract declares: the
+        // same type (the canonical parameter-cast form, whose return the recompiled source
+        // restates), the erasure of a reference-valued override of an `Object` contract (the
+        // previously proved covariant form), or a subtype the snapshot's own class files prove by
+        // their header chain — a covariant override of an interface-typed contract. A chain the
+        // walk cannot reach stays refused exactly as before.
+        let proved_return = if bridge_return == target_return {
+            parameter_cast_form
+        } else if bridge_return == b"Ljava/lang/Object;" {
+            target_return.starts_with(b"L") || target_return.starts_with(b"[")
+        } else {
+            match (
+                internal_reference_name(target_return),
+                internal_reference_name(bridge_return),
+            ) {
+                (Some(source_class), Some(bridge_class)) => {
+                    match snapshot_header_chain_widens_with(
+                        source_class,
+                        bridge_class,
+                        SNAPSHOT_HIERARCHY_WALK_DEPTH,
+                        budget,
+                        |owner, budget| {
+                            bridge_admission_reference_header(
+                                content,
+                                environment,
+                                facts,
+                                owner,
+                                &mut walk_cache,
+                                execution,
+                                budget,
+                            )
+                        },
+                    ) {
+                        Ok(proved) => proved,
+                        Err(error) => {
+                            merge_execution(execution, stop_execution(&error, budget));
+                            proofs.clear();
+                            proofs.push(refuse(
+                                "the snapshot hierarchy walk stopped before it proved the erased return type",
+                            ));
+                            return proofs;
+                        }
+                    }
+                }
+                _ => false,
+            }
+        };
+        if !proved_return {
             proofs.push(refuse("the source return type is not a proved covariant subtype of the erased Object return"));
             continue;
         }
@@ -29536,7 +29638,11 @@ fn prove_class_source_bridges(
             continue;
         }
         if source_flags & ACC_BRIDGE != 0
-            || source_flags & ACC_PUBLIC == 0
+            // The hidden member must never out-view the source override that replaces it: a
+            // public bridge whose source is not public would take a wider call surface with it.
+            // (flags here are the bridge's own; a package-private bridge beside a package-private
+            // source is the shape javac itself writes for a package-private contract.)
+            || (flags & ACC_PUBLIC != 0 && source_flags & ACC_PUBLIC == 0)
             || source_flags & (ACC_PRIVATE | ACC_STATIC | ACC_ABSTRACT | ACC_NATIVE) != 0
             || source_flags & ACC_SYNTHETIC != 0
             || source.declaration.is_none()
@@ -29602,6 +29708,61 @@ fn prove_class_source_bridges(
                 saw_unresolved = true;
                 continue;
             }
+            // The one platform member contract this admission carries: the erased
+            // `Comparable.compareTo(Object)` contract every `Comparable<T>` implementation is
+            // written against. Java SE 8 declares `int java.lang.Comparable.compareTo(Object)` —
+            // https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html — under the
+            // same runtime shape every other platform fact here assumes, and this explicit
+            // environment need not carry a JRE image. A `Comparable` the environment *does*
+            // provide is never answered by this fact: the check below only proves absence, and
+            // the ordinary member resolution then decides through the provided definition.
+            if use_kind == ReferenceUse::InvokeInterface
+                && owner.0.as_slice() == b"java/lang/Comparable"
+                && member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)I"
+                && environment.runtime.profile.java_release == 8
+                && environment.runtime.load_domain.delegation == DelegationPolicy::ParentFirst
+                && environment.runtime.load_domain.module_mode == ModuleMode::ClassPath
+                && environment.runtime.load_domain.external_override == RuntimeUncertainty::None
+                && environment.runtime.load_domain.runtime_transformation
+                    == RuntimeUncertainty::None
+            {
+                let provided = match jarde_jvm::resolve_symbol(
+                    content,
+                    &ResolutionRequest {
+                        environment: environment.clone(),
+                        target: jarde_reader::model::SymbolRef::Class {
+                            owner: jarde_reader::model::JvmBytes(b"java/lang/Comparable".to_vec()),
+                        },
+                        use_kind: ReferenceUse::ClassReference,
+                        caller: jarde_jvm::environment::CallerContext {
+                            loader: environment.runtime.load_domain.loader.clone(),
+                            enclosing: Some(member.clone()),
+                        },
+                        dispatch: None,
+                    },
+                    budget,
+                ) {
+                    Ok(resolution) => resolution,
+                    Err(error) => {
+                        merge_execution(execution, stop_execution(&error, budget));
+                        stopped = true;
+                        break;
+                    }
+                };
+                merge_execution(execution, provided.execution.clone());
+                if !matches!(&provided.execution, ExecutionReport::Complete { .. }) {
+                    stopped = true;
+                    break;
+                }
+                if provided.state == Some(ResolutionState::Missing)
+                    && provided.environment_problems.is_empty()
+                    && provided.unresolved_dependencies.is_empty()
+                    && provided.candidates.is_empty()
+                {
+                    inherited = true;
+                    break;
+                }
+            }
             let resolution = match jarde_jvm::resolve_symbol(
                 content,
                 &ResolutionRequest {
@@ -29612,9 +29773,12 @@ fn prove_class_source_bridges(
                         descriptor: member.descriptor.clone(),
                     },
                     use_kind,
+                    // The bridge's own member is the use site: the access rules (JVMS 5.4.4)
+                    // need the caller's class to decide a non-public contract, and this class is
+                    // exactly that caller.
                     caller: jarde_jvm::environment::CallerContext {
                         loader: environment.runtime.load_domain.loader.clone(),
-                        enclosing: None,
+                        enclosing: Some(member.clone()),
                     },
                     dispatch: None,
                 },
@@ -29632,10 +29796,14 @@ fn prove_class_source_bridges(
                 stopped = true;
                 break;
             }
-            reloaded_current |= resolution
-                .reads
-                .iter()
-                .any(|read| &read.definition == definition);
+            // The access rules read the caller's own class by identity when the contract is not
+            // public — that is the `MemberOwner` read the enclosing use site above names, not a
+            // traversal back into this class. A hierarchy edge that really reaches this class
+            // keeps its `ParentChain`/`HierarchyClosure` reason and is still a refusal.
+            reloaded_current |= resolution.reads.iter().any(|read| {
+                &read.definition == definition
+                    && read.reason != jarde_jvm::resolver::ReadReason::MemberOwner
+            });
             if resolution.state == Some(ResolutionState::Resolved)
                 && matches!(&resolution.execution, ExecutionReport::Complete { .. })
                 && resolution.unresolved_dependencies.is_empty()
@@ -29701,6 +29869,145 @@ fn method_descriptor_parts(descriptor: &[u8]) -> Option<(&[u8], &[u8])> {
     descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
     let close = descriptor.iter().position(|byte| *byte == b')')?;
     Some((&descriptor[..=close], &descriptor[close + 1..]))
+}
+
+/// How many parameters a method descriptor declares, when it is one a bridge may declare.
+fn bridge_parameter_count(descriptor: &[u8]) -> Option<usize> {
+    descriptor_facts(descriptor, DescriptorKind::Method)
+        .ok()
+        .map(|facts| facts.parameters().len())
+}
+
+/// Whether one `MethodParameters` attribute is the exact record javac writes for a bridge's
+/// mandated parameters: one entry per declared parameter, every entry nameless and `synthetic`.
+/// The payload is fixed-width (JVMS 4.7.24: a `u8` count, then a `u16` name index and a `u16`
+/// flag word per entry), so the bytes decide without the constant pool.
+fn bridge_method_parameters_canonical(
+    class_bytes: &[u8],
+    attribute: &AttributeShell,
+    parameter_count: usize,
+) -> bool {
+    let Ok(start) = usize::try_from(attribute.content_span.start) else {
+        return false;
+    };
+    let Ok(length) = usize::try_from(attribute.content_span.length) else {
+        return false;
+    };
+    let Some(content) = class_bytes.get(start..start.saturating_add(length)) else {
+        return false;
+    };
+    let Some(&count) = content.first() else {
+        return false;
+    };
+    usize::from(count) == parameter_count
+        && content.len() == 1 + 4 * parameter_count
+        && (0..parameter_count).all(|entry| {
+            let entry = &content[1 + entry * 4..1 + entry * 4 + 4];
+            entry[0] == 0 && entry[1] == 0 && entry[2] == 0x10 && entry[3] == 0x00
+        })
+}
+
+/// Whether the stated parameter casts fail the canonical form's own bitwise criterion: every
+/// parameter the bridge's erased descriptor widens must be narrowed by one stated cast whose
+/// target is exactly the source parameter, in parameter order, and a stated cast may name nothing
+/// else. (The bridge layer proves this against the invoked descriptor's own bytes; this re-check
+/// reads the same two full descriptors the admission already parsed.)
+fn bridge_parameter_casts_mismatch(
+    casts: &[jarde_java::bridge::BridgeParameterCast],
+    bridge_descriptor: &[u8],
+    target_descriptor: &[u8],
+) -> bool {
+    let (Ok(bridge), Ok(target)) = (
+        descriptor_facts(bridge_descriptor, DescriptorKind::Method),
+        descriptor_facts(target_descriptor, DescriptorKind::Method),
+    ) else {
+        return true;
+    };
+    let (bridge, target) = (bridge.parameters(), target.parameters());
+    if bridge.len() != target.len() {
+        return true;
+    }
+    let mut stated = 0usize;
+    let mut previous: Option<u16> = None;
+    for (ordinal, (bridge_parameter, target_parameter)) in bridge.iter().zip(target).enumerate() {
+        let Ok(ordinal) = u16::try_from(ordinal) else {
+            return true;
+        };
+        let Some(cast) = casts.get(stated) else {
+            // No cast left: the parameter must already be the source's own.
+            if bridge_parameter.bytes(bridge_descriptor)
+                != target_parameter.bytes(target_descriptor)
+            {
+                return true;
+            }
+            continue;
+        };
+        if cast.parameter != ordinal {
+            // This parameter carries no cast; it must already be the source's own, and the
+            // remaining cast belongs to a later parameter.
+            if bridge_parameter.bytes(bridge_descriptor)
+                != target_parameter.bytes(target_descriptor)
+            {
+                return true;
+            }
+            continue;
+        }
+        if previous.is_some_and(|previous| previous >= cast.parameter) {
+            return true;
+        }
+        previous = Some(cast.parameter);
+        stated += 1;
+        let internal = target_parameter
+            .bytes(target_descriptor)
+            .and_then(|name| name.strip_prefix(b"L"))
+            .and_then(|name| name.strip_suffix(b";"));
+        if internal != Some(cast.ty.as_bytes()) {
+            return true;
+        }
+    }
+    stated != casts.len()
+}
+
+/// The internal class name one reference-typed return descriptor states, or nothing for any other
+/// return (an array or a primitive is no class the snapshot's chain can walk).
+fn internal_reference_name(return_descriptor: &[u8]) -> Option<&[u8]> {
+    return_descriptor
+        .strip_prefix(b"L")
+        .and_then(|name| name.strip_suffix(b";"))
+}
+
+/// The bridge admission's own view of one class header: the prepared class's already-read facts,
+/// or one resolved dependency read from the same snapshot. Nothing beyond the snapshot is
+/// consulted, so a name the snapshot does not hold states no header at all.
+fn bridge_admission_reference_header(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    facts: &ClassMemberFacts,
+    owner: &[u8],
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Option<ReferenceClassHeader>> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if let Some(cached) = cache.get(owner) {
+        return Ok(cached.clone());
+    }
+    let header = if owner == facts.this_class.raw().0.as_slice() {
+        ReferenceClassHeader::from_facts(facts)
+    } else {
+        resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            owner,
+            execution,
+            budget,
+        )?
+        .and_then(|(_, read)| ReferenceClassHeader::from_facts(&read.facts))
+    };
+    cache.insert(owner.to_vec(), header.clone());
+    Ok(header)
 }
 
 /// Plans all bridge source replacements without mutating the physical member records. A missing or

@@ -11871,7 +11871,10 @@ mod tests {
             // and the packaged qualifier, twelve classes, twenty-one bodies) moved it again.
             // The 2026-10-03 assert-sugar negatives (the hand-patched guard-extra-statement and
             // wrong-owner probes, two classes, twelve bodies) moved it again.
-            (454, 2151, 251, 1679, 8),
+            // The 2026-10-04 bridge-admission-gates fixtures (the frozen BR patrol family six,
+            // the BR2 multilevel covariant variant four, and the provided-Comparable stand-in,
+            // eleven classes, twenty-one bodies) moved it again.
+            (465, 2172, 251, 1679, 8),
             "fixture population changed: re-measure these counts"
         );
     }
