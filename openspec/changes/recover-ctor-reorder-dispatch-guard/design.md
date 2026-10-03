@@ -10,9 +10,13 @@
 
 ## Decisions
 
-1. **单一前置条件**：重排准入要求 super 目标恰为 `java/lang/Object.<init>()V`（descriptor 与 owner 双匹配）。不引入"目标类是否声明可覆写方法"的推断——那需要读目标类且对平台类无源码，保守边界更诚实。
+1. **重排安全判据（root 2026-10-04 取证后修正——原判据"仅 Object super"过宽，会造成反向回归）**：重排仅在不改变构造期可见性时进行，分三档：
+   - **(a) super 目标 == `java/lang/Object.<init>()V`** → 安全（Object ctor 不可能分派到用户代码）。覆盖 C1/C2 全部既有正例。
+   - **(b) super 目标类在本快照有物理定义，且其构造器可证明构造期无法到达子类覆写**——两条都要成立：**(b1)** ctor 内无 receiver 为 `this`（`aload_0`/slot 0）的 `invokevirtual`/`invokeinterface`；**(b2)** ctor 不把 `this` 作为实参传给任何调用（`invokestatic`/`invokespecial`/`invokevirtual` 均算——被调方可能再分派，例如 `invokestatic helper(this)`）。允许的形：`invokespecial Object.<init>`、对**新建对象**的虚调用（receiver 来自 `new`+`dup`，非 slot 0）、无 `this` 实参的 `invokestatic`、以及 slot 0 仅作 `putfield` 的 receiver。**实测该档覆盖 `anonymous-super-args/AnonymousSuperArgs$1`（super `Base` ctor = `Object.<init>` + 自身字段 putfield + 新建 StringBuilder 的 invokevirtual + `invokestatic event(String)`）与 `anonymous-capture/AnonymousCaptureCases$1`（super `AnonymousCaptureCases$Base` ctor，`invokevirtual` 均在新建 StringBuilder 上、`invokestatic access$008:()I` 无实参）**——二者当前重排后既正确又可编译，判据必须保住它们。
+   - **(c) 其它**（super 类不在快照、或其 ctor 含 `this` 虚分派）→ **不重排**，保持既有逐字呈现与诊断。`anonymous-super-dispatch/Base`（ctor 内 `invokevirtual observe()` on `this`）落此档，回归消除。
+   - 读取 super ctor 走既有快照依赖读取与 A16 计费（`recover-snapshot-hierarchy-widening` 先例），不新增机制；读不到即落 (c) 保守档。
 2. **不重排时的行为**：保持本片之前的既有呈现（`this.val$captured = arg1; super();` 逐字）与其诊断/引注——**不得**改为整方法拒绝（那会丢失已恢复的其余成员），也不得静默丢弃该 ctor。
-3. **回归测试双向钉死**：(a) 反例断言重排未发生（呈现中捕获写入文本在 `super()` 之前）；(b) 正例（Object super）断言重排仍发生且文本逐字不变。任一失败即回归。
+3. **回归测试三向钉死**：(a) `anonymous-super-dispatch` 断言重排**未**发生（捕获写入文本在 `super()` 之前）且不得"可编译且行为不同"；(b) `anonymous-super-args`/`anonymous-capture` 断言重排**仍**发生且文本逐字不变（守 (b) 档不被过窄化）；(c) C1/C2 断言 Object 档逐字不变。
 
 ## Risks / Trade-offs
 

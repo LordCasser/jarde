@@ -34,6 +34,22 @@
 
 **重排仅在 super 目标为 `java/lang/Object.<init>()V` 时安全**；目标为其它任何类（用户类或平台非 Object 类）时保持原顺序呈现（现状：不可编译但忠实，且带引注/诊断——响亮失败优于静默错误）。
 
+## 影响面普查（2026-10-04，javap 扫 `tests/fixtures/proved-java-structure/`）
+
+pre-super 写（`putfield` 早于 `invokespecial`）且 super 目标非 Object 的冻结 fixture 共三处；但**逐一 javap 其 super ctor 后，只有一处真会翻转行为**——判据的关键不是 super 目标是不是 Object，而是 **super ctor 是否在 `this` 上虚分派**：
+
+| fixture | super 目标 | super ctor 是否 `this` 虚分派 | 重排后果 |
+| --- | --- | --- | --- |
+| `anonymous-super-dispatch/AnonymousSuperDispatch$1` | `Base.<init>` | **是**（ctor 内 `invokevirtual observe()` on `this`） | 行为翻转 `true→false`（本片回归实证） |
+| `anonymous-super-args/AnonymousSuperArgs$1` | `Base.<init>` | 否（仅 `Object.<init>`+自身字段+新建 StringBuilder 的 invokevirtual+`invokestatic event`） | 重排安全，产物当前已可编译且行为正确 |
+| `anonymous-capture/AnonymousCaptureCases$1` | `AnonymousCaptureCases$Base.<init>` | 否（`invokevirtual` 均在新建 StringBuilder 上，其余 `invokestatic`） | 重排安全，同上 |
+
+故修复判据**不能**简单收窄为"仅 Object super"——那会让后两个**当前正确且可编译**的 fixture 退化为不可编译（反向回归）。正确判据是 design 决策 1 的三档：Object 目标安全；或 super 类在快照内且其 ctor 无 `this` 虚分派则安全；否则不重排。
+
+super 目标为 `java/lang/Object."<init>"` 的 pre-super 写形（`AnonymousCaptureCases$Outer$1`、`Inner$1`、`AnonymousMemberBase$Outer$Base`）落入第一档，不受影响。
+
+修复片 `recover-ctor-reorder-dispatch-guard` 的 1.2 变体须覆盖上述**三处**并分别断言：dispatch 形不重排（回归消除）、两处无分派形仍重排且逐字不变（守反向回归），各自以重编运行对照钉死"不再出现可编译且行为不同"。
+
 ## 处置
 
 `recover-ctor-reorder-dispatch-guard`（窄修复片，最高优先）：在重排判据加"super 目标 == `java/lang/Object.<init>()V`"前置条件；不满足时不重排（保持既有逐字呈现与诊断）。C1/C2 及全部既有重排正例逐字不变（它们都是 Object super）；回归 fixture 恢复为"不可编译但行为忠实"，并以该 fixture 建**回归测试**（断言呈现中 `putfield` 语义序早于 `super()`，即文本含 `this.val$captured = arg1;` 在 `super();` 之前）。
