@@ -1,6 +1,16 @@
 ## Context
 
-[巡查证据](../../evidence/java-syntax-2026-10-03/statement-new-patrol/README.md)：B6 四形判别与 B5.main 复合。既有切片 `refuse-unconsumed-construction-invokes` 的拒绝位与其 CST 反例（`ordinary-new-void-effect`——实参含真实调用的 `CST` 序）。**第一个取证义务**：读该切片的语句位判定处——"实参依赖真实调用"判定的精确位置与当前语句位 new 的完整拒绝路径；确认实参分类数据（常量/局部读/消费链）在哪一层可得。
+[巡查证据](../../evidence/java-syntax-2026-10-03/statement-new-patrol/README.md)：B6 四形判别与 B5.main 复合。既有切片 `refuse-unconsumed-construction-invokes` 的拒绝位与其 CST 反例（`ordinary-new-void-effect`——实参含真实调用的 `CST` 序）。
+
+### 前次实现的取证结论（2026-10-04，root 固化——实现者未落码即被终止，结论可直接复用）
+
+首次派发（qwen 通道）在 128 分钟取证后未落码即终止，但其取证已定位全部落点与两处对原判据的**字面修正**，重派时按此执行、不必重复取证：
+
+1. **真实触发点不是 reader 检查，而是 `written.is_empty()` 分支**：B6.argless/withArg 与 B5.main 三 new 的实拒理由均为 `jre_new_shape` "is read only by instructions this build quotes (BCIs 7/9/17/25)"——reader 是裸 `pop`，而 `renders_its_reads`（`crates/jarde-java/src/init.rs:1329`）不含 `pop`（decode 把 `0x57` 归 `Operation::Other`）。**故须同时动两处**：init.rs 的 pop 认领 + reader 集合，非单点。
+2. **实参分类数据面已定位**（无需新机制/新 IR）：`init.rs::verify` 内即可得——`operands` + `value_dependency_bcis`（约 553 行）+ `operations`（`Push`=常量 / `Load`=直读 / `Field` / `Invoke`）+ `ssa`（`Definition::Entry`=参数或局部直读）；已证嵌套构造经 `nested_sites` + `is_the_instance`。
+3. **呈现落点**：`build.rs::instruction()` 的 `sites.owns(at)` 提前返回处，在构造器 BCI 写 `StmtKind::Expr`；并确保 pop 侧不被重复成文——先确认 `DiscardedEvaluations`（P3 2c.31，build.rs 约 18919/19400+，其 first arm 已覆盖 call→pop）是否已认领该 pop。
+4. **CST 保护面确认无需触碰**：VoidBetween 反例的拒绝来自实参分支的 `Invoke ∉ argument_dependencies`（`jre_new_interleaved_effect`，点名 BCI 4），该分支**先于** reader 检查执行；保持原样并加测试钉死拒绝码与 BCI 4 不变。
+5. **字段读实参同 chained 一并保持拒绝（root 裁决，取证已实证）**：`new Foo(o.n)`/`new Foo(静态字段)` 现以 `jre_new_interleaved_effect` 拒绝——`getfield`/`getstatic` 触发声明类 `<clinit>` 是真实副作用；干净对照 `new Ord(Ord.m())` 的源语义为 `Ord.clinit → m() → Ord.ctor` 证明此类顺序问题真实存在。本片判据严格限于 `Push` 常量、`Load`+`Definition::Entry` 直读、已证嵌套构造值三类。
 
 ## Goals / Non-Goals
 
@@ -15,3 +25,4 @@
 
 - **实参含 `getfield` 的形（chained）**：看似"无副作用读"，实际 getfield 触发声明类初始化——其安全需类初始化状态推理。判定为超本片范围，保持拒绝（宁可少恢复一形，不引入跨类初始化证明）。
 - **语句位 reader 放行 `pop`**（decode 把 0x57 归 `Operation::Other`，`renders_its_reads` 不含）：放行须与 CST 保护正交——CST 拒绝在实参效果扫描阶段先产生，测试钉死其拒绝码不变。
+- **单点修改不足**（取证实测）：真实拒绝出自 `written.is_empty()` 分支，仅改 `renders_its_reads` 或仅改 reader 集合都不足以恢复；实现须同时处理 pop 认领与 reader 集合，并以 B6.argless（最简形）先验证判据打通，再验 B5.main 复合形。
