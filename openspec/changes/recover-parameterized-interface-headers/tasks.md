@@ -1,6 +1,6 @@
 ## 1. 取证与基线
 
-- [ ] 1.1 重放固定 BR 家族（SHA 核对）：读 `recover-proved-direct-parameterized-superclass`（6/8 验收）的类头 Signature 投影落点，确认它是否已读取类 `Signature` 的 `interfaces` 部分；记录 `BR$Impl`（`implements Comparable` 裸）与 `BR$StrBox`（`extends BR$Box`）基线类头文本。
+- [ ] 1.1 重放固定 BR 家族（SHA 核对）：读 `src/class_source.rs:6349`（`parameterized_superclass`）/6354（`direct_parent_candidate`，注意其硬编码 `java/lang/String` 是既有片的刻意窄边界，**本片不得顺手放宽**）/6360（总门）与 `crates/jarde-reader/src/signature.rs:134` 的 `parse_class_signature`（`interfaces` 已解析、`class_references()` 已收集），确认 `ClassSignatureErasureProof`（signature.rs:222）是否已含 interfaces 擦除项；记录 `BR$Impl`（`implements Comparable` 裸）与 `BR$StrBox`（`extends BR$Box`）基线类头文本。
 - [ ] 1.2 冻结至少四个变体/负例：单接口参数化（`implements Comparable<Impl>`，正例）、多接口部分可证（`implements A<X>, B`）、接口不可解析（保留裸类型 + 桥可见）、arity/擦除不符（拒绝）；各自 `java -Xverify:all` 通过并记录实现前后类头文本。
 
 ## 2. 类头接口投影
