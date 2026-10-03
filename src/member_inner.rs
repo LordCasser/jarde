@@ -318,6 +318,223 @@ pub(crate) fn prove_family_capture(
     }))
 }
 
+/// The general non-static member capture: the constructor may hold ordinary source work of its
+/// own beside the synthetic outer write. Every identity fact the six-instruction certificate
+/// states still holds — one synthetic final instance Outer field and no other Outer-typed field,
+/// one constructor whose first physical parameter is the Outer, a method-handle-free field — and
+/// two facts a body-holding constructor adds before its synthetic parameter can be elided: the
+/// write reads exactly `this` and that parameter wherever the body states them, and that
+/// parameter's value has no other consumer. A body with an exception handler keeps the
+/// separated presentation: this fold removes a statement by its primary origin alone.
+pub(crate) fn prove_family_instance_capture(
+    root: &[u8],
+    child: &ClassMemberFacts,
+    methods: &[(PhysicalMethodId, &MethodIr)],
+    budget: &mut Budget,
+) -> Result<std::result::Result<MemberCaptureProof, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    if child.stopped_at.is_some()
+        || child.fields.len() as u64 != child.field_count
+        || child.methods.len() as u64 != child.method_count
+    {
+        return refuse("member physical tables are incomplete");
+    }
+    if child.methods.iter().any(|method| {
+        !method
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Code")
+    }) {
+        return refuse("member method without bytecode has unknown capture uses");
+    }
+    let outer_descriptor = [b"L".as_slice(), root, b";"].concat();
+    let candidates: Vec<_> = child
+        .fields
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| {
+            field.descriptor.raw().0 == outer_descriptor
+                && field.access_flags & (0x1000 | 0x0010 | 0x0008) == 0x1010
+        })
+        .collect();
+    let [(field_index, field)] = candidates.as_slice() else {
+        return refuse("capture requires one synthetic final instance Outer field");
+    };
+    if child
+        .fields
+        .iter()
+        .filter(|field| field.descriptor.raw().0 == outer_descriptor)
+        .count()
+        != 1
+    {
+        return refuse("another Outer-typed field prevents unique capture identity");
+    }
+    let constructors: Vec<_> = child
+        .methods
+        .iter()
+        .filter(|method| method.name.raw().0 == b"<init>")
+        .collect();
+    let [constructor] = constructors.as_slice() else {
+        return refuse(
+            "capture requires one physical constructor; this() chains are outside this proof",
+        );
+    };
+    let descriptor = &constructor.descriptor.raw().0;
+    let Ok(parsed) = descriptor_facts(descriptor, DescriptorKind::Method) else {
+        return refuse("constructor descriptor could not be parsed");
+    };
+    if parsed
+        .parameters()
+        .first()
+        .and_then(|part| part.bytes(descriptor))
+        != Some(outer_descriptor.as_slice())
+    {
+        return refuse("constructor first physical parameter is not Outer");
+    }
+    let Some((constructor_id, constructor_ir)) = methods
+        .iter()
+        .find(|(id, _)| id.name.0 == b"<init>" && id.descriptor.0 == *descriptor)
+    else {
+        return refuse("constructor SSA is unavailable");
+    };
+    let (Some(code), Some(ssa)) = (constructor_ir.code(), constructor_ir.ssa()) else {
+        return refuse("constructor code or SSA is unavailable");
+    };
+    if code.stopped_at.is_some() || !code.exception_handlers.is_empty() {
+        return refuse("constructor body has an exception handler or stopped early");
+    }
+    let pool = constructor_ir.constant_pool();
+    for entry in pool {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if let CpEntryKind::MethodHandle {
+            reference_index, ..
+        } = entry.kind
+        {
+            if field_reference_matches(
+                pool,
+                Some(reference_index),
+                &child.this_class.raw().0,
+                &field.name.raw().0,
+                &outer_descriptor,
+            ) {
+                return refuse("capture field has a method-handle use outside direct SSA reads");
+            }
+        }
+    }
+    // The synthetic outer write: the one putfield of the capture field whose SSA reads are the
+    // entry `this` and the entry first parameter, wherever the body states them.
+    let mut writes = Vec::new();
+    for instruction in &code.instructions {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if instruction.opcode != 0xb5 {
+            continue;
+        }
+        if !field_reference_matches(
+            pool,
+            instruction.constant_pool_index,
+            &child.this_class.raw().0,
+            &field.name.raw().0,
+            &outer_descriptor,
+        ) {
+            continue;
+        }
+        let Some(write) = ssa_instruction(ssa, instruction.bci) else {
+            return refuse("capture write has no SSA instruction");
+        };
+        if write.reads().len() != 2
+            || !write
+                .reads()
+                .iter()
+                .any(|(_, value)| value_from_this_load(ssa, *value))
+            || !write
+                .reads()
+                .iter()
+                .any(|(_, value)| value_from_entry_slot_load(ssa, *value, Slot::Local(1)))
+        {
+            return refuse("capture write does not consume this and the first physical parameter");
+        }
+        writes.push(instruction.bci);
+    }
+    let [write_bci] = writes.as_slice() else {
+        return refuse("constructor must write the capture field exactly once");
+    };
+    let write_bci = *write_bci;
+    // The dropped parameter keeps no other reference: its entry value is loaded exactly once,
+    // for this write.
+    let Some(write) = ssa_instruction(ssa, write_bci) else {
+        return refuse("capture write has no SSA instruction");
+    };
+    let Some((_, parameter_load)) = write
+        .reads()
+        .iter()
+        .find(|(_, value)| value_from_entry_slot_load(ssa, *value, Slot::Local(1)))
+    else {
+        return refuse("capture write does not consume the first physical parameter");
+    };
+    let Definition::Instruction {
+        bci: parameter_load_bci,
+        ..
+    } = ssa.value(*parameter_load).def()
+    else {
+        return refuse("first physical parameter load is not an instruction");
+    };
+    let parameter_load_bci = *parameter_load_bci;
+    let Some(parameter_load) = ssa_instruction(ssa, parameter_load_bci) else {
+        return refuse("first physical parameter load has no SSA instruction");
+    };
+    let Some((_, parameter_entry)) = parameter_load
+        .reads()
+        .iter()
+        .find(|(slot, _)| *slot == Slot::Local(1))
+    else {
+        return refuse("first physical parameter load reads no entry value");
+    };
+    let parameter_uses = ssa.value(*parameter_entry).uses();
+    if parameter_uses.len() != 1 || parameter_uses[0].bci() != Some(parameter_load_bci) {
+        return refuse("first physical parameter has a consumer besides the capture write");
+    }
+    let mut reads = Vec::new();
+    for (method_id, ir) in methods {
+        budget.poll()?;
+        let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+            return refuse("member method code or SSA is unavailable");
+        };
+        match scan_capture_method_uses(
+            method_id,
+            ir,
+            code,
+            ssa,
+            constructor_id,
+            &child.this_class.raw().0,
+            &field.name.raw().0,
+            &outer_descriptor,
+            write_bci,
+            budget,
+        )? {
+            Ok(method_reads) => reads.extend(method_reads),
+            Err(reason) => return Ok(Err(reason)),
+        }
+    }
+    let Some(field_name) = std::str::from_utf8(&field.name.raw().0).ok() else {
+        return refuse("capture field name is not UTF-8");
+    };
+    Ok(Ok(MemberCaptureProof {
+        field_index: *field_index as u64,
+        field_name: field_name.to_owned(),
+        constructor: constructor_id.clone(),
+        write_bci,
+        reads,
+    }))
+}
+
+/// The value one specific entry slot holds, loaded anywhere in this body.
+fn value_from_entry_slot_load(ssa: &SsaTable, value: ValueId, slot: Slot) -> bool {
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    value_from_entry_load(ssa, value, slot, *bci)
+}
+
 /// Proves the one javac Java 8 local-`double` capture shape used by anonymous interfaces. The
 /// caller separately closes the root allocation argument and whole-input owner census; this
 /// certificate covers only the child's physical field, constructor, SSA reads, and field uses.
