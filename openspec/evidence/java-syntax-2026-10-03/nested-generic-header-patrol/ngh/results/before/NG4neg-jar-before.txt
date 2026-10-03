@@ -1,0 +1,25 @@
+// jarde: presentation of `NG4` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NG4 extends java.lang.Object {
+    public NG4() {
+        // @method <init>()V
+        // @declaration a constructor of `NG4`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NG4`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NG4$Box local1 = new NG4$Box();
+        local1.value = "y";
+        java.lang.System.out.println((java.lang.String) local1.value);
+        return;
+    }
+}
+member_family.state = refused: selected child has no unique matching InnerClasses self row or has EnclosingMethod identity
+declaration.generic_signature = None
+declaration.generic_refusal = None
+declaration.declaration = public class NG4 extends java.lang.Object

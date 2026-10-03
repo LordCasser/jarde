@@ -1,0 +1,28 @@
+// jarde: presentation of `NG3$Num` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<N:Ljava/lang/Number;>Ljava/lang/Object;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+class NG3$Num extends java.lang.Object {
+    // jarde: field Signature projection refused for `nLjava/lang/Number;`: unsupported (jvm_signature_scope_unproved): type variable `N` is not declared in the available Signature scope
+    java.lang.Number n;
+
+    NG3$Num() {
+        // @method <init>()V
+        // @declaration a constructor of `NG3$Num`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `get()Ljava/lang/Number;`: unsupported (jvm_signature_scope_unproved): type variable `N` is not declared in the available Signature scope
+    java.lang.Number get() {
+        // @method get()Ljava/lang/Number;
+        // @declaration an instance method of `NG3$Num`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.n;
+    }
+}
+member_family.state = refused: selected root has an InnerClasses self row naming an outer class
+declaration.generic_signature = Some("<N:Ljava/lang/Number;>Ljava/lang/Object;")
+declaration.generic_refusal = Some("unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position")
+declaration.declaration = class NG3$Num extends java.lang.Object

@@ -1,0 +1,18 @@
+# 三方对照（Z1 与 NG 变体；主线 a7762a92 + 本片）
+
+腿 A = 原 class（家族 jar 运行）；腿 B = 固定 JADX（dev）反编译→`--release 8` 重编→`-Xverify:all` 运行；
+腿 C = Jarde 恢复文本重编（子单元按"install the patched original"惯例替换于家族 jar 之前运行原 main；
+NG5 为折叠根整编运行）。运行输出 SHA 见 [sha256.txt](sha256.txt)，逐腿输出与 javac 日志在本目录。
+
+| 家族 | 腿 A（orig） | 腿 B（固定 JADX dev） | 腿 C（Jarde 重编） |
+| --- | --- | --- | --- |
+| Z1（frozen，含 lambda） | `b` / `[1, 1]` / `x` | **javac 失败**（`z1.map(str -> str.length())` 中 `str` 被擦为 Object——固定 JADX 泛型 lambda 投影缺口，与 lambda 片记录的 Y1 同族；日志 `Z1-jadx-javac.txt`） | 子单元 `Z1$Box`（头 `class Z1$Box<U>`）替换后运行原 main：`b`/`[1, 1]`/`x` 逐字一致（`-Xverify:all`，SHA 同腿 A） |
+| NG1 非静态 `Inner<U>` | `x` | **javac 失败**（同族缺口，`NG1-jadx-javac.txt`） | 子单元头投影正确，但**替换腿不适用**：javac 对源码形 `class NG1$Inner`（NG1 在 cp 上）做内部类仿真，自行合成外围捕获参数（`this$0$`/`(NG1, NG1)`），替换后 `NoSuchMethodError`——harness 伪影非引擎问题；行为锚 = 腿 A + 回归测试反射核对（头 `U`、字段泛型如实） |
+| NG2 双参 `Pair<U, V>` | `a 1` | **javac 失败**（同族） | 子单元替换：`a 1` 一致 ✓ |
+| NG3 bound `Num<N extends Number>` | `7` | **javac 失败**（同族） | 子单元替换：`7` 一致 ✓ |
+| NG4 `Box<U>` | `y` | **javac 失败**（同族） | 子单元替换：`y` 一致 ✓ |
+| NG5 `Box<U>`（折叠家族） | `z` | **javac 失败**（同族） | **折叠根整编运行**：`static class Box<U>` + `U value`，`z` 一致 ✓ |
+
+JADX 腿说明：固定 JADX（dev）对本组全部家族的泛型方法/lambda 体均按擦除参数生成源码，
+`--release 8` 重编失败属该参考工具的既有缺口（lambda 片 `y1-jadx-javac.txt` 同族），
+如实记录；本片不要求参考工具通过。NG4neg 负例不参与三方（阻断链前后逐字一致即锚）。

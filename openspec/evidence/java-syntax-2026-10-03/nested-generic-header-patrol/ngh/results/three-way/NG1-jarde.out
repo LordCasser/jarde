@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.NoSuchMethodError: 'void NG1$Inner.<init>(NG1)'
+	at NG1.main(Unknown Source)

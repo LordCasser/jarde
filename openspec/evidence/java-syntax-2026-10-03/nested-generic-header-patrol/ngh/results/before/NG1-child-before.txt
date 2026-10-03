@@ -1,0 +1,31 @@
+// jarde: presentation of `NG1$Inner` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<U:Ljava/lang/Object;>Ljava/lang/Object;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+class NG1$Inner extends java.lang.Object {
+    // jarde: field Signature projection refused for `valueLjava/lang/Object;`: unsupported (jvm_signature_scope_unproved): type variable `U` is not declared in the available Signature scope
+    java.lang.Object value;
+
+    final NG1 this$0;
+
+    NG1$Inner(NG1 arg1) {
+        // @method <init>(LNG1;)V
+        // @declaration a constructor of `NG1$Inner`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.this$0 = arg1;
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `get()Ljava/lang/Object;`: unsupported (jvm_signature_scope_unproved): type variable `U` is not declared in the available Signature scope
+    java.lang.Object get() {
+        // @method get()Ljava/lang/Object;
+        // @declaration an instance method of `NG1$Inner`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value;
+    }
+}
+member_family.state = refused: selected root has an InnerClasses self row naming an outer class
+declaration.generic_signature = Some("<U:Ljava/lang/Object;>Ljava/lang/Object;")
+declaration.generic_refusal = Some("unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position")
+declaration.declaration = class NG1$Inner extends java.lang.Object

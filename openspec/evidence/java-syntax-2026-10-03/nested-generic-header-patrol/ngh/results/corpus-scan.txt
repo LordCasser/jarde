@@ -1,0 +1,39 @@
+# Corpus 双腿扫描（stash 基线 vs recover-nested-generic-class-headers）
+
+corpus = tests/fixtures + fuzz/corpus + openspec/evidence 全部 .class（2138 个，剔除本片自证目录
+`nested-generic-header-patrol/ngh/`）；双腿各用 release 版 `examples/class_source_file` 转写
+（腿 1 = `git stash` 后基线构建，腿 2 = 本片构建），逐字节比较 stdout 的 SHA256。
+脚本（绝对根版本）见本文件尾。
+
+- same = 2135（OK 逐字一致 1483 + 双侧一致拒绝的损坏 fixture 652）
+- text-diff = 3
+- exit-diff = 0
+
+3 处差异逐一核对（均为预期）：
+
+| class | 判定 |
+| --- | --- |
+| `nested-generic-header-patrol/fixture/Z1$Box.class` | 本片锚：头 `class Z1$Box<U>` + `U value` 投影（预期投影） |
+| `collection-widening-patrol/widen/original/CWN$MyList.class` | 嵌套位证明通过后拒绝推进到诚实的下一层 `direct superclass does not resolve to one proved single-parameter parent definition`（SingleClass 环境无 JDK 父定义；头仍未投影，文本其余逐字一致，仅标记消息随证明推进） |
+| `collection-widening-patrol/widen/original/CWN$MySubList.class` | 同上（`ArrayList<String>` 参数化父形状） |
+
+无意外差异：顶层泛型头、既有折叠、lambda、nested-spelling 家族零变化。
+
+```sh
+# scan_corpus.sh <out.sha>（每腿一次；leg1 = stash 基线构建，leg2 = 本片构建）
+#!/bin/bash
+set -u
+OUT="$1"; ROOT="<repo root>"; BIN="$ROOT/target/release/examples/class_source_file"
+cd "$ROOT" || exit 1
+: > "$OUT"
+while IFS= read -r class; do
+  TEXT="$("$BIN" "$class" 2>/dev/null)"; CODE=$?
+  if [ $CODE -eq 0 ]; then
+    SHA=$(printf '%s' "$TEXT" | shasum -a 256 | cut -d' ' -f1); echo "OK $SHA $class" >> "$OUT"
+  else
+    echo "EXIT$CODE - $class" >> "$OUT"
+  fi
+done < <(find tests/fixtures fuzz/corpus openspec/evidence -name '*.class' -type f \
+  -not -path '*/nested-generic-header-patrol/ngh/*' | sort)
+# diff <leg1.sha> <leg2.sha>
+```
