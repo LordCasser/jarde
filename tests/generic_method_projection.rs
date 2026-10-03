@@ -246,16 +246,6 @@ fn parameterized_null_return_rejects_other_signatures_effects_and_self_calls() {
                 }
             "#,
         ),
-        (
-            "ParameterizedNullBindingProbe",
-            r#"
-                import java.util.List;
-                public class ParameterizedNullBindingProbe {
-                    public List<String> empty() { return null; }
-                    public List<String> caller() { return empty(); }
-                }
-            "#,
-        ),
     ] {
         let report = compiled_source(name, java);
         let method = report
@@ -269,6 +259,33 @@ fn parameterized_null_return_rejects_other_signatures_effects_and_self_calls() {
         }));
         assert!(method.text.contains("generic Signature projection refused"));
     }
+}
+
+#[test]
+fn parameterized_null_return_same_class_caller_projects_after_use_proof() {
+    let report = compiled_source(
+        "ParameterizedNullBindingProbe",
+        r#"
+            import java.util.List;
+            public class ParameterizedNullBindingProbe {
+                public List<String> empty() { return null; }
+                public List<String> caller() { return empty(); }
+            }
+        "#,
+    );
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"empty")
+        .expect("the physical empty method remains in the report");
+    assert_eq!(method.item.descriptor.raw().0, b"()Ljava/util/List;");
+    // `caller`'s direct `empty()` site is the one same-class use: it names this member's exact
+    // descriptor and no sibling of that name is declared, so the null-return projection admits
+    // with the same-class binding proved.
+    assert!(method.declaration.as_deref().is_some_and(|declaration| {
+        declaration.contains("java.util.List<java.lang.String> empty()")
+    }));
+    assert!(method.text.contains("same-class call binding proved"));
 }
 
 #[test]
@@ -413,17 +430,6 @@ fn generic_instance_null_return_rejects_unproved_signatures_bodies_and_bindings(
             "descriptor and bound",
         ),
         (
-            "GenericNullBindingProbe",
-            r#"
-                public class GenericNullBindingProbe {
-                    public <T extends Number> T value() { return null; }
-                    public Number value(Number input) { return input; }
-                    public Number caller() { return value(); }
-                }
-            "#,
-            "same-class overload binding",
-        ),
-        (
             "GenericNullStaticProbe",
             r#"
                 public class GenericNullStaticProbe {
@@ -459,6 +465,46 @@ fn generic_instance_null_return_rejects_unproved_signatures_bodies_and_bindings(
             "{boundary}: physical declaration missing: {method:?}"
         );
     }
+}
+
+#[test]
+fn generic_instance_null_return_admits_an_arity_disjoint_same_class_overload() {
+    let report = compiled_source(
+        "GenericNullBindingProbe",
+        r#"
+            public class GenericNullBindingProbe {
+                public <T extends Number> T value() { return null; }
+                public Number value(Number input) { return input; }
+                public Number caller() { return value(); }
+            }
+        "#,
+    );
+    let generic = report
+        .methods
+        .iter()
+        .find(|method| method.item.descriptor.raw().0 == b"()Ljava/lang/Number;")
+        .expect("the physical generic value() remains in the report");
+    // `caller`'s `value()` site names the no-argument member exactly; the one-argument sibling
+    // cannot apply there, so the null-return header projects with the binding proved.
+    assert!(
+        generic
+            .text
+            .contains("<T extends java.lang.Number> T value()"),
+        "{}",
+        generic.text
+    );
+    assert!(generic.text.contains("same-class call binding proved"));
+    let sibling = report
+        .methods
+        .iter()
+        .find(|method| method.item.descriptor.raw().0 == b"(Ljava/lang/Number;)Ljava/lang/Number;")
+        .expect("the physical sibling remains in the report");
+    assert!(
+        sibling
+            .declaration
+            .as_deref()
+            .is_some_and(|declaration| declaration.contains("java.lang.Number value("))
+    );
 }
 
 #[test]
@@ -735,7 +781,7 @@ fn neighboring_overload_without_a_caller_does_not_block_the_proved_method() {
 }
 
 #[test]
-fn same_class_caller_to_overloaded_name_refuses_projection() {
+fn same_class_caller_to_arity_disjoint_overload_proves_projection() {
     let report = compiled_source(
         "GenericCallerProbe",
         r#"
@@ -746,9 +792,18 @@ fn same_class_caller_to_overloaded_name_refuses_projection() {
         }
     "#,
     );
-    assert!(!report.text.contains("<T extends"));
+    // The three-arity candidate's only same-class site names its exact descriptor, and the
+    // two-arity sibling cannot apply at that site, so the binding is proved and the header
+    // projects; the sibling keeps whatever its own proof supports.
     assert!(
-        report.text.contains("generic_call_binding_unproved"),
+        report
+            .text
+            .contains("<T extends java.lang.Number> T choose(T arg0, T arg1, boolean arg2)"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("same-class call binding proved"),
         "{}",
         report.text
     );

@@ -390,15 +390,23 @@ fn same_class_constructor_binding_and_adjacent_generic_method_are_independent() 
     );
     let bytes = fs::read(dir.path().join("GenericConstructorBinding.class")).unwrap();
     let report = report_for(&bytes, "GenericConstructorBinding");
+    // `of`'s `new GenericConstructorBinding(value)` is the one same-class site of the
+    // constructor: this is the only `<init>` in the class, the hierarchy closes over `Object`,
+    // and the site's descriptor names this exact member, so the constructor header projects
+    // with the binding proved. The adjacent generic `identity` method (no same-class caller)
+    // keeps its own independent projection.
     assert!(
-        !report.text.contains("<T extends java.lang.Number>"),
+        report.text.contains("<T extends java.lang.Number>"),
         "{}",
         report.text
     );
     assert!(
-        report
-            .text
-            .contains("GenericConstructorBinding(java.lang.Number arg1)"),
+        report.text.contains("GenericConstructorBinding(T arg1)"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("same-class call binding proved"),
         "{}",
         report.text
     );

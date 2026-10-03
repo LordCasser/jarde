@@ -424,15 +424,11 @@ public abstract class MethodLocalBindingBoundary {
         fs::read(dir.join("MethodLocalBindingBoundary.class")).unwrap(),
         "MethodLocalBindingBoundary",
     );
+    // `wait` is still refused: its name may override an Object instance method, so the visible
+    // candidate set never closes. `target` — one same-class site, closed hierarchy, no sibling —
+    // now projects with the binding proved, so the blanket binding refusal is gone from the text.
     assert!(
-        report.text.contains("generic_call_binding_unproved"),
-        "{}",
-        report.text
-    );
-    assert!(
-        report
-            .text
-            .contains("java.lang.Number target(java.lang.Number arg1)"),
+        !report.text.contains("generic_call_binding_unproved"),
         "{}",
         report.text
     );
@@ -447,6 +443,18 @@ public abstract class MethodLocalBindingBoundary {
         report
             .text
             .contains("void wait(java.lang.Exception arg1) throws java.lang.Exception;"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report
+            .text
+            .contains("<T extends java.lang.Number> T target(T arg1);"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("same-class call binding proved"),
         "{}",
         report.text
     );
