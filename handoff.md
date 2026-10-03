@@ -49,6 +49,12 @@ sed -n '46,76p' .github/workflows/ci.yml | sed 's/^ *//' | grep -E "^cargo|^-A" 
 
 当前 CI 清单为 **29 项** `-A`（`grep -oE '\-A [a-z_:]+' .github/workflows/ci.yml | sort -u | wc -l` 实测；旧文所载"30 项"已过期，勿再引用）。且 CI 的 1.98.1 与本地 1.98.0 存在 patch 版 lint 差（实例：`iter_cloned_collect`，CI-only 报出，b27e0443 修复）——本地全绿不等于 CI clippy 绿，推送后必须核对 CI。
 
+**池形类型名的结构反射陷阱（2026-10-04 root 以 N2 实证确立，适用所有类型名呈现片）**：当一个类型名以**池形**（含 `$`、未经 `InnerClasses` 行集重拼）写进源码时，它在编译产物中是**顶层类**（javac 不从 `$` 推断嵌套，也不生成 InnerClasses 属性）。后果分两类，验收时必须区分：
+- **不受影响**：`getName()`（顶层类的二进制名恰等于池名，与原类逐字一致）、`getAnnotation`/`isAnnotationPresent`/`getDeclaredFields`/`getSuperclass`/`isArray` 等不依赖 InnerClasses 的调用。
+- **必然偏离或崩溃**：`getSimpleName()`（返回池名而非简单名）、`getEnclosingClass()`（返回 **null** → 后续解引用 NPE）、`getCanonicalName()`、`getDeclaringClass()`、`isMemberClass/isLocalClass/isAnonymousClass()`、`getNestHost/getNestMembers()`、`getEnclosingConstructor/getEnclosingMethod()`——这些的返回值**直接来自 InnerClasses 元数据**。
+故判据是：**池形呈现 ∧ 值被上述结构反射方法消费 → 必须保持拒绝**（响亮失败），否则产出"可编译且行为不同/NPE"，违反消隐前置不变量与 `recover-return-in-do-while-false` 的口径。单条件不足以拒绝——行集内的名重拼为源码形（呈现为折叠成员）后 javac 会重新生成 InnerClasses，结构反射正确（实测 `A12$Nested.class.getSimpleName()` → `Nested` ✓）；池形 + `getName()` 也正确。
+实例：`recover-nested-class-literal-values` 首版使 N2 从基线的响亮失败（10 处引注、方法体空、不可编译）变为可编译且 `multiLevel` 静默偏离（`Leaf`→`N2$Outer$Mid$Leaf`）、`recvChain` NPE 崩溃——root 验收发现并退回修正。根因是 N2 的 `InnerClasses` 只含 `Outer`/`Mid`/`Leaf` 三行且 `Leaf` 行属于 `N2$Outer$Mid` 的表（`javap -v N2.class` 实证），故 `N2$Outer$Mid$Leaf` 不在 N2 自己的行集内 → 池形。
+
 **冻结行为 fixture 必须有 CI 测试引用（2026-10-04 事故教训，强制）**：`tests/fixtures/proved-java-structure/` 的 16 个 fixture 中 8 个未被任何 CI 测试引用，其行为基线只存在于 README 与**手动** `run.sh`（实测 CI workflow 与全部测试文件都不调用 `run.sh`）。后果已由真实事故证明：ctor 重排使 `anonymous-super-dispatch` 的 `visibleDuringSuper` 由 `true` 翻转为 `false`，CI 全绿（2918 passed），只有 root 手动重放才发现。规则：**新增冻结行为 fixture 时 MUST 同时新增一个引用它的 CI 测试**（模式见 `tests/p3_anonymous_class_facts.rs`：`include_bytes!` + `Engine::open` + `ClassSourceRequest` + 文本断言；需跑 JVM 时用 `recompile_and_run`/`run_class` 先例并按 `p3_execution_comparison` 惯例标 `#[ignore]`）；`run.sh` 定位为**复现工具而非守卫**；`p5_corpus_fingerprint` 只守文件哈希、不守行为（其自述"asserts nothing about whether an acceptance row passes"），不可当作行为覆盖。当前 8 个未守卫 fixture 的补覆盖由 [recover-fixture-behavior-guard-coverage](openspec/changes/recover-fixture-behavior-guard-coverage/) 承担。
 
 **合成成员消隐的前置不变量（2026-10-04 root 以 javac 实证确立，适用全部消隐片）**：隐藏 javac 合成成员（`access$NNN`、lambda 伴生 `lambda$x$N`、擦除桥、`$SwitchMap` 辅助类）的**唯一合法性来源**是"源码自身能让 javac 重新生成同一合成物"，而不是"该成员在字节码里可证是合成的"。故每个消隐片都必须回答：**javac 重编时靠什么重建它？**
