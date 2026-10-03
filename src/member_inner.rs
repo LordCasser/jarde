@@ -1468,6 +1468,79 @@ pub(crate) fn scan_nested_annotation_root(
 const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0200 | 0x2000 | 0x4000;
 const FAMILY_VISIBILITY_FLAGS: u16 = 0x0001 | 0x0002 | 0x0004;
 
+/// The one `InnerClasses` row flag shape a Java source member declaration states. A member
+/// interface is what javac always writes for one — implicitly `static abstract` plus at most
+/// one visibility bit, never `final` and never synthetic — and a class row never carries the
+/// interface, annotation, enum or synthetic bits. The static member fold and the nested
+/// generic header projection share this single predicate, so a row the fold would not write is
+/// also a row whose header position stays unproved.
+pub(crate) fn source_spellable_member_row(access_flags: u16) -> bool {
+    let interface_row = access_flags & 0x0200 != 0;
+    let source_spellable = if interface_row {
+        access_flags & 0x0008 != 0
+            && access_flags & (0x0010 | 0x1000) == 0
+            && access_flags & !(FAMILY_VISIBILITY_FLAGS | 0x0008 | 0x0200 | 0x0400) == 0
+    } else {
+        access_flags & FAMILY_FORBIDDEN_FLAGS == 0
+    };
+    source_spellable
+        && (access_flags & FAMILY_VISIBILITY_FLAGS).count_ones() <= 1
+        && access_flags & (0x0010 | 0x0400) != (0x0010 | 0x0400)
+}
+
+/// Prove the nested source position of one `$`-named class from its **own** `InnerClasses`
+/// self row: the row states a named member relation (`outer` present, no `EnclosingMethod`
+/// identity), the source name joins (`outer + "$" + name` is exactly `this_class`), the row's
+/// kind and flags are the one spellable member shape [`source_spellable_member_row`] admits,
+/// and every source-level modifier bit the row states agrees with the class header's own
+/// `access_flags` (the header may add `ACC_SUPER`; the row may add `ACC_STATIC`). This is the
+/// same evidence the member fold requires of a child (`scan_family_root` on the owner's row,
+/// [`child_relation_agrees`] on this self row); a `$` name with no such row — a synthetic or
+/// top-level `$`-spelled class — keeps the unproved-header refusal.
+///
+/// `Ok(false)` states the position is not proved; a budget stop propagates as `Err`.
+pub(crate) fn prove_nested_member_position(
+    this_class: &[u8],
+    access_flags: u16,
+    nesting: &crate::class_source::ClassSourceAssemblyContext,
+    budget: &mut Budget,
+) -> Result<bool> {
+    const ACC_STATIC: u16 = 0x0008;
+    const ACC_SUPER: u16 = 0x0020;
+    if nesting.enclosing_method.is_some() {
+        return Ok(false);
+    }
+    let mut self_row = None;
+    for row in &nesting.resolved_inner_classes {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if row.class == this_class && self_row.replace(row).is_some() {
+            return Ok(false);
+        }
+    }
+    let Some(row) = self_row else {
+        return Ok(false);
+    };
+    let (Some(outer), Some(name)) = (
+        row.outer_class.as_deref(),
+        row.inner_name.as_ref().map(|name| name.0.as_slice()),
+    ) else {
+        return Ok(false);
+    };
+    let (Ok(outer_source), Ok(simple)) = (std::str::from_utf8(outer), std::str::from_utf8(name))
+    else {
+        return Ok(false);
+    };
+    Ok(jarde_java::names::is_java_identifier(simple)
+        && !outer.is_empty()
+        && outer_source
+            .split('/')
+            .all(jarde_java::names::is_java_identifier)
+        && [outer, b"$", name].concat() == this_class
+        && source_spellable_member_row(row.access_flags)
+        && row.access_flags & !ACC_STATIC == access_flags & !(ACC_SUPER | ACC_STATIC))
+}
+
 /// Discover one direct named child, the bounded interface/abstract declaration pair, or the
 /// direct static member family a fold projection renders as nested declarations.
 /// No binary-name search is used: the class index in the row supplies the exact symbolic target.
@@ -1542,19 +1615,9 @@ pub(crate) fn scan_family_root(
         // exactly that shape is source-spellable as a nested `static interface` declaration and
         // enters the same member family as a class row; every other interface row — a non-static
         // one, a final or synthetic one — stays a row this presentation cannot write.
-        let interface_row = row.access_flags & 0x0200 != 0;
-        let source_spellable = if interface_row {
-            row.access_flags & 0x0008 != 0
-                && row.access_flags & (0x0010 | 0x1000) == 0
-                && row.access_flags & !(FAMILY_VISIBILITY_FLAGS | 0x0008 | 0x0200 | 0x0400) == 0
-        } else {
-            row.access_flags & FAMILY_FORBIDDEN_FLAGS == 0
-        };
         if !jarde_java::names::is_java_identifier(simple)
             || child.0 != [root, b"$", simple.as_bytes()].concat()
-            || !source_spellable
-            || (row.access_flags & FAMILY_VISIBILITY_FLAGS).count_ones() > 1
-            || row.access_flags & (0x0010 | 0x0400) == (0x0010 | 0x0400)
+            || !source_spellable_member_row(row.access_flags)
         {
             return Ok(FamilyRootScan::Refused(
                 "direct member is not a source-spellable named class".to_owned(),
