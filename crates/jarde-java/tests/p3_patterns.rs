@@ -1404,7 +1404,8 @@ const BRIDGE_FLAGS: u16 = 0x0001 | 0x0040 | 0x1000;
 /// One bridge fixture: `Test.real()` plus the bridge member the caller describes.
 ///
 /// `body` is the bridge's own bytecode, `flags` its declaration, and `name`/`descriptor` its
-/// identity; the parameter cast fixture supplies its own forwarded member through `extra`.
+/// identity; the parameter cast fixtures supply their own forwarded members through `real2`
+/// and `real3`.
 /// The body one bridge fixture declares for its bridge member.
 enum BridgeBody {
     /// `aload_0; invokevirtual real; areturn` — the forward on its own.
@@ -1414,9 +1415,23 @@ enum BridgeBody {
     ForwardWithErasedCast,
     /// `aload_0; invokevirtual real; astore_1; aload_1; areturn` — a forward and something else.
     ForwardAndStore,
-    /// `aload_0; aload_1; checkcast java/lang/String; invokevirtual real2; areturn` — a cast on the
-    /// **parameter**, which is a check that can fail.
+    /// `aload_0; aload_1; checkcast java/lang/String; invokevirtual real2; areturn` — the
+    /// canonical parameter-cast form: the cast names exactly the type the forwarded invocation
+    /// declares for the parameter.
     ParameterCast,
+    /// `aload_0; aload_1; checkcast java/lang/String; checkcast java/lang/String; invokevirtual
+    /// real2; areturn` — a second cast on the value the first cast produced, which is not a
+    /// parameter the bridge was given.
+    ParameterCastTwice,
+    /// `aload_0; aload_1; checkcast java/lang/Object; invokevirtual real2; areturn` — a cast that
+    /// names a type the forwarded invocation does not declare for the parameter.
+    ParameterCastWrongType,
+    /// `aload_0; aload_1; checkcast java/lang/String; invokevirtual real2; checkcast
+    /// java/lang/String; areturn` — the parameter cast and the return erasure together.
+    ParameterCastWithErasedCast,
+    /// `aload_0; aload_1; checkcast java/lang/String; invokevirtual real3; return` — the
+    /// canonical parameter-cast form of a void forward.
+    ParameterCastVoid,
 }
 
 fn bridge_class(name: &str, descriptor: &str, flags: u16, body: BridgeBody) -> Vec<u8> {
@@ -1428,6 +1443,7 @@ fn bridge_class(name: &str, descriptor: &str, flags: u16, body: BridgeBody) -> V
         "real2",
         "(Ljava/lang/String;)Ljava/lang/String;",
     );
+    let real3 = member_ref(&mut pool, test, "real3", "(Ljava/lang/String;)V");
     let string_name = pool.utf8("java/lang/String");
     let string = pool.class(string_name);
     let bridge_name = pool.utf8(name);
@@ -1463,6 +1479,46 @@ fn bridge_class(name: &str, descriptor: &str, flags: u16, body: BridgeBody) -> V
             .op(0xb6)
             .index(real2) // 5: invokevirtual Test.real2
             .op(0xb0) // 8: areturn
+            .done(),
+        BridgeBody::ParameterCastTwice => Code::default()
+            .op(0x2a) // 0: aload_0
+            .op(0x2b) // 1: aload_1
+            .op(0xc0)
+            .index(string) // 2: checkcast java/lang/String
+            .op(0xc0)
+            .index(string) // 5: checkcast java/lang/String
+            .op(0xb6)
+            .index(real2) // 8: invokevirtual Test.real2
+            .op(0xb0) // 11: areturn
+            .done(),
+        BridgeBody::ParameterCastWrongType => Code::default()
+            .op(0x2a) // 0: aload_0
+            .op(0x2b) // 1: aload_1
+            .op(0xc0)
+            .index(object) // 2: checkcast java/lang/Object
+            .op(0xb6)
+            .index(real2) // 5: invokevirtual Test.real2
+            .op(0xb0) // 8: areturn
+            .done(),
+        BridgeBody::ParameterCastWithErasedCast => Code::default()
+            .op(0x2a) // 0: aload_0
+            .op(0x2b) // 1: aload_1
+            .op(0xc0)
+            .index(string) // 2: checkcast java/lang/String
+            .op(0xb6)
+            .index(real2) // 5: invokevirtual Test.real2
+            .op(0xc0)
+            .index(string) // 8: checkcast java/lang/String
+            .op(0xb0) // 11: areturn
+            .done(),
+        BridgeBody::ParameterCastVoid => Code::default()
+            .op(0x2a) // 0: aload_0
+            .op(0x2b) // 1: aload_1
+            .op(0xc0)
+            .index(string) // 2: checkcast java/lang/String
+            .op(0xb6)
+            .index(real3) // 5: invokevirtual Test.real3
+            .op(0xb1) // 8: return
             .done(),
     };
     class_bytes(
@@ -1891,7 +1947,7 @@ fn a_bridge_that_does_something_besides_forward_is_refused_and_its_body_kept() {
 }
 
 #[test]
-fn a_cast_a_bridge_applies_to_a_parameter_is_not_an_erasure() {
+fn a_parameter_cast_to_the_source_type_is_the_canonical_bridge_shape() {
     let class = bridge_class(
         "p",
         "(Ljava/lang/Object;)Ljava/lang/String;",
@@ -1907,16 +1963,26 @@ fn a_cast_a_bridge_applies_to_a_parameter_is_not_an_erasure() {
     );
     assert_eq!(report.bridges.len(), 1);
     let bridge = &report.bridges[0];
-    assert!(!bridge.presented());
-    assert!(!bridge.pure_forward);
-    assert_eq!(bridge.target, None);
-    assert_eq!(bridge.call_bci, None);
-    assert_eq!(bridge.cast_bci, None);
-    let refusal = bridge.refusal.as_ref().expect("the refusal is recorded");
-    assert_eq!(refusal.code, "jre_bridge_cast_not_erasure");
-    assert!(refusal.message.contains("can fail"), "{}", refusal.message);
-    // The bridge verdict remains a refusal, while ordinary cast recovery keeps the parameter check
-    // in the call argument and writes the body as Java.
+    // The canonical parameter-cast form is the shape javac writes for a specialized override:
+    // presented as a pure forward, with the cast stated (and never erased) for the assembler.
+    assert!(bridge.presented());
+    assert!(bridge.pure_forward);
+    assert_bridge_target(
+        bridge,
+        "Test",
+        "real2",
+        "(Ljava/lang/String;)Ljava/lang/String;",
+        jarde_java::facts::InvokeKind::Virtual,
+        false,
+    );
+    assert_eq!(bridge.call_bci, Some(5));
+    assert_eq!(
+        bridge.cast_bci, None,
+        "a parameter cast is never the erasure"
+    );
+    let refusal = bridge.refusal.as_ref();
+    assert!(refusal.is_none(), "{refusal:?}");
+    // The presented body keeps the parameter check quoted as the call argument it guards.
     assert!(
         report
             .text
@@ -1925,6 +1991,139 @@ fn a_cast_a_bridge_applies_to_a_parameter_is_not_an_erasure() {
         report.text
     );
     assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(report.representation, Representation::Java);
+}
+
+#[test]
+fn a_void_parameter_cast_forward_is_presented_without_any_erasure() {
+    let class = bridge_class(
+        "p",
+        "(Ljava/lang/Object;)V",
+        BRIDGE_FLAGS,
+        BridgeBody::ParameterCastVoid,
+    );
+    let report = present(
+        &class,
+        b"p",
+        b"(Ljava/lang/Object;)V",
+        2,
+        vec![Some("self".into()), Some("value".into())],
+    );
+    assert_eq!(report.bridges.len(), 1);
+    let bridge = &report.bridges[0];
+    assert!(bridge.presented());
+    assert!(bridge.pure_forward);
+    assert_bridge_target(
+        bridge,
+        "Test",
+        "real3",
+        "(Ljava/lang/String;)V",
+        jarde_java::facts::InvokeKind::Virtual,
+        false,
+    );
+    assert_eq!(bridge.call_bci, Some(5));
+    assert_eq!(bridge.cast_bci, None);
+    assert!(bridge.refusal.is_none());
+    assert!(
+        report
+            .text
+            .contains("this.real3((java.lang.String) value);"),
+        "{}",
+        report.text
+    );
+    assert_eq!(report.representation, Representation::Java);
+}
+
+#[test]
+fn a_parameter_cast_with_the_return_erasure_is_one_canonical_bridge() {
+    let class = bridge_class(
+        "p",
+        "(Ljava/lang/Object;)Ljava/lang/String;",
+        BRIDGE_FLAGS,
+        BridgeBody::ParameterCastWithErasedCast,
+    );
+    let report = present(
+        &class,
+        b"p",
+        b"(Ljava/lang/Object;)Ljava/lang/String;",
+        2,
+        vec![Some("self".into()), Some("value".into())],
+    );
+    assert_eq!(report.bridges.len(), 1);
+    let bridge = &report.bridges[0];
+    assert!(bridge.presented());
+    assert!(bridge.pure_forward);
+    assert_eq!(bridge.call_bci, Some(5));
+    // The return cast is still the one erasure this rule owns; the parameter cast is not.
+    assert_eq!(bridge.cast_bci, Some(8));
+    assert_eq!(bridge.erased.as_deref(), Some("java/lang/String"));
+    assert!(bridge.refusal.is_none());
+}
+
+#[test]
+fn a_parameter_cast_to_any_other_type_is_not_an_erasure() {
+    let class = bridge_class(
+        "p",
+        "(Ljava/lang/Object;)Ljava/lang/String;",
+        BRIDGE_FLAGS,
+        BridgeBody::ParameterCastWrongType,
+    );
+    let report = present(
+        &class,
+        b"p",
+        b"(Ljava/lang/Object;)Ljava/lang/String;",
+        2,
+        vec![Some("self".into()), Some("value".into())],
+    );
+    // The cast names `Object` and the forwarded invocation declares `String` for the parameter:
+    // the bitwise criterion fails, and the verdict stays a refusal the source cannot re-derive.
+    // The body itself quotes at the unsafe argument, so the verdict is read from the refusal
+    // diagnostic the rule records either way.
+    let refusal = report
+        .diagnostics
+        .iter()
+        .find(|diagnostic| diagnostic.code == "jre_bridge_cast_not_erasure")
+        .expect("the parameter-cast refusal is recorded");
+    assert!(
+        refusal
+            .message
+            .contains("does not declare that type for the parameter"),
+        "{}",
+        refusal.message
+    );
+    assert!(refusal.message.contains("can fail"), "{}", refusal.message);
+}
+
+#[test]
+fn a_cast_of_a_value_that_is_not_a_parameter_is_not_the_parameter_cast_shape() {
+    let class = bridge_class(
+        "p",
+        "(Ljava/lang/Object;)Ljava/lang/String;",
+        BRIDGE_FLAGS,
+        BridgeBody::ParameterCastTwice,
+    );
+    let report = present(
+        &class,
+        b"p",
+        b"(Ljava/lang/Object;)Ljava/lang/String;",
+        2,
+        vec![Some("self".into()), Some("value".into())],
+    );
+    assert_eq!(report.bridges.len(), 1);
+    let bridge = &report.bridges[0];
+    // The second cast checks the value the first cast produced, which is not a parameter the
+    // bridge was given: out of the canonical shape, and refused as a check, not an erasure.
+    assert!(!bridge.presented());
+    assert!(!bridge.pure_forward);
+    let refusal = bridge.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_bridge_cast_not_erasure");
+    assert!(
+        refusal
+            .message
+            .contains("not one of the bridge's own parameters"),
+        "{}",
+        refusal.message
+    );
     assert_eq!(report.representation, Representation::Java);
 }
 
