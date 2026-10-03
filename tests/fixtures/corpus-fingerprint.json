@@ -957,6 +957,16 @@
       "path": "tests/fixtures/JvmBytecodeOracle.java"
     },
     {
+      "blake3": "e2cd9d5b2c19e42325d9e0c2d1c3da3c9e3a3c929f0fb03daf7aa1d62e1c7727",
+      "bytes": 1669,
+      "path": "tests/fixtures/assert-statement-sugar/AssertProbeExtraGuard.class"
+    },
+    {
+      "blake3": "5248a7e5c52c83d020e227fe8fc8a157e75c6df6e0569c749c16c44ae89b0912",
+      "bytes": 1666,
+      "path": "tests/fixtures/assert-statement-sugar/AssertProbeWrongOwner.class"
+    },
+    {
       "blake3": "6c771a42b1cd6800abcf37e14d2d6e5d0d7af222a15d3a85ac648358efb0c59d",
       "bytes": 108,
       "path": "tests/fixtures/b2-bootstrap-descriptor/LambdaSample.java"

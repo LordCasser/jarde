@@ -874,6 +874,10 @@ pub enum MemberFamilyDerivedKind {
     /// One access-bridge call site a member fold re-spelled into the qualified field access the
     /// bridge forwarded: the anchors name the invokestatic site and the hidden bridge.
     AccessBridgeCall,
+    /// The javac assert switch field the assert projection hid from the class's text: the
+    /// anchors name the physical field beside the class definition it was proved against, and
+    /// the span is the header the field's declaration would have followed.
+    HiddenAssertSwitchField,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -1135,9 +1139,14 @@ pub struct ClassSourceInitializerField {
 #[serde(deny_unknown_fields)]
 pub struct ClassSourceProjectionInputs {
     /// Physical method indices the assembled text omits entirely: proved array-constructor
-    /// helpers and omitted lambda companions, whose every class-wide use a projection rewrote.
-    /// The member records themselves stay in [`ClassSourceReport::methods`].
+    /// helpers and omitted lambda companions, whose every class-wide use a projection rewrote,
+    /// and a `<clinit>` the assert projection left empty. The member records themselves stay in
+    /// [`ClassSourceReport::methods`].
     pub omitted_methods: Vec<u64>,
+    /// Physical field indices the assembled text omits: the javac assert switch field, hidden
+    /// with its whole pattern (initialization line and every guard) proved rewritten to `assert`
+    /// statements. The field records themselves stay in [`ClassSourceReport::fields`].
+    pub hidden_fields: Vec<u64>,
     /// The marker lines the assembled text carries at the top of the class body, in order.
     pub markers: Vec<String>,
     /// The composed member texts the assembled text substitutes for those members' physical
@@ -1151,6 +1160,7 @@ impl ClassSourceProjectionInputs {
     /// Whether every channel is empty: the serialized form of a class without projections.
     pub fn is_empty(&self) -> bool {
         self.omitted_methods.is_empty()
+            && self.hidden_fields.is_empty()
             && self.markers.is_empty()
             && self.member_texts.is_empty()
             && self.enum_projection.is_none()
@@ -7158,6 +7168,30 @@ impl ClassSourceMethod {
             &self.annotations,
         ))
     }
+
+    /// This member's text with its body replaced by the assert projection's staged statements,
+    /// keeping the original envelope the recovery wrote and every marker already placed.
+    ///
+    /// The markers are kept rather than refused (unlike the integer-constant projection): the
+    /// assert fold replaces statement text inside the same block, and a marker another
+    /// projection placed above the declaration states a fact this replacement does not touch.
+    /// A member whose current body is not its own AST's emission is refused by the caller before
+    /// this composes anything.
+    pub(crate) fn assert_projection_text(&self, body: &str) -> Option<String> {
+        let declaration = self.declaration.as_ref()?;
+        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
+            return None;
+        };
+        let original = artifact(&report.text)?;
+        let staged = Artifact {
+            envelope: original.envelope,
+            statements: body,
+        };
+        Some(prefix_method_annotations(
+            block_member(declaration, Placed::Block(staged), &self.markers),
+            &self.annotations,
+        ))
+    }
     /// The one physical-recovery marker that may be replaced by a later complete family re-run.
     /// It remains on this physical record; only the separately assembled source text omits it.
     pub(crate) fn has_only_explanation_marker(&self) -> bool {
@@ -7790,6 +7824,10 @@ pub(crate) struct ClassSourceTextContext<'a> {
     pub(crate) array_helper_indices: Option<&'a [u64]>,
     pub(crate) array_method_texts: Option<&'a [(u64, String)]>,
     pub(crate) array_helper_markers: Option<&'a [String]>,
+    /// Physical field indices the assembled text omits: the assert projection's hidden switch
+    /// field. `None` when no projection staged one, which is the assembly of every class that
+    /// keeps its fields physical.
+    pub(crate) hidden_fields: Option<&'a [u64]>,
 }
 
 impl EnumConstantSourceProjection {
@@ -8631,6 +8669,7 @@ pub(crate) fn source_text_with_method_projections(
         array_helper_indices: None,
         array_method_texts: None,
         array_helper_markers: None,
+        hidden_fields: None,
     };
     if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return None;
@@ -8981,18 +9020,24 @@ pub(crate) fn member_family_source_text(
     {
         return None;
     }
+    // The staged member texts stay out of this rebuild deliberately: a first pass that staged
+    // them (a lambda companion rewrite) keeps its pre-existing refusal here, and the assert
+    // projection — which refuses beside any staged text — never adds one. The omitted-member and
+    // hidden-field channels enter only for a class the assert projection itself staged (one
+    // with hidden fields), so every other first pass keeps exactly the equality it had.
+    let assert_projected = !root.projection_inputs.hidden_fields.is_empty();
     let context = ClassSourceTextContext {
         initializer_field_order: None,
         declared_methods: root.methods.len() as u64,
         member_table: None,
         execution: &root.execution,
         enum_projection: None,
-        array_helper_indices: None,
+        array_helper_indices: assert_projected
+            .then_some(&root.projection_inputs.omitted_methods[..]),
         array_method_texts: None,
         array_helper_markers: None,
+        hidden_fields: assert_projected.then_some(&root.projection_inputs.hidden_fields[..]),
     };
-    // Other class-level projections have their own writer inputs. This equality proves that the
-    // narrow family writer can reproduce the physical root before adding the nested declaration.
     if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return None;
     }
@@ -9013,6 +9058,8 @@ pub(crate) fn member_family_source_text(
         + usize::from(member.capture.is_none())
         + 3 * usize::from(member.generic_static.is_some())
         + member.outer_super_bridges.len()
+        + root.projection_inputs.hidden_fields.len()
+        + member.child.projection_inputs.hidden_fields.len()
         + member
             .root_methods
             .iter()
@@ -9042,15 +9089,21 @@ pub(crate) fn declaration_pair_source_text(
     members: &[ClassSourceMemberChild; 2],
 ) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
     let declaration = root.declaration.as_ref()?;
+    // The same retained-input equality as the narrow writer: the pair composes the physical root
+    // the assert projection staged (omitted members and hidden fields included), while every
+    // other first pass — staged member texts among them — keeps the refusal it had.
+    let assert_projected = !root.projection_inputs.hidden_fields.is_empty();
     let context = ClassSourceTextContext {
         initializer_field_order: None,
         declared_methods: root.methods.len() as u64,
         member_table: None,
         execution: &root.execution,
         enum_projection: None,
-        array_helper_indices: None,
+        array_helper_indices: assert_projected
+            .then_some(&root.projection_inputs.omitted_methods[..]),
         array_method_texts: None,
         array_helper_markers: None,
+        hidden_fields: assert_projected.then_some(&root.projection_inputs.hidden_fields[..]),
     };
     if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return None;
@@ -9157,6 +9210,7 @@ fn source_text_with_member(
     let array_helper_indices = context.array_helper_indices;
     let array_method_texts = context.array_method_texts;
     let array_helper_markers = context.array_helper_markers;
+    let hidden_fields = context.hidden_fields;
     let mut out = String::new();
     out.push_str(&format!(
         "// jarde: presentation of `{}` from the class file's own declaration and one recovery run per member.\n",
@@ -9257,6 +9311,26 @@ fn source_text_with_member(
                     .constant_field_indices
                     .contains(&field.item.index)
         }) {
+            continue;
+        }
+        if hidden_fields.is_some_and(|hidden| hidden.contains(&field.item.index)) {
+            // The assert projection proved the field's whole pattern rewritten: the declaration
+            // goes with it, and the derived record keeps the physical field anchored on the
+            // header it was hidden beside.
+            derived.push(MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::HiddenAssertSwitchField,
+                start: header_start,
+                end: out.len() - 1,
+                anchors: vec![
+                    MemberFamilyPhysicalAnchor::Field {
+                        field: field.item.identity.clone(),
+                        index: field.item.index,
+                    },
+                    MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: field.item.identity.owner.clone(),
+                    },
+                ],
+            });
             continue;
         }
         if !first {
@@ -9516,6 +9590,24 @@ fn render_member_class(
         {
             continue;
         }
+        if child
+            .projection_inputs
+            .hidden_fields
+            .contains(&field.item.index)
+        {
+            // The child's own assert projection hid this field; the nested rendering hides it
+            // too, anchored beside the header its flat text anchored it on.
+            derived.push(MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::HiddenAssertSwitchField,
+                start: header_start,
+                end: out.len() - 1,
+                anchors: vec![MemberFamilyPhysicalAnchor::Field {
+                    field: field.item.identity.clone(),
+                    index: field.item.index,
+                }],
+            });
+            continue;
+        }
         if !first {
             out.push('\n');
         }
@@ -9555,6 +9647,18 @@ fn render_member_class(
         if member
             .generic_static
             .is_some_and(|generic| generic.bridge == method.item.identity)
+        {
+            continue;
+        }
+        // A member the child's own assert projection omitted (its switch line was all its
+        // `<clinit>` held) carries no declaration here either, exactly as the child's flat text
+        // omits it. Other first passes keep their members here as before: this channel reaches
+        // the nested writer only beside the child's hidden fields.
+        if !child.projection_inputs.hidden_fields.is_empty()
+            && child
+                .projection_inputs
+                .omitted_methods
+                .contains(&method.item.index)
         {
             continue;
         }
@@ -9658,6 +9762,7 @@ pub(crate) struct NestedRetainedTexts<'a> {
     pub(crate) omitted_methods: &'a [u64],
     pub(crate) markers: &'a [String],
     pub(crate) member_texts: &'a [ClassSourceProjectedMemberText],
+    pub(crate) hidden_fields: &'a [u64],
 }
 
 pub(crate) fn nested_static_member_source_text(
@@ -9757,6 +9862,26 @@ pub(crate) fn nested_static_member_source_text(
             // the physical field it removed, anchored on the declaration it hides beside.
             derived.push(MemberFamilyDerivedProjection {
                 kind: MemberFamilyDerivedKind::HiddenCaptureField,
+                start: hidden_span.0,
+                end: hidden_span.1,
+                anchors: vec![
+                    MemberFamilyPhysicalAnchor::Field {
+                        field: field.item.identity.clone(),
+                        index: field.item.index,
+                    },
+                    MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: child_definition.clone(),
+                    },
+                ],
+            });
+            continue;
+        }
+        if retained.hidden_fields.contains(&field.item.index) {
+            // The child's own assert projection proved its switch field rewritten; the fold's
+            // nested rendering keeps that hiding, anchored beside the header as its flat text
+            // was.
+            derived.push(MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::HiddenAssertSwitchField,
                 start: hidden_span.0,
                 end: hidden_span.1,
                 anchors: vec![

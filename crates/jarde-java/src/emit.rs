@@ -183,6 +183,12 @@ pub(crate) fn emit_class_source_statements(
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
     let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
+    // A `<clinit>`'s statements are re-emitted under the same return suppression the committed
+    // artifact applied ([`Emitter::body`] sets the flag from the declaration form there, and a
+    // statement-only re-emission holds no declaration): Java has no spelling for a `return`
+    // inside an initializer block (JLS §8.7), so a terminator or nested void `return` the region
+    // structure placed inside these statements is skipped here exactly as it was there.
+    emitter.initializer = member.name.0 == b"<clinit>";
     match emitter.stmts(statements, indentation) {
         Ok(()) => Ok(emitter.finish().text),
         Err(Halt::Stop(stop)) => Err(stop),
@@ -779,6 +785,18 @@ impl<'a> Emitter<'a> {
                 self.put(&pad, at)?;
                 self.put("throw ", at)?;
                 self.expr(value)?;
+                self.put(";\n", at)
+            }
+            StmtKind::Assert { cond, message } => {
+                // The message is the only optional half, and the separator belongs to it: an
+                // assert without one is `assert cond;`, never `assert cond :;`.
+                self.put(&pad, at)?;
+                self.put("assert ", at)?;
+                self.expr(cond)?;
+                if let Some(message) = message {
+                    self.put(" : ", at)?;
+                    self.expr(message)?;
+                }
                 self.put(";\n", at)
             }
             StmtKind::ConstructorCall { target, args } => {
