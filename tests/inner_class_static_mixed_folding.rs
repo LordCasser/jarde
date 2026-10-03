@@ -1,21 +1,21 @@
-//! Acceptance tests of change `recover-inner-class-static-mixed-folding`: a family that mixes
-//! direct static member rows with one non-static candidate folds its static subset into the
-//! enclosing class's own source unit, while the non-static member keeps the separated
-//! presentation it always had — neither member blocks the other.
+//! Acceptance tests of change `recover-inner-class-static-mixed-folding` — extended by
+//! `recover-inner-class-instance-folding` to fold the family's non-static candidate in the same
+//! assembly: a family that mixes direct static member rows with one non-static candidate folds
+//! **every** member into the enclosing class's own source unit, with the instance child's
+//! synthetic capture elided inside that text.
 //!
-//! The anchors the proposal fixes:
+//! The anchors the proposals fix:
 //!
-//! 1. the patrol's frozen N1 family: `static class Stat` folds with source-spelled references
-//!    (`new Stat()`), every reference to the non-folded `Inner` keeps the pool spelling, and the
-//!    one body the recovery layer never proved (`use`'s qualified `outer.new Inner(9)`) is
-//!    carried verbatim — the registered slice-two gap, byte-identical to the pre-change
-//!    separated unit's;
+//! 1. the patrol's frozen N1 family: `static class Stat` and `class Inner` fold together, the
+//!    synthetic `this$0` capture (constructor parameter, field, write) and the `access$000`
+//!    bridge are elided, constructions state the qualified syntax, and the whole family set
+//!    recompiles under `--release 8`, verifies under `-Xverify:all`, and prints exactly what
+//!    the original class files print (`10`/`7`/`13`);
 //! 2. the three frozen variants — two statics beside one non-static, one beside one, and the
-//!    pure non-static negative — recompile with their separated sibling units under
-//!    `javac --release 8`, verify under `-Xverify:all`, and print exactly what the original
-//!    class files print;
-//! 3. the boundaries: a pure non-static family never folds, and budget or cancellation stops
-//!    the whole mixed fold atomically.
+//!    pure non-static family — each recompile as their single folded unit and reproduce the
+//!    original runs;
+//! 3. the boundaries: the separated per-class presentations stay byte-for-byte what they were,
+//!    and budget or cancellation stops the whole fold atomically.
 
 use jarde::class_source::{
     ClassSourceMemberFamily, ClassSourceMemberProjection, ClassSourceReport,
@@ -297,11 +297,10 @@ const MV1_SOURCE: &str = r#"public class MV1 {
 "#;
 
 #[test]
-fn n1_folds_its_static_stat_beside_the_separated_inner() {
+fn n1_folds_stat_and_inner_together_with_the_synthetics_elided() {
     let jar = n1_jar();
     let report = source_of(&jar, "N1");
-    // The static subset folds: one nested declaration in the root's own source unit, and every
-    // reference to it inside the fold scope states the source spelling.
+    // Both members fold into one nested assembly, in the root's own InnerClasses row order.
     assert!(
         report
             .text
@@ -310,66 +309,93 @@ fn n1_folds_its_static_stat_beside_the_separated_inner() {
         report.text
     );
     assert!(
+        report
+            .text
+            .contains("class Inner extends java.lang.Object {"),
+        "{}",
+        report.text
+    );
+    // The static subset's references state the source spelling.
+    assert!(
         report.text.contains("new Stat().use(new N1())"),
         "{}",
         report.text
     );
-    assert!(report.text.contains("int use(N1 arg1)"), "{}", report.text);
-    // No code line keeps the folded member's pool spelling; the marker comments keep the
+    // The instance child's synthetic capture is elided: no `this$0` field declaration, no
+    // synthetic constructor parameter, no capture write, and no `access$000` bridge.
+    assert!(!report.text.contains("this$0"), "{}", report.text);
+    assert!(report.text.contains("Inner(int arg2) {"), "{}", report.text);
+    assert!(!report.text.contains("access$000"), "{}", report.text);
+    // Constructions state the qualified syntax the three provable contexts lower to.
+    assert!(
+        report.text.contains("return new Inner(arg1);"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("new N1().new Inner(3).total()"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("return arg1.new Inner(9).total();"),
+        "{}",
+        report.text
+    );
+    // The captured outer read renders as the qualified this, with the hidden bridge's call
+    // site re-spelled to the field it forwarded.
+    assert!(
+        report.text.contains("return this.tag + N1.this.base;"),
+        "{}",
+        report.text
+    );
+    // No code line keeps a folded member's pool spelling; the marker comments keep the
     // physical descriptors by design.
     for line in report.text.lines() {
         if !line.trim_start().starts_with("//") {
             assert!(!line.contains("N1$Stat"), "{line}");
+            assert!(!line.contains("N1$Inner"), "{line}");
         }
     }
-    // The non-static member never enters the fold: its references keep the pool spelling the
-    // separated presentation always stated, and no nested Inner declaration appears.
-    assert!(
-        report.text.contains("N1$Inner make(int arg1)"),
-        "{}",
-        report.text
-    );
-    assert!(
-        report.text.contains("return new N1$Inner(this, arg1);"),
-        "{}",
-        report.text
-    );
-    assert!(
-        report.text.contains("new N1$Inner(new N1(), 3).total()"),
-        "{}",
-        report.text
-    );
-    assert!(!report.text.contains("class Inner"), "{}", report.text);
-    // The one body the recovery layer never proved — `use`'s qualified `outer.new Inner(9)` —
-    // is carried verbatim into the nested declaration: the registered slice-two gap, exactly
-    // the pre-change separated unit's presentation of the same member.
-    assert!(
-        report
-            .text
-            .contains("not recovered: the recovery run for `use(LN1;)I`"),
-        "{}",
-        report.text
-    );
-    let ClassSourceMemberFamily::PreparedStatic {
+    let ClassSourceMemberFamily::PreparedFold {
         members,
         projection: ClassSourceMemberProjection::Projected { derived },
     } = &report.member_family
     else {
         panic!(
-            "the mixed family folds its static subset: {:?}",
+            "the mixed family folds both members: {:?}",
             report.member_family
         )
     };
-    assert_eq!(members.len(), 1);
-    assert_eq!(members[0].relation.simple_name, "Stat");
-    assert_eq!(members[0].relation.access_flags, 0x0008);
+    assert_eq!(
+        members
+            .iter()
+            .map(|member| member.relation.simple_name.as_str())
+            .collect::<Vec<_>>(),
+        vec!["Inner", "Stat"]
+    );
+    assert_eq!(members[0].relation.access_flags, 0x0000);
+    assert_eq!(members[1].relation.access_flags, 0x0008);
     assert!(
         derived.iter().any(|entry| entry.kind
             == jarde::class_source::MemberFamilyDerivedKind::MemberClassDeclaration)
     );
+    assert!(derived.iter().any(
+        |entry| entry.kind == jarde::class_source::MemberFamilyDerivedKind::HiddenAccessBridge
+    ));
     assert!(
-        derived.iter().any(|entry| entry.kind
-            == jarde::class_source::MemberFamilyDerivedKind::MemberConstructorName)
+        derived
+            .iter()
+            .any(|entry| entry.kind
+                == jarde::class_source::MemberFamilyDerivedKind::AccessBridgeCall)
+    );
+    assert!(derived.iter().any(
+        |entry| entry.kind == jarde::class_source::MemberFamilyDerivedKind::HiddenCaptureField
+    ));
+    // The whole family set is the one folded unit now: it recompiles, verifies and runs.
+    assert_eq!(
+        recompile_family_set_and_run("n1", &[("N1", &report.text)], "N1", &jar),
+        "10\n7\n13\n"
     );
     // The separated units keep their own flat presentations: the fold neither embeds nor
     // re-spells them.
@@ -403,10 +429,9 @@ fn n1_folds_its_static_stat_beside_the_separated_inner() {
 }
 
 #[test]
-fn mixed_variants_recompile_as_family_sets_and_reproduce_the_baseline() {
-    // Two static members beside one non-static candidate: both static rows fold — including the
-    // sibling inheritance between them — while the Inner unit stays separated and the family
-    // set reproduces the original run.
+fn mixed_variants_recompile_as_their_folded_units_and_reproduce_the_baseline() {
+    // Two static members beside one non-static candidate: all three fold — including the
+    // sibling inheritance between the statics — and the single unit reproduces the run.
     let (jar, _) = compile_family("mv3", MV3_SOURCE);
     let report = source_of(&jar, "MV3");
     assert!(
@@ -423,37 +448,25 @@ fn mixed_variants_recompile_as_family_sets_and_reproduce_the_baseline() {
     );
     assert!(report.text.contains("new StatB().b()"), "{}", report.text);
     assert!(
-        report.text.contains("return new MV3$Inner(this, arg1);"),
+        report.text.contains("return new Inner(arg1);"),
         "{}",
         report.text
     );
     assert!(matches!(
         &report.member_family,
-        ClassSourceMemberFamily::PreparedStatic {
+        ClassSourceMemberFamily::PreparedFold {
             members,
             projection: ClassSourceMemberProjection::Projected { .. },
-        } if members.len() == 2
+        } if members.len() == 3
     ));
-    let inner = source_of(&jar, "MV3$Inner");
-    assert!(
-        inner
-            .text
-            .contains("class MV3$Inner extends java.lang.Object {"),
-        "{}",
-        inner.text
-    );
     assert_eq!(
-        recompile_family_set_and_run(
-            "mv3",
-            &[("MV3", &report.text), ("Inner_unit", &inner.text)],
-            "MV3",
-            &jar,
-        ),
+        recompile_family_set_and_run("mv3", &[("MV3", &report.text)], "MV3", &jar),
         "6\n6\n"
     );
 
     // One static member beside one non-static candidate — the N1 shape with fully recovered
-    // bodies, so the whole family set recompiles, verifies and runs.
+    // bodies: both fold, and the qualified `new MV2().new Inner(4)` renders from the fresh
+    // allocation qualifier.
     let (jar, _) = compile_family("mv2", MV2_SOURCE);
     let report = source_of(&jar, "MV2");
     assert!(
@@ -465,40 +478,55 @@ fn mixed_variants_recompile_as_family_sets_and_reproduce_the_baseline() {
     );
     assert!(report.text.contains("new Stat().m()"), "{}", report.text);
     assert!(
-        report.text.contains("new MV2$Inner(new MV2(), 4).total()"),
+        report.text.contains("new MV2().new Inner(4).total()"),
         "{}",
         report.text
     );
     assert!(matches!(
         &report.member_family,
-        ClassSourceMemberFamily::PreparedStatic {
+        ClassSourceMemberFamily::PreparedFold {
             members,
             projection: ClassSourceMemberProjection::Projected { .. },
-        } if members.len() == 1
+        } if members.len() == 2
     ));
-    let inner = source_of(&jar, "MV2$Inner");
     assert_eq!(
-        recompile_family_set_and_run(
-            "mv2",
-            &[("MV2", &report.text), ("Inner_unit", &inner.text)],
-            "MV2",
-            &jar,
-        ),
+        recompile_family_set_and_run("mv2", &[("MV2", &report.text)], "MV2", &jar),
         "11\n8\n"
     );
 }
 
 #[test]
-fn pure_non_static_family_never_folds() {
+fn pure_non_static_family_folds_too() {
     let (jar, _) = compile_family("mv1", MV1_SOURCE);
     let report = source_of(&jar, "MV1");
-    // A family without a static row has no subset to fold: the root keeps the separated
-    // presentation and the capture channel's own family state, exactly as before this change.
-    assert!(!report.text.contains("static class"), "{}", report.text);
-    assert!(!matches!(
+    // The pure instance family takes the same fold road with an empty static set: the capture
+    // machinery has nothing to elide (this Inner captures nothing javac did not already
+    // state), and the implicit-this construction renders without its synthetic argument.
+    assert!(
+        report
+            .text
+            .contains("class Inner extends java.lang.Object {"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("return new Inner().v();"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("this$0"), "{}", report.text);
+    assert!(matches!(
         &report.member_family,
-        ClassSourceMemberFamily::PreparedStatic { .. }
+        ClassSourceMemberFamily::PreparedFold {
+            members,
+            projection: ClassSourceMemberProjection::Projected { .. },
+        } if members.len() == 1
     ));
+    assert_eq!(
+        recompile_family_set_and_run("mv1", &[("MV1", &report.text)], "MV1", &jar),
+        "9\n"
+    );
+    // The separated presentation of the same child stays byte-for-byte flat.
     let inner = source_of(&jar, "MV1$Inner");
     assert!(
         inner
@@ -506,15 +534,6 @@ fn pure_non_static_family_never_folds() {
             .contains("class MV1$Inner extends java.lang.Object {"),
         "{}",
         inner.text
-    );
-    assert_eq!(
-        recompile_family_set_and_run(
-            "mv1",
-            &[("MV1", &report.text), ("Inner_unit", &inner.text)],
-            "MV1",
-            &jar,
-        ),
-        "9\n"
     );
 }
 
