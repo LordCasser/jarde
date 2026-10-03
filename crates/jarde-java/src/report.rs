@@ -2934,29 +2934,36 @@ fn locate_lambda_expression<'a>(
 }
 
 /// Applies every decided edit to the caller's retained program, returning the re-emitted body text
-/// beside an unmodified re-emission of the same program.
+/// beside an unmodified re-emission of the same program, and the re-emitted body's own source map.
 ///
 /// The unmodified emission is the adapter's own safety check: the member's current text must
 /// still be exactly what this same-run AST writes — a member another projection already rewrote
 /// is not a member this channel may re-emit from the same AST, and the adapter keeps such a
 /// helper's physical presentation instead.
+///
+/// The map is the edited program's own anchor table, replayed over the edited emission with the
+/// same formatter: a span a later consumer re-spells inside this body can still name the physical
+/// instruction it came from, and a donor node spliced in by an inline edit keeps the donor's own
+/// anchors. The map is enrichment, never a precondition: a budget that stops the replay leaves the
+/// committed texts standing and hands out an empty table, and a caller that needs every span
+/// anchors nothing through it.
 pub fn emit_class_source_lambda_member(
     candidate: &ClassSourceLambdaHelperCandidate,
     edits: &[ClassSourceLambdaSiteEdit],
     budget: &mut Budget,
-) -> Result<Option<(String, String)>, crate::stop::StopReason> {
+) -> Result<Option<(String, String, SourceMap)>, crate::stop::StopReason> {
     let caller = &candidate.projection;
     if caller.program.ragged || edits.is_empty() {
         return Ok(None);
     }
-    let unmodified = crate::emit::emit(
+    let unmodified_emitted = crate::emit::emit(
         &caller.program.stmts,
         &caller.facts,
         caller.declaration.as_ref(),
         Some(&caller.member),
         budget,
-    )?
-    .text;
+    )?;
+    let unmodified = unmodified_emitted.text;
     let mut program = caller.program.clone();
     let mut applied = 0;
     for edit in edits {
@@ -2965,15 +2972,26 @@ pub fn emit_class_source_lambda_member(
     if applied != edits.len() {
         return Ok(None);
     }
-    let edited = crate::emit::emit(
+    let edited_emitted = crate::emit::emit(
         &program.stmts,
         &caller.facts,
         caller.declaration.as_ref(),
         Some(&caller.member),
         budget,
-    )?
-    .text;
-    Ok(Some((unmodified, edited)))
+    )?;
+    let edited_map = emit_source_map(
+        &program.stmts,
+        &caller.facts,
+        caller.declaration.as_ref(),
+        Some(&caller.member),
+        SegmentPublication::Whole,
+        &edited_emitted,
+        &mut EvidencePhase::new(),
+        budget,
+    )
+    .map(|(map, _)| map)
+    .unwrap_or_default();
+    Ok(Some((unmodified, edited_emitted.text, edited_map)))
 }
 
 /// Applies one edit to the lambda expression whose site matches, reporting whether it did.
