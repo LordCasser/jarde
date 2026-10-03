@@ -1,0 +1,3 @@
+0f964fd3f4657ac49250203d05cb555e22a72e5ecb497650c15a0e365445caf0  tests/fixtures/proved-java-structure/anonymous-super-dispatch/AnonymousSuperDispatch.class
+06ae20e411c051ae4293144248259d08bc80168d9fd472b8cb4d5560eabc3886  tests/fixtures/proved-java-structure/anonymous-super-dispatch/AnonymousSuperDispatch$1.class
+f957579bad5e74049e41d61966de5ba6fe951f053aff8cc82130607028240d2a  tests/fixtures/proved-java-structure/anonymous-super-dispatch/Base.class
