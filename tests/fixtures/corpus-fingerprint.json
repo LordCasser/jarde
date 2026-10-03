@@ -1897,6 +1897,121 @@
       "path": "tests/fixtures/p3-boolean-short-circuit-return/v8/BoolValue.class"
     },
     {
+      "blake3": "4acc958a47af8f5b167a6c41664f40c4a5e4e59ef5f0be942bb178bebf606de5",
+      "bytes": 145,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/platform/Comparable.class"
+    },
+    {
+      "blake3": "ffb18f088425a62674c55fb1698d99d03ffceee637eafb89878f2b9164d65250",
+      "bytes": 246,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/platform/Comparable.java"
+    },
+    {
+      "blake3": "f4374ba0ce13f156e763548d1e569bee32bfbf5490f665cdb0db6b49efd44b0a",
+      "bytes": 92,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/platform/Comparable.sha256"
+    },
+    {
+      "blake3": "b2e5a5e6e0d09133ddaa361bb59b5287da23c5ce34ec84e87409df2d67f172f0",
+      "bytes": 313,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR$Base.class"
+    },
+    {
+      "blake3": "78bf69879a3ff4a1052ff20172f66e6849033b0fa8821e95f07cef54529ab58a",
+      "bytes": 376,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR$Box.class"
+    },
+    {
+      "blake3": "01f2efc44f9677c7b946e9a326df51474cc8f7ab9bd555b6fcb23c9951d5246f",
+      "bytes": 424,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR$Impl.class"
+    },
+    {
+      "blake3": "e0e4f950c89375367beb9709389fda3cd8f8b4c727ffb1e9047959f978454c1f",
+      "bytes": 134,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR$Node.class"
+    },
+    {
+      "blake3": "3a8128ab337611593939c1f6ea281b7031074c7d62b613718b2784cfc0f93ef5",
+      "bytes": 534,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR$StrBox.class"
+    },
+    {
+      "blake3": "8ba32dad76643d11925be7fb4eb399c22be0a36fdba6063da67d6652005a55f7",
+      "bytes": 770,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR.class"
+    },
+    {
+      "blake3": "1b90fdb20ffca05a2ff2a82f1d2a3df1e3fb9d94650901614c47f73a27495318",
+      "bytes": 907,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR.java"
+    },
+    {
+      "blake3": "e7927daf64babb7f1af255ff1d3ec2837c5bb4a1c486a34aa8d8344f6ec6bafa",
+      "bytes": 533,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR2$Base2.class"
+    },
+    {
+      "blake3": "4ae188b5c67c032dd92622bcf4d9e4a59c3ca88aa4573139a45f29da74c01ce3",
+      "bytes": 170,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR2$Mid.class"
+    },
+    {
+      "blake3": "02ad31cbf7febd1410e054aaf63cd12ba0376dd7e8d778726f24b557f216e5a2",
+      "bytes": 172,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR2$Node2.class"
+    },
+    {
+      "blake3": "ec787efe2022a309669139673ff969e49147ef148ff5560adac2de0110cb000a",
+      "bytes": 873,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR2.class"
+    },
+    {
+      "blake3": "9e83d85cab3ab2fd5008443578ae9a488457a26a13307e56e449a3cebfff7015",
+      "bytes": 420,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/BR2.java"
+    },
+    {
+      "blake3": "a0146fdf48e8ca0dc26e742f63c90a9722b80cf7a1ec394bfce0568d7995181d",
+      "bytes": 235,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/ImplRunner.java"
+    },
+    {
+      "blake3": "e681ff56e3eebefd72450bb3f916c0aec797ef343f5210e356cfb987f1b1940b",
+      "bytes": 266,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/MultilevelPairRunner.java"
+    },
+    {
+      "blake3": "8de678e04bb5012f0d00103786d352da9238bc5b2fd38661c27ecd2f0b426504",
+      "bytes": 243,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/OriginalImplRunner.java"
+    },
+    {
+      "blake3": "b356b98fb350da0a7052688b1a3f9338d84bc7903ff95875d3427fd55e0c28db",
+      "bytes": 270,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/OriginalMultilevelRunner.java"
+    },
+    {
+      "blake3": "497f4fe83c6e533a3c4f8a537019c88f4fd9bb04139807eaddeb8715212bb267",
+      "bytes": 310,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/OriginalPairRunner.java"
+    },
+    {
+      "blake3": "7ce4b9e15c185ca8a2137080dbf8074c3b920beaf278507b507cd2ed9efc4aef",
+      "bytes": 302,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/PairRunner.java"
+    },
+    {
+      "blake3": "87ef616036512c43ca31756528970e87d022d24f62f9113d37daeefada9a93b4",
+      "bytes": 320,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/br2-sha256.txt"
+    },
+    {
+      "blake3": "fa090112ddc7c6822be2c06c16036aedd0236994fe570852d42745b1ca94a695",
+      "bytes": 476,
+      "path": "tests/fixtures/p3-bridge-projection/br-family/v8/fixture-sha256.txt"
+    },
+    {
       "blake3": "c95477c5aadfca1c4442aaa56d8ed2e3c736eafea866bfe801e3c4f91902aee5",
       "bytes": 254,
       "path": "tests/fixtures/p3-bridge-projection/negative/FakeBridge.java"
