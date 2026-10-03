@@ -319,20 +319,21 @@ fn separated_nested_generic_units_project_the_header_and_member_scope() {
             "public class NG3 {\n    static class Num<N extends Number> { N n; N get() { return n; } }\n    public static void main(String[] a) {\n        Num<java.lang.Integer> num = new Num<java.lang.Integer>();\n        num.n = 7;\n        System.out.println(num.get());\n    }\n}\n",
             "NG3$Num",
             "class NG3$Num<N extends java.lang.Number> extends java.lang.Object {",
-            // The field stays on its physical descriptor: the child's own pool carries the
-            // same-class Fieldref of `get` — the next chain, outside this change.
-            "java.lang.Number n;",
+            // The same-class read `get` performs on `n` is an areturn consumer: the value keeps
+            // accepting the parameterized type, so `recover-same-class-generic-bindings` proves
+            // the binding and the member scope reaches the field too.
+            "N n;",
             "n",
-            "N\nclass java.lang.Number\n",
+            "N\nN\n",
         ),
         (
             "non-static",
             "public class NG1 {\n    class Inner<U> { U value; U get() { return value; } }\n    public static void main(String[] a) {\n        Inner<String> inner = new NG1().new Inner<String>();\n        inner.value = \"x\";\n        System.out.println(inner.get());\n    }\n}\n",
             "NG1$Inner",
             "class NG1$Inner<U> extends java.lang.Object {",
-            "java.lang.Object value;",
+            "U value;",
             "value",
-            "U\nclass java.lang.Object\n",
+            "U\nU\n",
         ),
     ] {
         let (jar, _) = compile_family(label, source);
