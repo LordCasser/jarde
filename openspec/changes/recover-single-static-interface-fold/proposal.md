@@ -5,7 +5,7 @@
 ## What Changes
 
 - 锚定匹配器接受 `InterfaceMethodRef` 条目的 owner 类名作为折叠成员名的匹配源（与 Fieldref/Methodref owner 同一判据位）；不改变锚定健全性要求（覆盖段/CP 索引既有校验）。
-- WCallI 形恢复折叠；WCallC/既有全部家族 diff 逐字不变；Y1 折叠仍受**根重投影门**限制（独立大切片 `recover-fold-context-projection-preservation` 处置，本片不碰）。
+- WCallI 形恢复折叠；WCallC/既有全部家族 diff 逐字不变；Y1 折叠仍受**根重投影门**限制（独立大切片 `recover-fold-context-projection-preservation` 处置——**该切片已落地，Y1 双呈现已由其达成**；本片为其互补的锚定判据位）。实测 corpus 变化为 **5 类**（F1/SDAbstract/SDIndirect/pkg.SDPacked/SDDiamond——后者为 owner 扩展与 fcp 生产者锚的合取，实现者消融实验证实；与 fcp 的 8 类无交集）。
 
 ## Capabilities
 
