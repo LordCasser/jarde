@@ -1,0 +1,37 @@
+Guard-leg behavior record for the two frozen non-Object-super fixtures that return to the
+verbatim order: each fixture's original classes still run their registered behavior, and the
+reverted constructor is refused by javac (the loud state the fixtures' own acceptance evidence
+registered before the reorder slice existed).
+
+=== anonymous-super-args ===
+
+$ java -Xverify:all -cp tests/fixtures/proved-java-structure/anonymous-super-args AnonymousSuperArgs
+arg:capture|arg:super-label|arg:super-value|base:explicit:17
+explicit:17:captured
+
+$ javac --release 8 -g:none -Xlint:-options -cp <fixture> -d out <rendered AnonymousSuperArgs$1.java>
+exit 1: /…/AnonymousSuperArgs$1.java:10: 错误: 灵活构造器 是预览功能，默认情况下禁用。
+
+Matches evidence/java-syntax-2026-09-27/anonymous-super-args/report.md lines 30–34
+(verbatim `this.val$captured = arg3; super(arg1, arg2);`, "完整源码编译因此退出 1").
+
+=== anonymous-capture ===
+
+$ java -Xverify:all -cp tests/fixtures/proved-java-structure/anonymous-capture AnonymousCaptureCases
+base=7:captured
+events=capture,choose,base(7),render
+counts=1,1,1,1
+receiver=20:10
+
+$ javac --release 8 -g:none -Xlint:-options -cp <fixture> -d out <rendered AnonymousCaptureCases$1.java>
+exit 1: /…/AnonymousCaptureCases$1.java:10: 错误: 灵活构造器 是预览功能，默认情况下禁用。
+
+=== anonymous-top-level (the census's fourth non-Object-super form, found by the corpus scan) ===
+
+$ java -Xverify:all -cp tests/fixtures/proved-java-structure/anonymous-top-level AnonymousTopLevel
+value=23:captured
+events=capture,choose,base(23),render
+counts=1,1,1,1
+
+$ javac --release 8 … <rendered AnonymousTopLevel$1.java>   # exit 1, same flexible-constructor refusal
+Matches its own evidence (java-syntax-2026-09-25/anonymous-top-level/evidence.md, "Jarde 当前对照").

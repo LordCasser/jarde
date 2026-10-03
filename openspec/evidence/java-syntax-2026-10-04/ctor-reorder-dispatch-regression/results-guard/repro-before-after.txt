@@ -1,0 +1,42 @@
+Reproduction of the ctor-reorder dispatch regression, run at repo root with
+`target/debug/jarde-cli` (baseline leg = mainline 9eaf7b2c, "before"; guard leg = this change, "after").
+The script these runs follow is ../results/repro.sh.
+
+=== BEFORE (mainline 9eaf7b2c, the slice recover-synthetic-ctor-super-order active) ===
+
+$ java -Xverify:all -cp tests/fixtures/proved-java-structure/anonymous-super-dispatch AnonymousSuperDispatch
+observed=captured-value
+visibleDuringSuper=true
+
+$ jarde-cli class-source --input 'AnonymousSuperDispatch$1.class' --policy single-class --class 'AnonymousSuperDispatch$1'   # ctor only
+AnonymousSuperDispatch$1(java.lang.String arg1) {
+    super();
+    this.val$captured = arg1;
+    return;
+}
+
+$ javac --release 8 -g:none -Xlint:-options -cp <fixture> -d out rendered.java   # exit 0
+$ java -Xverify:all -cp out:<fixture> AnonymousSuperDispatch
+observed=null
+visibleDuringSuper=false          <- SILENT BEHAVIOR CHANGE (compilable AND different)
+
+=== AFTER (this change: reorder gated on super == java/lang/Object.<init>()V) ===
+
+$ java -Xverify:all -cp tests/fixtures/proved-java-structure/anonymous-super-dispatch AnonymousSuperDispatch
+observed=captured-value
+visibleDuringSuper=true
+
+$ jarde-cli class-source --input 'AnonymousSuperDispatch$1.class' --policy single-class --class 'AnonymousSuperDispatch$1'   # ctor only
+AnonymousSuperDispatch$1(java.lang.String arg1) {
+    this.val$captured = arg1;
+    super();
+    return;
+}
+
+$ javac --release 8 -g:none -Xlint:-options -cp <fixture> -d out rendered.java   # exit 1, LOUD
+rendered.java:10: 错误: 灵活构造器 是预览功能，默认情况下禁用。
+  （请使用 --enable-preview 以启用 灵活构造器）
+
+The regression's criterion — "compilable and behaves differently" — no longer holds:
+the presented order is the bytes' own order, javac refuses it, and no recompiled run exists
+to diverge from the original (original stays the behavior baseline: visibleDuringSuper=true).

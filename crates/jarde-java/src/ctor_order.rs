@@ -38,6 +38,21 @@
 //! initializer's field writes after the constructor call, which is exactly the order the
 //! normalized text has.
 //!
+//! # The move happens only past a constructor call that cannot run user code
+//!
+//! Placing the group after the constructor call is the source's order because a source
+//! constructor call cannot read what it has not been handed. A class file's call is not bound by
+//! that: a superclass constructor that virtually dispatches on `this` — the shape an anonymous
+//! subclass overriding a hook the superclass constructor calls makes possible — runs the
+//! subclass's own code *during* the call, and that code reads the captures from the very fields
+//! this group writes, so where the bytes store them decides what it sees. `java/lang/Object`'s
+//! constructor is final and empty, so the one target that provably runs no user code is
+//! `java/lang/Object.<init>()V`, as the prologue's own invoke states it — owner and descriptor
+//! exactly. That is the only target the group moves past. Any other target keeps the byte order,
+//! whose source shape javac refuses (a flexible constructor body): an uncompilable text is a
+//! loud failure, where a recompiled program that reads `null` where the original read a value is
+//! a silent one.
+//!
 //! [`facts::ACC_SYNTHETIC`]: crate::facts::ACC_SYNTHETIC
 
 use jarde_jvm::method_ir::{Definition, SsaInstruction, SsaTable, Value, ValueId};
@@ -55,9 +70,10 @@ use crate::stop::{self, StopReason};
 /// compiler's certified synthetic-store group, and leaves it byte-verbatim when it is not.
 ///
 /// `stmts` are the body's top-level statements in BCI order. Everything the criteria do not
-/// prove — a body with no prologue, a `this(…)` prologue, an empty prefix, a prefix holding
-/// anything but certified synthetic direct-parameter stores, or a prologue statement the order
-/// does not place at top level — is a no-op that keeps the text byte-verbatim.
+/// prove — a body with no prologue, a `this(…)` prologue, a super prologue whose target is not
+/// `java/lang/Object`'s own `<init>()V`, an empty prefix, a prefix holding anything but
+/// certified synthetic direct-parameter stores, or a prologue statement the order does not place
+/// at top level — is a no-op that keeps the text byte-verbatim.
 pub(crate) fn present_prologue_first(
     stmts: &mut [Stmt],
     ssa: &SsaTable,
@@ -131,7 +147,24 @@ pub(crate) fn present_prologue_first(
     }
     // Prologue first, then the group in its original order, then the rest in its original order:
     // the certified group runs up to the prologue, so this is one rotation of the prologue
-    // statement to the front of that range.
+    // statement to the front of that range. The rotation is gated on the constructor call being
+    // one no user code can run in: the group is re-derived where JLS 12.5 runs field writes —
+    // *after* the call — and a superclass constructor that virtually dispatches on `this` runs
+    // the subclass's own code during the call, reading these very captures where the bytes store
+    // them. `java/lang/Object.<init>()V` is final and empty — the one target that cannot — and
+    // any other target keeps the byte order, whose uncompilable source shape fails loudly where
+    // the moved shape would silently change the program.
+    let call_cannot_run_user_code = match operations.get(prologue.bci) {
+        Some(Operation::Invoke(target)) => {
+            target.owner() == "java/lang/Object"
+                && target.name() == "<init>"
+                && target.descriptor() == "()V"
+        }
+        _ => false,
+    };
+    if !call_cannot_run_user_code {
+        return Ok(());
+    }
     stmts[..=prologue_index].rotate_right(1);
     Ok(())
 }

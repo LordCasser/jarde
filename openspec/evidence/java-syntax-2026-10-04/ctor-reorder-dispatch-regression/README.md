@@ -44,6 +44,11 @@ pre-super 写（`putfield` 早于 `invokespecial`）且 super 目标非 Object �
 | `anonymous-super-args/AnonymousSuperArgs$1` | `Base.<init>` | 否（仅 `Object.<init>`+自身字段+新建 StringBuilder 的 invokevirtual+`invokestatic event`） | 重排安全，产物当前已可编译且行为正确 |
 | `anonymous-capture/AnonymousCaptureCases$1` | `AnonymousCaptureCases$Base.<init>` | 否（`invokevirtual` 均在新建 StringBuilder 上，其余 `invokestatic`） | 重排安全，同上 |
 
+勘误（2026-10-04，guard 片 corpus 双腿扫描发现）：本普查漏计第四处同形
+`anonymous-top-level/AnonymousTopLevel$1`（super `Base(J)V`，`putfield val$captured` 早于
+`invokespecial`）；该 fixture 自身 2026-09-25 证据登记的呈现正是 verbatim 序 + 重编退出 1。
+见 [results-guard/corpus-two-leg-scan.txt](results-guard/corpus-two-leg-scan.txt)。
+
 故修复判据的关键是 **super ctor 能否在构造期分派到用户代码**。root 二次取证（2026-10-04）**否证了"读 super ctor 体证明无 this 虚分派"的宽档**，最终采单档判据（仅 `Object.<init>` 允许重排），依据三条实证：
 
 1. **跨类读方法体在本仓库无既有先例**：`prove_class_source_bridges` 走 `jarde_jvm::resolve_symbol` 只取**声明**；`prove_outer_super_bridge_use_closure` 消费**已恢复报告**；lambda 伴生读**同类**成员；`build::Inputs` 仅携带 `direct_super_class` 名字（无 Code）。引入跨类读体+decode+计费会把窄修复扩成中大片。
