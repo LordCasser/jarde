@@ -5,7 +5,7 @@
 ## What Changes
 
 - 类字面量值的证明准入接受**嵌套 CP 名**：判据沿用既有类型名可拼性事实（与 `recover-nested-type-source-spelling` 同源），不再要求名为顶层形或等于当前类。
-- 呈现沿用既有类字面量通道与 nested-spelling 的拼写规则（折叠域内简单名、分离域按该片既有规则），不新增呈现函数。
+- 呈现沿用既有类字面量通道：`emit.rs` 的 `put_type` 对含 `$` 的名调用 `nested_member_reference_spelling`，其确证条件是 **`InnerClasses` 行集**（JVMS §4.7.6）——名在行集内则拼为源码形（`Nested.class`），否则保持池形（`Foo$Bar.class`）。声明侧走同一函数同一行集，故声明与引用**按构造一致**；不新增呈现函数、不新增证据通道。
 - A12 两形与 A11 三形（反射读注解）恢复且行为一致；顶层类字面量五形与全部既有类字面量测试逐字不变；不可拼名（本地类 `1$Local`、匿名 `X$1`）保持拒绝。
 
 ## Capabilities
