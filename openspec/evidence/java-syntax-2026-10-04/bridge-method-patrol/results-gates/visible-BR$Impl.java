@@ -16,5 +16,10 @@ class BR$Impl extends java.lang.Object implements java.lang.Comparable {
         return 0;
     }
 
-    // jarde: projected bridge `compareTo(Ljava/lang/Object;)I` at physical method record 2: bridge@1 proved a pure call at BCI 5 to source declaration `compareTo(LBR$Impl;)I` at method record 1; the resolved erased contract lets javac regenerate the bridge
+    public int compareTo(java.lang.Object arg1) {
+        // @method compareTo(Ljava/lang/Object;)I
+        // @declaration an instance method of `BR$Impl`, member flags 0x1041
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.compareTo((BR$Impl) arg1);
+    }
 }

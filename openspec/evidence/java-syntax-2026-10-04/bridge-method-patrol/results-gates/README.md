@@ -63,7 +63,7 @@
 | 类 | 桥 | 基线拒绝（baseline CLI） | 修后 |
 | --- | --- | --- | --- |
 | BR$Base | `next()LBR$Node;` | 门 1：the source return type is not a proved covariant subtype of the erased Object return | admitted+projected（marker 落盘） |
-| BR$Impl | `compareTo(Ljava/lang/Object;)I` | bridge@1 did not prove a pure single forward | admitted+projected |
+| BR$Impl | `compareTo(Ljava/lang/Object;)I` | bridge@1 did not prove a pure single forward | 投影拒绝（root 复核前置，见 §6；`visible-BR$Impl.java` + `impl-refusal.txt`） |
 | BR$StrBox | `set(Ljava/lang/Object;)V` | flags 门：modifiers beyond public bridge synthetic | admitted+projected |
 | BR$StrBox | `get()Ljava/lang/Object;` | flags 门（同上） | admitted+projected |
 
@@ -86,23 +86,41 @@
 
 - 单类腿：tests/fixtures 全部 465 个 `.class`（含本次新增 11 个），baseline vs changed CLI，
   single-class policy，class-source 文本 SHA 对比——**零差异**。
-- 家族腿：fam.jar 六类 plain-jar——BR / BR$Node / BR$Box 逐字相同；BR$Base / BR$StrBox /
-  BR$Impl 差异**仅为**桥成员声明（6 行）被替换为 `// jarde: projected bridge …` 标记行，
-  无其它行变化。
+- 家族腿：fam.jar 六类 plain-jar——BR / BR$Node / BR$Box / **BR$Impl 逐字相同**（Impl 桥按
+  §6 前置拒绝投影，输出与基线一致）；BR$Base / BR$StrBox 差异**仅为**桥成员声明被替换为
+  `// jarde: projected bridge …` 标记行，无其它行变化。
 
-## 6. Impl 整类重编缺口（root 决策 B，另立专项）
+## 6. Impl 的桥投影前置（root 复核裁决，2026-10-04）
 
-桥门全部通过（Impl 桥已投影、源级 `compareTo(BR$Impl)` 保留），但恢复源
-`class BR$Impl implements java.lang.Comparable { public int compareTo(BR$Impl) }` javac 报
-"未覆盖 Comparable 中的抽象方法 compareTo(Object)"——类级参数化**接口**投影缺口：泛型头机制在
-`src/class_source.rs`（`type_parameters.is_empty() && !parameterized_superclass → Ok(None)`）
-对只有参数化接口的类静默跳过（预留拒绝文案 "parameterized or nested parent needs a separate
-inherited-member proof"，既有 interfaces 拼写代码相邻）。`javac-after-raw-Comparable-loud-failure
-.stderr.txt` 钉死当前响亮失败形态。该缺口由 root 另立专项（编号待其落 spec 后回填），不并入
-本片。隐藏桥本身在任何情况下不劣于基线：基线是 name clash（响亮失败），现在是更接近真相的
-响亮失败。
+root 复核发现（javac 实证）：桥的可重建性来自**类头的类型参数投影**，不是继承契约本身——
 
-## 7. 验证命令与结果（2026-10-04）
+```java
+class RawI implements java.lang.Comparable { public int compareTo(RawI o) { … } }   // javac 拒：未覆盖 compareTo(Object)
+class ParamI implements java.lang.Comparable<ParamI> { public int compareTo(ParamI o) { … } } // javac 收，ACC_BRIDGE 再生
+```
+
+裸泛型接口头下，源参数收窄的方法不再是擦除契约的 override：隐藏桥只会把错误换成
+missing-override 并丢掉"该类实现了什么契约"的信息。故本片加入**投影前置**（facade 准入段，
+参数 cast 形 + 接口契约边）：类自身 `Signature` 属性将该接口拼写为带类型实参 → 该接口泛型，
+而当前投影不拼写参数化接口 → **拒绝投影、保持桥可见（现行为）**；无 `Signature` 或无实参 →
+非泛型，照常准入。父类契约边不受此门（裸泛型父类头把收窄覆写降级为普通重载，仍编译，
+桥由协变覆写再生——BR$StrBox 即此形，root 明示按已完成状态交付）。
+
+**Impl 交付状态**：桥保持可见（`visible-BR$Impl.java`，`compareTo(BR$Impl)` 源覆写 + 擦除
+`compareTo(Object)` 普通重载并存），`impl-refusal.txt` 为前置拒绝文本。基线的 javac 状态本就
+不是 name clash（两个 compareTo 是合法重载）——六类全部可编译，`java -Xverify:all BR` 输出
+`BR$Base`/`s`/`0`（与原 class `Base`/`s`/`0` 仅 getSimpleName 之差，恢复类为顶级二进制名），
+重载调用与经 raw `Comparable` 的擦除调用都分派到与原 class 相同的成员（class_source e2e
+`ImplRunner` 双腿 `0\n0`）。**整类可编不缺任何东西**；缺的是让 Impl 桥也可隐藏的
+参数化接口头投影——独立专项（机制位置：`src/class_source.rs` 泛型头静默跳过条件与预留拒绝
+文案），落地后本前置的拒绝分支即为其接入点。
+
+## 7.## 7. 验证命令与结果（2026-10-04）
+## 7. 验证命令与结果（2026-10-04，root 复核后重跑）
+
+- 复核修正（接口契约头前置）后：class_source 92/92、p3_patterns 82/82、jarde-reader lib
+  178/178、全量 workspace 套件重跑全绿、fmt/clippy(CI 清单)/openspec strict 重跑通过。
+
 
 - `cargo test --workspace --tests --locked --no-fail-fast`：见 §8（最终轮全绿）。
 - `cargo fmt --all -- --check`：通过（修过 bridge.rs / p3_patterns.rs 两处格式后）。

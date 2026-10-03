@@ -1,0 +1,1 @@
+(Ljava/lang/Object;)I -> the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge

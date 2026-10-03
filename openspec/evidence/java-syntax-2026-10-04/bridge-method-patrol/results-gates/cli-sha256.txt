@@ -5,3 +5,5 @@ da8aa97b64fa32cbe31ed16a8488e3490ce01627c001650da67166f06eadd8e7  openspec/evide
 e2b0d787aef563cecdbea867ae665f36eb260c37005f2ed4562bfa54bcdaa5af  openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/results-gates/baseline-refusals-BR$Base.txt
 def80d0479ab44f9397b3d5935da9d9abd2f789d3ce256bd659de466541390e1  openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/results-gates/baseline-refusals-BR$Impl.txt
 66e3522e316cfe5bbdeece10f07d891ab05796a940d56b0b2b0a35577748e6a2  openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/results-gates/baseline-refusals-BR$StrBox.txt
+7c177e78b0b52788f02194232bff0e6af81c424fa1506796fa59182803711d08  openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/results-gates/impl-refusal.txt
+05f3d044ebf5038b7165e2f0e22ff9234b804516f2f25220f61d52b278e10a7e  openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/results-gates/visible-BR$Impl.java
