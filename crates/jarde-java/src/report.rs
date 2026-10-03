@@ -135,6 +135,15 @@ pub struct RecoveryRequest<'a> {
     pub captured_outer_reads: &'a [ProvedCapturedOuterRead],
     /// Exact calls through a selected outer-super bridge, closed by the family proof.
     pub outer_super_calls: &'a [ProvedOuterSuperCall],
+    /// Whether this run's presentation keeps every member class in the pool's own `$` spelling —
+    /// no fold projection will rewrite nested names to source nesting in the text this run's
+    /// artifacts are placed into. Under that presentation a pool-spelled class literal is a
+    /// top-level class in the compiled text, so the structural-reflection reads of
+    /// `java/lang/Class` (`getSimpleName`, `getEnclosingClass` and kin) would answer from nesting
+    /// metadata the text does not state; the build refuses such a call rather than publishing a
+    /// compilable text that behaves differently. A presentation that folds members — which spells
+    /// a folded member's own name the source way — states `false`, the default.
+    pub pool_spelled_members: bool,
     /// Which **optional evidence** this request wants delivered (change
     /// `add-demand-driven-core-results`, D1): the categories of detail records, and the driver BCI
     /// range they are restricted to. [`RecoveryEvidenceRequest::essential`] — the default
@@ -3591,9 +3600,18 @@ impl<'a> RecoveryRequest<'a> {
             superclass_field_writes: &[],
             captured_outer_reads: &[],
             outer_super_calls: &[],
+            pool_spelled_members: false,
             evidence: RecoveryEvidenceRequest::essential(),
             subject: None,
         }
+    }
+
+    /// The same request, under a presentation that keeps member classes pool-spelled: the flag
+    /// that makes the build refuse structural-reflection reads over such literals (see the field's
+    /// own contract).
+    pub fn with_pool_spelled_members(mut self, pool_spelled: bool) -> Self {
+        self.pool_spelled_members = pool_spelled;
+        self
     }
 
     /// The same request, with the class's other members: the evidence a synthetic accessor call site
@@ -5514,6 +5532,15 @@ fn recover_inner(
             snapshot_hierarchy_widenings: request.snapshot_hierarchy_widenings,
             captured_outer_reads: request.captured_outer_reads,
             outer_super_calls: request.outer_super_calls,
+            // The declaring class's own member rows, in the spelling the pool names are compared
+            // with: the structural-reflection refusal reads them beside the literal's own class.
+            nested_class_members: request
+                .facts
+                .method()
+                .declaring_class()
+                .map(|declaring| declaring.inner_class_members())
+                .unwrap_or(&[]),
+            pool_spelled_members: request.pool_spelled_members,
             physical_method: request.ir.declaration().map(|member| member.identity()),
             // The class this body belongs to, as the run's own member declaration states it: the
             // fact a static call's pool owner is compared against, so that a call to this class is

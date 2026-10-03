@@ -1,5 +1,7 @@
 # 嵌套类的类字面量巡查（2026-10-04）
 
+**实现结果（2026-10-04，`recover-nested-class-literal-values`）**：见 [results-values/README.md](results-values/README.md) —— 判据放宽前后引注对照（A12 6→0、N2 10→0、A11 15→0、A9 17→0、A10 零回归字节一致、LC 负例保持）、三方对照、corpus 465 类双腿扫描 0 差异、新增冻结 fixture 与 SHA、遗留单列（折叠深度域、折叠数组 token-tie 锚域）。
+
 注解/反射域巡查引出（主线 `30e54613`；**巡查用 spn worktree 的 HEAD 版 jarde-cli，零额外构建**）。固定转录 [fixture](fixture/)（A10 类字面量五形对照 / A11 反射注解三形 / A12 嵌套判别 / A9 复合；SHA 见 [results/fixture-sha256.txt](results/fixture-sha256.txt)），行为基线 o2/o3/o4.out。
 
 ## 判别矩阵（单变量钉死）
