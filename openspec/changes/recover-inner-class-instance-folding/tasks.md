@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含两片折叠、capture-ctor 分离家族、synthetic-ctor 序全部测试）、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。
 - [x] 3.2 N1 与变体三方对照：原 class/固定 JADX Java-input/Jarde 家族集重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核消隐语境边界、限定形判定与三方行为，更新 DT 账本（嵌套声明第二层）与巡查记录。
+- [x] 3.3 root 独立复核消隐语境边界、限定形判定与三方行为，更新 DT 账本（嵌套声明第二层）与巡查记录。（root 于合并主线 c3805b5c 复核：N1 单元 `class Inner`+`static class Stat` 双折叠、`new Inner(arg1)`/`arg1.new Inner(9)`/`new N1().new Inner(3)` 三限定语境、`N1.this.base` 限定捕获、this$0/access$000 消隐——2875/0、fmt/openspec 255/255；corpus 7 类变化全为折叠根。**取证 (c) 复核认可**：限定 new 舞蹈非前置，折叠缝补 member target 后既有舞蹈臂直接证明。IV3 孙代保守门（拒绝折叠而非降级发布）与写桥登记均接受；`PreparedFold` 族状态入报告契约。）
