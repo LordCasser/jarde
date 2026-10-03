@@ -24499,25 +24499,6 @@ fn narrow_numeric_conditional_arm(argument: &Expr, required: &Type, bci: u32) ->
     None
 }
 
-/// The `java/lang/Class` reads whose answers come from the class file's nesting metadata (the
-/// `InnerClasses` relations of JVMS 4.7.6): a simple name, an enclosing class, a canonical name,
-/// the declaring class and the member/local/anonymous tests, the nest mates, and the enclosing
-/// member. `getName` is deliberately absent — a pool-spelled name's binary name is exact — and so
-/// is every annotation read, which the runtime annotation table answers.
-const STRUCTURAL_REFLECTION_METHODS: [&str; 11] = [
-    "getSimpleName",
-    "getEnclosingClass",
-    "getCanonicalName",
-    "getDeclaringClass",
-    "isMemberClass",
-    "isLocalClass",
-    "isAnonymousClass",
-    "getNestHost",
-    "getNestMembers",
-    "getEnclosingConstructor",
-    "getEnclosingMethod",
-];
-
 /// Whether the class literal `rendered` may be the receiver of one structural-reflection read.
 ///
 /// The answer the text gives must be the answer the class file gives. Where the presentation
@@ -24543,7 +24524,7 @@ fn structural_reflection_over_pool_spelled_literal(
     if target.owner() != "java/lang/Class" {
         return None;
     }
-    if !STRUCTURAL_REFLECTION_METHODS.contains(&target.name()) {
+    if !crate::facts::STRUCTURAL_REFLECTION_METHODS.contains(&target.name()) {
         return None;
     }
     let ExprKind::ClassLiteral { ty } = &rendered.kind else {

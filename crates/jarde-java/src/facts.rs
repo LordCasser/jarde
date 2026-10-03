@@ -450,6 +450,28 @@ pub enum InvokeKind {
     Interface,
 }
 
+/// The `java/lang/Class` reads whose answers come from the class file's nesting metadata (the
+/// `InnerClasses` relations of JVMS 4.7.6): a simple name, an enclosing class, a canonical name,
+/// the declaring class and the member/local/anonymous tests, the nest mates, and the enclosing
+/// member. `getName` is deliberately absent — a pool-spelled name's binary name is exact — and so
+/// is every annotation read, which the runtime annotation table answers. The class-literal guard
+/// (decode → build) refuses exactly these reads over a class literal whose presented text stays in
+/// the pool's `$` form, and the class-source assembly screens for them when a fold that would have
+/// re-spelled the names did not finish.
+pub const STRUCTURAL_REFLECTION_METHODS: [&str; 11] = [
+    "getSimpleName",
+    "getEnclosingClass",
+    "getCanonicalName",
+    "getDeclaringClass",
+    "isMemberClass",
+    "isLocalClass",
+    "isAnonymousClass",
+    "getNestHost",
+    "getNestMembers",
+    "getEnclosingConstructor",
+    "getEnclosingMethod",
+];
+
 /// One symbolic reference an invocation names.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CallTarget {
