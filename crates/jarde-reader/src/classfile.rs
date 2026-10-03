@@ -11869,7 +11869,9 @@ mod tests {
             // concatenation-consumed short-circuit locals) moved it again.
             // The 2026-10-02 qualified-super-default fixtures (the nested diamond/single family
             // and the packaged qualifier, twelve classes, twenty-one bodies) moved it again.
-            (452, 2139, 249, 1665, 8),
+            // The 2026-10-03 assert-sugar negatives (the hand-patched guard-extra-statement and
+            // wrong-owner probes, two classes, twelve bodies) moved it again.
+            (454, 2151, 251, 1679, 8),
             "fixture population changed: re-measure these counts"
         );
     }
