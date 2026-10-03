@@ -964,11 +964,11 @@ fn no_capture_primitive_lambda_helpers_inline_as_one_class_projection() {
         );
     }
     assert!(recovered.text.contains("return () -> 7;"));
-    assert!(recovered.text.contains("return (int p0) -> p0 + 10;"));
+    assert!(recovered.text.contains("return (int arg0) -> arg0 + 10;"));
     assert!(
         recovered
             .text
-            .contains("return (int p0, int p1) -> p0 * 10 + p1;")
+            .contains("return (int arg0, int arg1) -> arg0 * 10 + arg1;")
     );
     let emitted = scratch.child("lambda-helper-emitted");
     fs::write(emitted.join("LambdaSubject.java"), &recovered.text).unwrap();
@@ -1038,7 +1038,13 @@ fn direct_int_and_this_plus_int_captures_inline_with_call_time_semantics() {
             .text
             .contains("return () -> this.number() + arg1;")
     );
-    assert!(!recovered.text.contains("lambda$"), "{}", recovered.text);
+    for helper in &helpers {
+        assert!(
+            !recovered.text.contains(&format!("{helper}(")),
+            "helper call or declaration leaked: {helper}\n{}",
+            recovered.text
+        );
+    }
     for helper in &helpers {
         assert!(
             recovered
@@ -1083,15 +1089,16 @@ fn direct_int_and_this_plus_int_captures_inline_with_call_time_semantics() {
 }
 
 #[test]
-fn effectful_capture_source_refuses_the_entire_captured_helper_group() {
+fn effectful_capture_source_inlines_its_local_capture_once_with_call_time_semantics() {
     let scratch = Scratch::new();
-    let original = scratch.child("captured-lambda-effect-negative");
+    let original = scratch.child("captured-lambda-effect-original");
     fs::write(
         original.join("CaptureEffect.java"),
         "import java.util.function.*;\n\
          public final class CaptureEffect {\n\
            static int next() { return 3; }\n\
            static IntUnaryOperator effect() { int base = next(); return x -> x + base; }\n\
+           static int run() { return effect().applyAsInt(4); }\n\
          }\n",
     )
     .unwrap();
@@ -1108,16 +1115,56 @@ fn effectful_capture_source_refuses_the_entire_captured_helper_group() {
     );
     let snapshot = open(&fs::read(original.join("CaptureEffect.class")).unwrap());
     let recovered = class_source(&snapshot, "CaptureEffect", &RecoveryEvidenceRequest::all());
-    assert!(recovered.text.contains("lambda$effect$0"));
+    // The captured local is embedded exactly where the call already read it — once — and the
+    // companion's physical method leaves the text.
     assert!(
-        recovered.diagnostics.iter().any(|diagnostic| {
-            diagnostic.code == "lambda_helper_projection_refused"
-                && diagnostic.message.contains("lambda$effect$0")
-                && diagnostic.message.contains("direct parameter load")
-        }),
-        "capture-source refusal must be located: {:?}",
-        recovered.diagnostics
+        recovered
+            .text
+            .contains("return (int arg1) -> arg1 + local0;"),
+        "{}",
+        recovered.text
     );
+    let helper = lambda_helper_name(
+        &fs::read(original.join("CaptureEffect.class")).unwrap(),
+        "effect",
+    );
+    assert!(
+        !recovered.text.contains(&format!("{helper}(")),
+        "helper call or declaration leaked: {helper}\n{}",
+        recovered.text
+    );
+    let emitted = scratch.child("captured-lambda-effect-emitted");
+    fs::write(emitted.join("CaptureEffect.java"), &recovered.text).unwrap();
+    fs::write(
+        emitted.join("Runner.java"),
+        "public class Runner { public static void main(String[] a) { System.out.println(CaptureEffect.run()); } }\n",
+    )
+    .unwrap();
+    let recompile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join("CaptureEffect.java"))
+        .arg(emitted.join("Runner.java"))
+        .output()
+        .unwrap();
+    assert!(
+        recompile.status.success(),
+        "{}\n{}",
+        recovered.text,
+        String::from_utf8_lossy(&recompile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&emitted)
+        .arg("Runner")
+        .output()
+        .unwrap();
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&run.stdout), "7\n");
 }
 
 #[test]
@@ -1150,9 +1197,9 @@ fn phi_merged_capture_source_is_refused_without_hiding_its_helper() {
         recovered.diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "lambda_helper_projection_refused"
                 && diagnostic.message.contains("lambda$merged$0")
-                && diagnostic.message.contains("direct parameter load")
+                && diagnostic.message.contains("could not take its projection")
         }),
-        "phi capture refusal must name its proof boundary: {:?}",
+        "the refused site must keep its physical companion, with the reason located: {:?}",
         recovered.diagnostics
     );
 }
@@ -1314,10 +1361,16 @@ fn captured_int_parameter_precedes_sam_parameter_in_the_helper_mapping() {
         .output()
         .unwrap();
     assert!(compile.status.success());
-    let snapshot = open(&fs::read(original.join("CaptureOrder.class")).unwrap());
+    let bytes = fs::read(original.join("CaptureOrder.class")).unwrap();
+    let snapshot = open(&bytes);
     let recovered = class_source(&snapshot, "CaptureOrder", &RecoveryEvidenceRequest::all());
     assert!(recovered.text.contains("return (int p0) -> p0 - arg1;"));
-    assert!(!recovered.text.contains("lambda$"));
+    let helper = lambda_helper_name(&bytes, "subtract");
+    assert!(
+        !recovered.text.contains(&format!("{helper}(")),
+        "helper call or declaration leaked: {helper}\n{}",
+        recovered.text
+    );
     let emitted = scratch.child("captured-lambda-order-emitted");
     fs::write(emitted.join("CaptureOrder.java"), recovered.text).unwrap();
     fs::write(
@@ -1348,10 +1401,10 @@ fn captured_int_parameter_precedes_sam_parameter_in_the_helper_mapping() {
 }
 
 #[test]
-fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
+fn a_branchy_lambda_helper_renames_while_the_straight_one_inlines() {
     let scratch = Scratch::new();
     let original = scratch.child("lambda-helper-negative");
-    fs::write(original.join("LambdaNegative.java"), "import java.util.function.*;\npublic final class LambdaNegative {\n  static IntUnaryOperator simple() { return x -> x + 1; }\n  static IntUnaryOperator branch() { return x -> x > 0 ? x : 0; }\n}\n").unwrap();
+    fs::write(original.join("LambdaNegative.java"), "import java.util.function.*;\npublic final class LambdaNegative {\n  static IntUnaryOperator simple() { return x -> x + 1; }\n  static IntUnaryOperator branch() { return x -> x > 0 ? x : 0; }\n  static int run() { return simple().applyAsInt(4) + branch().applyAsInt(-7); }\n}\n").unwrap();
     let compile = Command::new("javac")
         .args(["--release", "8", "-g:none", "-d"])
         .arg(&original)
@@ -1368,41 +1421,56 @@ fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
     let branch_helper = lambda_helper_name(&bytes, "branch");
     let snapshot = open(&bytes);
     let recovered = class_source(&snapshot, "LambdaNegative", &RecoveryEvidenceRequest::all());
-    assert!(recovered.text.contains(&simple_helper));
-    assert!(recovered.text.contains(&branch_helper));
+    // The straight body inlines and its physical method leaves the text; the conditional body
+    // keeps its companion under the `$jarde` name javac never synthesizes, and the call names it.
+    assert!(recovered.text.contains("return (int arg0) -> arg0 + 1;"));
     assert!(
-        !recovered
+        !recovered.text.contains(&format!("{simple_helper}(")),
+        "the inlined companion leaked: {simple_helper}\n{}",
+        recovered.text
+    );
+    assert!(recovered.text.contains(&format!("{branch_helper}$jarde(")));
+    assert!(
+        recovered
             .text
-            .contains("inlined exact primitive lambda helper")
+            .contains(&format!("private static int {branch_helper}$jarde("))
     );
+    let emitted = scratch.child("lambda-negative-emitted");
+    fs::write(emitted.join("LambdaNegative.java"), &recovered.text).unwrap();
+    fs::write(
+        emitted.join("Runner.java"),
+        "public class Runner { public static void main(String[] a) { System.out.println(LambdaNegative.run()); } }\n",
+    )
+    .unwrap();
+    let recompile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join("LambdaNegative.java"))
+        .arg(emitted.join("Runner.java"))
+        .output()
+        .unwrap();
     assert!(
-        recovered
-            .diagnostics
-            .iter()
-            .any(
-                |diagnostic| diagnostic.code == "lambda_helper_projection_refused"
-                    && diagnostic.message.contains(&branch_helper)
-                    && diagnostic.message.contains("straight-line")
-            ),
-        "refusal must identify the physical helper and unsupported proof: {:?}",
-        recovered.diagnostics
+        recompile.status.success(),
+        "{}\n{}",
+        recovered.text,
+        String::from_utf8_lossy(&recompile.stderr)
     );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&emitted)
+        .arg("Runner")
+        .output()
+        .unwrap();
     assert!(
-        recovered
-            .methods
-            .iter()
-            .any(|method| method.item.name.raw().0 == simple_helper.as_bytes())
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
     );
-    assert!(
-        recovered
-            .methods
-            .iter()
-            .any(|method| method.item.name.raw().0 == branch_helper.as_bytes())
-    );
+    assert_eq!(String::from_utf8_lossy(&run.stdout), "5\n");
 }
 
 #[test]
-fn an_overdeep_lambda_helper_is_refused_before_recursive_projection_walks() {
+fn an_overdeep_lambda_helper_renames_instead_of_walking_an_unbounded_body() {
     let scratch = Scratch::new();
     let original = scratch.child("lambda-helper-deep");
     let expression = format!("x{}", " + 1".repeat(300));
@@ -1426,20 +1494,13 @@ fn an_overdeep_lambda_helper_is_refused_before_recursive_projection_walks() {
     );
     let snapshot = open(&fs::read(original.join("LambdaDeep.class")).unwrap());
     let recovered = class_source(&snapshot, "LambdaDeep", &RecoveryEvidenceRequest::all());
-    assert!(recovered.text.contains("lambda$deep$0"));
+    // The over-deep straight body stays out of the bounded inline proof and keeps its companion
+    // under the `$jarde` name instead — the whole class still recompiles and runs.
+    assert!(recovered.text.contains("lambda$deep$0$jarde"));
     assert!(
-        recovered.diagnostics.iter().any(|diagnostic| {
-            diagnostic.code == "lambda_helper_projection_refused"
-                && diagnostic.message.contains("lambda$deep$0")
-                && diagnostic.message.contains("bounded straight-line")
-        }),
-        "overdeep helper must be refused with a physical helper reason: {:?}",
-        recovered.diagnostics
-    );
-    assert!(
-        !recovered
+        recovered
             .text
-            .contains("inlined exact primitive lambda helper")
+            .contains("private static int lambda$deep$0$jarde(")
     );
 }
 
@@ -1503,8 +1564,13 @@ fn lambda_helper_projection_budget_stop_does_not_publish_partial_helpers() {
     assert!(stopped.text.contains(&helpers[0]));
     assert!(stopped.text.contains(&helpers[1]));
     assert!(
-        !stopped
-            .text
-            .contains("inlined exact primitive lambda helper")
+        !stopped.text.contains("lambda companion body inlined"),
+        "a stopped projection publishes no inlined site: {}",
+        stopped.text
+    );
+    assert!(
+        !stopped.text.contains("omitted physical lambda helper"),
+        "a stopped projection omits no companion: {}",
+        stopped.text
     );
 }
