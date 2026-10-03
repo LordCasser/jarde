@@ -722,6 +722,15 @@ pub enum ClassSourceMemberFamily {
         members: Vec<ClassSourceMemberChild>,
         projection: ClassSourceMemberProjection,
     },
+    /// The member family a fold projection renders with proved non-static rows beside its
+    /// static ones: the root's text carries every nested declaration, the synthetic outer
+    /// capture (constructor parameter, field and write) is elided inside that scope, and the
+    /// javac access bridges the family proved are hidden with their call sites re-spelled. The
+    /// members are in the root's InnerClasses row order.
+    PreparedFold {
+        members: Vec<ClassSourceMemberChild>,
+        projection: ClassSourceMemberProjection,
+    },
 }
 
 /// One selected physical child retained beside its proved relation, in the order the root's
@@ -847,6 +856,12 @@ pub enum MemberFamilyDerivedKind {
     /// the nested source spelling inside the fold's own text. The anchors name the physical
     /// evidence (field, method point, or member signature) beside both class definitions.
     StaticMemberTypeReference,
+    /// One javac access bridge a member fold hid from the root's text: the anchors name the
+    /// bridge's own method identity beside the passthrough field it read.
+    HiddenAccessBridge,
+    /// One access-bridge call site a member fold re-spelled into the qualified field access the
+    /// bridge forwarded: the anchors name the invokestatic site and the hidden bridge.
+    AccessBridgeCall,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -7825,6 +7840,7 @@ pub(crate) fn source_text(
         &[],
         &[],
         &mut Vec::new(),
+        &[],
     )
     .expect("ordinary class writer has no derived ranges to translate")
 }
@@ -7845,12 +7861,15 @@ pub(crate) fn source_text_with_nested_declaration(
         context,
         method_texts,
         std::slice::from_ref(nested),
+        &[],
     )
 }
 
 /// The same assembly with any number of sibling nested declarations: the fold's children are
 /// appended in the order the caller states (the root's own `InnerClasses` row order), one
-/// blank line apart, before the unit's closing brace.
+/// blank line apart, before the unit's closing brace. The hidden methods are root members a
+/// fold proved synthetic (the javac access bridges); each keeps a derived record anchored on
+/// the header its omission hides beside.
 pub(crate) fn source_text_with_nested_declarations(
     declaration: &ClassSourceDeclaration,
     fields: &[ClassSourceField],
@@ -7859,6 +7878,7 @@ pub(crate) fn source_text_with_nested_declarations(
     context: &ClassSourceTextContext<'_>,
     method_texts: &[MemberFamilyMethodText],
     nested: &[NestedClassSourceText],
+    hidden: &[HiddenFoldMethod],
 ) -> (String, Vec<MemberFamilyDerivedProjection>) {
     let mut derived = Vec::new();
     let text = source_text_with_member(
@@ -7871,6 +7891,7 @@ pub(crate) fn source_text_with_nested_declarations(
         method_texts,
         nested,
         &mut derived,
+        hidden,
     )
     .expect("nested declaration writer has no member-family ranges to translate");
     (text, derived)
@@ -7908,6 +7929,7 @@ pub(crate) fn source_text_with_method_projections(
         method_texts,
         &[],
         &mut derived,
+        &[],
     )?;
     let expected = method_texts
         .iter()
@@ -7957,6 +7979,13 @@ pub(crate) struct MemberFamilyMethodText {
 pub(crate) struct NestedClassSourceText {
     pub(crate) text: String,
     pub(crate) derived: Vec<MemberFamilyDerivedProjection>,
+}
+
+/// One root method a member fold omits from the assembled unit — a proved javac access bridge —
+/// with the anchors its hidden declaration records.
+pub(crate) struct HiddenFoldMethod {
+    pub(crate) index: u64,
+    pub(crate) anchors: Vec<MemberFamilyPhysicalAnchor>,
 }
 
 /// Translate one exact, single-line recovery span through this writer's artifact placement.
@@ -8247,6 +8276,7 @@ pub(crate) fn member_family_source_text(
         &[],
         &[],
         &mut derived,
+        &[],
     )?;
     let expected = 1
         + usize::from(member.capture.is_none())
@@ -8362,6 +8392,7 @@ pub(crate) fn declaration_pair_source_text(
         &[],
         std::slice::from_ref(&nested),
         &mut derived,
+        &[],
     )?;
     if derived.len() != 6
         || derived.iter().any(|entry| {
@@ -8385,6 +8416,7 @@ fn source_text_with_member(
     method_texts: &[MemberFamilyMethodText],
     nested_classes: &[NestedClassSourceText],
     derived: &mut Vec<MemberFamilyDerivedProjection>,
+    hidden_methods: &[HiddenFoldMethod],
 ) -> Option<String> {
     let initializer_field_order = context.initializer_field_order;
     let declared_methods = context.declared_methods;
@@ -8458,6 +8490,14 @@ fn source_text_with_member(
                 ],
             });
         }
+    }
+    for hidden in hidden_methods {
+        derived.push(MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::HiddenAccessBridge,
+            start: header_start,
+            end: out.len() - 1,
+            anchors: hidden.anchors.clone(),
+        });
     }
     if let Some(markers) = array_helper_markers {
         for marker in markers {
@@ -8534,6 +8574,12 @@ fn source_text_with_member(
                 .iter()
                 .any(|closed| closed.bridge.bridge == method.item.identity)
         }) {
+            continue;
+        }
+        if hidden_methods
+            .iter()
+            .any(|hidden| hidden.index == method.item.index)
+        {
             continue;
         }
         if array_helper_indices.is_some_and(|indices| indices.contains(&method.item.index)) {
@@ -8862,6 +8908,14 @@ fn append_family_method(
 /// constructor is renamed to the member's own source name — the pool's `$` name it came in with is
 /// not a name the nested unit can resolve. The staged texts' derived ranges are translated through
 /// this writer's placement, exactly as the family method writer does.
+/// The synthetic members one proved non-static child elides inside a fold's nested declaration:
+/// the capture field's row and the constructor's synthetic first parameter. The write statement
+/// itself is removed from the staged constructor text before this renderer sees it.
+#[derive(Clone, Copy)]
+pub(crate) struct InstanceMemberElision {
+    pub(crate) capture_field_index: u64,
+}
+
 pub(crate) fn nested_static_member_source_text(
     simple_name: &str,
     access_flags: u16,
@@ -8873,6 +8927,7 @@ pub(crate) fn nested_static_member_source_text(
     fold_targets: &[(&str, &str)],
     child_definition: PhysicalDefinitionId,
     root_definition: PhysicalDefinitionId,
+    elision: Option<InstanceMemberElision>,
 ) -> Option<NestedClassSourceText> {
     const SOURCE_CLASS_FLAGS: u16 = ACC_PUBLIC
         | ACC_PRIVATE
@@ -8940,8 +8995,29 @@ pub(crate) fn nested_static_member_source_text(
             },
         ],
     });
+    let hidden_span = (own_start, text.len() - 1);
     let mut first = true;
     for field in fields {
+        if elision.is_some_and(|elision| elision.capture_field_index == field.item.index) {
+            // The synthetic capture field's declaration is hidden with its constructor
+            // parameter: the fold's own text never names it, and the derived record keeps
+            // the physical field it removed, anchored on the declaration it hides beside.
+            derived.push(MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::HiddenCaptureField,
+                start: hidden_span.0,
+                end: hidden_span.1,
+                anchors: vec![
+                    MemberFamilyPhysicalAnchor::Field {
+                        field: field.item.identity.clone(),
+                        index: field.item.index,
+                    },
+                    MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: child_definition.clone(),
+                    },
+                ],
+            });
+            continue;
+        }
         if !first {
             text.push('\n');
         }
@@ -9013,13 +9089,60 @@ pub(crate) fn nested_static_member_source_text(
                     },
                 ],
             });
+            if elision.is_some() {
+                // The synthetic first parameter leaves the constructor's source list: the
+                // descriptor's first parameter is the proved Outer capture, and the capture
+                // write that consumed it is already gone from the staged body. Derived ranges
+                // the facade staged after this list move by exactly the bytes dropped, plus
+                // the rename's own delta.
+                let list_start = local_start + simple_name.len() + "(".len();
+                let Some(drop) = top_level_parameter_end(&staged.text, list_start) else {
+                    return None;
+                };
+                let name_delta = simple_name.len() as isize - old_name.len() as isize;
+                staged.text.replace_range(list_start..drop, "");
+                shift_derived_ranges(
+                    &mut staged.derived,
+                    local_start + old_name.len(),
+                    name_delta - (drop - list_start) as isize,
+                );
+                // The hidden capture write's record keeps the declaration line as its span: the
+                // line itself just changed length, so the range is re-clamped to it.
+                let line_end = staged.text.find('\n').unwrap_or(staged.text.len());
+                for entry in &mut staged.derived {
+                    if entry.kind == MemberFamilyDerivedKind::HiddenCaptureWrite {
+                        entry.start = entry.start.min(line_end);
+                        entry.end = line_end;
+                    }
+                }
+                staged.derived.push(MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::HiddenConstructorParameter,
+                    start: local_start,
+                    end: local_start + simple_name.len() + "()".len(),
+                    anchors: vec![
+                        MemberFamilyPhysicalAnchor::ConstructorParameter {
+                            method: method.item.identity.clone(),
+                            index: 0,
+                        },
+                        MemberFamilyPhysicalAnchor::ClassDefinition {
+                            definition: child_definition.clone(),
+                        },
+                    ],
+                });
+            }
         }
         let offset = text.len();
         text.push_str(&indent(&staged.text, 1));
         for entry in &staged.derived {
-            let source_span = staged.text.get(entry.start..entry.end)?;
-            let start = indented_offset(&staged.text, entry.start, 1, false)?;
-            let end = indented_offset(&staged.text, entry.end, 1, true)?;
+            let Some(source_span) = staged.text.get(entry.start..entry.end) else {
+                return None;
+            };
+            let Some(start) = indented_offset(&staged.text, entry.start, 1, false) else {
+                return None;
+            };
+            let Some(end) = indented_offset(&staged.text, entry.end, 1, true) else {
+                return None;
+            };
             let mut translated = entry.clone();
             translated.start = offset + start;
             translated.end = offset + end;
@@ -9031,6 +9154,65 @@ pub(crate) fn nested_static_member_source_text(
     }
     text.push_str("    }\n");
     Some(NestedClassSourceText { text, derived })
+}
+
+/// The end of a constructor's first source parameter: just past the first top-level separator,
+/// or at the closing parenthesis when the list holds only that parameter. The list begins just
+/// after its opening parenthesis; generic angle brackets, annotations, nested parentheses and
+/// literals never separate parameters.
+fn top_level_parameter_end(text: &str, open: usize) -> Option<usize> {
+    let bytes = text.as_bytes();
+    let mut depth = 1isize;
+    let mut angles = 0isize;
+    let mut index = open;
+    let mut literal: Option<u8> = None;
+    let mut escaped = false;
+    while index < bytes.len() {
+        let byte = bytes[index];
+        if let Some(quote) = literal {
+            if escaped {
+                escaped = false;
+            } else if byte == b'\\' {
+                escaped = true;
+            } else if byte == quote {
+                literal = None;
+            }
+        } else if byte == b'"' || byte == b'\'' {
+            literal = Some(byte);
+        } else {
+            match byte {
+                b'(' => depth += 1,
+                b')' => {
+                    depth -= 1;
+                    if depth == 0 {
+                        return Some(index);
+                    }
+                }
+                b'<' => angles += 1,
+                b'>' => angles -= 1,
+                b',' if depth == 1 && angles == 0 => {
+                    let mut end = index + 1;
+                    if bytes.get(end) == Some(&b' ') {
+                        end += 1;
+                    }
+                    return Some(end);
+                }
+                _ => {}
+            }
+        }
+        index += 1;
+    }
+    None
+}
+
+/// Move every derived range that begins at or after `from` by `delta` byte positions.
+fn shift_derived_ranges(derived: &mut [MemberFamilyDerivedProjection], from: usize, delta: isize) {
+    for entry in derived.iter_mut() {
+        if entry.start >= from {
+            entry.start = (entry.start as isize + delta).max(0) as usize;
+            entry.end = (entry.end as isize + delta).max(0) as usize;
+        }
+    }
 }
 
 /// Render a proved enum as a lexical member using the child's typed declaration and member

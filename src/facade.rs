@@ -1785,7 +1785,7 @@ impl Engine {
             .declaration
             .as_ref()
             .map(|declaration| declaration.item.declaration.this_class.raw().0.clone());
-        let root_has_synthetic_member_rows = root_binary_name.is_some_and(|root_binary| {
+        let root_has_synthetic_member_rows = root_binary_name.clone().is_some_and(|root_binary| {
             root_nesting.resolved_inner_classes.iter().any(|row| {
                 row.class
                     .strip_prefix(root_binary.as_slice())
@@ -1798,6 +1798,30 @@ impl Engine {
             })
         });
         let scanned_static_rows = static_fold_rows.is_some();
+        // The instance fold road: a non-static candidate the narrow channels prepared but did
+        // not claim joins the same fold its family's static rows take. Only the fold's own
+        // text carries the elisions, so a refused proof or projection leaves every earlier
+        // outcome exactly as it was.
+        let instance_fold_candidate = if root_has_synthetic_member_rows {
+            None
+        } else {
+            match &report.member_family {
+                class_source::ClassSourceMemberFamily::Prepared {
+                    relation,
+                    child,
+                    projection,
+                    ..
+                } if relation.access_flags & 0x0008 == 0
+                    && !matches!(
+                        projection,
+                        class_source::ClassSourceMemberProjection::Projected { .. }
+                    ) =>
+                {
+                    Some((relation.clone(), child.clone()))
+                }
+                _ => None,
+            }
+        };
         let static_fold = if root_has_synthetic_member_rows {
             None
         } else if let Some(rows) = static_fold_rows.take() {
@@ -1851,6 +1875,21 @@ impl Engine {
         } else {
             None
         };
+        // A pure instance family travels the same fold road with an empty static set. Its only
+        // road is the joint attempt below: a refused proof or projection publishes nothing at
+        // all — the narrow channel's prepared family keeps the report, exactly as it did
+        // before this change knew about instance folding.
+        let pure_instance_road = instance_fold_candidate.is_some() && !scanned_static_rows;
+        let static_fold = static_fold.or_else(|| {
+            instance_fold_candidate.as_ref().map(|_| {
+                class_source::ClassSourceMemberFamily::PreparedStatic {
+                    members: Vec::new(),
+                    projection: class_source::ClassSourceMemberProjection::Refused {
+                        reason: "static member family projection has not completed".to_owned(),
+                    },
+                }
+            })
+        });
         if let Some(mut family) = static_fold {
             let members = match &family {
                 class_source::ClassSourceMemberFamily::PreparedStatic { members, .. } => {
@@ -1863,53 +1902,137 @@ impl Engine {
                 let mut projection_execution = ExecutionReport::Complete {
                     usage: budget.usage(),
                 };
-                let projected = project_class_source_static_member_fold(
-                    content,
-                    &environment,
-                    &report,
-                    &members,
-                    &mut projection_execution,
-                    budget,
-                );
-                merge_execution(&mut report.execution, projection_execution);
-                match projected {
-                    Ok(Ok((text, derived))) => {
-                        if let class_source::ClassSourceMemberFamily::PreparedStatic {
-                            projection,
-                            ..
-                        } = &mut family
-                        {
-                            *projection =
-                                class_source::ClassSourceMemberProjection::Projected { derived };
+                // The joint instance attempt: the proved non-static child folds beside the
+                // prepared statics with its synthetic capture and access bridges elided. A
+                // mixed family falls back to the statics-only road on refusal; a pure
+                // instance family has no road but this one.
+                if let Some((relation, child)) = &instance_fold_candidate {
+                    match prepare_class_source_instance_member_fold(
+                        content,
+                        &environment,
+                        &report,
+                        relation,
+                        child,
+                        members.clone(),
+                        &mut projection_execution,
+                        budget,
+                    ) {
+                        Ok(Ok(mut plan)) => {
+                            // The fold states the members in the root's own InnerClasses row
+                            // order, exactly as the static-only fold's contract does.
+                            if let Some(root_binary) = root_binary_name.as_ref() {
+                                plan.members.sort_by_key(|member| {
+                                    let binary = [
+                                        root_binary.as_slice(),
+                                        b"$",
+                                        member.relation.simple_name.as_bytes(),
+                                    ]
+                                    .concat();
+                                    root_nesting
+                                        .resolved_inner_classes
+                                        .iter()
+                                        .position(|row| row.class == binary)
+                                        .unwrap_or(usize::MAX)
+                                });
+                            }
+                            let joint_projection = project_class_source_member_fold(
+                                content,
+                                &environment,
+                                &report,
+                                &plan,
+                                &mut projection_execution,
+                                budget,
+                            );
+                            match joint_projection {
+                                Ok(Ok((text, derived))) => {
+                                    family = class_source::ClassSourceMemberFamily::PreparedFold {
+                                        members: plan.members.clone(),
+                                        projection:
+                                            class_source::ClassSourceMemberProjection::Projected {
+                                                derived,
+                                            },
+                                    };
+                                    projected_text = Some(text);
+                                }
+                                Ok(Err(_reason)) => {}
+                                Err(error) => {
+                                    merge_execution(
+                                        &mut report.execution,
+                                        stop_execution(&error, budget),
+                                    );
+                                    report.diagnostics.push(stop_diagnostic(
+                                        &error,
+                                        Some(definition_provenance(&report.class)),
+                                    ));
+                                }
+                            }
                         }
-                        projected_text = Some(text);
+                        Ok(Err(_reason)) => {}
+                        Err(_error) => {}
                     }
-                    Ok(Err(reason)) => {
-                        if let class_source::ClassSourceMemberFamily::PreparedStatic {
-                            projection,
-                            ..
-                        } = &mut family
-                        {
-                            *projection =
-                                class_source::ClassSourceMemberProjection::Refused { reason };
+                }
+                if projected_text.is_none() && !pure_instance_road {
+                    let projected = project_class_source_member_fold(
+                        content,
+                        &environment,
+                        &report,
+                        &MemberFoldPlan {
+                            members,
+                            instances: Vec::new(),
+                            bridges: Vec::new(),
+                            constructor_sites: Vec::new(),
+                        },
+                        &mut projection_execution,
+                        budget,
+                    );
+                    merge_execution(&mut report.execution, projection_execution);
+                    match projected {
+                        Ok(Ok((text, derived))) => {
+                            if let class_source::ClassSourceMemberFamily::PreparedStatic {
+                                projection,
+                                ..
+                            } = &mut family
+                            {
+                                *projection =
+                                    class_source::ClassSourceMemberProjection::Projected {
+                                        derived,
+                                    };
+                            }
+                            projected_text = Some(text);
+                        }
+                        Ok(Err(reason)) => {
+                            if let class_source::ClassSourceMemberFamily::PreparedStatic {
+                                projection,
+                                ..
+                            } = &mut family
+                            {
+                                *projection =
+                                    class_source::ClassSourceMemberProjection::Refused { reason };
+                            }
+                        }
+                        Err(error) => {
+                            merge_execution(&mut report.execution, stop_execution(&error, budget));
+                            report.diagnostics.push(stop_diagnostic(
+                                &error,
+                                Some(definition_provenance(&report.class)),
+                            ));
+                            if let class_source::ClassSourceMemberFamily::PreparedStatic {
+                                projection,
+                                ..
+                            } = &mut family
+                            {
+                                *projection = class_source::ClassSourceMemberProjection::Refused {
+                                    reason: format!(
+                                        "static member family projection stopped: {error}"
+                                    ),
+                                };
+                            }
                         }
                     }
-                    Err(error) => {
-                        merge_execution(&mut report.execution, stop_execution(&error, budget));
-                        report.diagnostics.push(stop_diagnostic(
-                            &error,
-                            Some(definition_provenance(&report.class)),
-                        ));
-                        if let class_source::ClassSourceMemberFamily::PreparedStatic {
-                            projection,
-                            ..
-                        } = &mut family
-                        {
-                            *projection = class_source::ClassSourceMemberProjection::Refused {
-                                reason: format!("static member family projection stopped: {error}"),
-                            };
-                        }
-                    }
+                } else {
+                    // The joint attempt's own execution accounting survives both outcomes:
+                    // a pure-instance refusal publishes no family, but its work was real.
+                    merge_execution(&mut report.execution, projection_execution);
                 }
             }
             // The scan's own rows always state their fold outcome; a refused fallback leaves
@@ -18137,7 +18260,593 @@ struct StaticFoldOwnerTexts {
     methods: Vec<class_source::MemberFamilyMethodText>,
 }
 
-/// The static member fold projection. Every direct static member becomes one nested declaration
+/// One proved javac access bridge a member fold hides: a synthetic static root method whose
+/// body is exactly one instance-field read of its own class, with every physical invocation
+/// censused to a family method the fold's own text re-spells.
+#[derive(Clone)]
+struct AccessBridgeProof {
+    method: PhysicalMethodId,
+    field_name: String,
+    field_index: u64,
+    read_bci: u32,
+    call_sites: Vec<(PhysicalMethodId, u32)>,
+}
+
+/// One proved non-static member child a fold renders beside its static siblings, with the
+/// recovery feeds its synthetic capture authorizes inside the fold's own text.
+#[derive(Clone)]
+struct InstanceFoldPlan {
+    relation: class_source::ClassSourceMemberRelation,
+    capture: class_source::MemberCaptureProof,
+    target: jarde_java::report::ProvedMemberInnerTarget,
+    reads: Vec<jarde_java::report::ProvedCapturedOuterRead>,
+}
+
+/// The joint member fold: physically prepared static children, proved instance children, and
+/// the access bridges the family proved — one projection renders every nested declaration.
+#[derive(Clone)]
+struct MemberFoldPlan {
+    /// Every folded child in the root's own `InnerClasses` row order.
+    members: Vec<class_source::ClassSourceMemberChild>,
+    instances: Vec<InstanceFoldPlan>,
+    bridges: Vec<AccessBridgeProof>,
+    /// Every constructor invocation of an instance child the census proved, in family methods.
+    constructor_sites: Vec<(PhysicalMethodId, u32)>,
+}
+
+/// Prove the javac access bridges of one root a member fold may hide: synthetic static
+/// `access$NNN` methods whose bodies are exactly one instance-field read of the root's own
+/// class. Every other shape — a setter's write, a body that computes, a read of another
+/// class's field — keeps its separated presentation; this function only collects what proved.
+fn prove_fold_access_bridges(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<Vec<AccessBridgeProof>, String>> {
+    let Some(declaration) = root.declaration.as_ref() else {
+        return Ok(Err("access bridge proof has no root declaration".to_owned()));
+    };
+    let root_binary = declaration.item.declaration.this_class.raw().0.clone();
+    let mut bridges = Vec::new();
+    for method in &root.methods {
+        budget.poll()?;
+        if method.item.access_flags & (0x1000 | 0x0008) != 0x1008 {
+            continue;
+        }
+        let Ok(name) = std::str::from_utf8(&method.item.identity.name.0) else {
+            continue;
+        };
+        let Some(number) = name.strip_prefix("access$") else {
+            continue;
+        };
+        if number.is_empty() || !number.bytes().all(|byte| byte.is_ascii_digit()) {
+            continue;
+        }
+        let descriptor = &method.item.identity.descriptor.0;
+        let Ok(parsed) = descriptor_facts(descriptor, DescriptorKind::Method) else {
+            continue;
+        };
+        let parameters = parsed.parameters();
+        let outer_descriptor = [b"L".as_slice(), &root_binary, b";"].concat();
+        if parameters.len() != 1
+            || parameters[0].bytes(descriptor) != Some(outer_descriptor.as_slice())
+        {
+            continue;
+        }
+        let Some(result) = parsed.result() else {
+            continue;
+        };
+        let Some(result_type) = result.bytes(descriptor) else {
+            continue;
+        };
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: method.item.identity.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != method.item.identity
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return Ok(Err(format!(
+                "access bridge {name} did not complete its method analysis"
+            )));
+        }
+        let Some(code) = analyzed.ir().code() else {
+            // A bridge without bytecode declares nothing this fold can hide.
+            continue;
+        };
+        let instructions = &code.instructions;
+        if code.stopped_at.is_some()
+            || !code.exception_handlers.is_empty()
+            || instructions.len() != 3
+            || instructions[0].opcode != 0x2a
+            || instructions[1].opcode != 0xb4
+        {
+            continue;
+        }
+        let expected_return = match result_type.first() {
+            Some(b'I') => Some(0xac),
+            Some(b'J') => Some(0xad),
+            Some(b'F') => Some(0xae),
+            Some(b'D') => Some(0xaf),
+            Some(b'L') | Some(b'[') => Some(0xb0),
+            _ => None,
+        };
+        if instructions[2].opcode != expected_return.unwrap_or(0x00) {
+            continue;
+        }
+        let pool = analyzed.ir().constant_pool();
+        let Some(field_index) = instructions[1].constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = jarde_reader::classfile::cp_entry(pool, field_index) else {
+            continue;
+        };
+        let jarde_reader::classfile::CpEntryKind::FieldRef {
+            owner,
+            name: field_name,
+            descriptor: field_descriptor,
+            ..
+        } = &entry.kind
+        else {
+            continue;
+        };
+        if owner.0 != root_binary || field_descriptor.0 != result_type {
+            continue;
+        }
+        let Some(field) = root.fields.iter().find(|field| {
+            matches!(&field.item.identity.member,
+                jarde_reader::model::MemberKey::Field { name, descriptor }
+                    if name.0 == field_name.0 && descriptor.0 == field_descriptor.0)
+        }) else {
+            continue;
+        };
+        if field.item.access_flags & 0x0008 != 0 {
+            continue;
+        }
+        let Some(read_bci) = instructions.get(1).map(|instruction| instruction.bci) else {
+            continue;
+        };
+        bridges.push(AccessBridgeProof {
+            method: method.item.identity.clone(),
+            field_name: String::from_utf8_lossy(&field_name.0).into_owned(),
+            field_index: field.item.index,
+            read_bci,
+            call_sites: Vec::new(),
+        });
+    }
+    Ok(Ok(bridges))
+}
+
+/// Close the whole fold family over the selected physical scope: every construction of an
+/// instance child, every capture-field access and every hidden-bridge invocation must sit in a
+/// family method this fold's own text presents. The queries are the narrow member family's;
+/// the allowed set is the fold's.
+fn prove_fold_external_use_census(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    plan: &mut MemberFoldPlan,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(), String>> {
+    use crate::resolver::DeclarationRefQuery;
+    use jarde_query::query::{ConsumerKind, ConsumerSchema, XrefOperation};
+    use jarde_reader::model::SymbolRef;
+
+    // The same selected-scope closure the narrow member family requires: an explicit classpath
+    // or extra snapshot can hide a consumer this scan never sees.
+    if content.len() != 1
+        || environment.domains.len() != 1
+        || !environment.providers.is_empty()
+        || environment.runtime.load_domain.roots.len() != 1
+        || environment.runtime.load_domain.roots[0]
+            != (LoadRoot::Container {
+                origin: ContainerOrigin {
+                    snapshot: environment.runtime.physical.snapshot.clone(),
+                    root_container: ContainerId(ROOT_CONTAINER.to_owned()),
+                    steps: Vec::new(),
+                },
+                prefix: ArchiveNameBytes(Vec::new()),
+            })
+        || !matches!(
+            environment.runtime.profile.multi_release,
+            crate::MultiReleasePolicy::Disabled
+        )
+    {
+        return Ok(Err(
+            "fold external-use census cannot prove the whole selected scope".to_owned(),
+        ));
+    }
+    let Some(root_declaration) = root.declaration.as_ref() else {
+        return Ok(Err("fold census has no root declaration".to_owned()));
+    };
+    let root_binary = &root_declaration.item.declaration.this_class.raw().0;
+    let outer_descriptor = [b"L".as_slice(), root_binary, b";"].concat();
+    let family_method = |method: &PhysicalMethodId| {
+        method.owner == root.class
+            || plan
+                .members
+                .iter()
+                .any(|member| member.relation.child == method.owner)
+    };
+    let mut constructor_sites = Vec::new();
+    let mut bridge_sites: Vec<Vec<(PhysicalMethodId, u32)>> = vec![Vec::new(); plan.bridges.len()];
+    let mut external_bridges: Vec<usize> = Vec::new();
+    // One query per censused member identity: the capture field of every instance child, its
+    // constructor, and every bridge the fold hides.
+    let mut queries: Vec<(String, SymbolRef, PhysicalDefinitionId, Option<usize>)> = Vec::new();
+    for instance in &plan.instances {
+        let child_binary = [
+            root_binary.as_slice(),
+            b"$",
+            instance.relation.simple_name.as_bytes(),
+        ]
+        .concat();
+        queries.push((
+            "capture field".to_owned(),
+            SymbolRef::Field {
+                owner: JvmBytes(child_binary.clone()),
+                name: JvmBytes(instance.capture.field_name.clone().into_bytes()),
+                descriptor: JvmBytes(outer_descriptor.clone()),
+            },
+            instance.relation.child.clone(),
+            None,
+        ));
+        queries.push((
+            "member constructor".to_owned(),
+            SymbolRef::Method {
+                owner: JvmBytes(child_binary),
+                name: JvmBytes(b"<init>".to_vec()),
+                descriptor: JvmBytes(instance.capture.constructor.descriptor.0.clone()),
+            },
+            instance.relation.child.clone(),
+            None,
+        ));
+    }
+    for (index, bridge) in plan.bridges.iter().enumerate() {
+        queries.push((
+            "access bridge".to_owned(),
+            SymbolRef::Method {
+                owner: JvmBytes(root_binary.clone()),
+                name: JvmBytes(bridge.method.name.0.clone()),
+                descriptor: JvmBytes(bridge.method.descriptor.0.clone()),
+            },
+            root.class.clone(),
+            Some(index),
+        ));
+    }
+    for (kind, member, definition, bridge_index) in queries {
+        budget.poll()?;
+        let query = DeclarationRefQuery {
+            environment: environment.clone(),
+            declaration: ResolvedMemberRef {
+                loader: environment.runtime.load_domain.loader.clone(),
+                definition,
+                member,
+            },
+            scope: environment.runtime.physical.scope.clone(),
+            consumers: ConsumerSchema::new(
+                0,
+                [
+                    ConsumerKind::Field,
+                    ConsumerKind::Invocation,
+                    ConsumerKind::Constant,
+                    ConsumerKind::Bootstrap,
+                ],
+            ),
+            max_items: 0,
+        };
+        let scanned = jarde_jvm::declaration_references(content, &query, budget)?;
+        merge_execution(execution, scanned.execution.clone());
+        if scanned.analysis != ResolutionAnalysis::Performed
+            || !scanned.environment_problems.is_empty()
+            || !scanned.unsupported_categories.is_empty()
+            || scanned.unresolved_candidates != 0
+            || scanned.has_more
+            || !matches!(scanned.execution, ExecutionReport::Complete { .. })
+            || scanned.coverage.artifact_structural.state != CoverageState::CompleteWithinSchema
+            || scanned.coverage.runtime_resolution.state != CoverageState::CompleteWithinSchema
+        {
+            return Ok(Err(format!(
+                "{kind} external-use census is incomplete in the selected scope"
+            )));
+        }
+        for item in &scanned.items {
+            let allowed = match (&kind[..], item.consumer, item.operation) {
+                ("capture field", ConsumerKind::Field, XrefOperation::PutField) => {
+                    plan.instances.iter().any(|instance| {
+                        item.origin.members.as_slice()
+                            == [OriginMember::MethodPoint {
+                                method: instance.capture.constructor.clone(),
+                                bci: instance.capture.write_bci,
+                            }]
+                    })
+                }
+                ("capture field", ConsumerKind::Field, XrefOperation::GetField) => {
+                    plan.instances.iter().any(|instance| {
+                        instance.capture.reads.iter().any(|read| {
+                            item.origin.members.as_slice()
+                                == [OriginMember::MethodPoint {
+                                    method: read.method.clone(),
+                                    bci: read.bci,
+                                }]
+                        })
+                    })
+                }
+                ("member constructor", ConsumerKind::Invocation, XrefOperation::InvokeSpecial) => {
+                    item.origin
+                        .members
+                        .first()
+                        .is_some_and(|member| match member {
+                            OriginMember::MethodPoint { method, .. } => family_method(method),
+                            _ => false,
+                        })
+                }
+                ("access bridge", ConsumerKind::Invocation, XrefOperation::InvokeStatic) => {
+                    // An out-of-family bridge caller only costs the bridge its hiding: the
+                    // declaration stays, and every call site keeps the call it had.
+                    let inside = item
+                        .origin
+                        .members
+                        .first()
+                        .is_some_and(|member| match member {
+                            OriginMember::MethodPoint { method, .. } => family_method(method),
+                            _ => false,
+                        });
+                    if !inside {
+                        external_bridges.extend(bridge_index);
+                    }
+                    if let [OriginMember::MethodPoint { method, bci }] =
+                        item.origin.members.as_slice()
+                        && inside
+                        && let Some(index) = bridge_index
+                    {
+                        bridge_sites[index].push((method.clone(), *bci));
+                    }
+                    true
+                }
+                ("access bridge", ConsumerKind::Constant | ConsumerKind::Bootstrap, _) => {
+                    // A method-handle or constant consumer references the bridge as data: the
+                    // declaration stays for it exactly as an out-of-family caller's would.
+                    external_bridges.extend(bridge_index);
+                    true
+                }
+                _ => false,
+            };
+            if !allowed {
+                return Ok(Err(format!(
+                    "{kind} has a physical consumer outside the folded family"
+                )));
+            }
+            if let [OriginMember::MethodPoint { method, bci }] = item.origin.members.as_slice()
+                && kind == "member constructor"
+            {
+                constructor_sites.push((method.clone(), *bci));
+            }
+        }
+    }
+    plan.constructor_sites = constructor_sites;
+    external_bridges.sort_unstable();
+    external_bridges.dedup();
+    for (bridge, sites) in plan.bridges.iter_mut().zip(bridge_sites) {
+        bridge.call_sites = sites;
+    }
+    // The bridges whose consumers all closed inside the family (and the uncalled ones nothing
+    // references) are the hidden set; the rest keep their declarations.
+    let mut bridges = std::mem::take(&mut plan.bridges);
+    plan.bridges = bridges
+        .drain(..)
+        .enumerate()
+        .filter(|(index, _)| !external_bridges.contains(index))
+        .map(|(_, bridge)| bridge)
+        .collect();
+    Ok(Ok(()))
+}
+
+/// Prepare the joint member fold: prove one non-static child's synthetic capture, hide the
+/// javac access bridges the family proved, and census every physical use the elided members
+/// have. The static children arrive already physically prepared; this function adds no text.
+#[allow(clippy::too_many_arguments)]
+fn prepare_class_source_instance_member_fold(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    relation: &class_source::ClassSourceMemberRelation,
+    child_report: &class_source::ClassSourceReport,
+    static_members: Vec<class_source::ClassSourceMemberChild>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<MemberFoldPlan, String>> {
+    let Some(root_declaration) = root.declaration.as_ref() else {
+        return Ok(Err("instance fold has no root declaration".to_owned()));
+    };
+    let Some(child_declaration) = child_report.declaration.as_ref() else {
+        return Ok(Err("instance fold has no child declaration".to_owned()));
+    };
+    let root_binary = root_declaration.item.declaration.this_class.raw().0.clone();
+    let child_binary = child_declaration
+        .item
+        .declaration
+        .this_class
+        .raw()
+        .0
+        .clone();
+    let (Some(root_name), Some(child_name)) = (
+        std::str::from_utf8(&root_binary).ok(),
+        std::str::from_utf8(&child_binary).ok(),
+    ) else {
+        return Ok(Err("instance fold identities are not UTF-8".to_owned()));
+    };
+    if !matches!(root.execution, ExecutionReport::Complete { .. })
+        || !matches!(child_report.execution, ExecutionReport::Complete { .. })
+    {
+        return Ok(Err(
+            "instance fold physical preparation is incomplete".to_owned()
+        ));
+    }
+    let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+        content,
+        environment,
+        None,
+        &child_binary,
+        execution,
+        budget,
+    )?
+    else {
+        return Ok(Err(
+            "instance fold cannot re-read the child definition".to_owned()
+        ));
+    };
+    if definition != child_report.class {
+        return Ok(Err(
+            "instance fold re-read resolved another child definition".to_owned(),
+        ));
+    }
+    let facts = read.facts;
+    let mut analyses = Vec::new();
+    for method in &facts.methods {
+        budget.poll()?;
+        if !method
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Code")
+        {
+            continue;
+        }
+        let id = PhysicalMethodId {
+            owner: definition.clone(),
+            name: method.name.raw().clone(),
+            descriptor: method.descriptor.raw().clone(),
+        };
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != id
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return Ok(Err(
+                "instance fold child method analysis did not complete".to_owned()
+            ));
+        }
+        analyses.push((id, analyzed));
+    }
+    let irs: Vec<_> = analyses
+        .iter()
+        .map(|(id, analyzed)| (id.clone(), analyzed.ir()))
+        .collect();
+    let capture = match crate::member_inner::prove_family_instance_capture(
+        &root_binary,
+        &facts,
+        &irs,
+        budget,
+    )? {
+        Ok(proof) => proof,
+        Err(reason) => {
+            return Ok(Err(format!("instance capture refused: {reason}")));
+        }
+    };
+    let root_source_name = root_name.replace('/', ".");
+    let Ok(constructor_descriptor) = std::str::from_utf8(&capture.constructor.descriptor.0) else {
+        return Ok(Err(
+            "instance fold constructor descriptor is not UTF-8".to_owned()
+        ));
+    };
+    let target = jarde_java::report::ProvedMemberInnerTarget {
+        definition: child_report.class.clone(),
+        owner: child_name.to_owned(),
+        outer: root_name.to_owned(),
+        simple_name: relation.simple_name.clone(),
+        constructor_descriptor: constructor_descriptor.to_owned(),
+        capture_field: capture.field_name.clone(),
+        generic_diamond: false,
+        source_type_path: vec![
+            source_type_path_segment(
+                &root.class,
+                root_name,
+                root_source_name.clone(),
+                root.declaration
+                    .as_ref()
+                    .and_then(|declaration| declaration.generic_scope.as_ref())
+                    .map_or(0, |scope| scope.type_parameters.len()),
+                None,
+                true,
+            ),
+            source_type_path_segment(
+                &child_report.class,
+                child_name,
+                format!("{root_source_name}.{}", relation.simple_name),
+                0,
+                Some(root_name.to_owned()),
+                false,
+            ),
+        ],
+    };
+    let reads: Vec<_> = capture
+        .reads
+        .iter()
+        .map(|read| jarde_java::report::ProvedCapturedOuterRead {
+            method: read.method.clone(),
+            read_bci: read.bci,
+            field_owner: child_name.to_owned(),
+            field_name: capture.field_name.clone(),
+            field_descriptor: format!("L{root_name};"),
+            outer_internal_name: root_name.to_owned(),
+            outer_source_name: root_source_name.clone(),
+            constructor: capture.constructor.clone(),
+            constructor_write_bci: capture.write_bci,
+        })
+        .collect();
+    let bridges = match prove_fold_access_bridges(content, environment, root, execution, budget)? {
+        Ok(bridges) => bridges,
+        Err(reason) => return Ok(Err(format!("access bridge proof refused: {reason}"))),
+    };
+    // The static members keep the row order the scan stated; the instance child joins them.
+    let mut members = static_members;
+    members.push(class_source::ClassSourceMemberChild {
+        relation: relation.clone(),
+        child: Box::new(child_report.clone()),
+    });
+    let mut plan = MemberFoldPlan {
+        members,
+        instances: vec![InstanceFoldPlan {
+            relation: relation.clone(),
+            capture,
+            target,
+            reads,
+        }],
+        bridges,
+        constructor_sites: Vec::new(),
+    };
+    if let Err(reason) =
+        prove_fold_external_use_census(content, environment, root, &mut plan, execution, budget)?
+    {
+        return Ok(Err(reason));
+    }
+    Ok(Ok(plan))
+}
+
+/// The member fold projection. Every direct static member becomes one nested declaration
 /// of the root's source unit — the root's own `InnerClasses` order — and every reference to a
 /// folded member inside that unit is re-spelled with the source nesting the declaration states:
 /// the pool `$` name of a member the fold declares is not a name Java source can resolve once the
@@ -18147,18 +18856,27 @@ struct StaticFoldOwnerTexts {
 /// field tokens to the field's own descriptor. Grandchildren stay in the pool spelling the child
 /// text already carries: the fold does not declare them, so their flattened physical names remain
 /// exactly what a project of the remaining units resolves.
+///
+/// A proved non-static member joins the same assembly with its synthetic capture elided inside
+/// the fold's own text: the constructor's first parameter and the capture field's declaration
+/// disappear, the capture write's statement is removed, and the construction sites the census
+/// closed re-render through the member-inner recovery feeds as `new Inner(args)`,
+/// `qualifier.new Inner(args)` or the checked-qualifier form the verifier already proves. The
+/// javac access bridges the family proved hide with their call sites re-spelled to the qualified
+/// field access the bridge forwarded.
 #[allow(clippy::too_many_arguments)]
-fn project_class_source_static_member_fold(
+fn project_class_source_member_fold(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
     root: &ClassSourceReport,
-    members: &[class_source::ClassSourceMemberChild],
+    plan: &MemberFoldPlan,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
 {
+    let members = &plan.members;
     let Some(declaration) = root.declaration.as_ref() else {
-        return Ok(Err("static fold root has no source declaration".to_owned()));
+        return Ok(Err("member fold root has no source declaration".to_owned()));
     };
     let root_binary = declaration.item.declaration.this_class.raw().0.clone();
     if !matches!(root.execution, ExecutionReport::Complete { .. })
@@ -18168,7 +18886,7 @@ fn project_class_source_static_member_fold(
         })
     {
         return Ok(Err(
-            "static fold physical preparation is incomplete".to_owned()
+            "member fold physical preparation is incomplete".to_owned()
         ));
     }
     // A generic member class is outside this slice: the nested header this fold writes is the
@@ -18182,7 +18900,7 @@ fn project_class_source_static_member_fold(
             .is_some_and(|declaration| declaration.generic_signature.is_some())
     }) {
         return Ok(Err(
-            "static fold member has a class Signature this slice does not project".to_owned(),
+            "member fold member has a class Signature this slice does not project".to_owned(),
         ));
     }
     let context = class_source::ClassSourceTextContext {
@@ -18197,7 +18915,7 @@ fn project_class_source_static_member_fold(
     };
     if class_source::source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return Ok(Err(
-            "root class has another source projection outside the static member fold".to_owned(),
+            "root class has another source projection outside the member fold".to_owned(),
         ));
     }
     let mut targets = Vec::with_capacity(members.len());
@@ -18218,7 +18936,7 @@ fn project_class_source_static_member_fold(
             Ok(name) => name,
             Err(_) => {
                 return Ok(Err(
-                    "static fold member has no exact UTF-8 identity".to_owned()
+                    "member fold member has no exact UTF-8 identity".to_owned()
                 ));
             }
         };
@@ -18240,7 +18958,7 @@ fn project_class_source_static_member_fold(
         ) != member.child.text
         {
             return Ok(Err(
-                "one static member child has another physical source projection".to_owned(),
+                "one member child has another physical source projection".to_owned(),
             ));
         }
         // The fold spelling this unit states: the member is declared directly in this text, so
@@ -18252,7 +18970,7 @@ fn project_class_source_static_member_fold(
             });
         if spelling != member.relation.simple_name {
             return Ok(Err(
-                "static fold member row and binary name disagree on the source name".to_owned(),
+                "member fold member row and binary name disagree on the source name".to_owned(),
             ));
         }
         targets.push(StaticFoldTarget {
@@ -18263,12 +18981,132 @@ fn project_class_source_static_member_fold(
             relation: &member.relation,
         });
     }
+    // The instance re-runs: every family method the census tied to a construction of an
+    // instance child, a capture read or a hidden-bridge call recovers again with the feeds the
+    // fold proved. A re-run that does not present the full body leaves the fold refused: the
+    // elided members would leave dangling references in a text this fold cannot respell.
+    let mut overrides: Vec<(PhysicalMethodId, jarde_java::RecoveryReport)> = Vec::new();
+    if !plan.instances.is_empty() {
+        let mut affected: Vec<PhysicalMethodId> = plan
+            .constructor_sites
+            .iter()
+            .map(|(method, _)| method)
+            .chain(
+                plan.instances
+                    .iter()
+                    .flat_map(|instance| instance.reads.iter().map(|read| &read.method)),
+            )
+            .chain(
+                plan.bridges
+                    .iter()
+                    .flat_map(|bridge| bridge.call_sites.iter().map(|(method, _)| method)),
+            )
+            .cloned()
+            .collect();
+        affected.sort_by_key(|method| format!("{method:?}"));
+        affected.dedup();
+        let member_targets: Vec<_> = plan
+            .instances
+            .iter()
+            .map(|instance| instance.target.clone())
+            .collect();
+        for method in &affected {
+            budget.poll()?;
+            let analyzed = jarde_jvm::analyze_method_ir(
+                content,
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: method.clone(),
+                    stages: MethodOperation::Analysis.stages().to_vec(),
+                },
+                budget,
+            )?;
+            merge_execution(execution, analyzed.report().execution.clone());
+            if analyzed.report().method != *method
+                || !matches!(
+                    analyzed.report().execution,
+                    ExecutionReport::Complete { .. }
+                )
+            {
+                return Ok(Err(
+                    "member fold re-recovery analysis did not complete".to_owned()
+                ));
+            }
+            let facts = recovery_facts(analyzed.ir().declaration(), analyzed.ir().code(), method);
+            let captured: Vec<_> = plan
+                .instances
+                .iter()
+                .flat_map(|instance| instance.reads.iter())
+                .filter(|read| &read.method == method)
+                .cloned()
+                .collect();
+            let recovery = jarde_java::recover(
+                &jarde_java::RecoveryRequest::new(
+                    analyzed.ir(),
+                    &facts,
+                    environment.runtime.profile.clone(),
+                )
+                .with_member_inner_targets(&member_targets)
+                .with_captured_outer_reads(&captured)
+                .with_evidence(
+                    RecoveryEvidenceRequest::essential()
+                        .with_kind(RecoveryEvidenceKind::RuleDetails)
+                        .with_kind(RecoveryEvidenceKind::SourceMap),
+                ),
+                budget,
+            );
+            merge_execution(execution, recovery.execution.clone());
+            // The fold replaces this method's physical text with the re-run's, so the re-run
+            // must be full quality on every plane the report states — a body the feeds made
+            // *worse* (a value presentation the argument checks now refuse) is `Mixed`, and a
+            // fold that would publish it keeps the separated presentation instead.
+            if !matches!(recovery.execution, ExecutionReport::Complete { .. })
+                || !recovery.produced()
+                || recovery.content != RecoveryContent::ContainsStatements
+                || recovery.representation != crate::ir::Representation::Java
+                || recovery.regions.iter().any(|region| !region.structured)
+                || !recovery.fallbacks.is_empty()
+            {
+                return Ok(Err(format!(
+                    "member fold re-recovery of {method:?} retains fallback or incomplete recovery"
+                )));
+            }
+            overrides.push((method.clone(), recovery));
+        }
+    }
+    let bridge_rewrite: Vec<(PhysicalMethodId, u32, usize)> = plan
+        .bridges
+        .iter()
+        .enumerate()
+        .flat_map(|(index, bridge)| {
+            bridge
+                .call_sites
+                .iter()
+                .map(move |(method, bci)| (method.clone(), *bci, index))
+        })
+        .collect();
+    let ctor_removals: Vec<(PhysicalMethodId, u32)> = plan
+        .instances
+        .iter()
+        .map(|instance| {
+            (
+                instance.capture.constructor.clone(),
+                instance.capture.write_bci,
+            )
+        })
+        .collect();
+    let bridge_owner_dotted = String::from_utf8_lossy(&root_binary).replace('/', ".");
     let root_texts = match project_static_fold_owner_texts(
         content,
         environment,
         root,
         &root_binary,
         &targets,
+        &overrides,
+        &bridge_rewrite,
+        &plan.bridges,
+        &bridge_owner_dotted,
+        &[],
         execution,
         budget,
     )? {
@@ -18289,12 +19127,21 @@ fn project_class_source_static_member_fold(
             .raw()
             .0
             .clone();
+        let instance = plan.instances.iter().find(|instance| {
+            instance.relation.child == member.relation.child
+                && instance.relation.simple_name == member.relation.simple_name
+        });
         let child_texts = match project_static_fold_owner_texts(
             content,
             environment,
             member.child.as_ref(),
             &child_binary,
             &targets,
+            &overrides,
+            &bridge_rewrite,
+            &plan.bridges,
+            &bridge_owner_dotted,
+            &ctor_removals,
             execution,
             budget,
         )? {
@@ -18315,16 +19162,50 @@ fn project_class_source_static_member_fold(
                 .collect::<Vec<_>>(),
             member.relation.child.clone(),
             member.relation.root.clone(),
+            instance.map(|instance| class_source::InstanceMemberElision {
+                capture_field_index: instance.capture.field_index,
+            }),
         ) {
             Some(block) => block,
             None => {
                 return Ok(Err(
-                    "static member records could not be rendered atomically".to_owned(),
+                    "member records could not be rendered atomically".to_owned()
                 ));
             }
         };
         nested.push(block);
     }
+    let hidden: Vec<class_source::HiddenFoldMethod> = plan
+        .bridges
+        .iter()
+        .filter_map(|bridge| {
+            root.methods
+                .iter()
+                .find(|method| method.item.identity == bridge.method)
+                .map(|method| class_source::HiddenFoldMethod {
+                    index: method.item.index,
+                    anchors: root
+                        .fields
+                        .iter()
+                        .find(|field| field.item.index == bridge.field_index)
+                        .map(|field| class_source::MemberFamilyPhysicalAnchor::Field {
+                            field: field.item.identity.clone(),
+                            index: bridge.field_index,
+                        })
+                        .into_iter()
+                        .chain([
+                            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                                method: bridge.method.clone(),
+                                bci: bridge.read_bci,
+                            },
+                            class_source::MemberFamilyPhysicalAnchor::MethodSignature {
+                                method: bridge.method.clone(),
+                            },
+                        ])
+                        .collect(),
+                })
+        })
+        .collect();
     let (text, derived) = class_source::source_text_with_nested_declarations(
         declaration,
         &root.fields,
@@ -18333,6 +19214,7 @@ fn project_class_source_static_member_fold(
         &context,
         &root_texts.methods,
         &nested,
+        &hidden,
     );
     budget.poll()?;
     let added_output = text
@@ -18350,12 +19232,23 @@ fn project_class_source_static_member_fold(
 /// descriptor does not state); method bodies through the source-map anchored scan the nested-enum
 /// projection established, generalized to every instruction whose constant-pool entry names the
 /// folded class and to the exception handler a catch clause's type names.
+///
+/// The instance fold's own rewrites ride the same staging: a re-run recovery replaces the
+/// physical one before any token is scanned, a hidden access bridge's call sites are re-spelled
+/// to the qualified field access the bridge forwarded, and the capture write's statement leaves
+/// the constructor body it never belonged to in source.
+#[allow(clippy::too_many_arguments)]
 fn project_static_fold_owner_texts(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
     owner: &ClassSourceReport,
     owner_binary: &[u8],
     targets: &[StaticFoldTarget<'_>],
+    overrides: &[(PhysicalMethodId, jarde_java::RecoveryReport)],
+    bridge_calls: &[(PhysicalMethodId, u32, usize)],
+    bridges: &[AccessBridgeProof],
+    bridge_owner_dotted: &str,
+    ctor_removals: &[(PhysicalMethodId, u32)],
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Result<std::result::Result<StaticFoldOwnerTexts, String>> {
@@ -18453,11 +19346,17 @@ fn project_static_fold_owner_texts(
     let mut staged_methods = Vec::new();
     for method in &owner.methods {
         let class_source::ClassSourceOutcome::Recovered {
-            report: recovery, ..
+            report: physical, ..
         } = &method.outcome
         else {
             continue;
         };
+        // A re-run recovery replaces the physical one before any token is scanned: its text is
+        // the same method's recovery with the fold's member and capture feeds attached.
+        let recovery = overrides
+            .iter()
+            .find(|(id, _)| *id == method.item.identity)
+            .map_or(&**physical, |(_, report)| report);
         // The lazily re-read member table of this owner: only a declaration whose `throws` clause
         // might name a fold target pays for it.
         let mut owner_read: Option<(Vec<u8>, Vec<jarde_reader::classfile::MemberHeader>)> = None;
@@ -18597,7 +19496,22 @@ fn project_static_fold_owner_texts(
             }
             declaration
         });
-        if edits.is_empty() && declaration_edits.is_empty() {
+        let this_bridge_calls: Vec<(u32, usize)> = bridge_calls
+            .iter()
+            .filter(|(id, _, _)| *id == method.item.identity)
+            .map(|(_, bci, index)| (*bci, *index))
+            .collect();
+        let this_ctor_removal = ctor_removals
+            .iter()
+            .find(|(id, _)| *id == method.item.identity)
+            .map(|(_, bci)| *bci);
+        let has_override = overrides.iter().any(|(id, _)| *id == method.item.identity);
+        if !has_override
+            && edits.is_empty()
+            && declaration_edits.is_empty()
+            && this_bridge_calls.is_empty()
+            && this_ctor_removal.is_none()
+        {
             continue;
         }
         // The body rewrite needs the member's own bytecode to anchor every token it changes; a
@@ -18701,52 +19615,262 @@ fn project_static_fold_owner_texts(
                 ));
             }
         }
-        replacements.sort_by_key(|replacement| replacement.0);
+        replacements.sort_by_key(
+            |replacement: &(
+                usize,
+                usize,
+                String,
+                u32,
+                PhysicalDefinitionId,
+                PhysicalDefinitionId,
+            )| replacement.0,
+        );
         if replacements.windows(2).any(|pair| pair[0].1 > pair[1].0) {
             return Ok(Err("static fold source references overlap".to_owned()));
         }
+        // The hidden access bridges' call sites: one proved `Owner.access$NNN(arg)` span whose
+        // invokestatic bytecode anchors it, re-spelled to the qualified field read the bridge
+        // forwarded.
+        let mut bridge_edits = Vec::new();
+        for (bci, index) in &this_bridge_calls {
+            let bridge = &bridges[*index];
+            let Some((start, end, replacement)) = fold_bridge_call_rewrite_span(
+                method,
+                recovery,
+                *bci,
+                bridge_owner_dotted,
+                bridge,
+                budget,
+            )?
+            else {
+                return Ok(Err(format!(
+                    "access bridge call in method {} has no exact source span",
+                    method.item.index
+                )));
+            };
+            bridge_edits.push((start, end, replacement, *bci, *index));
+        }
+        bridge_edits.sort_by_key(|edit: &(usize, usize, String, u32, usize)| edit.0);
+        if bridge_edits.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+            return Ok(Err("access bridge call rewrites overlap".to_owned()));
+        }
+        // The capture write's own statement: exactly one line whose primary origin is the
+        // putfield, removed from the body it never belonged to in source.
+        let write_edit = match this_ctor_removal {
+            Some(write_bci) => {
+                match fold_capture_write_statement_span(method, recovery, write_bci, budget)? {
+                    Some((start, end)) => Some((start, end, write_bci)),
+                    None => {
+                        return Ok(Err(format!(
+                            "capture write in constructor {} has no exact statement span",
+                            method.item.index
+                        )));
+                    }
+                }
+            }
+            None => None,
+        };
+        // Every edit this fold states in one body: the spans were all computed on the same
+        // recovery text, so one ordered walk carries every offset — applied innermost-last,
+        // recorded with the deltas of every edit before it.
+        enum PendingEdit {
+            Token {
+                start: usize,
+                end: usize,
+                bci: u32,
+                root: PhysicalDefinitionId,
+                child: PhysicalDefinitionId,
+            },
+            Bridge {
+                start: usize,
+                end: usize,
+                bci: u32,
+                index: usize,
+            },
+            Write {
+                start: usize,
+                end: usize,
+            },
+        }
+        let mut pending: Vec<(usize, PendingEdit)> = replacements
+            .iter()
+            .map(|(start, end, _spelling, bci, root, child)| {
+                (
+                    *start,
+                    PendingEdit::Token {
+                        start: *start,
+                        end: *end,
+                        bci: *bci,
+                        root: root.clone(),
+                        child: child.clone(),
+                    },
+                )
+            })
+            .chain(bridge_edits.iter().map(|(start, end, _, bci, index)| {
+                (
+                    *start,
+                    PendingEdit::Bridge {
+                        start: *start,
+                        end: *end,
+                        bci: *bci,
+                        index: *index,
+                    },
+                )
+            }))
+            .chain(write_edit.iter().map(|(start, end, _)| {
+                (
+                    *start,
+                    PendingEdit::Write {
+                        start: *start,
+                        end: *end,
+                    },
+                )
+            }))
+            .collect();
+        pending.sort_by_key(|(start, _)| *start);
+        let end_of = |edit: &PendingEdit| match edit {
+            PendingEdit::Token { end, .. } | PendingEdit::Bridge { end, .. } => *end,
+            PendingEdit::Write { end, .. } => *end,
+        };
+        let start_of = |edit: &PendingEdit| match edit {
+            PendingEdit::Token { start, .. } | PendingEdit::Bridge { start, .. } => *start,
+            PendingEdit::Write { start, .. } => *start,
+        };
+        if pending
+            .windows(2)
+            .any(|pair| end_of(&pair[0].1) > start_of(&pair[1].1))
+        {
+            return Ok(Err("member fold rewrites overlap".to_owned()));
+        }
         let mut rewritten = recovery.clone();
-        for (start, end, replacement, ..) in replacements.iter().rev() {
-            rewritten.text.replace_range(start..end, replacement);
+        for (_, edit) in pending.iter().rev() {
+            match edit {
+                PendingEdit::Token { start, end, .. } => {
+                    let Some((_, _, spelling, ..)) =
+                        replacements.iter().find(|(at, ..)| at == start)
+                    else {
+                        unreachable!("token edit carries its spelling")
+                    };
+                    rewritten.text.replace_range(start..end, spelling);
+                }
+                PendingEdit::Bridge { start, end, .. } => {
+                    let Some((_, _, replacement, ..)) =
+                        bridge_edits.iter().find(|(at, ..)| at == start)
+                    else {
+                        unreachable!("bridge edit carries its replacement")
+                    };
+                    rewritten.text.replace_range(start..end, replacement);
+                }
+                PendingEdit::Write { start, end } => {
+                    rewritten.text.replace_range(start..end, "");
+                }
+            }
         }
         let mut adjusted = Vec::new();
         let mut prefix_delta = 0isize;
-        for (start, end, replacement, bci, root_definition, child_definition) in &replacements {
-            let final_start = start
-                .checked_add_signed(prefix_delta)
-                .ok_or_else(|| Error::invalid_input("static_fold_offset", "span overflow"))?;
-            let final_end = final_start + replacement.len();
-            let Some((local_start, local_end)) =
-                class_source::member_family_recovered_span_with_declaration(
-                    method,
-                    &rewritten,
-                    rewritten_declaration.as_deref(),
-                    final_start,
-                    final_end,
-                )
-            else {
-                return Ok(Err(
-                    "static fold source-map span does not survive method placement".to_owned(),
-                ));
-            };
-            adjusted.push(class_source::MemberFamilyDerivedProjection {
-                kind: class_source::MemberFamilyDerivedKind::StaticMemberTypeReference,
-                start: local_start,
-                end: local_end,
-                anchors: vec![
-                    class_source::MemberFamilyPhysicalAnchor::MethodPoint {
-                        method: method.item.identity.clone(),
-                        bci: *bci,
-                    },
-                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
-                        definition: root_definition.clone(),
-                    },
-                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
-                        definition: child_definition.clone(),
-                    },
-                ],
-            });
-            prefix_delta += replacement.len() as isize - (end - start) as isize;
+        for (at, edit) in &pending {
+            let _ = at;
+            match edit {
+                PendingEdit::Token {
+                    start,
+                    end,
+                    bci,
+                    root,
+                    child,
+                } => {
+                    let Some((_, _, spelling, ..)) = replacements
+                        .iter()
+                        .find(|(candidate, ..)| candidate == start)
+                    else {
+                        unreachable!("token edit carries its spelling")
+                    };
+                    let final_start = start.checked_add_signed(prefix_delta).ok_or_else(|| {
+                        Error::invalid_input("static_fold_offset", "span overflow")
+                    })?;
+                    let final_end = final_start + spelling.len();
+                    let Some((local_start, local_end)) =
+                        class_source::member_family_recovered_span_with_declaration(
+                            method,
+                            &rewritten,
+                            rewritten_declaration.as_deref(),
+                            final_start,
+                            final_end,
+                        )
+                    else {
+                        return Ok(Err(
+                            "static fold source-map span does not survive method placement"
+                                .to_owned(),
+                        ));
+                    };
+                    adjusted.push(class_source::MemberFamilyDerivedProjection {
+                        kind: class_source::MemberFamilyDerivedKind::StaticMemberTypeReference,
+                        start: local_start,
+                        end: local_end,
+                        anchors: vec![
+                            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                                method: method.item.identity.clone(),
+                                bci: *bci,
+                            },
+                            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                                definition: root.clone(),
+                            },
+                            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                                definition: child.clone(),
+                            },
+                        ],
+                    });
+                    prefix_delta += spelling.len() as isize - (end - start) as isize;
+                }
+                PendingEdit::Bridge {
+                    start,
+                    end,
+                    bci,
+                    index,
+                } => {
+                    let Some((_, _, replacement, ..)) = bridge_edits
+                        .iter()
+                        .find(|(candidate, ..)| candidate == start)
+                    else {
+                        unreachable!("bridge edit carries its replacement")
+                    };
+                    let final_start = start.checked_add_signed(prefix_delta).ok_or_else(|| {
+                        Error::invalid_input("static_fold_offset", "span overflow")
+                    })?;
+                    let final_end = final_start + replacement.len();
+                    let Some((local_start, local_end)) =
+                        class_source::member_family_recovered_span_with_declaration(
+                            method,
+                            &rewritten,
+                            rewritten_declaration.as_deref(),
+                            final_start,
+                            final_end,
+                        )
+                    else {
+                        return Ok(Err(
+                            "access bridge span does not survive method placement".to_owned()
+                        ));
+                    };
+                    let bridge = &bridges[*index];
+                    adjusted.push(class_source::MemberFamilyDerivedProjection {
+                        kind: class_source::MemberFamilyDerivedKind::AccessBridgeCall,
+                        start: local_start,
+                        end: local_end,
+                        anchors: vec![
+                            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                                method: method.item.identity.clone(),
+                                bci: *bci,
+                            },
+                            class_source::MemberFamilyPhysicalAnchor::MethodSignature {
+                                method: bridge.method.clone(),
+                            },
+                        ],
+                    });
+                    prefix_delta += replacement.len() as isize - (end - start) as isize;
+                }
+                PendingEdit::Write { start, end } => {
+                    prefix_delta -= (*end - *start) as isize;
+                }
+            }
         }
         // Declaration rewrites carry no derived record, exactly as the nested-enum projection:
         // the recovery map anchors body tokens only, and the declaration rewrite stays gated on
@@ -18760,6 +19884,20 @@ fn project_static_fold_owner_texts(
                 "static fold source method cannot be reassembled".to_owned()
             ));
         };
+        if let Some((_, _, write_bci)) = write_edit {
+            // The hidden capture write keeps its record on the constructor's declaration line —
+            // the position its parameter's own elision is stated beside.
+            let line_end = text.find('\n').unwrap_or(text.len());
+            adjusted.push(class_source::MemberFamilyDerivedProjection {
+                kind: class_source::MemberFamilyDerivedKind::HiddenCaptureWrite,
+                start: 0,
+                end: line_end,
+                anchors: vec![class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                    method: method.item.identity.clone(),
+                    bci: write_bci,
+                }],
+            });
+        }
         staged_methods.push(class_source::MemberFamilyMethodText {
             index: method.item.index,
             text,
@@ -18770,6 +19908,178 @@ fn project_static_fold_owner_texts(
         fields: staged_fields,
         methods: staged_methods,
     }))
+}
+
+/// One proved access-bridge call and its replacement text: the shortest source-map segment of
+/// the invokestatic whose text is exactly `Owner.access$NNN(argument)` becomes
+/// `argument.field` — the qualified read the bridge forwarded. String and character literals
+/// never count as delimiters while the argument's closing parenthesis is matched.
+fn fold_bridge_call_rewrite_span(
+    method: &ClassSourceMethod,
+    recovery: &RecoveryReport,
+    call_bci: u32,
+    owner_dotted: &str,
+    bridge: &AccessBridgeProof,
+    budget: &mut Budget,
+) -> Result<Option<(usize, usize, String)>> {
+    let Ok(bridge_name) = std::str::from_utf8(&bridge.method.name.0) else {
+        return Ok(None);
+    };
+    let prefix = format!("{owner_dotted}.{bridge_name}(");
+    let mut candidates = Vec::new();
+    for segment in recovery.source_map.segments() {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if segment.origin().primary().method() != Some(&method.item.identity)
+            || segment.origin().primary().bci() != call_bci
+            || segment.mentions(call_bci) != Some(jarde_java::Provenance::Direct)
+        {
+            continue;
+        }
+        let source = segment.text(&recovery.text);
+        if !source.starts_with(&prefix) {
+            continue;
+        }
+        let Some(close) = matching_delimiter(source, prefix.len() - 1, b'(', b')') else {
+            continue;
+        };
+        let argument = &source[prefix.len()..close];
+        // The read bridge takes exactly the instance it dereferences: a second top-level
+        // argument is a shape this rewrite does not state.
+        if top_level_commas(argument) {
+            continue;
+        }
+        candidates.push((
+            segment.len(),
+            segment.start(),
+            segment.start() + close + 1,
+            argument.to_owned(),
+        ));
+    }
+    candidates.sort_unstable();
+    let Some((_, start, end, argument)) = candidates.first().cloned() else {
+        return Ok(None);
+    };
+    if candidates
+        .iter()
+        .take_while(|candidate| candidate.0 == candidates[0].0)
+        .any(|candidate| (candidate.1, candidate.2) != (start, end))
+    {
+        return Ok(None);
+    }
+    Ok(Some((
+        start,
+        end,
+        format!("{argument}.{}", bridge.field_name),
+    )))
+}
+
+/// One proved capture-write statement: the source-map segment whose primary origin is the
+/// putfield, when it covers exactly one complete statement line.
+fn fold_capture_write_statement_span(
+    method: &ClassSourceMethod,
+    recovery: &RecoveryReport,
+    write_bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<(usize, usize)>> {
+    let mut candidates = Vec::new();
+    for segment in recovery.source_map.segments() {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if segment.origin().primary().method() != Some(&method.item.identity)
+            || segment.origin().primary().bci() != write_bci
+            || segment.mentions(write_bci) != Some(jarde_java::Provenance::Direct)
+        {
+            continue;
+        }
+        let source = segment.text(&recovery.text);
+        if source.matches('\n').count() != 1
+            || !source.ends_with('\n')
+            || !source.trim_end().ends_with(';')
+        {
+            continue;
+        }
+        candidates.push((segment.len(), segment.start(), segment.end()));
+    }
+    candidates.sort_unstable();
+    let Some((_, start, end)) = candidates.first().copied() else {
+        return Ok(None);
+    };
+    if candidates
+        .iter()
+        .take_while(|candidate| candidate.0 == candidates[0].0)
+        .any(|candidate| (candidate.1, candidate.2) != (start, end))
+    {
+        return Ok(None);
+    }
+    Ok(Some((start, end)))
+}
+
+/// The index of the delimiter that closes the one at `open`, skipping string and character
+/// literals, or `None` when the text ends first.
+fn matching_delimiter(text: &str, open: usize, left: u8, right: u8) -> Option<usize> {
+    let bytes = text.as_bytes();
+    let mut depth = 0isize;
+    let mut index = open;
+    let mut literal: Option<u8> = None;
+    let mut escaped = false;
+    while index < bytes.len() {
+        let byte = bytes[index];
+        if let Some(quote) = literal {
+            if escaped {
+                escaped = false;
+            } else if byte == b'\\' {
+                escaped = true;
+            } else if byte == quote {
+                literal = None;
+            }
+        } else if byte == b'"' || byte == b'\'' {
+            literal = Some(byte);
+        } else if byte == left {
+            depth += 1;
+        } else if byte == right {
+            depth -= 1;
+            if depth == 0 {
+                return Some(index);
+            }
+        }
+        index += 1;
+    }
+    None
+}
+
+/// Whether an argument list text holds a top-level comma (nested parentheses, generics and
+/// literals do not count).
+fn top_level_commas(text: &str) -> bool {
+    let bytes = text.as_bytes();
+    let mut depth = 0isize;
+    let mut angles = 0isize;
+    let mut index = 0;
+    let mut literal: Option<u8> = None;
+    let mut escaped = false;
+    while index < bytes.len() {
+        let byte = bytes[index];
+        if let Some(quote) = literal {
+            if escaped {
+                escaped = false;
+            } else if byte == b'\\' {
+                escaped = true;
+            } else if byte == quote {
+                literal = None;
+            }
+        } else if byte == b'"' || byte == b'\'' {
+            literal = Some(byte);
+        } else {
+            match byte {
+                b'(' => depth += 1,
+                b')' => depth -= 1,
+                b'<' => angles += 1,
+                b'>' => angles -= 1,
+                b',' if depth == 0 && angles == 0 => return true,
+                _ => {}
+            }
+        }
+        index += 1;
+    }
+    false
 }
 
 fn project_class_source_nested_enum(

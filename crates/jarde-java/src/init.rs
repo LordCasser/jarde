@@ -503,7 +503,7 @@ fn verify(
                     Some(Operation::Invoke(call)) if call.descriptor() == target.constructor_descriptor
                 )
         })
-        .map(|target| verify_member(index, block, constructor, &operands, facts, target))
+        .map(|target| verify_member(index, block, constructor, &operands, facts, target, &nested_sites))
         .transpose()?;
     // Every nested construction the scan stepped over is one **argument** of this call: its
     // completed instance is exactly the value the call reads at that position — the same "the
@@ -801,6 +801,7 @@ fn verify_member(
     operands: &[(jarde_jvm::method_ir::Slot, ValueId)],
     facts: &ConstructionFacts<'_>,
     target: &ProvedMemberInnerTarget,
+    nested_sites: &[Site],
 ) -> Result<MemberProof, Refusal> {
     let ConstructionFacts {
         ssa,
@@ -816,6 +817,14 @@ fn verify_member(
         return Err(shape(format!(
             "the member constructor at BCI {at} has no physical outer argument"
         )));
+    };
+    let outer_descriptor = format!("L{};", target.outer);
+    // The frame facts keep a `new`/`this` class name as an internal name while a descriptor
+    // parameter keeps its `L...;` spelling; both spell this exact selected Outer.
+    let names_outer = |value: ValueId| {
+        matches!(ssa.value(value).ty(),
+            Value::Ref(RefType::Named { name, .. })
+                if name == target.outer.as_bytes() || name == outer_descriptor.as_bytes())
     };
     if let (Some([receiver, call]), Some(method_facts)) = (block.get(index + 2..index + 4), method)
     {
@@ -854,10 +863,7 @@ fn verify_member(
             && operands.len() == 2
             && receiver_value == Some(physical_outer)
             && single_use_at(ssa, physical_outer, call.bci())
-            && matches!(ssa.value(physical_outer).ty(),
-                Value::Ref(RefType::Named { name, .. })
-                    if name == target.outer.as_bytes()
-                        || name.as_slice() == [b"L".as_slice(), target.outer.as_bytes(), b";"].concat())
+            && receiver_value.is_some_and(names_outer)
         {
             let receiver_bci = receiver.bci();
             return Ok(MemberProof {
@@ -874,6 +880,99 @@ fn verify_member(
                 owned: [block[index + 1].bci(), receiver_bci].into_iter().collect(),
             });
         }
+    }
+    // The enclosing-`this` qualifier: javac needs no null check for the outer instance a
+    // non-static member binds to when that instance is the calling method's own `this`, so the
+    // physical outer argument is the slot-0 entry value itself. The qualifier's SSA type — never
+    // the descriptor's first parameter type — states which class's `this` this is.
+    if let Some(qualifier) = block.get(index + 2)
+        && matches!(
+            operations.get(qualifier.bci()),
+            Some(Operation::Load { slot: 0 })
+        )
+    {
+        let qualifier_writes = qualifier.writes();
+        if qualifier_writes.len() == 1
+            && qualifier_writes[0].1 == physical_outer
+            && single_use_at(ssa, physical_outer, at)
+            && names_outer(physical_outer)
+        {
+            let qualifier_bci = qualifier.bci();
+            let ordinary = member_ordinary_arguments(
+                index + 3,
+                qualifier_bci,
+                at,
+                block,
+                operands,
+                ssa,
+                operations,
+            )?;
+            let mut arguments = vec![qualifier_bci];
+            arguments.extend(ordinary);
+            return Ok(MemberProof {
+                site: MemberInnerSite {
+                    qualifier: qualifier_bci,
+                    check: qualifier_bci,
+                    pop: qualifier_bci,
+                    outer: target.outer.clone(),
+                    simple_name: target.simple_name.clone(),
+                    generic_diamond: target.generic_diamond,
+                    implicit_this: true,
+                },
+                arguments,
+                owned: [block[index + 1].bci(), qualifier_bci]
+                    .into_iter()
+                    .collect(),
+            });
+        }
+    }
+    // The allocation qualifier: `new Outer().new Inner(…)` evaluates a fresh, provably non-null
+    // Outer first, and javac again writes no null check for it. The physical outer argument is
+    // the completed instance of one nested construction this same scan proved — the scan accepts
+    // that run as an argument of this call, and this arm proves it is *the* first argument.
+    if let Some(nested) = nested_sites.iter().find(|site| site.class == target.outer)
+        && block
+            .get(index + 2)
+            .is_some_and(|head| head.bci() == nested.head)
+        && is_the_instance(
+            ssa,
+            physical_outer,
+            &[nested.head, nested.dup, nested.constructor],
+        )
+        && single_use_at(ssa, physical_outer, at)
+        && names_outer(physical_outer)
+    {
+        let after_nested = block
+            .iter()
+            .position(|instruction| instruction.bci() == nested.constructor)
+            .expect("the nested construction's call belongs to this block")
+            + 1;
+        let ordinary = member_ordinary_arguments(
+            after_nested,
+            nested.constructor,
+            at,
+            block,
+            operands,
+            ssa,
+            operations,
+        )?;
+        let mut arguments = vec![nested.constructor];
+        arguments.extend(ordinary);
+        return Ok(MemberProof {
+            site: MemberInnerSite {
+                qualifier: nested.constructor,
+                check: nested.constructor,
+                pop: nested.constructor,
+                outer: target.outer.clone(),
+                simple_name: target.simple_name.clone(),
+                generic_diamond: target.generic_diamond,
+                implicit_this: false,
+            },
+            arguments,
+            // The qualifier's own instructions belong to the nested construction's site: this
+            // site owns only its `dup` beside the constructor it names.
+            owned: [block[index + 1].bci()].into_iter().collect(),
+        });
     }
     let Some([qualifier, copy, check, pop]) = block.get(index + 2..index + 6) else {
         return Err(shape(format!(
@@ -928,13 +1027,7 @@ fn verify_member(
             "the member constructor at BCI {at} does not pass the checked qualifier's two SSA copies as its physical outer and null-check operand exactly once"
         )));
     }
-    let outer_descriptor = format!("L{};", target.outer);
-    // Frame facts retain a `new`/`this` class name as an internal name, while a descriptor
-    // parameter keeps its `L...;` spelling. Both name this exact selected Outer.
-    if !matches!(ssa.value(qualifier_writes[0].1).ty(),
-        Value::Ref(RefType::Named { name, .. })
-            if name == target.outer.as_bytes() || name == outer_descriptor.as_bytes())
-    {
+    if !names_outer(qualifier_writes[0].1) {
         return Err(shape(format!(
             "the qualifier at BCI {} has no exact static type `{}` for member binding (SSA type {:?})",
             qualifier.bci(),
@@ -1023,6 +1116,67 @@ fn verify_member(
         arguments,
         owned,
     })
+}
+
+/// The ordinary source arguments of a member construction whose qualifier needs no null check —
+/// the enclosing `this` itself, or a fresh allocation. The discipline is the checked qualifier's:
+/// every ordinary argument is produced after the qualifier run and before the constructor, and
+/// nothing else may stand in that window.
+fn member_ordinary_arguments(
+    start: usize,
+    last: u32,
+    at: u32,
+    block: &[SsaInstruction],
+    operands: &[(jarde_jvm::method_ir::Slot, ValueId)],
+    ssa: &SsaTable,
+    operations: &crate::decode::Operations,
+) -> Result<Vec<u32>, Refusal> {
+    let order = |detail: String| Refusal::shape("jre_new_member_order", detail);
+    let mut arguments = Vec::new();
+    let mut last = last;
+    for (_, value) in operands.iter().skip(2) {
+        let Some(produced) = produced_at(ssa, *value) else {
+            return Err(order(format!(
+                "an ordinary argument of the member constructor at BCI {at} has no local producer"
+            )));
+        };
+        if produced <= last || produced >= at {
+            return Err(order(format!(
+                "the ordinary argument at BCI {produced} is not produced in order after the qualifier at BCI {last} and before the constructor at BCI {at}"
+            )));
+        }
+        arguments.push(produced);
+        last = produced;
+    }
+    let dependencies =
+        value_dependency_bcis(ssa, block, operands.iter().skip(2).map(|(_, value)| *value));
+    for instruction in block
+        .iter()
+        .skip(start)
+        .take_while(|instruction| instruction.bci() < at)
+    {
+        let bci = instruction.bci();
+        if !dependencies.contains(&bci) {
+            return Err(order(format!(
+                "the instruction at BCI {bci} is not an ordinary argument dependency of the member constructor at BCI {at}"
+            )));
+        }
+        if !matches!(
+            operations.get(bci),
+            Some(
+                Operation::Push(_)
+                    | Operation::Load { .. }
+                    | Operation::Arithmetic { .. }
+                    | Operation::Negate
+                    | Operation::Invoke(_)
+            )
+        ) {
+            return Err(order(format!(
+                "the instruction at BCI {bci} cannot be kept in member argument order"
+            )));
+        }
+    }
+    Ok(arguments)
 }
 
 fn single_use_at(ssa: &SsaTable, value: ValueId, at: u32) -> bool {
