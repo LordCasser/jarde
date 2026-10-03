@@ -1,0 +1,4 @@
+9b78fc2d1e39b1b641b9b00372c42189d08b6c093ea7b060c735dcdaab697c57  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/RF.class
+75908504c0a0f752183b834743ca690668f94c1c9ae69773f46f0204e122af57  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/RF$Inner.class
+765595c30ddb123b6ffd1a1a35300349cc492d27fdf8f1442900afc3e6f58fbb  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/RP.class
+81262803ec863be2900ce82a0e031f0ced55d865c943b2883b04bd17e77e6b2c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/RP$Box.class
