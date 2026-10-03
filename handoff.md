@@ -41,7 +41,13 @@ git branch -a
 
 若用户恢复语法目标，从状态账本选一个**尚未闭合的具体子形态**，重新读对应 JADX 测试/算法和 Jarde 当前代码，再冻结三方正反例。按现有 OpenSpec 写窄任务、实施、Java 8 完整类重编与验证运行、来源/拒绝边界及主 agent 验收；每完成一个切片就回写账本。CF-16 是已登记的剩余真实差距，但它的多个首片已修，不能仅凭编号重做。旧工作树均无剩余实现任务，也不需要重新合并；物理目录的后续归档受 Codex 固定工作区保护约束。
 
-**验收门禁口径（2026-09-30 CI 36678484547 教训；10-01 增补）**：CI 的 "stable / test and specification" 跑 `cargo test --workspace --all-targets --all-features --locked` 双固定 seed、ignored 的 JDK oracle/P3 对照与两个 example。实现任务的验收与 root 复核必须同口径跑整仓命令（注意 `--all-targets` 含 benches/examples，宽于 `--tests`）；只跑 `-p jarde-java --tests` 会漏掉根 crate（如 `enum_constants` 的投影消费方）——恢复层改进（例：`array_of_value` 使增强 for 可证）会改变下游折叠器的输入形状，消费方期望不同步即回归。**Clippy 必须用 `.github/workflows/ci.yml` 的完整 30 项 `-A` 清单**（本地常引的 6 项精简版会漏报）；且 CI 的 1.98.1 与本地 1.98.0 存在 patch 版 lint 差（实例：`iter_cloned_collect`，CI-only 报出，b27e0443 修复）——本地全绿不等于 CI clippy 绿，推送后必须核对 CI。
+**验收门禁口径（2026-09-30 CI 36678484547 教训；10-01 增补）**：CI 的 "stable / test and specification" 跑 `cargo test --workspace --all-targets --all-features --locked` 双固定 seed、ignored 的 JDK oracle/P3 对照与两个 example。实现任务的验收与 root 复核必须同口径跑整仓命令（注意 `--all-targets` 含 benches/examples，宽于 `--tests`）；只跑 `-p jarde-java --tests` 会漏掉根 crate（如 `enum_constants` 的投影消费方）——恢复层改进（例：`array_of_value` 使增强 for 可证）会改变下游折叠器的输入形状，消费方期望不同步即回归。**Clippy 门禁必须从 `.github/workflows/ci.yml` 逐字复制整条命令**（2026-10-04 root 实测教训）：本地常引的精简 `-A` 清单会漏报，而**漏掉 `--all-features` 会误报**——root 首跑 `cargo clippy --workspace --all-targets --locked -- <29 项 -A> -D warnings` 时报出 11 个 `unit_arg`/`let_unit_value` 错误于 `p5_optimize_workloads`（一个未被当次改动触碰的文件），加回 `--all-features` 后同命令 exit 0、Finished 干净。可靠做法是**用脚本从 workflow 生成命令**，不手抄：
+
+```sh
+sed -n '46,76p' .github/workflows/ci.yml | sed 's/^ *//' | grep -E "^cargo|^-A" | tr '\n' ' ' > /tmp/ci-clippy.sh && sh /tmp/ci-clippy.sh
+```
+
+当前 CI 清单为 **29 项** `-A`（`grep -oE '\-A [a-z_:]+' .github/workflows/ci.yml | sort -u | wc -l` 实测；旧文所载"30 项"已过期，勿再引用）。且 CI 的 1.98.1 与本地 1.98.0 存在 patch 版 lint 差（实例：`iter_cloned_collect`，CI-only 报出，b27e0443 修复）——本地全绿不等于 CI clippy 绿，推送后必须核对 CI。
 
 **合成成员消隐的前置不变量（2026-10-04 root 以 javac 实证确立，适用全部消隐片）**：隐藏 javac 合成成员（`access$NNN`、lambda 伴生 `lambda$x$N`、擦除桥、`$SwitchMap` 辅助类）的**唯一合法性来源**是"源码自身能让 javac 重新生成同一合成物"，而不是"该成员在字节码里可证是合成的"。故每个消隐片都必须回答：**javac 重编时靠什么重建它？**
 - 擦除桥 → 靠**类头的类型实参投影**（`implements Comparable<Impl>`）。实证：裸 `implements Comparable` + 隐藏桥 → javac 报"未覆盖 compareTo(Object)"；参数化 `implements Comparable<ParamI>` + 隐藏桥 → javac 自行重建桥（`javap -v` 实测 ACC_BRIDGE=1、exit 0）。证据 `openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/header-invariant/`。
