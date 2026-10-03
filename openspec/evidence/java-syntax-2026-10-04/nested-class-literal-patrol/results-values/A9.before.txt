@@ -1,0 +1,90 @@
+// jarde: presentation of `A9` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class A9 extends java.lang.Object {
+    public A9() {
+        // @method <init>()V
+        // @declaration a constructor of `A9`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public java.lang.String toString() {
+        // @method toString()Ljava/lang/String;
+        // @declaration an instance method of `A9`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return "t";
+    }
+
+    static java.util.List rawList() {
+        // @method rawList()Ljava/util/List;
+        // @declaration a static method of `A9`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(1), java.lang.Integer.valueOf(2)});
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `A9`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 4
+        // the dependency chain from BCI 4 to final consumer 10 is not bounded
+        // @bytecode 4 7
+        // the dependency chain from BCI 7 to final consumer 10 is not bounded
+        // @bytecode 10 7 4
+        // the value at BCI 10 was produced by a saved declaration this run could not commit
+        // @bytecode 11 14 17 18 21 22 27 30 32 35 36 41 44 46 49 50 55 58 61 64
+        // the statement at BCI 64 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 67
+        // the dependency chain from BCI 67 to final consumer 77 is not bounded
+        // @bytecode 70
+        // the instruction at BCI 70 is not part of the provable subset
+        // @bytecode 72 74
+        // the dependency chain from BCI 74 to final consumer 77 is not bounded
+        // @bytecode 77 67 74 72
+        // the value at BCI 77 was produced by a saved declaration this run could not commit
+        // @bytecode 80
+        // the dependency chain from BCI 80 to final consumer 98 is not bounded
+        // @bytecode 83
+        // the instruction at BCI 83 is not part of the provable subset
+        // @bytecode 85
+        // the instruction at BCI 85 is not part of the provable subset
+        // @bytecode 87
+        // the dependency chain from BCI 87 to final consumer 98 is not bounded
+        // @bytecode 87 90
+        // the dependency chain from BCI 90 to final consumer 98 is not bounded
+        // @bytecode 87 90 93
+        // the dependency chain from BCI 93 to final consumer 98 is not bounded
+        // @bytecode 98 80 93 90 87
+        // the value at BCI 98 was produced by a saved declaration this run could not commit
+        java.lang.System.out.println(rawList().size());
+        return;
+    }
+
+    @java.lang.Deprecated
+    @A9$Meta(value = "m", n = 7, tags = {"a", "b"})
+    static class Target extends java.lang.Object {
+        Target() {
+            // @method <init>()V
+            // @declaration a constructor of `A9$Target`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+
+    @A9$Meta
+    static class DefTarget extends java.lang.Object {
+        DefTarget() {
+            // @method <init>()V
+            // @declaration a constructor of `A9$DefTarget`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+}

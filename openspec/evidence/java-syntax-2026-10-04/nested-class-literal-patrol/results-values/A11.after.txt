@@ -1,0 +1,55 @@
+// jarde: presentation of `A11` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class A11 extends java.lang.Object {
+    public A11() {
+        // @method <init>()V
+        // @declaration a constructor of `A11`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String refl() throws java.lang.Exception {
+        // @method refl()Ljava/lang/String;
+        // @declaration a static method of `A11`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        A11$Tag local0 = (A11$Tag) Marked.class.getAnnotation(A11$Tag.class);
+        return local0.value();
+    }
+
+    public static java.lang.String reflCast() throws java.lang.Exception {
+        // @method reflCast()Ljava/lang/String;
+        // @declaration a static method of `A11`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.annotation.Annotation local0 = Marked.class.getAnnotation(A11$Tag.class);
+        return ((A11$Tag) local0).value();
+    }
+
+    public static boolean reflPresent() {
+        // @method reflPresent()Z
+        // @declaration a static method of `A11`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return Marked.class.isAnnotationPresent(A11$Tag.class);
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `A11`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) refl());
+        java.lang.System.out.println((java.lang.String) reflCast());
+        java.lang.System.out.println(reflPresent());
+        return;
+    }
+
+    @A11$Tag(value = "real")
+    static class Marked extends java.lang.Object {
+        Marked() {
+            // @method <init>()V
+            // @declaration a constructor of `A11$Marked`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+}
