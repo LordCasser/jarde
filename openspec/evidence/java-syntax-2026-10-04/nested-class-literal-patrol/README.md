@@ -37,3 +37,21 @@
 | 链式 receiver | `Outer.Mid.Leaf.class.getEnclosingClass().getSimpleName()` | 拒绝（4 引注） |
 
 三形与 A12 单段形同因（嵌套 CP 名不在可证子集），确认判据须覆盖**任意段数**而非仅一段；链式 receiver 形另需确认准入后依赖链不再触发 "not bounded" 级联（design 已列该风险）。
+
+## 判据的 javac 实证（2026-10-04，root；负例 fixture 已就位）
+
+design 决策 1 的推论（"按 `$` 分段后每段均为合法标识符即准入，本地/匿名类被同一判据自然排除"）经真实 javac 输出确认——非推理：
+
+| javac 生成的二进制名 | `$` 分段 | 每段皆合法标识符 | 判据结果 |
+| --- | --- | --- | --- |
+| `LC$Inner`（具名嵌套类） | `LC` / `Inner` | 是 | **准入** |
+| `A12$Nested` | `A12` / `Nested` | 是 | **准入** |
+| `N2$Outer$Mid$Leaf`（多段） | `N2` / `Outer` / `Mid` / `Leaf` | 是 | **准入** |
+| `LC$1Local`（**本地类**） | `LC` / `1Local` | 否（数字开头） | **拒绝** |
+| `LC$1`（**匿名类**） | `LC` / `1` | 否（数字开头） | **拒绝** |
+
+依据：`names.rs::is_java_identifier`（125 行）要求首字符为 `_`/`$`/ASCII 字母——数字开头即否。故无需专门规则排除本地/匿名形。
+
+[fixture/LC.java](fixture/LC.java) 与四个 class（`LC`、`LC$Inner`、`LC$1Local`、`LC$1`）已冻结，可直接作为 tasks 1.2 要求的本地类/匿名类**负例**输入（`LC$1Local.class` 的 CP 含 `ldc class LC$1Local`；匿名形经 `getClass()` 不产生 ldc，故负例主体是 `LC$1Local`）。
+
+放宽范围核实：`source_internal_name` 在全仓仅两处调用（`decode.rs:322` 数组元素名、`337` 对象名），均在 `class_literal_type` 内——**只影响类字面量准入，不波及其它路径**，确认是单点接线而非跨层改动。

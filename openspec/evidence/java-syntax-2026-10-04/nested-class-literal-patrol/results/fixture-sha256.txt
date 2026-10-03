@@ -3,6 +3,10 @@ b88eacf4b3661493c1ed1092624a30f45eb0402f277cc884a7cb4a1f9ff61b28  /Users/lordcas
 70afb03e4f77e9588dd933b078a6df695ec3b24abea17adf17b83d39ec9d95a8  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A11$Tag.class
 219b869d70bba00dd694202564429d6fd7934840f81dd0f4ab8b2b98703fe4a0  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12.class
 dd229f32c2debe3814cfd6c9a903ab3bbca33fac4fda791a99918945ec472d73  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12$Nested.class
+8b241a35fb703076bb4f216fd1a65fe412fca739c9f678ce914cb0112470177c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/LC.class
+0d4cd923ed44a9b9aff1bb58b2746bb614925d2efdb5e17743d319469db3496b  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/LC$1.class
+9cdab375b002ed4f881708544470c7abd0751c97e7f94dca88a3c3dda2b4d5a7  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/LC$1Local.class
+15dca9771da53d37f70e387c849803645529a11eab3684dc4f27d60cd07262c5  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/LC$Inner.class
 64cdd5bc1f6d9103a7b861761ceeee4d81702d701e87395b53d05eeb918c830c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/N2.class
 11e017ca932c49e2b0eeef3bb944b2d182ab9d19e7e5b9f89ac3fe1fcc0b465e  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/N2$Outer.class
 776c6eff477491681f051855979e95f26468451f611c96e95bea032792cadb23  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/N2$Outer$Mid.class
