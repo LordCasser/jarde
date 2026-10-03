@@ -46,6 +46,41 @@ const FAKE_BRIDGE: &[u8] =
     include_bytes!("fixtures/p3-bridge-projection/negative/v8/FakeBridge.class");
 const ORPHAN_BRIDGE: &[u8] =
     include_bytes!("fixtures/p3-bridge-projection/orphan/v8/OrphanBridge.class");
+
+/// The frozen patrol family (`bridge-method-patrol/fixture`, SHAs pinned beside the bytes): one
+/// covariant interface override, one generic container specialization and one `Comparable`
+/// implementation, plus the contract and container classes they override.
+const BR_CLASS: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR.class");
+const BR_NODE: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR$Node.class");
+const BR_BOX: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR$Box.class");
+const BR_BASE: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR$Base.class");
+const BR_STRBOX: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR$StrBox.class");
+const BR_IMPL: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR$Impl.class");
+const BR_REFERENCE_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/BR.java");
+const PAIR_RUNNER_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/PairRunner.java");
+const ORIGINAL_PAIR_RUNNER_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/OriginalPairRunner.java");
+/// The multilevel covariant variant: `Base2 implements Mid extends Node2`, whose bridge return
+/// the hierarchy walk reaches over two interface edges.
+const BR2_CLASS: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR2.class");
+const BR2_NODE: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR2$Node2.class");
+const BR2_MID: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR2$Mid.class");
+const BR2_BASE: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR2$Base2.class");
+const BR2_REFERENCE_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/BR2.java");
+const MULTILEVEL_RUNNER_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/MultilevelPairRunner.java");
+const ORIGINAL_MULTILEVEL_RUNNER_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/br-family/v8/OriginalMultilevelRunner.java");
+/// A stand-in the snapshot may *provide* for `java/lang/Comparable`: same binary name, same
+/// erased member, readable source beside the bytes.
+const PROVIDED_COMPARABLE: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/br-family/platform/Comparable.class");
 const CLASS_RETENTION_TARGET: &[u8] =
     include_bytes!("fixtures/class-annotation-uses/v8/HiddenTarget.class");
 const EMPTY_ANNOTATION_TARGET: &[u8] =
@@ -7211,4 +7246,816 @@ fn one_preparation_serves_every_member_body() {
             );
         }
     }
+}
+
+// ---------------------------------------------------------------------------------------------
+// The bridge admission gates (`recover-bridge-admission-gates`): the erased-return walk, the
+// canonical parameter-cast form, and the three reconstructibility criteria every admitted bridge
+// must keep. The frozen `br-family` fixture carries the patrol's own classes; the patches below
+// are labeled class-file surgery, not javac output, and are never claimed to verify.
+// ---------------------------------------------------------------------------------------------
+
+/// The frozen family jar, in its own entry order.
+fn br_family_zip() -> Vec<u8> {
+    zip_of(&[
+        (b"BR.class", BR_CLASS),
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", BR_IMPL),
+    ])
+}
+
+/// The Utf8 entry naming `content`, when the fixture pool holds one.
+fn test_utf8_index(bytes: &[u8], content: &[u8]) -> u16 {
+    let (_, entries) = test_pool(bytes);
+    u16::try_from(
+        entries
+            .iter()
+            .position(|entry| entry == content)
+            .unwrap_or_else(|| {
+                panic!(
+                    "the fixture pool holds {}",
+                    String::from_utf8_lossy(content)
+                )
+            }),
+    )
+    .expect("the pool index fits")
+}
+
+/// The bridge's physical member header, for patches that name it.
+fn test_member(bytes: &[u8], name: &[u8], descriptor: &[u8]) -> TestMethodHeader {
+    test_method_headers(bytes)
+        .into_iter()
+        .find(|method| method.name.as_slice() == name && method.descriptor.as_slice() == descriptor)
+        .unwrap_or_else(|| panic!("the fixture declares the member {name:?}"))
+}
+
+/// Rewrites one access_flags field of the named member.
+fn patch_member_flags(bytes: &[u8], name: &[u8], descriptor: &[u8], flags: u16) -> Vec<u8> {
+    let member = test_member(bytes, name, descriptor);
+    let mut patched = bytes.to_vec();
+    test_put_u16(&mut patched, member.access_offset, flags as usize);
+    patched
+}
+
+/// Rewrites the bridge's `MethodParameters` payload: the entry count, the entry's name index and
+/// the entry's flag word, each a byte field of the fixed-width record.
+fn patch_bridge_method_parameters(bytes: &[u8], count: u8, name_index: u16, flags: u16) -> Vec<u8> {
+    let bridge = test_member(bytes, b"compareTo", b"(Ljava/lang/Object;)I");
+    let attribute = bridge
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name.as_slice() == b"MethodParameters")
+        .expect("the bridge declares MethodParameters");
+    let mut patched = bytes.to_vec();
+    patched[attribute.data_offset] = count;
+    test_put_u16(&mut patched, attribute.data_offset + 1, name_index as usize);
+    test_put_u16(&mut patched, attribute.data_offset + 3, flags as usize);
+    patched
+}
+
+/// Every in-place occurrence of one byte string becomes the other; the two spellings are the same
+/// length, so no offset moves.
+fn patch_bytes_in_place(bytes: &[u8], from: &[u8], to: &[u8]) -> Vec<u8> {
+    assert_eq!(
+        from.len(),
+        to.len(),
+        "the patch replaces, it does not resize"
+    );
+    let mut patched = bytes.to_vec();
+    let mut cursor = 0;
+    while let Some(found) = patched[cursor..]
+        .windows(from.len())
+        .position(|window| window == from)
+    {
+        let at = cursor + found;
+        patched[at..at + from.len()].copy_from_slice(to);
+        cursor = at + to.len();
+    }
+    patched
+}
+
+/// Boxes away its own `get` declaration and takes `BR$StrBox` as its superclass, so the erased
+/// contract resolves only through a hierarchy edge that folds back into the prepared class.
+fn patch_box_parent_chain_fold(bytes: &[u8]) -> Vec<u8> {
+    let mut patched = patch_bytes_in_place(bytes, b"get", b"gee");
+    let (pool_end, _) = test_pool(bytes);
+    let count = test_u16(bytes, 8);
+    let class_index = count + 1;
+    // The field writes go first: the splice shifts everything past the pool, and a write computed
+    // from the old offsets would land inside the appended entries.
+    test_put_u16(&mut patched, 8, count + 2);
+    test_put_u16(&mut patched, pool_end + 4, class_index);
+    let mut appended = Vec::new();
+    appended.push(0x01);
+    u16b(&mut appended, 9);
+    appended.extend_from_slice(b"BR$StrBox");
+    appended.push(0x07);
+    u16b(
+        &mut appended,
+        u16::try_from(count).expect("the pool index fits"),
+    );
+    patched.splice(pool_end..pool_end, appended);
+    patched
+}
+
+#[test]
+fn br_family_bridges_admit_through_the_extended_gates() {
+    let jar = open(br_family_zip());
+
+    // `BR$Base`: the erased return is the interface type `BR$Node`, and the covariant override is
+    // proved by the snapshot's own header chain (gate 1).
+    let base = bridge_class_source(
+        &jar,
+        "BR$Base",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(base.bridge_proofs.len(), 1);
+    let base_proof = &base.bridge_proofs[0];
+    assert!(base_proof.admitted, "{:?}", base_proof.refusal);
+    assert!(base_proof.projected);
+    assert_eq!(
+        base_proof.member.descriptor.0.as_slice(),
+        b"()LBR$Node;" as &[u8]
+    );
+    assert_eq!(
+        base_proof.target.as_ref().unwrap().descriptor.0.as_slice(),
+        b"()LBR$Base;" as &[u8]
+    );
+    assert!(base.text.contains("public BR$Base next()"));
+    assert!(!base.text.contains("BR$Node next()"));
+
+    // `BR$Impl`: the bridge narrows its parameter through a cast to exactly the source parameter
+    // (gate 2), carries javac's mandated `MethodParameters`, and implements a `Comparable` this
+    // snapshot does not carry — the erased contract the platform fact states.
+    let impl_report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(impl_report.bridge_proofs.len(), 1);
+    let impl_proof = &impl_report.bridge_proofs[0];
+    assert!(impl_proof.admitted, "{:?}", impl_proof.refusal);
+    assert!(impl_proof.projected);
+    assert_eq!(
+        impl_proof.member.descriptor.0.as_slice(),
+        b"(Ljava/lang/Object;)I" as &[u8]
+    );
+    assert_eq!(
+        impl_proof.target.as_ref().unwrap().descriptor.0.as_slice(),
+        b"(LBR$Impl;)I" as &[u8]
+    );
+    assert!(impl_report.text.contains("public int compareTo(BR$Impl"));
+    assert!(
+        !impl_report
+            .text
+            .contains("public int compareTo(java.lang.Object")
+    );
+
+    // `BR$StrBox`: two bridges, one per member — the covariant `get` and the void
+    // parameter-cast `set` — both package-private, as javac writes them for a package-private
+    // parent.
+    let strbox = bridge_class_source(
+        &jar,
+        "BR$StrBox",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(strbox.bridge_proofs.len(), 2);
+    assert!(strbox.bridge_proofs.iter().all(|proof| proof.admitted));
+    assert!(strbox.bridge_proofs.iter().all(|proof| proof.projected));
+    assert!(strbox.text.contains("java.lang.String get()"));
+    assert!(!strbox.text.contains("java.lang.Object get()"));
+    assert!(strbox.text.contains("void set(java.lang.String"));
+    assert!(!strbox.text.contains("void set(java.lang.Object"));
+}
+
+#[test]
+fn br_family_recovered_source_recompiles_and_runs_like_the_original() {
+    let jar = open(br_family_zip());
+    let scratch = BridgeProjectionScratch::new();
+
+    // The original leg: the frozen reference source and its nested-syntax runner.
+    let original = scratch.child("original");
+    fs::write(original.join("BR.java"), BR_REFERENCE_SOURCE).expect("write the reference source");
+    fs::write(
+        original.join("OriginalPairRunner.java"),
+        ORIGINAL_PAIR_RUNNER_SOURCE,
+    )
+    .expect("write the reference runner");
+    compile_bridge_runner(&original, &["BR.java", "OriginalPairRunner.java"]);
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&original)
+        .arg("OriginalPairRunner")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    let original_trace = String::from_utf8(run.stdout).expect("the trace is UTF-8");
+    assert_eq!(original_trace, "BR$Base\ns\n");
+
+    // The recovered leg: the four classes whose bridge shapes this change admits, recovered as
+    // complete class sources and recompiled together with the binary-name runner. The interface
+    // call (`BR$Node n = new BR$Base()`) dispatches through the bridge javac regenerates.
+    let recovered = scratch.child("recovered");
+    for (name, report) in [
+        (
+            "BR$Node",
+            class_source_of(&jar, "BR$Node", EnvironmentPolicy::PlainJar),
+        ),
+        (
+            "BR$Box",
+            class_source_of(&jar, "BR$Box", EnvironmentPolicy::PlainJar),
+        ),
+        (
+            "BR$Base",
+            class_source_of(&jar, "BR$Base", EnvironmentPolicy::PlainJar),
+        ),
+        (
+            "BR$StrBox",
+            class_source_of(&jar, "BR$StrBox", EnvironmentPolicy::PlainJar),
+        ),
+    ] {
+        fs::write(recovered.join(format!("{name}.java")), report.text)
+            .expect("write the recovered class source");
+    }
+    fs::write(recovered.join("PairRunner.java"), PAIR_RUNNER_SOURCE)
+        .expect("write the recovered runner");
+    compile_bridge_runner(
+        &recovered,
+        &[
+            "BR$Node.java",
+            "BR$Box.java",
+            "BR$Base.java",
+            "BR$StrBox.java",
+            "PairRunner.java",
+        ],
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&recovered)
+        .arg("PairRunner")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    let recovered_trace = String::from_utf8(run.stdout).expect("the trace is UTF-8");
+    assert_eq!(recovered_trace, original_trace);
+
+    // `BR$Impl` is admitted and its bridge hidden, but its whole-class recompile is a separate
+    // mechanism's debt: the class-level parameterized-interface projection is deliberately
+    // unproved, so the recovered source spells a raw `Comparable` and javac refuses it loudly
+    // (the abstract `compareTo(Object)` stays unimplemented). The refusal is the honest state
+    // until that projection exists; this pins it so the gap cannot become silent.
+    let impl_report = class_source_of(&jar, "BR$Impl", EnvironmentPolicy::PlainJar);
+    fs::write(recovered.join("BR$Impl.java"), impl_report.text)
+        .expect("write the recovered Impl source");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-Xlint:-options", "-d"])
+        .arg(scratch.child("impl-classes"))
+        .arg(recovered.join("BR$Impl.java"))
+        .output()
+        .expect("JDK javac is available");
+    assert!(
+        !compile.status.success(),
+        "the raw-Comparable reconstruction must stay a loud javac refusal until the parameterized-interface projection exists"
+    );
+    let stderr = String::from_utf8_lossy(&compile.stderr);
+    assert!(stderr.contains("compareTo"), "{stderr}");
+}
+
+#[test]
+fn the_multilevel_covariant_bridge_walks_two_interface_edges() {
+    let multilevel_zip = zip_of(&[
+        (b"BR2.class", BR2_CLASS),
+        (b"BR2$Node2.class", BR2_NODE),
+        (b"BR2$Mid.class", BR2_MID),
+        (b"BR2$Base2.class", BR2_BASE),
+    ]);
+    let jar = open(multilevel_zip);
+    let report = bridge_class_source(
+        &jar,
+        "BR2$Base2",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(report.bridge_proofs.len(), 1);
+    let proof = &report.bridge_proofs[0];
+    assert!(
+        proof.admitted,
+        "the erased return is reached over `Mid extends Node2`: {:?}",
+        proof.refusal
+    );
+    assert!(proof.projected);
+    assert_eq!(
+        proof.member.descriptor.0.as_slice(),
+        b"()LBR2$Node2;" as &[u8]
+    );
+
+    let scratch = BridgeProjectionScratch::new();
+    let original = scratch.child("original");
+    fs::write(original.join("BR2.java"), BR2_REFERENCE_SOURCE).expect("write the reference source");
+    fs::write(
+        original.join("OriginalMultilevelRunner.java"),
+        ORIGINAL_MULTILEVEL_RUNNER_SOURCE,
+    )
+    .expect("write the reference runner");
+    compile_bridge_runner(&original, &["BR2.java", "OriginalMultilevelRunner.java"]);
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&original)
+        .arg("OriginalMultilevelRunner")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    let original_trace = String::from_utf8(run.stdout).expect("the trace is UTF-8");
+    assert_eq!(original_trace, "BR2$Base2\nBR2$Base2\n");
+    assert_eq!(original_trace, "BR2$Base2\nBR2$Base2\n");
+
+    let recovered = scratch.child("recovered");
+    for name in ["BR2$Node2", "BR2$Mid", "BR2$Base2"] {
+        let report = class_source_of(&jar, name, EnvironmentPolicy::PlainJar);
+        fs::write(recovered.join(format!("{name}.java")), report.text)
+            .expect("write the recovered class source");
+    }
+    fs::write(
+        recovered.join("MultilevelPairRunner.java"),
+        MULTILEVEL_RUNNER_SOURCE,
+    )
+    .expect("write the recovered runner");
+    compile_bridge_runner(
+        &recovered,
+        &[
+            "BR2$Node2.java",
+            "BR2$Mid.java",
+            "BR2$Base2.java",
+            "MultilevelPairRunner.java",
+        ],
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&recovered)
+        .arg("MultilevelPairRunner")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(run.stdout).expect("the trace is UTF-8"),
+        original_trace
+    );
+}
+
+#[test]
+fn br_family_negative_shapes_keep_their_refusals() {
+    // A modifier beyond `public bridge synthetic` — `final` — stays refused with the gate's own
+    // sentence (an explicitly labeled patch; the class is never claimed to verify).
+    let finalized = patch_member_flags(
+        BR_IMPL,
+        b"compareTo",
+        b"(Ljava/lang/Object;)I",
+        0x1041 | 0x0010,
+    );
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &finalized),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(report.bridge_proofs.len(), 1);
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some(
+            "the physical bridge has modifiers beyond public bridge synthetic that source reconstruction does not prove"
+        )
+    );
+
+    // A `bridge` member without `synthetic` is not the declared bridge identity either.
+    let unsynthetic = patch_member_flags(BR_IMPL, b"compareTo", b"(Ljava/lang/Object;)I", 0x0041);
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &unsynthetic),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some(
+            "the physical bridge has modifiers beyond public bridge synthetic that source reconstruction does not prove"
+        )
+    );
+
+    // A named `MethodParameters` entry is a fact the source copy cannot prove.
+    let code_name_index = test_utf8_index(BR_IMPL, b"Code");
+    let named = patch_bridge_method_parameters(BR_IMPL, 1, code_name_index, 0x1000);
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &named),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some("the bridge declares method metadata whose source copying is unproved")
+    );
+
+    // An entry flag word that is not exactly `synthetic` is the same refusal.
+    let plain = patch_bridge_method_parameters(BR_IMPL, 1, 0, 0x0000);
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &plain),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some("the bridge declares method metadata whose source copying is unproved")
+    );
+
+    // An entry count that disagrees with the declared parameters is the same refusal. The patch
+    // appends one full entry (and its length word), so the reader parses the record and the
+    // admission's own count check is what refuses it.
+    let miscounted = {
+        let bridge = test_member(BR_IMPL, b"compareTo", b"(Ljava/lang/Object;)I");
+        let attribute = bridge
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.as_slice() == b"MethodParameters")
+            .expect("the bridge declares MethodParameters");
+        let mut patched = BR_IMPL.to_vec();
+        patched.splice(
+            attribute.data_offset + 5..attribute.data_offset + 5,
+            [0x00, 0x00, 0x10, 0x00],
+        );
+        test_put_u32(&mut patched, attribute.length_offset, attribute.length + 4);
+        patched[attribute.data_offset] = 2;
+        patched
+    };
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &miscounted),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some("the bridge declares method metadata whose source copying is unproved")
+    );
+
+    // A second `MethodParameters` attribute never reaches the gate: the class file itself is
+    // invalid, and the request is an input error, not a report.
+    // The duplicate rides on the bridge itself, whose own `MethodParameters` is what the second
+    // copy duplicates; the reader's uniqueness check fires before any content is read.
+    let bridge = test_member(BR_IMPL, b"compareTo", b"(Ljava/lang/Object;)I");
+    let attribute = bridge
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name.as_slice() == b"MethodParameters")
+        .expect("the bridge declares MethodParameters");
+    let method_parameters_index = test_utf8_index(BR_IMPL, b"MethodParameters");
+    let mut duplicated = BR_IMPL.to_vec();
+    let mut duplicate_attribute = Vec::new();
+    u16b(&mut duplicate_attribute, method_parameters_index);
+    u32b(&mut duplicate_attribute, 5);
+    duplicate_attribute
+        .extend_from_slice(&BR_IMPL[attribute.data_offset..attribute.data_offset + 5]);
+    duplicated.splice(bridge.end..bridge.end, duplicate_attribute);
+    test_put_u16(&mut duplicated, bridge.attribute_count_offset, 3);
+    let duplicated_jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &duplicated),
+    ]));
+    // The duplicate refuses the bridge member's own run before any verdict exists, so no proof
+    // is offered and the physical member carries the reader's refusal.
+    let duplicated_report = bridge_class_source(
+        &duplicated_jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(duplicated_report.bridge_proofs.is_empty());
+    let bridge_member = duplicated_report
+        .methods
+        .iter()
+        .find(|method| {
+            method.item.identity.name.0.as_slice() == b"compareTo"
+                && method.item.identity.descriptor.0.as_slice() == b"(Ljava/lang/Object;)I"
+        })
+        .expect("the bridge stays in the physical table");
+    let ClassSourceOutcome::Refused { execution, .. } = &bridge_member.outcome else {
+        panic!("the duplicate attribute refuses the member run")
+    };
+    let ExecutionReport::Failed { reason, .. } = execution else {
+        panic!("the refusal is the run's failure")
+    };
+    let TerminationReason::Error { code, .. } = reason else {
+        panic!("the refusal is the reader's own")
+    };
+    assert_eq!(code, "classfile_duplicate_attribute");
+
+    // A public bridge beside a package-private source would hide a wider call surface than the
+    // member that replaces it: refused, with the visibility invariant's own sentence.
+    let hidden_source = patch_member_flags(BR_IMPL, b"compareTo", b"(LBR$Impl;)I", 0x0000);
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &hidden_source),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some("the unique target is not a spellable, concrete public source method")
+    );
+
+    // A source return the walk cannot relate to the erased return stays refused with the
+    // covariant sentence, exactly as before this change.
+    let unrelated = patch_bytes_in_place(BR_BASE, b"()LBR$Base;", b"()LBR$Nope;");
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", &unrelated),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", BR_IMPL),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Base",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some(
+            "the source return type is not a proved covariant subtype of the erased Object return"
+        )
+    );
+
+    // A parameter cast that names anything but the source parameter is refused: `bridge@1` fails
+    // the bitwise criterion, and the admission never sees a proved forward.
+    let object_class = test_class_index(BR_IMPL, b"java/lang/Object");
+    let bridge = test_member(BR_IMPL, b"compareTo", b"(Ljava/lang/Object;)I");
+    let code = bridge
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name.as_slice() == b"Code")
+        .expect("the bridge declares Code");
+    let cast_index = code.data_offset + 8 + 2;
+    assert_eq!(BR_IMPL[cast_index], 0xc0, "the cast opcode sits there");
+    let mut wrong_cast = BR_IMPL.to_vec();
+    test_put_u16(&mut wrong_cast, cast_index + 1, object_class as usize);
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &wrong_cast),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some("bridge@1 did not prove a pure single forward")
+    );
+    let bridge_method = report
+        .methods
+        .iter()
+        .find(|method| {
+            method.item.identity.name.0.as_slice() == b"compareTo"
+                && method.item.identity.descriptor.0.as_slice() == b"(Ljava/lang/Object;)I"
+        })
+        .expect("the bridge stays in the physical table");
+    let ClassSourceOutcome::Recovered { report: run, .. } = &bridge_method.outcome else {
+        panic!("the bridge run is available")
+    };
+    assert!(run.diagnostics.iter().any(|diagnostic| {
+        diagnostic.code == "jre_bridge_cast_not_erasure"
+            && diagnostic
+                .message
+                .contains("does not declare that type for the parameter")
+    }));
+}
+
+/// The stand-in `Comparable` declared under the binary name its own entry spells. javac refuses
+/// the `java.lang` package, so the compiled stand-in names `Comparable`; the class file's
+/// `this_class` moves to an appended pool entry naming `java/lang/Comparable`, which is what the
+/// resolver's definition-name check demands.
+fn patch_provided_comparable_name(bytes: &[u8]) -> Vec<u8> {
+    let (pool_end, _) = test_pool(bytes);
+    let count = test_u16(bytes, 8);
+    let class_index = count + 1;
+    let mut patched = bytes.to_vec();
+    // The field writes go first: the splice shifts everything past the pool, and a write computed
+    // from the old offsets would land inside the appended entries.
+    test_put_u16(&mut patched, 8, count + 2);
+    test_put_u16(&mut patched, pool_end + 2, class_index);
+    let mut appended = Vec::new();
+    appended.push(0x01);
+    u16b(&mut appended, 20);
+    appended.extend_from_slice(b"java/lang/Comparable");
+    appended.push(0x07);
+    u16b(
+        &mut appended,
+        u16::try_from(count).expect("the pool index fits"),
+    );
+    patched.splice(pool_end..pool_end, appended);
+    patched
+}
+
+#[test]
+fn the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges() {
+    // A hierarchy edge that really folds back into the prepared class is still a refusal: the
+    // `MemberOwner` read the access rules make is exempted, the `ParentChain` one is not.
+    let folded_box = patch_box_parent_chain_fold(BR_BOX);
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", &folded_box),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", BR_IMPL),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$StrBox",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    // The folded hierarchy resolves the erased contract through the `ParentChain` read that
+    // reaches back into the prepared class: refused, with the traversal invariant's own sentence
+    // — only the access rules' `MemberOwner` read is exempt, this edge is not.
+    let get_proof = report
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.member.descriptor.0.as_slice() == b"()Ljava/lang/Object;")
+        .expect("the get bridge is a candidate");
+    assert!(!get_proof.admitted);
+    assert_eq!(
+        get_proof.refusal.as_deref(),
+        Some("the existing resolver traversed back into this prepared class; admission is refused")
+    );
+    // The sibling bridge, whose contract Box still declares, is unaffected.
+    let set_proof = report
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)V")
+        .expect("the set bridge is a candidate");
+    assert!(set_proof.admitted, "{:?}", set_proof.refusal);
+
+    // A provided `java/lang/Comparable` decides the contract through its own definition: the
+    // platform fact does not short-circuit a definition the environment carries. javac refuses
+    // the `java.lang` package, so the stand-in's own name is patched to the binary name its
+    // entry spells (a labeled patch, like every other one here).
+    let provided = patch_provided_comparable_name(PROVIDED_COMPARABLE);
+    let provided_zip = zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", BR_IMPL),
+        (b"java/lang/Comparable.class", &provided),
+    ]);
+    let jar = open(provided_zip);
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(report.bridge_proofs.len(), 1);
+    assert!(
+        report.bridge_proofs[0].admitted,
+        "{:?}",
+        report.bridge_proofs[0].refusal
+    );
+
+    // The same provided definition that does *not* declare the contract is the decision: no
+    // platform answer overrides a readable parent.
+    let renamed = patch_bytes_in_place(&provided, b"compareTo", b"comparetO");
+    let renamed_zip = zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", BR_IMPL),
+        (b"java/lang/Comparable.class", &renamed),
+    ]);
+    let jar = open(renamed_zip);
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some("a direct parent or interface needed for the erased method is unresolved")
+    );
+
+    // The platform fact states one triple — owner, descriptor, invocation kind. An interface
+    // edge that does not name `java/lang/Comparable` gets no platform answer.
+    let object_class = test_class_index(BR_IMPL, b"java/lang/Object");
+    let comparable_class = test_class_index(BR_IMPL, b"java/lang/Comparable");
+    let mut other_interface = BR_IMPL.to_vec();
+    // The interface table sits right after access_flags/this_class/super_class: pool end + 8.
+    let (pool_end, _) = test_pool(BR_IMPL);
+    let interface_entry = pool_end + 8;
+    assert_eq!(
+        test_u16(BR_IMPL, interface_entry),
+        comparable_class as usize,
+        "the fixture declares exactly Comparable"
+    );
+    test_put_u16(&mut other_interface, interface_entry, object_class as usize);
+    let jar = open(zip_of(&[
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &other_interface),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(!report.bridge_proofs[0].admitted);
+    assert_eq!(
+        report.bridge_proofs[0].refusal.as_deref(),
+        Some("a direct parent or interface needed for the erased method is unresolved")
+    );
 }
