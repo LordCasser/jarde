@@ -10,13 +10,13 @@
 
 ## Decisions
 
-1. **重排安全判据（root 2026-10-04 取证后修正——原判据"仅 Object super"过宽，会造成反向回归）**：重排仅在不改变构造期可见性时进行，分三档：
-   - **(a) super 目标 == `java/lang/Object.<init>()V`** → 安全（Object ctor 不可能分派到用户代码）。覆盖 C1/C2 全部既有正例。
-   - **(b) super 目标类在本快照有物理定义，且其构造器可证明构造期无法到达子类覆写**——两条都要成立：**(b1)** ctor 内无 receiver 为 `this`（`aload_0`/slot 0）的 `invokevirtual`/`invokeinterface`；**(b2)** ctor 不把 `this` 作为实参传给任何调用（`invokestatic`/`invokespecial`/`invokevirtual` 均算——被调方可能再分派，例如 `invokestatic helper(this)`）。允许的形：`invokespecial Object.<init>`、对**新建对象**的虚调用（receiver 来自 `new`+`dup`，非 slot 0）、无 `this` 实参的 `invokestatic`、以及 slot 0 仅作 `putfield` 的 receiver。**实测该档覆盖 `anonymous-super-args/AnonymousSuperArgs$1`（super `Base` ctor = `Object.<init>` + 自身字段 putfield + 新建 StringBuilder 的 invokevirtual + `invokestatic event(String)`）与 `anonymous-capture/AnonymousCaptureCases$1`（super `AnonymousCaptureCases$Base` ctor，`invokevirtual` 均在新建 StringBuilder 上、`invokestatic access$008:()I` 无实参）**——二者当前重排后既正确又可编译，判据必须保住它们。
-   - **(c) 其它**（super 类不在快照、或其 ctor 含 `this` 虚分派）→ **不重排**，保持既有逐字呈现与诊断。`anonymous-super-dispatch/Base`（ctor 内 `invokevirtual observe()` on `this`）落此档，回归消除。
-   - 读取 super ctor 走既有快照依赖读取与 A16 计费（`recover-snapshot-hierarchy-widening` 先例），不新增机制；读不到即落 (c) 保守档。
-2. **不重排时的行为**：保持本片之前的既有呈现（`this.val$captured = arg1; super();` 逐字）与其诊断/引注——**不得**改为整方法拒绝（那会丢失已恢复的其余成员），也不得静默丢弃该 ctor。
-3. **回归测试三向钉死**：(a) `anonymous-super-dispatch` 断言重排**未**发生（捕获写入文本在 `super()` 之前）且不得"可编译且行为不同"；(b) `anonymous-super-args`/`anonymous-capture` 断言重排**仍**发生且文本逐字不变（守 (b) 档不被过窄化）；(c) C1/C2 断言 Object 档逐字不变。
+1. **单档判据（root 2026-10-04 二次取证后修正——原判据三档需新机制且会反向回归，已否证）**：重排仅在 **super 目标恰为 `java/lang/Object.<init>()V`**（owner 与 descriptor 双匹配）时进行；任何其它 super 目标一律不重排，保持既有逐字呈现与诊断。
+   - **健全性**：`Object.<init>` 是 final 的空实现，构造期不可能分派到用户代码，故移动捕获写入不改变任何可观察行为。这是唯一无需读别的类即可证成的档。
+   - **为何不做"读 super ctor 体证明无 this 虚分派"的宽档**（原 (b)）：三条实证否证——(i) **跨类读方法体在本仓库无既有先例**：`prove_class_source_bridges` 走 `jarde_jvm::resolve_symbol` 只取**声明**、`prove_outer_super_bridge_use_closure` 消费**已恢复报告**、lambda 伴生读**同类**成员，`Inputs` 仅携带 `direct_super_class` 名字而无 Code；引入跨类读体+decode+计费是把窄修复扩成中大片。(ii) **headers-only 代理（覆写名匹配）会反向回归**：实测 `anonymous-super-args/AnonymousSuperArgs$1` 的 `render()` 与 super `Base.render()` 同名 → 代理判 UNSAFE，但该 fixture 的重排实际安全（其 super ctor 只有 `Object.<init>`+自身字段+新建 StringBuilder 的 invokevirtual+`invokestatic event`，无 `this` 分派）。(iii) **单类事实无法区分**：实测三处 fixture 都"有本类方法读被移动字段"，该判据对三者同为真。
+2. **收紧不构成对已验收声明的回归**（关键取证）：`anonymous-super-args` 的既有验收证据 [report.md](../../evidence/java-syntax-2026-09-27/anonymous-super-args/report.md) 第 30–34 行记录的是 **verbatim 序**（`this.val$captured = arg3; super(arg1, arg2);`）与 **"完整源码编译因此退出 1"**——即"不可编译"是该 fixture 在重排切片（10-02）之前的既有如实登记状态。收紧后退回该状态（响亮失败），符合 `present-proved-java-structure` 2.10 的项目立场：*"独立二进制名类视图需明确不声称该构造器可编译；等 5.3 的类级匿名语法、捕获值流及整类运行证明齐全，才由 `new Base(...) { ... }` 让 javac 生成等价的前置合成写入"*。
+3. **不重排时的行为**：保持重排切片之前的既有呈现（捕获写入在 `super()` 之前的逐字节序）与其诊断/引注——**不得**改为整方法拒绝（会丢失已恢复的其余成员），也不得静默丢弃该 ctor。
+4. **回归测试三向钉死**：(a) `anonymous-super-dispatch` 断言重排**未**发生（捕获写入文本在 `super()` 之前）且不得"可编译且行为不同"；(b) C1/C2 与 `capture_ctor_class` 生成的全部既有正例断言重排**仍**发生且逐字不变（实测其 super 目标全为 `java/lang/Object`，故零回归）；(c) 新增负例：super 目标为非 Object 用户类时不重排（可用生成器构造，无需新 fixture）。
+5. **宽档（super ctor 无 this 分派）登记为 5.3 的依赖**：若将来要让非 Object super 的独立二进制名类视图可编译，正路是 2.10 所述的类级匿名语法（`new Base(...) { ... }` 让 javac 自行生成前置写入），而非在呈现层猜测 super ctor 的分派行为。本片不引入。
 
 ## Risks / Trade-offs
 
