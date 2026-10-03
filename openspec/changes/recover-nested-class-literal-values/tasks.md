@@ -10,6 +10,6 @@
 
 ## 3. 回归与验收
 
-- [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 nested-spelling、类字面量、反射相关全部既有测试）、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律：每轮构建前 `df -h /`，低于 12Gi 先 `cargo clean`，报告前必 clean。（修正轮实测 296 目标 / 2932 passed / 0 failed、fmt 干净、CI clippy `--all-features` exit 0、openspec 268/268、`git diff --check` 干净；corpus 465 类双腿复扫 0 差异；全程磁盘 ≥25Gi。）
+- [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 nested-spelling、类字面量、反射相关全部既有测试）、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律：每轮构建前 `df -h /`，低于 12Gi 先 `cargo clean`，报告前必 clean。（第二修正轮实测 296 目标 / 2933 passed / 0 failed、fmt 干净、CI clippy `--all-features` exit 0、openspec 268/268、`git diff --check` 干净；corpus 465 类双腿复扫 0 差异；全程磁盘 ≥25Gi。）
 - [x] 3.2 A10/A11/A12 与变体三方对照：原 class/固定 JADX（dev）/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。（`results-values/`：jadx-*.out、*-jarde-recompile.out、fixture-sha256.txt；JADX dev 的 defpackage 重打包使 getName 路径自身偏离原类，已按路径记录口径。）
 - [ ] 3.3 root 独立复核准入判据、负例边界与三方行为，更新 EM 账本（反射/类字面量域）与巡查记录。
