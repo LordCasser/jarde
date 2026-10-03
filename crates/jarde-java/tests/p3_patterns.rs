@@ -5698,13 +5698,24 @@ fn a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue
 /// field flags as the negative cases state them, and `extra` writing one ordinary field after the
 /// captures when an interleave negative asks for it.
 fn capture_ctor_class(captures: &[(&str, u16)], extra: Option<(&str, u16)>) -> Vec<u8> {
+    capture_ctor_class_for("java/lang/Object", captures, extra)
+}
+
+/// The same capture-constructor body with the constructor call's owner named: the prologue-first
+/// presentation moves the group only past `java/lang/Object.<init>()V`, the one constructor call
+/// that cannot dispatch into user code, so the dispatch-guard negative names any other owner.
+fn capture_ctor_class_for(
+    super_owner: &str,
+    captures: &[(&str, u16)],
+    extra: Option<(&str, u16)>,
+) -> Vec<u8> {
     let mut pool = Pool::default();
     let _code = code_attribute(&mut pool);
-    let object_name = pool.utf8("java/lang/Object");
-    let object = pool.class(object_name);
+    let super_name = pool.utf8(super_owner);
+    let superclass = pool.class(super_name);
     let class_name = pool.utf8("p/Cap");
     let class = pool.class(class_name);
-    let super_init = member_ref(&mut pool, object, "<init>", "()V");
+    let super_init = member_ref(&mut pool, superclass, "<init>", "()V");
     let mut descriptor = String::from("(");
     let mut fields = Vec::new();
     let mut code = Code::default();
@@ -5747,7 +5758,7 @@ fn capture_ctor_class(captures: &[(&str, u16)], extra: Option<(&str, u16)>) -> V
         &pool,
         CLASS_FLAGS,
         class,
-        object,
+        superclass,
         &fields,
         &[MemberDef {
             flags: 0x0000,
@@ -5980,6 +5991,27 @@ fn a_synthetic_capture_of_a_computed_value_stays_where_the_bytecode_made_it() {
     assert!(
         write_line < super_line,
         "the computed capture write is not moved past the constructor call:\n{}",
+        report.text
+    );
+}
+
+#[test]
+fn a_synthetic_capture_before_a_user_class_constructor_call_stays_where_the_bytecode_made_it() {
+    // The dispatch guard: the certified group moves only past `java/lang/Object.<init>()V`, the
+    // one constructor call that cannot dispatch into user code. A user class's constructor may
+    // call an overridden method on `this` while it runs, and that override reads the capture from
+    // the field this prefix writes — so where the bytes store the capture is what the override
+    // sees, and the verbatim order stays even though the prefix is the compiler's own group. The
+    // text this leaves is an uncompilable flexible constructor body, which fails loudly where
+    // the moved shape would fail silently.
+    let class = capture_ctor_class_for("p/Base", &[("val$base", ACC_FINAL_SYNTHETIC)], None);
+    let report = present_in(&class, b"<init>", b"(I)V", 2, capture_debug(1));
+    assert!(report.produced(), "{:?}", report.stop());
+    let write_line = line_with(&report, "this.val$base = arg1;");
+    let super_line = line_with(&report, "super();");
+    assert!(
+        write_line < super_line,
+        "a user-class constructor call keeps the capture write where its bytes put it:\n{}",
         report.text
     );
 }
