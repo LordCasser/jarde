@@ -175,4 +175,5 @@ JADX 一栏的口径与 `handoff.md`、`sif/README.md` §6、`fcp/README.md` §6
   `verify_behavior.sh`（三方对照）、`apply_probe.py`（SIFDBG 探针，已回退）、`corpus-{before,after}.txt`
   （391 项）、`corpus-diff.txt`、`classfiles-before.txt`（2163 项）、`classfiles-diff.txt`（空）、
   `anchor-probe.txt`、`fold-output-sha256.txt`、`tests.log`、`clippy.log`。
-- `threeway/`：每用例的 `legs.txt`（各腿退出码/输出 SHA/判定）、`*.jarde.java` + SHA。
+- `threeway/`：每用例的 `legs.txt`（各腿退出码/输出 SHA/判定）、`*.jarde.java` + SHA；
+  `threeway/corpus-classes/` 是同一个脚本对 corpus 变化 6 项的逐项记录（键形 `<jar>.<类>`）。
