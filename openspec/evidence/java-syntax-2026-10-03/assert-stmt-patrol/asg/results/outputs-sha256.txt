@@ -1,0 +1,5 @@
+9ad8acfcdd2addcc5c5a8f613fcf02b8a12f8a528b7fd486eeea383835a602f0  openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/asg/results/A1.jarde.java.txt
+590b2d5cf9bf07edd8fdd974a6e61e1189dd7c8e2130131df95ed5d05813e591  openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/asg/results/AssertProbe-extra.jarde.java.txt
+27813384c0b18384cbc5c1d8c93458111aca32759a8bddbc0cf910e327a3a0d0  openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/asg/results/AssertProbe-wrong-owner.jarde.java.txt
+581a92aeb890d5200ea6199afdbe47c66244d77547c0868629dcb206e645285f  openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/asg/results/AssertProbe.jarde.java.txt
+ccb3c4168b2ca6525b53ed3fc8949bed13695b1311871a0c7364cf7d2b42a37d  openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/asg/results/MixedShapes.jarde.java.txt

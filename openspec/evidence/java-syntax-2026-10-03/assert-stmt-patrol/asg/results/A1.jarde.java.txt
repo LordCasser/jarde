@@ -1,0 +1,56 @@
+// jarde: presentation of `A1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class A1 extends java.lang.Object {
+    public A1() {
+        // @method <init>()V
+        // @declaration a constructor of `A1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int check(int arg0) {
+        // @method check(I)I
+        // @declaration a static method of `A1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        assert arg0 > 0 : "positive: " + arg0;
+        return arg0 * 2;
+    }
+
+    public static int plainAssert(int arg0) {
+        // @method plainAssert(I)I
+        // @declaration a static method of `A1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        assert arg0 != 0;
+        return 100 / arg0;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `A1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(check(5));
+        java.lang.System.out.println(plainAssert(4));
+        java.lang.System.out.println(new Sub().m(3));
+        java.lang.System.out.println(check(-1));
+        return;
+    }
+
+    static class Sub extends java.lang.Object {
+        Sub() {
+            // @method <init>()V
+            // @declaration a constructor of `A1$Sub`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+
+        int m(int arg1) {
+            // @method m(I)I
+            // @declaration an instance method of `A1$Sub`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            assert arg1 > 1 : arg1;
+            return arg1 - 1;
+        }
+    }
+}
