@@ -45,9 +45,10 @@ JADX dev 以 `defpackage` 重打包，凡输出暴露二进制名的路径（`ge
 
 ## 遗留（单列，不在本片放宽）
 
-1. **折叠深度 ≥ 2 的结构反射形**：jarde 成员折叠为单层（folded child 自身 `member_family.state = "absent"`，N2$Outer$Mid/Led 以平铺 `$` 单元呈现）。平铺单元不带 `InnerClasses` 行，javac 亦不从 `$` 名推断嵌套，故 `getSimpleName`/`getEnclosingClass` 等结构反射在平铺单元上返回池名形/null。`getName` 形不受影响（二进制名保留）。JADX dev 递归内联成员类所以全绿。属成员折叠深度域，非本片准入判据；A12/A11/A9 折叠覆盖到的一层成员全部逐字一致。
-2. **折叠 token-tie 锚不认数组类常量**：根文本含自身成员的**数组类字面量**（`Nested[].class`，池名 `[LChild;`）时，静态折叠的重拼锚检查（facade.rs `project_class_source_member_fold` 路径："static fold token … is not tied to one proved class reference"）只认 `Class` 名 == 成员二进制名与 FieldRef/MethodRef owner，不认数组描述符的元素名 → 折叠拒绝 → WV1 退回分离呈现（遗留 1 的 `getSimpleName` 偏移因此放大到一层成员）。基线上该形态方法整体拒绝、根文本无 token，折叠"成功"是平凡情形；本片准入后首次暴露。属折叠域，未顺手放宽。
+1. **折叠深度 ≥ 2 的结构反射形**：jarde 成员折叠为单层（folded child 自身 `member_family.state = "absent"`，N2$Outer$Mid/Led 以平铺 `$` 单元呈现）。平铺单元不带 `InnerClasses` 行，javac 亦不从 `$` 名推断嵌套，故 `getSimpleName`/`getEnclosingClass` 等结构反射在平铺单元上返回池名形/null。`getName` 形不受影响（二进制名保留）。JADX dev 递归内联成员类所以全绿。**状态（第二修正轮后）**：该形的行为偏离已消解——任何「池形呈现 + 真嵌套名 + 结构反射」的形（折叠尝试失败、折叠未尝试、standalone 三路）现均被守卫/重跑拒绝（响亮失败）；JADX 对照仅剩参考意义。
+2. **折叠 token-tie 锚不认数组类常量**：根文本含自身成员的**数组类字面量**（`Nested[].class`，池名 `[LChild;`）时，静态折叠的重拼锚检查只认 `Class` 名 == 成员二进制名与 FieldRef/MethodRef owner，不认数组描述符的元素名 → 折叠拒绝。**状态（第一修正轮后）：已闭环**——锚补认 `[LChild;` 的元素名，WV1 折叠恢复、三线重编运行逐字一致（`wv1-jarde-recompile-guard.out`）。
 3. 方法级恢复本身不受上述影响：所有锚方法引注清零、整类/整工程 `javac --release 8` 通过。
+4. **重跑路的无 feeds 角落**：rerun 不携带本类的 member_inner_targets 等 feeds；屏选成员的重跑若未引用守卫原句（形状因缺 feeds 退化），保留第一遍呈现（与修复前等价，不采用更差的 body）。corpus 零命中，无锚。
 
 ## 修正轮（2026-10-04，root 验收驳回后的守卫）
 
@@ -89,3 +90,7 @@ root 验收驳回上表的 N2 行为：基线响亮失败（10 引注、不可�
 ### corpus 复扫（守卫后）
 
 465 类双腿（基线 vs 守卫二进制，single-class）：**仍 0 差异**——守卫与旗标在冻结 corpus 无命中（corpus 无成员类字面量输入），准入判据本身未动。
+
+## 第二修正轮（root 实测驳回残余边界：RF fixture）
+
+root 构造 RF（直属成员含 `<clinit>` → 折叠被拒 → 分离池形呈现 → `RF$Inner.class.getSimpleName()` 发布为已恢复 → 家族可编译但 `getSimpleName` 从 `Inner` 静默偏离为 `RF$Inner`）实测命中本 README 前述"遗留 1"边界，判定为验收阻塞（ncl 引入的净倒退：诚实拒绝 → 静默偏离）。修复按 root 裁决：**折叠决策后**（`projected_text` 未认领）对屏选成员以旗标重跑（`rerun_pool_spelled_structural_reads`），重跑守卫产生 run 自己的拒绝文本后替换成员 outcome 与组装文本。RF 现为整方法引注 + 家族 `javac` exit 1（响亮失败，与 ncl 前等价）；四向验收（A12-jar / A12-single / RF-jar / N2）全过；corpus 复扫仍 465/465 零差异。证据与实测数字见 [../residual-boundary/README.md](../residual-boundary/README.md)（实现副本随本 worktree 合回）。测试 `a_refused_fold_reruns_the_structural_reader_and_the_family_stays_loud` 含家族负向编译断言。
