@@ -1,0 +1,53 @@
+// jarde: presentation of `AssertProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class AssertProbe extends java.lang.Object {
+    private static int guardCalls;
+
+    private static int detailCalls;
+
+    public AssertProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `AssertProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static boolean guard(int value) {
+        // @method guard(I)Z
+        // @declaration a static method of `AssertProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        AssertProbe.guardCalls = AssertProbe.guardCalls + 1;
+        return value > 0;
+    }
+
+    private static java.lang.String detail(int value) {
+        // @method detail(I)Ljava/lang/String;
+        // @declaration a static method of `AssertProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        AssertProbe.detailCalls = AssertProbe.detailCalls + 1;
+        return "bad:" + value;
+    }
+
+    static java.lang.String check(int value) {
+        // @method check(I)Ljava/lang/String;
+        // @declaration a static method of `AssertProbe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        assert guard(value) : detail(value);
+        return new java.lang.StringBuilder().append(AssertProbe.guardCalls).append("|").append(AssertProbe.detailCalls).toString();
+    }
+
+    public static void main(java.lang.String[] args) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.print(check(1) + ";");
+        try {
+            java.lang.System.out.print((java.lang.String) check(-1));
+        } catch (java.lang.AssertionError error) {
+            java.lang.System.out.print((java.lang.String) new java.lang.StringBuilder().append((java.lang.String) error.getMessage()).append("|").append(AssertProbe.guardCalls).append("|").append(AssertProbe.detailCalls).toString());
+        }
+        java.lang.System.out.println();
+        return;
+    }
+}

@@ -306,6 +306,10 @@ pub(crate) fn committed_presentations(
                 StmtKind::Assign { value, .. }
                 | StmtKind::Expr(value)
                 | StmtKind::Throw { value } => pending.push(Node::Expr(value)),
+                StmtKind::Assert { cond, message } => {
+                    pending.push(Node::Expr(cond));
+                    pending.extend(message.iter().map(Node::Expr));
+                }
                 StmtKind::FieldAssign {
                     receiver,
                     name,

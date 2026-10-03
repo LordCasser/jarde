@@ -1,0 +1,113 @@
+// jarde: presentation of `V1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class V1 extends java.lang.Object {
+    static boolean flag;
+
+    static int counter;
+
+    static final boolean $assertionsDisabled;
+
+    public V1() {
+        // @method <init>()V
+        // @declaration a constructor of `V1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static void both(boolean a, boolean b) {
+        // jarde: not recovered: the recovery run for `both(ZZ)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method both(ZZ)V
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 6 7 10 11 14 17 18 20 23 24 27 28 29 32
+        // the arms of the branch in block 0 do not meet at one join
+    }
+
+    static void disj(boolean a, boolean b) {
+        // @method disj(ZZ)V
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!V1.$assertionsDisabled) {
+            if (!a) {
+                if (!b) {
+                    throw new java.lang.AssertionError();
+                }
+            }
+        }
+        return;
+    }
+
+    static void local(boolean f) {
+        // @method local(Z)V
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!V1.$assertionsDisabled) {
+            if (!f) {
+                throw new java.lang.AssertionError();
+            }
+        }
+        return;
+    }
+
+    static void negated(boolean f) {
+        // @method negated(Z)V
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!V1.$assertionsDisabled) {
+            if (f) {
+                // @bytecode 10
+                // the instruction at BCI 10 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+                // @bytecode 13
+                // the instruction at BCI 13 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+                // @bytecode 20 17 14
+                // the copy at BCI 13 has no proved local assignment
+            }
+        }
+        return;
+    }
+
+    static void call(int v) {
+        // @method call(I)V
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!V1.$assertionsDisabled) {
+            if (!check(v)) {
+                throw new java.lang.AssertionError((java.lang.Object) ("call:" + v));
+            }
+        }
+        return;
+    }
+
+    static boolean check(int v) {
+        // @method check(I)Z
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return v > 0;
+    }
+
+    static void two(int x) {
+        // @method two(I)V
+        // @declaration a static method of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!V1.$assertionsDisabled) {
+            if (x <= 0) {
+                throw new java.lang.AssertionError((java.lang.Object) "first");
+            }
+        }
+        if (!V1.$assertionsDisabled) {
+            if (x >= 100) {
+                throw new java.lang.AssertionError((java.lang.Object) "second");
+            }
+        }
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `V1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        $assertionsDisabled = (!V1.class.desiredAssertionStatus() ? 1 : 0) % 2 != 0;
+        V1.counter = 7;
+    }
+}

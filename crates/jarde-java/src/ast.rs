@@ -129,6 +129,36 @@ impl BinaryOp {
             Self::GreaterOrEqual => ">=",
         }
     }
+
+    /// Whether this operator is one of the six comparisons a condition can test.
+    ///
+    /// The comparisons are the operators whose two results are each other's negation — the fact
+    /// [`crate::asserts`] relies on when it rewrites a proved branch condition into the condition
+    /// whose failure branched, and the reason the answer is on the operator and not on a text.
+    pub fn is_comparison(self) -> bool {
+        matches!(
+            self,
+            Self::Equal
+                | Self::NotEqual
+                | Self::Less
+                | Self::LessOrEqual
+                | Self::Greater
+                | Self::GreaterOrEqual
+        )
+    }
+
+    /// The operator that tests the opposite of this comparison, when this is one.
+    pub fn negated(self) -> Option<Self> {
+        match self {
+            Self::Equal => Some(Self::NotEqual),
+            Self::NotEqual => Some(Self::Equal),
+            Self::Less => Some(Self::GreaterOrEqual),
+            Self::LessOrEqual => Some(Self::Greater),
+            Self::Greater => Some(Self::LessOrEqual),
+            Self::GreaterOrEqual => Some(Self::Less),
+            _ => None,
+        }
+    }
 }
 
 /// The direction of a proved postfix update.
@@ -783,6 +813,20 @@ pub enum StmtKind {
     /// the expression's own evidence; this node does not infer a `Throwable` hierarchy or insert a
     /// cast the class file did not perform.
     Throw { value: Expr },
+    /// `assert <cond>;` or `assert <cond> : <message>;` — one proved javac assert lowering folded
+    /// back to the statement javac compiled it from.
+    ///
+    /// The build layer never writes this node from bytecode regions directly: an `assert` is not a
+    /// bytecode shape but the *pattern* of three of them (the synthetic `$assertionsDisabled` field,
+    /// its `<clinit>` initialization, the guarded `throw`), and proving that pattern is a
+    /// class-level fact no single body holds. [`crate::asserts`] rewrites an already-proved guard
+    /// statement into this node after the class-source assembly proved the whole pattern, so the
+    /// `cond` is the negated condition the guard tested and the optional `message` is the
+    /// `AssertionError` construction's single argument (its `(java.lang.Object)` position cast
+    /// removed — the message position performs no conversion the constructor would not). Both keep
+    /// the evaluation order the bytecode had: the condition is tested first and the message is
+    /// evaluated only when it fails.
+    Assert { cond: Expr, message: Option<Expr> },
     /// `if (<cond>) { … } else { … }`, with an empty `else_body` when the source had none.
     If {
         cond: Expr,
