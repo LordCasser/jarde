@@ -305,9 +305,10 @@ fn constant(
 /// source spelling: a supplementary Java identifier is a surrogate pair in the pool, not standard
 /// UTF-8. Malformed sequences become U+FFFD in `lossy` and are rejected here rather than published
 /// as a plausible Java path. The current type-name policy is the existing bounded ASCII identifier
-/// grammar excluding `$`; valid Unicode names and binary names containing `$` remain known recovery
-/// boundaries until Java 8's identifier tables and the required nested/classpath name evidence are
-/// represented here.
+/// grammar applied to every `/` and `$` segment (change `recover-nested-class-literal-values`):
+/// a `$` no longer vetoes, so the nested binary names javac writes admit here, and what the pool
+/// name spells as in recovered text stays the presentation layer's decision. Valid Unicode names
+/// remain a known recovery boundary until Java 8's identifier tables are represented here.
 fn class_literal_type(name: &jarde_reader::model::JvmBytes) -> Option<String> {
     let raw = lossy(name);
     if raw.contains('\u{fffd}') {
@@ -341,11 +342,19 @@ fn class_literal_type(name: &jarde_reader::model::JvmBytes) -> Option<String> {
 }
 
 /// Whether every component of one internal class name is a source identifier this layer writes.
-/// `$` is deliberately refused: from this pool entry alone it may be a nested binary name that
-/// needs `Outer.Inner` source spelling, or a top-level `$` identifier whose classpath binding this
-/// single-class read cannot prove.
+///
+/// The name is split on both separators the binary form uses — `/` between package parts and `$`
+/// between a class and its nested members — and every segment must be a legal Java identifier. A
+/// `$` is no longer a veto (change `recover-nested-class-literal-values`): the ambiguity that
+/// refused it here — a nested binary name versus a top-level `$` name — is a *presentation*
+/// question the class's `InnerClasses` row set answers at the spelling seam, and both answers are
+/// legal source, so admission cannot publish an unspellable name. What this gate still refuses is
+/// any name Java could not have declared: an empty segment (`Outer$`, `Outer$$Inner`), and a
+/// segment that is no identifier — which is exactly javac's synthetic families, the anonymous
+/// `Outer$1` and the local `Outer$1Local`, whose digit-leading tails fail the identifier's start
+/// rule without a dedicated check.
 fn source_internal_name(name: &str) -> bool {
-    !name.is_empty() && !name.contains('$') && name.split('/').all(crate::names::is_java_identifier)
+    !name.is_empty() && name.split(['/', '$']).all(crate::names::is_java_identifier)
 }
 
 /// The arithmetic one opcode performs, when this subset has that operator.
@@ -1158,13 +1167,49 @@ mod tests {
 
         let invalid_java_identifier = jarde_reader::model::JvmBytes(b"invalid-name".to_vec());
         assert_eq!(class_literal_type(&invalid_java_identifier), None);
+    }
 
-        let dollar_binary_name = jarde_reader::model::JvmBytes(b"OuterDollarProbe$Inner".to_vec());
+    #[test]
+    fn nested_binary_names_admit_the_class_literal_when_every_segment_is_an_identifier() {
+        // The nested binary names javac writes — one segment deep or a chain — are legal source
+        // names segment-wise, so the literal is admitted with the pool's own `$` spelling: whether
+        // that name spells as source nesting is the `InnerClasses` row set's decision at the
+        // presentation seam (`nested_member_reference_spelling`), never this gate's. A top-level
+        // class whose own name carries `$` admits by the same rule and keeps the pool spelling on
+        // both sides for the same reason.
+        let nested = jarde_reader::model::JvmBytes(b"A12$Nested".to_vec());
+        assert_eq!(class_literal_type(&nested), Some("A12$Nested".to_owned()));
+        let chain = jarde_reader::model::JvmBytes(b"N2$Outer$Mid$Leaf".to_vec());
         assert_eq!(
-            class_literal_type(&dollar_binary_name),
-            None,
-            "the Class pool alone cannot distinguish a nested binary name from a top-level `$` name"
+            class_literal_type(&chain),
+            Some("N2$Outer$Mid$Leaf".to_owned())
         );
+        let packaged = jarde_reader::model::JvmBytes(b"p/N2$Outer$Mid$Leaf".to_vec());
+        assert_eq!(
+            class_literal_type(&packaged),
+            Some("p.N2$Outer$Mid$Leaf".to_owned())
+        );
+        let literal_dollar_top_level = jarde_reader::model::JvmBytes(b"WC1$Top".to_vec());
+        assert_eq!(
+            class_literal_type(&literal_dollar_top_level),
+            Some("WC1$Top".to_owned())
+        );
+        // The array form rides the same gate: the element's segments are validated, and the
+        // descriptor spelling appends the dimensions the pool entry stated.
+        let array = jarde_reader::model::JvmBytes(b"[LWV1$Nested;".to_vec());
+        assert_eq!(class_literal_type(&array), Some("WV1$Nested[]".to_owned()));
+
+        // The synthetic families the same criterion keeps out: javac's anonymous `Outer$1` and
+        // local `Outer$1Local` carry digit-leading tails, and an empty segment (`Outer$`,
+        // `Outer$$Inner`) is no identifier at all. No dedicated rule excludes them.
+        for rejected in ["Outer$1", "Outer$1Local", "Outer$", "Outer$$Inner"] {
+            let name = jarde_reader::model::JvmBytes(rejected.as_bytes().to_vec());
+            assert_eq!(
+                class_literal_type(&name),
+                None,
+                "`{rejected}` stays outside the provable subset"
+            );
+        }
     }
 
     #[test]
