@@ -11,13 +11,30 @@
 //! [load every parameter slot, in order] ─ invoke T.m(…) ─ [checkcast C] ─ return
 //! ```
 //!
+//! A bridge over a *specialized* override has one more part: the erased signature takes the wider
+//! parameters the inherited contract declares, so the forward narrows each one first.
+//!
+//! ```text
+//! [load every parameter slot, in order] ─ [checkcast Pₖ per narrowed parameter, in order] ─
+//! invoke T.m(…) ─ [checkcast C] ─ return
+//! ```
+//!
 //! The `checkcast` is the interesting part: a cast **is not** an erasure in general — it can fail,
-//! and dropping one changes what the method does. What makes it one here is the proof that it
-//! *cannot* fail: the value it casts is exactly the value the forwarded invocation returned, and
-//! `C` is exactly the type that invocation's own descriptor declares it returns. A value of a
-//! declared type is either null or of that type, and a cast on it can neither throw nor change it,
-//! so writing the forward without the cast writes the same thing. That proof is per cast, from two
-//! pool facts, and it is the only reason this rule ever drops one.
+//! and dropping one changes what the method does. What makes a *return* cast one here is the proof
+//! that it *cannot* fail: the value it casts is exactly the value the forwarded invocation
+//! returned, and `C` is exactly the type that invocation's own descriptor declares it returns. A
+//! value of a declared type is either null or of that type, and a cast on it can neither throw nor
+//! change it, so writing the forward without the cast writes the same thing. That proof is per
+//! cast, from two pool facts, and it is the only reason this rule ever drops one.
+//!
+//! A *parameter* cast is never dropped: the value it checks comes from the erased signature, and
+//! the check is the narrowing the compiler itself writes before the call. What this rule proves
+//! about one is its **canonical form** — each parameter cast, in parameter order, names exactly the
+//! type the forwarded invocation's own descriptor declares for that parameter, so the cast is the
+//! erasure-driven narrowing the compiler writes for a specialized override and nothing more. A cast
+//! to any other type is a check this rule cannot prove the source re-derives, and the run refuses
+//! it. The presented text keeps a parameter cast quoted as the check it is; only the class-source
+//! assembler decides, separately, that a proved bridge member is hidden for recompilation.
 //!
 //! # What the rule reads before it looks at a body
 //!
@@ -32,10 +49,11 @@
 //! # What is presented, and what is refused
 //!
 //! Every instruction of the body must be one of the four, in that order, with the parameter slots
-//! loaded exactly in order and handed to the invocation unchanged: that is "it only forwards". A
-//! bridge that also stores, calls twice, computes or casts a *parameter* is not this shape; the run
-//! records the refusal and presents the body the ordinary way, where the instruction it cannot
-//! model is quoted. Nothing about the artifact's original facts changes: an `access$…`/bridge call
+//! loaded exactly in order and handed to the invocation unchanged — except where the canonical
+//! parameter-cast form narrows one to exactly the type the invocation's own descriptor declares.
+//! A bridge that also stores, calls twice, computes, casts a *parameter to any other type*, or
+//! casts something that is not a parameter is not this shape; the run records the refusal and
+//! presents the body the ordinary way, where the instruction it cannot model is quoted. Nothing about the artifact's original facts changes: an `access$…`/bridge call
 //! site is still a call in the class file, and the presentation is derived from it, not written
 //! back over it.
 
@@ -54,6 +72,20 @@ use crate::refusal::{Gap, Refusal};
 /// The pass answerable for every verdict of this module.
 pub(crate) const RULE: RuleVersion = BRIDGE.rule();
 
+/// One parameter a canonical parameter-cast bridge narrows before it forwards: the ordinal of the
+/// bridge's own parameter (the receiver excluded), the cast's BCI, and the exact internal name the
+/// cast checks. The class-source assembler re-checks every one against the source method's own
+/// descriptor; the cast itself is never erased, because a check that can fail is semantics.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BridgeParameterCast {
+    /// Which of the bridge's own parameters the cast narrows, the receiver not counted.
+    pub parameter: u16,
+    /// The cast instruction's BCI within the bridge body.
+    pub bci: u32,
+    /// The exact internal name the cast checks.
+    pub ty: String,
+}
+
 /// What one body was decided to be, in the terms the builder reads.
 ///
 /// The verdict is the *plan*: what the rule read (`forwarded`/`erased`), whether it presented the
@@ -65,6 +97,9 @@ pub(crate) struct Plan {
     /// when the bridge has one. That instruction produces no text of its own: the value it casts is
     /// written where the forward wrote it.
     cast: Option<u32>,
+    /// The parameter casts of the canonical parameter-cast form, in parameter order. The rule owns
+    /// none of them: each is kept, quoted where the bridge is presented.
+    parameter_casts: Vec<BridgeParameterCast>,
     /// The verdict every selection reports: whether the body was presented as the forward it is.
     /// The verdict is a decision about the whole body rather than about one position, so a driver
     /// range neither selects nor drops it.
@@ -113,7 +148,8 @@ impl Plan {
         let owned_items = 1
             + u64::from(member.is_some() as u8)
             + u64::from(self.target.is_some() as u8)
-            + u64::from(self.refusal.is_some() as u8);
+            + u64::from(self.refusal.is_some() as u8)
+            + u64::try_from(self.parameter_casts.len()).unwrap_or(u64::MAX);
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
@@ -128,6 +164,7 @@ impl Plan {
             target: self.target.clone(),
             call_bci: self.call_bci,
             cast_bci: self.cast,
+            parameter_casts: self.parameter_casts.clone(),
             pure_forward: self.pure_forward,
             presented: self.presented,
             refusal: self.refusal.clone(),
@@ -172,6 +209,7 @@ struct Verdict {
     target: Option<CallTarget>,
     call_bci: Option<u32>,
     erased: Option<String>,
+    parameter_casts: Vec<BridgeParameterCast>,
     presented: bool,
     pure_forward: bool,
     refusal: Option<BridgeRefusal>,
@@ -182,6 +220,7 @@ impl Verdict {
     fn plan(self, cast: Option<u32>) -> Plan {
         Plan {
             cast,
+            parameter_casts: self.parameter_casts,
             presented: self.presented,
             pure_forward: self.pure_forward,
             forwarded: self.forwarded,
@@ -220,6 +259,7 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
                     target: Some(forward.target),
                     call_bci: Some(forward.call_bci),
                     erased: forward.cast_type.clone(),
+                    parameter_casts: forward.parameter_casts,
                     presented: false,
                     pure_forward: true,
                     refusal: Some(BridgeRefusal::of(
@@ -251,6 +291,7 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
                     target: Some(forward.target),
                     call_bci: Some(forward.call_bci),
                     erased: forward.cast_type.clone(),
+                    parameter_casts: forward.parameter_casts,
                     presented: false,
                     pure_forward: true,
                     refusal: Some(BridgeRefusal::of(
@@ -272,6 +313,7 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
                     target: Some(forward.target),
                     call_bci: Some(forward.call_bci),
                     erased: forward.cast_type.clone(),
+                    parameter_casts: forward.parameter_casts,
                     presented: true,
                     pure_forward: true,
                     refusal: None,
@@ -284,6 +326,7 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
                     target: None,
                     call_bci: None,
                     erased: None,
+                    parameter_casts: Vec::new(),
                     presented: false,
                     pure_forward: false,
                     refusal: Some(BridgeRefusal::of(&refusal, 0)),
@@ -294,12 +337,14 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
     }
 }
 
-/// One verified pure forward, with the invocation and its optional return cast kept separately.
+/// One verified pure forward, with the invocation, its optional return cast and its canonical
+/// parameter casts kept separately.
 struct Forward {
     target: CallTarget,
     call_bci: u32,
     cast_type: Option<String>,
     cast_bci: Option<u32>,
+    parameter_casts: Vec<BridgeParameterCast>,
 }
 
 impl Forward {
@@ -373,29 +418,102 @@ fn forward_shape(
             }
         }
     }
+    // Between the loads and the invocation, the canonical parameter-cast form checks the
+    // parameters it narrows — in parameter order, one cast per parameter, and nothing else. Every
+    // cast must read a value one of the bridge's own parameter slots produced; what it *names* is
+    // verified against the forwarded invocation's own descriptor right after, because that
+    // descriptor is the source method's own signature and the bitwise comparison against it is
+    // what makes the cast reconstructible rather than an extra check.
+    let mut parameter_casts: Vec<(u16, u32, String, ValueId)> = Vec::new();
+    loop {
+        let Some(next) = instructions.get(cursor) else {
+            return Err(shape_error("the body ends before it forwards anything"));
+        };
+        let Some(Operation::CheckCast { ty }) = operations.get(next.bci()) else {
+            break;
+        };
+        let reads = next
+            .reads()
+            .iter()
+            .find(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .map(|(_, value)| *value);
+        let parameter = loaded[usize::from(!is_static)..]
+            .iter()
+            .position(|value| Some(*value) == reads);
+        let Some(parameter) = parameter else {
+            return Err(Refusal::shape(
+                "jre_bridge_cast_not_erasure",
+                format!(
+                    "the cast at BCI {} casts a value that is not one of the bridge's own parameters, so it is a check this rule cannot prove the source re-derives",
+                    next.bci()
+                ),
+            ));
+        };
+        if let Some(previous) = parameter_casts.last() {
+            if parameter as u16 <= previous.0 {
+                return Err(Refusal::shape(
+                    "jre_bridge_cast_not_erasure",
+                    format!(
+                        "the cast at BCI {} casts parameter {parameter} out of the parameter order the erased signature declares, so it is not the narrowing a bridge writes before it forwards",
+                        next.bci()
+                    ),
+                ));
+            }
+        }
+        let Some(written) = next
+            .writes()
+            .iter()
+            .find(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .map(|(_, value)| *value)
+        else {
+            return Err(shape_error(format!(
+                "the cast at BCI {} produces no value this run states",
+                next.bci()
+            )));
+        };
+        parameter_casts.push((parameter as u16, next.bci(), ty.clone(), written));
+        cursor += 1;
+    }
     let Some(invoke) = instructions.get(cursor) else {
         return Err(shape_error("the body ends before it forwards anything"));
     };
-    // A cast *between* the bridge's own parameters and the invocation is a cast on a parameter: the
-    // value it checks comes from the erased signature and the invocation's own descriptor takes a
-    // narrower type, so the check can fail and this rule does not present the forward.
-    if let Some(Operation::CheckCast { ty }) = operations.get(invoke.bci()) {
-        return Err(Refusal::shape(
-            "jre_bridge_cast_not_erasure",
-            format!(
-                "the bridge casts a parameter to `{ty}` at BCI {} before it forwards: a value the erased signature declares as the wider type is not proven to be the narrower one, so that cast is a check that can fail — it is not the erasure of a forwarded value",
-                invoke.bci()
-            ),
-        ));
-    }
     let Some(Operation::Invoke(target)) = operations.get(invoke.bci()) else {
         return Err(shape_error(format!(
             "the instruction at BCI {} is not the invocation a bridge forwards to",
             invoke.bci()
         )));
     };
+    // The bitwise criterion, against the one descriptor the source method itself declares: a
+    // parameter cast is canonical exactly when it names the type that descriptor takes for the
+    // same parameter. Anything else is a check that can fail, which the source re-derives no
+    // bridge from.
+    if !parameter_casts.is_empty() {
+        let Some((invoked_parameters, _)) = parse_method(target.descriptor()) else {
+            return Err(shape_error(format!(
+                "the forwarded invocation's descriptor `{}` is not one this layer reads",
+                target.descriptor()
+            )));
+        };
+        for (parameter, bci, ty, _) in &parameter_casts {
+            let canonical = matches!(
+                invoked_parameters.get(usize::from(*parameter)),
+                Some(Type::Reference(name)) if name == &source_name(ty)
+            );
+            if !canonical {
+                return Err(Refusal::shape(
+                    "jre_bridge_cast_not_erasure",
+                    format!(
+                        "the cast at BCI {bci} casts parameter {parameter} to `{ty}` and the forwarded invocation `{}.{}` does not declare that type for the parameter: a value the erased signature declares as the wider type is not proven to be that narrower one, so that cast is a check that can fail — it is not the narrowing the source re-derives",
+                        target.owner(),
+                        target.name()
+                    ),
+                ));
+            }
+        }
+    }
     // The parameters are handed over unchanged: what the invocation reads off the stack is exactly
-    // the values the parameter slots produced, in order (its receiver first, when it takes one).
+    // the values the parameter slots produced, in order (its receiver first, when it takes one) —
+    // each narrowed parameter read through its own cast instead.
     let operands: Vec<ValueId> = stack_operands(invoke)
         .into_iter()
         .map(|(_, value)| value)
@@ -412,31 +530,38 @@ fn forward_shape(
         ));
     }
     let given: Vec<ValueId> = operands.iter().skip(receiver).copied().collect();
-    let forwarded: Vec<ValueId> = loaded.iter().skip(receiver).copied().collect();
+    let forwarded: Vec<ValueId> = loaded
+        .iter()
+        .skip(receiver)
+        .enumerate()
+        .map(|(ordinal, value)| {
+            parameter_casts
+                .iter()
+                .find(|cast| usize::from(cast.0) == ordinal)
+                .map_or(*value, |cast| cast.3)
+        })
+        .collect();
     if given != forwarded {
         return Err(shape_error(
             "the invocation is not given the bridge's own parameters, in order",
         ));
     }
-    // The result the invocation produced: what the cast casts and the return returns.
-    let Some(produced) = invoke
+    // The result the invocation produced: what the cast casts and the return returns. A void
+    // forward produces none — the canonical specialized-setter bridge is exactly that shape — and
+    // then nothing may cast what the invocation never returned.
+    let produced: Option<ValueId> = invoke
         .writes()
         .iter()
         .find(|(slot, _)| matches!(slot, Slot::Stack(_)))
-        .map(|(_, value)| *value)
-    else {
-        return Err(shape_error(
-            "the invocation a bridge forwards to returns nothing this run states",
-        ));
-    };
+        .map(|(_, value)| *value);
     cursor += 1;
     let Some(after) = instructions.get(cursor) else {
         return Err(shape_error(
             "the body ends before it returns the forwarded value",
         ));
     };
-    let cast = match operations.get(after.bci()) {
-        Some(Operation::CheckCast { ty }) => {
+    let cast = match (operations.get(after.bci()), produced) {
+        (Some(Operation::CheckCast { ty }), Some(produced)) => {
             let reads = after
                 .reads()
                 .iter()
@@ -474,6 +599,15 @@ fn forward_shape(
             cursor += 1;
             Some((after, ty.clone()))
         }
+        (Some(Operation::CheckCast { .. }), None) => {
+            return Err(Refusal::shape(
+                "jre_bridge_cast_not_erasure",
+                format!(
+                    "the cast at BCI {} follows a forward that returns nothing, so it checks a value the invocation never produced and this rule cannot prove the source re-derives it",
+                    after.bci()
+                ),
+            ));
+        }
         _ => None,
     };
     let Some(returned) = instructions.get(cursor) else {
@@ -491,7 +625,8 @@ fn forward_shape(
             instructions.len() - cursor - 1
         )));
     }
-    // The return returns the forwarded value (or the erased cast of it) and nothing else.
+    // The return returns the forwarded value (or the erased cast of it) and nothing else; a void
+    // forward returns nothing, and so must the return.
     let forwarded_value = cast
         .as_ref()
         .and_then(|(instruction, _)| {
@@ -501,13 +636,13 @@ fn forward_shape(
                 .find(|(slot, _)| matches!(slot, Slot::Stack(_)))
                 .map(|(_, value)| *value)
         })
-        .unwrap_or(produced);
+        .or(produced);
     let returned_value = returned
         .reads()
         .iter()
         .find(|(slot, _)| matches!(slot, Slot::Stack(_)))
         .map(|(_, value)| *value);
-    if returned_value != Some(forwarded_value) {
+    if returned_value != forwarded_value {
         return Err(shape_error(
             "the return does not return the value the forward produced",
         ));
@@ -517,6 +652,10 @@ fn forward_shape(
         call_bci: invoke.bci(),
         cast_type: cast.as_ref().map(|(_, ty)| ty.clone()),
         cast_bci: cast.map(|(instruction, _)| instruction.bci()),
+        parameter_casts: parameter_casts
+            .into_iter()
+            .map(|(parameter, bci, ty, _)| BridgeParameterCast { parameter, bci, ty })
+            .collect(),
     })
 }
 
@@ -582,6 +721,8 @@ pub struct ClassSourceBridgeCandidate {
     pub call_bci: Option<u32>,
     /// The redundant return cast's BCI when `bridge@1` owns that cast.
     pub cast_bci: Option<u32>,
+    /// The canonical parameter casts, in parameter order, when the shape narrows parameters.
+    pub parameter_casts: Vec<BridgeParameterCast>,
     /// Whether the complete body satisfies the pure-forward shape.
     pub pure_forward: bool,
     /// Whether `bridge@1` presented the method as a forward under the supplied flags.
@@ -658,6 +799,7 @@ mod tests {
     fn class_source_candidate_obeys_budget_and_cancellation() {
         let plan = Plan {
             cast: None,
+            parameter_casts: Vec::new(),
             presented: true,
             pure_forward: true,
             forwarded: Some("Owner.get()Ljava/lang/String;".to_string()),
