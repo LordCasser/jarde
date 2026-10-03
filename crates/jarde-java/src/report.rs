@@ -590,6 +590,98 @@ pub fn emit_class_source_method_ast(
     )
 }
 
+/// The javac assert-switch field name, for the class-source projection that census-checks it.
+#[doc(hidden)]
+pub const ASSERT_SWITCH_FIELD_NAME: &str = crate::asserts::SWITCH_FIELD_NAME;
+
+/// One member's guard sites folded to `assert` statements, as the class-source projection
+/// consumes them: the folded statements, and the `getstatic` BCIs the fold consumed.
+#[doc(hidden)]
+pub type ClassSourceAssertMemberFold = crate::asserts::AssertMemberFold;
+
+/// The proved switch-initialization line of one `<clinit>` body: the class literal its
+/// `desiredAssertionStatus()` call reads, the write's BCI, and the statement's position.
+#[doc(hidden)]
+pub type ClassSourceAssertSwitchLine = crate::asserts::AssertSwitchLine;
+
+/// Folds one retained member's javac assert guards into `assert` statements.
+///
+/// `None` keeps the member verbatim: the body reads the switch field somewhere this fold cannot
+/// rewrite. The walk charges the budget per statement and expression node it touches.
+#[doc(hidden)]
+pub fn class_source_assert_member_fold(
+    ast: &ClassSourceMethodAst,
+    field: &str,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceAssertMemberFold>, crate::stop::StopReason> {
+    crate::asserts::fold_member_guards(&ast.projection.program.stmts, field, budget)
+}
+
+/// Reads one retained `<clinit>` program's switch-initialization line, when it holds exactly the
+/// one javac shape.
+#[doc(hidden)]
+pub fn class_source_assert_switch_line(
+    ast: &ClassSourceMethodAst,
+    field: &str,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceAssertSwitchLine>, crate::stop::StopReason> {
+    crate::asserts::switch_line(&ast.projection.program.stmts, field, budget)
+}
+
+/// Emits one projected statement list of a member the assert projection rewrote, under the same
+/// member context its own artifact was written in.
+#[doc(hidden)]
+pub fn emit_class_source_assert_statements(
+    ast: &ClassSourceMethodAst,
+    statements: &[crate::ast::Stmt],
+    budget: &mut Budget,
+) -> Result<String, crate::stop::StopReason> {
+    crate::emit::emit_class_source_statements(
+        statements,
+        &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
+        1,
+        budget,
+    )
+}
+
+/// Emits the member's own retained statements unmodified, as the assert projection's baseline:
+/// the caller checks this against the member's placed text before replacing it, so a body
+/// another projection already claimed is never silently re-fetched.
+#[doc(hidden)]
+pub fn class_source_assert_member_current(
+    ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<String, crate::stop::StopReason> {
+    crate::emit::emit_class_source_statements(
+        &ast.projection.program.stmts,
+        &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
+        1,
+        budget,
+    )
+}
+
+/// The `<clinit>` program with its one switch-initialization line removed, when the program
+/// holds exactly the one line shape. An empty remainder is the caller's signal that the whole
+/// member goes.
+#[doc(hidden)]
+pub fn class_source_assert_clinit_without_line(
+    ast: &ClassSourceMethodAst,
+    field: &str,
+    budget: &mut Budget,
+) -> Result<Option<Vec<crate::ast::Stmt>>, crate::stop::StopReason> {
+    let Some(line) = crate::asserts::switch_line(&ast.projection.program.stmts, field, budget)?
+    else {
+        return Ok(None);
+    };
+    let mut statements = ast.projection.program.stmts.clone();
+    statements.remove(line.position);
+    Ok(Some(statements))
+}
+
 /// A name admitted only for a class-source projection. The physical method report is untouched.
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -987,6 +1079,12 @@ fn project_captured_stmt(
             .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?,
         StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
             project_captured_expr(value, expected, matched, budget)?
+        }
+        StmtKind::Assert { cond, message } => {
+            project_captured_expr(cond, expected, matched, budget)?;
+            if let Some(message) = message {
+                project_captured_expr(message, expected, matched, budget)?;
+            }
         }
         StmtKind::FieldAssign {
             receiver, value, ..
@@ -2863,6 +2961,12 @@ fn for_each_statement_value_expression<'a>(
             StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
                 visit(value)
             }
+            StmtKind::Assert { cond, message } => {
+                visit(cond);
+                if let Some(message) = message {
+                    visit(message);
+                }
+            }
             StmtKind::FieldAssign {
                 receiver, value, ..
             } => {
@@ -3062,6 +3166,12 @@ fn for_each_statement_expression<'a>(
             StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
                 for_each_expression(value, visit)
             }
+            StmtKind::Assert { cond, message } => {
+                for_each_expression(cond, visit);
+                if let Some(message) = message {
+                    for_each_expression(message, visit);
+                }
+            }
             StmtKind::FieldAssign {
                 receiver, value, ..
             } => {
@@ -3252,6 +3362,12 @@ fn for_each_statement_expression_mut(
             }
             StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
                 for_each_expression_mut(value, visit)
+            }
+            StmtKind::Assert { cond, message } => {
+                for_each_expression_mut(cond, visit);
+                if let Some(message) = message {
+                    for_each_expression_mut(message, visit);
+                }
             }
             StmtKind::FieldAssign {
                 receiver, value, ..
@@ -6289,6 +6405,10 @@ fn program_node_count(program: &build::Program) -> u64 {
             K::Assign { value, .. } | K::Expr(value) | K::Throw { value } => {
                 expressions.push(value)
             }
+            K::Assert { cond, message } => {
+                expressions.push(cond);
+                expressions.extend(message.iter());
+            }
             K::FieldAssign {
                 receiver, value, ..
             } => {
@@ -6964,6 +7084,10 @@ fn class_initializer_statement_kind(kind: &crate::ast::StmtKind) -> ClassInitial
         StmtKind::ConstructorCall { .. } => ClassInitializerStatementKind::ConstructorCall,
         StmtKind::Return { .. } => ClassInitializerStatementKind::Return,
         StmtKind::Throw { .. } => ClassInitializerStatementKind::Throw,
+        // An `assert` never reaches a `<clinit>` the build produced (the fold that writes it runs
+        // on retained copies for class-source projection), and the category that fits its halves
+        // if one ever does is the expression one.
+        StmtKind::Assert { .. } => ClassInitializerStatementKind::Expression,
         StmtKind::If { .. } => ClassInitializerStatementKind::Conditional,
         StmtKind::While { .. }
         | StmtKind::For { .. }
