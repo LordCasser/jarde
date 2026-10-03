@@ -662,7 +662,7 @@ fn parameter_reassignment_cannot_use_the_identity_body_proof() {
 }
 
 #[test]
-fn same_class_overload_caller_refuses_the_target_projection() {
+fn same_class_overload_caller_proves_the_target_projection() {
     let report = compile_source(
         "Boundaries",
         include_str!(
@@ -678,13 +678,22 @@ fn same_class_overload_caller_refuses_the_target_projection() {
         target.item.descriptor.raw().0,
         b"(Ljava/util/List;)Ljava/util/List;"
     );
+    // `overloadedCall`'s `bodyOverload(values)` is the one same-class site: no sibling of that
+    // name is declared, the class closes over `Object`, and the site's pool descriptor names this
+    // exact member, so `recover-same-class-generic-bindings` proves the binding instead of
+    // refusing on the entry's existence.
     assert!(
-        target.text.contains("generic_call_binding_unproved"),
+        target
+            .text
+            .contains("generic Signature `(Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Ljava/lang/String;>;` projected")
+            && target.text.contains("same-class call binding proved"),
         "{}",
         target.text
     );
     assert!(target.declaration.as_deref().is_some_and(|declaration| {
-        declaration.contains("java.util.List bodyOverload(java.util.List arg0)")
+        declaration.contains(
+            "java.util.List<java.lang.String> bodyOverload(java.util.List<java.lang.String> arg0)",
+        )
     }));
     let positive = report
         .methods
