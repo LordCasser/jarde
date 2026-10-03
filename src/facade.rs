@@ -5539,6 +5539,19 @@ impl Engine {
         let mut array_constructor_candidate_runs = Vec::new();
         let mut lambda_helper_candidate_runs = Vec::new();
         let mut array_helper_use_runs = Vec::new();
+        // The bounded same-class use-site inventory (change `recover-same-class-generic-bindings`):
+        // one scan per decoded member body, plus the members whose generic projection is held
+        // back until the inventory closes. A class whose pool names no member of its own keeps
+        // the census off entirely, so its charges and texts stay exactly what they were; the
+        // census itself is decided after the pool binding below resolves.
+        let mut member_use_scans: Vec<MemberUseScan> = Vec::new();
+        let mut deferred_fields: Vec<(usize, Option<class_source::MemberDefault>)> = Vec::new();
+        let mut deferred_methods: Vec<(
+            usize,
+            class_source::MemberAttributes,
+            Option<jarde_java::report::GenericReturnCandidate>,
+            Option<jarde_java::report::GenericConstructorCandidate>,
+        )> = Vec::new();
         // This only avoids scanning unrelated classes. A header-level synthetic lambda helper is
         // not proof of a projection; all eligibility still comes from same-run Code/CP/AST facts.
         let array_helper_census_needed = read.facts.methods.iter().any(|member| {
@@ -5606,6 +5619,32 @@ impl Engine {
             (None, true) => Cow::Owned(class_constant_pool(&read.bytes, budget)?),
             (None, false) => Cow::Borrowed(&[]),
         };
+        // A same-class entry in this pool is what can hold a generic projection: only such a
+        // class pays the body-side use census, and only when a member could be held at all. The
+        // scan over the already-resolved pool is another view of bytes the binding read paid
+        // for, so like the pool resolution above it charges nothing.
+        let same_class_census_needed = (read
+            .facts
+            .fields
+            .iter()
+            .any(class_source::declares_signature)
+            || read
+                .facts
+                .methods
+                .iter()
+                .any(class_source::declares_signature))
+            && {
+                let this_class = read.facts.this_class.raw().0.as_slice();
+                pool.iter().any(|entry| {
+                    matches!(
+                        &entry.kind,
+                        CpEntryKind::MethodRef { owner, .. }
+                        | CpEntryKind::InterfaceMethodRef { owner, .. }
+                        | CpEntryKind::FieldRef { owner, .. }
+                            if owner.0.as_slice() == this_class
+                    )
+                })
+            };
         // Class nesting is an assembly fact, not method IR. Decode the two already recognized
         // class attributes once from the selected read and keep them in a private handoff for the
         // source assembler. In particular, do not re-slice these attributes from a sibling class
@@ -5833,7 +5872,7 @@ impl Engine {
                 ended = true;
                 break;
             }
-            if let Err(error) = class_source::project_field_signature(
+            match class_source::project_field_signature(
                 &mut source_field,
                 field,
                 &read.bytes,
@@ -5846,13 +5885,21 @@ impl Engine {
                     .unwrap_or(&[]),
                 class_scope.is_some(),
                 constant.as_ref(),
+                class_source::SameClassBinding::Pending,
+                "",
                 budget,
             ) {
-                merge_execution(&mut execution, stop_execution(&error, budget));
-                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                fields.push(source_field);
-                ended = true;
-                break;
+                Ok(class_source::SignatureProjection::Settled) => {}
+                Ok(class_source::SignatureProjection::DeferredSameClass) => {
+                    deferred_fields.push((index, constant.clone()));
+                }
+                Err(error) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    fields.push(source_field);
+                    ended = true;
+                    break;
+                }
             }
             if let Some(class_source::MemberDefault::Integer(value)) = constant
                 && source_field.declaration.is_some()
@@ -6066,7 +6113,7 @@ impl Engine {
                 let mut record =
                     ClassSourceMethod::no_body(item, no_body_kind(member.access_flags), spelled);
                 let mut stops = Vec::new();
-                if let Err(error) = class_source::project_method_signature(
+                match class_source::project_method_signature(
                     &mut record,
                     member,
                     &attributes,
@@ -6087,10 +6134,17 @@ impl Engine {
                         .unwrap_or(&[]),
                     class_signature_present,
                     &assembly_context.resolved_inner_classes,
+                    class_source::SameClassBinding::Pending,
                     budget,
                 ) {
-                    stops.push(stop_execution(&error, budget));
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    Ok(class_source::SignatureProjection::Settled) => {}
+                    Ok(class_source::SignatureProjection::DeferredSameClass) => {
+                        deferred_methods.push((index, attributes, None, None));
+                    }
+                    Err(error) => {
+                        stops.push(stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    }
                 }
                 let ends = stops.iter().any(ends_the_request);
                 (record, stops, ends)
@@ -6127,6 +6181,8 @@ impl Engine {
                                 capture_anonymous_child_asts,
                                 capture_integer_constant_asts: !integer_constant_candidates
                                     .is_empty(),
+                                capture_member_uses: same_class_census_needed,
+                                capture_member_use_bootstrap: member_use_scans.is_empty(),
                                 static_member_target: static_target.as_ref(),
                             },
                             budget,
@@ -6141,6 +6197,7 @@ impl Engine {
                                 lambda_helpers: lambda_helper_candidates,
                                 array_helper_uses,
                                 enum_switch_field_uses,
+                                member_uses: member_use_scan,
                                 generic_return,
                                 typed_functional_target,
                                 generic_constructor,
@@ -6171,6 +6228,9 @@ impl Engine {
                                 }
                                 if let Some(scan) = array_helper_uses {
                                     array_helper_use_runs.push(scan);
+                                }
+                                if let Some(scan) = member_use_scan {
+                                    member_use_scans.push(scan);
                                 }
                                 if let Some(uses) = enum_switch_field_uses {
                                     enum_switch_scanned_members.push(item.identity.clone());
@@ -6225,7 +6285,7 @@ impl Engine {
                                                 jarde_java::report::GenericReturnValue::StaticMemberCreation { .. }
                                             )
                                         });
-                                if let Err(error) = class_source::project_method_signature(
+                                match class_source::project_method_signature(
                                     &mut record,
                                     member,
                                     &attributes,
@@ -6246,11 +6306,25 @@ impl Engine {
                                         .unwrap_or(&[]),
                                     class_signature_present,
                                     &assembly_context.resolved_inner_classes,
+                                    class_source::SameClassBinding::Pending,
                                     budget,
                                 ) {
-                                    stops.push(stop_execution(&error, budget));
-                                    diagnostics
-                                        .push(stop_diagnostic(&error, class_provenance.clone()));
+                                    Ok(class_source::SignatureProjection::Settled) => {}
+                                    Ok(class_source::SignatureProjection::DeferredSameClass) => {
+                                        deferred_methods.push((
+                                            index,
+                                            attributes.clone(),
+                                            signature_candidate.cloned(),
+                                            generic_constructor.clone(),
+                                        ));
+                                    }
+                                    Err(error) => {
+                                        stops.push(stop_execution(&error, budget));
+                                        diagnostics.push(stop_diagnostic(
+                                            &error,
+                                            class_provenance.clone(),
+                                        ));
+                                    }
                                 }
                                 if typed_functional_target.is_some_and(|target| {
                                     target.kind
@@ -6307,6 +6381,155 @@ impl Engine {
             methods.push(record);
             if ends {
                 ended = true;
+            }
+        }
+        // The class-level same-class binding commit (change `recover-same-class-generic-bindings`):
+        // every held candidate settles here, after this class's own member records are complete,
+        // and each settles whole — the projection path either publishes a header over the recovered
+        // body or writes the existing refusal, never half of either. The inventory is complete only
+        // when every body this presentation would run was decoded and scanned without a stop and
+        // the class's shared bootstrap table was read; anything less keeps every held member on its
+        // erased declaration with the existing refusal, so an unread body can never read as "no use".
+        if !(deferred_fields.is_empty() && deferred_methods.is_empty()) {
+            let inventory_complete = structure_complete
+                && !ended
+                && methods.len() == read.facts.methods.len()
+                && read
+                    .facts
+                    .methods
+                    .iter()
+                    .zip(&methods)
+                    .all(|(header, method)| {
+                        if !class_source_runs_body(header) {
+                            return true;
+                        }
+                        member_use_scans.iter().any(|scan| {
+                            scan.complete && scan.member.as_ref() == Some(&method.item.identity)
+                        })
+                    })
+                && (member_use_scans.iter().any(|scan| scan.bootstrap_captured)
+                    || read
+                        .facts
+                        .methods
+                        .iter()
+                        .filter(|header| class_source_runs_body(header))
+                        .count()
+                        == 0);
+            let invokes: Vec<class_source::SameClassInvokeUse> = member_use_scans
+                .iter()
+                .flat_map(|scan| scan.invokes.iter().cloned())
+                .collect();
+            let field_uses: Vec<class_source::SameClassFieldUse> = member_use_scans
+                .iter()
+                .flat_map(|scan| scan.field_uses.iter().cloned())
+                .collect();
+            let member_refs: Vec<class_source::SameClassMemberRef> = member_use_scans
+                .iter()
+                .flat_map(|scan| scan.member_refs.iter().cloned())
+                .collect();
+            let facts = class_source::SameClassUseFacts {
+                complete: inventory_complete,
+                invokes: &invokes,
+                field_uses: &field_uses,
+                member_refs: &member_refs,
+            };
+            for (index, constant) in deferred_fields {
+                let member_name = read.facts.fields[index].name.raw().0.clone();
+                let binding = match class_source::prove_same_class_field_binding(
+                    &read.facts.this_class.raw().0,
+                    &read.facts.fields,
+                    index,
+                    &facts,
+                    budget,
+                ) {
+                    Ok(binding) => binding,
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
+                    }
+                };
+                let note = class_source::same_class_field_use_note(&facts, &member_name);
+                match class_source::project_field_signature(
+                    &mut fields[index],
+                    &read.facts.fields[index],
+                    &read.bytes,
+                    &pool,
+                    &declaration.item.declaration.this_class.raw().0,
+                    declaration.item.declaration.access_flags,
+                    class_scope
+                        .as_ref()
+                        .map(|proof| proof.type_parameters.as_slice())
+                        .unwrap_or(&[]),
+                    class_scope.is_some(),
+                    constant.as_ref(),
+                    binding,
+                    &note,
+                    budget,
+                ) {
+                    Ok(_) => {}
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
+                    }
+                }
+            }
+            for (index, attributes, candidate, constructor_candidate) in deferred_methods {
+                let binding = match class_source::prove_same_class_method_binding(
+                    &read.facts.this_class.raw().0,
+                    read.facts
+                        .super_class
+                        .as_ref()
+                        .map(|name| name.raw().0.as_slice()),
+                    &physical_interfaces_raw,
+                    &read.facts.methods,
+                    index,
+                    &facts,
+                    budget,
+                ) {
+                    Ok(binding) => binding,
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
+                    }
+                };
+                match class_source::project_method_signature(
+                    &mut methods[index],
+                    &read.facts.methods[index],
+                    &attributes,
+                    candidate.as_ref(),
+                    constructor_candidate.as_ref(),
+                    &read.bytes,
+                    &pool,
+                    &read.facts.this_class.raw().0,
+                    read.facts.access_flags,
+                    read.facts
+                        .super_class
+                        .as_ref()
+                        .map(|name| name.raw().0.as_slice()),
+                    &physical_interfaces_raw,
+                    class_scope
+                        .as_ref()
+                        .map(|proof| proof.type_parameters.as_slice())
+                        .unwrap_or(&[]),
+                    class_signature_present,
+                    &assembly_context.resolved_inner_classes,
+                    binding,
+                    budget,
+                ) {
+                    Ok(_) => {}
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
+                    }
+                }
             }
         }
         let mut enum_switch_proofs = Vec::new();
@@ -9383,6 +9606,444 @@ fn array_helper_has_direct_use(helper: &RawMethodReference, scans: &[ArrayHelper
 
 /// Select one allocation by physical `new` BCI only after every supplied caller scan completed.
 /// The caller supplies scans for every method with Code; a missing or partial scan is a refusal.
+/// The bounded use-site inventory of one member body: every invoke and field-access site of the
+/// decoded Code, every readable handle/indirect source, and whether the scan covered everything.
+/// A member whose decode stopped, or a source this scan cannot classify, clears `complete`, which
+/// makes the class-level proof hold every deferred candidate on its erased declaration.
+#[derive(Clone, Debug, Default)]
+struct MemberUseScan {
+    complete: bool,
+    member: Option<PhysicalMethodId>,
+    invokes: Vec<class_source::SameClassInvokeUse>,
+    field_uses: Vec<class_source::SameClassFieldUse>,
+    member_refs: Vec<class_source::SameClassMemberRef>,
+    bootstrap_captured: bool,
+}
+
+/// One same-read consumer's verdict for a field value under a projected (parameterized) type.
+///
+/// The safe consumers are the ones that use the value at or above the generality its erasure
+/// already had: an unchecked assignment, a comparison, a cast, a monitor, or an argument position
+/// whose callee descriptor takes exactly `java.lang.Object` or the field's own erasure at that
+/// position. Anything that would *select members on* the value — an invoke receiver, a chained
+/// field access, an array store's element position — or that moves it somewhere this scan cannot
+/// follow (a local store, a duplication, a phi, a dynamic site) is refused, because a
+/// parameterized receiver can change which member the source call binds or stop compiling.
+fn field_read_consumer_expressible(
+    consumer_opcode: u8,
+    consumer_reads_stack: &[(jarde_jvm::method_ir::Slot, jarde_jvm::method_ir::ValueId)],
+    value_depth: u32,
+    field_descriptor: &[u8],
+    callee_descriptor: Option<&[u8]>,
+) -> bool {
+    use jarde_jvm::method_ir::Slot;
+    let deepest_stack_depth = |reads: &[(Slot, jarde_jvm::method_ir::ValueId)]| {
+        reads
+            .iter()
+            .filter_map(|(slot, _)| match slot {
+                Slot::Stack(depth) => Some(*depth),
+                Slot::Local(_) => None,
+            })
+            .min()
+    };
+    match consumer_opcode {
+        // Reads at or above erasure generality: comparisons, casts, monitors, throws, returns,
+        // pops, and a store *into* another array's element position (the value is what is stored,
+        // and the verifier proved it fits the array's erasure).
+        0x50 | 0x57 | 0x58 | 0xa5 | 0xa6 | 0xb0 | 0xbf | 0xc0 | 0xc1 | 0xc2 | 0xc3 | 0xc6
+        | 0xc7 => true,
+        // A store of the value into a local: the presentation types every local from physical
+        // descriptor positions (never from the projected `Signature`), so the emitted local keeps
+        // an erasure-level type and the parameterized value assigns to it as the unchecked
+        // assignment it already was. Member selection through that local stays governed by the
+        // local's own erasure, which the body was already written under.
+        0x3a | 0x4a | 0x4b | 0x4c | 0x4d => true,
+        // `aastore` (0x53) reads array, index and value; the field value is only safe in the
+        // stored-value (topmost) position, not as the array it stores into.
+        0x53 => {
+            let Some(deepest) = deepest_stack_depth(consumer_reads_stack) else {
+                return false;
+            };
+            value_depth > deepest
+        }
+        // A stored field value keeps the assignment legal under the projected type (the unchecked
+        // assignment it already was); a value used as the *receiver* of the store selects members.
+        0xb5 | 0xb3 => {
+            let Some(deepest) = deepest_stack_depth(consumer_reads_stack) else {
+                return false;
+            };
+            value_depth > deepest
+        }
+        // Invocations: the receiver is the deepest operand of a receiver-bearing call; anything
+        // else is an argument, safe only at a position the callee descriptor types as exactly
+        // `java.lang.Object` or the field's own erasure.
+        0xb6 | 0xb7 | 0xb8 | 0xb9 => {
+            let Some(deepest) = deepest_stack_depth(consumer_reads_stack) else {
+                return false;
+            };
+            if consumer_opcode != 0xb8 && value_depth == deepest {
+                return false;
+            }
+            let Some(callee) = callee_descriptor else {
+                return false;
+            };
+            let arguments: Vec<u32> = consumer_reads_stack
+                .iter()
+                .filter_map(|(slot, _)| match slot {
+                    Slot::Stack(depth) => Some(*depth),
+                    Slot::Local(_) => None,
+                })
+                .filter(|depth| *depth > deepest || consumer_opcode == 0xb8)
+                .collect();
+            let position = arguments
+                .iter()
+                .filter(|depth| **depth < value_depth)
+                .count();
+            let raw = method_parameter_raw_descriptor(callee, position);
+            match raw.as_deref() {
+                Some(b"Ljava/lang/Object;") => true,
+                Some(segment) => segment == field_descriptor,
+                None => false,
+            }
+        }
+        // Everything else — chained member selection, local stores, duplications, dynamic sites —
+        // is outside this slice's proof.
+        _ => false,
+    }
+}
+
+/// The raw descriptor segment of one parameter position: `Ljava/util/List;`, `[Ljava/lang/String;`
+/// or a primitive letter, exactly as the pool states it.
+fn method_parameter_raw_descriptor(descriptor: &[u8], position: usize) -> Option<Vec<u8>> {
+    let mut rest = descriptor.strip_prefix(b"(")?;
+    let mut index = 0usize;
+    while let Some(&first) = rest.first() {
+        if first == b')' {
+            return None;
+        }
+        let start = rest;
+        while rest.first() == Some(&b'[') {
+            rest = &rest[1..];
+        }
+        let segment_end = match rest.first() {
+            Some(b'L') => rest.iter().position(|&byte| byte == b';')? + 1,
+            Some(_) => 1,
+            None => return None,
+        };
+        rest = &rest[segment_end..];
+        let segment = &start[..start.len() - rest.len()];
+        if index == position {
+            return Some(segment.to_vec());
+        }
+        index += 1;
+    }
+    None
+}
+
+/// Classify one field-read site's consumers through the same run's SSA: every instruction that
+/// reads the value the `getfield`/`getstatic` produced must keep accepting it.
+fn classify_field_read_consumers(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    bci: u32,
+    pool: &[jarde_reader::classfile::CpEntryFacts],
+    field_descriptor: &[u8],
+) -> bool {
+    use jarde_jvm::method_ir::{PhiInput, Slot};
+    let Some(ssa) = ir.ssa() else {
+        return false;
+    };
+    let Some(value) = ssa
+        .blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .find_map(|instruction| {
+            (instruction.bci() == bci).then(|| {
+                instruction
+                    .writes()
+                    .iter()
+                    .find_map(|(slot, value)| match slot {
+                        Slot::Stack(_) => Some(*value),
+                        Slot::Local(_) => None,
+                    })
+            })
+        })
+        .flatten()
+    else {
+        return false;
+    };
+    // A phi that merges this value sends it somewhere this scan does not follow.
+    for phi in ssa.phis() {
+        if phi
+            .inputs()
+            .iter()
+            .any(|input| matches!(input, PhiInput::Value(other) if *other == value))
+        {
+            return false;
+        }
+    }
+    let mut consumers: Vec<(
+        u8,
+        Vec<(Slot, jarde_jvm::method_ir::ValueId)>,
+        u32,
+        Option<Vec<u8>>,
+    )> = Vec::new();
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            if instruction.bci() == bci {
+                continue;
+            }
+            let reads_value = instruction.reads().iter().any(|(_, read)| *read == value);
+            if !reads_value {
+                continue;
+            }
+            // Only operand-stack reads are consumers of a freshly loaded value.
+            let stack_reads: Vec<(Slot, jarde_jvm::method_ir::ValueId)> = instruction
+                .reads()
+                .iter()
+                .filter_map(|(slot, read)| match slot {
+                    Slot::Stack(_) => Some((*slot, *read)),
+                    Slot::Local(_) => None,
+                })
+                .collect();
+            let Some(Slot::Stack(depth)) = stack_reads
+                .iter()
+                .find(|(_, read)| *read == value)
+                .map(|(slot, _)| slot)
+                .copied()
+            else {
+                return false;
+            };
+            let callee_descriptor = if (0xb6..=0xb9).contains(&instruction.opcode()) {
+                ir.code().and_then(|code| {
+                    code.instructions
+                        .iter()
+                        .zip(code.operands())
+                        .find(|(site, _)| site.bci == instruction.bci())
+                        .and_then(|(_, operands)| operands.constant_pool_index)
+                        .and_then(|index| {
+                            jarde_reader::classfile::cp_entry(pool, index)
+                                .ok()
+                                .map(|entry| match &entry.kind {
+                                    jarde_reader::classfile::CpEntryKind::MethodRef {
+                                        descriptor,
+                                        ..
+                                    }
+                                    | jarde_reader::classfile::CpEntryKind::InterfaceMethodRef {
+                                        descriptor,
+                                        ..
+                                    } => descriptor.0.clone(),
+                                    _ => Vec::new(),
+                                })
+                        })
+                })
+            } else {
+                None
+            };
+            consumers.push((instruction.opcode(), stack_reads, depth, callee_descriptor));
+        }
+    }
+    if consumers.is_empty() {
+        return true;
+    }
+    consumers
+        .iter()
+        .all(|(opcode, stack_reads, depth, callee)| {
+            field_read_consumer_expressible(
+                *opcode,
+                stack_reads,
+                *depth,
+                field_descriptor,
+                callee.as_deref(),
+            )
+        })
+}
+
+/// The bounded same-class use-site scan over one member body's decoded Code, in the shape of the
+/// array-helper census beside it: physical instructions, their pool entries, the readable
+/// non-body sources, and a completeness flag that turns any stop or unresolvable source into "not
+/// proven" at the class level.
+fn scan_member_uses(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    capture_bootstrap: bool,
+    budget: &mut Budget,
+) -> Result<Option<MemberUseScan>> {
+    use jarde_reader::classfile::CpEntryKind as K;
+
+    let Some(code) = ir.code() else {
+        return Ok(None);
+    };
+    let instruction_cost = u64::try_from(code.instructions.len()).unwrap_or(u64::MAX);
+    let bootstrap_cost = if capture_bootstrap {
+        ir.bootstrap_methods().iter().fold(0_u64, |sum, bootstrap| {
+            sum.saturating_add(1 + u64::try_from(bootstrap.arguments.len()).unwrap_or(u64::MAX))
+        })
+    } else {
+        0
+    };
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        instruction_cost.saturating_add(bootstrap_cost),
+    )?;
+    let pool = ir.constant_pool();
+    let caller = ir
+        .declaration()
+        .map(|declaration| {
+            let identity = declaration.identity();
+            format!(
+                "{}{}",
+                String::from_utf8_lossy(&identity.name.0),
+                String::from_utf8_lossy(&identity.descriptor.0),
+            )
+        })
+        .unwrap_or_default();
+    let mut scan = MemberUseScan {
+        complete: code.stopped_at.is_none(),
+        member: ir
+            .declaration()
+            .map(|declaration| declaration.identity().clone()),
+        ..MemberUseScan::default()
+    };
+    for (instruction, operands) in code.instructions.iter().zip(code.operands()) {
+        let opcode = operands.effective_opcode;
+        let Some(index) = operands.constant_pool_index else {
+            continue;
+        };
+        let entry = match jarde_reader::classfile::cp_entry(pool, index) {
+            Ok(entry) => entry,
+            Err(_) => {
+                scan.complete = false;
+                continue;
+            }
+        };
+        if (0xb6..=0xb9).contains(&opcode) {
+            match method_reference_identity(pool, index) {
+                Some(target) => scan.invokes.push(class_source::SameClassInvokeUse {
+                    caller: caller.clone(),
+                    bci: instruction.bci,
+                    opcode,
+                    owner: target.owner.0.clone(),
+                    name: target.name.0.clone(),
+                    descriptor: target.descriptor.0.clone(),
+                }),
+                None => scan.complete = false,
+            }
+        } else if matches!(opcode, 0xb2 | 0xb3 | 0xb4 | 0xb5) {
+            let K::FieldRef {
+                owner,
+                name,
+                descriptor,
+                ..
+            } = &entry.kind
+            else {
+                scan.complete = false;
+                continue;
+            };
+            // 0xb2 `getstatic` and 0xb4 `getfield` are the reads; 0xb3/0xb5 the writes.
+            let read_expressible = if matches!(opcode, 0xb2 | 0xb4) {
+                Some(classify_field_read_consumers(
+                    ir,
+                    instruction.bci,
+                    pool,
+                    descriptor.0.as_slice(),
+                ))
+            } else {
+                None
+            };
+            scan.field_uses.push(class_source::SameClassFieldUse {
+                caller: caller.clone(),
+                bci: instruction.bci,
+                opcode,
+                owner: owner.0.clone(),
+                name: name.0.clone(),
+                descriptor: descriptor.0.clone(),
+                read_expressible,
+            });
+        } else if matches!(opcode, 0x12..=0x14) {
+            if let K::MethodHandle { .. } = &entry.kind {
+                match method_handle_reference(pool, index) {
+                    Some(reference) => scan.member_refs.push(reference),
+                    None => scan.complete = false,
+                }
+            }
+        } else if opcode == 0xba && !matches!(entry.kind, K::InvokeDynamic { .. }) {
+            scan.complete = false;
+        }
+    }
+    if capture_bootstrap {
+        scan.bootstrap_captured = true;
+        for bootstrap in ir.bootstrap_methods().iter() {
+            match method_handle_reference(pool, bootstrap.method_ref) {
+                Some(reference) => scan.member_refs.push(reference),
+                None => scan.complete = false,
+            }
+            for cp_index in bootstrap.arguments.iter().copied() {
+                if matches!(
+                    jarde_reader::classfile::cp_entry(pool, cp_index).map(|entry| &entry.kind),
+                    Ok(K::MethodHandle { .. })
+                ) {
+                    match method_handle_reference(pool, cp_index) {
+                        Some(reference) => scan.member_refs.push(reference),
+                        None => scan.complete = false,
+                    }
+                }
+            }
+        }
+    }
+    Ok(Some(scan))
+}
+
+/// The member a method handle names, with whether it names a method (reference kinds 5-9) or a
+/// field accessor (kinds 1-4). A handle whose kind and target kind disagree is not a member this
+/// scan can name.
+fn method_handle_reference(
+    pool: &[jarde_reader::classfile::CpEntryFacts],
+    index: u16,
+) -> Option<class_source::SameClassMemberRef> {
+    use jarde_reader::classfile::CpEntryKind as K;
+    let K::MethodHandle {
+        reference_kind,
+        reference_index,
+    } = &jarde_reader::classfile::cp_entry(pool, index).ok()?.kind
+    else {
+        return None;
+    };
+    let method = (5..=9).contains(reference_kind);
+    match &jarde_reader::classfile::cp_entry(pool, *reference_index)
+        .ok()?
+        .kind
+    {
+        K::MethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        }
+        | K::InterfaceMethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } if method => Some(class_source::SameClassMemberRef {
+            owner: owner.0.clone(),
+            name: name.0.clone(),
+            descriptor: descriptor.0.clone(),
+            method: true,
+        }),
+        K::FieldRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } if !method => Some(class_source::SameClassMemberRef {
+            owner: owner.0.clone(),
+            name: name.0.clone(),
+            descriptor: descriptor.0.clone(),
+            method: false,
+        }),
+        _ => None,
+    }
+}
+
 fn unique_anonymous_allocation<'a>(
     scans: &'a [(
         PhysicalMethodId,
@@ -10450,6 +11111,7 @@ struct PreparedMemberRecovery {
     lambda_helpers: Option<Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>>,
     array_helper_uses: Option<ArrayHelperUseScan>,
     enum_switch_field_uses: Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
+    member_uses: Option<MemberUseScan>,
     generic_return: Option<jarde_java::report::GenericReturnCandidate>,
     typed_functional_target: Option<jarde_java::report::TypedFunctionalTarget>,
     generic_constructor: Option<jarde_java::report::GenericConstructorCandidate>,
@@ -10648,6 +11310,8 @@ struct PreparedMemberOptions<'a> {
     capture_array_helper_use_table: bool,
     capture_anonymous_child_asts: bool,
     capture_integer_constant_asts: bool,
+    capture_member_uses: bool,
+    capture_member_use_bootstrap: bool,
     static_member_target: Option<&'a jarde_java::report::ProvedStaticMemberTarget>,
 }
 
@@ -10699,6 +11363,11 @@ fn recover_prepared_member(
             options.capture_array_helper_use_table,
             budget,
         )?
+    } else {
+        None
+    };
+    let member_uses = if options.capture_member_uses {
+        scan_member_uses(analyzed.ir(), options.capture_member_use_bootstrap, budget)?
     } else {
         None
     };
@@ -10778,6 +11447,7 @@ fn recover_prepared_member(
         lambda_helpers,
         array_helper_uses,
         enum_switch_field_uses,
+        member_uses,
         generic_return,
         typed_functional_target,
         generic_constructor,
