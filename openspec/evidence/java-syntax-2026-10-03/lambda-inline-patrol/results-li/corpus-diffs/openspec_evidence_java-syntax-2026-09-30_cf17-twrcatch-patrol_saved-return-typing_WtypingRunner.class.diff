@@ -1,0 +1,71 @@
+3a4,9
+>     // jarde: omitted physical lambda helper "lambda$main$0" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$main$1" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$main$2" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$main$3" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$main$4" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$main$5" after proving its single class-wide use
+12a19,24
+>         // jarde: lambda companion body inlined at invokedynamic@22
+>         // jarde: lambda companion body inlined at invokedynamic@32
+>         // jarde: lambda companion body inlined at invokedynamic@42
+>         // jarde: lambda companion body inlined at invokedynamic@52
+>         // jarde: lambda companion body inlined at invokedynamic@62
+>         // jarde: lambda companion body inlined at invokedynamic@72
+21,26c33,38
+<         run("stringLiteral", (WtypingRunner$Call) (() -> WtypingRunner.lambda$main$0()));
+<         run("intLiteral", (WtypingRunner$Call) (() -> WtypingRunner.lambda$main$1()));
+<         run("constructorValue", (WtypingRunner$Call) (() -> WtypingRunner.lambda$main$2()));
+<         run("callReturn", (WtypingRunner$Call) (() -> WtypingRunner.lambda$main$3()));
+<         run("nullValue", (WtypingRunner$Call) (() -> WtypingRunner.lambda$main$4()));
+<         run("classLiteral", (WtypingRunner$Call) (() -> WtypingRunner.lambda$main$5()));
+---
+>         run("stringLiteral", (WtypingRunner$Call) (() -> Wtyping.stringLiteral()));
+>         run("intLiteral", (WtypingRunner$Call) (() -> java.lang.Integer.toString(Wtyping.intLiteral())));
+>         run("constructorValue", (WtypingRunner$Call) (() -> Wtyping.constructorValue().toString()));
+>         run("callReturn", (WtypingRunner$Call) (() -> Wtyping.callReturn()));
+>         run("nullValue", (WtypingRunner$Call) (() -> java.lang.String.valueOf((java.lang.Object) Wtyping.nullValue())));
+>         run("classLiteral", (WtypingRunner$Call) (() -> Wtyping.classLiteral().toString()));
+38,79d49
+< 
+<     private static java.lang.String lambda$main$5() throws java.lang.Exception {
+<         // @method lambda$main$5()Ljava/lang/String;
+<         // @declaration a static method of `WtypingRunner`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return Wtyping.classLiteral().toString();
+<     }
+< 
+<     private static java.lang.String lambda$main$4() throws java.lang.Exception {
+<         // @method lambda$main$4()Ljava/lang/String;
+<         // @declaration a static method of `WtypingRunner`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return java.lang.String.valueOf((java.lang.Object) Wtyping.nullValue());
+<     }
+< 
+<     private static java.lang.String lambda$main$3() throws java.lang.Exception {
+<         // @method lambda$main$3()Ljava/lang/String;
+<         // @declaration a static method of `WtypingRunner`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return Wtyping.callReturn();
+<     }
+< 
+<     private static java.lang.String lambda$main$2() throws java.lang.Exception {
+<         // @method lambda$main$2()Ljava/lang/String;
+<         // @declaration a static method of `WtypingRunner`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return Wtyping.constructorValue().toString();
+<     }
+< 
+<     private static java.lang.String lambda$main$1() throws java.lang.Exception {
+<         // @method lambda$main$1()Ljava/lang/String;
+<         // @declaration a static method of `WtypingRunner`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return java.lang.Integer.toString(Wtyping.intLiteral());
+<     }
+< 
+<     private static java.lang.String lambda$main$0() throws java.lang.Exception {
+<         // @method lambda$main$0()Ljava/lang/String;
+<         // @declaration a static method of `WtypingRunner`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return Wtyping.stringLiteral();
+<     }

@@ -19,3 +19,9 @@ lambda/method-ref 域巡查（主线 `c7b7b767`）。固定转录 [fixture](fixt
 `recover-lambda-inline-bodies`（大颗粒，源码形状）：伴生 `lambda$…` 方法的**体**内联进 lambda 表达式（MVP：单表达式/直线体——参数按位绑定、无 return 语义差），伴生方法隐藏；复杂体（多语句/控制流）MVP 保守——伴生保留但改用**非冲突名**（如 `lambda$…$jarde` 后缀，private static 合成语义不变），保整类可编。方法引用 `X::m` 语法呈现为独立后续（行为已对）。
 
 原 class 为行为基准。
+
+## 处置结果（2026-10-03，`recover-lambda-inline-bodies` 落地）
+
+实现侧取证、变体前后转写、Y1 命中输出、三方对照与 corpus 双腿扫描见 [results-li/](results-li/README.md)：
+Y1 四位点内联 + 伴生省略，整类 `javac --release 8` 重编通过、`java -Xverify:all` 输出与 orig.out 逐字一致；
+复杂体（分支/多语句）伴生重命名 `lambda$…$jarde`；多用途伴生保持现呈现并登记。

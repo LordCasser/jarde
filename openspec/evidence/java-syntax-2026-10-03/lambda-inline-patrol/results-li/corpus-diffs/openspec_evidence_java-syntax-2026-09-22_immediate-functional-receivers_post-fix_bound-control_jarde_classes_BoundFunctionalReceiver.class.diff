@@ -1,0 +1,16 @@
+3a4
+>     // jarde: omitted physical lambda helper "lambda$array$0" after proving its single class-wide use
+12a14
+>         // jarde: lambda companion body inlined at invokedynamic@0
+16c18
+<         java.util.function.IntFunction local1 = (int p0) -> BoundFunctionalReceiver.lambda$array$0(p0);
+---
+>         java.util.function.IntFunction local1 = (int p0) -> lambda$array$0(p0);
+34,40d35
+< 
+<     private static java.lang.Object lambda$array$0(int arg0) {
+<         // @method lambda$array$0(I)Ljava/lang/Object;
+<         // @declaration a static method of `BoundFunctionalReceiver`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return lambda$array$0(arg0);
+<     }

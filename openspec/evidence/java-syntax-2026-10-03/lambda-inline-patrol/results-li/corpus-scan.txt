@@ -1,0 +1,40 @@
+# Corpus 双腿扫描（HEAD ee1c85b4 基线 vs recover-lambda-inline-bodies）
+
+corpus = tests/fixtures + fuzz/corpus + openspec/evidence 全部 .class（2138 个）；
+双腿各用 release 版 examples/class_source_file 转写，逐字节比较。
+
+same=1458（其中不含 lambda 呈现的 1458 个逐字一致——无 lambda 类 diff 逐字不变）
+text-diff=28（全部属于 33 个 lambda-bearing 类：内联/重命名/标记差异，仅 lambda 家族形态）
+exit-diff=0  both-fail=652（双侧一致拒绝的损坏 fixture）
+
+diff 清单：
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/post-fix/bound-control/jarde/classes/BoundFunctionalReceiver.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/post-fix/bound-control/original-classes/BoundFunctionalReceiver.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/post-fix/direct-array/jarde/classes/DirectArrayCtorRef.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/post-fix/direct-array/original-classes/DirectArrayCtorRef.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/results/bound-control/jarde/classes/BoundFunctionalReceiver.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/results/bound-control/original-classes/BoundFunctionalReceiver.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/results/direct-array/mechanism-only/classes/DirectArrayCtorRef.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/immediate-functional-receivers/results/direct-array/original-classes/DirectArrayCtorRef.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/cases-v1/LambdaRunnable/jadx-classes/LambdaRunnable.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/cases-v1/LambdaRunnable/LambdaRunnable.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/cases-v1/LambdaRunnable/original-classes/LambdaRunnable.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/cases-v1/LambdaSupplier/jadx-classes/LambdaSupplier.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/cases-v1/LambdaSupplier/jarde-classes/LambdaSupplier.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/cases-v1/LambdaSupplier/LambdaSupplier.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/cases-v1/LambdaSupplier/original-classes/LambdaSupplier.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/whole-class-v3/jadx-classes/OverloadEdges.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/whole-class-v3/original-classes/OverloadEdges.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-22/overloads/boundaries/whole-class/OverloadEdges.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-26/Patrol.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/saved-return-typing/WtypingRunner.class
+TEXT-DIFF openspec/evidence/java-syntax-2026-10-03/lambda-inline-patrol/fixture/Y1.class
+TEXT-DIFF tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class
+TEXT-DIFF tests/fixtures/p3-immediate-functional-receivers/v8/bound-control/BoundFunctionalReceiver.class
+TEXT-DIFF tests/fixtures/p3-immediate-functional-receivers/v8/direct-array/DirectArrayCtorRef.class
+TEXT-DIFF tests/fixtures/p3-lambda-adaptation/v8/CapturedLambdaAdaptationProbe.class
+TEXT-DIFF tests/fixtures/p4-modern/v8/ConcatJava8.class
+TEXT-DIFF tests/fixtures/proved-java-structure/lambda-body-inline/LambdaBodyInline.class
+
+28 处差异抽样（diffs/ 目录随本记录归档）：

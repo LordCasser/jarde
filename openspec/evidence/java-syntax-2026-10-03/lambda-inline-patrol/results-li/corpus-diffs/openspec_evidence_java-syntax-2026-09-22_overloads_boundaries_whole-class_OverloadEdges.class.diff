@@ -1,0 +1,27 @@
+3a4,5
+>     // jarde: renamed physical lambda helper "lambda$lambdaRunnable$0" after proving its single class-wide use
+>     // jarde: omitted physical lambda helper "lambda$lambdaSupplier$1" after proving its single class-wide use
+90a93
+>         // jarde: lambda companion call renamed at invokedynamic@0
+94c97
+<         return action((java.lang.Runnable) (() -> OverloadEdges.lambda$lambdaRunnable$0()));
+---
+>         return action((java.lang.Runnable) (() -> OverloadEdges.lambda$lambdaRunnable$0$jarde()));
+97a101
+>         // jarde: lambda companion body inlined at invokedynamic@0
+101c105
+<         return action((java.util.function.Supplier) (() -> OverloadEdges.lambda$lambdaSupplier$1()));
+---
+>         return action((java.util.function.Supplier) (() -> "s"));
+111,118c115,116
+<     private static java.lang.String lambda$lambdaSupplier$1() {
+<         // @method lambda$lambdaSupplier$1()Ljava/lang/String;
+<         // @declaration a static method of `OverloadEdges`, member flags 0x100a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return "s";
+<     }
+< 
+<     private static void lambda$lambdaRunnable$0() {
+---
+>     private static void lambda$lambdaRunnable$0$jarde() {
+>         // jarde: renamed physical lambda helper "lambda$lambdaRunnable$0" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
