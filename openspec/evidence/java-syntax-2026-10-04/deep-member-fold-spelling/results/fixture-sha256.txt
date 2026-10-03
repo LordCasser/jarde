@@ -1,0 +1,3 @@
+57f2363b03ee936e9cc63edff362a9a7c1198de417feab7740e6a93bf06012fa  openspec/evidence/java-syntax-2026-10-04/deep-member-fold-spelling/fixture/FP.class
+c4867e20ce8816a65eb2aaf8e1d0609456e169f008835e60756ac085b598acd6  openspec/evidence/java-syntax-2026-10-04/deep-member-fold-spelling/fixture/FP$Mid.class
+13a6624b4e1c92a77a34138382ac96cc55a6e726c2cb486f7549ddc293d78cde  openspec/evidence/java-syntax-2026-10-04/deep-member-fold-spelling/fixture/FP$Mid$Leaf.class
