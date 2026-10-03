@@ -9,7 +9,7 @@
 ### 精确落点（root 已定位，省去实现者取证）
 
 - **门在 `crates/jarde-java/src/decode.rs:347` 的 `source_internal_name`**：`!name.is_empty() && !name.contains('$') && …all(is_java_identifier)`；被同文件 `class_literal_type`（311 行）两处调用（数组元素名 322 行、对象名 337 行），失败返回 `None` → `Operation::Other` → 上游 "not part of the provable subset"。
-- **该拒绝在 09-26 是正确的保守决策**（其文档注释）：单类读取无法区分 `Outer$Inner`（嵌套名，需 `Outer.Inner` 拼写）与字面名含 `$` 的顶层类（`$` 是合法 Java 标识符字符）。**但 `recover-nested-type-source-spelling`（2026-10-02 合入，晚于 class-literals）建立的呈现缝已消解该歧义**：折叠域内拼简单名、分离域保留池形——池形对两种情况都是合法源码（分离输出的类声明本身就是 `class A12$Nested`，引用同形即解析）。故歧义不再是拒绝理由。
+- **该拒绝在 09-26 是正确的保守决策**（其文档注释）：单类读取无法区分 `Outer$Inner`（嵌套名，需源码拼写）与字面名含 `$` 的顶层类（`$` 是合法 Java 标识符字符）。**但 `recover-nested-type-source-spelling`（2026-10-02 合入，晚于 class-literals）建立的呈现缝已消解该歧义**：拼写不再靠 `$` 猜测，而靠 `InnerClasses` 行集确证（见下条）——在行集内的名拼为源码形，不在行集内的名（含字面 `$` 顶层类）保持池形，两种结果都是合法源码。故歧义不再是拒绝理由。
 - **拼写零新增，且声明侧与引用侧按构造一致**（root 2026-10-04 二次核实，修正先前"池形对两种情况都合法"的错误依据）：`emit.rs:1497` 的 `put_type` 对含 `$` 的名调用 `names.rs::nested_member_reference_spelling`（226 行），而声明侧 `src/class_source.rs:5687/5741/6020/7113` 调用**同一函数、同一 `nested_class_members` 行集**——故声明与引用**不可能不一致**。该函数的确证条件是 **`InnerClasses` 行**（JVMS §4.7.6），因为 `$` 单独不足以断言嵌套关系（`Named$Top` 可能是一个顶层类的自身名）：名在行集内 → 源码拼写（`Nested`）；不在行集内或 run 未读行 → **保持池形**（此时声明侧也保持池形，仍一致）。
   - 实测印证：A12 分离域文本的声明是 `static class Nested`（**源码拼写**，非池形 `A12$Nested`），故其类字面量必须同样拼为 `Nested.class` 才能解析——两侧共用行集正好保证这一点。
   - **修正**：本片先前写的"无需 InnerClasses 行证据"是错的——拼写确实依赖该行集，但**该片已建立该机制**（`recover-nested-type-source-spelling`），本片只是让类字面量走同一条既有路径，故仍无需新增证据通道。
