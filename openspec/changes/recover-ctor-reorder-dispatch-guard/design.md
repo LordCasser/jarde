@@ -1,6 +1,13 @@
 ## Context
 
-[回归实证](../../evidence/java-syntax-2026-10-04/ctor-reorder-dispatch-regression/README.md)：`AnonymousSuperDispatch$1` ctor = `putfield val$captured` → `invokespecial Base.<init>` → return；Base 构造期虚调用 `observe()` 读该字段。重排落点在 `crates/jarde-java/src/build.rs`（daa4fb31 的 ctor 呈现改动，+17 行），既有正例测试在 `crates/jarde-java/tests/p3_patterns.rs`（合成捕获/enclosing/双捕获三正例 + 非合成同名、pre-ctor 写两负例）与 `tests/recover_synthetic_ctor_super_order.rs`。
+[回归实证](../../evidence/java-syntax-2026-10-04/ctor-reorder-dispatch-regression/README.md)：`AnonymousSuperDispatch$1` ctor = `putfield val$captured` → `invokespecial Base.<init>` → return；Base 构造期虚调用 `observe()` 读该字段。
+
+### 精确落点（root 已定位——纯接线，无需扩展 `Prologue`）
+
+- **重排主体**：`crates/jarde-java/src/ctor_order.rs::present_prologue_first`（daa4fb31 新增的 255 行模块；`build.rs` 侧仅 +17 行接线，7601 行调用）。判据插入点在 78–101 行取得 `prologue`（`init::Prologue`，携带 `target`/`class`/`declared`/`bci`）与 `prologue_index` 之后、135 行 `stmts[..=prologue_index].rotate_right(1)` **之前**。
+- **super 目标的 descriptor 可得**：`Prologue` 只带 `class`（owner 内部名）与 `bci`，**不带 descriptor**；但 `ctor_order.rs:237` 已有 `operations.get(bci)` 先例，且 `Operation::Invoke(CallTarget)`（facts.rs:624）的 `CallTarget` 携带 `kind`/`owner`/`name`/`descriptor`（facts.rs:455–459），`InvokeKind::Special`（facts.rs:449）即 `invokespecial`。故判据读 `operations.get(prologue.bci)` 即可核对 `owner == "java/lang/Object" && name == "<init>" && descriptor == "()V"`，**不必扩展 `Prologue` 结构**。
+- `StmtKind::ConstructorCall`（ast.rs:800）只带 `target`/`args`、无 owner，故不能从已发射语句取判据——必须走 operations。
+- **既有测试**：`tests/recover_synthetic_ctor_super_order.rs`（family 重编与文本序断言，`before(&child, "super();", write_line)`）与 `crates/jarde-java/tests/p3_patterns.rs`（`capture_ctor_class` 生成器，pool 第 4/8/43 行即 `java/lang/Object`+`<init>`+`()V`——全部既有正例落安全档，零回归）。
 
 **判据的精确性依据**：已验收的 C1/C2 正例其 super 目标实测均为 `java/lang/Object."<init>"`（javap 记录于回归证据 README）；回归 fixture 的 super 目标为用户类 `Base.<init>`。二者以此单一事实区分。
 
