@@ -3,7 +3,12 @@
 //! Java identifiers admits its class literal, and every spelling rides the seams that already
 //! exist — the proof layer keeps the pool's `$` form (`spell_reference` never rewrites `$`), and
 //! the presentation layer's `InnerClasses` row set decides what the text spells, exactly as it
-//! does for declarations. Nothing here adds a spelling rule.
+//! does for declarations. One refusal guards the seam's faithful half: a literal of a
+//! **really-nested** class (its own row in the declaring class's `InnerClasses` attribute) whose
+//! presented text stays in the pool's `$` form is a top-level class in the compiled text, so a
+//! structural-reflection read over it — `getSimpleName`, `getEnclosingClass` — would answer from
+//! metadata the text does not state; the build refuses such a call instead of publishing a
+//! compilable text that behaves differently.
 //!
 //! The fixed fixtures are the patrol's own transcriptions
 //! (`openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/`): the frozen `A12`
@@ -12,15 +17,20 @@
 //! (reflected annotation reads), the frozen `LC` family (the local-class negative whose
 //! digit-leading tail the identifier gate refuses), and the frozen variants — `A10` (the healthy
 //! top-level five forms this slice must not disturb), `WC1` (a top-level class whose own name
-//! carries `$`, presented pool-spelled on both sides) and `WV1` (the array form riding the same
-//! gate). What this file proves through the public class-source surface:
+//! carries `$`: its pool spelling is exact, so even `getSimpleName` recovers) and `WV1` (the
+//! array form riding the same gate, folded and exact). What this file proves through the public
+//! class-source surface:
 //!
-//! 1. every nested or array class literal the subset refused before now recovers with no
-//!    `@bytecode` quotation, spelled by the presentation seam the run's own `InnerClasses` rows
-//!    drive (folded members in the simple spelling, separated units in the pool's `$` spelling);
+//! 1. every class literal the subset refused before now recovers with no `@bytecode` quotation,
+//!    spelled by the presentation seam the run's own `InnerClasses` rows drive (folded members in
+//!    the simple spelling, separated units in the pool's `$` spelling);
 //! 2. the recovered texts recompile as the family's units, and the runs print what the original
-//!    classes print wherever the presentation preserves source nesting;
-//! 3. the negatives hold: `LC`'s local-class literal stays refused, and the top-level five forms
+//!    classes print;
+//! 3. the refusal holds in both directions the criterion states: a structural read over a
+//!    pool-spelled nested literal is refused (the `N2` chain, and the standalone `A12` read whose
+//!    flag states the no-fold presentation), while `getName` over the same literal and the
+//!    folded member's `getSimpleName` recover;
+//! 4. the negatives hold: `LC`'s local-class literal stays refused, and the top-level five forms
 //!    (`A10`) are byte-for-byte what the patrol transcribed on the mainline.
 
 use jarde::budget::Budget;
@@ -74,6 +84,12 @@ const WC1_OUT: &[u8] = include_bytes!(
 );
 const WV1_JAR: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WV1/wv1.jar"
+);
+const WV1_OUT: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WV1/WV1.orig.out"
+);
+const A12_CLASS: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12.class"
 );
 
 fn budget() -> Budget {
@@ -312,42 +328,50 @@ fn reflected_compound_annotation_reads_recover_and_run_like_the_original() {
 }
 
 #[test]
-fn deep_chains_recover_with_pool_spelling_and_the_family_project_compiles() {
+fn deep_chain_structural_reads_refuse_but_the_name_form_recovers() {
     let report = source_of_jar(N2_JAR, "N2");
+    // The single-level fold spells only the root's direct member; the deeper members stay their
+    // own physical units in the pool's `$` spelling. `getName` over a pool-spelled name is exact
+    // (the binary name survives), and it is the one form of the chain that recovers.
     assert!(
-        !report.text.contains("@bytecode"),
-        "all three deep-chain forms recover without quotation:\n{}",
+        report.text.contains("return N2$Outer$Mid.class.getName();"),
+        "the name form recovers with the pool spelling:\n{}",
         report.text
     );
-    // The fold claims the root's direct member only; the deeper members stay their own physical
-    // units, so the references keep the pool's `$` spelling — exactly the rule the
-    // nested-spelling slice states for self-nested names without a fold.
-    for expected in [
-        "return N2$Outer$Mid$Leaf.class.getSimpleName();",
-        "return N2$Outer$Mid.class.getName();",
-        "return N2$Outer$Mid$Leaf.class.getEnclosingClass().getSimpleName();",
-        "static class Outer extends java.lang.Object {",
-    ] {
+    // `getSimpleName` and `getEnclosingClass` over a pool-spelled literal would answer from
+    // nesting metadata the text does not state — the refusal is the run's own explanation, and
+    // the method publishes no statement that could compile and differ.
+    assert!(
+        !report.text.contains("getSimpleName()"),
+        "no structural read over a pool-spelled literal is published:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("getEnclosingClass()"),
+        "no enclosing-class read over a pool-spelled literal is published:\n{}",
+        report.text
+    );
+    for name in ["multiLevel", "recvChain"] {
+        let member = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == name.as_bytes())
+            .unwrap_or_else(|| panic!("the fixture declares `{name}`"));
+        let ClassSourceOutcome::Recovered { report: body, .. } = &member.outcome else {
+            panic!(
+                "the refusal is a run's own explanation: {:?}",
+                member.outcome
+            )
+        };
         assert!(
-            report.text.contains(expected),
-            "`{expected}` keeps the pool spelling:\n{}",
-            report.text
+            body.text.contains("@bytecode")
+                && body
+                    .text
+                    .contains("which this text spells in the pool's form"),
+            "`{name}` quotes the pool-spelling refusal:\n{}",
+            body.text
         );
     }
-    let mid = source_of_jar(N2_JAR, "N2$Outer$Mid");
-    let leaf = source_of_jar(N2_JAR, "N2$Outer$Mid$Leaf");
-    // The three recovered units compile as one project: a flat unit named `N2$Outer$Mid` resolves
-    // the pool-spelled reference by its own binary name. The structural-reflection forms over the
-    // flat units are the fold-depth domain's residual — recorded, not pinned here
-    // (results-values/README.md, 遗留 1).
-    compile_project(
-        "n2",
-        &[
-            ("N2", &report.text),
-            ("N2$Outer$Mid", &mid.text),
-            ("N2$Outer$Mid$Leaf", &leaf.text),
-        ],
-    );
 }
 
 #[test]
@@ -441,7 +465,7 @@ fn a_literal_dollar_top_level_name_stays_pool_spelled_and_runs() {
 }
 
 #[test]
-fn array_class_literals_of_a_member_admit_and_the_name_forms_run_like_the_original() {
+fn array_class_literals_of_a_member_admit_and_the_folded_family_runs_like_the_original() {
     let report = source_of_jar(WV1_JAR, "WV1");
     assert!(
         !report.text.contains("@bytecode"),
@@ -449,30 +473,68 @@ fn array_class_literals_of_a_member_admit_and_the_name_forms_run_like_the_origin
         report.text
     );
     // The array element rides the same segment gate; the descriptor spelling appends the
-    // dimensions, and this family's presentation keeps the pool spelling (the fold's token-tie
-    // anchor gap for array class constants is the fold domain's residual —
-    // results-values/README.md, 遗留 2).
+    // dimensions. The fold's token tie reads the array descriptor's element as the class the
+    // token names, so the folded text spells every literal the simple way its declaration does —
+    // and `getSimpleName` over it answers what the original answers.
     for expected in [
-        "return WV1$Nested.class.getSimpleName();",
-        "return WV1$Nested[].class.getName();",
-        "return WV1$Nested[].class.getName().length();",
+        "return Nested.class.getSimpleName();",
+        "return Nested[].class.getName();",
+        "return Nested[].class.getName().length();",
+        "static class Nested extends java.lang.Object {",
     ] {
         assert!(
             report.text.contains(expected),
-            "`{expected}` is spelled the pool way:\n{}",
+            "`{expected}` is spelled the folded way:\n{}",
             report.text
         );
     }
-    let nested = source_of_jar(WV1_JAR, "WV1$Nested");
-    // The `getName()` forms are exact under the flat units — binary names survive — as are the
-    // dimensions; the `getSimpleName` line of the run is the fold residual and is not pinned.
-    let stdout = compile_project(
-        "wv1",
-        &[("WV1", &report.text), ("WV1$Nested", &nested.text)],
-    )
-    .run("WV1");
+    let stdout = compile_project("wv1", &[("WV1", &report.text)]).run("WV1");
+    assert_eq!(
+        stdout.as_bytes(),
+        WV1_OUT,
+        "the recompiled family prints what the original class printed"
+    );
+}
+
+#[test]
+fn a_standalone_read_refuses_structural_reads_over_its_own_pool_spelled_member() {
+    // One whole CLASS file: no child resolves, no fold re-spells anything, so the presentation
+    // states the pool-spelled-members fact itself. The direct member's literal is then refused in
+    // the structural reads — the flag the caller states — while `getName` over the same literal
+    // and every top-level literal recover exactly.
+    let report = source_of_class(A12_CLASS, "A12");
     assert!(
-        stdout.ends_with("[LWV1$Nested;\n13\n"),
-        "the array-name forms print what the original class printed:\n{stdout}"
+        report.text.contains("return A12.class.getSimpleName();"),
+        "the top-level literal's structural read is exact and recovers:\n{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("return A12$Nested.class.getName();"),
+        "the name form over the pool-spelled member recovers:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("A12$Nested.class.getSimpleName()"),
+        "the structural read over the pool-spelled member is refused:\n{}",
+        report.text
+    );
+    let nested_lit = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"nestedLit")
+        .expect("the fixture declares `nestedLit`");
+    let ClassSourceOutcome::Recovered { report: body, .. } = &nested_lit.outcome else {
+        panic!(
+            "the refusal is a run's own explanation: {:?}",
+            nested_lit.outcome
+        )
+    };
+    assert!(
+        body.text.contains("@bytecode")
+            && body
+                .text
+                .contains("which this text spells in the pool's form"),
+        "`nestedLit` quotes the pool-spelling refusal:\n{}",
+        body.text
     );
 }
