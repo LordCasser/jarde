@@ -1890,6 +1890,10 @@ impl Engine {
                 }
             })
         });
+        // Whether the fold's own text claimed the report: a fold that finished re-spells the
+        // nested names, and everything the correction round refuses stays refused by the build;
+        // a fold that did not finish leaves the pool-spelled presentation for the rerun below.
+        let mut fold_claimed_text = false;
         if let Some(mut family) = static_fold {
             let members = match &family {
                 class_source::ClassSourceMemberFamily::PreparedStatic { members, .. } => {
@@ -2044,8 +2048,32 @@ impl Engine {
             if projected_text.is_some() || (scanned_static_rows && !mixed_static_fold) {
                 if let Some(text) = projected_text {
                     report.text = text;
+                    fold_claimed_text = true;
                 }
                 report.member_family = family;
+            }
+        }
+        // A fold that did not claim the text leaves the separated presentation standing, and with
+        // it every class literal in the pool's `$` form. A structural-reflection read over one of
+        // those literals is a compilable text that behaves differently, so the members that write
+        // one rerun under the pool-spelled presentation and the runs refuse them — the exact
+        // decision the build's guard makes for a presentation stated pool-spelled up front.
+        if !fold_claimed_text {
+            let nested_members: Vec<String> = root_nesting
+                .resolved_inner_classes
+                .iter()
+                .map(|row| String::from_utf8_lossy(&row.class).replace('/', "."))
+                .filter(|name| name.contains('$'))
+                .collect();
+            if !nested_members.is_empty() {
+                rerun_pool_spelled_structural_reads(
+                    content,
+                    &environment,
+                    evidence,
+                    &mut report,
+                    &nested_members,
+                    budget,
+                )?;
             }
         }
         if matches!(
@@ -25639,6 +25667,7 @@ mod member_inner_target_tests {
                     true,
                     false,
                     false,
+                    false,
                 )
                 .unwrap();
             assert!(matches!(
@@ -31717,6 +31746,7 @@ fn recovery_presented_for_class_source(
         prove_generic_return,
         capture_enum_constructor_ast,
         capture_anonymous_child_asts,
+        false,
     )
 }
 
@@ -31746,6 +31776,124 @@ fn recovery_read(
 ///
 /// The three cases are the three callers of the presentation, and the difference between them is
 /// exactly "who already read the presented body's class":
+/// The phrase the build's class-literal guard writes into its own refusal: the one marker that
+/// separates a rerun whose guard fired from a rerun that merely diverged.
+const POOL_SPELLED_GUARD_PHRASE: &str = "which this text spells in the pool's form";
+
+/// Reruns the members whose bodies consume a **really-nested** class literal with a
+/// structural-reflection read, under a presentation that keeps member classes pool-spelled (change
+/// `recover-nested-class-literal-values`, correction round).
+///
+/// The road that needs this: a member fold was attempted and did not finish, so the separated
+/// presentation stands and every class literal the text spells stays in the pool's `$` form. A
+/// structural read over such a literal — `Inner.class.getSimpleName()` beside a flat
+/// `RF$Inner` unit — would answer, in the compiled text, from nesting metadata the text does not
+/// state: a compilable text that behaves differently, which this presentation never publishes. The
+/// build's own guard could not fire on the first run (no fold had been attempted yet, so a
+/// folding presentation was still possible), so the affected members rerun with the
+/// pool-spelled-members fact stated and the run's own refusal replaces the unfaithful recovery.
+///
+/// A member whose rerun does not quote the guard keeps its first recovery untouched: the rerun
+/// runs without this class's selected member feeds, so a divergence that is not the guard's own
+/// refusal is a worse body, not a correction, and the presentation stays as it was.
+fn rerun_pool_spelled_structural_reads(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    evidence: &RecoveryEvidenceRequest,
+    report: &mut class_source::ClassSourceReport,
+    nested_members: &[String],
+    budget: &mut Budget,
+) -> Result<()> {
+    // The screen is textual and conservative: it only names members for a rerun, and the rerun's
+    // own guard is the exact decision. A body quoting no structural read over a pool-spelled
+    // literal is never rerun, so a fold refusal cannot change a class that has none.
+    let candidates: Vec<usize> = report
+        .methods
+        .iter()
+        .enumerate()
+        .filter(|(_, method)| {
+            let class_source::ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome
+            else {
+                return false;
+            };
+            nested_members.iter().any(|name| {
+                jarde_java::facts::STRUCTURAL_REFLECTION_METHODS
+                    .iter()
+                    .any(|read| {
+                        body.text.contains(&format!("{name}.class.{read}("))
+                            || body.text.contains(&format!("{name}[].class.{read}("))
+                    })
+            })
+        })
+        .map(|(index, _)| index)
+        .collect();
+    for index in candidates {
+        budget.poll()?;
+        let identity = report.methods[index].item.identity.clone();
+        let request = crate::ir::MethodAnalysisRequest {
+            environment: environment.clone(),
+            method: identity.clone(),
+            stages: report.stages.clone(),
+        };
+        let analyzed = match jarde_jvm::analyze_method_ir(content, &request, budget) {
+            Ok(analyzed) => analyzed,
+            Err(error) => {
+                merge_execution(&mut report.execution, stop_execution(&error, budget));
+                report.diagnostics.push(stop_diagnostic(
+                    &error,
+                    Some(definition_provenance(&report.class)),
+                ));
+                return Err(error);
+            }
+        };
+        merge_execution(&mut report.execution, analyzed.report().execution.clone());
+        let rerun = match recovery_from_with_class_candidates(
+            content,
+            &request,
+            analyzed,
+            CalleeClass::None,
+            None,
+            None,
+            None,
+            None,
+            evidence,
+            budget,
+            false,
+            false,
+            false,
+            false,
+            true,
+        ) {
+            Ok((rerun, ..)) => rerun,
+            Err(error) => {
+                merge_execution(&mut report.execution, stop_execution(&error, budget));
+                report.diagnostics.push(stop_diagnostic(
+                    &error,
+                    Some(definition_provenance(&report.class)),
+                ));
+                return Err(error);
+            }
+        };
+        merge_execution(&mut report.execution, rerun.analysis().execution.clone());
+        if !rerun.recovery().text.contains(POOL_SPELLED_GUARD_PHRASE) {
+            continue;
+        }
+        let analysis = ClassSourceRunFacts {
+            execution: rerun.analysis().execution.clone(),
+            diagnostics: to_u64(rerun.analysis().diagnostics.len())?,
+        };
+        let (_, rerun_report, _) = rerun.into_parts();
+        let previous = report.methods[index].clone();
+        let previous_text = previous.text.clone();
+        let rerun_record = previous.with_rerun_body(Box::new(rerun_report), analysis);
+        // The assembled text carries the member's own text verbatim, so the refusal replaces the
+        // recovery at exactly one place — the member this rerun ran for.
+        report.text = report.text.replacen(&previous_text, &rerun_record.text, 1);
+        report.methods[index] = rerun_record;
+    }
+    Ok(())
+}
+
 enum CalleeClass<'a> {
     /// A class the caller already prepared — a bulk worker's class task, or this operation's own
     /// preparation of a read its binding performed. Every callee read is answered from it, and no
@@ -31800,6 +31948,7 @@ fn recovery_from(
         false,
         false,
         false,
+        false,
     )
     .map(|(recovered, _, _, _, _, _, _, _, _, _, _, _)| recovered)
 }
@@ -31819,6 +31968,7 @@ fn recovery_from_with_class_candidates(
     prove_generic_return: bool,
     capture_enum_constructor_ast: bool,
     retain_all_method_asts: bool,
+    pool_spelled_members: bool,
 ) -> Result<(
     RecoveredMethod,
     Option<jarde_java::report::ClassInitializerCandidates>,
@@ -31942,14 +32092,18 @@ fn recovery_from_with_class_candidates(
         .with_interface_super_calls(&interface_super_calls)
         .with_reference_overload_calls(&reference_overload_calls)
         .with_snapshot_hierarchy_widenings(&snapshot_hierarchy_widenings)
-        // A standalone-CLASS root resolves no member child, so no fold ever re-spells a nested
-        // name here: every member class this presentation writes is pool-spelled, and the
-        // structural-reflection reads over such literals are refused by the build rather than
-        // published as a compilable text that answers from metadata the text does not state.
-        .with_pool_spelled_members(matches!(
-            request.environment.runtime.load_domain.roots.as_slice(),
-            [jarde_reader::view::LoadRoot::StandaloneClass { .. }]
-        ));
+        // A presentation that will not re-spell member names — a standalone-CLASS root resolves
+        // no child to fold, and the fold-refusal rerun states it for a family whose fold did not
+        // finish — makes the build refuse the structural-reflection reads over pool-spelled class
+        // literals instead of publishing a compilable text that answers from metadata the text
+        // does not state.
+        .with_pool_spelled_members(
+            pool_spelled_members
+                || matches!(
+                    request.environment.runtime.load_domain.roots.as_slice(),
+                    [jarde_reader::view::LoadRoot::StandaloneClass { .. }]
+                ),
+        );
     let request = request.with_superclass_field_writes(&superclass_field_writes);
     let request = if let Some(target) = static_member_target {
         request.with_static_member_target(target)

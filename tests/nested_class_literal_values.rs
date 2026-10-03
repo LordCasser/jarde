@@ -91,6 +91,12 @@ const WV1_OUT: &[u8] = include_bytes!(
 const A12_CLASS: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12.class"
 );
+const RF_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/rf.jar"
+);
+const RF_OUT: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/results/original.out"
+);
 
 fn budget() -> Budget {
     task_budget(&[]).expect("the task defaults are bounded")
@@ -536,5 +542,77 @@ fn a_standalone_read_refuses_structural_reads_over_its_own_pool_spelled_member()
                 .contains("which this text spells in the pool's form"),
         "`nestedLit` quotes the pool-spelling refusal:\n{}",
         body.text
+    );
+}
+
+#[test]
+fn a_refused_fold_reruns_the_structural_reader_and_the_family_stays_loud() {
+    // `RF`'s member carries a `<clinit>`, so the fold is refused and the separated presentation
+    // keeps the pool spelling. The rerun this road states puts the member back where the
+    // class-literal slice found it: the structural read quotes the run's own refusal instead of
+    // publishing `RF$Inner.class.getSimpleName()` as a recovery — a compilable text whose
+    // `getSimpleName` answers `RF$Inner` where the original answers `Inner`.
+    let report = source_of_jar(RF_JAR, "RF");
+    assert!(
+        !report.text.contains("RF$Inner.class.getSimpleName()"),
+        "the structural read over the pool-spelled member is refused:\n{}",
+        report.text
+    );
+    let simple_name = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"simpleName")
+        .expect("the fixture declares `simpleName`");
+    let ClassSourceOutcome::Recovered { report: body, .. } = &simple_name.outcome else {
+        panic!(
+            "the refusal is a run's own explanation: {:?}",
+            simple_name.outcome
+        )
+    };
+    assert!(
+        body.text.contains("@bytecode")
+            && body
+                .text
+                .contains("which this text spells in the pool's form"),
+        "`simpleName` quotes the pool-spelling refusal:\n{}",
+        body.text
+    );
+    // The member beside it keeps its own recovery: the fold refusal refused nothing else.
+    assert!(
+        report.text.contains("RF$Inner.K"),
+        "the plain field read beside the refusal is untouched:\n{}",
+        report.text
+    );
+    // And the loud failure is real: the refusal states no return where the source returned, so
+    // the family cannot compile into the differently-behaving program.
+    let temp = TempDir::new("rf-family");
+    fs::write(temp.path().join("RF.java"), &report.text).expect("RF.java is written");
+    fs::write(
+        temp.path().join("RF$Inner.java"),
+        source_of_jar(RF_JAR, "RF$Inner").text,
+    )
+    .expect("the inner unit is written");
+    let compiled = Command::new("javac")
+        .arg("--release")
+        .arg("8")
+        .args(["RF.java", "RF$Inner.java"])
+        .current_dir(temp.path())
+        .output()
+        .expect("javac runs");
+    assert!(
+        !compiled.status.success(),
+        "the refused family must not compile into a differently-behaving program:\n{}",
+        String::from_utf8_lossy(&compiled.stdout)
+    );
+    // The member's own unit still presents and compiles beside the refusal.
+    let inner = source_of_jar(RF_JAR, "RF$Inner");
+    assert!(inner.text.contains("static int init()"));
+    compile_project("rf", &[("RF$Inner", &inner.text)]);
+    assert_eq!(
+        RF_OUT,
+        include_bytes!(
+            "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/results/original.out"
+        ),
+        "the frozen original output states `Inner`, `7`"
     );
 }

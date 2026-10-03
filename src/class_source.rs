@@ -6237,6 +6237,18 @@ fn recovered_markers(
     analysis: &ClassSourceRunFacts,
 ) -> Vec<String> {
     let mut markers = markers_of(spelled);
+    markers.extend(run_markers(item, report, analysis));
+    markers
+}
+
+/// The markers one run's own verdict adds over a spelling: the run's content verdict, and what
+/// stopped either of its planes. [`recovered_markers`] writes them after the spelling's own
+/// markers; [`ClassSourceMethod::with_rerun_body`] writes them over a body a rerun replaced.
+fn run_markers(
+    item: &MethodItem,
+    report: &RecoveryReport,
+    analysis: &ClassSourceRunFacts,
+) -> Vec<String> {
     let member = label(item);
     // A run **stopped** before it had an artifact: the artifact is absent, and the marker says which
     // plane of the run ended it. The recovery's *outcome* is what decides this, not the execution
@@ -6255,11 +6267,11 @@ fn recovered_markers(
             }
             None => String::new(),
         };
-        markers.push(format!(
+        return vec![format!(
             "// jarde: not recovered: the recovery run for `{member}` stopped ({stop}){blamed}"
-        ));
-        return markers;
+        )];
     }
+    let mut markers = Vec::new();
     match report.content {
         RecoveryContent::ContainsStatements => {}
         RecoveryContent::ExplanationOnly => {
@@ -7763,6 +7775,41 @@ impl ClassSourceMethod {
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
+    }
+
+    /// Replaces this record's body with one **rerun's** (change
+    /// `recover-nested-class-literal-values`, correction round): the class-source assembly reran
+    /// the member under a presentation that keeps member classes pool-spelled, and the run refused
+    /// what the first run had recovered. Everything the rerun did not decide stays exactly as the
+    /// first presentation wrote it — the declaration, its annotations, and every marker outside
+    /// the body (a member-name alias, a refused generic Signature projection) are facts about the
+    /// member and the first run's spelling, not about the body — and the run's own verdict writes
+    /// the run-level markers after them.
+    pub(crate) fn with_rerun_body(
+        mut self,
+        report: Box<RecoveryReport>,
+        analysis: ClassSourceRunFacts,
+    ) -> Self {
+        let placed = if report.text.is_empty() {
+            Placed::Without
+        } else {
+            match artifact(&report.text) {
+                Some(artifact) => Placed::Block(artifact),
+                None => {
+                    self.markers.push(not_placed_marker(&self.item));
+                    Placed::Quoted(&report.text)
+                }
+            }
+        };
+        let text = match &self.declaration {
+            Some(declaration) => block_member(declaration, placed, &self.markers),
+            None => comment_member(&self.markers),
+        };
+        self.text = prefix_method_annotations(text, &self.annotations);
+        self.markers
+            .extend(run_markers(&self.item, &report, &analysis));
+        self.outcome = ClassSourceOutcome::Recovered { report, analysis };
+        self
     }
 }
 
