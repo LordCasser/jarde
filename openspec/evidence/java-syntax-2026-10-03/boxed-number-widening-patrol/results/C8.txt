@@ -1,0 +1,69 @@
+// jarde: presentation of `C8` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class C8 extends java.lang.Object {
+    public C8() {
+        // @method <init>()V
+        // @declaration a constructor of `C8`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `pick(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;`: unsupported (generic_source_shape_unproved): method flags, annotations, or existing source refusals cannot be preserved in this generic shape
+    java.lang.Object pick(java.lang.Object arg1, java.lang.Object arg2) {
+        // @method pick(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+        // @declaration an instance method of `C8`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1;
+    }
+
+    // jarde: generic Signature projection refused for `larger(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Number;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    static java.lang.Number larger(java.lang.Number arg0, java.lang.Number arg1) {
+        // @method larger(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Number;
+        // @declaration a static method of `C8`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.doubleValue() >= arg1.doubleValue() ? arg0 : arg1;
+    }
+
+    java.lang.String useWitness() {
+        // @method useWitness()Ljava/lang/String;
+        // @declaration an instance method of `C8`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) this.pick((java.lang.Object) "x", (java.lang.Object) "y");
+    }
+
+    static java.lang.Integer boxedTern(boolean arg0) {
+        // @method boxedTern(Z)Ljava/lang/Integer;
+        // @declaration a static method of `C8`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.Integer.valueOf(arg0 ? java.lang.Integer.valueOf(1).intValue() : 2);
+    }
+
+    static java.lang.String loopBuilder(int arg0) {
+        // @method loopBuilder(I)Ljava/lang/String;
+        // @declaration a static method of `C8`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local1;
+        int local2;
+        local1 = new java.lang.StringBuilder();
+        for (local2 = 0; local2 < arg0; local2 = local2 + 1) {
+            local1.append(local2 % 2 == 0 ? "e" : "o");
+            if (local1.length() > 6) {
+                break;
+            }
+        }
+        return local1.toString();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `C8`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) new C8().useWitness());
+        java.lang.System.out.println("" + boxedTern(true) + ":" + boxedTern(false));
+        // @bytecode 66 51 63 55 60
+        // the parameter 0 of the invocation at BCI 63 is declared `java.lang.Number` presents `java.lang.Integer` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence
+        java.lang.System.out.println((java.lang.String) loopBuilder(9));
+        return;
+    }
+}

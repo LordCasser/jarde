@@ -1,0 +1,74 @@
+// jarde: presentation of `C7` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class C7 extends java.lang.Object {
+    public C7() {
+        // @method <init>()V
+        // @declaration a constructor of `C7`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static byte compoundByte(byte arg0) {
+        // @method compoundByte(B)B
+        // @declaration a static method of `C7`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0 = (byte) (arg0 + 1);
+        arg0 = (byte) (arg0 - 2);
+        arg0 = (byte) (arg0 * 3);
+        arg0 = (byte) (arg0 / 2);
+        arg0 = (byte) (arg0 % 5);
+        arg0 = (byte) (arg0 & 3);
+        arg0 = (byte) (arg0 | 8);
+        arg0 = (byte) (arg0 ^ 1);
+        arg0 = (byte) (arg0 << 1);
+        arg0 = (byte) (arg0 >> 1);
+        arg0 = (byte) (arg0 >>> 1);
+        return arg0;
+    }
+
+    public static short compoundShort(short arg0) {
+        // @method compoundShort(S)S
+        // @declaration a static method of `C7`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0 = (short) (arg0 + 100);
+        arg0 = (short) (arg0 * 2);
+        return arg0;
+    }
+
+    public static char charArith(char arg0) {
+        // @method charArith(C)C
+        // @declaration a static method of `C7`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = (char) (arg0 + 1);
+        local1 = (char) (local1 + 2);
+        local1 = (char) (local1 + 1);
+        return (char) local1;
+    }
+
+    public static int useConsts() {
+        // @method useConsts()I
+        // @declaration a static method of `C7`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 10 + "c7".length() + 15;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `C7`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((int) compoundByte((byte) 9));
+        java.lang.System.out.println((int) compoundShort((short) 7));
+        java.lang.System.out.println(charArith('a'));
+        java.lang.System.out.println(useConsts());
+        return;
+    }
+
+    static interface Consts {
+        public static final int LIMIT = 10;
+
+        public static final java.lang.String NAME = "c7";
+
+        public static final long MASK = 255L;
+    }
+}
