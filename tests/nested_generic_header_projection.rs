@@ -476,20 +476,24 @@ fn join_failure_row_keeps_the_refusal_chain() {
 
 #[test]
 fn owner_local_of_the_child_type_keeps_the_fold_open_and_the_unit_projected() {
-    // The fold slice's own token anchor does not prove a *local declaration* of a folded
-    // member type (a pre-existing conservative position, generics aside — a non-generic
-    // `Solo` local refuses the same way). The header this change projects must not change
-    // that boundary — the separated presentations carry it.
+    // The fold slice's token anchor originally refused a *local declaration* of a folded member
+    // type outright (its covering store carries no constant-pool index). Change
+    // `recover-fold-context-projection-preservation` added the store-producer anchor — the one
+    // instruction that produced the stored value, whose pool entry names the type the
+    // declaration spells — so this boundary is now proved rather than refused: the fold carries
+    // the local declaration re-spelled, beside the header this change projects.
     let (jar, _) = compile_family("ng4-fold", STATIC_BOX);
     let report = source_of(&jar, "NG4");
     assert!(
-        report.text.contains("NG4$Box local1 = new NG4$Box();"),
-        "the owner text keeps the physical spelling:\n{}",
+        report.text.contains("Box local1 = new Box();"),
+        "the owner text re-spells the local declaration through its producing `new`:\n{}",
         report.text
     );
     assert!(
-        !report.text.contains("static class Box"),
-        "the fold stays refused at its own token boundary:\n{}",
+        report
+            .text
+            .contains("static class Box<U> extends java.lang.Object {"),
+        "the fold now carries the proved local declaration beside the projected header:\n{}",
         report.text
     );
     let child = source_of(&jar, "NG4$Box");
