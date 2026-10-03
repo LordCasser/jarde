@@ -15,5 +15,10 @@
 
 - [x] 3.1 对 1.2 的成功子集保存原 class、固定 JADX Java-input 和 Jarde 三方源码与哈希；Jarde 完整类和独立调用方以 `javac --release 8` 重编，`java -Xverify:all` 比较调用目标、字段值、异常及泛型反射。验证：逐路径结果与原 class 相同；JADX 的偏离只作为对照，不作为准入依据。
 - [x] 3.2 重放 Z1 家族，逐项标出本变更使 `generic_call_binding_unproved`、`field_generic_body_unproved` 消失或保留的证据，并复跑相邻泛型、重载、字段、类级装配与预算回归。验证：未证明位仍明确拒绝，嵌套头、lambda、成员类的独立缺口不计入本项通过。
-- [ ] 3.3 执行适用的全工作区测试、`cargo fmt --all -- --check`、仓库 CI 的严格 Clippy、`openspec validate --all --strict --no-interactive`、语料 census/fingerprint 和 `git diff --check`；记录实际通过项与既存失败，不机械改门禁数字。验证：附命令、输出摘要和磁盘占用；Cargo 编译临时 target 在验证后清理。
-- [ ] 3.4 对源码绑定证明、真实消费者闭包、原子提交和三方行为作独立复核，记录通过与剩余拒绝边界。验证：复核者按 1.2 固定输入重放至少一个正例、一个重载负例、一个字段负例及一个预算停止，并核对物理来源。
+- [x] 3.3 执行适用的全工作区测试、`cargo fmt --all -- --check`、仓库 CI 的严格 Clippy、`openspec validate --all --strict --no-interactive`、语料 census/fingerprint 和 `git diff --check`；记录实际通过项与既存失败，不机械改门禁数字。验证：附命令、输出摘要和磁盘占用；Cargo 编译临时 target 在验证后清理。
+- [x] 3.4 对源码绑定证明、真实消费者闭包、原子提交和三方行为作独立复核，记录通过与剩余拒绝边界。验证：复核者按 1.2 固定输入重放至少一个正例、一个重载负例、一个字段负例及一个预算停止，并核对物理来源。
+
+### Root 复核记录（合并主线 2a69683e）
+
+- 3.3：root 实测——全仓 `--tests` 2898/0；fmt 通过；CI 实有 29 项 `-A` clippy 干净；`openspec validate --all --strict` 258/258（一次瞬时竞态重跑排除）；`p5_corpus_fingerprint` 5/5；`git diff --check` 干净；target 验证后清理（47Gi）。
+- 3.4：root 重放——正例 `add(T)`/`Map<String, List<T>> index` 投影（marker 含 same-class uses BCI）；重载负例（同 arity 兄弟）、接收者位字段负例、预算停止原子性、Z1 逐项共 9/9 绿。`items`/`first`/`map` 的保守拒绝为 design 边界正确执行（投影将发布不可编译源）。实现者自纠的 opcode 误写（corpus 双腿捕获）为门禁体系有效性实例。剩余边界（同 arity 泛型兄弟/函数位/接收者位）登记下一前沿。
