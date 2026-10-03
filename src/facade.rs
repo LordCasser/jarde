@@ -20400,10 +20400,12 @@ fn static_fold_stored_type_anchor(
 }
 
 /// Whether one constant-pool entry names a class through a position a *producing* instruction
-/// types a value with: directly (`Class`), as the owner of a member reference, or as a component
-/// of the descriptor a loaded value's type comes from — a field's own type, or an invoked
-/// member's return type. This is the producer-side companion of the direct-coverage matcher
-/// above; the direct matcher's own entry kinds are unchanged.
+/// types a value with: directly (`Class`), as the owner of a member reference — a field, a
+/// method or an interface method — or as a component of the descriptor a loaded value's type
+/// comes from: a field's own type, or an invoked member's return type. This is the producer-side
+/// companion of the direct-coverage matcher below, which reads the `Class` name and the same
+/// three owner positions from the covering instructions' own pool entries; what only this wider
+/// matcher reads is the descriptor components.
 fn static_fold_pool_entry_names_type(
     entry: &jarde_reader::classfile::CpEntryFacts,
     target_binary: &[u8],
@@ -20833,7 +20835,11 @@ fn project_static_fold_owner_texts(
             };
             for (start, end, target, source_bcis) in edits {
                 // One proved class reference: an instruction whose constant-pool entry names the
-                // folded class, or the exception handler a catch clause's own type selected.
+                // folded class in a position that types the token — the class itself, or the
+                // owner of a field, method or interface method reference the token's own
+                // expression reads — or the exception handler a catch clause's own type selected.
+                // An interface call's owner is the same evidence a virtual call's owner is: the
+                // invoked member belongs to that class, so its owner names it.
                 let mut matching = Vec::new();
                 for bci in source_bcis.iter().copied() {
                     let Some(instruction) = code.instructions.iter().find(|insn| insn.bci == bci)
@@ -20853,9 +20859,10 @@ fn project_static_fold_owner_texts(
                             name.0 == target.binary
                         }
                         jarde_reader::classfile::CpEntryKind::FieldRef { owner, .. }
-                        | jarde_reader::classfile::CpEntryKind::MethodRef { owner, .. } => {
-                            owner.0 == target.binary
-                        }
+                        | jarde_reader::classfile::CpEntryKind::MethodRef { owner, .. }
+                        | jarde_reader::classfile::CpEntryKind::InterfaceMethodRef {
+                            owner, ..
+                        } => owner.0 == target.binary,
                         _ => false,
                     };
                     if names_target {
