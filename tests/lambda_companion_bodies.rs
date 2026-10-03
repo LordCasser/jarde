@@ -304,20 +304,27 @@ fn conditional_and_block_companions_rename_instead_of_inlining() {
     );
     let snapshot = open(&bytes);
     let recovered = class_source(&snapshot, "V2");
+    // Companion numbering (`lambda$name$N`) is chosen by the compiling javac and differs
+    // across JDK builds (the conditional desugaring shifts the index); assert the rename
+    // shape on one line instead of pinning one index.
+    let renamed_on_line = |prefix: &str| {
+        recovered
+            .text
+            .lines()
+            .any(|l| l.contains(prefix) && l.contains("$jarde("))
+    };
     assert!(
-        recovered.text.contains("lambda$branchy$0$jarde("),
+        renamed_on_line("lambda$branchy$"),
         "the conditional body's companion is renamed and called by its new name: {}",
         recovered.text
     );
     assert!(
-        recovered
-            .text
-            .contains("private static int lambda$branchy$0$jarde("),
+        renamed_on_line("private static int lambda$branchy$"),
         "the renamed companion keeps a declaration: {}",
         recovered.text
     );
     assert!(
-        recovered.text.contains("lambda$blocky$1$jarde("),
+        renamed_on_line("lambda$blocky$"),
         "the multi-statement body's companion is renamed: {}",
         recovered.text
     );
