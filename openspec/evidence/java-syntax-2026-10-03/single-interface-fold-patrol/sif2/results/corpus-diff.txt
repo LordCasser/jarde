@@ -1,0 +1,22 @@
+25a26
+> 12f6c6a11b1bc0740e5b10bab8584c4ba59dab005bd3062319cb61ea47065b04 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-orig.jar:SDIndirect
+29a31,32
+> 14b2266c80d1abe5a567b7dab2a9965dfc01a40e7b284a84b909c2ef2912eae8 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-orig.jar:SDDiamond
+> 14b2266c80d1abe5a567b7dab2a9965dfc01a40e7b284a84b909c2ef2912eae8 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-variants.jar:SDDiamond
+30a34
+> 183c2c12d19281d069ce28e79faaf6aae20907a3a36b8b2f7cc8092bf9294065 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-variants.jar:pkg.SDPacked
+50a55
+> 24caaf1496474616e16e53bedfc9e71a034872c39b1d41306aa4a6e3f92e48c4 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-orig.jar:SDAbstract
+102d106
+< 4193df679489b908dae40ac28462f6c7fde7a281bfe996df251b139dd9b582f4 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-orig.jar:SDAbstract
+133a138
+> 558fcb9f4edcad34aaf6f4cba96713a6eca79fe948fbca3eb5899a0e5e949b27 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/fam.jar:F1
+144d148
+< 5aa8bf5714d0f40eb2ab20f189c9a29b04a35ed672304e7864fef48b0b269584 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-orig.jar:SDIndirect
+227,228d230
+< 8f15c13ff7d3cc2c137b8721a55e01d730318a9d5c4c15748029b55838480949 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-negatives-orig.jar:SDDiamond
+< 8f15c13ff7d3cc2c137b8721a55e01d730318a9d5c4c15748029b55838480949 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-variants.jar:SDDiamond
+282d283
+< b015b93850dcb03fccba6748ec7c85b4abb040a84d662f690b24aa7ececef5c9 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/fixture/fam.jar:F1
+347d347
+< dd46462cd8d2c7d3a45216af28c0b87e3e5389b8031c0d5a75dd4ba9e49f90e9 openspec/evidence/java-syntax-2026-10-02/super-default-patrol/sd/sd-variants.jar:pkg.SDPacked

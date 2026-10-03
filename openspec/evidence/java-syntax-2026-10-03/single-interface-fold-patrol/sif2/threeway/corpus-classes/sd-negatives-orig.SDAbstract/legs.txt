@@ -1,0 +1,8 @@
+original run exit=0
+jarde javac exit=0
+jarde run exit=0
+jadx javac exit=1
+jadx behaviour leg=unavailable (JADX text does not compile)
+original stdout sha256: f706a3fb01d6c008f30f7dd532d3f6c8ed233165df74b75e449f91822b5d6a89
+jarde stdout sha256:    f706a3fb01d6c008f30f7dd532d3f6c8ed233165df74b75e449f91822b5d6a89
+VERDICT jarde-stdout==original-stdout

@@ -471,6 +471,69 @@ fn cross_class_presenter_and_missing_child_keep_the_flattened_presentations() {
     ));
 }
 
+/// Change `recover-single-static-interface-fold`: the token anchor's direct-coverage matcher reads
+/// an interface method reference's owner exactly as it already read a method or field reference's
+/// owner, so a family whose only external use is a static interface call folds — and the negative
+/// whose covering segment names the class nowhere at all still refuses.
+#[test]
+fn interface_call_owner_anchors_the_fold_and_an_unnamed_segment_still_refuses() {
+    // `M.sv()` compiles to `invokestatic` on an `InterfaceMethodRef` whose owner is `WCallI$M`:
+    // before this change the anchor matcher read that owner position as nothing, so the token
+    // `WCallI$M` had no proved class reference and the whole fold was refused. Its class-child
+    // twin `WCallC` folds on the identical shape through an ordinary `MethodRef` owner.
+    let interface_family = "public class WCallI {\n    interface M { static int sv() { return 8; } int v(); }\n    public static void main(String[] a) { System.out.println(M.sv()); }\n}\n";
+    let (jar, _) = compile_family("wcalli", interface_family);
+    let report = source_of(&jar, "WCallI");
+    assert!(
+        report.text.contains("static interface M {"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("System.out.println(M.sv());"),
+        "{}",
+        report.text
+    );
+    // No code line keeps the pool `$` spelling: the markers retain physical descriptors by
+    // design, and every source-syntax position inside the fold scope states the nesting.
+    for line in report.text.lines() {
+        if !line.trim_start().starts_with("//") {
+            assert!(!line.contains("WCallI$"), "{line}");
+        }
+    }
+    assert!(matches!(
+        &report.member_family,
+        ClassSourceMemberFamily::PreparedStatic {
+            projection: ClassSourceMemberProjection::Projected { .. },
+            ..
+        }
+    ));
+    assert_eq!(
+        recompile_and_run("wcalli", &report.text, "WCallI", &jar),
+        "8\n"
+    );
+
+    // The negative: a family member's type is introduced through a local variable holding a
+    // value this run never produced, so the covering segment names no class at all — not through
+    // any owner, a `Class` entry or a producer. The direct-coverage matcher's own requirement is
+    // unchanged by this change, so the fold still refuses.
+    let unnamed = "public class NAnchor {\n    interface M { static int sv() { return 8; } }\n    static M pick(M candidate) { M local = candidate; return local; }\n    public static void main(String[] a) { System.out.println(M.sv() + (pick(null) == null ? 1 : 0)); }\n}\n";
+    let (jar, _) = compile_family("nanchor", unnamed);
+    let negative = source_of(&jar, "NAnchor");
+    assert!(
+        !negative.text.contains("static interface M"),
+        "{}",
+        negative.text
+    );
+    match &negative.member_family {
+        ClassSourceMemberFamily::Prepared {
+            projection: ClassSourceMemberProjection::Refused { reason },
+            ..
+        } => assert_eq!(reason, "capture proof is incomplete", "{}", negative.text),
+        other => panic!("the unanchored family keeps its refusal: {other:?}"),
+    }
+}
+
 #[test]
 fn budget_and_cancellation_stop_the_whole_fold_atomically() {
     let (jar, _) = compile_family("budget", M2_SOURCE);
