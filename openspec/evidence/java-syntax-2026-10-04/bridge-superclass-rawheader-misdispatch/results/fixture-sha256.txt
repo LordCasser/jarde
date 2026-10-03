@@ -1,0 +1,7 @@
+b91bd04a575ae27093d39cc219efb9e0b67813a6ef644b41d0900b020d0bbdf1  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/fixture/Box.class
+df58cb355190e9015d8087896429729ee73c3126df51c3e320a9df216f032491  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/fixture/Drv-toplevel.class
+45d26e6d59e10c4b6f4ee2d974316f77aa0a1d29f781003afa292e7a805bd541  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/fixture/Drv.class
+550e4cf5ad15e016d874b4a4824daf583442b313f6ff693a3abf524a7c84e815  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/fixture/Outer.class
+7e5d810fce277db1d24b2043949b8a743fd111ccdf35c63e45784dbdc1e5a569  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/fixture/Outer$Box.class
+aa9712828bbc07bde98c35a46afd6ff51a45a3daed56f80d4434b407ec33249d  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/fixture/Spec.class
+3946ba0ee7e3a0c033c3cfb17b2e61b6d86d5cae2ae00474215f3b43ac9d7864  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/fixture/Specialized.class
