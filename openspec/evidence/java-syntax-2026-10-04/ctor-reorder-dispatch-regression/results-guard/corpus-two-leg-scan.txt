@@ -1,0 +1,47 @@
+Corpus two-leg scan: every `tests/fixtures/**/*.class` (465 files) rendered twice through
+`jarde-cli class-source --policy single-class --class <file-stem>`, once with the baseline
+binary (mainline 9eaf7b2c) and once with the guard binary, stdout + exit status captured per
+file, then `diff -r` over the 930 captures.
+
+Result: 4 of 465 classes differ; every diff is exactly the constructor statement order
+(one `super(...)` line moved relative to one capture write). No other render changed.
+
+diff -rq /tmp/jarde-scan-a /tmp/jarde-scan-b   (names shortened to class files)
+  anonymous-capture/AnonymousCaptureCases$1.class
+  anonymous-super-args/AnonymousSuperArgs$1.class
+  anonymous-super-dispatch/AnonymousSuperDispatch$1.class
+  anonymous-top-level/AnonymousTopLevel$1.class
+
+Unified diffs (before -> after), all four identical in shape:
+
+-anonymous-capture/AnonymousCaptureCases$1:        -        super(seed);
++anonymous-capture/AnonymousCaptureCases$1:        +        super(seed);   (moved below the capture write)
+-anonymous-super-args/AnonymousSuperArgs$1:        -        super(arg1, arg2);
++anonymous-super-args/AnonymousSuperArgs$1:        +        super(arg1, arg2);   (moved below)
+-anonymous-super-dispatch/AnonymousSuperDispatch$1: -       super();
++anonymous-super-dispatch/AnonymousSuperDispatch$1: +       super();   (moved below)
+-anonymous-top-level/AnonymousTopLevel$1:          -        super(seed);
++anonymous-top-level/AnonymousTopLevel$1:          +        super(seed);   (moved below)
+
+The fourth file: the 2026-10-04 census table in ../README.md listed three non-Object-super
+pre-super-write fixtures; `anonymous-top-level` is a fourth, with the same byte shape
+(javap `AnonymousTopLevel$1`):
+
+  AnonymousTopLevel$1(long, java.lang.String);
+     0: aload_0
+     1: aload_3
+     2: putfield      #1   // Field val$captured:Ljava/lang/String;
+     5: aload_0
+     6: lload_1
+     7: invokespecial #7   // Method Base."<init>":(J)V      <- user-class super, guard applies
+    10: return
+
+Its own acceptance evidence registered the verbatim order all along
+(openspec/evidence/java-syntax-2026-09-25/anonymous-top-level/evidence.md, "Jarde 当前对照":
+"构造器文本仍是 `this.val$captured = arg3; super(seed);`。按 Java 8 模式重编退出码 1"),
+so the guard restores that registered state too; no test asserts a reordered render for it
+(grep over tests/ finds only the fixture files and the corpus-fingerprint byte listing).
+
+Object-super controls in the same scan stayed byte-identical, including
+`anonymous-capture/AnonymousCaptureCases$Outer$1` (double capture, super `Object.<init>()V`)
+and all 459 other fixtures (0 exit-status differences).

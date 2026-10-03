@@ -1,0 +1,18 @@
+2c7706fa97d1af9d8570e1273209bb780544e1b7704312d13fb70cc086cdebb9  C1_1.java
+0fe6b41fcac752da38b231189e4b49e5dd50f8daae04f4f0f4bfb38a9a5573aa  C1_2.java
+dcc7604a03a19f2af2f823b7c639dcfddb8be55a9fc0ab2e0c12f513b9a693a9  C1_Op.java
+91fa87629a94e3eb3483805105aa134da2a992ab1609710c5733564969213ad0  C1.java
+43f226d97822ac73df7906ab83ced01e50deb945d35cc79bddd89323cc8a8189  C2_Inner.java
+6eb02ad478fbf97d977c463463b980914724d24352cf562991f4b3271b04a0a3  C2.java
+2c7706fa97d1af9d8570e1273209bb780544e1b7704312d13fb70cc086cdebb9 (after)   C1_1.java
+0fe6b41fcac752da38b231189e4b49e5dd50f8daae04f4f0f4bfb38a9a5573aa (after)   C1_2.java
+dcc7604a03a19f2af2f823b7c639dcfddb8be55a9fc0ab2e0c12f513b9a693a9 (after)   C1_Op.java
+91fa87629a94e3eb3483805105aa134da2a992ab1609710c5733564969213ad0 (after)   C1.java
+43f226d97822ac73df7906ab83ced01e50deb945d35cc79bddd89323cc8a8189 (after)   C2_Inner.java
+6eb02ad478fbf97d977c463463b980914724d24352cf562991f4b3271b04a0a3 (after)   C2.java
+
+diff -r c1c2-before c1c2-after: no differences (diff exit 0) — all six classes byte-identical.
+javap super targets (frozen C1$1 / C1$2 / C2$Inner, all Object tier, reorder retained):
+  C1$1      6: invokespecial #7  // Method java/lang/Object."<init>":()V
+  C1$2      6: invokespecial #7  // Method java/lang/Object."<init>":()V
+  C2$Inner  6: invokespecial #7  // Method java/lang/Object."<init>":()V   (then putfield tag:I after the call, unmoved)

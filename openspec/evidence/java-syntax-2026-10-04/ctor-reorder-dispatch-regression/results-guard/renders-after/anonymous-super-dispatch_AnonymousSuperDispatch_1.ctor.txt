@@ -1,0 +1,8 @@
+    AnonymousSuperDispatch$1(java.lang.String arg1) {
+        // @method <init>(Ljava/lang/String;)V
+        // @declaration a constructor of `AnonymousSuperDispatch$1`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.val$captured = arg1;
+        super();
+        return;
+    }

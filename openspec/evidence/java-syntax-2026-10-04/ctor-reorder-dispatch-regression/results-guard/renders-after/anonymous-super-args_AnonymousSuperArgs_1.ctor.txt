@@ -1,0 +1,8 @@
+    AnonymousSuperArgs$1(java.lang.String arg1, int arg2, java.lang.String arg3) {
+        // @method <init>(Ljava/lang/String;ILjava/lang/String;)V
+        // @declaration a constructor of `AnonymousSuperArgs$1`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.val$captured = arg3;
+        super(arg1, arg2);
+        return;
+    }

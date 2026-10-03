@@ -1,0 +1,8 @@
+    AnonymousCaptureCases$1(long seed, java.lang.String arg3) {
+        // @method <init>(JLjava/lang/String;)V
+        // @declaration a constructor of `AnonymousCaptureCases$1`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.val$captured = arg3;
+        super(seed);
+        return;
+    }

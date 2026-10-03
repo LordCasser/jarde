@@ -1,0 +1,9 @@
+    AnonymousCaptureCases$Outer$1(AnonymousCaptureCases$Outer this$0, AnonymousCaptureCases$Outer arg2) {
+        // @method <init>(LAnonymousCaptureCases$Outer;LAnonymousCaptureCases$Outer;)V
+        // @declaration a constructor of `AnonymousCaptureCases$Outer$1`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.val$other = arg2;
+        this.this$0 = this$0;
+        return;
+    }
