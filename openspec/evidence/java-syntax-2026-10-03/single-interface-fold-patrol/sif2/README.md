@@ -146,7 +146,10 @@ JADX 一栏的口径与 `handoff.md`、`sif/README.md` §6、`fcp/README.md` §6
 ## 6. 门禁（任务 3.1）
 
 - `cargo test --workspace --tests --locked --no-fail-fast`：**2903 passed / 0 failed / 46 ignored**
-  （293 个 suite；日志 `results/tests.log`）。基线同命令 2902（本片新增 1 项回归测试）。
+  （293 个 suite；日志 `results/tests.log`）。基线同命令 2902（本片新增 1 项回归测试）。其中一次整仓
+  运行在 `p3_two_exit_return::complete_class_compiles_and_matches_eight_verified_paths` 报
+  `AlreadyExists`（`tests/p3_two_exit_return.rs` 的 scratch 目录撞名），**单测复跑通过**，
+  与 `handoff.md` 登记的临时目录碰撞 flake 家族同源、非本片回归。
 - `cargo fmt --all -- --check`：通过。
 - clippy，CI `.github/workflows/ci.yml` 实有 **29 项 `-A` 清单**
   （`--workspace --all-targets --all-features --locked -- -D warnings`）：零警告
