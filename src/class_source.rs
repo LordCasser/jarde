@@ -627,6 +627,12 @@ pub struct ClassSourceReport {
     /// proof's field indices and write positions remain available beside the projected declarations;
     /// the original method records and recovery reports are retained in [`Self::methods`].
     pub initializer_proof: ClassSourceInitializerProof,
+    /// The class-text projection inputs this report's assembled [`Self::text`] was staged with,
+    /// retained as facts of the first pass so the member-fold channel can re-project the same
+    /// text byte-for-byte (see [`ClassSourceProjectionInputs`]). Absent when the first pass
+    /// staged no projection beside the physical member records.
+    #[serde(skip_serializing_if = "ClassSourceProjectionInputs::is_empty")]
+    pub projection_inputs: ClassSourceProjectionInputs,
     /// Same-run proof input retained only for the next class-source projection stage. This is
     /// private assembly state and is deliberately absent from the serialized report.
     #[serde(skip)]
@@ -1109,6 +1115,120 @@ pub struct ClassSourceInitializerField {
     pub write_order: usize,
     /// The `putstatic` BCI claimed by `field@1`.
     pub write_bci: u32,
+}
+
+/// The class-text projection inputs one root's assembled [`ClassSourceReport::text`] was staged
+/// with, retained as the facts of that first pass — never recomputed, and never a second decision.
+///
+/// The first pass assembles its text from the physical member records plus a handful of same-run
+/// side channels (omitted helper members, marker lines, substituted member texts, an enum-constant
+/// projection and a proved initializer field order). Those channels live in the assembly context
+/// alone, so a later projection of the same report — the member fold's root re-projection — could
+/// previously rebuild only the physical text and had to refuse whenever the first pass had staged
+/// anything else. Retaining them here closes that gap the only sound way it can be closed: as
+/// facts. Every entry is what the first pass actually wrote (a text, an index, a marker line), and
+/// the consumer's re-projection is byte-equal to the first pass or it is refused.
+///
+/// The field is absent from the serialized report when every channel is empty — the class without
+/// any of these projections serializes exactly as it did before this field existed.
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceProjectionInputs {
+    /// Physical method indices the assembled text omits entirely: proved array-constructor
+    /// helpers and omitted lambda companions, whose every class-wide use a projection rewrote.
+    /// The member records themselves stay in [`ClassSourceReport::methods`].
+    pub omitted_methods: Vec<u64>,
+    /// The marker lines the assembled text carries at the top of the class body, in order.
+    pub markers: Vec<String>,
+    /// The composed member texts the assembled text substitutes for those members' physical
+    /// ones: each entry is the exact text the first pass placed (declaration, markers, body).
+    pub member_texts: Vec<ClassSourceProjectedMemberText>,
+    /// The root's own proved enum-constant projection, as the texts it staged.
+    pub enum_projection: Option<ClassSourceEnumProjectionTexts>,
+}
+
+impl ClassSourceProjectionInputs {
+    /// Whether every channel is empty: the serialized form of a class without projections.
+    pub fn is_empty(&self) -> bool {
+        self.omitted_methods.is_empty()
+            && self.markers.is_empty()
+            && self.member_texts.is_empty()
+            && self.enum_projection.is_none()
+    }
+}
+
+/// One member's projected text, as the first pass placed it into the assembled class text.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceProjectedMemberText {
+    /// The unchanged physical `method_info` table index of the member this text substitutes.
+    pub member: u64,
+    /// The composed text: the member's own declaration and markers, the projection's added
+    /// marker lines, and the projected body placed inside them.
+    pub text: String,
+    /// The projected body this text was placed from, with the anchors a later re-spelling of
+    /// that body needs. `None` for a projection this report states as text only — a renamed
+    /// lambda companion, an array-constructor rewrite — whose body a later channel may keep but
+    /// not re-spell, because no anchor table was emitted for it.
+    pub emission: Option<ClassSourceProjectedMemberEmission>,
+}
+
+/// The re-spellable half of one projected member text: the emitted body and its own anchor table.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceProjectedMemberEmission {
+    /// The emitted body artifact: envelope comments, braces, statements — the text a projection
+    /// re-emitted from the member's own same-run program with its edits applied.
+    pub body: String,
+    /// The marker lines the projection added beside the member's own markers.
+    pub extra_markers: Vec<String>,
+    /// The emitted body's anchor table: byte ranges in `body` with the physical instruction
+    /// positions their nodes came from. Only segments anchored to this member are retained; a
+    /// spliced-in donor body (an inlined companion) keeps its own member's anchors and is not
+    /// re-spellable through this table.
+    pub segments: Vec<ClassSourceBodySegment>,
+}
+
+/// One anchor of a projected member emission: a byte range and the physical positions it states.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceBodySegment {
+    /// Start of the range, in bytes of [`ClassSourceProjectedMemberEmission::body`].
+    pub start: u64,
+    /// End of the range, in bytes of the same body.
+    pub end: u64,
+    /// The bytecode indexes of the physical instructions this range's nodes came from.
+    pub bcis: Vec<u32>,
+}
+
+/// The root's own enum-constant projection as staged texts: the constants list, the source
+/// constructors and the static initializer suffix, with the physical indices they replace or
+/// omit. A stopped or refused proof never reaches this retention.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceEnumProjectionTexts {
+    /// Physical field indices of the projected enum constants.
+    pub constant_field_indices: Vec<u64>,
+    /// The backing array field the projection's constants replaced.
+    pub backing_field_index: u64,
+    /// Physical method indices the projection omits (`values`/`valueOf` and the like).
+    pub implicit_method_indices: Vec<u64>,
+    /// The constants list text, as placed.
+    pub constants_text: String,
+    /// The source constructor texts, each with the physical method index it replaces.
+    pub constructor_texts: Vec<ClassSourceEnumConstructorText>,
+    /// The proved static initializer suffix, when one was staged.
+    pub initializer_text: Option<String>,
+}
+
+/// One enum constructor the projection re-spelled, keyed by the member it replaces.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceEnumConstructorText {
+    /// The unchanged physical `method_info` table index of the constructor.
+    pub member: u64,
+    /// The source constructor text, as placed.
+    pub text: String,
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -7288,6 +7408,62 @@ impl ClassSourceMethod {
         Some(text)
     }
 
+    /// Places one projected body inside this member's declaration and markers — the exact
+    /// composition [`Self::lambda_projection_text`] performs, with the one extension a member
+    /// fold needs: the declaration line may be the fold's own re-spelled spelling. The markers
+    /// are this member's own followed by the projection's added lines, in the first pass's own
+    /// order, so a projected body placed here lands byte-for-byte where the first pass put it.
+    pub(crate) fn projected_body_method_text(
+        &self,
+        body: &str,
+        declaration_override: Option<&str>,
+        extra_markers: &[String],
+    ) -> Option<String> {
+        let declaration = declaration_override.unwrap_or(self.declaration.as_ref()?);
+        let artifact = artifact(body)?;
+        let mut all = self.markers.clone();
+        all.extend(extra_markers.iter().cloned());
+        Some(prefix_method_annotations(
+            block_member(declaration, Placed::Block(artifact), &all),
+            &self.annotations,
+        ))
+    }
+
+    /// The span mapping of [`Self::projected_body_method_text`]: one single-line span of the
+    /// projected body, translated through the same placement, and verified against the composed
+    /// text exactly as the physical member's mapping is.
+    pub(crate) fn projected_body_span(
+        &self,
+        body: &str,
+        declaration_override: Option<&str>,
+        extra_markers: &[String],
+        start: usize,
+        end: usize,
+    ) -> Option<(usize, usize)> {
+        let declaration = declaration_override.unwrap_or(self.declaration.as_ref()?);
+        let placed = artifact(body)?;
+        let source = body.get(start..end)?;
+        if source.is_empty() || source.contains('\n') {
+            return None;
+        }
+        let annotations = self
+            .annotations
+            .uses
+            .iter()
+            .map(|annotation| 4 + annotation.len() + 1)
+            .sum::<usize>();
+        let marker_len = self
+            .markers
+            .iter()
+            .chain(extra_markers)
+            .map(|marker| indent(&format!("{marker}\n"), 2).len())
+            .sum::<usize>();
+        let block_prefix = annotations + format!("    {declaration} {{\n").len() + marker_len;
+        let mapped = placed_artifact_span(&placed, start, end, block_prefix)?;
+        let text = self.projected_body_method_text(body, declaration_override, extra_markers)?;
+        (text.get(mapped.0..mapped.1)? == source).then_some(mapped)
+    }
+
     /// Spells one fully recovered method inside a class-source anonymous expression. The method
     /// declaration and annotations come from its own selected physical class; `body` is emitted
     /// from that method's same-run AST at the corresponding nested indentation.
@@ -7614,6 +7790,84 @@ pub(crate) struct ClassSourceTextContext<'a> {
     pub(crate) array_helper_indices: Option<&'a [u64]>,
     pub(crate) array_method_texts: Option<&'a [(u64, String)]>,
     pub(crate) array_helper_markers: Option<&'a [String]>,
+}
+
+impl EnumConstantSourceProjection {
+    /// The texts of this projection as the report retains them: a fact copy, index for index.
+    pub(crate) fn retained(&self) -> ClassSourceEnumProjectionTexts {
+        ClassSourceEnumProjectionTexts {
+            constant_field_indices: self.constant_field_indices.clone(),
+            backing_field_index: self.backing_field_index,
+            implicit_method_indices: self.implicit_method_indices.clone(),
+            constants_text: self.constants_text.clone(),
+            constructor_texts: self
+                .constructor_texts
+                .iter()
+                .map(|(member, text)| ClassSourceEnumConstructorText {
+                    member: *member,
+                    text: text.clone(),
+                })
+                .collect(),
+            initializer_text: self.initializer_text.clone(),
+        }
+    }
+}
+
+/// Rebuilds the assembly-side enum projection from its retained texts: the same index sets and
+/// the same placed strings, so an assembly over the rebuilt projection writes the same bytes the
+/// first pass did. This is placement of retained facts, never a second proof.
+pub(crate) fn retained_enum_projection(
+    texts: &ClassSourceEnumProjectionTexts,
+) -> EnumConstantSourceProjection {
+    EnumConstantSourceProjection {
+        constant_field_indices: texts.constant_field_indices.clone(),
+        backing_field_index: texts.backing_field_index,
+        implicit_method_indices: texts.implicit_method_indices.clone(),
+        constants_text: texts.constants_text.clone(),
+        constructor_texts: texts
+            .constructor_texts
+            .iter()
+            .map(|entry| (entry.member, entry.text.clone()))
+            .collect(),
+        initializer_text: texts.initializer_text.clone(),
+    }
+}
+
+/// The initializer field order a proved initializer group staged, derived from the proof the
+/// report already carries: proved fields in their `<clinit>` write order, every other field after
+/// them in physical order — the same permutation [`crate::facade`]'s first pass staged, read here
+/// from the serialized fact instead of being recomputed. `None` exactly when the first pass kept
+/// the physical order (no proved group).
+pub(crate) fn initializer_field_order_from_proof(
+    proof: &ClassSourceInitializerProof,
+    fields: &[ClassSourceField],
+) -> Option<Vec<usize>> {
+    let ClassSourceInitializerProof::Proved { fields: proved } = proof else {
+        return None;
+    };
+    let mut order = Vec::with_capacity(fields.len());
+    let mut projected = std::collections::BTreeSet::new();
+    for entry in proved {
+        let matching: Vec<usize> = fields
+            .iter()
+            .enumerate()
+            .filter_map(|(index, field)| (field.item.index == entry.field_index).then_some(index))
+            .collect();
+        let [physical] = matching.as_slice() else {
+            return None;
+        };
+        let physical = *physical;
+        if !projected.insert(physical) {
+            return None;
+        }
+        order.push(physical);
+    }
+    for (physical, _) in fields.iter().enumerate() {
+        if projected.insert(physical) {
+            order.push(physical);
+        }
+    }
+    (order.len() == fields.len()).then_some(order)
 }
 
 /// The source text of one arbitrary user-tail enum constructor: the folded declaration spells
@@ -8494,6 +8748,25 @@ pub(crate) fn member_family_recovered_span_with_declaration(
             .sum()
     };
     let block_prefix = annotations + format!("    {declaration} {{\n").len() + marker_len;
+    let mapped = placed_artifact_span(&body, start, end, block_prefix)?;
+    let text = member_family_recovered_method_text_with_declaration(
+        method,
+        recovery,
+        declaration_override,
+    )?;
+    (text.get(mapped.0..mapped.1)? == source).then_some(mapped)
+}
+
+/// The offset of one body-artifact span inside `block_member`'s placement of that artifact:
+/// envelope bytes sit one level in from the class body, statement bytes one level below the
+/// declaration — the two depths `block_member` itself indents to — and a span crossing or
+/// outside the artifact's own braces has no placement.
+fn placed_artifact_span(
+    body: &Artifact<'_>,
+    start: usize,
+    end: usize,
+    block_prefix: usize,
+) -> Option<(usize, usize)> {
     let envelope_end = body.envelope.len();
     let (part, local_start, local_end, depth, prefix) = if end <= envelope_end {
         (body.envelope, start, end, 2, block_prefix)
@@ -8512,12 +8785,7 @@ pub(crate) fn member_family_recovered_span_with_declaration(
     };
     let mapped_start = prefix + indented_offset(part, local_start, depth, false)?;
     let mapped_end = prefix + indented_offset(part, local_end, depth, true)?;
-    let text = member_family_recovered_method_text_with_declaration(
-        method,
-        recovery,
-        declaration_override,
-    )?;
-    (text.get(mapped_start..mapped_end)? == source).then_some((mapped_start, mapped_end))
+    Some((mapped_start, mapped_end))
 }
 
 fn indented_offset(text: &str, offset: usize, depth: usize, end_boundary: bool) -> Option<usize> {
@@ -9381,6 +9649,17 @@ pub(crate) struct InstanceMemberElision {
     pub(crate) capture_field_index: u64,
 }
 
+/// The first pass's own class-text projection channels a nested child block carries beside its
+/// staged texts: the members its projection omitted, its marker lines, and the member texts its
+/// projection substituted. The enum-constant and initializer projections are deliberately absent
+/// — a child whose first pass staged either is refused at the fold's child gate rather than
+/// degraded here.
+pub(crate) struct NestedRetainedTexts<'a> {
+    pub(crate) omitted_methods: &'a [u64],
+    pub(crate) markers: &'a [String],
+    pub(crate) member_texts: &'a [ClassSourceProjectedMemberText],
+}
+
 pub(crate) fn nested_static_member_source_text(
     simple_name: &str,
     access_flags: u16,
@@ -9393,6 +9672,7 @@ pub(crate) fn nested_static_member_source_text(
     child_definition: PhysicalDefinitionId,
     root_definition: PhysicalDefinitionId,
     elision: Option<InstanceMemberElision>,
+    retained: &NestedRetainedTexts<'_>,
 ) -> Option<NestedClassSourceText> {
     const SOURCE_CLASS_FLAGS: u16 = ACC_PUBLIC
         | ACC_PRIVATE
@@ -9464,6 +9744,11 @@ pub(crate) fn nested_static_member_source_text(
         ],
     });
     let hidden_span = (own_start, text.len() - 1);
+    // The first pass's own marker lines — omitted helper and projection notes — sit directly
+    // under the header, before any member, exactly where the flat unit placed them.
+    for marker in retained.markers {
+        text.push_str(&indent(&format!("{marker}\n"), 2));
+    }
     let mut first = true;
     for field in fields {
         if elision.is_some_and(|elision| elision.capture_field_index == field.item.index) {
@@ -9520,14 +9805,34 @@ pub(crate) fn nested_static_member_source_text(
         }
     }
     for method in methods {
+        // A member the first pass's projection omitted carries no declaration here either: its
+        // uses were rewritten in the retained member texts, and the physical record stays in the
+        // child's own report.
+        if retained.omitted_methods.contains(&method.item.index) {
+            continue;
+        }
         if !first {
             text.push('\n');
         }
         first = false;
+        // A member whose body the first pass projected keeps that projected text here — the
+        // fold's own staged texts (method_texts) still win, because those are the ones carrying
+        // the fold's re-spelled references.
         let mut staged = method_texts
             .iter()
             .find(|projected| projected.index == method.item.index)
             .cloned()
+            .or_else(|| {
+                retained
+                    .member_texts
+                    .iter()
+                    .find(|projected| projected.member == method.item.index)
+                    .map(|projected| MemberFamilyMethodText {
+                        index: method.item.index,
+                        text: projected.text.clone(),
+                        derived: Vec::new(),
+                    })
+            })
             .unwrap_or_else(|| MemberFamilyMethodText {
                 index: method.item.index,
                 text: method.text.clone(),

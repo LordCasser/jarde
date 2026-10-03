@@ -1232,18 +1232,36 @@ fn captured_lambda_ir_budget_stop_keeps_physical_helpers_and_does_not_inline() {
     ];
     let snapshot = open(&bytes);
     let complete = class_source(&snapshot, "CaptureBudget", &RecoveryEvidenceRequest::all());
-    let mut limits = complete.limits.clone();
-    limits.ir_items = complete.usage.ir_items.saturating_sub(1);
-    let outcome = Engine::new()
-        .class_source_with_evidence(
-            slice::from_ref(&snapshot),
-            &request(&snapshot, "CaptureBudget"),
-            &RecoveryEvidenceRequest::all(),
-            &mut Budget::new(limits),
-        )
-        .unwrap();
-    let OperationOutcome::Performed(stopped) = outcome else {
-        panic!("the budget stop retains a report: {outcome:?}")
+    // The retained-emission anchor tables (`recover-fold-context-projection-preservation`) are
+    // optional evidence charged after the projection's own critical path: shaving a few items
+    // off the tail degrades them silently while the projection still commits and the request
+    // still completes. The stop this test pins is the one *inside* the critical path, so the
+    // limit walks back item by item until the run first stops — the first Partial is that edge.
+    let stopped = {
+        let mut stopped = None;
+        for extra in 1.. {
+            let mut limits = complete.limits.clone();
+            limits.ir_items = complete.usage.ir_items.saturating_sub(extra);
+            let outcome = Engine::new()
+                .class_source_with_evidence(
+                    slice::from_ref(&snapshot),
+                    &request(&snapshot, "CaptureBudget"),
+                    &RecoveryEvidenceRequest::all(),
+                    &mut Budget::new(limits),
+                )
+                .unwrap();
+            match outcome {
+                OperationOutcome::Performed(report) => {
+                    if !matches!(report.execution, jarde::ExecutionReport::Complete { .. }) {
+                        stopped = Some(report);
+                        break;
+                    }
+                }
+                _ => break,
+            }
+            assert!(extra < 512, "the ir-items edge stays within a bounded walk");
+        }
+        stopped.expect("shaving the ir-items budget item by item stops the request")
     };
     assert!(stopped.text.contains(&helpers[0]));
     assert!(stopped.text.contains(&helpers[1]));

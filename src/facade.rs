@@ -5406,6 +5406,7 @@ impl Engine {
                     enum_constant_proof:
                         crate::enum_constants::ClassSourceEnumConstantProof::NotApplicable,
                     enum_constant_body_relations: Vec::new(),
+                    projection_inputs: class_source::ClassSourceProjectionInputs::default(),
                     text: String::new(),
                     limits: budget.limits().clone(),
                     usage: budget.usage(),
@@ -6538,6 +6539,17 @@ impl Engine {
         let mut array_projection_markers = Vec::new();
         let mut array_projection_members: Vec<(u64, Vec<u64>)> = Vec::new();
         let mut array_original_member_texts: Vec<(u64, String)> = Vec::new();
+        // The re-spellable half of the lambda channel's staged members: the emitted body, the
+        // projection notes placed beside it, and the emission's own anchor table. Retained with
+        // the report so the member-fold channel can re-spell a reference inside a projected body
+        // without falling back to the physical text the projection replaced. Entries exist only
+        // for members whose staged text is a body placement — a rename composition is not one.
+        let mut staged_member_emissions: Vec<(
+            u64,
+            String,
+            Vec<String>,
+            Vec<class_source::ClassSourceBodySegment>,
+        )> = Vec::new();
         // Keep the same-run census local until its class-level proof is implemented. Methods whose
         // preparation or body run never happened are absent; they are not empty scans.
         let enum_projection_complete = structure_complete
@@ -7473,10 +7485,15 @@ impl Engine {
                         continue;
                     };
                     let method = &methods[caller_vec_index];
+                    let notes: Vec<String> = projections
+                        .iter()
+                        .filter(|projection| projection.caller_vec_index == caller_vec_index)
+                        .map(|projection| format!("// jarde: {}", projection.note))
+                        .collect();
                     let emitted = match jarde_java::report::emit_class_source_lambda_member(
                         candidate, &edits, budget,
                     ) {
-                        Ok(Some((unmodified, edited))) => {
+                        Ok(Some((unmodified, edited, edited_map))) => {
                             if !method.matches_current_text(&unmodified) {
                                 diagnostics.push(lambda_helper_refusal_diagnostic(
                                     &String::from_utf8_lossy(&projection.helper.name.0),
@@ -7487,6 +7504,24 @@ impl Engine {
                                 dropped_callers.push(caller_vec_index);
                                 continue;
                             }
+                            staged_member_emissions.push((
+                                method.item.index,
+                                edited.clone(),
+                                notes.clone(),
+                                edited_map
+                                    .segments()
+                                    .iter()
+                                    .filter(|segment| {
+                                        segment.origin().primary().method()
+                                            == Some(&method.item.identity)
+                                    })
+                                    .map(|segment| class_source::ClassSourceBodySegment {
+                                        start: u64::try_from(segment.start()).unwrap_or(u64::MAX),
+                                        end: u64::try_from(segment.end()).unwrap_or(u64::MAX),
+                                        bcis: segment.origin().bcis().iter().copied().collect(),
+                                    })
+                                    .collect(),
+                            ));
                             edited
                         }
                         Ok(None) => {
@@ -7513,11 +7548,6 @@ impl Engine {
                             break;
                         }
                     };
-                    let notes: Vec<String> = projections
-                        .iter()
-                        .filter(|projection| projection.caller_vec_index == caller_vec_index)
-                        .map(|projection| format!("// jarde: {}", projection.note))
-                        .collect();
                     let Some(full_text) = method.lambda_projection_text(&emitted, &notes) else {
                         dropped_callers.push(caller_vec_index);
                         continue;
@@ -7559,6 +7589,11 @@ impl Engine {
                             text,
                         )),
                     }
+                    // The renamed member's placed text is a rename composition, not a body
+                    // placement: its emitted body is no longer the text the report carries, so
+                    // no later channel may re-spell through it.
+                    staged_member_emissions
+                        .retain(|(member, _, _, _)| *member != method.item.index);
                 }
                 // Pay for every staged text and every marker before any member changes; a
                 // refusal or a stop leaves the class exactly as the recovery wrote it.
@@ -7682,6 +7717,13 @@ impl Engine {
                         array_projection_markers.push(marker);
                         array_projection_members.push((helper_index, group_members));
                     }
+                    // Only members whose staged text the commit actually placed stay
+                    // re-spellable: a staged emission whose group could not commit is not the
+                    // text the report carries.
+                    staged_member_emissions
+                        .retain(|(member, _, _, _)| committed_members.contains(member));
+                } else {
+                    staged_member_emissions.clear();
                 }
             }
         }
@@ -8308,6 +8350,7 @@ impl Engine {
                 })
                 .collect();
             array_projection_method_texts.retain(|(index, _)| !rejected_members.contains(index));
+            staged_member_emissions.retain(|(member, _, _, _)| !rejected_members.contains(member));
             array_projection_members
                 .retain(|(helper_index, _)| !invalid_array_helpers.contains(helper_index));
         }
@@ -8434,6 +8477,32 @@ impl Engine {
                 bridge_proofs,
                 enum_switch_proofs,
                 initializer_proof,
+                projection_inputs: class_source::ClassSourceProjectionInputs {
+                    omitted_methods: array_helper_method_indices.clone(),
+                    markers: array_projection_markers.clone(),
+                    member_texts: array_projection_method_texts
+                        .iter()
+                        .map(
+                            |(member, text)| class_source::ClassSourceProjectedMemberText {
+                                member: *member,
+                                text: text.clone(),
+                                emission: staged_member_emissions
+                                    .iter()
+                                    .find(|(emitted_member, _, _, _)| emitted_member == member)
+                                    .map(|(_, body, extra_markers, segments)| {
+                                        class_source::ClassSourceProjectedMemberEmission {
+                                            body: body.clone(),
+                                            extra_markers: extra_markers.clone(),
+                                            segments: segments.clone(),
+                                        }
+                                    }),
+                            },
+                        )
+                        .collect(),
+                    enum_projection: enum_projection
+                        .as_ref()
+                        .map(class_source::EnumConstantSourceProjection::retained),
+                },
                 enum_constant_proof,
                 enum_constant_body_relations,
                 text,
@@ -19869,15 +19938,60 @@ fn project_class_source_member_fold(
                 .to_owned(),
         ));
     }
+    // The nested child block this fold writes carries the child's own member-text projection
+    // channels (omitted members, markers, projected member texts) but not its enum-constant or
+    // initializer projections: a child whose first pass staged either would come out of the
+    // nested writer physically ordered and with its `<clinit>` back, and that is a degradation
+    // this fold refuses rather than publishes. An initializer proof that staged the identity
+    // order over a child with no `<clinit>` changed nothing and is not a projection here.
+    if members.iter().any(|member| {
+        member.child.projection_inputs.enum_projection.is_some()
+            || class_source::initializer_field_order_from_proof(
+                &member.child.initializer_proof,
+                &member.child.fields,
+            )
+            .is_some_and(|order| {
+                order
+                    .iter()
+                    .enumerate()
+                    .any(|(position, field)| position != *field)
+                    || member.child.methods.iter().any(|method| {
+                        method.item.identity.name.0 == b"<clinit>"
+                            && method.item.identity.descriptor.0 == b"()V"
+                    })
+            })
+    }) {
+        return Ok(Err(
+            "member fold member has an enum or initializer projection this fold does not carry"
+                .to_owned(),
+        ));
+    }
+    // The first pass's own projection inputs, retained with the report as facts: the root
+    // re-projection below runs over exactly the channels the first pass staged, so the equality
+    // check is a consistency proof of the retained facts — and a root another channel already
+    // claimed (a nested enum or annotation slice, say) still fails it, exactly as before.
+    let retained_enum_projection = root
+        .projection_inputs
+        .enum_projection
+        .as_ref()
+        .map(class_source::retained_enum_projection);
+    let retained_initializer_order =
+        class_source::initializer_field_order_from_proof(&root.initializer_proof, &root.fields);
+    let retained_member_texts = root
+        .projection_inputs
+        .member_texts
+        .iter()
+        .map(|projected| (projected.member, projected.text.clone()))
+        .collect::<Vec<_>>();
     let context = class_source::ClassSourceTextContext {
-        initializer_field_order: None,
+        initializer_field_order: retained_initializer_order.as_deref(),
         declared_methods: root.methods.len() as u64,
         member_table: None,
         execution: &root.execution,
-        enum_projection: None,
-        array_helper_indices: None,
-        array_method_texts: None,
-        array_helper_markers: None,
+        enum_projection: retained_enum_projection.as_ref(),
+        array_helper_indices: Some(&root.projection_inputs.omitted_methods),
+        array_method_texts: Some(retained_member_texts.as_slice()),
+        array_helper_markers: Some(&root.projection_inputs.markers),
     };
     if class_source::source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return Ok(Err(
@@ -19906,15 +20020,32 @@ fn project_class_source_member_fold(
                 ));
             }
         };
+        let child_enum_projection = member
+            .child
+            .projection_inputs
+            .enum_projection
+            .as_ref()
+            .map(class_source::retained_enum_projection);
+        let child_initializer_order = class_source::initializer_field_order_from_proof(
+            &member.child.initializer_proof,
+            &member.child.fields,
+        );
+        let child_member_texts = member
+            .child
+            .projection_inputs
+            .member_texts
+            .iter()
+            .map(|projected| (projected.member, projected.text.clone()))
+            .collect::<Vec<_>>();
         let child_context = class_source::ClassSourceTextContext {
-            initializer_field_order: None,
+            initializer_field_order: child_initializer_order.as_deref(),
             declared_methods: member.child.methods.len() as u64,
             member_table: None,
             execution: &member.child.execution,
-            enum_projection: None,
-            array_helper_indices: None,
-            array_method_texts: None,
-            array_helper_markers: None,
+            enum_projection: child_enum_projection.as_ref(),
+            array_helper_indices: Some(&member.child.projection_inputs.omitted_methods),
+            array_method_texts: Some(child_member_texts.as_slice()),
+            array_helper_markers: Some(&member.child.projection_inputs.markers),
         };
         if class_source::source_text(
             child_declaration,
@@ -20131,6 +20262,11 @@ fn project_class_source_member_fold(
             instance.map(|instance| class_source::InstanceMemberElision {
                 capture_field_index: instance.capture.field_index,
             }),
+            &class_source::NestedRetainedTexts {
+                omitted_methods: &member.child.projection_inputs.omitted_methods,
+                markers: &member.child.projection_inputs.markers,
+                member_texts: &member.child.projection_inputs.member_texts,
+            },
         ) {
             Some(block) => block,
             None => {
@@ -20190,6 +20326,119 @@ fn project_class_source_member_fold(
         .unwrap_or(u64::MAX);
     budget.charge(CountedBudgetDimension::OutputBytes, added_output)?;
     Ok(Ok((text, derived)))
+}
+
+/// The sound anchor for a token no covering instruction names itself: a local-variable
+/// declaration's type. The covering instruction must be the store that introduced the local —
+/// exactly one local written, exactly the one stack value read — and the stored value must have
+/// one instruction as its single definition, whose own constant-pool entry names the type this
+/// token spells. That producer is the token's physical origin: the recovered declaration spells
+/// the stored value's type, and the value's type is the producer's pool-typed result (for a
+/// lambda site, the `invokedynamic` descriptor's return type). A phi-defined value, an entry
+/// value or a producer whose pool entry names nothing is no anchor at all.
+fn static_fold_stored_type_anchor(
+    ssa: Option<&jarde_jvm::method_ir::SsaTable>,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    pool: &[jarde_reader::classfile::CpEntryFacts],
+    source_bcis: &std::collections::BTreeSet<u32>,
+    target_binary: &[u8],
+) -> Option<u32> {
+    let Some(ssa) = ssa else {
+        return None;
+    };
+    for bci in source_bcis {
+        let Some(store) = ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| instruction.bci() == *bci)
+        else {
+            continue;
+        };
+        let writes_local = store
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, jarde_jvm::method_ir::Slot::Local(_)))
+            .collect::<Vec<_>>();
+        let [(_, _written)] = writes_local.as_slice() else {
+            continue;
+        };
+        // The store moves one stack value into the local: in this SSA the written local slot
+        // gets a fresh value defined by the store itself, so the producer is the *read* value's
+        // definition — the one instruction that produced what the store holds.
+        let reads_stack = store
+            .reads()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, jarde_jvm::method_ir::Slot::Stack(_)))
+            .collect::<Vec<_>>();
+        let [(_, stored)] = reads_stack.as_slice() else {
+            continue;
+        };
+        let jarde_jvm::method_ir::Definition::Instruction { bci: producer, .. } =
+            ssa.value(*stored).def()
+        else {
+            continue;
+        };
+        let Some(instruction) = code
+            .instructions
+            .iter()
+            .find(|instruction| instruction.bci == *producer)
+        else {
+            continue;
+        };
+        let Some(index) = instruction.constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = jarde_reader::classfile::cp_entry(pool, index) else {
+            continue;
+        };
+        if static_fold_pool_entry_names_type(entry, target_binary) {
+            return Some(*producer);
+        }
+    }
+    None
+}
+
+/// Whether one constant-pool entry names a class through a position a *producing* instruction
+/// types a value with: directly (`Class`), as the owner of a member reference, or as a component
+/// of the descriptor a loaded value's type comes from — a field's own type, or an invoked
+/// member's return type. This is the producer-side companion of the direct-coverage matcher
+/// above; the direct matcher's own entry kinds are unchanged.
+fn static_fold_pool_entry_names_type(
+    entry: &jarde_reader::classfile::CpEntryFacts,
+    target_binary: &[u8],
+) -> bool {
+    let component = format!("L{};", String::from_utf8_lossy(target_binary));
+    let names_binary = |descriptor: &[u8]| {
+        descriptor
+            .windows(component.len())
+            .any(|window| window == component.as_bytes())
+    };
+    // Only the return half types a value an invocation produces; a parameter mention is not a
+    // produced type's origin.
+    let return_half_names_binary = |descriptor: &[u8]| {
+        descriptor
+            .iter()
+            .rposition(|byte| *byte == b')')
+            .is_some_and(|close| names_binary(&descriptor[close + 1..]))
+    };
+    match &entry.kind {
+        jarde_reader::classfile::CpEntryKind::Class { name, .. } => name.0 == *target_binary,
+        jarde_reader::classfile::CpEntryKind::FieldRef {
+            owner, descriptor, ..
+        } => owner.0 == *target_binary || names_binary(&descriptor.0),
+        jarde_reader::classfile::CpEntryKind::MethodRef {
+            owner, descriptor, ..
+        }
+        | jarde_reader::classfile::CpEntryKind::InterfaceMethodRef {
+            owner, descriptor, ..
+        } => owner.0 == *target_binary || return_half_names_binary(&descriptor.0),
+        jarde_reader::classfile::CpEntryKind::InvokeDynamic { descriptor, .. }
+        | jarde_reader::classfile::CpEntryKind::Dynamic { descriptor, .. } => {
+            return_half_names_binary(&descriptor.0)
+        }
+        _ => false,
+    }
 }
 
 /// Re-spell every fold-target reference in one physical class's member texts. Field declarations
@@ -20323,6 +20572,42 @@ fn project_static_fold_owner_texts(
             .iter()
             .find(|(id, _)| *id == method.item.identity)
             .map_or(&**physical, |(_, report)| report);
+        // The body this fold re-spells. A member whose first pass staged a projected body keeps
+        // that body — the retained emission and its anchor table — because it is the text the
+        // assembled unit already carries: re-spelling the physical one instead would publish a
+        // body the first pass replaced (an omitted companion's call, an un-inlined lambda). Two
+        // compositions this fold cannot state through a projected body refuse it outright: an
+        // instance re-run (its recovery is a different text than the emission was staged from)
+        // and an access-bridge or capture-write edit (whose span proofs read provenance the
+        // retained table does not carry).
+        let projected_text = owner
+            .projection_inputs
+            .member_texts
+            .iter()
+            .find(|projected| projected.member == method.item.index);
+        let projected_emission = projected_text.and_then(|projected| projected.emission.as_ref());
+        if projected_text.is_some() {
+            if overrides.iter().any(|(id, _)| *id == method.item.identity) {
+                return Ok(Err(format!(
+                    "static fold cannot compose an instance re-run with the projected body of method {}",
+                    method.item.index
+                )));
+            }
+            if bridge_calls
+                .iter()
+                .any(|(id, _, _)| *id == method.item.identity)
+                || ctor_removals
+                    .iter()
+                    .any(|(id, _)| *id == method.item.identity)
+            {
+                return Ok(Err(format!(
+                    "static fold cannot re-spell an access bridge or capture write inside the projected body of method {}",
+                    method.item.index
+                )));
+            }
+        }
+        let body_text =
+            projected_emission.map_or(recovery.text.as_str(), |emission| emission.body.as_str());
         // The lazily re-read member table of this owner: only a declaration whose `throws` clause
         // might name a fold target pays for it.
         let mut owner_read: Option<(Vec<u8>, Vec<jarde_reader::classfile::MemberHeader>)> = None;
@@ -20333,15 +20618,15 @@ fn project_static_fold_owner_texts(
             budget.poll()?;
             budget.charge(
                 CountedBudgetDimension::AnalysisSteps,
-                recovery.text.len() as u64,
+                body_text.len() as u64,
             )?;
             let (pool_name, dotted_name) = (&target.pool_dotted, &target.dotted);
-            let mut spans = match java_code_name_spans(&recovery.text, pool_name) {
+            let mut spans = match java_code_name_spans(body_text, pool_name) {
                 Some(spans) => spans,
                 None => return Ok(Err("static fold source artifact is malformed".to_owned())),
             };
             if dotted_name != pool_name {
-                let dotted_spans = match java_code_name_spans(&recovery.text, dotted_name) {
+                let dotted_spans = match java_code_name_spans(body_text, dotted_name) {
                     Some(spans) => spans,
                     None => return Ok(Err("static fold source artifact is malformed".to_owned())),
                 };
@@ -20358,17 +20643,35 @@ fn project_static_fold_owner_texts(
                 // Every segment of this method that covers the token contributes its bcis: the
                 // token of a synthesized cast or receiver qualifier is covered by the enclosing
                 // expression's segments, and the instruction that names the class — the cast's
-                // own checkcast, the invoked member's owner — is among them.
+                // own checkcast, the invoked member's owner — is among them. A projected body
+                // reads the same coverage from its retained table, whose segments were already
+                // filtered to this member when the first pass retained them.
                 let mut source_bcis = std::collections::BTreeSet::new();
-                for segment in recovery.source_map.segments() {
-                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                    if segment.start() > start
-                        || segment.end() < end
-                        || segment.origin().primary().method() != Some(&method.item.identity)
-                    {
-                        continue;
+                match projected_emission {
+                    Some(emission) => {
+                        for segment in &emission.segments {
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                            if usize::try_from(segment.start).unwrap_or(usize::MAX) > start
+                                || usize::try_from(segment.end).unwrap_or(0) < end
+                            {
+                                continue;
+                            }
+                            source_bcis.extend(segment.bcis.iter().copied());
+                        }
                     }
-                    source_bcis.extend(segment.origin().bcis());
+                    None => {
+                        for segment in recovery.source_map.segments() {
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                            if segment.start() > start
+                                || segment.end() < end
+                                || segment.origin().primary().method()
+                                    != Some(&method.item.identity)
+                            {
+                                continue;
+                            }
+                            source_bcis.extend(segment.origin().bcis());
+                        }
+                    }
                 }
                 if source_bcis.is_empty() {
                     return Ok(Err(format!(
@@ -20472,6 +20775,19 @@ fn project_static_fold_owner_texts(
             .find(|(id, _)| *id == method.item.identity)
             .map(|(_, bci)| *bci);
         let has_override = overrides.iter().any(|(id, _)| *id == method.item.identity);
+        // A projected member text without its re-spellable emission (a renamed companion, an
+        // array-constructor rewrite) may keep its projection but not be re-spelled through the
+        // physical body it replaced: staging the physical one would publish a body the first
+        // pass already rewrote away. Such a member refuses the fold outright.
+        if projected_text.is_some()
+            && projected_emission.is_none()
+            && (!edits.is_empty() || !declaration_edits.is_empty())
+        {
+            return Ok(Err(format!(
+                "static fold cannot re-spell the projected member text of method {}",
+                method.item.index
+            )));
+        }
         if !has_override
             && edits.is_empty()
             && declaration_edits.is_empty()
@@ -20563,13 +20879,32 @@ fn project_static_fold_owner_texts(
                                     })
                                 })
                     });
-                    let Some(handler) = handler else {
-                        return Ok(Err(format!(
-                            "static fold token in method {} is not tied to one proved class reference",
-                            method.item.index
-                        )));
-                    };
-                    handler.handler_bci
+                    if let Some(handler) = handler {
+                        handler.handler_bci
+                    } else {
+                        // The declared type of a freshly introduced local: a covering store
+                        // whose stored value one instruction produced, where the producer's own
+                        // constant-pool entry names the type the declaration spells. The
+                        // store itself (`astore` carries no pool index) never names anything;
+                        // the value's single definition does — for a lambda site the
+                        // `invokedynamic` whose descriptor types the local, and the recovered
+                        // declaration spells exactly that value's type, so the producer's pool
+                        // entry is this token's own physical origin.
+                        let stored = static_fold_stored_type_anchor(
+                            analyzed.ir().ssa(),
+                            code,
+                            analyzed.ir().constant_pool(),
+                            &source_bcis,
+                            &target.binary,
+                        );
+                        let Some(anchor) = stored else {
+                            return Ok(Err(format!(
+                                "static fold token in method {} is not tied to one proved class reference",
+                                method.item.index
+                            )));
+                        };
+                        anchor
+                    }
                 };
                 replacements.push((
                     start,
@@ -20708,7 +21043,7 @@ fn project_static_fold_owner_texts(
         {
             return Ok(Err("member fold rewrites overlap".to_owned()));
         }
-        let mut rewritten = recovery.clone();
+        let mut rewritten_text = body_text.to_owned();
         for (_, edit) in pending.iter().rev() {
             match edit {
                 PendingEdit::Token { start, end, .. } => {
@@ -20717,7 +21052,7 @@ fn project_static_fold_owner_texts(
                     else {
                         unreachable!("token edit carries its spelling")
                     };
-                    rewritten.text.replace_range(start..end, spelling);
+                    rewritten_text.replace_range(start..end, spelling);
                 }
                 PendingEdit::Bridge { start, end, .. } => {
                     let Some((_, _, replacement, ..)) =
@@ -20725,13 +21060,22 @@ fn project_static_fold_owner_texts(
                     else {
                         unreachable!("bridge edit carries its replacement")
                     };
-                    rewritten.text.replace_range(start..end, replacement);
+                    rewritten_text.replace_range(start..end, replacement);
                 }
                 PendingEdit::Write { start, end } => {
-                    rewritten.text.replace_range(start..end, "");
+                    rewritten_text.replace_range(start..end, "");
                 }
             }
         }
+        // The physical base's span mapping and placement read a whole recovery report; the
+        // projected base works from the rewritten emission text and the projection's own extra
+        // markers (bridge and capture-write edits were refused for it above, so its pending
+        // edits are tokens alone).
+        let rewritten_recovery = projected_emission.is_none().then(|| {
+            let mut rewritten = recovery.clone();
+            rewritten.text = rewritten_text.clone();
+            rewritten
+        });
         let mut adjusted = Vec::new();
         let mut prefix_delta = 0isize;
         for (at, edit) in &pending {
@@ -20754,15 +21098,25 @@ fn project_static_fold_owner_texts(
                         Error::invalid_input("static_fold_offset", "span overflow")
                     })?;
                     let final_end = final_start + spelling.len();
-                    let Some((local_start, local_end)) =
-                        class_source::member_family_recovered_span_with_declaration(
-                            method,
-                            &rewritten,
+                    let span = match projected_emission {
+                        Some(emission) => method.projected_body_span(
+                            &rewritten_text,
                             rewritten_declaration.as_deref(),
+                            &emission.extra_markers,
                             final_start,
                             final_end,
-                        )
-                    else {
+                        ),
+                        None => rewritten_recovery.as_ref().and_then(|rewritten| {
+                            class_source::member_family_recovered_span_with_declaration(
+                                method,
+                                rewritten,
+                                rewritten_declaration.as_deref(),
+                                final_start,
+                                final_end,
+                            )
+                        }),
+                    };
+                    let Some((local_start, local_end)) = span else {
                         return Ok(Err(
                             "static fold source-map span does not survive method placement"
                                 .to_owned(),
@@ -20803,14 +21157,18 @@ fn project_static_fold_owner_texts(
                         Error::invalid_input("static_fold_offset", "span overflow")
                     })?;
                     let final_end = final_start + replacement.len();
+                    // A bridge edit implies the physical base: a projected body with one was
+                    // refused above.
                     let Some((local_start, local_end)) =
-                        class_source::member_family_recovered_span_with_declaration(
-                            method,
-                            &rewritten,
-                            rewritten_declaration.as_deref(),
-                            final_start,
-                            final_end,
-                        )
+                        rewritten_recovery.as_ref().and_then(|rewritten| {
+                            class_source::member_family_recovered_span_with_declaration(
+                                method,
+                                rewritten,
+                                rewritten_declaration.as_deref(),
+                                final_start,
+                                final_end,
+                            )
+                        })
                     else {
                         return Ok(Err(
                             "access bridge span does not survive method placement".to_owned()
@@ -20841,11 +21199,21 @@ fn project_static_fold_owner_texts(
         // Declaration rewrites carry no derived record, exactly as the nested-enum projection:
         // the recovery map anchors body tokens only, and the declaration rewrite stays gated on
         // the member's own descriptor or `Exceptions` attribute.
-        let Some(text) = class_source::member_family_recovered_method_text_with_declaration(
-            method,
-            &rewritten,
-            rewritten_declaration.as_deref(),
-        ) else {
+        let composed_text = match projected_emission {
+            Some(emission) => method.projected_body_method_text(
+                &rewritten_text,
+                rewritten_declaration.as_deref(),
+                &emission.extra_markers,
+            ),
+            None => rewritten_recovery.as_ref().and_then(|rewritten| {
+                class_source::member_family_recovered_method_text_with_declaration(
+                    method,
+                    rewritten,
+                    rewritten_declaration.as_deref(),
+                )
+            }),
+        };
+        let Some(text) = composed_text else {
             return Ok(Err(
                 "static fold source method cannot be reassembled".to_owned()
             ));
