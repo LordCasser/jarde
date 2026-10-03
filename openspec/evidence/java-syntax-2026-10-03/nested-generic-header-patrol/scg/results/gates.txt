@@ -1,0 +1,19 @@
+# 门禁记录（worktree，2026-10-03；基线 b90400f7）
+
+命令与结果（磁盘纪律：每轮构建/测试前 `df -h /`，全程 ≥28Gi 可用，未触发 clean 阈值；
+报告前执行 `cargo clean`，见文末）：
+
+| 门禁 | 命令 | 结果 |
+| --- | --- | --- |
+| 工作区测试 | `cargo test --workspace --tests --locked --no-fail-fast` | 292 个测试二进制全部 ok，0 failed（opcode 修正后终轮；两轮全量均为 292/0） |
+| 格式 | `cargo fmt --all -- --check` | 通过（先 `cargo fmt --all` 归一） |
+| Clippy（CI 实有清单） | `cargo clippy --workspace --all-targets --all-features --locked --` + ci.yml 的 29 项 `-A` + `-D warnings` | 通过（修正 2 处：bootstrap 参数 MethodHandle 的 match 解构、测试内多余 `mut`） |
+| openspec | `openspec validate --all --strict --no-interactive` | 257 passed / 0 failed（基线 stash 复核同为 257——handoff 记 258 为旧口径，非本片回归） |
+| corpus 双腿 | `scg/results/scan_corpus.sh` × 2 腿 | 2140 类：same 2120，text-diff 20（两家族，见 corpus-scan.txt），exit-diff 0 |
+
+已知 flake 家族（handoff.md：bulk_recovery_delivery 4-worker / p3_two_exit_return 目录碰撞 /
+export_cli 计时 / gateway 族 / p4_plugins / ordinary_generic_projection）本轮均未复现，无需单测复跑判定。
+
+`git diff --check`：无空白错误（提交前复核）。
+
+验证后清理：`cargo clean`（报告时 target/ 已移除）。

@@ -1,0 +1,17 @@
+# 固定输入 SHA（recover-same-class-generic-bindings）
+
+fixture 与前后重放（release `examples/class_source_file`，本 worktree 构建腿）；
+逐文件 SHA 见 replay-sha256.txt，此处为快速对照的摘要（由其复制，非独立来源）：
+
+```
+8fc1bddec38987feaf0f3c9a29812e41e9fafda7795cf5a588bd9aa7fec58bbe  fixture/Z1.class
+d73192736ee1f78103f7f62ba7b97fa199e2b6075294bd210329e35caf724527  fixture/Z1$Box.class
+f08563176f825902bb6cd5179e1de55e61ac9f78562f1bbacc10caf6e1eb9880  results/before/Z1.txt（= 巡查基线 results/Z1-jar.txt，本片前）
+483566cc2b7eefac23cc2420e2e706b4ee3d970ebb37b678d6b9389210a299b4  results/after/Z1.txt
+50d5f7a517ec3bb99bff67902e3429c0b394cfae9f7fa9f2607d3c840d376fc9  results/after/Z1Box.txt（与 headers 片交付逐字一致，未受本片影响）
+```
+
+正反例三方对照（成功子集 + 变造负例）的源码/类/JADX/Jarde 副本在 `three-way/`，
+逐文件 SHA 见 replay-sha256.txt。行为与反射对齐由 `tests/same_class_generic_binding.rs`
+在每次运行时现场编译固定（`javac --release 8` 重编 + `java -Xverify:all` 双侧 + 反射断言），
+不依赖本文件的静态副本。

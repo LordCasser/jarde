@@ -2066,6 +2066,258 @@ pub(crate) fn typed_functional_signature_target(
     })
 }
 
+/// The class-level state of one member's same-class binding question, as the assembly drives it.
+///
+/// The ordinary projection path no longer treats a same-class constant-pool entry as a refusal on
+/// its own: the entry is a candidate fact, and the decision belongs to the use-site inventory the
+/// class-level assembly collects over this class's own decoded bodies. [`Self::Pending`] is what
+/// the member loop passes — a member whose pool holds a naming entry is held back unpublished until
+/// the inventory is complete — and the commit phase passes the proof outcome for every held member.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum SameClassBinding {
+    /// The use-site inventory of this presentation is still being collected: hold the candidate.
+    Pending,
+    /// Every actual same-class use site of the member is proved to keep binding its physical
+    /// target, and no unreadable reference source names it.
+    Proven,
+    /// A use site, a competing same-name declaration, or a reference source is not proved; the
+    /// member keeps its erased declaration and the existing refusal.
+    Unproved,
+}
+
+/// One physically decoded `invoke*` site of the selected class's own body set: the caller's own
+/// label, the site's BCI and opcode, and the owner/name/descriptor the pool entry states.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassInvokeUse {
+    pub(crate) caller: String,
+    pub(crate) bci: u32,
+    pub(crate) opcode: u8,
+    pub(crate) owner: Vec<u8>,
+    pub(crate) name: Vec<u8>,
+    pub(crate) descriptor: Vec<u8>,
+}
+
+/// One physically decoded field access of the selected class's own body set. A write site carries
+/// `None`: an assignment into the physical field stays legal under the projected type because the
+/// reader already proved the `Signature`'s erasure is the descriptor and the bytes verified the
+/// stored value against that descriptor, so the source keeps compiling as the unchecked assignment
+/// it already was. A read site carries the SSA-side classification of what the loaded value feeds:
+/// `Some(true)` only when every consumer keeps accepting the parameterized value (an
+/// `Object`-parameter argument position, or a consumer that does not select members on it).
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassFieldUse {
+    pub(crate) caller: String,
+    pub(crate) bci: u32,
+    pub(crate) opcode: u8,
+    pub(crate) owner: Vec<u8>,
+    pub(crate) name: Vec<u8>,
+    pub(crate) descriptor: Vec<u8>,
+    pub(crate) read_expressible: Option<bool>,
+}
+
+/// A member a readable but non-body reference source names: an `ldc` method handle or a
+/// bootstrap-table row/argument. The first slice reads these to keep the inventory honest but does
+/// not prove a functional-position target, so a candidate such a source names stays refused.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassMemberRef {
+    pub(crate) owner: Vec<u8>,
+    pub(crate) name: Vec<u8>,
+    pub(crate) descriptor: Vec<u8>,
+    pub(crate) method: bool,
+}
+
+/// The bounded use-site inventory of one selected class, as the commit phase hands it to the
+/// binding proofs: every decoded body's invoke and field sites, every readable non-body source,
+/// and whether the scan covered every supported consumer at all.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassUseFacts<'a> {
+    pub(crate) complete: bool,
+    pub(crate) invokes: &'a [SameClassInvokeUse],
+    pub(crate) field_uses: &'a [SameClassFieldUse],
+    pub(crate) member_refs: &'a [SameClassMemberRef],
+}
+
+/// The number of parameters one method descriptor declares.
+fn descriptor_parameter_count(descriptor: &[u8]) -> Option<usize> {
+    method_descriptor(descriptor, false, false).map(|signature| signature.parameters.len())
+}
+
+/// Prove one held generic method candidate's same-class binding from the completed inventory.
+///
+/// The proof is deliberately bounded to what the selected class alone can close: the class's own
+/// physical parent is `java/lang/Object` and it implements no interfaces (no external same-name
+/// candidate can compete), the name is not one of `Object`'s own instance methods, and every
+/// same-name overload the class declares is arities apart from the candidate so no call site's
+/// applicability can move between them (variable-arity members are excluded outright because a
+/// varargs member applies at every arity). Under those conditions the descriptor a call site's
+/// pool entry states *is* the physical target — the reader proved the projected header erases to
+/// exactly that descriptor — so every site naming the candidate stays bound, and a pool entry no
+/// supported source consumed blocks nothing. A site, a sibling, or a source outside these shapes
+/// keeps the existing refusal.
+pub(crate) fn prove_same_class_method_binding(
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    method_headers: &[MemberHeader],
+    member_index: usize,
+    facts: &SameClassUseFacts,
+    budget: &mut Budget,
+) -> Result<SameClassBinding> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    let member = &method_headers[member_index];
+    let name = member.name.raw().0.as_slice();
+    let descriptor = member.descriptor.raw().0.as_slice();
+    // The visible candidate set closes only over the selected class and the platform root.
+    if class_superclass != Some(b"java/lang/Object".as_slice())
+        || !class_interfaces.is_empty()
+        || is_object_instance_method_name(name)
+    {
+        return Ok(SameClassBinding::Unproved);
+    }
+    // A same-name sibling competes for source overload resolution; this slice admits one only
+    // when the declared arities cannot overlap.
+    let arity = descriptor_parameter_count(descriptor);
+    for (index, sibling) in method_headers.iter().enumerate() {
+        if index == member_index || sibling.name.raw().0.as_slice() != name {
+            continue;
+        }
+        let sibling_descriptor = sibling.descriptor.raw().0.as_slice();
+        if sibling_descriptor == descriptor {
+            return Ok(SameClassBinding::Unproved);
+        }
+        if sibling.access_flags & ACC_VARARGS != 0 || member.access_flags & ACC_VARARGS != 0 {
+            return Ok(SameClassBinding::Unproved);
+        }
+        if arity.is_none() || descriptor_parameter_count(sibling_descriptor) == arity {
+            return Ok(SameClassBinding::Unproved);
+        }
+    }
+    if !facts.complete {
+        return Ok(SameClassBinding::Unproved);
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(facts.invokes.len() + facts.member_refs.len()).unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    for use_site in facts.invokes {
+        if use_site.owner != class_internal || use_site.name != name {
+            continue;
+        }
+        if use_site.descriptor == descriptor {
+            continue;
+        }
+        // A site of the same name but another descriptor targets a sibling; a descriptor no
+        // declared sibling explains is a source this inventory cannot account for.
+        let explained = method_headers.iter().enumerate().any(|(index, header)| {
+            index != member_index
+                && header.name.raw().0.as_slice() == name
+                && header.descriptor.raw().0.as_slice() == use_site.descriptor
+        });
+        if !explained {
+            return Ok(SameClassBinding::Unproved);
+        }
+    }
+    for reference in facts.member_refs {
+        if reference.method
+            && reference.owner == class_internal
+            && reference.name == name
+            && reference.descriptor == descriptor
+        {
+            return Ok(SameClassBinding::Unproved);
+        }
+    }
+    Ok(SameClassBinding::Proven)
+}
+
+/// Prove one held field `Signature` candidate's same-class binding from the completed inventory.
+///
+/// Fields do not overload, so the binding itself is the owner/name/descriptor identity every
+/// access site states; what needs proof is that the *source* keeps working: a field the projected
+/// type would make unspellable at one of its own read sites (the loaded value selecting members,
+/// flowing into a local, or entering a functional position) stays on its physical descriptor. A
+/// same-name sibling field — legal bytes but no Java source spelling — and any unreadable or
+/// non-body source naming the field keep the existing refusal.
+pub(crate) fn prove_same_class_field_binding(
+    class_internal: &[u8],
+    field_headers: &[MemberHeader],
+    member_index: usize,
+    facts: &SameClassUseFacts,
+    budget: &mut Budget,
+) -> Result<SameClassBinding> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    let member = &field_headers[member_index];
+    let name = member.name.raw().0.as_slice();
+    let descriptor = member.descriptor.raw().0.as_slice();
+    for (index, sibling) in field_headers.iter().enumerate() {
+        if index == member_index || sibling.name.raw().0.as_slice() != name {
+            continue;
+        }
+        // Two same-name fields have one source spelling between them at best; the bytes may be
+        // legal but the projection cannot claim a binding it cannot even name.
+        return Ok(SameClassBinding::Unproved);
+    }
+    if !facts.complete {
+        return Ok(SameClassBinding::Unproved);
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(facts.field_uses.len() + facts.member_refs.len()).unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    for use_site in facts.field_uses {
+        if use_site.owner != class_internal || use_site.name != name {
+            continue;
+        }
+        if use_site.descriptor != descriptor {
+            return Ok(SameClassBinding::Unproved);
+        }
+        if use_site.read_expressible == Some(false) {
+            return Ok(SameClassBinding::Unproved);
+        }
+    }
+    for reference in facts.member_refs {
+        if !reference.method
+            && reference.owner == class_internal
+            && reference.name == name
+            && reference.descriptor == descriptor
+        {
+            return Ok(SameClassBinding::Unproved);
+        }
+    }
+    Ok(SameClassBinding::Proven)
+}
+
+/// The same-class field sites, with their callers and BCIs, for a proven field's source note.
+pub(crate) fn same_class_field_use_note(facts: &SameClassUseFacts, name: &[u8]) -> String {
+    let mut sites = Vec::new();
+    for use_site in facts.field_uses {
+        if use_site.name == name && sites.len() < 4 {
+            sites.push(format!("{}@{}", use_site.caller, use_site.bci));
+        }
+    }
+    if sites.is_empty() {
+        return "no consumed same-class entry".to_owned();
+    }
+    format!("same-class uses at {}", sites.join(", "))
+}
+
+/// Whether one member's generic projection settled in this call, or is held for the class-level
+/// same-class binding proof. A held candidate publishes nothing yet — no header, no refusal — so
+/// the commit phase is the only place a half-decided member could appear, and it publishes whole
+/// members through the same path a direct projection uses.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum SignatureProjection {
+    /// This call decided the member: a header was projected, a refusal was written, or the member
+    /// had no `Signature` to project at all.
+    Settled,
+    /// The member's pool entry names a same-class member and the use-site inventory is still
+    /// being collected: the candidate is held back for the class-level proof.
+    DeferredSameClass,
+}
+
 /// Decide one generic method-header projection from this member's own Signature, an already
 /// published class-variable scope, and a typed return candidate from the same recovery run.
 /// Syntax/erasure failures are refusals; budget and cancellation remain operation stops.
@@ -2084,8 +2336,9 @@ pub(crate) fn project_method_signature(
     class_scope: &[TypeParameterErasure],
     class_signature_present: bool,
     resolved_inner_classes: &[ResolvedInnerClass],
+    same_class: SameClassBinding,
     budget: &mut Budget,
-) -> Result<()> {
+) -> Result<SignatureProjection> {
     let shells = attribute_shells(member, b"Signature");
     if shells.is_empty() {
         if class_flags & 0x4000 != 0
@@ -2094,9 +2347,16 @@ pub(crate) fn project_method_signature(
         {
             record.enum_constructor_source_tail = EnumConstructorSourceTail::SingleString;
         }
-        return project_member_inner_descriptor_path(record, candidate, budget);
+        return project_member_inner_descriptor_path(record, candidate, budget)
+            .map(|()| SignatureProjection::Settled);
     }
-    let result = (|| -> Result<Option<(String, Vec<u8>, &'static str)>> {
+    /// The closure's own two answers: a projection to publish, or a same-class entry this call
+    /// must hold for the class-level proof.
+    enum MethodProjection {
+        Deferred,
+        Declaration(String, Vec<u8>, &'static str),
+    }
+    let result = (|| -> Result<MethodProjection> {
         let facts = attribute_facts(bytes, &shells, pool, budget)?;
         let raw = facts
             .signature
@@ -2243,7 +2503,19 @@ pub(crate) fn project_method_signature(
             CpEntryKind::MethodRef { owner, name: called, .. } | CpEntryKind::InterfaceMethodRef { owner, name: called, .. }
                 if owner.0.as_slice() == class_internal && called.0.as_slice() == name.as_slice()
         )) {
-            return Err(Error::unsupported("generic_call_binding_unproved", "a same-class Methodref names this method or an adjacent overload"));
+            // The pool entry is a candidate fact, not a refusal: the class-level assembly holds
+            // this member until its own decoded bodies state which members the entry's sites
+            // really target. A proven binding falls through to the same shape proofs as an
+            // unreferenced member; anything unproved keeps the existing refusal text.
+            match same_class {
+                SameClassBinding::Pending => {
+                    return Ok(MethodProjection::Deferred);
+                }
+                SameClassBinding::Proven => {}
+                SameClassBinding::Unproved => {
+                    return Err(Error::unsupported("generic_call_binding_unproved", "a same-class Methodref names this method or an adjacent overload"));
+                }
+            }
         }
         let (declaration, proof) = if generic_constructor {
             (
@@ -2394,6 +2666,11 @@ pub(crate) fn project_method_signature(
                     Some(GenericReturnValue::TypedFunctional { .. })
                 ) {
                     "same-run direct Code/SSA/Program and LambdaMetafactory target proof"
+                } else if matches!(
+                    candidate.map(|candidate| &candidate.value),
+                    Some(GenericReturnValue::VoidBody)
+                ) {
+                    "same-run AST/Code/SSA straight-line void body proof"
                 } else {
                     "same-run AST/SSA parameter-return proof"
                 },
@@ -2404,13 +2681,20 @@ pub(crate) fn project_method_signature(
                 "same-run AST/SSA parameter-return proof",
             )
         };
-        Ok(Some((declaration, raw, proof)))
+        Ok(MethodProjection::Declaration(declaration, raw, proof))
     })();
     match result {
-        Ok(Some((declaration, signature, proof))) => {
-            record.project_generic(declaration, &signature, proof, budget)
+        Ok(MethodProjection::Deferred) => Ok(SignatureProjection::DeferredSameClass),
+        Ok(MethodProjection::Declaration(declaration, signature, proof)) => {
+            let proof = if same_class == SameClassBinding::Proven {
+                format!("{proof}; same-class call binding proved")
+            } else {
+                proof.to_owned()
+            };
+            record
+                .project_generic(declaration, &signature, &proof, budget)
+                .map(|()| SignatureProjection::Settled)
         }
-        Ok(None) => Ok(()),
         Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
         Err(error) => {
             record.enum_constructor_signature_erasure_refused =
@@ -2420,7 +2704,9 @@ pub(crate) fn project_method_signature(
                         Error::InvalidInput { code, .. }
                             if code == "jvm_signature_erasure_mismatch"
                     );
-            record.refuse_generic(&error.to_string(), budget)
+            record
+                .refuse_generic(&error.to_string(), budget)
+                .map(|()| SignatureProjection::Settled)
         }
     }
 }
@@ -3675,6 +3961,21 @@ fn ordinary_parameterized_declaration(
             }
             GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
             GenericReturnValue::EmptyVoid => None,
+            // A complete straight-line void body whose parameters are only read keeps compiling
+            // when a class-scope variable replaces the erased parameter spelling: the reader
+            // proved the variable's erasure is that parameter, so every read stays assignable to
+            // the context that accepted the erased reference. The same-run candidate refused any
+            // reassignment of the parameter locals, which is the write side this proof refuses.
+            GenericReturnValue::VoidBody
+                if parsed.result.is_none()
+                    && parsed.throws.is_empty()
+                    && parsed
+                        .parameters
+                        .iter()
+                        .all(|parameter| matches!(parameter, SignatureType::TypeVariable(_))) =>
+            {
+                Some(Vec::new())
+            }
             GenericReturnValue::VoidBody => None,
             GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
             GenericReturnValue::NullLiteral => None,
@@ -5381,13 +5682,19 @@ pub(crate) fn project_field_signature(
     class_scope: &[TypeParameterErasure],
     class_header_projected: bool,
     constant: Option<&MemberDefault>,
+    same_class: SameClassBinding,
+    same_class_note: &str,
     budget: &mut Budget,
-) -> Result<()> {
+) -> Result<SignatureProjection> {
     let shells = attribute_shells(member, b"Signature");
     if shells.is_empty() {
-        return Ok(());
+        return Ok(SignatureProjection::Settled);
     }
-    let result = (|| -> Result<(String, Vec<u8>)> {
+    enum FieldProjection {
+        Deferred,
+        Declaration(String, Vec<u8>),
+    }
+    let result = (|| -> Result<FieldProjection> {
         let facts = attribute_facts(bytes, &shells, pool, budget)?;
         let raw = facts
             .signature
@@ -5441,23 +5748,40 @@ pub(crate) fn project_field_signature(
                         && descriptor.0.as_slice() == member.descriptor.raw().0.as_slice()
             )
         }) {
-            return Err(Error::unsupported(
-                "field_generic_body_unproved",
-                "a same-class Fieldref names this field and descriptor",
-            ));
+            // As with methods, the entry is a candidate fact: the class-level inventory of this
+            // class's own decoded bodies decides whether a real read/write site keeps accepting the
+            // parameterized type. Unproved sites keep the existing refusal.
+            match same_class {
+                SameClassBinding::Pending => {
+                    return Ok(FieldProjection::Deferred);
+                }
+                SameClassBinding::Proven => {}
+                SameClassBinding::Unproved => {
+                    return Err(Error::unsupported(
+                        "field_generic_body_unproved",
+                        "a same-class Fieldref names this field and descriptor",
+                    ));
+                }
+            }
         }
 
         let ty = spell_ordinary_signature_type(&parsed.ty, class_scope, budget, 0)?;
-        Ok((
+        Ok(FieldProjection::Declaration(
             field_declaration_with_type(&record.item, &ty, constant),
             raw,
         ))
     })();
     match result {
-        Ok((declaration, signature)) => {
+        Ok(FieldProjection::Deferred) => Ok(SignatureProjection::DeferredSameClass),
+        Ok(FieldProjection::Declaration(declaration, signature)) => {
             let marker = format!(
-                "// jarde: field Signature `{}` projected after descriptor erasure and no same-class Fieldref",
+                "// jarde: field Signature `{}` projected after descriptor erasure and {}",
                 comment_text(&String::from_utf8_lossy(&signature)),
+                if same_class == SameClassBinding::Proven {
+                    comment_text(same_class_note)
+                } else {
+                    "no same-class Fieldref".to_owned()
+                },
             );
             let mut markers = record.markers.clone();
             markers.push(marker);
@@ -5468,7 +5792,7 @@ pub(crate) fn project_field_signature(
             )?;
             record.declaration = Some(declaration);
             record.markers = markers;
-            Ok(())
+            Ok(SignatureProjection::Settled)
         }
         Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
         Err(error) => {
@@ -5487,7 +5811,7 @@ pub(crate) fn project_field_signature(
                 u64::try_from(text.len()).unwrap_or(u64::MAX),
             )?;
             record.markers = markers;
-            Ok(())
+            Ok(SignatureProjection::Settled)
         }
     }
 }
