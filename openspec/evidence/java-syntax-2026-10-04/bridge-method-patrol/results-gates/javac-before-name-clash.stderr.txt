@@ -1,0 +1,7 @@
+BR$Base.java:19: 错误: 已在类 BR$Base中定义了方法 next()
+    public BR$Node next() {
+                   ^
+BR$StrBox.java:36: 错误: 已在类 BR$StrBox中定义了方法 get()
+    java.lang.Object get() {
+                     ^
+2 个错误

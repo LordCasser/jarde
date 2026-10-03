@@ -1,0 +1,1 @@
+(Ljava/lang/Object;)I -> bridge@1 did not prove a pure single forward
