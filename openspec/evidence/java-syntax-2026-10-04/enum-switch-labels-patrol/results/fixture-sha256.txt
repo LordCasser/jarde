@@ -1,0 +1,6 @@
+ed663a41fb62ba3aae3121dcb9d9771cee125ae0af575cd6adf57f54e350c054  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/enum-switch-labels-patrol/fixture/Color.class
+2e9258acb250a6f53aae8bfe146fe7175dcb43aff7cc6c40fd84e9d52892269e  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/enum-switch-labels-patrol/fixture/E1.class
+12e448f892f344f98d18573115692d015be2e0adff96bb1faab7f3c07918b673  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/enum-switch-labels-patrol/fixture/E1$Color.class
+9d21443ca809107fcd41a1cb4f96ddade605abd3b5b12a3b98e095a05c2edc90  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/enum-switch-labels-patrol/fixture/E1$Level.class
+56e25d3e60e78902798336e1a510f7a736439f0bc4fbea4bb95a7e0b2a5d264e  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/enum-switch-labels-patrol/fixture/E2.class
+e4b690b200dddf66cc0c3e8c4768757a8a04b78227156ce12196eea0cec78abe  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/enum-switch-labels-patrol/fixture/E2$1.class

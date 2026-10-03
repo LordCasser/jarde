@@ -1,0 +1,24 @@
+// jarde: presentation of `E2$1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+class E2$1 extends java.lang.Object {
+    static final int[] $SwitchMap$Color;
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `E2$1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        $SwitchMap$Color = new int[Color.values().length];
+        try {
+            E2$1.$SwitchMap$Color[Color.RED.ordinal()] = 1;
+        } catch (java.lang.NoSuchFieldError local0) {
+        }
+        try {
+            E2$1.$SwitchMap$Color[Color.GREEN.ordinal()] = 2;
+        } catch (java.lang.NoSuchFieldError local0) {
+        }
+        try {
+            E2$1.$SwitchMap$Color[Color.BLUE.ordinal()] = 3;
+        } catch (java.lang.NoSuchFieldError local0) {
+        }
+    }
+}

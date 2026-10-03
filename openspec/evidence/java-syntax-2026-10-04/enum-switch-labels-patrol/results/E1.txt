@@ -1,0 +1,74 @@
+// jarde: presentation of `E1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class E1 extends java.lang.Object {
+    public E1() {
+        // @method <init>()V
+        // @declaration a constructor of `E1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String byColor(E1$Color arg0) {
+        // @method byColor(LE1$Color;)Ljava/lang/String;
+        // @declaration a static method of `E1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        switch (arg0.ordinal()) {
+            case 0:
+                return "r";
+            case 1:
+                return "g";
+            case 2:
+                return "b";
+            default:
+                return "?";
+        }
+    }
+
+    public static int byLevel(E1$Level arg0) {
+        // @method byLevel(LE1$Level;)I
+        // @declaration a static method of `E1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        switch (arg0.ordinal()) {
+            case 0:
+                return 1;
+            case 1:
+                return 2;
+            default:
+                return 3;
+        }
+    }
+
+    public static java.lang.String twoSwitches(E1$Color arg0, E1$Level arg1) {
+        // @method twoSwitches(LE1$Color;LE1$Level;)Ljava/lang/String;
+        // @declaration a static method of `E1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String local2;
+        switch (arg0.ordinal()) {
+            case 0:
+                local2 = "r";
+                break;
+            default:
+                local2 = "x";
+                break;
+        }
+        switch (arg1.ordinal()) {
+            case 2:
+                local2 = local2 + "h";
+                break;
+            default:
+                local2 = local2 + "l";
+                break;
+        }
+        return local2;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `E1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append((java.lang.String) byColor(E1$Color.GREEN)).append(byLevel(E1$Level.HIGH)).append((java.lang.String) twoSwitches(E1$Color.RED, E1$Level.LOW)).toString());
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append((java.lang.String) byColor(E1$Color.BLUE)).append(byLevel(E1$Level.MID)).append((java.lang.String) twoSwitches(E1$Color.BLUE, E1$Level.HIGH)).toString());
+        return;
+    }
+}
