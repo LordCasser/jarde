@@ -44,11 +44,17 @@ pre-super 写（`putfield` 早于 `invokespecial`）且 super 目标非 Object �
 | `anonymous-super-args/AnonymousSuperArgs$1` | `Base.<init>` | 否（仅 `Object.<init>`+自身字段+新建 StringBuilder 的 invokevirtual+`invokestatic event`） | 重排安全，产物当前已可编译且行为正确 |
 | `anonymous-capture/AnonymousCaptureCases$1` | `AnonymousCaptureCases$Base.<init>` | 否（`invokevirtual` 均在新建 StringBuilder 上，其余 `invokestatic`） | 重排安全，同上 |
 
-故修复判据**不能**简单收窄为"仅 Object super"——那会让后两个**当前正确且可编译**的 fixture 退化为不可编译（反向回归）。正确判据是 design 决策 1 的三档：Object 目标安全；或 super 类在快照内且其 ctor 无 `this` 虚分派则安全；否则不重排。
+故修复判据的关键是 **super ctor 能否在构造期分派到用户代码**。root 二次取证（2026-10-04）**否证了"读 super ctor 体证明无 this 虚分派"的宽档**，最终采单档判据（仅 `Object.<init>` 允许重排），依据三条实证：
 
-super 目标为 `java/lang/Object."<init>"` 的 pre-super 写形（`AnonymousCaptureCases$Outer$1`、`Inner$1`、`AnonymousMemberBase$Outer$Base`）落入第一档，不受影响。
+1. **跨类读方法体在本仓库无既有先例**：`prove_class_source_bridges` 走 `jarde_jvm::resolve_symbol` 只取**声明**；`prove_outer_super_bridge_use_closure` 消费**已恢复报告**；lambda 伴生读**同类**成员；`build::Inputs` 仅携带 `direct_super_class` 名字（无 Code）。引入跨类读体+decode+计费会把窄修复扩成中大片。
+2. **headers-only 代理（覆写名匹配）会反向回归**：实测 `anonymous-super-args/AnonymousSuperArgs$1` 的 `render()` 与 super `Base.render()` 同名 → 代理判 UNSAFE，但该 fixture 的 super ctor 实际只有 `Object.<init>`+自身字段+新建 StringBuilder 的 invokevirtual+`invokestatic event`（无 `this` 分派），重排是安全的。即代理既会漏判也会误判。
+3. **单类事实无法区分三处**：实测三者都"有本类方法读被移动字段"，该判据对三者同为真。
 
-修复片 `recover-ctor-reorder-dispatch-guard` 的 1.2 变体须覆盖上述**三处**并分别断言：dispatch 形不重排（回归消除）、两处无分派形仍重排且逐字不变（守反向回归），各自以重编运行对照钉死"不再出现可编译且行为不同"。
+**收紧不构成对已验收声明的回归**：`anonymous-super-args` 的既有验收证据（`evidence/java-syntax-2026-09-27/anonymous-super-args/report.md` 第 30–34 行）记录的就是 verbatim 序与"完整源码编译因此退出 1"——不可编译是该 fixture 在重排切片（10-02）之前的既有如实登记状态，且 `present-proved-java-structure` 2.10 明写"独立二进制名类视图需明确不声称该构造器可编译；等 5.3 的类级匿名语法……才由 `new Base(...) { ... }` 让 javac 生成等价的前置合成写入"。收紧后退回响亮失败，符合项目立场。
+
+super 目标为 `java/lang/Object."<init>"` 的 pre-super 写形（`AnonymousCaptureCases$Outer$1`、`Inner$1`、`AnonymousMemberBase$Outer$Base`，以及 C1/C2 与 `capture_ctor_class` 生成的全部测试正例）落入安全档，不受影响。
+
+修复片 `recover-ctor-reorder-dispatch-guard` 的 1.2 变体须覆盖：dispatch 形不重排（回归消除）、两处非 Object super 形退回 verbatim（响亮失败、行为忠实）、Object 档逐字不变。
 
 ## 处置
 
