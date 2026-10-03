@@ -1,0 +1,2 @@
+8fc1bddec38987feaf0f3c9a29812e41e9fafda7795cf5a588bd9aa7fec58bbe  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/fixture/Z1.class
+d73192736ee1f78103f7f62ba7b97fa199e2b6075294bd210329e35caf724527  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/fixture/Z1$Box.class
