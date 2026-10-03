@@ -1,0 +1,5 @@
+7518a93eab185cacbb64f3b10eb344cba6c230dfa5663cf68c60de0f718aef0a  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/fixture/BR$Base.class
+a2e0d94642200ab3d622702495abdcb7353839c8656c90ccba2f7359c388a596  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/fixture/BR$Box.class
+36b8115aa4592fcbee72bec742774276e0f9ab07854f4a4ed34b323fc98ad61f  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/fixture/BR$Impl.class
+ef3afe706348ddab3e872b719a66e6d7fef7bd08f9143e8571f7c877a8efe315  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/fixture/BR$Node.class
+9071c0cdb7226b6c0c8c439ad5f82b3686cb6e31bba2c527056263b0fe3678d8  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/bridge-method-patrol/fixture/BR$StrBox.class
