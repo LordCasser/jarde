@@ -1,0 +1,16 @@
+### 第二轮普查：8 个新构造 + 嵌套类补测（扫描器盲区修正）
+
+  扫描器自检（移植后先用已知耦合的 TR 复验）：TR 报 VERSION-COUPLED 2/6 方法 DIFF，故 SAME 结论可信。
+  8 构造逐方法 opcode：全部 same（D_diamond/D_varargs/D_covariant/D_narrow/D_ternary/D_iface/D_genwit/D_switchfall，共 27 方法 0 DIFF）
+
+### 扫描器盲区补测：嵌套类的整类 opcode SHA（扫描器只比源同名类，未比嵌套类）
+  D_covariant$A      真8=2cff2f4212d14d73f9fb8a893d350b07 javac23=2cff2f4212d14d73f9fb8a893d350b07  IDENTICAL
+  D_covariant$B      真8=7da7c5c90545aba8ebacc7f9af50a66e javac23=7da7c5c90545aba8ebacc7f9af50a66e  IDENTICAL
+  D_iface$C          真8=e153d3be27abf6120666b5082f5328f2 javac23=e153d3be27abf6120666b5082f5328f2  IDENTICAL
+  D_iface$I          真8=fbd5f727102da4a4f449f0134bce1135 javac23=fbd5f727102da4a4f449f0134bce1135  IDENTICAL
+
+### 协变返回 bridge（ACC_BRIDGE）在两腿是否都存在且同形
+  a8_D_covariant   methods=[java.lang.Stringget,java.lang.Objectget,] ACC_BRIDGE_count=1
+  b23_D_covariant  methods=[java.lang.Stringget,java.lang.Objectget,] ACC_BRIDGE_count=1
+
+  结论：bridge 方法（Object get() 桥接 String get()）在两腿都存在、ACC_BRIDGE 标志都在、opcode SHA 相同 → 协变返回的 bridge codegen 版本无关。

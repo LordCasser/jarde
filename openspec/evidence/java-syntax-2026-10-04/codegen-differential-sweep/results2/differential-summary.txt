@@ -1,0 +1,46 @@
+# codegen differential: 8 candidates (javap-only, zero cargo build)
+  D_covariant          SAME-CODEGEN     methods=2 differing=0
+      [same] public D_covariant()                         instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 17->17  exc 0->0  any 0->0
+  D_diamond            SAME-CODEGEN     methods=4 differing=0
+      [same] public D_diamond()                           instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 8->8  exc 0->0  any 0->0
+      [same] static java.util.List<java.lang.String> mk() instrs 4->4  exc 0->0  any 0->0
+      [same] static java.util.Map<java.lang.String, java. instrs 4->4  exc 0->0  any 0->0
+  D_genwit             SAME-CODEGEN     methods=4 differing=0
+      [same] public D_genwit()                            instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 27->27  exc 0->0  any 0->0
+      [same] static <T> T first(java.util.List<T>)        instrs 4->4  exc 0->0  any 0->0
+      [same] static <T> java.util.List<T> id(java.util.Li instrs 2->2  exc 0->0  any 0->0
+  D_iface              SAME-CODEGEN     methods=2 differing=0
+      [same] public D_iface()                             instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 7->7  exc 0->0  any 0->0
+  D_narrow             SAME-CODEGEN     methods=4 differing=0
+      [same] public D_narrow()                            instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 15->15  exc 0->0  any 0->0
+      [same] static byte add(byte)                        instrs 7->7  exc 0->0  any 0->0
+      [same] static char c(char)                          instrs 7->7  exc 0->0  any 0->0
+  D_switchfall         SAME-CODEGEN     methods=3 differing=0
+      [same] public D_switchfall()                        instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 14->14  exc 0->0  any 0->0
+      [same] static int f(int)                            instrs 11->11  exc 0->0  any 0->0
+  D_ternary            SAME-CODEGEN     methods=4 differing=0
+      [same] public D_ternary()                           instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 18->18  exc 0->0  any 0->0
+      [same] static int f(int, int, int)                  instrs 17->17  exc 0->0  any 0->0
+      [same] static java.lang.String g(java.lang.Object)  instrs 7->7  exc 0->0  any 0->0
+  D_varargs            SAME-CODEGEN     methods=4 differing=0
+      [same] public D_varargs()                           instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 36->36  exc 0->0  any 0->0
+      [same] static int sum(int...)                       instrs 24->24  exc 0->0  any 0->0
+      [same] static java.lang.String fmt(java.lang.String instrs 4->4  exc 0->0  any 0->0
+
+=== VERDICT SUMMARY ===
+  D_covariant: same codegen (0/2 methods differ)
+  D_diamond: same codegen (0/4 methods differ)
+  D_genwit: same codegen (0/4 methods differ)
+  D_iface: same codegen (0/2 methods differ)
+  D_narrow: same codegen (0/4 methods differ)
+  D_switchfall: same codegen (0/3 methods differ)
+  D_ternary: same codegen (0/4 methods differ)
+  D_varargs: same codegen (0/4 methods differ)

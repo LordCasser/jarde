@@ -1,0 +1,8 @@
+73f4d8f00960d460de6e6656333fe5e9364e21609b5d3534e84be0f0533d7c4a  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_covariant.java
+208ed7ea5f72d93fd9e57969da90f6f6a3d1d3f897b83c8c5f0ebc5458103547  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_diamond.java
+96099fefd1282b588d2f831639c88476ea8be5505d4c32f58c1c7028debaa262  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_genwit.java
+e8c037a0b7aefab66334fece94fe486cb9aa6a4afc796144c0c5f4e0d30b38d6  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_iface.java
+80714376cdab248f400986d23d4ebb2bc621604dfec280f26a0faab54ae81e90  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_narrow.java
+3d2d7dc8665ea7c2974e24c660762ff007d810384ddd3bacfc83d453645826ad  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_switchfall.java
+5bdfc24ddd9b3692797c8c9620addc83b93ad64245dd55651114fabbb3295b13  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_ternary.java
+77602cd3b0fcb094a2066eeee90edb50a1cbaf0c397a81fa15fe24ad616dc49a  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes2/D_varargs.java
