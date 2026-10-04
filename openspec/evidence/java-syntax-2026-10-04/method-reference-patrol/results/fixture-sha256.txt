@@ -1,0 +1,2 @@
+3191aa5e7fe48b928712cdbd006a11f0dc39ede256bfdd20fb37938bd4ac1b50  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/method-reference-patrol/fixture/M1.class
+4a22ec4ed8bc27752fca9ac89d9e0e6cd91cf259230c7e03fb49ab28c815f993  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/method-reference-patrol/fixture/M1$Item.class
