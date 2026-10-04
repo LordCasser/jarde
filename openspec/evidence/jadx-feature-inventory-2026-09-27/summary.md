@@ -100,6 +100,8 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 
 独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；[EM-12 三方核验](../java-syntax-2026-09-27/em12-super-dispatch/report.md)确认该无重载样本的投影正确、旧拒绝断言过时，应在 EM-12 的独立实现中修正测试并保留真正的错误接收者负例。[枚举 class Signature 的多余拒绝标记](enum-signature-marker-debt.md)在 DT-13 三方重放时不影响编译运行，作为报告质量问题单独核验。
 
+2026-10-05 root 负结果巡查登记（三个高频前沿，均健康、不立项）：(1) **多语句 lambda 体**（含三语句/块+return/条件体）——引用捕获全恢复（companion-call 形）；原生数组捕获三变体命中 DT-26 同一拒绝（锚家族实测扩至 3 形态，判别变量纯为捕获类型来源）；(2) **局部类**（方法内 `class`，单/双参数捕获、真局部捕获、无接口形四态）——方法体全恢复，jadx（`LC.1L` 点分形）与 jarde（池形）同级忠实，整类不可编译同源于已登记的池形伴生名声明债务（判别变量已锤定，jadx 亦不解决该形）；(3) **初始化块**（多语句 `static{}`、两实例块按源序并入构造器、`this()` 委派链）——全恢复，行为双向一致，jadx 折字段声明 vs jarde 留块内为呈现取舍。证据：[multi-statement-lambda 前沿](../java-syntax-2026-10-04/dual-javac-sweep/README.md) P02 扩样段、[local-class-presentation-patrol](../java-syntax-2026-10-05/local-class-presentation-patrol/README.md)、[init-blocks-patrol](../java-syntax-2026-10-05/init-blocks-patrol/README.md)。连续三个负结果佐证：高频语法面覆盖扎实，剩余缺口集中在已立项四片（DT-03 残留在飞、EM-15、DT-26、TWR）与已登记债务。
+
 ## 顺序与验收门槛
 
 先使用这 71 项作为固定巡查队列，对每项登记 `未测 / 已追平 / 有差距 / JADX 未完成`、代表正反例、Jarde 生产入口及可重放结果。没有实测证据的条目保持“未测”，不因存在实现代码就算完成。按依赖和实测差距安排以下批次；同一批中语义边界互不冲突的任务可并行，汇总验收由 root 独立重放。
