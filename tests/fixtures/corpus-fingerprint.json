@@ -5702,11 +5702,6 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold.root.rendered.txt"
     },
     {
-      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
-      "bytes": 243,
-      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-interface-hold/javac.log"
-    },
-    {
       "blake3": "a590f88f2db0f62596728deff82b2efaf0278cee52f2ef7585c3c044b0842058",
       "bytes": 594,
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/Base.class"
@@ -5737,11 +5732,6 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc.java"
     },
     {
-      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
-      "bytes": 243,
-      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/javac.log"
-    },
-    {
       "blake3": "c8a59ea2e9da965234315ebe0260fcf1cfb6941858794d91879be1db07981de4",
       "bytes": 589,
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/NestedSuperParentHold$1.class"
@@ -5765,11 +5755,6 @@
       "blake3": "06b7921880e69e70d82f16c3119d586806b2888c5c20486c225adf3488730225",
       "bytes": 194,
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/ParentCarrier.class"
-    },
-    {
-      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
-      "bytes": 243,
-      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/javac.log"
     },
     {
       "blake3": "e66831f21088b2f1f268b78dbea041638261a0f54f8b2f249cd717a438d33f7d",
@@ -5802,11 +5787,6 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites.java"
     },
     {
-      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
-      "bytes": 243,
-      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/javac.log"
-    },
-    {
       "blake3": "b9768725e6d3aef925a695418827fc628157ef36e2180fd0261e503308c46cf2",
       "bytes": 600,
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/Base.class"
@@ -5830,11 +5810,6 @@
       "blake3": "14113ae94205999d31d619fb3c630175f1705afa12464ac37ba27af5afb1b5d8",
       "bytes": 912,
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/UnresolvableChildRead.java"
-    },
-    {
-      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
-      "bytes": 243,
-      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/javac.log"
     },
     {
       "blake3": "84f50dc3fb474a308f7da3c06da9cf7568e35e9a892c0cbf5cd828c3f5215056",
@@ -5875,11 +5850,6 @@
       "blake3": "a9d99107e8bb5162429918efdb93dc1a50649c46a8c013d50fe07cd5b1804869",
       "bytes": 988,
       "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc.java"
-    },
-    {
-      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
-      "bytes": 243,
-      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/javac.log"
     },
     {
       "blake3": "e48c67e39f9571754dfa5065616fc54eec54da9b8f02dea374b022ab0469171e",
@@ -5940,11 +5910,6 @@
       "blake3": "d5cdb995fa42d9a0c3ecfaab6b264dcab9d1018dbaa5e150a696ce133fac5b76",
       "bytes": 263,
       "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/Base.java"
-    },
-    {
-      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
-      "bytes": 243,
-      "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/javac.log"
     },
     {
       "blake3": "289c31e8d066293da23b6da1bef00447f8b7a69599d0ae2004e58ccc8542d464",
