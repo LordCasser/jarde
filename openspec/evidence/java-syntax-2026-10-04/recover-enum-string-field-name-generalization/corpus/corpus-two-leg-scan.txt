@@ -1,0 +1,39 @@
+Corpus two-leg scan (2026-10-04, implementation of recover-enum-string-field-name-generalization):
+every `tests/fixtures/**/*.class` (532 files, 250 fixture directories) rendered once by the
+baseline binary (mainline `c226413c`) and once by the fixed binary, captures diffed.
+
+Two legs, because a single-class render cannot see the flip this slice makes (the enum main class
+only projects when its anonymous children resolve, which single-class input cannot provide):
+
+1. Single-class leg — each `.class` file rendered with
+   `jarde-cli class-source --policy single-class --class <the class's own this_class>` (the name
+   read from the bytes via `list-classes`, never derived from the directory path).
+   Result: 532 scanned, **0 diffs**.
+
+2. Family leg — each fixture directory packed into one STORE zip whose entry names are the
+   classes' own internal names (+`.class`), so anonymous children resolve; every class in the zip
+   rendered with `--policy plain-jar` by both binaries.
+   Result: 250 directories, 532 renders, **exactly 1 diff**:
+
+       tests/fixtures/enum-string-field-name/demo :: demo/LabeledOps
+
+   That is the new frozen non-`op` control probe itself (baseline degrades the constants to
+   `public static final demo.LabeledOps TIMES;`; the fixed binary projects
+   `TIMES("*") { … }` with `this.label = arg0;`). No other render changed byte.
+
+Self-checks run before the full scan (the harness's own red/green rehearsal):
+- name discovery: `demo/LabeledOps`, `em27/Probe` (packaged), `AnonymousCaptureCases$1` (nested,
+  default package) each resolve to their internal name from the bytes alone;
+- the harness's flip detector is exercised on `demo/LabeledOps` itself: baseline render contains
+  the degraded field-declaration form, fixed render contains `TIMES("*") {` and
+  `this.label = arg0;`, and the two captures differ.
+
+Exit statuses: 62 of 532 family-leg renders exit non-zero — **identical code on both legs**
+(45× exit 3 refused, 17× exit 4 stopped: classes whose multi-class families span fixture
+directories, so one leg's input cannot resolve them — same refusal before and after the fix).
+List in `family-leg-exit-codes.txt`; zero a≠b mismatches. No `NO-NAME` skips (0 files).
+
+Script: `/tmp/efn/two-leg-jarscan.py` (single-class leg in `/tmp/efn/two-leg-scan.sh`), invoked
+from the worktree root; both binaries are `c226413c` and the fix commit's own `cargo build -p
+jarde-cli` outputs (rebuilt after the last source change — an earlier stale-binary incident was
+caught by the self-check set and re-rendered).

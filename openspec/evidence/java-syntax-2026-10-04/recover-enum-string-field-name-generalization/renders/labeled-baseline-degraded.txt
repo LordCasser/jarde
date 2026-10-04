@@ -1,0 +1,70 @@
+// jarde: presentation of `demo/LabeledOps` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package demo;
+
+// jarde: class Signature `Ljava/lang/Enum<Ldemo/LabeledOps;>;Ldemo/LabeledValue;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+public enum LabeledOps implements demo.LabeledValue {
+    public static final demo.LabeledOps TIMES;
+
+    public static final demo.LabeledOps DIVIDE;
+
+    private final java.lang.String label;
+
+    private static final demo.LabeledOps[] $VALUES;
+
+    public static demo.LabeledOps[] values() {
+        // @method values()[Ldemo/LabeledOps;
+        // @declaration a static method of `demo.LabeledOps`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (demo.LabeledOps[]) demo.LabeledOps.$VALUES.clone();
+    }
+
+    public static demo.LabeledOps valueOf(java.lang.String arg0) {
+        // @method valueOf(Ljava/lang/String;)Ldemo/LabeledOps;
+        // @declaration a static method of `demo.LabeledOps`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (demo.LabeledOps) java.lang.Enum.valueOf(demo.LabeledOps.class, arg0);
+    }
+
+    // jarde: generic Signature projection refused for `<init>(Ljava/lang/String;ILjava/lang/String;)V`: invalid input (jvm_signature_erasure_mismatch): erased Signature disagrees with the physical descriptor at parameter count
+    private LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3) {
+        // @method <init>(Ljava/lang/String;ILjava/lang/String;)V
+        // @declaration a constructor of `demo.LabeledOps`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super(arg1, arg2);
+        this.label = arg3;
+        return;
+    }
+
+    public java.lang.String getLabel() {
+        // @method getLabel()Ljava/lang/String;
+        // @declaration an instance method of `demo.LabeledOps`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.label;
+    }
+
+    private static demo.LabeledOps[] $values() {
+        // @method $values()[Ldemo/LabeledOps;
+        // @declaration a static method of `demo.LabeledOps`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return new demo.LabeledOps[]{demo.LabeledOps.TIMES, demo.LabeledOps.DIVIDE};
+    }
+
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+        // @method <init>(Ljava/lang/String;ILjava/lang/String;Ldemo/LabeledOps$1;)V
+        // @declaration a constructor of `demo.LabeledOps`, member flags 0x1000
+        // recovered from bytecode; presentation is not claimed to compile
+        this(arg1, arg2, arg3);
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `demo.LabeledOps`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        demo.LabeledOps.TIMES = new demo.LabeledOps$1("TIMES", 0, "*");
+        demo.LabeledOps.DIVIDE = new demo.LabeledOps$2("DIVIDE", 1, "/");
+        demo.LabeledOps.$VALUES = $values();
+    }
+}

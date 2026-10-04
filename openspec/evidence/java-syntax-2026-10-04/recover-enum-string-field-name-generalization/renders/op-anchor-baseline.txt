@@ -1,0 +1,39 @@
+// jarde: presentation of `demo/DoubleOperations` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package demo;
+
+// jarde: class Signature `Ljava/lang/Enum<Ldemo/DoubleOperations;>;Ldemo/IOps;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+public enum DoubleOperations implements demo.IOps {
+    TIMES("*") {
+        // jarde: selected enum child definition: PhysicalDefinitionId { location: ArchiveEntry { entry: PhysicalEntryId { origin: ContainerOrigin { snapshot: SnapshotId("0b444a08f63953472d202ee29a29450cd1bbaec9fd207b0adb6628a4804641d1"), root_container: ContainerId("root"), steps: [] }, ordinal: 3, raw_name: ArchiveNameBytes([100, 101, 109, 111, 47, 68, 111, 117, 98, 108, 101, 79, 112, 101, 114, 97, 116, 105, 111, 110, 115, 36, 49, 46, 99, 108, 97, 115, 115]) } }, class_bytes: ClassBytesId { digest: Digest("2f837d0cb002663908019a30317bfdbe9bc545f85595a94379e05f13646d3c0d"), length: 395 }, variant: Base }
+        public double apply(double arg1, double arg3) {
+            // @method apply(DD)D
+            // @declaration an instance method of `demo.DoubleOperations$1`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            return arg1 * arg3;
+        }
+    },
+    DIVIDE("/") {
+        // jarde: selected enum child definition: PhysicalDefinitionId { location: ArchiveEntry { entry: PhysicalEntryId { origin: ContainerOrigin { snapshot: SnapshotId("0b444a08f63953472d202ee29a29450cd1bbaec9fd207b0adb6628a4804641d1"), root_container: ContainerId("root"), steps: [] }, ordinal: 4, raw_name: ArchiveNameBytes([100, 101, 109, 111, 47, 68, 111, 117, 98, 108, 101, 79, 112, 101, 114, 97, 116, 105, 111, 110, 115, 36, 50, 46, 99, 108, 97, 115, 115]) } }, class_bytes: ClassBytesId { digest: Digest("b1866ff74fa33cc928964b8a2f8027e20e93b98411802b6fb92bcd123550b357"), length: 432 }, variant: Base }
+        public double apply(double arg1, double arg3) {
+            // @method apply(DD)D
+            // @declaration an instance method of `demo.DoubleOperations$2`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            return arg1 / arg3;
+        }
+    };
+
+    private final java.lang.String op;
+
+    private DoubleOperations(java.lang.String arg0) {
+        this.op = arg0;
+    }
+
+    public java.lang.String getOp() {
+        // @method getOp()Ljava/lang/String;
+        // @declaration an instance method of `demo.DoubleOperations`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.op;
+    }
+}

@@ -1,0 +1,2 @@
+$ javac --release 8 -Xlint:-options -d javac-fixed-out fixed-jarde-source/demo/LabeledValue.java fixed-jarde-source/demo/LabeledOps.java
+exit=0

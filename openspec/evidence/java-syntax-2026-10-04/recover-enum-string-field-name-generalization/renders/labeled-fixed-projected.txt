@@ -1,0 +1,39 @@
+// jarde: presentation of `demo/LabeledOps` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package demo;
+
+// jarde: class Signature `Ljava/lang/Enum<Ldemo/LabeledOps;>;Ldemo/LabeledValue;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+public enum LabeledOps implements demo.LabeledValue {
+    TIMES("*") {
+        // jarde: selected enum child definition: PhysicalDefinitionId { location: ArchiveEntry { entry: PhysicalEntryId { origin: ContainerOrigin { snapshot: SnapshotId("502cb58b4f4958b1a7ee8ff7f19bfedd735fb3bf808f8caacbeb764dccedb18c"), root_container: ContainerId("root"), steps: [] }, ordinal: 1, raw_name: ArchiveNameBytes([100, 101, 109, 111, 47, 76, 97, 98, 101, 108, 101, 100, 79, 112, 115, 36, 49, 46, 99, 108, 97, 115, 115]) } }, class_bytes: ClassBytesId { digest: Digest("3ccfc6dee4ee95cdcf4ff2efe3e5b274c269b1e813c6405f6056790906a89fa2"), length: 377 }, variant: Base }
+        public double apply(double arg1, double arg3) {
+            // @method apply(DD)D
+            // @declaration an instance method of `demo.LabeledOps$1`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            return arg1 * arg3;
+        }
+    },
+    DIVIDE("/") {
+        // jarde: selected enum child definition: PhysicalDefinitionId { location: ArchiveEntry { entry: PhysicalEntryId { origin: ContainerOrigin { snapshot: SnapshotId("502cb58b4f4958b1a7ee8ff7f19bfedd735fb3bf808f8caacbeb764dccedb18c"), root_container: ContainerId("root"), steps: [] }, ordinal: 2, raw_name: ArchiveNameBytes([100, 101, 109, 111, 47, 76, 97, 98, 101, 108, 101, 100, 79, 112, 115, 36, 50, 46, 99, 108, 97, 115, 115]) } }, class_bytes: ClassBytesId { digest: Digest("febbbf6ebb72a63f015e206ae2308808e3496eb66d3fad91ed0483046ab00c9a"), length: 408 }, variant: Base }
+        public double apply(double arg1, double arg3) {
+            // @method apply(DD)D
+            // @declaration an instance method of `demo.LabeledOps$2`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            return arg1 / arg3;
+        }
+    };
+
+    private final java.lang.String label;
+
+    private LabeledOps(java.lang.String arg0) {
+        this.label = arg0;
+    }
+
+    public java.lang.String getLabel() {
+        // @method getLabel()Ljava/lang/String;
+        // @declaration an instance method of `demo.LabeledOps`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.label;
+    }
+}

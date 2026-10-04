@@ -1,0 +1,1 @@
+tests/fixtures/enum-string-field-name/demo :: demo/LabeledOps
