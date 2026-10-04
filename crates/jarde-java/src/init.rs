@@ -83,6 +83,13 @@ pub(crate) struct Site {
     /// instruction produces no statement of its own — its text is the `new` expression, written
     /// where the instance is consumed and nowhere else.
     pub(crate) owned: BTreeSet<u32>,
+    /// Every BCI whose value spells the instance this site builds: the allocation, its copy and
+    /// its constructor call — plus the discarded null-check tail (`dup; check; pop`), when the
+    /// compiler spelled one over the finished instance. The identity set the member proof matches
+    /// the physical outer argument against, and the set the consumer of a nested construction is
+    /// matched against: the tail's `dup` rewrites which SSA value the consumer reads, and that
+    /// copy is still this construction's instance.
+    pub(crate) instance: Vec<u32>,
     /// Every instruction from the allocation through the constructor call that the verifier
     /// accepted as this expression, including the value-producing argument instructions. A
     /// resource header can use this closed range to prove that its complete initializer is this
@@ -482,7 +489,7 @@ fn verify(
     // The instructions the instance comes from: the allocation, its copy and the constructor that
     // initialized it. A compiler may put the stored value down as any of the three, and what matters
     // is that the value really belongs to *this* allocation.
-    let produced_by: Vec<u32> = vec![head, dup.bci(), at];
+    let mut produced_by: Vec<u32> = vec![head, dup.bci(), at];
     let operands = stack_operands(constructor);
     let Some((_, receiver)) = operands.first().copied() else {
         return Err(shape(format!(
@@ -493,6 +500,27 @@ fn verify(
         return Err(shape(format!(
             "the constructor at BCI {at} is called on a value this allocation did not produce"
         )));
+    }
+    // One compiler spells a discarded null check **over the finished instance** before the instance
+    // is consumed: `dup; <discarded null check>; pop` immediately after the constructor call —
+    // real javac 8 writes it for every source-qualified member construction whose qualifier is a
+    // fresh allocation (`new Outer().new Inner(…)`), javac 9+ writes none. The check reads the
+    // instance this site builds and its result is dropped, so the three instructions are the
+    // qualifier's own spelling, not a reader of the instance: they join the site's own
+    // instructions here, and the value the construction's consumer reads is the copy the `dup`
+    // writes — the identity set below states that, so the member proof matches its physical outer
+    // argument against it (P3 2c.26's "one construction instance, one Java spelling" is untouched:
+    // the reader gate still demands exactly one instruction outside the site that writes the
+    // instance somewhere, and the check's own result being dropped is proved by the single-use
+    // facts of the tail, not by a spelling alone).
+    if let Some(tail) = block
+        .iter()
+        .position(|instruction| instruction.bci() == at)
+        .and_then(|constructor_index| {
+            discarded_null_check_tail(ssa, operations, block, constructor_index, &produced_by)
+        })
+    {
+        produced_by.extend_from_slice(&tail);
     }
     let member = member_targets
         .iter()
@@ -512,7 +540,7 @@ fn verify(
     // the fresh instance, a store of it — has no place in the expression, and this construction
     // keeps its refusal.
     for nested in &nested_sites {
-        let nested_produced_by = [nested.head, nested.dup, nested.constructor];
+        let nested_produced_by = nested.instance.as_slice();
         if !operands
             .iter()
             .skip(1)
@@ -787,6 +815,7 @@ fn verify(
         arguments,
         member_inner: member.map(|proof| proof.site),
         owned,
+        instance: produced_by,
         expression,
     })
 }
@@ -934,18 +963,19 @@ fn verify_member(
         && block
             .get(index + 2)
             .is_some_and(|head| head.bci() == nested.head)
-        && is_the_instance(
-            ssa,
-            physical_outer,
-            &[nested.head, nested.dup, nested.constructor],
-        )
+        && is_the_instance(ssa, physical_outer, nested.instance.as_slice())
         && single_use_at(ssa, physical_outer, at)
         && names_outer(physical_outer)
     {
+        let qualifier_end = nested
+            .instance
+            .last()
+            .copied()
+            .unwrap_or(nested.constructor);
         let after_nested = block
             .iter()
-            .position(|instruction| instruction.bci() == nested.constructor)
-            .expect("the nested construction's call belongs to this block")
+            .position(|instruction| instruction.bci() == qualifier_end)
+            .expect("the nested construction's tail belongs to this block")
             + 1;
         let ordinary = member_ordinary_arguments(
             after_nested,
@@ -1184,6 +1214,64 @@ fn member_ordinary_arguments(
 fn single_use_at(ssa: &SsaTable, value: ValueId, at: u32) -> bool {
     let uses = ssa.value(value).uses();
     uses.len() == 1 && uses[0].bci() == Some(at)
+}
+
+/// The discarded null-check tail spelled over a construction's finished instance, when there is
+/// one: `dup; <discarded null check>; pop` as the three block instructions immediately after the
+/// constructor call.
+///
+/// The `dup` must read the instance this site builds. The check is one of the two spellings
+/// [`crate::facts::is_discarded_null_check`] states, and it must consume one of the `dup`'s two
+/// writes **once**. The `pop` must be the category-1 discard and must consume the check's result
+/// **once** — a kept result (stored, called on) is not this tail and leaves the construction's
+/// refusal standing. The tail's contiguity is the same block-position discipline the checked
+/// qualifier's `[qualifier, copy, check, pop]` window applies.
+fn discarded_null_check_tail(
+    ssa: &SsaTable,
+    operations: &Operations,
+    block: &[SsaInstruction],
+    constructor_index: usize,
+    produced_by: &[u32],
+) -> Option<[u32; 3]> {
+    let [copy, check, pop] = block.get(constructor_index + 1..constructor_index + 4)? else {
+        return None;
+    };
+    if operations.get(copy.bci()) != Some(&Operation::Duplicate)
+        || !copy
+            .reads()
+            .iter()
+            .any(|(_, read)| is_the_instance(ssa, *read, produced_by))
+    {
+        return None;
+    }
+    let Some(Operation::Invoke(call)) = operations.get(check.bci()) else {
+        return None;
+    };
+    if !crate::facts::is_discarded_null_check(
+        call.kind(),
+        call.owner().as_bytes(),
+        call.name().as_bytes(),
+        call.descriptor().as_bytes(),
+        call.is_interface_reference(),
+    ) {
+        return None;
+    }
+    let copy_writes: Vec<ValueId> = copy.writes().iter().map(|(_, value)| *value).collect();
+    let check_reads = stack_operands(check);
+    let check_writes = check.writes();
+    let pop_reads = stack_operands(pop);
+    if pop.opcode() != 0x57
+        || check_reads.len() != 1
+        || check_writes.len() != 1
+        || pop_reads.len() != 1
+        || !copy_writes.contains(&check_reads[0].1)
+        || !single_use_at(ssa, check_reads[0].1, check.bci())
+        || pop_reads[0].1 != check_writes[0].1
+        || !single_use_at(ssa, check_writes[0].1, pop.bci())
+    {
+        return None;
+    }
+    Some([copy.bci(), check.bci(), pop.bci()])
 }
 
 /// The complete concat chains whose values are direct, unique constructor arguments.
