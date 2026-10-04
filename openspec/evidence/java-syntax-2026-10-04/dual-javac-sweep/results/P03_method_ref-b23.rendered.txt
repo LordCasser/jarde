@@ -1,0 +1,49 @@
+// jarde: presentation of `P03_method_ref` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class P03_method_ref extends java.lang.Object {
+    public P03_method_ref() {
+        // @method <init>()V
+        // @declaration a constructor of `P03_method_ref`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `run(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static void run(java.util.List arg0) {
+        // @method run(Ljava/util/List;)V
+        // @declaration a static method of `P03_method_ref`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4 1
+        // the instruction at BCI 4 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 5 8 1
+        // the copy at BCI 4 has no proved local assignment
+        // @bytecode 14 1 0
+        // adapting this bound receiver would move its null failure from functional-value creation to invocation
+        return;
+    }
+
+    static java.util.function.Supplier<java.lang.String> sup() {
+        // jarde: generic Signature `()Ljava/util/function/Supplier<Ljava/lang/String;>;` projected after descriptor erasure and same-run direct Code/SSA/Program and LambdaMetafactory target proof; same-class call binding proved
+        // @method sup()Ljava/util/function/Supplier;
+        // @declaration a static method of `P03_method_ref`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return P03_method_ref::make;
+    }
+
+    static java.lang.String make() {
+        // @method make()Ljava/lang/String;
+        // @declaration a static method of `P03_method_ref`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return "made";
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `P03_method_ref`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        run((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"x", "y"}));
+        java.lang.System.out.println((java.lang.String) sup().get());
+        return;
+    }
+}

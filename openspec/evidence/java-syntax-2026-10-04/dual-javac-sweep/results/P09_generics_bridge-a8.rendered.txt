@@ -1,0 +1,40 @@
+// jarde: presentation of `P09_generics_bridge` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class P09_generics_bridge<T extends java.lang.Comparable<T>> extends java.lang.Object {
+    public P09_generics_bridge() {
+        // @method <init>()V
+        // @declaration a constructor of `P09_generics_bridge`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `best(Ljava/util/List;)Ljava/lang/Comparable;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    java.lang.Comparable best(java.util.List arg1) {
+        // @method best(Ljava/util/List;)Ljava/lang/Comparable;
+        // @declaration an instance method of `P09_generics_bridge`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.Comparable local2;
+        java.util.Iterator local3;
+        local2 = (java.lang.Comparable) arg1.get(0);
+        local3 = arg1.iterator();
+        while (local3.hasNext()) {
+            java.lang.Comparable local4 = (java.lang.Comparable) local3.next();
+            if (local4.compareTo((java.lang.Object) local2) > 0) {
+                local2 = local4;
+            }
+        }
+        return local2;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `P09_generics_bridge`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.PrintStream saved0 = java.lang.System.out;
+        P09_generics_bridge saved1 = new P09_generics_bridge();
+        saved0.println((java.lang.Object) saved1.best((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(3), java.lang.Integer.valueOf(9), java.lang.Integer.valueOf(2)})));
+        return;
+    }
+}

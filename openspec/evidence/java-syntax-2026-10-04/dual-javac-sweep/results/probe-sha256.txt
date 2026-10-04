@@ -1,0 +1,10 @@
+1b4e38ab8b3586ab62d4d83f3aafc8b6c5219a84db8b9181f5a626db53c7975c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P01_string_concat.java
+d20617b98e2025db193c4c61ece86f97c2d2bee121f42051b21da80379c28c9a  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P02_lambda.java
+df4e8df7ec132f30742a72276e0f53ef5ea877601cff42402e5da561d7a47f7c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P03_method_ref.java
+91e2b88da6beff28ee0c22c67594773249f8ca08abeb21f238a9820c373835db  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P04_switch_string.java
+1fbaa763bee1330a3a30c77b3ab20834da9413470070394d7948beccfb3d2cb9  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P05_enum_body.java
+a362a431efa8741940064fde774ece4776738a28221d4281beac08408a759d69  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P06_anon_capture.java
+23b493f15fce19941356e3b7f2fb584ce7679cb367b2d0168e240fa976466d2d  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P07_inner_outer.java
+459a9b4435b2a32eb8ff54aff40b937a934f8ffc8672ed8bccef9d7058eb1222  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P08_twr.java
+d45f50633e1f2f46e33f2567f76b8bae3d698a24bd752294fb485cca54e20284  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P09_generics_bridge.java
+4aa21e3f8bb3ac9a8fe7cedfc0a2e6afcfe8048aca722e0036a212bda24e647f  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes/P10_nested_anon.java

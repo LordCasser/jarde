@@ -1,0 +1,26 @@
+# dual-javac sweep: 10 probes
+# jarde binary: /Users/lordcasser/workspace/projects/jarde/target/debug/jarde-cli  exists=True
+  P01_string_concat          OK               q8=0    q23=0    notrec8=0   notrec23=0   behavior_same=True
+  P02_lambda                 BOTH-REFUSE      q8=1    q23=1    notrec8=0   notrec23=0   behavior_same=True
+  P03_method_ref             BOTH-REFUSE      q8=3    q23=3    notrec8=0   notrec23=0   behavior_same=True
+  P04_switch_string          OK               q8=0    q23=0    notrec8=0   notrec23=0   behavior_same=True
+  P05_enum_body              OK               q8=0    q23=0    notrec8=0   notrec23=0   behavior_same=True
+  P06_anon_capture           OK               q8=0    q23=0    notrec8=0   notrec23=0   behavior_same=True
+  P07_inner_outer            BOTH-REFUSE      q8=13   q23=3    notrec8=2   notrec23=1   behavior_same=True
+  P08_twr                    VERSION-COUPLED  q8=1    q23=0    notrec8=1   notrec23=0   behavior_same=True
+  P09_generics_bridge        OK               q8=0    q23=0    notrec8=0   notrec23=0   behavior_same=True
+  P10_nested_anon            OK               q8=0    q23=0    notrec8=0   notrec23=0   behavior_same=True
+
+# VERSION-COUPLED (javac9+ recovers, real javac8 refuses): 1
+#   P08_twr
+# BOTH-REFUSE (unrecovered regardless of version): 3
+#   P02_lambda
+#   P03_method_ref
+#   P07_inner_outer
+# OK (both legs clean): 6
+#   P01_string_concat
+#   P04_switch_string
+#   P05_enum_body
+#   P06_anon_capture
+#   P09_generics_bridge
+#   P10_nested_anon

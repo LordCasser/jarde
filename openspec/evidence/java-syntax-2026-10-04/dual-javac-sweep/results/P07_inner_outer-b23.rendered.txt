@@ -1,0 +1,79 @@
+// jarde: presentation of `P07_inner_outer` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class P07_inner_outer extends java.lang.Object {
+    private int v;
+
+    public P07_inner_outer() {
+        // @method <init>()V
+        // @declaration a constructor of `P07_inner_outer`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.v = 7;
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `P07_inner_outer`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        P07_inner_outer local1 = new P07_inner_outer();
+        local1.new In().set(9);
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(local1.v).append("/").append(new St().use(local1)).toString());
+        return;
+    }
+
+    static int access$002(P07_inner_outer arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `access$002(LP07_inner_outer;I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$002(LP07_inner_outer;I)I
+        // @declaration a static method of `P07_inner_outer`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    class In extends java.lang.Object {
+        In() {
+            // @method <init>(LP07_inner_outer;)V
+            // @declaration a constructor of `P07_inner_outer$In`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+
+        int get() {
+            // @method get()I
+            // @declaration an instance method of `P07_inner_outer$In`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return P07_inner_outer.this.v;
+        }
+
+        void set(int arg1) {
+            // @method set(I)V
+            // @declaration an instance method of `P07_inner_outer$In`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            P07_inner_outer.access$002(P07_inner_outer.this, arg1);
+            return;
+        }
+    }
+
+    static class St extends java.lang.Object {
+        St() {
+            // @method <init>()V
+            // @declaration a constructor of `P07_inner_outer$St`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+
+        int use(P07_inner_outer arg1) {
+            // @method use(LP07_inner_outer;)I
+            // @declaration an instance method of `P07_inner_outer$St`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return arg1.new In().get();
+        }
+    }
+}

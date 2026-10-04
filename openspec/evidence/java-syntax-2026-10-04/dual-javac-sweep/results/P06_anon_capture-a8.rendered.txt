@@ -1,0 +1,27 @@
+// jarde: presentation of `P06_anon_capture` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class P06_anon_capture extends java.lang.Object {
+    public P06_anon_capture() {
+        // @method <init>()V
+        // @declaration a constructor of `P06_anon_capture`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.Runnable mk(java.lang.String arg0) {
+        // @method mk(Ljava/lang/String;)Ljava/lang/Runnable;
+        // @declaration a static method of `P06_anon_capture`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0.length();
+        return new P06_anon_capture$1(arg0, local1);
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `P06_anon_capture`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        mk("abc").run();
+        return;
+    }
+}
