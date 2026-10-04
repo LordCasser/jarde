@@ -9,10 +9,12 @@
 //! `anonymous_super_return_type_unproved`, which required the exact `()LBase;`. The `-g:none`
 //! leg (`anonymous-super-dispatch-nodebug`) carries no `LocalVariableTable`, so its projection
 //! proves the parameter name comes from the same-run AST's parameter table, never from debug
-//! information. The five refusal fixtures keep their physical class text: the widened gate
-//! accepts only `(P)Lparent;`, and its value flow (static root, complete scan, unmodified
-//! parameter slot 0 consumed only by the allocation) refuses every shape the descriptor alone
-//! cannot prove.
+//! information. The four refusal fixtures keep their physical class text: the widened gate
+//! accepts only an empty parameter table or the single proved capture descriptor, and its value
+//! flow (static root, complete scan, unmodified parameter slot 0 consumed only by the
+//! allocation) refuses every shape the descriptor alone cannot prove. The fifth frozen probe,
+//! `supertype-return`, was this slice's ring 2 boundary; the supertype-return slice
+//! (`recover-anonymous-supertype-return`) re-classified it as its own contrast positive.
 
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
@@ -95,18 +97,6 @@ const ALSO_CONSUMED_BASE: &[u8] = include_bytes!(
 );
 const INSTANCE_METHOD_BASE: &[u8] = include_bytes!(
     "fixtures/proved-java-structure/anonymous-parameterized-root-refusals/instance-method/Base.class"
-);
-const SUPERTYPE_RETURN_BASE: &[u8] = include_bytes!(
-    "fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/Base.class"
-);
-const SUPERTYPE_RETURN_RENDERER: &[u8] = include_bytes!(
-    "fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/Renderer.class"
-);
-const SUPERTYPE_RETURN_ROOT: &[u8] = include_bytes!(
-    "fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/ParameterizedSupertypeReturn.class"
-);
-const SUPERTYPE_RETURN_CHILD: &[u8] = include_bytes!(
-    "fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/ParameterizedSupertypeReturn$1.class"
 );
 
 #[test]
@@ -302,8 +292,11 @@ fn the_parameterized_root_projection_does_not_need_debug_information() {
 fn the_parameterized_root_refusals_keep_their_physical_text() {
     // Each widened-gate negative keeps its physical class text (the `$1` spelling javac
     // refuses) — the descriptor widening must not silently accept a shape its value flow
-    // cannot prove, and the ring 2 return-type boundary must stay shut.
-    let cases: [(&str, &str, &[(&[u8], &[u8])]); 5] = [
+    // cannot prove. The fifth former case, `supertype-return`, was this slice's frozen ring 2
+    // boundary probe: `recover-anonymous-supertype-return` proved the shape (one-layer
+    // supertype return, spellable names) and re-classified it as its contrast positive, so it
+    // is asserted there now, not here.
+    let cases: [(&str, &str, &[(&[u8], &[u8])]); 4] = [
         (
             "ParameterizedMultiParams",
             "anonymous_super_return_type_unproved",
@@ -347,19 +340,6 @@ fn the_parameterized_root_refusals_keep_their_physical_text() {
                     INSTANCE_METHOD_CHILD,
                 ),
                 (b"Base.class", INSTANCE_METHOD_BASE),
-            ],
-        ),
-        (
-            "ParameterizedSupertypeReturn",
-            "anonymous_super_return_type_unproved",
-            &[
-                (b"ParameterizedSupertypeReturn.class", SUPERTYPE_RETURN_ROOT),
-                (
-                    b"ParameterizedSupertypeReturn$1.class",
-                    SUPERTYPE_RETURN_CHILD,
-                ),
-                (b"Base.class", SUPERTYPE_RETURN_BASE),
-                (b"Renderer.class", SUPERTYPE_RETURN_RENDERER),
             ],
         ),
     ];
