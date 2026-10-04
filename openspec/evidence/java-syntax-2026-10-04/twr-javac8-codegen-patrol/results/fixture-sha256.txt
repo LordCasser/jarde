@@ -1,0 +1,2 @@
+7e4831366bb775adf65924b597ffbc1ba0bd136a6bd8e0d0a2baf8eb899fcda1  openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/real-javac8-TR/TR.class
+1401152b546f9dd1528fc9683882ac9334b04944dba01a79ffb6892c6025660d  openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/javac23-TR/TR.class
