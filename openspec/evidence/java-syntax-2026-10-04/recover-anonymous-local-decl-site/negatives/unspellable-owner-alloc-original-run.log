@@ -1,0 +1,2 @@
+x:1
+arg:a|arg:b|base:x:1|leaf-allocated

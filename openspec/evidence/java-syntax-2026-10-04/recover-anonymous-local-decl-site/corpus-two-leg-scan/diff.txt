@@ -1,0 +1,3 @@
+Files old/SUMMARY.txt and new/SUMMARY.txt differ
+Files old/anonymous-super-args-debuginfo::AnonymousSuperArgs.java and new/anonymous-super-args-debuginfo::AnonymousSuperArgs.java differ
+Files old/anonymous-super-args::AnonymousSuperArgs.java and new/anonymous-super-args::AnonymousSuperArgs.java differ

@@ -1,0 +1,15 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+src/AnonymousSuperArgs.java:46: 错误: 找不到符号
+        AnonymousSuperArgs$1 local2 = new AnonymousSuperArgs$1((java.lang.String) text("super-label", "explicit"), number("super-value", 17), local1);
+        ^
+  符号:   类 AnonymousSuperArgs$1
+  位置: 类 AnonymousSuperArgs
+src/AnonymousSuperArgs.java:46: 错误: 找不到符号
+        AnonymousSuperArgs$1 local2 = new AnonymousSuperArgs$1((java.lang.String) text("super-label", "explicit"), number("super-value", 17), local1);
+                                          ^
+  符号:   类 AnonymousSuperArgs$1
+  位置: 类 AnonymousSuperArgs
+2 个错误
+3 个警告
