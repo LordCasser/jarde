@@ -1,0 +1,31 @@
+Compiled from "AnonymousSuperDispatch.java"
+class AnonymousSuperDispatch$1 extends Base {
+  final java.lang.String val$captured;
+
+  AnonymousSuperDispatch$1(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field val$captured:Ljava/lang/String;
+       5: aload_0
+       6: invokespecial #7                  // Method Base."<init>":()V
+       9: return
+    LineNumberTable:
+      line 20: 0
+    LocalVariableTable:
+      Start  Length  Slot  Name   Signature
+          0      10     0  this   LAnonymousSuperDispatch$1;
+
+  void observe();
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field val$captured:Ljava/lang/String;
+       4: putstatic     #13                 // Field AnonymousSuperDispatch.observed:Ljava/lang/String;
+       7: return
+    LineNumberTable:
+      line 23: 0
+      line 24: 7
+    LocalVariableTable:
+      Start  Length  Slot  Name   Signature
+          0       8     0  this   LAnonymousSuperDispatch$1;
+}

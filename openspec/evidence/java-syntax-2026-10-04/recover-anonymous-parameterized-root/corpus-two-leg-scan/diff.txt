@@ -1,0 +1,4 @@
+Files old/SUMMARY.txt and new/SUMMARY.txt differ
+Files old/anonymous-super-dispatch-nodebug::AnonymousSuperDispatch.java and new/anonymous-super-dispatch-nodebug::AnonymousSuperDispatch.java differ
+Files old/anonymous-super-dispatch::AnonymousSuperDispatch.java and new/anonymous-super-dispatch::AnonymousSuperDispatch.java differ
+diff-exit=1

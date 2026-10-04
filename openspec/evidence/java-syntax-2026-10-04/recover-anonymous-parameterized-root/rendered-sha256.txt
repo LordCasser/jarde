@@ -1,0 +1,4 @@
+# 渲染源区 SHA-256（源码区 = CLI 全文渲染，即含 // jarde: 前言的完整文本；环 1 遏制负例冻结文件同口径）
+anchor-after-g:      076b62973188e2ccda450045a59b36f4066124d2005f18a728e62ce5c0faf591
+anchor-after-gnone:  6baa7c4f91cf58658ddd32106768b5a66a953f4bbbf3aece9a138f88bcbeaf1f
+hold-containment:    1badfcb5b9dcb9a46bf017e3b285073e8424c8143a239f3a6bac9606efc98ce5  (frozen 1badfcb5b9dcb9a46bf017e3b285073e8424c8143a239f3a6bac9606efc98ce5)

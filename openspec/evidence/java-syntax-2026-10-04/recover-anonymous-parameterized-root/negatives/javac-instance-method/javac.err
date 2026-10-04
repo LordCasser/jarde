@@ -1,0 +1,11 @@
+ParameterizedInstanceMethod.java:12: 错误: 找不到符号
+    private Base create(java.lang.String arg1) {
+            ^
+  符号:   类 Base
+  位置: 类 ParameterizedInstanceMethod
+ParameterizedInstanceMethod.java:16: 错误: 找不到符号
+        return new ParameterizedInstanceMethod$1(this, arg1);
+                   ^
+  符号:   类 ParameterizedInstanceMethod$1
+  位置: 类 ParameterizedInstanceMethod
+2 个错误

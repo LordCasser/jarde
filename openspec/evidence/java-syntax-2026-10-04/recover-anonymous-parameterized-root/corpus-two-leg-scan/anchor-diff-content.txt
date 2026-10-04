@@ -1,0 +1,12 @@
+19,22c19,24
+<         // @method create(Ljava/lang/String;)LBase;
+<         // @declaration a static method of `AnonymousSuperDispatch`, member flags 0x000a
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return new AnonymousSuperDispatch$1(captured);
+---
+>         return new Base() {
+>             void observe() {
+>                 AnonymousSuperDispatch.observed = captured;
+>                 return;
+>             }
+>         };
