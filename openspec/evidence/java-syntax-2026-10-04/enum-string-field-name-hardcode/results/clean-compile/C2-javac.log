@@ -1,0 +1,25 @@
+demo/C2.java:4: 错误: 此处需要枚举常量
+    public static final demo.C2 TIMES;
+    ^
+demo/C2.java:34: 错误: 需要')'或','
+    C2(java.lang.String arg1, int arg2, java.lang.String arg3, demo.C2$1 arg4) {
+                       ^
+demo/C2.java:34: 错误: 需要';'
+    C2(java.lang.String arg1, int arg2, java.lang.String arg3, demo.C2$1 arg4) {
+                                            ^
+demo/C2.java:34: 错误: 需要',', '}'或';'
+    C2(java.lang.String arg1, int arg2, java.lang.String arg3, demo.C2$1 arg4) {
+                                                 ^
+demo/C2.java:34: 错误: 需要',', '}'或';'
+    C2(java.lang.String arg1, int arg2, java.lang.String arg3, demo.C2$1 arg4) {
+                                                        ^
+demo/C2.java:34: 错误: 需要',', '}'或';'
+    C2(java.lang.String arg1, int arg2, java.lang.String arg3, demo.C2$1 arg4) {
+                                                                   ^
+demo/C2.java:34: 错误: 需要',', '}'或';'
+    C2(java.lang.String arg1, int arg2, java.lang.String arg3, demo.C2$1 arg4) {
+                                                                        ^
+demo/C2.java:34: 错误: 需要',', '}'或';'
+    C2(java.lang.String arg1, int arg2, java.lang.String arg3, demo.C2$1 arg4) {
+                                                                             ^
+8 个错误
