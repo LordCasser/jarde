@@ -67,6 +67,29 @@ const IMPL_RUNNER_SOURCE: &str =
     include_str!("fixtures/p3-bridge-projection/br-family/v8/ImplRunner.java");
 const ORIGINAL_IMPL_RUNNER_SOURCE: &str =
     include_str!("fixtures/p3-bridge-projection/br-family/v8/OriginalImplRunner.java");
+
+/// The frozen misdispatch family (`bridge-superclass-rawheader-misdispatch/fixture`, SHAs pinned
+/// beside the bytes): a nested generic superclass (`Outer$Box`, binary name carrying a `$`) whose
+/// parameterized header projection falls back to the raw form, the specialized subclass whose
+/// parameter bridge that raw header endangers, and the top-level `Box`/`Specialized` pair whose
+/// parent name projects — the single-variable control pair.
+const SPEC_SUPERCLASS: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Spec.class");
+const SPEC_SUPERCLASS_OUTER: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Outer.class");
+const SPEC_SUPERCLASS_OUTER_BOX: &[u8] = include_bytes!(
+    "fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Outer$Box.class"
+);
+const SPEC_SUPERCLASS_DRIVER: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Drv.class");
+const SPECIALIZED_SUPERCLASS_BOX: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Box.class");
+const SPECIALIZED_SUPERCLASS: &[u8] = include_bytes!(
+    "fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Specialized.class"
+);
+const SPECIALIZED_SUPERCLASS_DRIVER: &[u8] = include_bytes!(
+    "fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Drv-toplevel.class"
+);
 /// The multilevel covariant variant: `Base2 implements Mid extends Node2`, whose bridge return
 /// the hierarchy walk reaches over two interface edges.
 const BR2_CLASS: &[u8] = include_bytes!("fixtures/p3-bridge-projection/br-family/v8/BR2.class");
@@ -7429,7 +7452,11 @@ fn br_family_bridges_admit_through_the_extended_gates() {
 
     // `BR$StrBox`: two bridges, one per member — the covariant `get` and the void
     // parameter-cast `set` — both package-private, as javac writes them for a package-private
-    // parent.
+    // parent. `BR$Box` is a generic superclass whose binary name carries a `$`, so the header
+    // projection falls back to the raw `extends BR$Box` — and under that raw header the
+    // parameter-cast `set` would degrade into an overload that a recompiled source never
+    // regenerates, so its bridge stays visible (the superclass precondition); the covariant
+    // `get` is a same-erasure-signature override under the raw header and stays hidden.
     let strbox = bridge_class_source(
         &jar,
         "BR$StrBox",
@@ -7437,12 +7464,33 @@ fn br_family_bridges_admit_through_the_extended_gates() {
         &RecoveryEvidenceRequest::essential(),
     );
     assert_eq!(strbox.bridge_proofs.len(), 2);
-    assert!(strbox.bridge_proofs.iter().all(|proof| proof.admitted));
-    assert!(strbox.bridge_proofs.iter().all(|proof| proof.projected));
+    let get_proof = strbox
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.member.descriptor.0.as_slice() == b"()Ljava/lang/Object;")
+        .expect("the get bridge is a candidate");
+    let set_proof = strbox
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)V")
+        .expect("the set bridge is a candidate");
+    assert!(get_proof.admitted);
+    assert!(get_proof.projected);
+    assert!(!set_proof.admitted);
+    assert!(!set_proof.projected);
+    assert_eq!(
+        set_proof.refusal.as_deref(),
+        Some(
+            "the erased contract comes from a generic superclass the class header spells without its type arguments, so the source could not regenerate the bridge"
+        )
+    );
     assert!(strbox.text.contains("java.lang.String get()"));
     assert!(!strbox.text.contains("java.lang.Object get()"));
     assert!(strbox.text.contains("void set(java.lang.String"));
-    assert!(!strbox.text.contains("void set(java.lang.Object"));
+    assert!(
+        strbox.text.contains("void set(java.lang.Object"),
+        "the set bridge stays visible: the raw superclass header cannot regenerate it"
+    );
 }
 
 #[test]
@@ -7589,6 +7637,186 @@ fn br_family_recovered_source_recompiles_and_runs_like_the_original() {
     assert_eq!(
         String::from_utf8(run.stdout).expect("the trace is UTF-8"),
         "0\n0\n"
+    );
+}
+
+#[test]
+fn the_superclass_header_precondition_keeps_a_raw_header_parameter_bridge_visible() {
+    // `Spec extends Outer.Box<String>`: the class's own `Signature` states the superclass
+    // generic (`LOuter$Box<Ljava/lang/String;>;`), the parent's binary name carries a `$`, so
+    // the header projection falls back to the raw `extends Outer$Box`. Under that raw header
+    // the narrowed `set(String)` override is an ordinary overload of the inherited erased
+    // `set(Object)`, and a recompiled source would regenerate no parameter bridge — so hiding
+    // the bridge would silently route erased calls to the superclass body. The superclass
+    // precondition refuses the projection and the bridge stays visible; the covariant `get`
+    // bridge is a same-erasure-signature override under the raw header and stays hidden.
+    let jar = open(zip_of(&[
+        (b"Outer.class", SPEC_SUPERCLASS_OUTER),
+        (b"Outer$Box.class", SPEC_SUPERCLASS_OUTER_BOX),
+        (b"Spec.class", SPEC_SUPERCLASS),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "Spec",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    let get_proof = report
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.member.descriptor.0.as_slice() == b"()Ljava/lang/Object;")
+        .expect("the get bridge is a candidate");
+    assert!(get_proof.admitted);
+    assert!(get_proof.projected);
+    let set_proof = report
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)V")
+        .expect("the set bridge is a candidate");
+    assert!(!set_proof.admitted);
+    assert!(!set_proof.projected);
+    assert_eq!(
+        set_proof.refusal.as_deref(),
+        Some(
+            "the erased contract comes from a generic superclass the class header spells without its type arguments, so the source could not regenerate the bridge"
+        )
+    );
+    assert!(
+        report.text.contains("class Spec extends Outer$Box"),
+        "the raw header itself is the sister slice's projection debt, not this change's"
+    );
+    assert!(report.text.contains("void set(java.lang.String"));
+    assert!(
+        report.text.contains("void set(java.lang.Object"),
+        "the bridge stays visible: the raw superclass header cannot regenerate it"
+    );
+    assert!(report.text.contains("this.set((java.lang.String) arg1)"));
+    assert!(!report.text.contains("java.lang.Object get()"));
+
+    // The three-way run: the original class and the source recompiled from the rendered text
+    // dispatch the erased `Outer$Box.set:(Ljava/lang/Object;)V` call identically — the visible
+    // bridge forwards to the narrowed override. The pre-fix behavior hid this bridge, and the
+    // recompiled source then regenerated no parameter bridge, so the same call reached the
+    // superclass body (`BOX.set(Object) ran`).
+    let scratch = BridgeProjectionScratch::new();
+    let original = scratch.child("original");
+    fs::write(original.join("Outer.class"), SPEC_SUPERCLASS_OUTER)
+        .expect("write the original hierarchy");
+    fs::write(original.join("Outer$Box.class"), SPEC_SUPERCLASS_OUTER_BOX)
+        .expect("write the original hierarchy");
+    fs::write(original.join("Spec.class"), SPEC_SUPERCLASS).expect("write the original class");
+    fs::write(original.join("Drv.class"), SPEC_SUPERCLASS_DRIVER).expect("write the driver");
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&original)
+        .arg("Drv")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    let original_trace = String::from_utf8(run.stdout).expect("the trace is UTF-8");
+    assert_eq!(original_trace, "SPEC.set(String) ran\nSPEC.get ran\n");
+
+    let recovered = scratch.child("recovered");
+    fs::write(recovered.join("Outer.class"), SPEC_SUPERCLASS_OUTER)
+        .expect("write the recovered hierarchy");
+    fs::write(recovered.join("Outer$Box.class"), SPEC_SUPERCLASS_OUTER_BOX)
+        .expect("write the recovered hierarchy");
+    fs::write(recovered.join("Drv.class"), SPEC_SUPERCLASS_DRIVER).expect("write the driver");
+    fs::write(recovered.join("Spec.java"), report.text).expect("write the rendered source");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-classpath"])
+        .arg(&recovered)
+        .arg("-d")
+        .arg(&recovered)
+        .arg(recovered.join("Spec.java"))
+        .output()
+        .expect("JDK javac is available");
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&recovered)
+        .arg("Drv")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(run.stdout).expect("the trace is UTF-8"),
+        original_trace
+    );
+
+    // The top-level control: the parent's binary name carries no `$`, the header projection
+    // spells `extends Box<java.lang.String>`, and both bridges stay hidden exactly as before
+    // this change — the parameterized header regenerates them on recompile.
+    let toplevel = open(zip_of(&[
+        (b"Box.class", SPECIALIZED_SUPERCLASS_BOX),
+        (b"Specialized.class", SPECIALIZED_SUPERCLASS),
+    ]));
+    let report = bridge_class_source(
+        &toplevel,
+        "Specialized",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(report.bridge_proofs.len(), 2);
+    assert!(
+        report
+            .bridge_proofs
+            .iter()
+            .all(|proof| proof.admitted && proof.projected)
+    );
+    assert!(
+        report
+            .text
+            .contains("class Specialized extends Box<java.lang.String>")
+    );
+    assert!(!report.text.contains("void set(java.lang.Object"));
+    assert!(!report.text.contains("java.lang.Object get()"));
+
+    let recovered = scratch.child("recovered-toplevel");
+    fs::write(recovered.join("Box.class"), SPECIALIZED_SUPERCLASS_BOX)
+        .expect("write the recovered hierarchy");
+    fs::write(recovered.join("Drv.class"), SPECIALIZED_SUPERCLASS_DRIVER)
+        .expect("write the driver");
+    fs::write(recovered.join("Specialized.java"), report.text).expect("write the rendered source");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-classpath"])
+        .arg(&recovered)
+        .arg("-d")
+        .arg(&recovered)
+        .arg(recovered.join("Specialized.java"))
+        .output()
+        .expect("JDK javac is available");
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&recovered)
+        .arg("Drv")
+        .output()
+        .expect("JDK java is available");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(run.stdout).expect("the trace is UTF-8"),
+        "SPEC.set(String) ran\nSPEC.get ran\n"
     );
 }
 
@@ -8024,13 +8252,21 @@ fn the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges(
         get_proof.refusal.as_deref(),
         Some("the existing resolver traversed back into this prepared class; admission is refused")
     );
-    // The sibling bridge, whose contract Box still declares, is unaffected.
+    // The sibling bridge, whose contract Box still declares, is unaffected by the fold: its
+    // refusal, if any, comes from the superclass header precondition (BR$Box is a generic
+    // superclass the raw header spells without its type arguments), never from the traversal.
     let set_proof = report
         .bridge_proofs
         .iter()
         .find(|proof| proof.member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)V")
         .expect("the set bridge is a candidate");
-    assert!(set_proof.admitted, "{:?}", set_proof.refusal);
+    assert!(!set_proof.admitted, "{:?}", set_proof.refusal);
+    assert_eq!(
+        set_proof.refusal.as_deref(),
+        Some(
+            "the erased contract comes from a generic superclass the class header spells without its type arguments, so the source could not regenerate the bridge"
+        )
+    );
 
     // A provided `java/lang/Comparable` decides the contract through its own definition: the
     // platform fact does not short-circuit a definition the environment carries, and the

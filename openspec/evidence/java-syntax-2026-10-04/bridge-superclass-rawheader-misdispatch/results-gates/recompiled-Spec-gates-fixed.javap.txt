@@ -1,0 +1,8 @@
+Compiled from "Spec.java"
+public class Spec extends Outer$Box {
+  public Spec();
+  void set(java.lang.String);
+  java.lang.String get();
+  void set(java.lang.Object);
+  java.lang.Object get();
+}

@@ -1,0 +1,19 @@
+package defpackage;
+
+/* JADX INFO: loaded from: br.jar:BR$StrBox.class */
+class BR$StrBox extends defpackage.BR$Box<java.lang.String> {
+    BR$StrBox() {
+    }
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    /* JADX WARN: Can't rename method to resolve collision */
+    @Override // defpackage.BR$Box
+    public java.lang.String get() {
+        return "s";
+    }
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    @Override // defpackage.BR$Box
+    public void set(java.lang.String str) {
+    }
+}

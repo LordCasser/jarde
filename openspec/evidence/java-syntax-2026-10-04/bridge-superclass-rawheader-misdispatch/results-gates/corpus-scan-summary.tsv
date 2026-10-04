@@ -1,0 +1,18 @@
+TOTAL_ATTEMPTS=448
+RENDERED=441
+IDENTICAL=439
+DIFFS=2 (BR$StrBox, Spec — 父类边参数收窄桥从隐藏变可见形)
+UNRENDERABLE_BOTH_LEGS=7
+
+== diffs.tsv ==
+DIFF	/tmp/bridge-gates/corpus-scan2/jars/tests__fixtures__p3-bridge-projection__br-family__v8.jar	BR$StrBox	standalone__tests__fixtures__p3-bridge-projection__br-family__v8__BRDOLLARStrBox
+DIFF	/tmp/bridge-gates/corpus-scan2/jars/tests__fixtures__p3-bridge-projection__bridge-superclass-precondition__v8.jar	Spec	standalone__tests__fixtures__p3-bridge-projection__bridge-superclass-precondition__v8__Spec
+
+== unrenderable.tsv ==
+UNRENDERABLE	/tmp/bridge-gates/corpus-scan2/jars/tests__fixtures__p3-declaration__v8.jar	Holder
+UNRENDERABLE	/tmp/bridge-gates/corpus-scan2/jars/tests__fixtures__proved-java-structure__anonymous-cross-class-use.jar	Other
+UNRENDERABLE	/tmp/bridge-gates/corpus-scan2/jars/tests__fixtures__proved-java-structure__anonymous-cross-class-use.jar	Owner
+UNRENDERABLE	/tmp/bridge-gates/corpus-scan2/jars/tests__fixtures__proved-java-structure__anonymous-super-dispatch.jar	AnonymousSuperDispatch
+UNRENDERABLE	/tmp/bridge-gates/corpus-scan2/jars/tests__fixtures__recover-generic-enclosing-member-call-sites__matrix.jar	matrix/UsePlainRaw
+UNRENDERABLE	/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10438-ea1d-72d1-be9e-7df1a427beda/fuzz/corpus/artifact_tree/multi-release.jar	com/example/Seed
+UNRENDERABLE	/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10438-ea1d-72d1-be9e-7df1a427beda/fuzz/corpus/artifact_tree/multi-release.jar	com/example/Seed

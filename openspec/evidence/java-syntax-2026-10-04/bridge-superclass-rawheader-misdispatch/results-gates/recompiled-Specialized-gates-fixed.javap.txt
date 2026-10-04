@@ -1,0 +1,8 @@
+Compiled from "Specialized.java"
+class Specialized extends Box<java.lang.String> {
+  Specialized();
+  void set(java.lang.String);
+  java.lang.String get();
+  java.lang.Object get();
+  void set(java.lang.Object);
+}

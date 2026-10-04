@@ -8,6 +8,30 @@
 
 **第一个取证义务（修正后）**：(a) `prove_anonymous_double_capture`（541–660）的哪些判据是 double 专属、哪些可直接泛化——尤其 `anonymous_double_constructor_shape`（759，6 指令固定形 `aload_0;dload_1;putfield;aload_0;invokespecial;return`）对 `(String,int,String)` 三参形**不适用**（指令数与 slot 宽度都不同），需按参数角色划分重写为按序核对而非固定索引；(b) `prove_family_capture` 的 `this$0` 判据（179–191）与新路径的边界——具名内部类形必须仍走原路径，本片不得误纳；(c) `project_class_source_anonymous_super` 的实参发射路径（4562 起）当前假设"全部物理实参都是父类实参"，改为子集后其序保持与副作用计数如何调整；(d) 两侧的原子发布接缝是否同一个（能否在同一次类源装配中同时应用两半证明），还是需两次独立发布——**这决定本片是一个投影还是两个投影的组合**。
 
+### root 已核实的关键契约约束（2026-10-04，实现前必读）
+
+**`MemberCaptureProof`（`src/class_source.rs:987`）当前无法表达混合形所需的参数角色划分**——它只携带单个捕获字段的事实：
+
+```rust
+pub struct MemberCaptureProof {
+    pub field_index: u64,      // 单一字段
+    pub field_name: String,
+    pub constructor: PhysicalMethodId,
+    pub write_bci: u32,        // 单一写入 BCI
+    pub reads: Vec<MemberCaptureRead>,
+}
+```
+
+即它只能陈述"一个捕获字段被谁读"，**没有**"哪些物理参数是父类实参、哪些是捕获值"的划分表示。而混合形的核心正是这个划分（fixture：`(String,int,String)` 中前两个转发 `Base.<init>(String,int)`、第三个存 `val$captured`）。
+
+约束与选项（实现者须在取证阶段选定并在报告说明）：
+
+1. 该结构是 `pub` + `#[serde(deny_unknown_fields)]` + `Serialize`，故**新增字段会影响 JSON 契约**。若新增，须用 `#[serde(default, skip_serializing_if = "Option::is_none")]` 保持向后兼容（既有消费者与 golden 不受影响），并核实是否有 golden 断言其序列化形状。
+2. 波及面已量化：**约 12 处消费者**跨三文件（`src/class_source.rs` 3 处：971/8758/987；`src/facade.rs` 6 处：5023/17544/19731/22605/22807/24297；`src/member_inner.rs` 8 处含 9/163/312）。扩展契约须逐一核实不被破坏——这是本片的主要风险面，不是判据本身。
+3. **备选**：不动 `MemberCaptureProof`，另用一个并列结构承载参数角色划分（只在混合形路径产生与消费）。若消费者波及面证明扩展代价过高，优先此路——它把新复杂度关在新路径内，不触碰已验收的具名内部类/double 两条路径的契约。
+
+**故本片的真实工作量在"契约如何承载划分"，不在判据**（判据是对既有 SSA 消费点事实的分类）。取证义务 (d) 的结论会决定选 1 还是选 3。
+
 ## Goals / Non-Goals
 
 **Goals:** 静态上下文、单分配点、super 实参与捕获值并存的匿名类内联为 `new Base(args) { … }`；捕获字段与构造器脚手架隐藏且可由 javac 重建；`anonymous-super-args` 完整源集可编译且行为一致。**Non-Goals:** `this$0` + 捕获 + super 实参三者并存（具名成员类形，属 inner-this 域的后续）；嵌套匿名类；多分配点；跨类引用；非 `structured` 正文；捕获字段的二次写入（既有片已拒）；多个 `val$` 捕获字段（本片验单字段形，多字段登记为后续）。
