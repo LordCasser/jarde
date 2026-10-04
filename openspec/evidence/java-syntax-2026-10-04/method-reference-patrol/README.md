@@ -39,8 +39,26 @@
 - 本巡查的价值是**新增数据点**：把"绑定实例引用被拒"的确切理由（NPE 时机）与"六形中五形行为正确、一形响亮拒绝"的实测结果记入 DT-27 的扩验证据，使将来推进 DT-27 时不必重造探针。
 - 优先级判断：该残留属**呈现润色**（行为已正确、失败是响亮的），低于队列中的能力增量项（5.3 混合参数匿名类内联使 fixture 从不可编译变可编译）。
 
-## 一处待将来核实的观察（低危，非本片结论）
+## 伴生方法呈现路径的归属（2026-10-04 root 读码后**已解决**，原为待核实观察）
 
-形 5/6 的 lambda 伴生方法（`lambda$main$0`/`$1`/`$2`）在渲染文本中**以原名声明为成员**并被 lambda 体调用，family 重编 `javac` exit 0、行为正确。而 `recover-lambda-inline-bodies` 的文档描述复杂体走"保留但重命名为 `lambda$…$jarde` 后缀"路径——本例既未内联也未见 `$jarde` 后缀。因**可编译且行为一致**，不构成缺陷；但与文档描述的对应关系值得在推进 lambda 域时一并核实（可能是"简单体但未被内联"的第三种路径，或文档描述与实际路径的措辞差）。未在此另立项。
+形 5/6 的 lambda 伴生方法（`lambda$main$0`/`$1`/`$2`）在渲染文本中**以原名声明为成员**并被 lambda 体调用，family 重编 `javac` exit 0、行为正确。原先记为"既未内联也未见 `$jarde` 后缀，疑为第三种路径或文档措辞差"——**读码后确认是既有的第三种写法，非缺陷、非文档偏差**：
+
+`crates/jarde-java/src/lambda.rs:70-71` 文档明载两种写法，其中第二种即本例：
+
+> "a **lambda** (`(params) -> body`) when explicit parameter adaptations or captured leading arguments need to be written, **with the body the handle's own invocation**: `impl(captures…, params…)` for a static handle, `capture0.impl(captures[1..]…, params…)` for an instance one, `new Owner(captures…, params…)` for a constructor."
+
+即伴生作为**真实成员**保留原名、lambda 体写成对它的调用。故三条路径并存：
+
+| 路径 | 结果 | 落点 |
+| --- | --- | --- |
+| 基线写法（本例） | 伴生原名可见 + lambda 体调用它 | `lambda.rs:70-71` 文档化写法 |
+| 内联 | 伴生体并入 lambda、伴生隐藏（`omit: true`） | `facade.rs:7796` 的 `Some(plan)` 分支 |
+| 重命名 | 伴生保留但改名 `…$jarde`（javac 不会合成的名字），整类仍可编 | `facade.rs:7817` 的 `None` 分支；测试 `tests/lambda_companion_bodies.rs:314`、`tests/p3_immediate_functional_receivers.rs:1450` |
+
+进入内联/重命名的前提是伴生被收进 `by_helper`（`facade.rs:7350-7361` 按 helper 分组、7711 处 `candidates.len() != 1` 拒多用途），否则在 7604/7610 记 `lambda_helper_refusal_diagnostic` 并保持基线写法。
+
+**root 自查纠错（重要，勿重犯）**：root 最初 grep 只扫了 `crates/jarde-java/src/lambda.rs` 与 `src/class_source.rs`，未见 `$jarde` 便写下"该重命名从未实现，仅存在于文档描述"——**这是错的**：实现在 `src/facade.rs:7817` 且有两个测试文件断言它。教训已固化进 `handoff.md` 的"**空查询不能证明"不存在"**"纪律条：下否定结论前须覆盖整个 `src/` 与 `crates/*/src/`（外加 `tests/` 查断言），并对同一目标用多个不同拼写/标识符各查一次。
+
+**残留（低危，未立项）**：M1 的伴生走基线写法而非内联，属**源码形态/可读性**差异（行为与可编译性均正确）。若将来推进 lambda 域（5.2 多语句体需 AST 扩展，见 `present-proved-java-structure` tasks 的 5.2 root 机制核实段），可一并取证"为何这些单表达式伴生未被内联"——需带诊断跑一次（`RuleDetails` 选择下才填 refusal 字段），当前证据不足以断定是 7604 还是 7610 那道拒绝。
 
 原 class 为行为基准（`x?`/`5`/`made`/`3`/`count=1`）。
