@@ -6725,6 +6725,56 @@
       "blake3": "4270fd3abfbe092d880d1d1b2913a98a1918f50998364fab73ea4011caac2947",
       "bytes": 487,
       "path": "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class"
+    },
+    {
+      "blake3": "70d20b974846fe43738401ce084cea740bc333c584da481440621dbc415a68ca",
+      "bytes": 319,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/g/G$In.class"
+    },
+    {
+      "blake3": "3fd7883a80ceb24174a83d6294804dab766811933e29c78afcec2ea60dccfbab",
+      "bytes": 426,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/g/G.class"
+    },
+    {
+      "blake3": "e27f6adc3d39dbd8caadb5dbf6a526e885c41482401cca380cc214cde5b91ab2",
+      "bytes": 328,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/g/G.java"
+    },
+    {
+      "blake3": "3c5f42cc87e2ae8ddf277476d1e627785f1bd07e70dc4b033d529fb5c355ca40",
+      "bytes": 418,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x$Inner.class"
+    },
+    {
+      "blake3": "9400508c7b2ddb7639f4a42f1667f8c00dbb717c0570d1ca919e208df2a0fe29",
+      "bytes": 470,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x$Stat.class"
+    },
+    {
+      "blake3": "d1ea39c0f31f04354b496d3ccf14b07b2332c9f898052eca751d05f59da51f12",
+      "bytes": 648,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x.class"
+    },
+    {
+      "blake3": "cfbf093f024ca3993908cf3a8e3f1a8b843916167448c2f8a8bb0d6956952e86",
+      "bytes": 491,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x.java"
+    },
+    {
+      "blake3": "f8cf17de84ba21c35d7aa1103553e7472a9039edc2e3b1573c3cc1d3d658fe02",
+      "bytes": 382,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap$Seed.class"
+    },
+    {
+      "blake3": "67b7f0f105c7ec203d88ccabb249ab44b0cc12f15c82dcb1f61e01cf5e6382f5",
+      "bytes": 555,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap.class"
+    },
+    {
+      "blake3": "ad9a6a7709485bfae595600137b7cdbca65db1a1c243d8884bc1ed8734ad69dd",
+      "bytes": 290,
+      "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap.java"
     }
   ],
   "known_gaps": [
