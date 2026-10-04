@@ -9,7 +9,9 @@ static Hold f1 = new MN$Holdava.lang.Object) "a");   // jarde 渲染（逐字）
 
 丢左括号、丢类型实参、类名与池形和 `java.lang.Object` 纠缠（嵌套形出现 `Hold.lang.Object` 片段）。渲染源集 `javac` **exit 1**（"需要 '(' 或 '['"）。**jadx 完整恢复同形**（`static MN.Hold<java.lang.String> f1 = new MN.Hold<>("a")`）——有解，非语言层限制。
 
-**判别（已实测）**：菱形与显式类型实参**同样坏**（与 diamond 无关）；仅**静态**字段受影响（实例字段退化为构造器赋值，保守合法）；伴生 `Hold<T>` 自身的 `T v` 投影正常。触发链 = 静态字段 + 泛型 Signature 投影被拒（注释 `field_generic_body_unproved`，常量在 `src/class_source.rs` 约 5891 行一带）+ 初始化含泛型类构造调用。
+**判别（已实测）**：菱形与显式类型实参**同样坏**（与 diamond 无关）；仅**静态**字段受影响（实例字段退化为构造器赋值，保守合法）；伴生 `Hold<T>` 自身的 `T v` 投影正常。
+
+> **root 落点收窄数据点（2026-10-05，[methodref-corner-patrol](../../evidence/java-syntax-2026-10-05/methodref-corner-patrol/README.md)）**：同为静态泛型字段 + `field_generic_body_unproved` 投影拒绝，**初始化走 clinit + lambda（invokedynamic）路径的**（`arrRef = int[]::new`）呈现**正确可编译**（`(Object arg0) -> new int[…]`）；**初始化走字段声明内联路径的**（`new Hold<>("a")` 构造调用）才损坏——即损坏片落点在**字段声明处的初始化内联分支**（clinit 拆分路径正常），实现者 task 1.1 可据此直接对比两条分支。触发链 = 静态字段 + 泛型 Signature 投影被拒（注释 `field_generic_body_unproved`，常量在 `src/class_source.rs` 约 5891 行一带）+ 初始化含泛型类构造调用。
 
 ## What Changes
 
