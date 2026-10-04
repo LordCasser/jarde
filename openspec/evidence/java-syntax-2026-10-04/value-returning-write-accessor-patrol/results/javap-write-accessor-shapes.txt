@@ -1,0 +1,115 @@
+### WA (javac 23 --release 8): 写访问器 access$002(WA,int) 的字节码——返回值形（dup_x1; putfield; ireturn），descriptor (LWA;I)I 而非文档记载的 (LC;D)V:
+  static int access$002(WA, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: dup_x1
+       3: putfield      #1                  // Field v:I
+       6: ireturn
+}
+
+### I1 (javac 23): 三个写/复合访问器，全部返回值形
+  static int access$012(I1, int);
+  static int access$000(I1);
+  static int access$100(I1);
+  static int access$102(I1, int);
+--- access$102 (纯赋值 secret = v) ---
+  static int access$102(I1, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: dup_x1
+       3: putfield      #1                  // Field secret:I
+       6: ireturn
+
+  static {};
+    Code:
+       0: new           #98                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #100                // Method java/util/HashMap."<init>":()V
+       7: putstatic     #22                 // Field REG:Ljava/util/Map;
+      10: getstatic     #22                 // Field REG:Ljava/util/Map;
+      13: ldc           #26                 // String a
+      15: iconst_1
+      16: invokestatic  #101                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      19: invokeinterface #105,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      24: pop
+      25: getstatic     #22                 // Field REG:Ljava/util/Map;
+      28: ldc           #40                 // String b
+      30: iconst_2
+      31: invokestatic  #101                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      34: invokeinterface #105,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      39: pop
+      40: return
+}
+--- access$012 (复合 counter += n，含 iadd，属 accessor.rs 明文拒绝的'计算'形) ---
+  static int access$012(I1, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #7                  // Field counter:I
+       5: iload_1
+       6: iadd
+       7: dup_x1
+       8: putfield      #7                  // Field counter:I
+      11: ireturn
+
+  static int access$000(I1);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field counter:I
+       4: ireturn
+
+  static int access$100(I1);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field secret:I
+       4: ireturn
+
+  static int access$102(I1, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: dup_x1
+       3: putfield      #1                  // Field secret:I
+       6: ireturn
+
+  static {};
+    Code:
+       0: new           #98                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #100                // Method java/util/HashMap."<init>":()V
+       7: putstatic     #22                 // Field REG:Ljava/util/Map;
+      10: getstatic     #22                 // Field REG:Ljava/util/Map;
+      13: ldc           #26                 // String a
+      15: iconst_1
+      16: invokestatic  #101                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      19: invokeinterface #105,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      24: pop
+      25: getstatic     #22                 // Field REG:Ljava/util/Map;
+      28: ldc           #40                 // String b
+      30: iconst_2
+      31: invokestatic  #101                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      34: invokeinterface #105,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      39: pop
+      40: return
+}
+
+### W (javac 23): long/double 字段写访问器同为返回值形（dup2_x1 + l/dreturn），证明非 int 专属
+  static long access$002(W, long);
+  static double access$102(W, double);
+  static int access$202(W, int);
+-- access$002
+       2: dup2_x1
+       3: putfield      #11                 // Field lng:J
+       6: lreturn
+       2: dup2_x1
+-- access$102
+       2: dup2_x1
+       3: putfield      #7                  // Field dbl:D
+       6: dreturn
+       2: dup_x1
+-- access$202
+       2: dup_x1
+       3: putfield      #1                  // Field in:I
+       6: ireturn

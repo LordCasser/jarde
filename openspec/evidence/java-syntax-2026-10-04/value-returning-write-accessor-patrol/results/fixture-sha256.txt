@@ -1,0 +1,6 @@
+bdbb49dbecd0379496a3484423b717a4bb704a30a43497136a8f912d91aff45e  openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/I1.class
+66de9a9631296d8ba41a1b019731f80f1cb62d096644c3f3a9bfbf7c7b93faaa  openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/I1$Inner.class
+8212ba92fb1b6f9523b828159e3f3ac94e61999f3ed07fc9092d1f26227f18b8  openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/I1$Nested.class
+a4427ab41c620ba7a53bf133dd29b6cf480f7625d74270d3bd0808c2585652bc  openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/I1$Reader.class
+f7a35be63746c4c27ae7e246bea98039ddadde37e286a55eaf0e17ad9585c127  openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/WA.class
+dc82c0599f5e9f41245c2425cc4d0bedda06305670e9862f55968721e62ac20a  openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/WA$Setter.class
