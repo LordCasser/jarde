@@ -11889,7 +11889,10 @@ mod tests {
             // control leg three, and the five refusal families sixteen — the supertype-return
             // family freezes its `Renderer` interface beside `Base`, nineteen classes,
             // thirty-six bodies) moved it again.
-            (527, 2346, 251, 1692, 8),
+            // The 2026-10-04 enum-string-field-name fixture (the non-`op` control probe for the
+            // DT-12 String-argument slice, five classes: the enum, its two anonymous bodies, the
+            // interface, and the behavior probe, thirteen bodies) moved it again.
+            (532, 2359, 251, 1692, 8),
             "fixture population changed: re-measure these counts"
         );
     }
