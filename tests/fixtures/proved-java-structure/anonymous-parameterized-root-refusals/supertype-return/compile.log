@@ -1,6 +1,0 @@
-ParameterizedSupertypeReturn.java:22: 错误: 找不到符号
-        System.out.println(create("captured-value").render());
-                                                   ^
-  符号:   方法 render()
-  位置: 接口 Renderer
-1 个错误
