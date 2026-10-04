@@ -47,11 +47,26 @@ CF-17 有**两族**验收 fixture，root 逐一核实**均由 javac 9+ 编译**�
 
 即真 javac 8 的 TWR 用**两条 `any` catch-all 行**表达"正常路径与异常路径都要关闭资源"的 JDK 8 codegen，且保护区间与关闭块被复制多份（`one()` 48 指令 / 16 异常表项 vs javac 9+ 的 22 / 7）。
 
-**结论（对 Goal 核心问题的回答）**：TWR **不是"再认一种 idiom 拼写"能覆盖的**——它要求 `guard` 的 `NullableResourceFinally` 形证明**接受一套不同的块/异常表拓扑**（含 `any` 行的归属、复制的关闭路径、以及 `successor_ids` 恰等集合的相应放宽或分支）。这属**机制层扩展**（中大颗粒），与 DT-03（同构序列里换一条调用拼写，窄片）、EM-15（判据扩返回值形 + 健全性负例，中片）都不同。故：
+**结论（对 Goal 核心问题的回答：不需要新增机制，需要一个沿用既有惯例的新 shape 变体）**：TWR **不是"再认一种 idiom 拼写"能覆盖的**——它要求 `guard` 的 `NullableResourceFinally` 形证明**接受一套不同的块/异常表拓扑**。但 root 进一步取证发现**该拓扑在本仓已有已验收的同构先例**：
+
+真 javac 8 的 `one()` 拓扑清点（root 实测）：
+
+| 维度 | 真 javac 8 TWR `one()` | 既有 `Shape::SegmentedFinally`（已验收） |
+| --- | --- | --- |
+| 异常表行数 | **5**（3 条 `Class java/lang/Throwable` + **2 条 `any`**） | `rows: [u32; 5]` ← **同为 5 行** |
+| 段数 | **2**（正常关闭副本 BCI 13-41 / 异常关闭副本 BCI 48-82） | `segments: [(u32, u32); 2]` ← **同为 2 段** |
+| 关闭序列副本 | **4**（`invokevirtual close` 于 BCI 22、38、59、77）+ `addSuppressed` ×2（BCI 31、70） | `cleanup: [(u32, u32); 4]` ← **同为 4 份** |
+| 保存返回值 | `ldc "in"; astore_2`（BCI 10-12），恢复于 `aload_2; areturn`（41-42） | `early_return: u32` / `saved_return` 同族字段 |
+
+即 `SegmentedFinally` 的文档自述"**The one five-row, two-segment, four-copy Java 8 finally certificate**"与真 javac 8 TWR 的拓扑**逐维吻合**。差别只在语义角色：`SegmentedFinally` 建模的是 **`catch`-型** finally（持 `catch_type`/`catch_handler`/`catch_body`/`catch_parameter`），而 javac 8 TWR 用的是 **`any` catch-all 行 + 资源 null 守卫**（`aload_0; ifnull`、`aload_1; ifnull`）。
+
+**且 `any` 行在事实模型中可表示、可区分**：`ExceptionHandlerFact`（`crates/jarde-reader/src/classfile.rs:285-291`）持 `ordinal: u32` + `catch_type_index: Option<u16>`，`None` 即 catch-all，两条 `any` 行由 ordinal 区分。（注意 `guard.rs:12169` 的 `CatchTypes::ProvenThrowable` 文档写"**A single** catch-all"——那是 `try`/`catch` **语句**（`Catches`）的模型，不是 finally certificate 的行模型；root 核实二者是不同结构，故"单 catch-all"限制不约束本形。此点须在立项时由实现者复核，root 已标注为唯一未完全排除的风险。）
+
+**故颗粒度判定为**：**中大颗粒、但架构上常规**——按 `SegmentedFinally`/`NestedCleanupFinally`/`TwoCatchReturnFinally`（`rows: [u32; 4]`）的既有惯例**新增一个 shape 变体**（如 `NullableResourceFinallyJdk8 { rows: [u32;5], segments: …, cleanup: [(u32,u32);4], saved_return: … }`），并让 `region.rs:5252` 的区域侧消费它。**不需要新机制、不需要平行状态、不需要放宽既有 shape 的判据**（新变体与 `NullableResourceFinally` 并列，javac 9+ 产物走原变体、零回退）。
 
 - **不并入 DT-03 片**（落点、判据性质、颗粒度都不同）。
-- **立项前须先做一次独立取证**：把真 javac 8 的 `one()`/`two()` 块图与异常表逐块画出，判定 `NullableResourceFinally` 是"加一个 `any`-行变体"即可覆盖，还是需要第二个 shape（如 `ResourceFinallyJdk8`）。root 未做该块图取证，**不外推**其结论。
-- 取证前的诚实判断：**若**只需为 `any` 行加归属规则，则是中片；**若**关闭路径复制导致 `successor_ids` 恰等集合无法用单一 shape 表达，则需新 shape，属大颗粒。这个分岔只能由块图取证决定。
+- **立项前的剩余取证**（root 未做，不外推）：(1) 把 `one()`/`two()` 的**规范块图**（canonical blocks + edges）逐块画出，确认 `successor_ids` 恰等集合能否用单一新变体表达，还是需要按"单资源 / 多资源"分两个变体（`two()` 有 113 指令、双资源逆序关闭，可能需独立形）；(2) 复核上面标注的 `CatchTypes::ProvenThrowable` "single catch-all" 是否真的不约束 finally 行模型；(3) 确认 `addSuppressed` 调用（javac 8 TWR 特有、javac 9+ 简化后位置不同）在区域侧的呈现归属。
+- **优先级判断**：TWR 是 Java 8 极常见形且当前真 javac 8 产物**整方法拒绝**（响亮，非静默），价值高；但颗粒度显著大于 DT-03/EM-15，须单独排期，不与窄片混批。
 
 ## 四、健全性与严重性
 
