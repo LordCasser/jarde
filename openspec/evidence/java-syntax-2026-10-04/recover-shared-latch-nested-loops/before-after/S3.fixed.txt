@@ -1,0 +1,92 @@
+// jarde: presentation of `S3` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class S3 extends java.lang.Object {
+    public S3() {
+        // @method <init>()V
+        // @declaration a constructor of `S3`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `nestedBreak(Ljava/util/Map;Ljava/lang/String;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List nestedBreak(java.util.Map arg0, java.lang.String arg1) {
+        // @method nestedBreak(Ljava/util/Map;Ljava/lang/String;)Ljava/util/List;
+        // @declaration a static method of `S3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local2;
+        java.util.Iterator local3;
+        local2 = new java.util.ArrayList();
+        local3 = arg0.entrySet().iterator();
+        java.util.Map.Entry local4;
+        java.util.Iterator local5;
+        while (local3.hasNext()) {
+            local4 = (java.util.Map.Entry) local3.next();
+            if (!((java.lang.String) local4.getKey()).startsWith(arg1)) {
+                continue;
+            }
+            local5 = ((java.util.List) local4.getValue()).iterator();
+            while (local5.hasNext()) {
+                java.lang.Integer local6 = (java.lang.Integer) local5.next();
+                if (local6.intValue() < 0) {
+                    break;
+                } else {
+                    local2.add((java.lang.Object) new java.lang.StringBuilder().append((java.lang.String) local4.getKey()).append(":").append((java.lang.Object) local6).toString());
+                }
+            }
+        }
+        return local2;
+    }
+
+    // jarde: generic Signature projection refused for `nestedNoJump(Ljava/util/Map;Ljava/lang/String;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List nestedNoJump(java.util.Map arg0, java.lang.String arg1) {
+        // @method nestedNoJump(Ljava/util/Map;Ljava/lang/String;)Ljava/util/List;
+        // @declaration a static method of `S3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local2;
+        java.util.Iterator local3;
+        local2 = new java.util.ArrayList();
+        local3 = arg0.entrySet().iterator();
+        java.util.Map.Entry local4;
+        java.util.Iterator local5;
+        while (local3.hasNext()) {
+            local4 = (java.util.Map.Entry) local3.next();
+            if (!((java.lang.String) local4.getKey()).startsWith(arg1)) {
+                continue;
+            }
+            local5 = ((java.util.List) local4.getValue()).iterator();
+            while (local5.hasNext()) {
+                java.lang.Integer local6 = (java.lang.Integer) local5.next();
+                local2.add((java.lang.Object) new java.lang.StringBuilder().append((java.lang.String) local4.getKey()).append(":").append((java.lang.Object) local6).toString());
+            }
+        }
+        return local2;
+    }
+
+    // jarde: generic Signature projection refused for `singleLoopConcat(Ljava/util/List;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List singleLoopConcat(java.util.List arg0) {
+        // @method singleLoopConcat(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `S3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1;
+        local1 = new java.util.ArrayList();
+        for (java.lang.Object iteratorElement25 : arg0) {
+            java.lang.String local3 = (java.lang.String) iteratorElement25;
+            local1.add((java.lang.Object) (local3 + "!"));
+        }
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `S3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.HashMap local1 = new java.util.HashMap();
+        local1.put((java.lang.Object) "px", (java.lang.Object) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(3), java.lang.Integer.valueOf(-1), java.lang.Integer.valueOf(5)}));
+        java.lang.System.out.println((java.lang.Object) nestedBreak((java.util.Map) local1, "p"));
+        java.lang.System.out.println((java.lang.Object) nestedNoJump((java.util.Map) local1, "p"));
+        java.io.PrintStream saved0 = java.lang.System.out;
+        saved0.println((java.lang.Object) singleLoopConcat((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"a", "b"})));
+        return;
+    }
+}

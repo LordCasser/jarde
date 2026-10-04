@@ -1,0 +1,74 @@
+// jarde: presentation of `S4` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class S4 extends java.lang.Object {
+    public S4() {
+        // @method <init>()V
+        // @declaration a constructor of `S4`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `nestedNoCast(Ljava/util/List;Ljava/util/List;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List nestedNoCast(java.util.List arg0, java.util.List arg1) {
+        // @method nestedNoCast(Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `S4`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local2;
+        java.util.Iterator local3;
+        local2 = new java.util.ArrayList();
+        local3 = arg0.iterator();
+        java.lang.String local4;
+        java.util.Iterator local5;
+        while (local3.hasNext()) {
+            local4 = (java.lang.String) local3.next();
+            local5 = arg1.iterator();
+            while (local5.hasNext()) {
+                java.lang.String local6 = (java.lang.String) local5.next();
+                local2.add((java.lang.Object) (local4 + ":" + local6));
+            }
+        }
+        return local2;
+    }
+
+    // jarde: generic Signature projection refused for `singleCastConcat(Ljava/util/List;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List singleCastConcat(java.util.List arg0) {
+        // @method singleCastConcat(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `S4`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1;
+        java.util.Iterator local2;
+        local1 = new java.util.ArrayList();
+        local2 = arg0.iterator();
+        while (local2.hasNext()) {
+            java.lang.Object local3 = local2.next();
+            local1.add((java.lang.Object) new java.lang.StringBuilder().append((java.lang.String) local3).append("!").toString());
+        }
+        return local1;
+    }
+
+    // jarde: generic Signature projection refused for `nestedPreStored(Ljava/util/Map;Ljava/lang/String;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    public static java.util.List nestedPreStored(java.util.Map arg0, java.lang.String arg1) {
+        // jarde: not recovered: the recovery run for `nestedPreStored(Ljava/util/Map;Ljava/lang/String;)Ljava/util/List;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nestedPreStored(Ljava/util/Map;Ljava/lang/String;)Ljava/util/List;
+        // @declaration a static method of `S4`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 20 29 61 64 81 91 145 148
+        // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `S4`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.PrintStream saved0 = java.lang.System.out;
+        java.util.List saved1 = java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"k"});
+        saved0.println((java.lang.Object) nestedNoCast(saved1, (java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"v"})));
+        java.io.PrintStream saved2 = java.lang.System.out;
+        saved2.println((java.lang.Object) singleCastConcat((java.util.List) java.util.Arrays.asList(new java.lang.Object[]{"c"})));
+        java.util.HashMap local1 = new java.util.HashMap();
+        local1.put((java.lang.Object) "px", (java.lang.Object) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(3), java.lang.Integer.valueOf(5)}));
+        java.lang.System.out.println((java.lang.Object) nestedPreStored((java.util.Map) local1, "p"));
+        return;
+    }
+}
