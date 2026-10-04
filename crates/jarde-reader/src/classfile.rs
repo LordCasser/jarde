@@ -11892,7 +11892,11 @@ mod tests {
             // The 2026-10-04 enum-string-field-name fixture (the non-`op` control probe for the
             // DT-12 String-argument slice, five classes: the enum, its two anonymous bodies, the
             // interface, and the behavior probe, thirteen bodies) moved it again.
-            (532, 2359, 251, 1692, 8),
+            // The 2026-10-04 recover-anonymous-supertype-return fixtures (the refusal families
+            // `indirect-supertype-return` and `nested-supertype-return` ten and the interface
+            // census containment probe three, thirteen classes, twenty-two bodies) moved it
+            // again.
+            (545, 2381, 251, 1692, 8),
             "fixture population changed: re-measure these counts"
         );
     }

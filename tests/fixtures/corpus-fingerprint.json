@@ -6222,6 +6222,86 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites.java"
     },
     {
+      "blake3": "4ee18e9bd144815526ec341c2e003903530b7b9b394d54808f84eed7318ecdb7",
+      "bytes": 169,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/indirect-supertype-return/Base.class"
+    },
+    {
+      "blake3": "bee726dde8c238fb0845f224b7bbf2b4f3a464fcdc0fd07ba9d1372197120974",
+      "bytes": 104,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/indirect-supertype-return/Mid.class"
+    },
+    {
+      "blake3": "be9016ab4fbeff94d088ef49a3452fbad8cbf270cb93bf7fbf4b9f896dd96027",
+      "bytes": 389,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/indirect-supertype-return/SupertypeReturnIndirect$1.class"
+    },
+    {
+      "blake3": "6c896a48edf50f86cf55105ce6c37845dec6d4d0f0f0afae297cc07f143413ec",
+      "bytes": 520,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/indirect-supertype-return/SupertypeReturnIndirect.class"
+    },
+    {
+      "blake3": "56b44305c08a27b0081c99e108ceaa28ab6db9df433bed4bab869e4a6cff3d3c",
+      "bytes": 1090,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/indirect-supertype-return/SupertypeReturnIndirect.java"
+    },
+    {
+      "blake3": "2b2f6926134a7195c74befc1ba430161dad245d593a26081d01264e886370217",
+      "bytes": 92,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/indirect-supertype-return/Top.class"
+    },
+    {
+      "blake3": "402b5ee8f1d89bbe81af1b31a1e597b63691a541f1fa66e2ca8fcd194fcd2966",
+      "bytes": 395,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/interface-self-invocation/InterfaceSelfInvocation$1.class"
+    },
+    {
+      "blake3": "7393512248ad2db84e56c523fcbeb7d678274e8bebe3ddcc1a8b82812c3ee358",
+      "bytes": 472,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/interface-self-invocation/InterfaceSelfInvocation.class"
+    },
+    {
+      "blake3": "d80fb8e098831e7cb6130b8eafa826c0be3ef6d372c90025c65b0588bd8d805a",
+      "bytes": 1265,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/interface-self-invocation/InterfaceSelfInvocation.java"
+    },
+    {
+      "blake3": "be56a40916ef66b4efc64a77a014c407fdfdbd083302aeeecd4c479a1ba20201",
+      "bytes": 97,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/interface-self-invocation/Renderer.class"
+    },
+    {
+      "blake3": "f94889d8a4447598203f0873688f519b43908c4622906e654d33537868e9843d",
+      "bytes": 231,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/nested-supertype-return/Base.class"
+    },
+    {
+      "blake3": "76c47836e91235a8ae90e98f2c8a7d313f139cbe2f41718b1ba1d3ebc6547aa3",
+      "bytes": 154,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/nested-supertype-return/Holder$Marker.class"
+    },
+    {
+      "blake3": "3d624badad7346bf7ee1aaae537f7dcf2bd356734b0623da0d1ccd6feb233a21",
+      "bytes": 180,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/nested-supertype-return/Holder.class"
+    },
+    {
+      "blake3": "56913e31a8f7ed887f6084fa9ab33a53518106b3cc4cd964e652005e6fc84dc5",
+      "bytes": 404,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/nested-supertype-return/SupertypeReturnNested$1.class"
+    },
+    {
+      "blake3": "ec67a62856d24c1d373dd446622021b1a96ccb26a082d0565e5c026429d26b44",
+      "bytes": 565,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/nested-supertype-return/SupertypeReturnNested.class"
+    },
+    {
+      "blake3": "7d2f5da7d03d4d371846bc315461021b65bc16d680708afd2a918e1559b3706e",
+      "bytes": 1134,
+      "path": "tests/fixtures/proved-java-structure/anonymous-supertype-return-refusals/nested-supertype-return/SupertypeReturnNested.java"
+    },
+    {
       "blake3": "5cf106a3e87e8966a632806150e9424af212972b6da548aeb1dba45020ef04e6",
       "bytes": 895,
       "path": "tests/fixtures/proved-java-structure/anonymous-top-level/AnonymousTopLevel$1.class"
