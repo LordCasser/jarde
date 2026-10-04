@@ -2012,6 +2012,41 @@
       "path": "tests/fixtures/p3-bridge-projection/br-family/v8/fixture-sha256.txt"
     },
     {
+      "blake3": "41ee2b8d3dc0a591943717c6deba7cb2403839a19aa3e9edea28a60ded717505",
+      "bytes": 517,
+      "path": "tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Box.class"
+    },
+    {
+      "blake3": "2a7bf03fd847025bc08c51ee196337d4f650185e19526b2a896e59efa4289bc8",
+      "bytes": 313,
+      "path": "tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Drv-toplevel.class"
+    },
+    {
+      "blake3": "5efe18101d5c6da1161b81f06b4772cae490a5e19d36a115671c2f101e711665",
+      "bytes": 360,
+      "path": "tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Drv.class"
+    },
+    {
+      "blake3": "a8c2607a259c8082233893188aeede5b834cee11d880d884670f208b6417bd3c",
+      "bytes": 571,
+      "path": "tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Outer$Box.class"
+    },
+    {
+      "blake3": "988179a1574c482dc49e8eb00a2208cd5b57b0dfa867dd780c542015316b86fe",
+      "bytes": 172,
+      "path": "tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Outer.class"
+    },
+    {
+      "blake3": "e4ec94ee48f5a5e3f5bed4c5eb3c875ea6dbcccd30cd481fca33b1dbcaf06c13",
+      "bytes": 688,
+      "path": "tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Spec.class"
+    },
+    {
+      "blake3": "68667c6d4b4915c06c1ec68066b584277d5e892e1c03686c05f5302741e87ad8",
+      "bytes": 635,
+      "path": "tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Specialized.class"
+    },
+    {
       "blake3": "c95477c5aadfca1c4442aaa56d8ed2e3c736eafea866bfe801e3c4f91902aee5",
       "bytes": 254,
       "path": "tests/fixtures/p3-bridge-projection/negative/FakeBridge.java"

@@ -7775,6 +7775,7 @@ impl Engine {
             &read.facts,
             &methods,
             &_bridge_candidate_runs,
+            class_scope.is_some(),
             &mut execution,
             budget,
         );
@@ -29378,6 +29379,7 @@ fn prove_class_source_bridges(
     facts: &ClassMemberFacts,
     methods: &[ClassSourceMethod],
     candidates: &[jarde_java::bridge::ClassSourceBridgeCandidate],
+    class_header_projected: bool,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Vec<class_source::ClassSourceBridgeProof> {
@@ -29902,9 +29904,7 @@ fn prove_class_source_bridges(
         // without one states no generic parent. No projection spells a parameterized interface
         // yet, so a generic interface contract keeps its bridge visible exactly as before this
         // change; when the header projection learns that spelling, its success is this
-        // branch's admit path. A *superclass* contract is different: the raw header degrades
-        // the narrowed override into an ordinary overload, which still compiles, which is why
-        // superclass edges are not questioned here.
+        // branch's admit path.
         if let Some((owner, use_kind)) = &inherited_owner
             && *use_kind == ReferenceUse::InvokeInterface
             && parameter_cast_form
@@ -29928,6 +29928,48 @@ fn prove_class_source_bridges(
             if owner_generic {
                 proofs.push(refuse(
                     "the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge",
+                ));
+                continue;
+            }
+        }
+        // The same rebuildability precondition over a *superclass* contract, where a raw header's
+        // cost is worse than a refused class: the narrowed override degrades into an ordinary
+        // overload, which still compiles — and a recompiled source then regenerates no parameter
+        // bridge, so a call through the erased contract dispatches to the superclass body instead
+        // of the override. Hiding the bridge would be a silent misdispatch, so a parameter-cast
+        // bridge whose contract owner is the superclass stays visible whenever the class's own
+        // `Signature` states the superclass generic and the projected header spells it raw (the
+        // superclass projection falls back, for example when the parent's binary name carries a
+        // `$`). A header that does carry the superclass type arguments (`class_header_projected`)
+        // is the admit path — the recompiled source regenerates the bridge from it — and a
+        // signature whose superclass segment states no arguments was never a generic contract,
+        // so both hide exactly as before. A covariant-*return* bridge is a same-erasure-signature
+        // override under the raw header too, which is why only the narrowing form is questioned
+        // here.
+        if let Some((owner, use_kind)) = &inherited_owner
+            && *use_kind == ReferenceUse::InvokeVirtual
+            && parameter_cast_form
+            && !class_header_projected
+        {
+            let superclass_generic = match bridge_superclass_contract_generic(
+                class_bytes,
+                facts,
+                owner.0.as_slice(),
+                budget,
+            ) {
+                Ok(generic) => generic,
+                Err(error) => {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    proofs.clear();
+                    proofs.push(refuse(
+                        "the class Signature stopped before it proved the erased contract's header",
+                    ));
+                    return proofs;
+                }
+            };
+            if superclass_generic {
+                proofs.push(refuse(
+                    "the erased contract comes from a generic superclass the class header spells without its type arguments, so the source could not regenerate the bridge",
                 ));
                 continue;
             }
@@ -30096,6 +30138,50 @@ fn bridge_interface_contract_generic(
             .first()
             .is_some_and(|segment| !segment.arguments.is_empty())
     }))
+}
+
+/// Whether one superclass contract's owner is generic, read from the class's own `Signature`
+/// attribute: the superclass entry that owns the contract, spelled with arguments there, is
+/// generic. Whether the projected header spells those arguments is not this helper's question —
+/// the admission carries that fact as `class_header_projected`, read off the same class's header
+/// projection, whose success is the admit path. A class without a `Signature` states no generic
+/// parent, and a superclass the signature spells without arguments is not generic. The segment
+/// test is the header projection's own `parameterized_superclass` computation, so the criterion
+/// and the projection cannot drift.
+fn bridge_superclass_contract_generic(
+    class_bytes: &[u8],
+    facts: &ClassMemberFacts,
+    owner: &[u8],
+    budget: &mut Budget,
+) -> Result<bool> {
+    let Some(shell) = facts
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name.raw().0.as_slice() == b"Signature")
+    else {
+        return Ok(false);
+    };
+    let Some(super_class) = &facts.super_class else {
+        return Ok(false);
+    };
+    if super_class.raw().0.as_slice() != owner {
+        return Ok(false);
+    }
+    let pool = class_constant_pool(class_bytes, budget)?;
+    let raw = attribute_facts(class_bytes, std::slice::from_ref(shell), &pool, budget)?
+        .signature
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "jvm_signature_missing",
+                "class Signature attribute did not resolve",
+            )
+        })?;
+    let parsed = jarde_reader::signature::parse_class_signature(raw.0.as_slice(), budget)?;
+    Ok(parsed
+        .superclass
+        .segments
+        .iter()
+        .any(|segment| !segment.arguments.is_empty()))
 }
 
 /// The bridge admission's own view of one class header: the prepared class's already-read facts,

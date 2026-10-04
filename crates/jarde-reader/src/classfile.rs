@@ -11874,7 +11874,11 @@ mod tests {
             // The 2026-10-04 bridge-admission-gates fixtures (the frozen BR patrol family six,
             // the BR2 multilevel covariant variant four, and the provided-Comparable stand-in,
             // eleven classes, twenty-one bodies) moved it again.
-            (465, 2172, 251, 1679, 8),
+            // The 2026-10-04 bridge-superclass-precondition fixtures (the frozen misdispatch
+            // family seven: the nested `Outer$Box`/`Spec`/`Drv` trio, the top-level
+            // `Box`/`Specialized`/`Drv` control trio, and the second driver, twenty-one bodies)
+            // moved it again.
+            (472, 2193, 251, 1679, 8),
             "fixture population changed: re-measure these counts"
         );
     }
