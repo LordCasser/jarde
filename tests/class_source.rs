@@ -8602,3 +8602,425 @@ fn the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges(
         Some("a direct parent or interface needed for the erased method is unresolved")
     );
 }
+
+// ==== recover-anonymous-local-decl-site ================================================
+
+const ANONYMOUS_SUPER_ARGS_ROOT: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-super-args/AnonymousSuperArgs.class");
+const ANONYMOUS_SUPER_ARGS_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-args/AnonymousSuperArgs$1.class"
+);
+const ANONYMOUS_SUPER_ARGS_BASE: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-super-args/Base.class");
+const ANONYMOUS_SUPER_ARGS_DEBUGINFO_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-args-debuginfo/AnonymousSuperArgs.class"
+);
+const LOCAL_DECL_INTERFACE_HOLD_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold.class"
+);
+const LOCAL_DECL_INTERFACE_HOLD_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold$1.class"
+);
+const LOCAL_DECL_INTERFACE_HOLD_RENDERED: &str = include_str!(
+    "fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold.root.rendered.txt"
+);
+const NESTED_SUPER_PARENT_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/NestedSuperParentHold.class"
+);
+const NESTED_SUPER_PARENT_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/NestedSuperParentHold$1.class"
+);
+const NESTED_SUPER_PARENT_CARRIER: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/ParentCarrier.class"
+);
+const NESTED_SUPER_PARENT_HOLDER: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/ParentCarrier$Holder.class"
+);
+const TWO_DECL_SITES_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites.class"
+);
+const TWO_DECL_SITES_FIRST: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites$1.class"
+);
+const TWO_DECL_SITES_SECOND: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites$2.class"
+);
+const TWO_DECL_SITES_BASE: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/Base.class"
+);
+const UNRESOLVABLE_CHILD_READ_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/UnresolvableChildRead.class"
+);
+const UNRESOLVABLE_CHILD_READ_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/UnresolvableChildRead$1.class"
+);
+const UNRESOLVABLE_CHILD_READ_BASE: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/Base.class"
+);
+const UNSPELLABLE_OWNER_ALLOC_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc.class"
+);
+const UNSPELLABLE_OWNER_ALLOC_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc$1.class"
+);
+const UNSPELLABLE_OWNER_ALLOC_BASE: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/Base.class"
+);
+const NESTED_ANON_ALLOC_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc.class"
+);
+const NESTED_ANON_ALLOC_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc$1.class"
+);
+const NESTED_ANON_ALLOC_GRANDCHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc$1$1.class"
+);
+const NESTED_ANON_ALLOC_BASE: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/Base.class"
+);
+
+#[test]
+fn anonymous_superclass_projects_the_local_declaration_initializer_shape() {
+    let snapshot = open(zip_of(&[
+        (b"AnonymousSuperArgs.class", ANONYMOUS_SUPER_ARGS_ROOT),
+        (b"AnonymousSuperArgs$1.class", ANONYMOUS_SUPER_ARGS_CHILD),
+        (b"Base.class", ANONYMOUS_SUPER_ARGS_BASE),
+    ]));
+    let root = class_source_of(&snapshot, "AnonymousSuperArgs", EnvironmentPolicy::PlainJar);
+    // The allocation site sits in a local declaration initializer mid-method; the declared
+    // left-hand type re-spells to the superclass source name and the statements after the site
+    // survive unchanged.
+    assert!(
+        root.text.contains(
+            "Base local2 = new Base((java.lang.String) text(\"super-label\", \"explicit\"), \
+             number(\"super-value\", 17)) {"
+        ),
+        "{}",
+        root.text
+    );
+    assert!(
+        root.text.contains("append(\"body:\").append(local1)"),
+        "{}",
+        root.text
+    );
+    assert!(
+        root.text.contains(
+            "java.lang.System.out.println((java.lang.Object) AnonymousSuperArgs.EVENTS);"
+        ),
+        "{}",
+        root.text
+    );
+    assert!(!root.text.contains("AnonymousSuperArgs$1"), "{}", root.text);
+    // The physical child stays queryable beside the projection.
+    let child = class_source_of(
+        &snapshot,
+        "AnonymousSuperArgs$1",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        child
+            .text
+            .contains("class AnonymousSuperArgs$1 extends Base"),
+        "{}",
+        child.text
+    );
+}
+
+#[test]
+fn anonymous_superclass_projects_the_same_shape_with_debug_info() {
+    // The -g leg carries a LocalVariableTable (the source names `captured`/`instance` come back
+    // through the existing naming channel) and its LVT records the declared type `LBase;` — but
+    // the projected left-hand type must come from the initializer's `new` operand in both legs.
+    let snapshot = open(zip_of(&[
+        (
+            b"AnonymousSuperArgs.class",
+            ANONYMOUS_SUPER_ARGS_DEBUGINFO_ROOT,
+        ),
+        (b"AnonymousSuperArgs$1.class", ANONYMOUS_SUPER_ARGS_CHILD),
+        (b"Base.class", ANONYMOUS_SUPER_ARGS_BASE),
+    ]));
+    let root = class_source_of(&snapshot, "AnonymousSuperArgs", EnvironmentPolicy::PlainJar);
+    assert!(
+        root.text.contains(
+            "Base instance = new Base((java.lang.String) text(\"super-label\", \"explicit\"), \
+             number(\"super-value\", 17)) {"
+        ),
+        "{}",
+        root.text
+    );
+    assert!(!root.text.contains("AnonymousSuperArgs$1"), "{}", root.text);
+}
+
+#[test]
+fn anonymous_interface_projection_stays_direct_return_only_for_declaration_sites() {
+    // Design criterion 5's containment: the shared site scan now derives the local-declaration
+    // shape, and the interface path must refuse it explicitly — the root's presentation stays
+    // byte-identical with the pre-relaxation rendering frozen beside the fixture.
+    let snapshot = open(zip_of(&[
+        (
+            b"LocalDeclInterfaceHold.class",
+            LOCAL_DECL_INTERFACE_HOLD_ROOT,
+        ),
+        (
+            b"LocalDeclInterfaceHold$1.class",
+            LOCAL_DECL_INTERFACE_HOLD_CHILD,
+        ),
+    ]));
+    let root = class_source_of(
+        &snapshot,
+        "LocalDeclInterfaceHold",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert_eq!(root.text, LOCAL_DECL_INTERFACE_HOLD_RENDERED);
+    assert!(
+        matches!(
+            root.anonymous_interface_projection,
+            class_source::ClassSourceAnonymousInterfaceProjection::Refused { .. }
+        ),
+        "{:?}",
+        root.anonymous_interface_projection
+    );
+    assert!(
+        root.diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "anonymous_interface_site_shape_unsupported"),
+        "{:?}",
+        root.diagnostics
+    );
+}
+
+#[test]
+fn anonymous_superclass_refuses_unproved_local_declaration_sites() {
+    // 嵌套父类: the superclass binary name contains `$`, so the left-hand retype has no
+    // spellable source name.
+    let physical = |entries: &[(&[u8], &[u8])], name: &str| {
+        class_source_of(&open(zip_of(entries)), name, EnvironmentPolicy::PlainJar)
+    };
+    let nested = physical(
+        &[
+            (b"NestedSuperParentHold.class", NESTED_SUPER_PARENT_ROOT),
+            (b"NestedSuperParentHold$1.class", NESTED_SUPER_PARENT_CHILD),
+            (b"ParentCarrier.class", NESTED_SUPER_PARENT_CARRIER),
+            (b"ParentCarrier$Holder.class", NESTED_SUPER_PARENT_HOLDER),
+        ],
+        "NestedSuperParentHold",
+    );
+    assert!(
+        nested.text.contains("new NestedSuperParentHold$1()"),
+        "{}",
+        nested.text
+    );
+    assert!(
+        !nested.text.contains("new ParentCarrier.Holder("),
+        "{}",
+        nested.text
+    );
+    assert!(
+        nested
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "anonymous_super_source_type_unproved"),
+        "{:?}",
+        nested.diagnostics
+    );
+
+    // 局部被后续读取且该读取在父类上不可解析: the anonymous body's self-call of an
+    // extra member is a child-owner use the owner census refuses.
+    let unresolvable = physical(
+        &[
+            (b"UnresolvableChildRead.class", UNRESOLVABLE_CHILD_READ_ROOT),
+            (
+                b"UnresolvableChildRead$1.class",
+                UNRESOLVABLE_CHILD_READ_CHILD,
+            ),
+            (b"Base.class", UNRESOLVABLE_CHILD_READ_BASE),
+        ],
+        "UnresolvableChildRead",
+    );
+    assert!(
+        unresolvable
+            .text
+            .contains("new UnresolvableChildRead$1((java.lang.String) text("),
+        "{}",
+        unresolvable.text
+    );
+    assert!(
+        unresolvable
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "anonymous_interface_child_additional_use"),
+        "{:?}",
+        unresolvable.diagnostics
+    );
+
+    // 不可拼写 owner 的分配: the child body's allocation is quoted at recovery, so the child
+    // method is not a complete structured body and the projection refuses whole.
+    let unspellable = physical(
+        &[
+            (b"UnspellableOwnerAlloc.class", UNSPELLABLE_OWNER_ALLOC_ROOT),
+            (
+                b"UnspellableOwnerAlloc$1.class",
+                UNSPELLABLE_OWNER_ALLOC_CHILD,
+            ),
+            (b"Base.class", UNSPELLABLE_OWNER_ALLOC_BASE),
+        ],
+        "UnspellableOwnerAlloc",
+    );
+    assert!(
+        unspellable
+            .text
+            .contains("new UnspellableOwnerAlloc$1((java.lang.String) text("),
+        "{}",
+        unspellable.text
+    );
+    assert!(
+        unspellable
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "anonymous_child_methods_incomplete"),
+        "{:?}",
+        unspellable.diagnostics
+    );
+
+    // 嵌套匿名分配: the grandchild's EnclosingMethod names the child, an owner use the census
+    // refuses — no half projection.
+    let nested_anon = physical(
+        &[
+            (b"NestedAnonAlloc.class", NESTED_ANON_ALLOC_ROOT),
+            (b"NestedAnonAlloc$1.class", NESTED_ANON_ALLOC_CHILD),
+            (b"NestedAnonAlloc$1$1.class", NESTED_ANON_ALLOC_GRANDCHILD),
+            (b"Base.class", NESTED_ANON_ALLOC_BASE),
+        ],
+        "NestedAnonAlloc",
+    );
+    assert!(
+        nested_anon
+            .text
+            .contains("new NestedAnonAlloc$1((java.lang.String) text("),
+        "{}",
+        nested_anon.text
+    );
+    assert!(
+        nested_anon
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "anonymous_interface_child_additional_use"),
+        "{:?}",
+        nested_anon.diagnostics
+    );
+}
+
+#[test]
+fn anonymous_superclass_refuses_two_declaration_initializer_sites_in_one_method() {
+    let stays_physical = |root: &class_source::ClassSourceReport, label: &str| {
+        assert!(
+            root.text
+                .contains("new TwoDeclSites$1((java.lang.String) text("),
+            "{label}: {}",
+            root.text
+        );
+        assert!(
+            !root.text.contains("new Base((java.lang.String) text("),
+            "{label}: {}",
+            root.text
+        );
+    };
+    // 同方法内两个声明初始化位: the per-method proved-site count is two, so no site is proved.
+    let both_sites = class_source_of(
+        &open(zip_of(&[
+            (b"TwoDeclSites.class", TWO_DECL_SITES_ROOT),
+            (b"TwoDeclSites$1.class", TWO_DECL_SITES_FIRST),
+            (b"TwoDeclSites$2.class", TWO_DECL_SITES_SECOND),
+            (b"Base.class", TWO_DECL_SITES_BASE),
+        ])),
+        "TwoDeclSites",
+        EnvironmentPolicy::PlainJar,
+    );
+    stays_physical(&both_sites, "two-decl-sites");
+
+    // 初始化值非唯一分配点: the second site's class constant names the first child, so both
+    // initializer sites allocate one physical class and the single-allocation proof cannot
+    // close. Both children share the constructor shape, so the patched root still verifies.
+    let mut multi_site = TWO_DECL_SITES_ROOT.to_vec();
+    let (_, utf8) = test_pool(&multi_site);
+    let first_name_index = utf8
+        .iter()
+        .enumerate()
+        .find(|(_, content)| content.as_slice() == b"TwoDeclSites$1")
+        .expect("the first child's name constant exists")
+        .0;
+    let second_class_index = test_class_index(&multi_site, b"TwoDeclSites$2");
+    let second_class_offset = test_cp_entry_offset(&multi_site, second_class_index);
+    assert_eq!(multi_site[second_class_offset], 7);
+    test_put_u16(
+        &mut multi_site,
+        second_class_offset + 1,
+        usize::try_from(first_name_index).expect("the name index fits u16"),
+    );
+    let patched = class_source_of(
+        &open(zip_of(&[
+            (b"TwoDeclSites.class", &multi_site),
+            (b"TwoDeclSites$1.class", TWO_DECL_SITES_FIRST),
+            (b"TwoDeclSites$2.class", TWO_DECL_SITES_SECOND),
+            (b"Base.class", TWO_DECL_SITES_BASE),
+        ])),
+        "TwoDeclSites",
+        EnvironmentPolicy::PlainJar,
+    );
+    stays_physical(&patched, "non-unique");
+    assert_eq!(
+        patched
+            .text
+            .matches("new TwoDeclSites$1((java.lang.String) text(")
+            .count(),
+        2
+    );
+}
+
+#[test]
+fn anonymous_superclass_refuses_a_child_body_allocating_the_anonymous_class_itself() {
+    // 自引用分配 (derived input, jarde-readable but deliberately not JVM-verifiable): the
+    // anchor child's StringBuilder class constant is retargeted to the child's own name, so the
+    // anonymous body allocates the anonymous class itself. The owner census refuses the child's
+    // own owner use — the projection never reaches the retype's survivor check.
+    let (_, utf8) = test_pool(ANONYMOUS_SUPER_ARGS_CHILD);
+    let self_name_index = utf8
+        .iter()
+        .enumerate()
+        .find(|(_, content)| content.as_slice() == b"AnonymousSuperArgs$1")
+        .expect("the child's own name constant exists")
+        .0;
+    let string_builder_class_index =
+        test_class_index(ANONYMOUS_SUPER_ARGS_CHILD, b"java/lang/StringBuilder");
+    let class_offset = test_cp_entry_offset(ANONYMOUS_SUPER_ARGS_CHILD, string_builder_class_index);
+    let mut child = ANONYMOUS_SUPER_ARGS_CHILD.to_vec();
+    assert_eq!(child[class_offset], 7);
+    test_put_u16(
+        &mut child,
+        class_offset + 1,
+        usize::try_from(self_name_index).expect("the name index fits u16"),
+    );
+    let root = class_source_of(
+        &open(zip_of(&[
+            (b"AnonymousSuperArgs.class", ANONYMOUS_SUPER_ARGS_ROOT),
+            (b"AnonymousSuperArgs$1.class", &child),
+            (b"Base.class", ANONYMOUS_SUPER_ARGS_BASE),
+        ])),
+        "AnonymousSuperArgs",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        root.text
+            .contains("AnonymousSuperArgs$1 local2 = new AnonymousSuperArgs$1("),
+        "{}",
+        root.text
+    );
+    assert!(!root.text.contains("new Base(("), "{}", root.text);
+    assert!(
+        root.diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "anonymous_interface_child_additional_use"),
+        "{:?}",
+        root.diagnostics
+    );
+}
