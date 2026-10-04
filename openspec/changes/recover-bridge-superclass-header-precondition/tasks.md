@@ -13,5 +13,5 @@
 ## 3. 回归与验收
 
 - [ ] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（当前主线 296 目标 / 2933 passed；含 `recover-bridge-admission-gates` 全部桥测试、`br_family_negative_shapes_keep_their_refusals`、`the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges`；已知 flake 家族见 handoff.md，单测复跑两轮判定）；fmt；clippy **从 `.github/workflows/ci.yml` 46–76 行逐字生成**（含 `--all-features`，29 项 `-A`）；`openspec validate --all --strict`；磁盘纪律：每轮构建前 `df -h /`，低于 12Gi 先 `cargo clean`，报告前必 clean。
-- [ ] 3.2 `Spec`/`Specialized`/`BR$StrBox` 与变体三方对照：原 class / 固定 JADX（dev，仅对照不作准入）/ Jarde 重编 `java -Xverify:all` 擦除派发逐路径一致；corpus 双腿扫描——差异应仅"父类边参数收窄桥从隐藏变可见"的形（如 `BR$StrBox`），且逐条确认无行为变化（空体两侧一致），如实记录。
+- [ ] 3.2 `Spec`/`Specialized`/`BR$StrBox` 与变体三方对照：原 class / 固定 JADX（dev，仅对照不作准入）/ Jarde 重编 `java -Xverify:all` 擦除派发逐路径一致；corpus 双腿扫描——**root 已用 javap 全量普查 454 类，含 `$` 父类 + ACC_BRIDGE 的类恰好只有 1 个：`tests/fixtures/p3-bridge-projection/br-family/v8/BR$StrBox.class`（extends BR$Box）**。故本片 corpus 差异**应恰为这 1 类**（其 `set(Object)` 桥从隐藏变可见），且须逐条确认仅桥成员声明变化、无行为变化（`BR$Box.set/get` 是空体/null，两侧一致）。**若双腿扫描出现第 2 个差异类，即为越界信号，停下报告**（说明判据过宽，误纳了非"嵌套泛型父 + 参数收窄桥"形）。
 - [ ] 3.3 root 独立复核父类边前置判据、协变返回桥零回退、擦除派发三方行为，更新 EM 账本（桥域）与巡查记录；确认与 `recover-parameterized-superclass-nested-headers`（姊妹根治片）的协调——本片前置在姊妹片落地后自动失效，无需回退。
