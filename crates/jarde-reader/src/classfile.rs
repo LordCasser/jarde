@@ -11878,7 +11878,11 @@ mod tests {
             // family seven: the nested `Outer$Box`/`Spec`/`Drv` trio, the top-level
             // `Box`/`Specialized`/`Drv` control trio, and the second driver, twenty-one bodies)
             // moved it again.
-            (472, 2193, 251, 1679, 8),
+            // The 2026-10-04 anonymous-super-mixed-direct fixture (the mixed super-argument and
+            // capture-value anchor, three classes, twelve bodies) and the mixed-refusals
+            // fixtures (two source families: two capture fields and two mixed sites, seven
+            // classes, sixteen bodies) moved it again.
+            (482, 2233, 251, 1682, 8),
             "fixture population changed: re-measure these counts"
         );
     }

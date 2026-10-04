@@ -187,6 +187,29 @@ const ANONYMOUS_INNER_THIS_CHILD: &[u8] =
 const ANONYMOUS_SUPER_DIRECT_ROOT: &[u8] = include_bytes!(
     "fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect.class"
 );
+const ANONYMOUS_SUPER_MIXED_DIRECT_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-mixed-direct/AnonymousSuperMixedDirect.class"
+);
+const ANONYMOUS_SUPER_MIXED_DIRECT_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-mixed-direct/AnonymousSuperMixedDirect$1.class"
+);
+const ANONYMOUS_SUPER_MIXED_DIRECT_BASE: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-super-mixed-direct/Base.class");
+const ANONYMOUS_SUPER_MIXED_TWO_SITES_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites.class"
+);
+const ANONYMOUS_SUPER_MIXED_TWO_SITES_FIRST: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites$1.class"
+);
+const ANONYMOUS_SUPER_MIXED_TWO_SITES_SECOND: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites$2.class"
+);
+const ANONYMOUS_SUPER_MIXED_TWO_CAPTURES_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-capture-fields/TwoCaptureFields.class"
+);
+const ANONYMOUS_SUPER_MIXED_TWO_CAPTURES_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-capture-fields/TwoCaptureFields$1.class"
+);
 const ANONYMOUS_SUPER_DIRECT_CHILD: &[u8] = include_bytes!(
     "fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect$1.class"
 );
@@ -3463,6 +3486,228 @@ fn anonymous_superclass_refuses_a_different_parent_constructor_overload() {
             .contains("new AnonymousSuperDirect$1(next(), next())")
     );
     assert!(!report.text.contains("new Base(next(), next()) {"));
+}
+
+#[test]
+fn proved_anonymous_superclass_projects_the_mixed_capture_shape() {
+    let snapshot = open(zip_of(&[
+        (
+            b"AnonymousSuperMixedDirect.class",
+            ANONYMOUS_SUPER_MIXED_DIRECT_ROOT,
+        ),
+        (
+            b"AnonymousSuperMixedDirect$1.class",
+            ANONYMOUS_SUPER_MIXED_DIRECT_CHILD,
+        ),
+        (b"Base.class", ANONYMOUS_SUPER_MIXED_DIRECT_BASE),
+    ]));
+    let root = class_source_of(
+        &snapshot,
+        "AnonymousSuperMixedDirect",
+        EnvironmentPolicy::PlainJar,
+    );
+    // The superclass arguments stay in order at the allocation; the capture argument hides and
+    // the body read spells the root local the site proof closed.
+    assert!(
+        root.text.contains(
+            "return new Base((java.lang.String) text(\"super-label\", \"explicit\"), \
+             number(\"super-value\", 17)) {"
+        ),
+        "{}",
+        root.text
+    );
+    assert!(
+        root.text
+            .contains("AnonymousSuperMixedDirect.event(local0);"),
+        "{}",
+        root.text
+    );
+    assert!(
+        !root.text.contains("AnonymousSuperMixedDirect$1"),
+        "{}",
+        root.text
+    );
+    assert!(!root.text.contains("val$captured"), "{}", root.text);
+    let child = class_source_of(
+        &snapshot,
+        "AnonymousSuperMixedDirect$1",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        child
+            .text
+            .contains("class AnonymousSuperMixedDirect$1 extends Base")
+    );
+}
+
+#[test]
+fn anonymous_superclass_refuses_unproved_mixed_parameter_roles() {
+    let constructor = test_method_headers(ANONYMOUS_SUPER_MIXED_DIRECT_CHILD)
+        .into_iter()
+        .find(|method| method.name == b"<init>")
+        .expect("the anonymous constructor exists");
+    let code = constructor
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the constructor has Code");
+    let code_start = code.data_offset + 8;
+    // The minted shape: aload_0; aload_3; putfield; aload_0; aload_1; iload_2; invokespecial; return.
+    assert_eq!(
+        &ANONYMOUS_SUPER_MIXED_DIRECT_CHILD[code_start..code_start + 12],
+        &[
+            0x2a, 0x2d, 0xb5, 0x00, 0x01, 0x2a, 0x2b, 0x1c, 0xb7, 0x00, 0x07, 0xb1
+        ][..]
+    );
+    let physical = |child: &[u8]| {
+        let snapshot = open(zip_of(&[
+            (
+                b"AnonymousSuperMixedDirect.class",
+                ANONYMOUS_SUPER_MIXED_DIRECT_ROOT,
+            ),
+            (b"AnonymousSuperMixedDirect$1.class", child),
+            (b"Base.class", ANONYMOUS_SUPER_MIXED_DIRECT_BASE),
+        ]));
+        class_source_of(
+            &snapshot,
+            "AnonymousSuperMixedDirect",
+            EnvironmentPolicy::PlainJar,
+        )
+    };
+    let stays_physical = |label: &str, report: &class_source::ClassSourceReport| {
+        assert!(
+            report
+                .text
+                .contains("new AnonymousSuperMixedDirect$1((java.lang.String) text("),
+            "{label}: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("new Base((java.lang.String) text("),
+            "{label}: {}",
+            report.text
+        );
+    };
+    // 参数无消费: the whole capture store disappears, leaving the parameter unloaded.
+    let mut unconsumed = ANONYMOUS_SUPER_MIXED_DIRECT_CHILD.to_vec();
+    for offset in 0..5 {
+        unconsumed[code_start + offset] = 0x00;
+    }
+    stays_physical("unconsumed", &physical(&unconsumed));
+    // 同一参数两类角色: the superclass argument loads the capture parameter instead of its own.
+    let mut dual_role = ANONYMOUS_SUPER_MIXED_DIRECT_CHILD.to_vec();
+    dual_role[code_start + 6] = 0x2d;
+    stays_physical("dual-role", &physical(&dual_role));
+    // super 实参序与物理序不一致: the leading arguments swap, and the invoked descriptor moves
+    // with them so the class still verifies and runs.
+    let mut reordered = ANONYMOUS_SUPER_MIXED_DIRECT_CHILD.to_vec();
+    reordered.swap(code_start + 6, code_start + 7);
+    let (_, utf8) = test_pool(&reordered);
+    let descriptor_index = utf8
+        .iter()
+        .enumerate()
+        .find(|(_, content)| content.as_slice() == b"(Ljava/lang/String;I)V")
+        .expect("the invoked descriptor constant exists")
+        .0;
+    let descriptor_offset = test_cp_entry_offset(
+        &reordered,
+        u16::try_from(descriptor_index).expect("the descriptor index fits u16"),
+    );
+    let replacement = b"(ILjava/lang/String;)V";
+    assert_eq!(
+        usize::try_from(test_u16(&reordered, descriptor_offset + 1)).unwrap(),
+        replacement.len()
+    );
+    reordered[descriptor_offset + 3..descriptor_offset + 3 + replacement.len()]
+        .copy_from_slice(replacement);
+    stays_physical("reordered", &physical(&reordered));
+    // 捕获字段二次写入: the closing return becomes a second store of the same field.
+    let mut double_write = ANONYMOUS_SUPER_MIXED_DIRECT_CHILD.to_vec();
+    let putfield_index =
+        u16::from_be_bytes([double_write[code_start + 3], double_write[code_start + 4]]);
+    let mut tail = vec![0x2a, 0x2d];
+    tail.extend_from_slice(&putfield_index.to_be_bytes());
+    tail.push(0xb1);
+    assert_eq!(test_u32(&double_write, code.data_offset + 4), 12);
+    double_write.splice(code_start + 11..code_start + 12, tail);
+    test_put_u32(&mut double_write, code.data_offset + 4, 16);
+    let attribute_length = test_u32(&double_write, code.length_offset) + 4;
+    test_put_u32(&mut double_write, code.length_offset, attribute_length);
+    stays_physical("double-write", &physical(&double_write));
+}
+
+#[test]
+fn anonymous_superclass_refuses_multiple_sites_and_multiple_capture_fields() {
+    // 多分配点: the second site's class constant names the first child, so both sites allocate
+    // one physical class and the single-allocation proof cannot close.
+    let mut multi_site = ANONYMOUS_SUPER_MIXED_TWO_SITES_ROOT.to_vec();
+    let (_, utf8) = test_pool(&multi_site);
+    let first_name_index = utf8
+        .iter()
+        .enumerate()
+        .find(|(_, content)| content.as_slice() == b"TwoMixedSites$1")
+        .expect("the first child's name constant exists")
+        .0;
+    let second_class_index = test_class_index(&multi_site, b"TwoMixedSites$2");
+    let second_class_offset = test_cp_entry_offset(&multi_site, second_class_index);
+    assert_eq!(multi_site[second_class_offset], 7);
+    test_put_u16(
+        &mut multi_site,
+        second_class_offset + 1,
+        usize::try_from(first_name_index).expect("the name index fits u16"),
+    );
+    let snapshot = open(zip_of(&[
+        (b"TwoMixedSites.class", &multi_site),
+        (
+            b"TwoMixedSites$1.class",
+            ANONYMOUS_SUPER_MIXED_TWO_SITES_FIRST,
+        ),
+        (
+            b"TwoMixedSites$2.class",
+            ANONYMOUS_SUPER_MIXED_TWO_SITES_SECOND,
+        ),
+        (b"Base.class", ANONYMOUS_SUPER_MIXED_DIRECT_BASE),
+    ]));
+    let root = class_source_of(&snapshot, "TwoMixedSites", EnvironmentPolicy::PlainJar);
+    assert!(
+        root.text
+            .contains("new TwoMixedSites$1((java.lang.String) text("),
+        "{}",
+        root.text
+    );
+    // both sites now name the first child, so the single-allocation proof cannot close
+    assert_eq!(
+        root.text
+            .matches("new TwoMixedSites$1((java.lang.String) text(")
+            .count(),
+        2
+    );
+    assert!(!root.text.contains("new TwoMixedSites$2("), "{}", root.text);
+    assert!(!root.text.contains("new Base(("), "{}", root.text);
+    // 多 val$ 字段: two synthetic capture fields are outside the one-field shape.
+    let snapshot = open(zip_of(&[
+        (
+            b"TwoCaptureFields.class",
+            ANONYMOUS_SUPER_MIXED_TWO_CAPTURES_ROOT,
+        ),
+        (
+            b"TwoCaptureFields$1.class",
+            ANONYMOUS_SUPER_MIXED_TWO_CAPTURES_CHILD,
+        ),
+        (b"Base.class", ANONYMOUS_SUPER_MIXED_DIRECT_BASE),
+    ]));
+    let root = class_source_of(&snapshot, "TwoCaptureFields", EnvironmentPolicy::PlainJar);
+    assert!(
+        root.text
+            .contains("new TwoCaptureFields$1((java.lang.String) text("),
+        "{}",
+        root.text
+    );
+    assert!(!root.text.contains("new Base(("), "{}", root.text);
+    // the two synthetic capture fields keep the physical child queryable beside the refusal
+    let child = class_source_of(&snapshot, "TwoCaptureFields$1", EnvironmentPolicy::PlainJar);
+    assert!(child.text.contains("val$first"), "{}", child.text);
+    assert!(child.text.contains("val$second"), "{}", child.text);
 }
 
 #[test]
