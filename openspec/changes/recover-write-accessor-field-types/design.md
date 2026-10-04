@@ -50,7 +50,10 @@
 4. **corpus**：双腿（基线/修复）全语料渲染 diff——只应出现**真实含写访问器的类**的差异；语料普查已知 0 个真实 `access$` 产物，故预期 diff 为空（这本身就是回归证据）；出现任何其它差异即停下报告。
 5. **门禁**：全量测试（基线 301 目标/2970 passed；flake 家族单测复跑两轮判定）、fmt、CI-exact clippy、openspec strict、`git diff --check`、fixture 新增后再生 corpus fingerprint。
 
-## Open Questions
+## Open Questions（root 2026-10-05 派发前预审计收窄）
+
+1. ~~`LongAssignmentResult` 对双槽 `dup2_x1` 是否需要区分槽宽~~ **已收窄**：root 读码 `assignment_result_statement`（build.rs:22517 起，消费方）与 `field_value`（build.rs:22644 起）——消费链是**按 SSA 值**（`receiver_source`/`parameter_source`/`field_copy` 的 `render_value`）走、槽宽语义由 `field_value` 的**描述符驱动**分支（`descriptor_type` → `Type::Boolean` 特判 / `Byte|Char|Short` 收窄 cast / 其余 `meeting_position`）承担，`LongAssignmentResult` 自身**不携带也不需要槽宽字段**。即双槽形在既有结构内可承载，实现片泛化时只需让 prove 接受 `J/D` 的 load/copy/return（查表），消费链零改动。但注意 `field_value` 的 boolean 特判读 `evidence.descriptor`——泛化 boolean 之外各型时确认该分支不误触发（`Type::Boolean` 判断已天然只对 `Z` 成立，预期无冲突，实现时以测试钉死）。
+2. 引用型描述符的表键匹配：~~预期描述符本身就是访问器参数描述符~~ **已确认为常规事实**：`fields.claim(store_bci)` 返回的 `evidence.descriptor` 即字段描述符，与访问器参数描述符一致是 `BooleanAccessorAssignment` 既有判据（`field.descriptor != "Z"` 那条）的同一事实源——泛化时保持"`field.descriptor` == 表键 == 参数/返回描述符"三方一致即可，无需前缀解析。
 
 1. `LongAssignmentResult`（处理器内部承载的结构）对双槽 `dup2_x1` 是否需要区分槽宽——预期不需要（它承载赋值结果，槽宽由描述符事实决定），实现片在泛化 long/double 时验证；若需要，在既有结构内加槽宽字段，不新建平行结构。
 2. 引用型描述符的表键匹配：`L…;` 与 `[…` 前缀如何与"字段描述符 == 访问器参数描述符"一致性判据协作（预期描述符本身就是访问器参数描述符，直接 `field.descriptor == 参数描述符` 即可，无需前缀解析）——实现片确认。
