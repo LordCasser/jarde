@@ -1,0 +1,178 @@
+// jarde: presentation of `WA` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class WA extends java.lang.Object {
+    private boolean flag;
+
+    private int count;
+
+    private long big;
+
+    private double d;
+
+    private java.lang.String ref;
+
+    private byte by;
+
+    private short sh;
+
+    private char ch;
+
+    private float fl;
+
+    public WA() {
+        // @method <init>()V
+        // @declaration a constructor of `WA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `WA`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        WA local1 = new WA();
+        // @bytecode 8
+        // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 11
+        // the instruction at BCI 11 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 13
+        // the instruction at BCI 13 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 14 17 12
+        // the copy at BCI 13 has no proved local assignment
+        // @bytecode 21 18 12
+        // the copy at BCI 11 has no proved local assignment
+        // @bytecode 22 23 24
+        // the statement at BCI 24 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 27 28 29
+        // the statement at BCI 29 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 32 33 36
+        // the statement at BCI 36 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 39 40 43
+        // the statement at BCI 43 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 46 47 49
+        // the statement at BCI 49 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 52 53 54
+        // the statement at BCI 54 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 57 58 59
+        // the statement at BCI 59 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 62 63 65
+        // the statement at BCI 65 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 68 69 71
+        // the statement at BCI 71 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(local1.flag).append(local1.count).append(local1.big).append(local1.d).append(local1.ref).append((int) local1.by).append((int) local1.sh).append(local1.ch).append(local1.fl).toString());
+        return;
+    }
+
+    static boolean access$002(WA arg0, boolean arg1) {
+        // @method access$002(LWA;Z)Z
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.flag = arg1;
+        return arg1;
+    }
+
+    static int access$102(WA arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `access$102(LWA;I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$102(LWA;I)I
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static long access$202(WA arg0, long arg1) {
+        // jarde: not recovered: the recovery run for `access$202(LWA;J)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$202(LWA;J)J
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static double access$302(WA arg0, double arg1) {
+        // jarde: not recovered: the recovery run for `access$302(LWA;D)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$302(LWA;D)D
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static java.lang.String access$402(WA arg0, java.lang.String arg1) {
+        // jarde: not recovered: the recovery run for `access$402(LWA;Ljava/lang/String;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$402(LWA;Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static byte access$502(WA arg0, byte arg1) {
+        // jarde: not recovered: the recovery run for `access$502(LWA;B)B` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$502(LWA;B)B
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static short access$602(WA arg0, short arg1) {
+        // jarde: not recovered: the recovery run for `access$602(LWA;S)S` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$602(LWA;S)S
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static char access$702(WA arg0, char arg1) {
+        // jarde: not recovered: the recovery run for `access$702(LWA;C)C` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$702(LWA;C)C
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    static float access$802(WA arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `access$802(LWA;F)F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method access$802(LWA;F)F
+        // @declaration a static method of `WA`, member flags 0x1008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+}
