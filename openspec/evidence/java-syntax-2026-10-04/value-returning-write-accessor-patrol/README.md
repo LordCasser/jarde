@@ -34,7 +34,38 @@ static int    access$202(W, int)     → dup_x1;  putfield in:I;  ireturn
 
 即 `dup_x1`（单槽）/`dup2_x1`（双槽）+ `xreturn` 是 javac 对**所有**基本类型字段写访问器的统一形，descriptor 一律 `(LC;D)D`（返回被写字段的类型），**从不是 void `(LC;D)V`**。
 
+## 一之二、决定性对照：**boolean 写访问器已恢复，int 写访问器被拒**（root 2026-10-04 追加，更正下文第二节的过度概括）
+
+root 追加一个**同类内两种字段类型**的探针 [fixture/BA/BA.java](fixture/BA/BA.java)（真 javac 8 编译）：
+
+```java
+public class BA {
+    private boolean flag = false;   // boolean 字段
+    private int count = 0;          // int 字段
+    class S { void setB(boolean b){ flag = b; } void setI(int i){ count = i; } }
+}
+```
+
+两个写访问器的 **opcode 序列逐字相同**（root 以 awk 精确取单方法复核、`diff` 为空）：
+
+| 访问器 | 描述符 | opcode 序列 | jarde 呈现 |
+| --- | --- | --- | --- |
+| `access$002` | `(LBA;Z)Z` | `aload_0 iload_1 dup_x1 putfield ireturn` | **恢复**：`arg0.flag = arg1; return arg1;` |
+| `access$102` | `(LBA;I)I` | `aload_0 iload_1 dup_x1 putfield ireturn` | **拒绝** → 空 stub |
+
+即**判别变量是字段描述符 `Z`，不是指令形**。root 读码定位判据：`build.rs:8848-8851` 的 `BooleanAccessorAssignment::prove` 要求 `field.owner == owner && field.descriptor == "Z" && field.access == Write && !field.is_static`，`descriptor != "Z"` 即 `return Ok(None)`。该处理器由**已合入的 `d09f5dea`**（"recover proved parent field writes and private setter helper"）交付，调用点 `build.rs:7293`，其文档（`build.rs:8751-8753`）自述"The **Java 8 private boolean setter helper**'s complete physical body. Its `dup_x1` has exactly three consumers: the receiver and value of one `putfield`, and the returned copy of that value."
+
+**严重性实测**：int 访问器渲染为空 stub 但保留 `int` 返回类型 → 渲染源集 `javac --release 8` **exit 1**（"缺少返回语句"）→ **整类不可编译**（响亮失败，非静默偏离）。见 [results2/BA-javac-errors.txt](results2/BA-javac-errors.txt)、[results2/BA-rendered.txt](results2/BA-rendered.txt)。
+
+> **root 自查纠错（本文件第二、五节的表述被本对照收窄）**：下文第二节写"`accessor.rs:480` 的 `if returns.is_some()` **有意拒绝**该形"、第五节写"写访问器臂**从未被任何真实 javac 产物行使过**"——**两处都不完整**。(1) `accessor.rs:480` 的拒绝是**访问器折叠规则**（`accessor@1`）的路径，而 `d09f5dea` 在 `build.rs` 另建了 `BooleanAccessorAssignment` 通路，**boolean 写访问器经该通路已恢复**（上表实证），故"一律拒绝"不成立。(2) "从未被真实产物行使"仅对 **`tests/fixtures` 语料**成立（root 普查：532 类中含 `access$` 的为 0、`p3_accessor_edges.rs:146-149` 合成访问器全为读形），但 `d09f5dea` 自己的 fixture（`openspec/evidence/…/dt29-reference-cast-audit/fixtures/private-field/`）确实行使了 boolean 写形——root 先前只普查了 `tests/fixtures`，**范围过窄导致结论过强**（正是 handoff「空查询不能证明不存在」纪律的情形）。
+>
+> **更正后的准确表述**：写访问器的**指令形已被支持**（`dup_x1` 值返回形有专门处理器），缺口是**该处理器把字段类型限定为 `boolean`**，故 `int`/`long`/`double`/引用类型字段的写访问器仍被拒 → 空 stub → 整类不可编译。这把缺口从"新机制"**收窄为"既有处理器的类型泛化"**，颗粒度显著下调（原估"中"，现判**窄到中**：把 `field.descriptor != "Z"` 放宽为"描述符与访问器返回类型一致且属单槽/双槽可 `dup_x1`/`dup2_x1` 表达的形"，并为每种类型补正例；`long`/`double` 用 `dup2_x1` + `l/dreturn`，root 已在第一节 javap 实录）。
+>
+> **另有一次假零事故（诚实登记）**：root 首次跑本探针时 `cd /tmp/boolacc` 后用**相对**路径调 `target/debug/jarde-cli`，而该二进制此前已被 `rm -rf target` 清掉，得 exit 127、输出文件只有 104 字节错误信息；对其计 `@bytecode` 得 **0**，一度被读成"两个访问器都恢复了"。这正是 handoff「假零结果」纪律描述的情形，且是 root **在把该纪律写进 handoff 之后**又犯的一次。改用绝对路径 + 重建二进制 + 检查文件含 jarde 自述头后，才得到上表（quotes=3、int 形拒绝）。
+
 ## 二、拒绝是有意的，且渲染为空 stub（响亮，非静默）
+
+> **本节及第五节的"一律拒绝/从未被行使"表述已被第一节之二收窄**（boolean 写访问器经 `d09f5dea` 的 `BooleanAccessorAssignment` 通路**已恢复**，缺口实为该处理器的**字段类型限定为 `Z`**）。下文保留原始记录不改写，阅读时以第一节之二为准。
 
 `accessor.rs:474-489`（`FieldAccess::Write` 分支）：
 
