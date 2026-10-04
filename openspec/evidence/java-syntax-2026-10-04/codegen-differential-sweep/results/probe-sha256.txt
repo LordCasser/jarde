@@ -1,0 +1,6 @@
+75821b2bf04cf83cf52edb9ae1b12ba133f4de7aa5aaad35c56083aab913562e  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes/C_assert.java
+8fed1e41cfe54b8a5b5286c8ed7d64ee552fd9fe9dc1359f0cb18e4ee32d51d2  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes/C_box.java
+dd54a82d38c4f1ee7dd6fec62bc752938d0570ae74a2e6670648cf5bf29e52b4  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes/C_foreach.java
+ae374f6b958624fb02e6a506c45312b6590e0b59ebbeeddbd7e101de29d2378f  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes/C_strswitch.java
+fa2ea9f115eda12ed8c3981c1fc099091dc16fd7bcfcc5ccf9ed860875636ea7  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes/C_switch.java
+53a2017cae2dd292c83a5fff2eb9c9046e3a6ed9b6f3ecb8090838114e6a3d44  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/codegen-differential-sweep/probes/C_sync.java

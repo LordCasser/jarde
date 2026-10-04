@@ -1,0 +1,20 @@
+### 整类指令序列 SHA 双腿对照（决定性：IDENTICAL = 该构造 codegen 版本无关）
+  C_switch       realjavac8=3648dcc06466675e1263fae738f9178b javac23=3648dcc06466675e1263fae738f9178b  IDENTICAL
+  C_strswitch    realjavac8=d77611feab748c873ead51be1bc4aa97 javac23=d77611feab748c873ead51be1bc4aa97  IDENTICAL
+  C_sync         realjavac8=5ab7c794588a315bc63bc9eb068acad3 javac23=5ab7c794588a315bc63bc9eb068acad3  IDENTICAL
+  C_box          realjavac8=86ba62cee81da02bd56f5fb9f447a996 javac23=86ba62cee81da02bd56f5fb9f447a996  IDENTICAL
+  C_assert       realjavac8=24e759c592006237a94ca9794a23f48d javac23=24e759c592006237a94ca9794a23f48d  IDENTICAL
+  C_foreach      realjavac8=fbe90ecd2e90c565e89c4a646c62c63a javac23=fbe90ecd2e90c565e89c4a646c62c63a  IDENTICAL
+
+### 合成产物对照
+  C_switch       classfiles 8=1/23=1 assertionsDisabled 8=0/23=0 bsm 8=0/23=0 cp 8=31/23=31
+  C_strswitch    classfiles 8=1/23=1 assertionsDisabled 8=0/23=0 bsm 8=0/23=0 cp 8=50/23=49
+  C_sync         classfiles 8=1/23=1 assertionsDisabled 8=0/23=0 bsm 8=0/23=0 cp 8=63/23=61
+  C_box          classfiles 8=1/23=1 assertionsDisabled 8=0/23=0 bsm 8=0/23=0 cp 8=43/23=43
+  C_assert       classfiles 8=1/23=1 assertionsDisabled 8=1/23=1 bsm 8=0/23=0 cp 8=49/23=49
+  C_foreach      classfiles 8=1/23=1 assertionsDisabled 8=0/23=0 bsm 8=0/23=0 cp 8=88/23=87
+
+### 自检记录
+  TR（已知耦合）: 6 方法中 2 个 DIFF（one/two），4 个 same -> 逐方法判别有效
+  P08_twr（已知耦合）: 4 方法中 1 个 DIFF（one），3 个 same
+  -> 扫描器对已知正例正确报 VERSION-COUPLED 且区分同类内非耦合方法，故 SAME-CODEGEN 结论可信。

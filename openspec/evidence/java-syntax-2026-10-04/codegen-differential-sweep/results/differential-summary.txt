@@ -1,0 +1,36 @@
+# codegen differential: 6 candidates (javap-only, zero cargo build)
+  C_assert             SAME-CODEGEN     methods=3 differing=0
+      [same] public C_assert()                            instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 13->13  exc 0->0  any 0->0
+      [same] static int f(int)                            instrs 11->11  exc 0->0  any 0->0
+  C_box                SAME-CODEGEN     methods=4 differing=0
+      [same] public C_box()                               instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 12->12  exc 0->0  any 0->0
+      [same] static int unbox(java.lang.Integer)          instrs 3->3  exc 0->0  any 0->0
+      [same] static java.lang.Integer box(int)            instrs 3->3  exc 0->0  any 0->0
+  C_foreach            SAME-CODEGEN     methods=4 differing=0
+      [same] public C_foreach()                           instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 40->40  exc 0->0  any 0->0
+      [same] static int sum(int[])                        instrs 24->24  exc 0->0  any 0->0
+      [same] static int sumL(java.util.List<java.lang.Int instrs 20->20  exc 0->0  any 0->0
+  C_strswitch          SAME-CODEGEN     methods=3 differing=0
+      [same] public C_strswitch()                         instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 11->11  exc 0->0  any 0->0
+      [same] static int pick(java.lang.String)            instrs 43->43  exc 0->0  any 0->0
+  C_switch             SAME-CODEGEN     methods=3 differing=0
+      [same] public C_switch()                            instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 18->18  exc 0->0  any 0->0
+      [same] static int pick(int)                         instrs 19->19  exc 0->0  any 0->0
+  C_sync               SAME-CODEGEN     methods=4 differing=0
+      [same] int bump()                                   instrs 20->20  exc 2->2  any 2->2
+      [same] public C_sync()                              instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 22->22  exc 0->0  any 0->0
+      [same] static int stat(java.lang.Object)            instrs 14->14  exc 2->2  any 2->2
+
+=== VERDICT SUMMARY ===
+  C_assert: same codegen (0/3 methods differ)
+  C_box: same codegen (0/4 methods differ)
+  C_foreach: same codegen (0/4 methods differ)
+  C_strswitch: same codegen (0/3 methods differ)
+  C_switch: same codegen (0/3 methods differ)
+  C_sync: same codegen (0/4 methods differ)
