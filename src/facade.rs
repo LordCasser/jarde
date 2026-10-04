@@ -4723,10 +4723,32 @@ impl Engine {
         // `void` (the anchor's `main` is), so no return-descriptor check exists for it. Dropping
         // the check for this one shape is not "ignoring the return type": the direct-return shape
         // still refuses every descriptor but the superclass's own.
+        //
+        // Design `recover-anonymous-parameterized-root`, decision 1: only the parameter table
+        // widens — to the proved capture field's own descriptor, `(P)Lparent;` for the single
+        // `val$` field P the child shape gate above already closed (a child with fields has
+        // exactly that one). The return part stays exactly the superclass type: a supertype
+        // return is ring 2's separate, unproven slice and keeps this refusal. Any other
+        // parameter count or type keeps it too. The descriptor match alone proves nothing about
+        // the value flow — the capture site below closes the argument to the unmodified
+        // parameter slot 0 before anything is projected.
         if site_shape == jarde_java::report::AnonymousSiteShape::DirectReturn {
-            let expected_return =
+            let plain_return =
                 [b"()L".as_slice(), parent_name.as_slice(), b";".as_slice()].concat();
-            if root_method.descriptor.0 != expected_return {
+            let capture_return =
+                anonymous_val_capture_field(&child_facts).map(|(_, field_descriptor)| {
+                    [
+                        b"(".as_slice(),
+                        field_descriptor.as_slice(),
+                        b")L".as_slice(),
+                        parent_name.as_slice(),
+                        b";".as_slice(),
+                    ]
+                    .concat()
+                });
+            if root_method.descriptor.0 != plain_return
+                && capture_return.as_deref() != Some(root_method.descriptor.0.as_slice())
+            {
                 return Err(Error::unsupported(
                     "anonymous_super_return_type_unproved",
                     "the root method return descriptor is not the exact superclass type",
@@ -5048,6 +5070,30 @@ impl Engine {
                         "the root method has no complete allocation scan",
                     ));
                 };
+                // Design `recover-anonymous-parameterized-root`: the parameterized shape's
+                // descriptor was accepted at the root gate; its value flow is proved here, with
+                // the interface path's parameter precedent (`captured_root_parameter`) as the
+                // criterion source. The shape is the direct-return descriptor whose sole
+                // parameter is the proved capture field's own type.
+                let parameterized_shape = site_shape
+                    == jarde_java::report::AnonymousSiteShape::DirectReturn
+                    && root_method.descriptor.0
+                        == [
+                            b"(".as_slice(),
+                            mixed.field_descriptor.as_slice(),
+                            b")L".as_slice(),
+                            parent_name.as_slice(),
+                            b";".as_slice(),
+                        ]
+                        .concat();
+                // The precedent's scan conjunct: the census counts every allocation of the
+                // method, so a parameterized projection reads only a complete one.
+                if parameterized_shape && !root_scan.complete {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the parameterized root method's allocation scan is incomplete",
+                    ));
+                }
                 let sites: Vec<_> = root_scan
                     .allocations
                     .iter()
@@ -5097,6 +5143,34 @@ impl Engine {
                         "anonymous_capture_argument_unproved",
                         "the captured constructor argument is not a root local reference",
                     ));
+                };
+                // The parameterized shape's remaining precedent conjuncts: the root method is
+                // static — its descriptor slot 0 IS the first declared parameter, while an
+                // instance method's slot 0 is the receiver — and the replacement name comes
+                // from the same-run AST's parameter table, never from debug information (the
+                // `-g:none` fixture leg runs this exact source with no `LocalVariableTable`).
+                let parameter_name = if parameterized_shape {
+                    let method_record = root
+                        .methods
+                        .iter()
+                        .find(|method| method.item.identity == *root_method);
+                    if method_record.is_none_or(|method| method.item.access_flags & 0x0008 == 0) {
+                        return Err(Error::unsupported(
+                            "anonymous_capture_argument_unproved",
+                            "the parameterized root method is not a static method",
+                        ));
+                    }
+                    Some(
+                        jarde_java::report::class_source_single_parameter_name(root_ast, 0)
+                            .ok_or_else(|| {
+                                Error::unsupported(
+                                    "anonymous_capture_argument_unproved",
+                                    "the root method's capture parameter has no AST name",
+                                )
+                            })?,
+                    )
+                } else {
+                    None
                 };
                 // The argument's physical producer is one load of a local the root method writes
                 // exactly once; that is the fact that makes the recapture behavior-identical.
@@ -5177,11 +5251,40 @@ impl Engine {
                         ));
                     }
                 };
+                // The parameterized shape's value flow: the capture value must BE the root
+                // method's own first parameter — its entry value at slot 0, and consumed
+                // exactly once, by this allocation argument. The descriptor match at the root
+                // gate alone proves nothing about the value flow, so a capture sourced from a
+                // root local, or a parameter consumed anywhere else in the root method, is the
+                // refused shape (design `recover-anonymous-parameterized-root`, Open Question
+                // (b) resolved as default-refuse: a second consumption has no proof it
+                // re-spells losslessly, so it keeps physical class text until separately
+                // evidenced).
+                if parameterized_shape {
+                    match root_ssa.value(*local_value).def() {
+                        jarde_jvm::method_ir::Definition::Entry {
+                            slot: jarde_jvm::method_ir::Slot::Local(entry_slot),
+                            ..
+                        } if *entry_slot == 0 => {}
+                        _ => {
+                            return Err(Error::unsupported(
+                                "anonymous_capture_argument_unproved",
+                                "the captured constructor argument is not the root method's own parameter",
+                            ));
+                        }
+                    }
+                    if root_ssa.value(*local_value).uses().len() != 1 {
+                        return Err(Error::unsupported(
+                            "anonymous_capture_argument_unproved",
+                            "the capture parameter is consumed beyond the allocation argument",
+                        ));
+                    }
+                }
                 budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
                 Some(AnonymousSuperCaptureSite {
                     argument_bci: capture_argument_bci,
                     slot: *capture_slot,
-                    local_name: capture_name,
+                    local_name: parameter_name.unwrap_or(capture_name),
                     presented: capture_presented,
                 })
             }

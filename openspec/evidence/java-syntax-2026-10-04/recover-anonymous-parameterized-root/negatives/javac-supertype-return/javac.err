@@ -1,0 +1,11 @@
+ParameterizedSupertypeReturn.java:10: 错误: 找不到符号
+    private static Renderer create(java.lang.String arg0) {
+                   ^
+  符号:   类 Renderer
+  位置: 类 ParameterizedSupertypeReturn
+ParameterizedSupertypeReturn.java:14: 错误: 找不到符号
+        return new ParameterizedSupertypeReturn$1(arg0);
+                   ^
+  符号:   类 ParameterizedSupertypeReturn$1
+  位置: 类 ParameterizedSupertypeReturn
+2 个错误

@@ -1,0 +1,3 @@
+observed=captured-value
+visibleDuringSuper=true
+run-exit=0
