@@ -1,6 +1,6 @@
 ## Why
 
-[DT-26 已证差距](../../evidence/jadx-feature-inventory-2026-09-27/declarations-types.md)（root 双 javac 扫描登记）：lambda 捕获**原生数组**局部（`int[] t={0}; l.forEach(i -> t[0]+=i)`）时整个 invokedynamic 站点被拒，落点 `crates/jarde-java/src/lambda.rs:769`（`jre_lambda_sam_types`）：捕获操作数在 SSA 帧中是 `Object` 而在站点描述符与实现中是 `int[]`。**同探针内引用类型捕获（`StringBuilder s; l.forEach(x -> s.append(x))`）内联正常**——判别变量是**捕获值的类型来源**。
+[DT-26 已证差距](../../evidence/jadx-feature-inventory-2026-09-27/declarations-types.md)（root 双 javac 扫描登记）：lambda 捕获**原生数组**局部（`int[] t={0}; l.forEach(i -> t[0]+=i)`）时整个 invokedynamic 站点被拒，落点 `crates/jarde-java/src/lambda.rs:768-772`（`jre_lambda_sam_types`）：捕获操作数在 SSA 帧中是 `Object` 而在站点描述符与实现中是 `int[]`。**同探针内引用类型捕获（`StringBuilder s; l.forEach(x -> s.append(x))`）内联正常**——判别变量是**捕获值的类型来源**。
 
 **根因（root 零构建读码定位，frame.rs:2299-2315）**：帧层对 `newarray`（原生数组）**有意**压入 `Value::Ref(RefType::Unknown)`——注释原文"The array of a primitive element type is defined by the bootstrap loader, which this request does not declare, so the slot holds a conservative unknown reference instead of a name this request cannot anchor"。而 `anewarray`（引用元素）经 `pool_class_name` 得**有名**类型。即：帧只锚定**常量池可命名**的类型，原生数组 `[I` 是描述符而非池类名，故帧层保守 Unknown（呈现为 `Object`）——lambda 捕获门（`lambda.rs:765-779` 三方类型一致判据）把帧 Unknown 与站点/实现的 `int[]` 判为不一致 → 拒。**这是响亮拒绝，非静默偏离**；但 `int[] t; l.forEach(i -> t[0]+=i)` 是真实高频形（forEach 累加、闭包计数器），双腿（真 javac 8 与 javac 23）引注相同，与版本无关。
 
