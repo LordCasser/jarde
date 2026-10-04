@@ -1,0 +1,3 @@
+newRet=java.util.List<java.lang.String>
+paramEcho=java.util.List<java.lang.String>
+size=1

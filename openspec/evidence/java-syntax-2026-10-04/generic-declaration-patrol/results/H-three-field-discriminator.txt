@@ -1,0 +1,37 @@
+// jarde: presentation of `H` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class H extends java.lang.Object {
+    // jarde: field Signature `Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-class uses at <clinit>()V@7
+    static java.util.List<java.lang.String> unread;
+
+    // jarde: field Signature projection refused for `readInMainLjava/util/List;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static java.util.List readInMain;
+
+    // jarde: field Signature `Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-class uses at <clinit>()V@27
+    static java.util.List<java.lang.String> initDiamond;
+
+    public H() {
+        // @method <init>()V
+        // @declaration a constructor of `H`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `H`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(H.readInMain.size());
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `H`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        H.unread = new java.util.ArrayList();
+        H.readInMain = new java.util.ArrayList();
+        H.initDiamond = new java.util.ArrayList();
+    }
+}

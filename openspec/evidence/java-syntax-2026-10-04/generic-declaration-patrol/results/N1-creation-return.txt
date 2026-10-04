@@ -1,0 +1,27 @@
+// jarde: presentation of `N1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class N1 extends java.lang.Object {
+    public N1() {
+        // @method <init>()V
+        // @declaration a constructor of `N1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `newRet()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public java.util.List newRet() {
+        // @method newRet()Ljava/util/List;
+        // @declaration an instance method of `N1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.util.ArrayList();
+    }
+
+    public java.util.List<java.lang.String> paramEcho(java.util.List<java.lang.String> arg1) {
+        // jarde: generic Signature `(Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+        // @method paramEcho(Ljava/util/List;)Ljava/util/List;
+        // @declaration an instance method of `N1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1;
+    }
+}

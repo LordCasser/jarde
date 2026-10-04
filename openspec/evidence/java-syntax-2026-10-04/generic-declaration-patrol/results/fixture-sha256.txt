@@ -1,0 +1,4 @@
+bee28102cfb904e4f07c22a787d07dae1768af571b8631a4c59ad2d36c2e3cb7  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/generic-declaration-patrol/fixture/D1.class
+d149f15f4629b8980b2e38287296d52eae98d3cd3d09979ae45435ca1ba6742c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/generic-declaration-patrol/fixture/G1.class
+041f0bd79a65df7ad74d1bcfe5a82b8e9e88c37bb2cb39c352ce73effbf553f5  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/generic-declaration-patrol/fixture/H.class
+afcfdb10688a84c7995c756f47090a60a27d0489d866d6a1a18ca1b3852ae6ff  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/generic-declaration-patrol/fixture/N1.class

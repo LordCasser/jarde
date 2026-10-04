@@ -1,0 +1,60 @@
+// jarde: presentation of `G1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class G1 extends java.lang.Object {
+    // jarde: field Signature `Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-class uses at fieldRet()Ljava/util/List;@0, <clinit>()V@7
+    static java.util.List<java.lang.String> F;
+
+    public G1() {
+        // @method <init>()V
+        // @declaration a constructor of `G1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.util.List<java.lang.String> paramEcho(java.util.List<java.lang.String> in) {
+        // jarde: generic Signature `(Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+        // @method paramEcho(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `G1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return in;
+    }
+
+    // jarde: generic Signature projection refused for `nullRet()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): return source is not a proven parameter value or selected member creation
+    public static java.util.List nullRet() {
+        // @method nullRet()Ljava/util/List;
+        // @declaration a static method of `G1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return null;
+    }
+
+    // jarde: generic Signature projection refused for `newRet()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List newRet() {
+        // @method newRet()Ljava/util/List;
+        // @declaration a static method of `G1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.util.ArrayList();
+    }
+
+    // jarde: generic Signature projection refused for `fieldRet()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List fieldRet() {
+        // @method fieldRet()Ljava/util/List;
+        // @declaration a static method of `G1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return G1.F;
+    }
+
+    public void main(java.lang.String[] a) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration an instance method of `G1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `G1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        G1.F = new java.util.ArrayList();
+    }
+}

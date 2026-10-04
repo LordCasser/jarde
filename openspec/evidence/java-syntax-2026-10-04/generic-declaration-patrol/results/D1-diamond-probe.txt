@@ -1,0 +1,91 @@
+// jarde: presentation of `D1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class D1 extends java.lang.Object {
+    // jarde: field Signature projection refused for `fieldListLjava/util/List;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static java.util.List fieldList;
+
+    // jarde: field Signature projection refused for `mapLjava/util/Map;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    java.util.Map map;
+
+    public D1() {
+        // @method <init>()V
+        // @declaration a constructor of `D1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.map = new java.util.HashMap();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `makeList()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List makeList() {
+        // @method makeList()Ljava/util/List;
+        // @declaration a static method of `D1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.util.ArrayList();
+    }
+
+    // jarde: generic Signature projection refused for `makeNested()Ljava/util/Map;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.Map makeNested() {
+        // @method makeNested()Ljava/util/Map;
+        // @declaration a static method of `D1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.util.HashMap();
+    }
+
+    // jarde: generic Signature projection refused for `consume(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): return source is not a proven parameter value or selected member creation
+    public static void consume(java.util.List arg0) {
+        // @method consume(Ljava/util/List;)V
+        // @declaration a static method of `D1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static void callSite() {
+        // @method callSite()V
+        // @declaration a static method of `D1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        consume((java.util.List) new java.util.ArrayList());
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `localVar()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.List localVar() {
+        // @method localVar()Ljava/util/List;
+        // @declaration a static method of `D1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.LinkedList local0 = new java.util.LinkedList();
+        local0.add((java.lang.Object) "a");
+        return local0;
+    }
+
+    // jarde: generic Signature projection refused for `generic(Ljava/lang/Object;)Ljava/util/List;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    public static java.util.List generic(java.lang.Object arg0) {
+        // @method generic(Ljava/lang/Object;)Ljava/util/List;
+        // @declaration a static method of `D1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1 = new java.util.ArrayList();
+        local1.add(arg0);
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `D1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(makeList().size());
+        java.lang.System.out.println(makeNested().isEmpty());
+        callSite();
+        java.lang.System.out.println((java.lang.Object) localVar());
+        java.lang.System.out.println((java.lang.Object) generic((java.lang.Object) "z"));
+        java.lang.System.out.println(D1.fieldList.size());
+        java.lang.System.out.println(new D1().map.isEmpty());
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `D1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        D1.fieldList = new java.util.ArrayList();
+    }
+}
