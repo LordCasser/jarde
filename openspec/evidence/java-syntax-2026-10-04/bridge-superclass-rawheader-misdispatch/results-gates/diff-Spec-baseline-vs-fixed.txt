@@ -1,0 +1,10 @@
+32c32,38
+<     // jarde: projected bridge `set(Ljava/lang/Object;)V` at physical method record 4: bridge@1 proved a pure call at BCI 5 to source declaration `set(Ljava/lang/String;)V` at method record 1; the resolved erased contract lets javac regenerate the bridge
+---
+>     void set(java.lang.Object arg1) {
+>         // @method set(Ljava/lang/Object;)V
+>         // @declaration an instance method of `Spec`, member flags 0x1040
+>         // recovered from bytecode; presentation is not claimed to compile
+>         this.set((java.lang.String) arg1);
+>         return;
+>     }

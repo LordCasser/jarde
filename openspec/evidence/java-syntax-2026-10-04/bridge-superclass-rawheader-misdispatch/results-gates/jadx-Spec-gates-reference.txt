@@ -1,0 +1,18 @@
+package defpackage;
+
+/* JADX INFO: loaded from: obs.jar:Spec.class */
+public class Spec extends Outer.Box<java.lang.String> {
+    /* JADX INFO: Access modifiers changed from: package-private */
+    @Override // Outer.Box
+    public void set(java.lang.String str) {
+        java.lang.System.out.println("SPEC.set(String) ran");
+    }
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    /* JADX WARN: Can't rename method to resolve collision */
+    @Override // Outer.Box
+    public java.lang.String get() {
+        java.lang.System.out.println("SPEC.get ran");
+        return "S";
+    }
+}

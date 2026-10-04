@@ -1,0 +1,1 @@
+    // jarde: projected bridge `get()Ljava/lang/Object;` at physical method record 3: bridge@1 proved a pure call at BCI 1 to source declaration `get()Ljava/lang/String;` at method record 2; the resolved erased contract lets javac regenerate the bridge
