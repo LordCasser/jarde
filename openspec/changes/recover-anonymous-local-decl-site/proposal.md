@@ -8,7 +8,7 @@
 
 另有一道**既有**约束本片必须继续遵守（不属新增前置，故不计入上面三道）：父类 binary 名不含 `$`、每段是合法 Java 标识符、与根类同包（`anonymous_super_source_type_unproved`）——这正是 `anonymous-capture`/`anonymous-top-level` 仍被拒的原因，本片不得顺带放宽。
 
-真实代码中局部声明初始化远多于直返（`present-proved-java-structure` 2.10 所指的终局解最终要覆盖它），故立此片，不静默丢弃。**四处关键判据（根方法门表述、站点扫描边界、左端重拼的健全性依据与三项必要检查、前置数目）已由 root 实测钉死于 [design.md](design.md)，实现者不得自行选择。**
+真实代码中局部声明初始化远多于直返（`present-proved-java-structure` 2.10 所指的终局解最终要覆盖它），故立此片，不静默丢弃。**五处关键判据（根方法门表述、站点扫描边界、左端重拼的健全性依据与三项必要检查、前置数目、以及"站点扫描两路径共享故须显式遏制接口路径"）已由 root 实测钉死于 [design.md](design.md)，实现者不得自行选择。其中第 5 条是架构决定性的：root 已实测证明 `mixed-super-capture` 的放宽确已激活接口路径（`anonymous_interface_projection.state` 由 `absent` 变 `refused`），当前仅被通用写回门碰巧挡住，故本片的写回能力扩展必须配显式遏制，见 [interface-path-activation-probe](../../evidence/java-syntax-2026-10-04/interface-path-activation-probe/README.md)。**
 
 ## What Changes
 

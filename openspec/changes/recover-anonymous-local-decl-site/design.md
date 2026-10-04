@@ -20,7 +20,9 @@ public static void main(String[] args) {                      // ← 根方法�
 
 fixture 以 `javac --release 8 -g:none` 冻结（README 第 5–9 行），故 **class 内无 `LocalVariableTable`/`LineNumberTable`**（root 实测 `javap -l` 计数为 0）。当前主线呈现为物理文本：`AnonymousSuperArgs$1 local2 = new AnonymousSuperArgs$1((java.lang.String) text(...), number(...), local0);`——`$1` 非合法 Java 标识符，故完整源集 `javac` **exit 1**（响亮失败，非静默）。
 
-## 四处 root 必须先钉死的判据（proposal 未写明，实现者不得自行选择）
+## 五处 root 必须先钉死的判据（proposal 未写明，实现者不得自行选择）
+
+> 判据 1–4 是 2026-10-04 首轮实测（读源 + javap + 渲染 + 重编）钉死的；判据 5 由 root 读码发现共享站点扫描后追加，并已用 [interface-path-activation-probe](../../evidence/java-syntax-2026-10-04/interface-path-activation-probe/README.md) 实测证实激活确实发生。
 
 ### 判据 1：根方法门不能沿用"返回类型"表述——锚的根方法是 `void`
 
@@ -80,7 +82,7 @@ class_source_direct_return_new (report.rs:6596)          ← 已被 mixed-super-
 - `recover-proved-anonymous-local-capture`（6/6）、`recover-proved-anonymous-inner-this`（8/8）、`anonymous-interface-basic`（DT-05）的全部既有测试**逐字通过**，且 corpus 双腿扫描中**接口匿名形的渲染零差异**。
 - 若 corpus 双腿扫描出现**接口路径**的任何差异，即为遏制失效信号，**停下报告**，不得以"看起来正确"放行。
 
-**顺带登记（非本片工作）**：`mixed-super-capture` 对同一 helper 的第一次放宽（"前导 `Declare` + 末条直返"）**同样**作用于接口路径。其 corpus 双腿扫描报告 49 渲染仅 1 处差异（新锚），故经验上未观察到接口路径变化；但这是**corpus 覆盖所限的阴性结果**，不是遏制证明。root 将其登记为独立债务：接口路径应补一个"前导 Declare + 末条直返"形的冻结负例，确认该放宽未激活接口投影。见 `openspec/evidence/jadx-feature-inventory-2026-09-27/`（DT-05 匿名接口域）待扩验项。
+**顺带登记（非本片工作）**：`mixed-super-capture` 对同一 helper 的第一次放宽（"前导 `Declare` + 末条直返"）**同样**作用于接口路径。其 corpus 双腿扫描报告 49 渲染仅 1 处差异（新锚），故经验上未观察到接口路径变化；但 root 已实测确认**这是扫描覆盖所限的假阴性**——该扫描只比对渲染文本、不比对报告 JSON，而激活确实发生了（接口匿名形的 `anonymous_interface_projection.state` 由 `absent` 变为 `refused`，被通用写回门 `anonymous_root_writer_rejected` 挡住，故渲染文本零变化）。**完整取证见 [interface-path-activation-probe](../../evidence/java-syntax-2026-10-04/interface-path-activation-probe/README.md)**，其中三形实测（纯直返 → `projected`；前导 Declare + 直返 → `refused`；嵌套接口 → `absent`）证明写回门是**形选择**的，即当前遏制是"碰巧"而非设计不变量。**这正是本片必须实现显式遏制（判据 5 方案 1）的直接理由**：本片要扩展写回能力，一旦写回门能处理"前导声明 + 分配点"形，接口投影就会在无人取证、无专门测试的情况下从 `refused` 变为 `projected`。另登记独立债务：corpus 双腿扫描宜增加报告 JSON 投影状态字段的比对，否则此类诊断级泄漏无法被发现。
 
 ## Goals / Non-Goals
 

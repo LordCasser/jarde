@@ -1,6 +1,6 @@
 ## 1. 取证与冻结
 
-- [ ] 1.1 以 `anonymous-super-args/AnonymousSuperArgs$1` 为锚重放现状：完整源集 `javac --release 8` 退出 1、`main` 分配点的 verbatim 呈现、原 class `java -Xverify:all` 事件日志（`openspec/evidence/java-syntax-2026-09-27/anonymous-super-args/` 既有基线之上补本片前后对照）。**须先读 [design.md](design.md) 的四处判据**，并在取证中确认 root 的实测事实：根方法 `main` 返回 `void`、分配点在方法体**中部**（其后有两条 `println`）、局部 `instance` **随后被读取**（`instance.render()`）、fixture 以 `-g:none` 冻结故 class **无 `LocalVariableTable`**（`javap -l` 计数 0）。
+- [ ] 1.1 以 `anonymous-super-args/AnonymousSuperArgs$1` 为锚重放现状：完整源集 `javac --release 8` 退出 1、`main` 分配点的 verbatim 呈现、原 class `java -Xverify:all` 事件日志（`openspec/evidence/java-syntax-2026-09-27/anonymous-super-args/` 既有基线之上补本片前后对照）。**须先读 [design.md](design.md) 的五处判据**（尤其判据 5 的接口路径显式遏制），并在取证中确认 root 的实测事实：根方法 `main` 返回 `void`、分配点在方法体**中部**（其后有两条 `println`）、局部 `instance` **随后被读取**（`instance.render()`）、fixture 以 `-g:none` 冻结故 class **无 `LocalVariableTable`**（`javap -l` 计数 0）。
 - [ ] 1.2 冻结正负例：局部声明初始化形正例（`AnonymousSuperArgs$1` 本身）；声明类型不可重拼（父类 binary 名含 `$`，即嵌套父类）负例；初始化值非唯一分配点负例；**同一方法内两个声明初始化位各含一个分配点**负例（design 判据 2 的"分配点唯一性"不变量）；**局部被后续读取且该读取在父类上不可解析**负例（design 判据 3 第三项）。
 - [ ] 1.3 **双腿调试信息对照**（design 风险 3）：另冻结一个以 `-g` 编译的**同形**对照（含 `LocalVariableTable`），确认实现后两者的左端类型来源都是 `new` owner 而非 LVT——即实现**不得依赖调试信息**。记录两者的呈现与拒绝原因。
 - [ ] 1.4 **共享站点扫描的遏制负例**（design 判据 5，**不可省略**）：冻结一个类，其某方法在**局部声明初始化位**含一个已证的匿名**接口**分配点（`I x = new I() { … };`），且该类当前**不投影**。记录其放宽前的呈现（作为逐字节对照基线）。理由：`class_source_direct_return_new` → `class_source_anonymous_return_site` → `_anonymous_return_sites` 是**接口路径与父类路径共享**的（接口投影在 `facade.rs:3293` 解构该向量、再于 3367 委派父类投影），故放宽站点形会顺带激活接口匿名投影——那是本片 Non-Goals 之外、无人取证的能力。
@@ -19,4 +19,4 @@
 
 - [ ] 3.1 `anonymous-super-args` 完整源集 `javac --release 8` 通过、`java -Xverify:all` 事件日志逐行一致；全部既有匿名正负例（含 `anonymous-super-mixed-direct` 与六个 mixed refusals）零回退；`-g` 对照腿同样通过且左端类型来源一致。
 - [ ] 3.2 门禁：fmt、clippy **从 `.github/workflows/ci.yml` 46–76 行逐字生成**（含 `--all-features`、29 项 `-A`）、`openspec validate --all --strict`、corpus 双腿扫描（差异应仅赋值初始化形；**若出现第 2 个差异类即越界信号，停下报告**）、全仓测试（当前主线基线 **296 目标 / 2937 passed**）、`git diff --check`。磁盘纪律：每轮构建前 `df -h /`，低于 12Gi 先 `cargo clean`，报告前必 clean；**同一时刻只允许一个 cargo target 存在**。
-- [ ] 3.3 root 独立复核四处判据的实现、左端重拼的健全性、双腿调试信息对照、三方行为与 `anonymous-super-args` 的可编译性转变，更新 DT-06 账本与 `present-proved-java-structure` 5.3 剩余范围说明。（留 root）
+- [ ] 3.3 root 独立复核五处判据的实现（尤其判据 5 的接口路径显式遏制是否成立：遏制负例逐字节不变 + 接口匿名形 corpus 零差异）、左端重拼的健全性、双腿调试信息对照、三方行为与 `anonymous-super-args` 的可编译性转变，更新 DT-06 账本与 `present-proved-java-structure` 5.3 剩余范围说明。（留 root）
