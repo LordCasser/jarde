@@ -671,6 +671,455 @@ pub(crate) fn prove_anonymous_double_capture(
     }))
 }
 
+/// The parameter roles one anonymous `val$`-capture constructor proves. The partition is the
+/// whole constructor shape: every physical parameter is consumed by exactly one proved sink, and
+/// everything else the body holds is one of the two sinks, a parameter load or the closing
+/// return.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct AnonymousValConstructorPartition {
+    /// The one `invokespecial <init>` on the direct superclass.
+    pub super_invoke_bci: u32,
+    /// The descriptor that invoke names: the child constructor descriptor with the capture
+    /// parameters removed.
+    pub super_descriptor: Vec<u8>,
+    /// Physical parameter slots feeding the super invoke, in argument order.
+    pub super_parameter_slots: Vec<u16>,
+    /// The one `putfield` writing the capture field.
+    pub capture_write_bci: u32,
+    /// Physical parameter slots stored into the capture field.
+    pub capture_parameter_slots: Vec<u16>,
+}
+
+/// Splits one anonymous `val$`-capture constructor's physical parameters into the superclass
+/// arguments and the capture stores by their SSA consumption points alone.
+///
+/// javac mints the constructor with one load per physical parameter and exactly two sinks: the
+/// `putfield` of the synthetic capture field and the `invokespecial` of the direct superclass
+/// constructor. The partition refuses any parameter that no proved sink consumes, any parameter
+/// more than one sink or position consumes, any unproved sink at all, and any result whose
+/// superclass arguments are not the leading physical parameters in order — javac keeps the source
+/// order, so an argument that moved is not a constructor this projection can rebuild.
+pub(crate) fn partition_anonymous_val_constructor(
+    child: &ClassMemberFacts,
+    field_name: &[u8],
+    field_descriptor: &[u8],
+    ir: &MethodIr,
+    constructor_descriptor: &[u8],
+    budget: &mut Budget,
+) -> Result<std::result::Result<AnonymousValConstructorPartition, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+        return refuse("constructor code or SSA is unavailable");
+    };
+    if code.stopped_at.is_some()
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+    {
+        return refuse(
+            "constructor capture prologue or exception range is outside the proved shape",
+        );
+    }
+    let Ok(parsed) = descriptor_facts(constructor_descriptor, DescriptorKind::Method) else {
+        return refuse("constructor descriptor could not be parsed");
+    };
+    let mut parameter_slots = Vec::new();
+    let mut parameter_types = Vec::new();
+    let mut next_slot = 1u16;
+    for part in parsed.parameters() {
+        let Some(bytes) = part.bytes(constructor_descriptor) else {
+            return refuse("constructor descriptor parameter could not be read");
+        };
+        parameter_slots.push(next_slot);
+        parameter_types.push(bytes.to_vec());
+        // long and double occupy two local slots
+        next_slot += 1 + u16::from(matches!(bytes.first(), Some(b'J' | b'D')));
+    }
+    let pool = ir.constant_pool();
+    let owner = &child.this_class.raw().0;
+    let mut writes = Vec::new();
+    let mut invokes = Vec::new();
+    for instruction in &code.instructions {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        match instruction.opcode {
+            0xb5 => {
+                if field_reference_matches(
+                    pool,
+                    instruction.constant_pool_index,
+                    owner,
+                    field_name,
+                    field_descriptor,
+                ) {
+                    writes.push(instruction.bci);
+                } else {
+                    return refuse("constructor writes a field outside the proved capture");
+                }
+            }
+            0xb7 => {
+                let Some(CpEntryKind::MethodRef {
+                    owner: target,
+                    name,
+                    descriptor,
+                    ..
+                }) = cp_entry(pool, instruction.constant_pool_index.unwrap_or(0))
+                    .ok()
+                    .map(|entry| &entry.kind)
+                else {
+                    return refuse("constructor invokes an unproved special target");
+                };
+                if !child
+                    .super_class
+                    .as_ref()
+                    .is_some_and(|superclass| target.0 == superclass.raw().0)
+                    || name.0 != b"<init>"
+                {
+                    return refuse("constructor invokes an unproved special target");
+                }
+                invokes.push((instruction.bci, descriptor.0.to_vec()));
+            }
+            _ => {}
+        }
+    }
+    let [capture_write_bci] = writes.as_slice() else {
+        return refuse("capture field must have exactly one constructor write");
+    };
+    let [(super_invoke_bci, super_descriptor)] = invokes.as_slice() else {
+        return refuse("constructor must invoke the direct superclass constructor exactly once");
+    };
+    if !super_descriptor.ends_with(b")V") {
+        return refuse("superclass constructor does not return void");
+    }
+    // One load per physical parameter: javac mints the constructor with exactly one consumption
+    // point per parameter, so a second load is already a shape this proof does not rebuild.
+    let mut loads: Vec<(u16, u32, ValueId)> = Vec::new();
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            let [(Slot::Local(read_slot), value)] = instruction.reads() else {
+                continue;
+            };
+            let slot = *read_slot;
+            if slot != 0 && !parameter_slots.contains(&slot) {
+                continue;
+            }
+            if !(0x15..=0x2d).contains(&instruction.opcode()) {
+                continue;
+            }
+            if !matches!(
+                ssa.value(*value).def(),
+                Definition::Entry {
+                    slot: Slot::Local(entry),
+                    ..
+                } if *entry == slot
+            ) {
+                continue;
+            }
+            let [(_, output)] = instruction.writes() else {
+                continue;
+            };
+            loads.push((slot, instruction.bci(), *output));
+        }
+    }
+    let mut this_loads = Vec::new();
+    let mut parameter_loads = Vec::new();
+    for load in &loads {
+        if load.0 == 0 {
+            this_loads.push(load);
+        } else {
+            parameter_loads.push(load);
+        }
+    }
+    let mut per_slot: std::collections::BTreeMap<u16, Vec<&(u16, u32, ValueId)>> =
+        std::collections::BTreeMap::new();
+    for load in &parameter_loads {
+        per_slot.entry(load.0).or_default().push(load);
+    }
+    for slot in &parameter_slots {
+        if per_slot.get(slot).is_none_or(|loads| loads.len() != 1) {
+            return refuse("physical parameter is not loaded exactly once");
+        }
+    }
+    for (_, _, output) in &this_loads {
+        if ssa.value(*output).uses().len() != 1 {
+            return refuse("receiver load flows into an unproved consumer");
+        }
+    }
+    // Each parameter load's one consumer must be one of the two sinks, at the position the role
+    // states: the capture write's value slot, or a superclass-argument slot.
+    enum ParameterRole {
+        Capture,
+        SuperArgument(u32),
+    }
+    let mut roles: std::collections::BTreeMap<u16, ParameterRole> =
+        std::collections::BTreeMap::new();
+    for (slot, _, output) in &parameter_loads {
+        let uses = ssa.value(*output).uses();
+        let [use_] = uses else {
+            return refuse("parameter load flows into an unproved consumer");
+        };
+        let Some(use_bci) = use_.bci() else {
+            return refuse("parameter load flows through an unproved phi");
+        };
+        if use_bci == *capture_write_bci {
+            let Some(write) = ssa_instruction(ssa, use_bci) else {
+                return refuse("capture write has no SSA instruction");
+            };
+            let Some(read_index) = write.reads().iter().position(|(_, value)| value == output)
+            else {
+                return refuse("capture write does not consume the parameter value");
+            };
+            // the read order is the stack pop order, so the parameter may sit at either record;
+            // what must hold is that the other read is the receiver
+            if write.reads().len() != 2
+                || !value_from_this_load(ssa, write.reads()[1 - read_index].1)
+            {
+                return refuse("capture write consumes the parameter at an unproved position");
+            }
+            if roles.insert(*slot, ParameterRole::Capture).is_some() {
+                return refuse("physical parameter is consumed by two roles");
+            }
+            continue;
+        }
+        if use_bci == *super_invoke_bci {
+            let Some(invoke) = ssa_instruction(ssa, use_bci) else {
+                return refuse("superclass constructor invoke has no SSA instruction");
+            };
+            let Some(read_index) = invoke.reads().iter().position(|(_, value)| value == output)
+            else {
+                return refuse("superclass constructor does not consume the parameter value");
+            };
+            if read_index + 1 == invoke.reads().len() {
+                return refuse("parameter load reaches the superclass receiver position");
+            }
+            // the recorded invoke reads end with the receiver, so the argument positions count
+            // backwards from it
+            let argument_index = (invoke.reads().len() - 2 - read_index) as u32;
+            if roles
+                .insert(*slot, ParameterRole::SuperArgument(argument_index))
+                .is_some()
+            {
+                return refuse("physical parameter is consumed by two roles");
+            }
+            continue;
+        }
+        return refuse("parameter is consumed outside the proved capture and super roles");
+    }
+    let mut super_slots: Vec<(u16, u32)> = Vec::new();
+    let mut capture_slots: Vec<u16> = Vec::new();
+    for slot in &parameter_slots {
+        match roles.get(slot) {
+            Some(ParameterRole::Capture) => capture_slots.push(*slot),
+            Some(ParameterRole::SuperArgument(index)) => super_slots.push((*slot, *index)),
+            None => return refuse("physical parameter has no proved consumption"),
+        }
+    }
+    // javac forwards the superclass arguments in source order, so they are the leading physical
+    // parameters with counting argument positions, and the capture parameters are the rest.
+    super_slots.sort_by_key(|(_, index)| *index);
+    if super_slots
+        .iter()
+        .enumerate()
+        .any(|(index, (slot, argument))| {
+            *argument != index as u32 || parameter_slots[index] != *slot
+        })
+    {
+        return refuse("superclass arguments are not the leading physical parameters in order");
+    }
+    if capture_slots != parameter_slots[super_slots.len()..] {
+        return refuse("capture parameters are not the trailing physical parameters");
+    }
+    let Ok(super_parsed) = descriptor_facts(super_descriptor, DescriptorKind::Method) else {
+        return refuse("superclass constructor descriptor could not be parsed");
+    };
+    let Some(super_parameters) = super_parsed
+        .parameters()
+        .iter()
+        .map(|part| part.bytes(super_descriptor))
+        .collect::<Option<Vec<_>>>()
+    else {
+        return refuse("superclass constructor descriptor could not be read");
+    };
+    if super_parameters.len() != super_slots.len()
+        || super_parameters
+            .iter()
+            .zip(parameter_types.iter())
+            .any(|(super_type, child_type)| *super_type != child_type.as_slice())
+    {
+        return refuse("superclass constructor descriptor does not match the forwarded parameters");
+    }
+    Ok(Ok(AnonymousValConstructorPartition {
+        super_invoke_bci: *super_invoke_bci,
+        super_descriptor: super_descriptor.clone(),
+        super_parameter_slots: super_slots.into_iter().map(|(slot, _)| slot).collect(),
+        capture_write_bci: *capture_write_bci,
+        capture_parameter_slots: capture_slots,
+    }))
+}
+
+/// Proves the one javac Java 8 local-capture shape that carries real superclass arguments: a
+/// single synthetic final instance `val$` field, one constructor whose parameters split into the
+/// proved super-argument prefix and the capture store, and every field read closed to its SSA
+/// consumer. The caller separately closes the allocation site, the owner census and the
+/// root-side argument value; this certificate covers only the child's physical facts.
+pub(crate) fn prove_anonymous_val_capture(
+    child: &ClassMemberFacts,
+    methods: &[(PhysicalMethodId, &MethodIr)],
+    budget: &mut Budget,
+) -> Result<std::result::Result<MemberCaptureProof, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    if child.stopped_at.is_some()
+        || child.fields.len() as u64 != child.field_count
+        || child.methods.len() as u64 != child.method_count
+        || child.field_count != 1
+    {
+        return refuse("anonymous val capture requires complete tables with one field");
+    }
+    if child.methods.iter().any(|method| {
+        !method
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Code")
+    }) {
+        return refuse("anonymous method without bytecode has unknown capture uses");
+    }
+    let [field] = child.fields.as_slice() else {
+        return refuse("anonymous val capture requires one physical field");
+    };
+    if field.access_flags & (0x1000 | 0x0010 | 0x0008) != 0x1010 {
+        return refuse("capture requires one synthetic final instance field");
+    }
+    if !field.name.raw().0.starts_with(b"val$") {
+        return refuse("capture field is not a javac local-capture name");
+    }
+    let field_descriptor = field.descriptor.raw().0.as_slice();
+    let constructors: Vec<_> = child
+        .methods
+        .iter()
+        .filter(|method| method.name.raw().0 == b"<init>")
+        .collect();
+    let [constructor] = constructors.as_slice() else {
+        return refuse("capture requires one physical constructor");
+    };
+    let constructor_descriptor = constructor.descriptor.raw().0.clone();
+    let Some((constructor_id, constructor_ir)) = methods
+        .iter()
+        .find(|(id, _)| id.name.0 == b"<init>" && id.descriptor.0 == constructor_descriptor)
+    else {
+        return refuse("constructor SSA is unavailable");
+    };
+    let partition = match partition_anonymous_val_constructor(
+        child,
+        &field.name.raw().0,
+        field_descriptor,
+        constructor_ir,
+        &constructor_descriptor,
+        budget,
+    )? {
+        Ok(partition) => partition,
+        Err(reason) => return Ok(Err(reason)),
+    };
+    let [capture_slot] = partition.capture_parameter_slots.as_slice() else {
+        return refuse("capture field must be stored from exactly one parameter");
+    };
+    let owner = &child.this_class.raw().0;
+    let name = &field.name.raw().0;
+    let pool = constructor_ir.constant_pool();
+    for entry in pool {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if let CpEntryKind::MethodHandle {
+            reference_index, ..
+        } = entry.kind
+            && field_reference_matches(pool, Some(reference_index), owner, name, field_descriptor)
+        {
+            return refuse("capture field has a method-handle use outside direct SSA reads");
+        }
+    }
+    let Some(ssa) = constructor_ir.ssa() else {
+        return refuse("constructor code or SSA is unavailable");
+    };
+    let Some(write) = ssa_instruction(ssa, partition.capture_write_bci) else {
+        return refuse("capture write has no SSA instruction");
+    };
+    if write.reads().len() != 2
+        || !write
+            .reads()
+            .iter()
+            .any(|(_, value)| value_from_this_load(ssa, *value))
+        || !write
+            .reads()
+            .iter()
+            .any(|(_, value)| value_from_entry_slot_load(ssa, *value, Slot::Local(*capture_slot)))
+    {
+        return refuse("capture write does not consume this and the capture entry parameter");
+    }
+    let mut reads = Vec::new();
+    for (method_id, ir) in methods {
+        budget.poll()?;
+        let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+            return refuse("anonymous method code or SSA is unavailable");
+        };
+        match scan_capture_method_uses(
+            method_id,
+            ir,
+            code,
+            ssa,
+            constructor_id,
+            owner,
+            name,
+            field_descriptor,
+            partition.capture_write_bci,
+            budget,
+        )? {
+            Ok(method_reads) => reads.extend(method_reads),
+            Err(reason) => return Ok(Err(reason)),
+        }
+    }
+    if reads.is_empty() {
+        return refuse("capture field has no proved child read");
+    }
+    let Some(field_name) = std::str::from_utf8(name).ok() else {
+        return refuse("capture field name is not UTF-8");
+    };
+    Ok(Ok(MemberCaptureProof {
+        field_index: 0,
+        field_name: field_name.to_owned(),
+        constructor: constructor_id.clone(),
+        write_bci: partition.capture_write_bci,
+        reads,
+    }))
+}
+
+/// The assignment facts of one root-method local slot a captured anonymous value may come from:
+/// exactly one write (an effectively final local, with the write's BCI), or no write at all (an
+/// unassigned parameter slot). A phi merge or a second assignment means the name does not denote
+/// one value, and the capture is refused.
+pub(crate) fn local_slot_single_write(
+    ssa: &SsaTable,
+    slot: u16,
+) -> std::result::Result<Option<u32>, String> {
+    let mut writes = Vec::new();
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            if instruction
+                .writes()
+                .iter()
+                .any(|(write_slot, _)| *write_slot == Slot::Local(slot))
+            {
+                writes.push(instruction.bci());
+            }
+        }
+    }
+    if ssa.phis().iter().any(|phi| match phi.slot() {
+        Slot::Local(phi_slot) => phi_slot == slot,
+        Slot::Stack(_) => false,
+    }) {
+        return Err("captured local is merged by a phi".to_owned());
+    }
+    match writes.as_slice() {
+        [bci] => Ok(Some(*bci)),
+        [] => Ok(None),
+        _ => Err("captured local has more than one assignment".to_owned()),
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 fn scan_capture_method_uses(
     method: &PhysicalMethodId,
