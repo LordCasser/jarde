@@ -9,7 +9,7 @@
 1. **落点**：`src/facade.rs` 约 4749–4756。环 3 已把该门条件化为 `if site_shape == …DirectReturn { … }`，内含 `plain_return`（`()Lparent;`）与 `capture_return`（`(P)Lparent;`）两条恰等判据，**两者的返回段都硬编码为 `parent_name`**。该处注释已明写"a supertype return is ring 2's separate, unproven slice and keeps this refusal"。
 2. **关键有利事实**：`parent_read`（父类 class file 的 `ConfirmedRead`）在**该门之后紧接的 4758 行**就由 `resolve_class_source_dependency_read_raw` 解析出来了。故环 2 的一层判据**不需要任何新的解析机制**——只需把门的检查下移到 `parent_read` 可用之后（或在该处补取），即可直接读 `parent_read.facts.super_class` 与 `parent_read.facts.interfaces`。
 3. **两处未闭合 fixture 的阻塞门不同**（root 以 javap 核实 `super_class` 常量与根方法返回描述符）：
-   - `anonymous-top-level`：父类 `Base` **顶层可拼写**，返回 `Renderer` 是 `Base` **直接实现**的接口 → **只需本环**。
+   - `anonymous-top-level`：父类 `Base` **顶层可拼写**，返回 `Renderer` 是 `Base` **直接实现**的接口 → 需本环的返回段放宽。**（2026-10-04 实施中更正：不止返回段）** 实现者取证发现该锚还被**第三道门**挡住——child `AnonymousTopLevel$1.render()` 以 `invokevirtual 自身.seed:()J`（符号 owner 是匿名类自身，`seed()` 继承自 `Base`）撞共享 owner 普查 `prove_anonymous_owner_xrefs` 的 `anonymous_interface_child_additional_use`。root 用 javap 与读码独立复核后确认该发现成立并**正式裁决**：批准为普查增加"child 自身方法调用"允许臂，但**仅限父类路径 ∧ 直返站点形**（具名判别 `AnonymousOwnerCensusPath`，接口/grandchild/局部声明位三处逐字不变），且**仅 `InvokeVirtual`**（`InvokeSpecial` 经 javap 实录可达，保持拒绝）。故本环实为"返回段放宽 + 受遏制的普查臂"两部分。
    - `anonymous-capture`：父类 `AnonymousCaptureCases$Base` 与返回类型 `AnonymousCaptureCases$Renderer` **均含 `$`**（都是嵌套类）→ **先撞 `anonymous_super_source_type_unproved`**（父类须为"同包、可直接拼写的源码类型"），本环**无法单独闭合它**，还需嵌套父类名可拼写能力。
 
    **故本环的验收锚只能是 `anonymous-top-level`**；把 `anonymous-capture` 当锚会让实现者误判完成而实际仍拒绝。
