@@ -1,0 +1,32 @@
+Compiled from "Pod.java"
+public class Pod {
+  private int seed;
+
+  public Pod();
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: bipush        6
+       7: putfield      #1                  // Field seed:I
+      10: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: new           #19                 // class Pod$Nut
+       6: dup
+       7: new           #2                  // class Pod
+      10: dup
+      11: invokespecial #21                 // Method "<init>":()V
+      14: invokespecial #22                 // Method Pod$Nut."<init>":(LPod;)V
+      17: invokevirtual #25                 // Method Pod$Nut.mark:()I
+      20: invokevirtual #29                 // Method java/io/PrintStream.println:(I)V
+      23: return
+
+  static int access$000(Pod);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field seed:I
+       4: ireturn
+}

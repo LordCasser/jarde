@@ -1,0 +1,2 @@
+E1.class kept-result probe: equal-length patch deltas (file offset, before, after)
+  offset 537: 0x57 -> 0x4c

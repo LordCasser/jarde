@@ -1,0 +1,29 @@
+// jarde: presentation of `E1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class E1 extends java.lang.Object {
+    public E1() {
+        // @method <init>()V
+        // @declaration a constructor of `E1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `E1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Object local1 = null;
+        // @bytecode 2
+        // the instruction at BCI 2 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 5
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 24 21 18
+        // the copy at BCI 5 has no proved local assignment
+        // @bytecode 25
+        // the saved producer at BCI 25 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 39 25 28
+        // the value at BCI 39 was produced by a saved declaration this run could not commit
+        return;
+    }
+}

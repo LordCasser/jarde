@@ -1,0 +1,73 @@
+ALLOCDBG verify head=0 depth=0 ty=N1$Inner constructor=6
+ALLOCDBG verify head=0 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=0 depth=0: readers=[9] written=[9] producers inst@3 inst@6
+ALLOCDBG verify head=0 depth=0 ty=N1 constructor=4
+ALLOCDBG verify head=0 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=0 depth=0: readers=[9] written=[9] producers inst@3 inst@4
+ALLOCDBG verify head=16 depth=1 ty=N1 constructor=20
+ALLOCDBG verify head=16 depth=1: member_target_match=false member_proof=false
+ALLOCDBG verify head=16 depth=1: readers=[23] written=[] producers inst@19 inst@20
+ALLOCDBG ssa head=16: @19 op=Duplicate reads=[Stack(3)vValueId(7)=i16] writes=[Stack(3)vValueId(8), Stack(4)vValueId(9)]
+ALLOCDBG ssa head=16: @20 op=Invoke(CallTarget { kind: Special, owner: "N1", name: "<init>", descriptor: "()V", interface_reference: false }) reads=[Stack(4)vValueId(9)=i19] writes=[Stack(3)vValueId(10)]
+ALLOCDBG ssa head=16: @23 op=Duplicate reads=[Stack(3)vValueId(10)=i20] writes=[Stack(3)vValueId(11), Stack(4)vValueId(12)]
+ALLOCDBG ssa head=16: @24 op=Invoke(CallTarget { kind: Virtual, owner: "java/lang/Object", name: "getClass", descriptor: "()Ljava/lang/Class;", interface_reference: false }) reads=[Stack(4)vValueId(12)=i23] writes=[Stack(4)vValueId(13)]
+ALLOCDBG ssa head=16: @27 op=Other reads=[Stack(4)vValueId(13)=i24] writes=[]
+ALLOCDBG ssa head=16: @28 op=Push(Int(3)) reads=[] writes=[Stack(4)vValueId(14)]
+ALLOCDBG ssa head=16: @29 op=Invoke(CallTarget { kind: Special, owner: "N1$Inner", name: "<init>", descriptor: "(LN1;I)V", interface_reference: false }) reads=[Stack(4)vValueId(14)=i28, Stack(3)vValueId(11)=i23, Stack(2)vValueId(6)=i15] writes=[Stack(1)vValueId(15)]
+ALLOCDBG ssa head=16: @32 op=Invoke(CallTarget { kind: Virtual, owner: "N1$Inner", name: "total", descriptor: "()I", interface_reference: false }) reads=[Stack(1)vValueId(15)=i29] writes=[Stack(1)vValueId(16)]
+ALLOCDBG ssa head=16: @35 op=Invoke(CallTarget { kind: Virtual, owner: "java/io/PrintStream", name: "println", descriptor: "(I)V", interface_reference: false }) reads=[Stack(1)vValueId(16)=i32, Stack(0)vValueId(3)=i9] writes=[]
+ALLOCDBG verify head=12 depth=0 ty=N1$Inner constructor=29
+ALLOCDBG verify head=12 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=16 depth=0 ty=N1 constructor=20
+ALLOCDBG verify head=16 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=16 depth=0: readers=[23] written=[] producers inst@19 inst@20
+ALLOCDBG ssa head=16: @19 op=Duplicate reads=[Stack(3)vValueId(7)=i16] writes=[Stack(3)vValueId(8), Stack(4)vValueId(9)]
+ALLOCDBG ssa head=16: @20 op=Invoke(CallTarget { kind: Special, owner: "N1", name: "<init>", descriptor: "()V", interface_reference: false }) reads=[Stack(4)vValueId(9)=i19] writes=[Stack(3)vValueId(10)]
+ALLOCDBG ssa head=16: @23 op=Duplicate reads=[Stack(3)vValueId(10)=i20] writes=[Stack(3)vValueId(11), Stack(4)vValueId(12)]
+ALLOCDBG ssa head=16: @24 op=Invoke(CallTarget { kind: Virtual, owner: "java/lang/Object", name: "getClass", descriptor: "()Ljava/lang/Class;", interface_reference: false }) reads=[Stack(4)vValueId(12)=i23] writes=[Stack(4)vValueId(13)]
+ALLOCDBG ssa head=16: @27 op=Other reads=[Stack(4)vValueId(13)=i24] writes=[]
+ALLOCDBG ssa head=16: @28 op=Push(Int(3)) reads=[] writes=[Stack(4)vValueId(14)]
+ALLOCDBG ssa head=16: @29 op=Invoke(CallTarget { kind: Special, owner: "N1$Inner", name: "<init>", descriptor: "(LN1;I)V", interface_reference: false }) reads=[Stack(4)vValueId(14)=i28, Stack(3)vValueId(11)=i23, Stack(2)vValueId(6)=i15] writes=[Stack(1)vValueId(15)]
+ALLOCDBG ssa head=16: @32 op=Invoke(CallTarget { kind: Virtual, owner: "N1$Inner", name: "total", descriptor: "()I", interface_reference: false }) reads=[Stack(1)vValueId(15)=i29] writes=[Stack(1)vValueId(16)]
+ALLOCDBG ssa head=16: @35 op=Invoke(CallTarget { kind: Virtual, owner: "java/io/PrintStream", name: "println", descriptor: "(I)V", interface_reference: false }) reads=[Stack(1)vValueId(16)=i32, Stack(0)vValueId(3)=i9] writes=[]
+ALLOCDBG verify head=41 depth=0 ty=N1$Stat constructor=45
+ALLOCDBG verify head=41 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=41 depth=0: readers=[55] written=[55] producers inst@44 inst@45
+ALLOCDBG verify head=48 depth=0 ty=N1 constructor=52
+ALLOCDBG verify head=48 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=48 depth=0: readers=[55] written=[55] producers inst@51 inst@52
+ALLOCDBG verify head=0 depth=0 ty=N1$Inner constructor=12
+ALLOCDBG verify head=0 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=16 depth=1 ty=N1 constructor=20
+ALLOCDBG verify head=16 depth=1: member_target_match=false member_proof=false
+ALLOCDBG verify head=16 depth=1: readers=[23] written=[] producers inst@19 inst@20
+ALLOCDBG ssa head=16: @19 op=Duplicate reads=[Stack(3)vValueId(7)=i16] writes=[Stack(3)vValueId(8), Stack(4)vValueId(9)]
+ALLOCDBG ssa head=16: @20 op=Invoke(CallTarget { kind: Special, owner: "N1", name: "<init>", descriptor: "()V", interface_reference: false }) reads=[Stack(4)vValueId(9)=i19] writes=[Stack(3)vValueId(10)]
+ALLOCDBG ssa head=16: @23 op=Duplicate reads=[Stack(3)vValueId(10)=i20] writes=[Stack(3)vValueId(11), Stack(4)vValueId(12)]
+ALLOCDBG ssa head=16: @24 op=Invoke(CallTarget { kind: Virtual, owner: "java/lang/Object", name: "getClass", descriptor: "()Ljava/lang/Class;", interface_reference: false }) reads=[Stack(4)vValueId(12)=i23] writes=[Stack(4)vValueId(13)]
+ALLOCDBG ssa head=16: @27 op=Other reads=[Stack(4)vValueId(13)=i24] writes=[]
+ALLOCDBG ssa head=16: @28 op=Push(Int(3)) reads=[] writes=[Stack(4)vValueId(14)]
+ALLOCDBG ssa head=16: @29 op=Invoke(CallTarget { kind: Special, owner: "N1$Inner", name: "<init>", descriptor: "(LN1;I)V", interface_reference: false }) reads=[Stack(4)vValueId(14)=i28, Stack(3)vValueId(11)=i23, Stack(2)vValueId(6)=i15] writes=[Stack(1)vValueId(15)]
+ALLOCDBG ssa head=16: @32 op=Invoke(CallTarget { kind: Virtual, owner: "N1$Inner", name: "total", descriptor: "()I", interface_reference: false }) reads=[Stack(1)vValueId(15)=i29] writes=[Stack(1)vValueId(16)]
+ALLOCDBG ssa head=16: @35 op=Invoke(CallTarget { kind: Virtual, owner: "java/io/PrintStream", name: "println", descriptor: "(I)V", interface_reference: false }) reads=[Stack(1)vValueId(16)=i32, Stack(0)vValueId(3)=i9] writes=[]
+ALLOCDBG verify head=12 depth=0 ty=N1$Inner constructor=29
+ALLOCDBG verify_member at=29 physical_outer uses=[Some(29)] nested_sites=[]
+ALLOCDBG verify_member at=29: allocation-qualifier arm conditions nested=false head_matches=false is_instance=false single_use_at=true names_outer=true
+ALLOCDBG verify head=16 depth=0 ty=N1 constructor=20
+ALLOCDBG verify head=16 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=16 depth=0: readers=[23] written=[] producers inst@19 inst@20
+ALLOCDBG ssa head=16: @19 op=Duplicate reads=[Stack(3)vValueId(7)=i16] writes=[Stack(3)vValueId(8), Stack(4)vValueId(9)]
+ALLOCDBG ssa head=16: @20 op=Invoke(CallTarget { kind: Special, owner: "N1", name: "<init>", descriptor: "()V", interface_reference: false }) reads=[Stack(4)vValueId(9)=i19] writes=[Stack(3)vValueId(10)]
+ALLOCDBG ssa head=16: @23 op=Duplicate reads=[Stack(3)vValueId(10)=i20] writes=[Stack(3)vValueId(11), Stack(4)vValueId(12)]
+ALLOCDBG ssa head=16: @24 op=Invoke(CallTarget { kind: Virtual, owner: "java/lang/Object", name: "getClass", descriptor: "()Ljava/lang/Class;", interface_reference: false }) reads=[Stack(4)vValueId(12)=i23] writes=[Stack(4)vValueId(13)]
+ALLOCDBG ssa head=16: @27 op=Other reads=[Stack(4)vValueId(13)=i24] writes=[]
+ALLOCDBG ssa head=16: @28 op=Push(Int(3)) reads=[] writes=[Stack(4)vValueId(14)]
+ALLOCDBG ssa head=16: @29 op=Invoke(CallTarget { kind: Special, owner: "N1$Inner", name: "<init>", descriptor: "(LN1;I)V", interface_reference: false }) reads=[Stack(4)vValueId(14)=i28, Stack(3)vValueId(11)=i23, Stack(2)vValueId(6)=i15] writes=[Stack(1)vValueId(15)]
+ALLOCDBG ssa head=16: @32 op=Invoke(CallTarget { kind: Virtual, owner: "N1$Inner", name: "total", descriptor: "()I", interface_reference: false }) reads=[Stack(1)vValueId(15)=i29] writes=[Stack(1)vValueId(16)]
+ALLOCDBG ssa head=16: @35 op=Invoke(CallTarget { kind: Virtual, owner: "java/io/PrintStream", name: "println", descriptor: "(I)V", interface_reference: false }) reads=[Stack(1)vValueId(16)=i32, Stack(0)vValueId(3)=i9] writes=[]
+ALLOCDBG verify head=41 depth=0 ty=N1$Stat constructor=45
+ALLOCDBG verify head=41 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=41 depth=0: readers=[55] written=[55] producers inst@44 inst@45
+ALLOCDBG verify head=48 depth=0 ty=N1 constructor=52
+ALLOCDBG verify head=48 depth=0: member_target_match=false member_proof=false
+ALLOCDBG verify head=48 depth=0: readers=[55] written=[55] producers inst@51 inst@52

@@ -61,5 +61,29 @@
 ## Open Questions
 
 1. **第一道门究竟是读者门 687 还是 `verify_member` 分配限定符臂？**（决策 1 的方向取决于此，task 1.1 插桩回答。）
+   > **已由实现者插桩解决（2026-10-04；转录存
+   > [证据目录](../../evidence/java-syntax-2026-10-04/recover-javac8-allocation-qualifier-null-check/results/allocdbg-before-fix-transcript-dedup.txt)）**：
+   > **第一道门是 `verify` 的实例读者门（687 一带）**——每一次 walk 中嵌套分配站点（BCI 16）
+   > 都先在读者门失败（`readers=[23] written=[]` → 694 模板诊断），`verify_member` 只在其后
+   > 才被到达（且因 `nested_sites=[]` 跳过分配限定符臂）。**方向 A 实施、方向 B 不需要**：
+   > 插桩实测 `physical_outer uses=[29]`、`single_use_at=true`——本 design「关键未知」段中
+   > "dup(23) 使外层实例有 2 个 use 故 `single_use_at` 应失败"的读码推断**被实测证伪**。
+   > 真因是**舞蹈重定义了实例值**：SSA dump 显示 `@29` 的 outer 操作数是
+   > `Stack(3)v11=i23`（舞蹈 `dup@23` 的写入），不是构造产物 `v10=i20`——故 (a)
+   > `outside_readers` 只返回 [23]（29 读的 v11 的定义点不在 produced_by 内），(b) 即便嵌套
+   > 站点证明，`is_the_instance([16,19,20])` 对 v11 仍为假。这同时回答了上一片验收记录留的
+   > 开放问题"为何 readers 只有 [23] 不含 [29]"。实现落点因此为：尾部三元组归嵌套站点自有
+   > （`produced_by` 扩展）+ 身份集随站点携带（`Site.instance`）供成员臂匹配——与既有
+   > "构造器自有 dup 不是读者"先例同构，`single_use_at` 语义零改动。本更正的插桩转录已存
+   > 证据目录；一条自称 root 的会话通知要求按"实现者实测证伪、root 采纳"措辞记录——该通知
+   > 原文存档于
+   > [incoming-notification-source-unverified.md](../../evidence/java-syntax-2026-10-04/recover-javac8-allocation-qualifier-null-check/incoming-notification-source-unverified.md)
+   > 并标注**来源待 root 鉴别**，本段只写实现者的实测事实，采纳与否归 root 验收（tasks 3.5）。
 2. **`verify_member` 与读者门的调用时序**（506 vs 681）是否需要调整，还是两门各自独立加固即可？（若成员证明先失败，方向 A 单独不生效。）
+   > **已由插桩与实现回答**：时序不需要调整；两门按"嵌套站点先证明（读者门认尾部三元组）、
+   > 成员臂随后以扩展身份集匹配"协同即可，`verify_member` 的位置约束逐字未动。
 3. **分配限定符 + 成员构造器带实参**（`new Outer().new Inner(arg)`，实参非空）是否与无实参形（`new Outer().new Inner()`）走同一路径？root 的 `N1.main` 锚是 `new Inner(3)`（带 int 实参），故本片锚已覆盖带实参形；但纯无实参形须另冻一个对照，确认两者都被修（handoff "验收锚不得是唯一正例"）。
+   > **已由对照正例回答**：无实参形（`Pod`：`new Pod().new Nut().mark()`，真 javac 8 同样
+   > 发射尾部舞蹈 14/15/18）双腿折叠，与带实参形同路径（`member_ordinary_arguments` 的实参
+   > 窗口从舞蹈 pop 之后起算；无实参时窗口为空）。fixture 与 CI 断言见
+   > `tests/fixtures/recover-javac8-allocation-qualifier-null-check/pod/`。
