@@ -1,0 +1,8 @@
+d0ec9c5d92d81047e536bfe591bae6daf6c3b61ec2b9128ccef778ac5246fc72  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/IP.class
+a0b254496dd106b622d456d47cf784dc831cd5f1ffae4369bee97d94f605b134  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/IP$1.class
+1950cb463f7e258f96d5ee79610eda93b1339f4f2a7728fc53824eaabdd3967e  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/IP$I.class
+80885bbae33759fbcc7e307457133b9590d20bbb9d5376a87eb8a77656be7532  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/IP2.class
+8ec2293fa6743fcd992ac0559d7d8ef5c34abf10fd3c3526b84019f66745be5d  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/IP2$1.class
+f2ad3230c2510207a342919528311a04d1b356292b9b052d4cb6a0bc3c247115  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/IP3.class
+adea745204e7f93cccc3a35fa2517a207732e751870aac964b10a2b57db37287  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/IP3$1.class
+6d6c0e887e102bef096980cca830fbc26e3f79a7b8c458406e6dcffd8941a535  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/interface-path-activation-probe/fixture/TopI.class
