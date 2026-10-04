@@ -1,0 +1,23 @@
+# codegen differential: 2 candidates (javap-only, zero cargo build)
+  L1                   SAME-CODEGEN     methods=10 differing=0
+      [same] java.lang.Runnable noCap()                   instrs 2->2  exc 0->0  any 0->0
+      [same] java.util.function.Function<java.lang.String instrs 5->5  exc 0->0  any 0->0
+      [same] java.util.function.IntUnaryOperator capFinal instrs 3->3  exc 0->0  any 0->0
+      [same] java.util.function.Supplier<java.lang.Intege instrs 3->3  exc 0->0  any 0->0
+      [same] private java.lang.Integer lambda$capThis$2() instrs 4->4  exc 0->0  any 0->0
+      [same] private java.lang.Integer lambda$capTwo$3(ja instrs 12->12  exc 0->0  any 0->0
+      [same] private static int lambda$capFinal$1(int, in instrs 4->4  exc 0->0  any 0->0
+      [same] private static void lambda$noCap$0()         instrs 4->4  exc 0->0  any 0->0
+      [same] public L1()                                  instrs 6->6  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 30->30  exc 0->0  any 0->0
+  L2                   SAME-CODEGEN     methods=6 differing=0
+      [same] private static int lambda$block$0(int, int,  instrs 8->8  exc 0->0  any 0->0
+      [same] private static void lambda$stmt$1(java.lang. instrs 4->4  exc 0->0  any 0->0
+      [same] public L2()                                  instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 11->11  exc 0->0  any 0->0
+      [same] static L2$Two block(int)                     instrs 3->3  exc 0->0  any 0->0
+      [same] static java.util.function.Consumer<java.lang instrs 2->2  exc 0->0  any 0->0
+
+=== VERDICT SUMMARY ===
+  L1: same codegen (0/10 methods differ)
+  L2: same codegen (0/6 methods differ)

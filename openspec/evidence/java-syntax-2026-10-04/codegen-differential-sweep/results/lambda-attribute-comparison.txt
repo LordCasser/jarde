@@ -1,0 +1,21 @@
+### lambda 的 codegen 侧双腿比对（结清 README 第四节登记的待办）
+  探针: L1（无捕获 / 捕获 final 局部 / 捕获 this / 多捕获+字段）、L2（多语句块体 / 语句体）
+  扫描器移植后已用已知正例 TR 复验（仍正确报 VERSION-COUPLED, 2/6 方法 DIFF）
+
+  [1] 逐方法 opcode 序列: L1 10/10 same, L2 6/6 same（共 16 方法 0 DIFF）
+  [2] BootstrapMethods 属性（剥离常量池索引后）: L1 IDENTICAL / L2 IDENTICAL
+      两腿均 4 (L1) / 2 (L2) 条目、同为 LambdaMetafactory.metafactory（altMetafactory=0）、
+      Method arguments 逐条相同（含 REF_invokeStatic 无捕获形与 REF_invokeSpecial 捕获 this 形）
+  [3] InnerClasses 属性（剥离索引后）: L1 IDENTICAL / L2 IDENTICAL（条目数与名字/访问kind均同，仅 CP 索引不同）
+  [4] 合成 lambda 命名惯例: 两腿完全一致
+      L1   真8=[lambda$capTwo$3 lambda$capThis$2 lambda$capFinal$1 lambda$noCap$0]
+      L1    23=[lambda$capTwo$3 lambda$capThis$2 lambda$capFinal$1 lambda$noCap$0]
+      L2   真8=[lambda$stmt$1 lambda$block$0]
+      L2    23=[lambda$stmt$1 lambda$block$0]
+
+  结论: lambda 的 codegen（含 invokedynamic BSM 参数、捕获形、合成方法命名）在真 javac 8 与 javac 23 --release 8 下**逐维一致**，无版本盲区。
+
+  [重要] 扫描器盲区自我更正: cgdiff.py 只比 opcode 序列，而 invokedynamic 无论其 BSM 索引为何都是**单一 opcode**，
+  故 lambda 的版本敏感数据（BSM 参数）落在扫描器盲区。root 补做了 [2][3][4] 三项 javap -v 属性级比对才得出结论——
+  单靠扫描器的 SAME-CODEGEN **不足以**证明 lambda 无版本耦合。此为 handoff「脚手架必须先自检」的延伸：自检不仅要验阳性，
+  还要核对**扫描器的比较维度是否覆盖该构造的版本敏感数据**。

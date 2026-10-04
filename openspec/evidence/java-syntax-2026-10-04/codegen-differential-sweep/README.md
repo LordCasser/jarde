@@ -69,13 +69,14 @@
 ## 四、证据强度与限制（如实标注）
 
 - **比对的是 opcode 序列，不是 class 文件字节**：SHA 覆盖 `<bci>: <opcode>` 的 opcode 列（剥离了操作数与常量池索引）。故"IDENTICAL"证明的是**指令形状一致**，不是"字节相同的 class 文件"——两腿 class 文件字节本就不同（调试信息、路径、常量池编排不同；`C_strswitch` 常量池条目 50 vs 49）。异常表（行数 + `any` 数）与合成产物属性另作独立比对，也一致。**对本问题（"jarde 面对的 codegen 形状是否随 javac 版本变化"）opcode 序列 + 异常表 + 合成属性正是恰当的证据粒度**；字节级差异（常量池编排）不改变 jarde 的判据输入。
-- **未覆盖 lambda**：本普查的六个探针不含 lambda（`invokedynamic` + `altMetafactory`），故 lambda 的版本耦合性**未测**。[dual-javac-sweep](../dual-javac-sweep/README.md) 的 P02/P03 曾测过 lambda 与方法引用，但其结论是"双腿引注相同 → 版本无关的能力缺口"（P02 数组捕获、P03 绑定方法引用），那是**呈现侧**结论；lambda 的 **codegen 侧**双腿比对仍未做。已登记为待排查。
+- **lambda 已补测（本节原记"未覆盖 lambda"，root 同日补做，见 [results/lambda-attribute-comparison.txt](results/lambda-attribute-comparison.txt)）**：补测 `L1`（无捕获 / 捕获 final 局部 / 捕获 this / 多捕获+字段，10 方法）与 `L2`（多语句块体 / 语句体，6 方法），四个维度**全部一致**：(1) 逐方法 opcode 序列 16/16 same；(2) `BootstrapMethods` 属性剥离常量池索引后 IDENTICAL（两腿同为 `LambdaMetafactory.metafactory`、`altMetafactory=0`，Method arguments 逐条相同，含 `REF_invokeStatic` 无捕获形与 `REF_invokeSpecial` 捕获 this 形）；(3) `InnerClasses` 属性剥离索引后 IDENTICAL（条目数与名字/访问 kind 均同，仅 CP 索引不同）；(4) 合成 lambda 命名惯例完全一致（`lambda$capTwo$3` 等两腿逐字相同）。故 **lambda 无版本耦合盲区**。
+  - **补测暴露了扫描器盲区（诚实登记，并延伸了自检纪律）**：`codegen_differential.py` 只比 **opcode 序列**，而 `invokedynamic` 无论其 BSM 索引与参数为何都是**单一 opcode**——故 lambda 的版本敏感数据（BSM 参数、捕获形、`altMetafactory` flag）落在该扫描器盲区。若只看扫描器的 `SAME-CODEGEN` 就下结论，会把"扫描器没看的维度"误当成"一致的维度"。root 因此**补做了 (2)(3)(4) 三项 `javap -v` 属性级比对**才得出 lambda 结论。这是 handoff「验证脚手架必须先自检」纪律的**延伸**：自检不仅要验已知阳性（扫描器移植后 root 用 `TR` 复验，仍正确报 2/6 方法 DIFF），还要核对**扫描器的比较维度是否覆盖该构造的版本敏感数据**——opcode 序列对 switch/synchronized/assert 等足够，对 `invokedynamic` 系构造（lambda/方法引用/字符串拼接）不足，须加属性级比对。（字符串拼接之所以在本普查外已被 dual-javac-sweep 的 P01 覆盖，是因为它用的是 `StringBuilder` 形而非 `invokedynamic`；若某构造真用 `StringConcatFactory`，同样须属性级比对。）。[dual-javac-sweep](../dual-javac-sweep/README.md) 的 P02/P03 曾测过 lambda 与方法引用，但其结论是"双腿引注相同 → 版本无关的能力缺口"（P02 数组捕获、P03 绑定方法引用），那是**呈现侧**结论；lambda 的 **codegen 侧**双腿比对仍未做。已登记为待排查。
 - **单资源/双资源 TWR 不在本普查范围**：TWR 已由专项巡查覆盖（且自检时用作已知正例）。
 
 ## 五、处置
 
 **不立 spec**（六构造均无缺口，是健康负结果）。价值有二：
 1. **结清** dual-javac-sweep 第二节登记的"待排查高风险候选"清单（switch/String switch/synchronized/装箱/assert/foreach 六项全部排查完毕，均无盲区）；
-2. 为版本耦合规则补上**六个负例**，使其从事后归纳变为可双向预测的判据（第三节表），并指出剩余应优先怀疑的方向（lambda codegen 侧未测，已登记）。
+2. 为版本耦合规则补上**负例**，使其从事后归纳变为可双向预测的判据（第三节表）。原列"lambda codegen 侧未测"的待办**已于同日补做**（第四节），结论为 lambda 无版本耦合；补做过程还暴露并登记了扫描器的 opcode-序列盲区（`invokedynamic` 系构造须加属性级比对）。
 
 **登记待办**：lambda 的 codegen 侧双腿比对（`invokedynamic` 的 BSM 参数、捕获形、`altMetafactory` flag）——本普查未覆盖，须独立取证。
