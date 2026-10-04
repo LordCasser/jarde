@@ -34,13 +34,32 @@ CF-17 有**两族**验收 fixture，root 逐一核实**均由 javac 9+ 编译**�
 > **root 自查纠错（诚实登记，两处）**：(1) 含 TWR 的类是 `original.class`（即 `TwrAudit`），**不是** `original-TwrAuditRunner.class`——Runner 不含 `try` 语句、其 codegen **版本无关**（三腿均 197 instrs）。root 一度误指纹 Runner 得到"version-invariant"的假象，核实 `Exception table` 数后更正到 `TwrAudit`。(2) root 曾假设"版本耦合是 return-in-try 专属"，用 `D.java` 探针（`noReturn` 无 return-in-try vs `withReturn` 有）**证伪**：两形都耦合（noReturn 真8/javac23 = 50/24、withReturn = 48/22，ratio 均 ~2.1）。故耦合是 **JDK 9 对 TWR codegen 的全局简化**（去掉 `aconst_null` 资源副本前置与部分 `ifnull` 守卫），不限于某一子形——这扩大了缺口范围，也说明"挑一个 TWR 子形修"不足以覆盖。
 
 
-## 三、健全性与严重性
+## 三、颗粒度取证（root 零构建读码 + 异常表实测，回答"是否一定要新增机制"）
+
+**判据是 CFG/异常表驱动，不是指令序列匹配**。root 读码核实：TWR 的形证明在 `crates/jarde-java/src/guard.rs`（`Shape::NullableResourceFinally` 声明于 `guard.rs:363`、构造于 `3853`），其证明通篇用**块与异常表事实**——`facts.blocks_in((body_start, cleanup_start))`、`facts.covering(bci)` 的 row ordinal 集合恰等、`view.successor_ids(&handler_entry)` 须恰为 `{handler_call_block, rethrow_block}`、`successor_ids(&handler_call_block) == [rethrow_block]`、`successor_ids(&rethrow_block).is_empty()`、以及每条 `CanonicalEdgeKind::{Exception,Normal,Return}` 边的端点归属校验。区域侧 `region.rs:5252` `nullable_resource_finally_regions` 消费该 shape。
+
+**而两腿的异常表拓扑不同**（root javap 实测 `P08_twr.one()`）：
+
+| 腿 | 异常表行数 | `any`（catch-all）行 | 保护区间 |
+| --- | --- | --- | --- |
+| javac 23 `--release 8` | **2** | **0** | `8→11 target 17`、`18→22 target 25`（均 `Class java/lang/Throwable`） |
+| 真 javac 8 | **5** | **2** | `21→25 target 28`、`10→13 target 43`、**`10→13 target 48 any`**、`58→62 target 65`、**`43→50 target 48 any`** |
+
+即真 javac 8 的 TWR 用**两条 `any` catch-all 行**表达"正常路径与异常路径都要关闭资源"的 JDK 8 codegen，且保护区间与关闭块被复制多份（`one()` 48 指令 / 16 异常表项 vs javac 9+ 的 22 / 7）。
+
+**结论（对 Goal 核心问题的回答）**：TWR **不是"再认一种 idiom 拼写"能覆盖的**——它要求 `guard` 的 `NullableResourceFinally` 形证明**接受一套不同的块/异常表拓扑**（含 `any` 行的归属、复制的关闭路径、以及 `successor_ids` 恰等集合的相应放宽或分支）。这属**机制层扩展**（中大颗粒），与 DT-03（同构序列里换一条调用拼写，窄片）、EM-15（判据扩返回值形 + 健全性负例，中片）都不同。故：
+
+- **不并入 DT-03 片**（落点、判据性质、颗粒度都不同）。
+- **立项前须先做一次独立取证**：把真 javac 8 的 `one()`/`two()` 块图与异常表逐块画出，判定 `NullableResourceFinally` 是"加一个 `any`-行变体"即可覆盖，还是需要第二个 shape（如 `ResourceFinallyJdk8`）。root 未做该块图取证，**不外推**其结论。
+- 取证前的诚实判断：**若**只需为 `any` 行加归属规则，则是中片；**若**关闭路径复制导致 `successor_ids` 恰等集合无法用单一 shape 表达，则需新 shape，属大颗粒。这个分岔只能由块图取证决定。
+
+## 四、健全性与严重性
 
 - **失败是响亮的**：真 javac 8 的 TWR 方法 `not recovered` + 引注 + 整方法不投影，**不产生"可编译但行为不同"的文本**，符合核心不变量。故这不是静默偏离事故。
 - **但它是目标层级上的真实覆盖缺口**：jarde 的唯一目标输出层级是 Java 8（`classfile.rs:145` `OutputLevel::Java8`），而真 javac 8 的 TWR 是 Java 8 极常见形（`try (Resource r = …) { … }`）。真 javac 8 产物与 javac 9+ `--release 8` 产物**都是 major version 52 的 Java 8 class**（root 实测四份产物 major 均 52），故真实世界的 JDK-8 编译产物会命中该缺口，而 `--release 8` 交叉编译产物不会。
 - **TWR 缺口比 DT-03 大**：DT-03 只是 null-check 一条调用的拼写差异（`requireNonNull` vs `getClass`，结构同构），而 TWR 是整个 region 的指令序列与异常表结构差异（48 vs 22 指令、16 vs 7 异常表项），涉及 `aconst_null` 资源副本、`ifnull` 守卫关闭序列的 region/latch 证明。故 TWR **不是一条 idiom 拼写能覆盖的**，须独立取证其 region 证明能否扩展到 JDK 8 关闭序列——可能是中等到大颗粒的机制工作，非窄切片。
 
-## 四、系统性归属（三例同根，这是本巡查的主要产出）
+## 五、系统性归属（三例同根，这是本巡查的主要产出）
 
 本会话连续发现三例**同一根因**的缺口：
 
@@ -56,7 +75,7 @@ CF-17 有**两族**验收 fixture，root 逐一核实**均由 javac 9+ 编译**�
 
 **但三者共同要求一个横切的验收方法学修正**（比任何单点修复更重要）：**涉及 javac 合成 codegen 的能力，验收必须含真 javac 8 腿**，否则版本耦合盲区不可见。这已固化进 [handoff.md](../../../../handoff.md) 的"字节码惯用法普查必须按指令序列匹配"纪律（含双 javac 腿要求）。是否对整个 fixture 语料做一次"真 javac 8 双腿补强"是独立的大颗粒项，须单独评估（见下处置）。
 
-## 五、处置
+## 六、处置
 
 - **DT-03**：已派发 [recover-javac8-getclass-null-check-idiom](../../../changes/recover-javac8-getclass-null-check-idiom/)（窄片，单一谓词 + 两处投影，禁用版本门）。
 - **写访问器**：已登记为 EM-15 下的独立债务（[summary.md](../../jadx-feature-inventory-2026-09-27/summary.md) EM 剔除条目段 + [取证 README](../value-returning-write-accessor-patrol/README.md)），待独立取证（须先读已合入的 `d09f5dea` private-setter-helper 通路）后立项。
