@@ -1,0 +1,12 @@
+Compiled from "FW.java"
+public class FW {
+  private final int fin;
+  private int mut;
+  static int statW;
+  FW();
+  public static void main(java.lang.String[]);
+  static int access$000(FW);
+  static int access$102(FW, int);
+  static int access$100(FW);
+  static {};
+}
