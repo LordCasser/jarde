@@ -14,7 +14,7 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（当前主线 296 目标 / 2933 passed；含 `recover-bridge-admission-gates` 全部桥测试、`br_family_negative_shapes_keep_their_refusals`、`the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges`；已知 flake 家族见 handoff.md，单测复跑两轮判定）；fmt；clippy **从 `.github/workflows/ci.yml` 46–76 行逐字生成**（含 `--all-features`，29 项 `-A`）；`openspec validate --all --strict`；磁盘纪律：每轮构建前 `df -h /`，低于 12Gi 先 `cargo clean`，报告前必 clean。（新增测试 `the_superclass_header_precondition_keeps_a_raw_header_parameter_bridge_visible` 在仅回退 facade.rs 时失败于 `!set_proof.admitted`——回归检查可在旧行为上失败；fixture 群计数元组按既定协议重测 `(465,2172,251,1679,8)`→`(472,2193,251,1679,8)`；具体实测数字见交付报告与 results-gates/README.md）
 - [x] 3.2 `Spec`/`Specialized`/`BR$StrBox` 与变体三方对照：原 class / 固定 JADX（dev，仅对照不作准入）/ Jarde 重编 `java -Xverify:all` 擦除派发逐路径一致；corpus 双腿扫描——差异应仅"父类边参数收窄桥从隐藏变可见"的形（如 `BR$StrBox`），且逐条确认无行为变化（空体两侧一致），如实记录。（corpus：448 次尝试/441 渲染/439 一致/2 差异（`BR$StrBox`、`Spec`，均为且仅为桥声明从无到有）/7 双腿一致不可寻址；`corpus-scan-diffs.txt` 逐行核对仅桥成员声明变化）
-- [x] 3.3 root 独立复核父类边前置判据、协变返回桥零回退、擦除派发三方行为，更新 EM 账本（桥域）与巡查记录；确认与 `recover-parameterized-superclass-nested-headers`（姊妹根治片）的协调——本片前置在姊妹片落地后自动失效，无需回退。
+- [x] 3.3 root 独立复核父类边前置判据、协变返回桥零回退、擦除派发三方行为，更新 EM 账本（桥域）与巡查记录；确认与 `recover-parameterized-superclass-nested-headers`（**待立项的**姊妹根治片，root 2026-10-04 核实其目录尚不存在）的协调——本片前置在该片落地后自动失效，无需回退。
 
 > **2026-10-04 root 验收记录**（合并主线 `cc4b6f11`；全部独立复跑与端到端实测，不采信实现者自报）：
 >
