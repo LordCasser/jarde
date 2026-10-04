@@ -1,0 +1,30 @@
+class AnonymousSuperMixedDirect$1 extends Base {
+  final java.lang.String val$captured;
+    descriptor: Ljava/lang/String;
+
+  AnonymousSuperMixedDirect$1(java.lang.String, int, java.lang.String);
+    descriptor: (Ljava/lang/String;ILjava/lang/String;)V
+    Code:
+       0: aload_0
+       1: aload_3
+       2: putfield      #1                  // Field val$captured:Ljava/lang/String;
+       5: aload_0
+       6: aload_1
+       7: iload_2
+       8: invokespecial #7                  // Method Base."<init>":(Ljava/lang/String;I)V
+      11: return
+
+  java.lang.String render();
+    descriptor: ()Ljava/lang/String;
+    Code:
+       0: new           #13                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #18                 // String body:
+       9: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: getfield      #1                  // Field val$captured:Ljava/lang/String;
+      16: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      22: invokestatic  #28                 // Method AnonymousSuperMixedDirect.event:(Ljava/lang/String;)V
+      25: new           #13                 // class java/lang/StringBuilder
