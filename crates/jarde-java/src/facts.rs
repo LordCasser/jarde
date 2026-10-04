@@ -472,6 +472,63 @@ pub const STRUCTURAL_REFLECTION_METHODS: [&str; 11] = [
     "getEnclosingMethod",
 ];
 
+/// One spelling a compiler writes for the null check it inserts over a
+/// source-qualified expression (`outer.new Inner(…)`). Both spellings state the
+/// same fact — a call whose result the site immediately discards — and each
+/// generation of `javac` writes a different one: javac 9+ the
+/// `Objects.requireNonNull` static call, javac 8 the `Object.getClass` virtual
+/// call. The two returns are single-slot values (`Class`, `Object`), so a `pop`
+/// discards either one; the discard itself is the call site's fact and stays
+/// checked there.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum NullCheckSpelling {
+    /// javac 9+: `invokestatic java/util/Objects.requireNonNull(Object)Object`.
+    RequireNonNull,
+    /// javac 8: `invokevirtual java/lang/Object.getClass()Class`.
+    GetClass,
+}
+
+impl NullCheckSpelling {
+    /// The spelling these call facts state, when the invocation kind and the
+    /// named symbol form one pair together; `None` when they name none of this
+    /// vocabulary or combine kinds and symbols from different spellings.
+    fn stated_by(kind: InvokeKind, owner: &[u8], name: &[u8], descriptor: &[u8]) -> Option<Self> {
+        match (kind, owner, name, descriptor) {
+            (
+                InvokeKind::Static,
+                b"java/util/Objects",
+                b"requireNonNull",
+                b"(Ljava/lang/Object;)Ljava/lang/Object;",
+            ) => Some(Self::RequireNonNull),
+            (InvokeKind::Virtual, b"java/lang/Object", b"getClass", b"()Ljava/lang/Class;") => {
+                Some(Self::GetClass)
+            }
+            _ => None,
+        }
+    }
+}
+
+/// Whether one call is a null check whose result the site discards, stated in
+/// one of the [`NullCheckSpelling`] pairs.
+///
+/// The kind and the symbol are matched **as a pair**, never independently: the
+/// cross product (`invokestatic Object.getClass`, `invokevirtual
+/// Objects.requireNonNull`) is not what any javac emits, and admitting it would
+/// widen the accepted set past the evidence this rule holds. Both spellings
+/// target `MethodRef` entries, so an interface-method reference of either
+/// symbol is refused here too. Whether the site actually discards the result —
+/// a `pop` over the single-slot return, not a `pop2` — is the call site's own
+/// fact and is checked at each caller, not by this predicate.
+pub fn is_discarded_null_check(
+    kind: InvokeKind,
+    owner: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    interface_reference: bool,
+) -> bool {
+    !interface_reference && NullCheckSpelling::stated_by(kind, owner, name, descriptor).is_some()
+}
+
 /// One symbolic reference an invocation names.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CallTarget {

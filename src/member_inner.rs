@@ -34,7 +34,7 @@ pub(crate) fn prove_family_call_site(
     let refuse = |reason: &str| Err(reason.to_owned());
     // javac lowers an unqualified `new Inner()` in Outer to `new; dup; aload_0;
     // invokespecial; areturn`. The implicit current receiver is already non-null, so the
-    // explicit `requireNonNull; pop` pair used for a source-qualified expression is absent.
+    // explicit discarded-null-check call used for a source-qualified expression is absent.
     // Admit only this entire, side-effect-free return body in the selected root definition.
     if caller.owner == *root_definition
         && caller.name.0 == b"make"
@@ -122,13 +122,24 @@ pub(crate) fn prove_family_call_site(
     {
         return refuse("member call does not name the selected physical constructor");
     }
-    if check.opcode != 0xb8
-        || !matches!(cp_entry(pool, check.constant_pool_index.unwrap_or(0)).ok().map(|entry| &entry.kind),
-        Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
-            if owner.0 == b"java/util/Objects" && name.0 == b"requireNonNull"
-                && descriptor.0 == b"(Ljava/lang/Object;)Ljava/lang/Object;")
+    let check_kind = match check.opcode {
+        0xb8 => jarde_java::facts::InvokeKind::Static,
+        0xb6 => jarde_java::facts::InvokeKind::Virtual,
+        _ => return refuse("member call has no exact early discarded null check"),
+    };
+    if !matches!(cp_entry(pool, check.constant_pool_index.unwrap_or(0)).ok().map(|entry| &entry.kind),
+    Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+        if jarde_java::facts::is_discarded_null_check(
+            check_kind,
+            &owner.0,
+            &name.0,
+            &descriptor.0,
+            // The pool entry is a `MethodRef`, never an interface-method
+            // reference, so this projection states that fact directly.
+            false,
+        ))
     {
-        return refuse("member call has no exact early requireNonNull check");
+        return refuse("member call has no exact early discarded null check");
     }
     let Some((&first, ordinary)) = record.arguments.split_first() else {
         return refuse("new@1 did not identify the physical outer argument");

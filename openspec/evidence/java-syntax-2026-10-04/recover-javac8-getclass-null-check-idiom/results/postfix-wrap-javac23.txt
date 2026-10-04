@@ -1,0 +1,40 @@
+// jarde: presentation of `Wrap` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Wrap extends java.lang.Object {
+    public Wrap() {
+        // @method <init>()V
+        // @declaration a constructor of `Wrap`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Wrap`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Wrap local1 = new Wrap();
+        java.lang.System.out.println(local1.new Seed(2).grow(3));
+        return;
+    }
+
+    class Seed extends java.lang.Object {
+        int seed;
+
+        Seed(int arg2) {
+            // @method <init>(LWrap;I)V
+            // @declaration a constructor of `Wrap$Seed`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            this.seed = arg2;
+            return;
+        }
+
+        int grow(int arg1) {
+            // @method grow(I)I
+            // @declaration an instance method of `Wrap$Seed`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return this.seed + arg1;
+        }
+    }
+}

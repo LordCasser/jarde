@@ -1,0 +1,68 @@
+# 任务 1.1 复现（2026-10-04，实现者重跑 root 的单变量实验）
+
+编译器：Corretto 1.8.0_432（/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac，`javac -version` → 1.8.0_432）
+命令行：cd /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10661-c547-7362-b3f9-eda47806f81b/openspec/evidence/java-syntax-2026-10-04/recover-javac8-getclass-null-check-idiom/fixture/n1-realjavac8-rerun && /Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac -d . ../N1.java    (exit 0)
+确定性证明：重编产物 SHA256 与 root 冻结类逐字节一致：
+  N1.class        23a391a54ed02bb025e16f73a6698a4ec89598eea5893ec403c01279d4e806fb
+  N1$Inner.class  c799a6e345a61def1e80cc7085c51361b199944a018ba28d230099516e5d17ba
+  N1$Stat.class   a563455582b5e55f34528f754b588b459be8864def86748da87d2335f54c1431
+  （对照 root 冻结转录 fixture-sha256.txt 的 real-javac8 三条）
+
+## N1$Stat.use —— 参数限定符 outer.new Inner(9) 的分配序列
+
+  int use(N1);
+    Code:
+       0: new           #2                  // class N1$Inner
+       3: dup
+       4: aload_1
+       5: dup
+       6: invokevirtual #3                  // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       9: pop
+      10: bipush        9
+      12: invokespecial #4                  // Method N1$Inner."<init>":(LN1;I)V
+      15: invokevirtual #5                  // Method N1$Inner.total:()I
+      18: ireturn
+}
+
+## N1.main —— 分配限定符 new N1().new Inner(3) 的分配序列
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: invokestatic  #10                 // Method useStatic:()I
+       6: invokevirtual #11                 // Method java/io/PrintStream.println:(I)V
+       9: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      12: new           #3                  // class N1$Inner
+      15: dup
+      16: new           #5                  // class N1
+      19: dup
+      20: invokespecial #6                  // Method "<init>":()V
+      23: dup
+      24: invokevirtual #12                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      27: pop
+      28: iconst_3
+      29: invokespecial #4                  // Method N1$Inner."<init>":(LN1;I)V
+      32: invokevirtual #8                  // Method N1$Inner.total:()I
+      35: invokevirtual #11                 // Method java/io/PrintStream.println:(I)V
+      38: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      41: new           #13                 // class N1$Stat
+      44: dup
+      45: invokespecial #14                 // Method N1$Stat."<init>":()V
+      48: new           #5                  // class N1
+      51: dup
+      52: invokespecial #6                  // Method "<init>":()V
+      55: invokevirtual #15                 // Method N1$Stat.use:(LN1;)I
+      58: invokevirtual #11                 // Method java/io/PrintStream.println:(I)V
+      61: return
+
+  static int access$000(N1);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field base:I
+       4: ireturn
+}
+
+## class 文件版本（真 javac 8 与 javac 23 --release 8 均为 52，无法区分）
+
+  real-javac8 N1$Stat: majorversion:52
+  javac23-leg N1$Stat: majorversion:52

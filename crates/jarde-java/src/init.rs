@@ -986,15 +986,17 @@ fn verify_member(
         )
         || operations.get(copy.bci()) != Some(&Operation::Duplicate)
         || !matches!(operations.get(check.bci()), Some(Operation::Invoke(call))
-            if call.kind() == crate::facts::InvokeKind::Static
-                && !call.is_interface_reference()
-                && call.owner() == "java/util/Objects"
-                && call.name() == "requireNonNull"
-                && call.descriptor() == "(Ljava/lang/Object;)Ljava/lang/Object;")
+        if crate::facts::is_discarded_null_check(
+            call.kind(),
+            call.owner().as_bytes(),
+            call.name().as_bytes(),
+            call.descriptor().as_bytes(),
+            call.is_interface_reference(),
+        ))
         || pop.opcode() != 0x57
     {
         return Err(shape(format!(
-            "the member constructor at BCI {at} lacks the contiguous local load, dup, exact requireNonNull(Object), pop check"
+            "the member constructor at BCI {at} lacks the contiguous local load, dup, discarded null check, pop"
         )));
     }
     let qualifier_writes = qualifier.writes();

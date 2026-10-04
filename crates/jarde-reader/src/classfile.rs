@@ -11896,7 +11896,11 @@ mod tests {
             // `indirect-supertype-return` and `nested-supertype-return` ten and the interface
             // census containment probe three, thirteen classes, twenty-two bodies) moved it
             // again.
-            (545, 2381, 251, 1692, 8),
+            // The 2026-10-04 recover-javac8-getclass-null-check-idiom fixtures (the real-javac8
+            // getClass-leg anchors: the `N1x` parameter-qualifier family three, the `Wrap`
+            // local-variable qualifier two, and the explicit-statement negative `G` two, seven
+            // classes, nineteen bodies) moved it again.
+            (552, 2400, 251, 1692, 8),
             "fixture population changed: re-measure these counts"
         );
     }
