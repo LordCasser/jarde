@@ -5887,6 +5887,116 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-member-base/run.sh"
     },
     {
+      "blake3": "79816d8345e1da5917a243c29aadf49bb30a5e096ff3c428421c7947b1a92594",
+      "bytes": 137,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/capture-from-local/Base.class"
+    },
+    {
+      "blake3": "bc6c71f625157d65d9b5b4a1ebb51cba0aec9e1b2371d2496feac30b9dcf594b",
+      "bytes": 416,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/capture-from-local/ParameterizedCaptureFromLocal$1.class"
+    },
+    {
+      "blake3": "2ec4d6a6330981b620de3b5d479c116ae8eae54d61117b0e6ef86ad8b7515673",
+      "bytes": 760,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/capture-from-local/ParameterizedCaptureFromLocal.class"
+    },
+    {
+      "blake3": "ca24599bd7650f0228cff770424cd1dfe9361d4bbbb299937040940e3ef3ee2b",
+      "bytes": 920,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/capture-from-local/ParameterizedCaptureFromLocal.java"
+    },
+    {
+      "blake3": "79816d8345e1da5917a243c29aadf49bb30a5e096ff3c428421c7947b1a92594",
+      "bytes": 137,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/instance-method/Base.class"
+    },
+    {
+      "blake3": "c6e720a4db110c76828c6214e987a81207219a9bad6cfd599e3613aa6d9a332b",
+      "bytes": 542,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/instance-method/ParameterizedInstanceMethod$1.class"
+    },
+    {
+      "blake3": "4612ff73827e3d7cd8d34cc1d04a616419e046bd8260d18742cca16a3b7a3652",
+      "bytes": 820,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/instance-method/ParameterizedInstanceMethod.class"
+    },
+    {
+      "blake3": "c16070918735fe88f2de813730a303edac80a90fcaff71c9d97ab59942bcf0c8",
+      "bytes": 960,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/instance-method/ParameterizedInstanceMethod.java"
+    },
+    {
+      "blake3": "79816d8345e1da5917a243c29aadf49bb30a5e096ff3c428421c7947b1a92594",
+      "bytes": 137,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/multiple-parameters/Base.class"
+    },
+    {
+      "blake3": "1d63045f5f3a7d0e63e7411bc9850730a7e257c1928da377b7ecacd8ddc05b20",
+      "bytes": 410,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/multiple-parameters/ParameterizedMultiParams$1.class"
+    },
+    {
+      "blake3": "5b67fcf512e35faf35b05f7cbc48a3e9b68d86eb9a1f6d824c2734e20839e8b1",
+      "bytes": 751,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/multiple-parameters/ParameterizedMultiParams.class"
+    },
+    {
+      "blake3": "112f7e45cd22862bad423482a8d74872663a837570c85ebdac0af69a8e35620b",
+      "bytes": 934,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/multiple-parameters/ParameterizedMultiParams.java"
+    },
+    {
+      "blake3": "79816d8345e1da5917a243c29aadf49bb30a5e096ff3c428421c7947b1a92594",
+      "bytes": 137,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/parameter-also-consumed/Base.class"
+    },
+    {
+      "blake3": "81cfbeca7ae276223f147aee5dc9d006961514f8ebf2f8752f52417288a6ba9b",
+      "bytes": 411,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/parameter-also-consumed/ParameterizedAlsoConsumed$1.class"
+    },
+    {
+      "blake3": "592c65bd06ecfa48238b2d0f2bdbe3dae5ac744aaca8cb13a073ab6069ac4d45",
+      "bytes": 752,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/parameter-also-consumed/ParameterizedAlsoConsumed.class"
+    },
+    {
+      "blake3": "b876ae952c9395c8e0c351cd48e78348217cdc390003b50d691722d55b8ab08a",
+      "bytes": 935,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/parameter-also-consumed/ParameterizedAlsoConsumed.java"
+    },
+    {
+      "blake3": "65e819bde843bd30e38884f825c2656049ae0a2aba3ae8d045188340ead91e97",
+      "bytes": 175,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/Base.class"
+    },
+    {
+      "blake3": "697cd67078a15a56b564d56c7d271db633d7109c25569f05d19601bdc87b7a5f",
+      "bytes": 567,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/ParameterizedSupertypeReturn$1.class"
+    },
+    {
+      "blake3": "14ed6b63695b389fcd9d4221e7ee689835d90cc732e5d16e0aa26719a675dd8f",
+      "bytes": 589,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/ParameterizedSupertypeReturn.class"
+    },
+    {
+      "blake3": "6376dabbbd0bf124319bb3658b314ce95f5e39d61bb70a4fd8c2179102a48b79",
+      "bytes": 861,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/ParameterizedSupertypeReturn.java"
+    },
+    {
+      "blake3": "c0cc611a62e360f574c726504e7e0bc6995cbaf974414aa05d4399ed236b4f98",
+      "bytes": 100,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/Renderer.class"
+    },
+    {
+      "blake3": "078e3f63052be571c11555690a8e4f1cd409d8e67741dad3ab5160546fc7a9ab",
+      "bytes": 244,
+      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/compile.log"
+    },
+    {
       "blake3": "cfef9dfd3ea056aac79bd244f11240cec8a853c83466b1fe70641c394a76f7e6",
       "bytes": 904,
       "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/AnonymousSuperArgs$1.class"
@@ -5960,6 +6070,26 @@
       "blake3": "a5098c820cb2e3f4b7a8c4f4cc37ebbfc65ae0c69d3753f1089f4c9d892ff7b8",
       "bytes": 265,
       "path": "tests/fixtures/proved-java-structure/anonymous-super-direct/SHA256SUMS"
+    },
+    {
+      "blake3": "716669ef1df130dc2435c231f058742426865c5533b64aa7dded54f0d2ddd1ce",
+      "bytes": 405,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-dispatch-nodebug/AnonymousSuperDispatch$1.class"
+    },
+    {
+      "blake3": "b36566ae03b0c1386a45ca107f65208d85d4ec16648764344ee68aa7d24b9f53",
+      "bytes": 922,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-dispatch-nodebug/AnonymousSuperDispatch.class"
+    },
+    {
+      "blake3": "5860a18ed085922a5b4b902c989c023160cf8d0a15d3fe941eb91cc858da84d8",
+      "bytes": 1009,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-dispatch-nodebug/AnonymousSuperDispatch.java"
+    },
+    {
+      "blake3": "899ab447289879d5651149cdb475b15bc30db25b95885c82958c1def64b8783c",
+      "bytes": 454,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-dispatch-nodebug/Base.class"
     },
     {
       "blake3": "80b7a89a62709766388a5643ce69a41a0c6ceda84f2cac5785b592dab1656e91",
