@@ -1,0 +1,2 @@
+9cddea7b6236d4280a8b63e115c57e2be6fb8f676e9d819408559d83bde43609  openspec/evidence/java-syntax-2026-10-04/multi-catch-labeled-control-patrol/fixture/C.class
+fb2d9df327fb59845ef268d8d4a299783058b98cf78290275c0fe626f7e0fbd2  openspec/evidence/java-syntax-2026-10-04/multi-catch-labeled-control-patrol/fixture/M1.class
