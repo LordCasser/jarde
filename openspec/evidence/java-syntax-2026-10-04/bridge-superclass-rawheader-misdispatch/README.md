@@ -40,3 +40,23 @@
 根治路径是 `recover-parameterized-interface-headers` 的姊妹——让父类参数化投影也覆盖嵌套父名（放宽 `class_source.rs:6432` 的 `$` 拒绝，走同一 `InnerClasses` 行集重拼），使类头呈现 `extends Outer.Box<String>`，javac 遂重建两桥。但那属父类头投影域；**本修复片先堵桥隐藏的行为洞**（拒绝隐藏 = 响亮、可编译、行为正确），父类头投影作为后续独立片让该形也能隐藏桥。
 
 原 class 为行为基准（`SPEC.set(String) ran` / `SPEC.get ran`）。
+
+## 修复形状的 root 独立验证（2026-10-04，派发前用 javac 实证，非 cargo）
+
+裁决的核心断言是"桥可见 + 裸头 = 行为正确"。root 在派发实现前先用 javac 独立验证该形状成立（避免实现者撞向错误设计）：
+
+```java
+class Box<T> { void set(T v){System.out.println("BOX.set(Object) ran");} T get(){...} }
+// 模拟修复后呈现：裸父类头 + 参数收窄桥【可见】
+class SpecFixed extends Box {                     // 裸头
+    void set(String v){System.out.println("SPEC.set(String) ran");}
+    void set(Object v){ this.set((String)v); }    // 桥可见：覆写继承的 set(Object) → 转发 set(String)
+    String get(){System.out.println("SPEC.get ran"); return "S";}
+}
+// Drv: Box b = new SpecFixed(); b.set("x"); b.get();
+```
+
+- `javac --release 8` → **exit 0**（`set(String)` 与 `set(Object)` 是合法重载；可见的 `set(Object)` 覆写继承来的擦除 `set(Object)`）。
+- 运行经 `Box` 擦除引用 `b.set("x")` → **`SPEC.set(String) ran`**（命中可见桥 → 转发），`b.get()` → **`SPEC.get ran`**——**与原类逐路径一致**。
+
+故"桥可见 + 裸头"确实修复了错值（对比隐藏桥时擦除派发路由到 `BOX.set(Object)`）。协变返回桥隐藏仍安全（`Spec.get` 实测 `SPEC.get ran` 一致）——两者不对称的根因：协变返回桥裸头下仍是同擦除签名**覆写**（javac 再生），参数收窄桥裸头下降级为**重载**（javac 不再生），故前者可隐藏、后者不可。这印证了 design 决策 2 的 `parameter_cast_form` 约束面。
