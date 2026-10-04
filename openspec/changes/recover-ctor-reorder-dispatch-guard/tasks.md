@@ -24,14 +24,14 @@
 > **保守判据的已知代价（root 复核确认属 spec 内取舍）**：`anonymous-super-args`/`anonymous-capture`/`anonymous-top-level` 三处的 super ctor 实测**无** `this` 虚分派，其重排本是行为安全的，但单档判据使其退回 verbatim（不可编译）。这是 design 决策 1 明确接受的取舍（换取"无需跨类读方法体、无新机制"），终局解见下。
 > **终局解关联（2026-10-04 root 实测更正：原写"5.3 是四处 fixture 的终局解"不成立）**：本片是过渡收敛（响亮失败）。[recover-anonymous-mixed-super-capture](../recover-anonymous-mixed-super-capture/)（5.3，合并 `e1c89d57`）已落地，但**只覆盖"根方法为无参、返回类型恰为父类 `()Lparent;`、分配点在直返位"的混合形**，其新锚是新建 fixture `anonymous-super-mixed-direct/`（root 实测：完整源集 `javac --release 8` exit 0、`java -Xverify:all` 事件日志与原 class **逐字一致**，且 javac 自行重建 `putfield val$local0` 先于 `invokespecial Base.<init>` —— 该形确已不依赖 ctor 重排）。
 >
-> **四处 ctor-reorder fixture 实测仍全部未内联**（root 用合并后二进制逐类渲染取证，拒绝码为 `facade.rs:4694/4701` 的**既有**门，非本片或 5.3 引入）：
+> **四处 ctor-reorder fixture 的状态（root 2026-10-04 两次实测；环 1 合入 `25f2589e` 后重测）**：
 >
-> | fixture | 根方法签名 | 阻塞门 | 5.3 是否解决 | 后续片是否解决 |
-> | --- | --- | --- | --- | --- |
-> | `anonymous-super-args` | `main` 内 `Base instance = new Base(…)` | 分配点在**局部声明初始化位** | 否 | 是（`recover-anonymous-local-decl-site`） |
-> | `anonymous-top-level` | `static Renderer create()` | `anonymous_super_return_type_unproved`：返回类型是 `Renderer`，门要求 `()LBase;` | 否 | **否**（需放宽返回类型门） |
-> | `anonymous-capture` | `private static Renderer baseArgumentAndCapture()` | 同上 | 否 | **否** |
-> | `anonymous-super-dispatch` | `private static Base create(final String captured)` | 同上：根方法**带参数**，门要求无参 | 否 | **否** |
+> | fixture | 根方法签名 | 阻塞门 | 环 1 后状态 |
+> | --- | --- | --- | --- |
+> | `anonymous-super-args` | `main` 内 `Base instance = new Base(…)` | 分配点在**局部声明初始化位** | **已内联**（环 1 [recover-anonymous-local-decl-site](../recover-anonymous-local-decl-site/) 落地；root 实测完整源集 `javac` exit 0、事件日志与原 class 逐行一致） |
+> | `anonymous-top-level` | `static Renderer create()` | `anonymous_super_return_type_unproved`：返回类型是 `Renderer`，门要求 `()LBase;` | 仍未内联 → **环 2**（未立项） |
+> | `anonymous-capture` | `private static Renderer baseArgumentAndCapture()` | 同上 | 仍未内联 → **环 2**（未立项） |
+> | `anonymous-super-dispatch` | `private static Base create(final String captured)` | 同上门：根方法**带参数**，要求无参 | 仍未内联 → **环 3** [recover-anonymous-parameterized-root](../recover-anonymous-parameterized-root/)（已立项，顺序约束已满足） |
 >
-> **故"四处 fixture 可编译"的终局解不是单一片，而是一条链**：(1) 局部声明位站点选择 + 赋值左端匿名类型名重拼（已立项 `recover-anonymous-local-decl-site`）；(2) 根方法返回类型门的放宽（允许返回父类的**子类型/接口**而非恰为父类）；(3) 根方法**带参数**形的支持。三者都未立项的 (2)(3) 需在推进前单独取证其判据安全性（返回类型门放宽会牵动"分配点唯一性"与"捕获值来源可证"两条既有不变量，不可草率）。`present-proved-java-structure` 2.10 的"可编译"一半**仅部分交付**（直返无参形）。
+> **故"四处 fixture 可编译"的终局解是一条链**：环 1（局部声明位站点选择 + 赋值左端匿名类型名重拼）**已落地**；环 3（根方法带参形）已立项且机制判定为"不需新机制"（移植接口路径 `captured_root_parameter` 先例）；环 2（根方法返回类型门放宽）**未立项**，须先取证其对"分配点唯一性"与"捕获值来源可证"两条不变量的影响，且需要一个新的类级可赋值性证明能力（盘点见 [anonymous-chain-rings-2-3](../../evidence/java-syntax-2026-10-04/anonymous-chain-rings-2-3/README.md)）。`present-proved-java-structure` 2.10 的"可编译"一半已交付直返无参形 + 局部声明初始化形。
 > **遗留**：handoff 记载的测试基线 2918 与实测 2919（bridge 验收后）差 1，属历史计数漂移，不影响门禁判定；测试数基线已在 handoff 更正。

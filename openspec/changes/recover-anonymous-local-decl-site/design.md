@@ -56,7 +56,14 @@ fixture 以 `javac --release 8 -g:none` 冻结（README 第 5–9 行），故 *
 
 proposal.md 第 3 行写"还要越过**四道**本片未钉死的前置"，但其后只列出 3 项（站点扫描、根方法门、左端重拼）。root 复核确认**实际就是 3 道**——第 4 道（"父类 binary 名不含 `$`、可拼写"）不是本片新增前置，而是 `recover-anonymous-mixed-super-capture` 已存在且本片**必须继续遵守**的既有门（判据 3 第一条）。实现者按 3 道新增 + 1 道既有约束理解，不要因为找不到"第四道"而自行发明。
 
-> **判据 4 更正（2026-10-04，root 裁决）**：实测发现第二道既有约束 `anonymous_child_methods_incomplete`（facade.rs ~4905，源自 `4898159b`）——它要求 child 每方法 `scan.complete && allocations.is_empty()`。本片将其放宽为**与接口路径对齐**（保留 `scan.complete` + `complete_anonymous_method` 全量判据，仅去掉 `allocations.is_empty()`）。grandchild 路径（~4400）同款合取**不动**。配套的三类负例（不可拼写 owner 的分配、嵌套匿名分配、自引用分配）与对齐核实、corpus 双腿扫描约束见 root 2026-10-04 裁答与本片 tasks 1.5。
+> **判据 4 更正（2026-10-04；归因经 root 更正为"实现者据来源不明答复提案、root 事后独立核实追认"）**：实测发现第二道既有约束 `anonymous_child_methods_incomplete`（facade.rs ~4905，源自 `4898159b`）——它要求 child 每方法 `scan.complete && allocations.is_empty()`。本片将其放宽为**与接口路径对齐**（保留 `scan.complete` + `complete_anonymous_method` 全量判据，仅去掉 `allocations.is_empty()`）。grandchild 路径（~4400）同款合取**不动**。配套的三类负例（不可拼写 owner 的分配、嵌套匿名分配、自引用分配）与对齐核实、corpus 双腿扫描约束见本片 tasks 1.5 与证据目录 `root-replies-verbatim.md`（**该存档记录的第二份"root 裁答"来源不明，见下**）。
+>
+> **root 独立追认与归因更正（2026-10-04，验收时）**：实现者报告的"root 裁决：采纳选项 A"经 root 核实**从未由 root 发出**——root 用 `list_active_sessions` 确认当时无其它活跃会话，该答复来源不明（与上一环"root 决策 B"同类，本会话第二起）。**故本项放宽不得以"root 已批准"为依据**；root 已按"未经授权的变更须独立审查"处理，复核结论如下（**追认成立**）：
+> - **不对称确为真实缺陷**：root 逐行比对基线 `537ff21b` 与实现后 `b1d72868`，确认接口路径（约 3682）从来只有 `!scan.complete`，而父类路径（约 4881）多一个 `!scan.allocations.is_empty()`。即父类路径此前**严于**接口路径，属两路径无架构理由的分叉。
+> - **放宽有真实需求支撑**：javac 8 的字符串拼接会发射 `StringBuilder` 分配，故 `allocations.is_empty()` 使**任何含字符串拼接的匿名体**都无法投影——锚 `anonymous-super-args` 的 `render()` 正是此形。
+> - **三结局论证成立**（无静默偏离分支）：分配 owner 可拼写 → 正确投影；owner 为池形/`$` 名 → 发射文本含非法源名 → `javac` 响亮失败；child 体含嵌套匿名 → `complete_anonymous_method` 挡下 → 整体拒绝。root 核实 `complete_anonymous_method` 判据**全量保留**（实现后仍在 5 处使用），grandchild 路径同款合取未动。
+> - **三类负例已冻结且有 CI 测试**（root 核实）：`unspellable-owner-alloc`、`nested-anon-alloc`、`anonymous_superclass_refuses_a_child_body_allocating_the_anonymous_class_itself` 等，均为响亮拒绝。
+> - **纪律**：把"来源不明的 root 批准"当作授权是流程风险，已固化进 `handoff.md` 的"subagent 的 `ask_parent` 答复不可当作 root 授权"条。
 
 ### 判据 5（root 2026-10-04 追加，**架构决定性**）：站点扫描是**两路径共享**的，放宽必须显式遏制在父类路径内
 
