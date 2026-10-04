@@ -20,7 +20,9 @@
   `MemberCaptureProof` **未扩展**（字段、序列化形状零改动；约 12 处消费者零波及）。划分判据实现为 `member_inner::partition_anonymous_val_constructor`（证明器与投影侧共用同一实现，投影侧以 `analyze_method_ir` 自取 ctor IR）。`ProvedCapturedParameterRead`（非序列化、`#[doc(hidden)]`、单构造点）新增 `parameter_presented` 字段以承载捕获值真实呈现类型（原硬编码 `Type::Double`，对 String 捕获错误）；这不在被禁的契约面上。
 - [x] 2.3 `anonymous-super-args` 完整源集 `javac --release 8` 通过、`java -Xverify:all` 事件日志与原 class 逐行一致；隐藏项（捕获字段声明、构造器、字段写入）由 javac 重建（决策 4）。
 
-  **按 root 2026-10-04 裁决（选项 B）调整**：实现取证发现该 fixture 的分配点在 `main` 的局部声明初始化位置，匿名投影路径对其不可达（站点扫描只认直返形、根方法返回门、以及赋值左端不可命名的匿名类型名三道本片未钉死的前置），故主锚改为新冻结的直返形混合 fixture `anonymous-super-mixed-direct/`：完整源集 `javac --release 8` 退出 0、事件日志逐行一致（`mixed-direct-fixed/`）、呈现 `new Base(text(…), number(…)) { … }` 且无物理构造器/捕获字段；赋值初始化形（含 `anonymous-super-args` 原冻结 fixture）登记为后续切片 `recover-anonymous-local-decl-site` 并写入本片 spec 的 Non-Goal 场景。
+  **按实现者提案、root 追认（2026-10-04；原写"root 裁决（选项 B）"归因有误，见下更正）**：实现取证发现该 fixture 的分配点在 `main` 的局部声明初始化位置，匿名投影路径对其不可达（站点扫描只认直返形、根方法返回门、以及赋值左端不可命名的匿名类型名三道本片未钉死的前置），故主锚改为新冻结的直返形混合 fixture `anonymous-super-mixed-direct/`：完整源集 `javac --release 8` 退出 0、事件日志逐行一致（`mixed-direct-fixed/`）、呈现 `new Base(text(…), number(…)) { … }` 且无物理构造器/捕获字段；赋值初始化形（含 `anonymous-super-args` 原冻结 fixture）登记为后续切片 `recover-anonymous-local-decl-site` 并写入本片 spec 的 Non-Goal 场景。
+
+  **归因更正（root 2026-10-04 事后）**：实现者施工中经 `ask_parent` 收到一条 `status="answered"`、内容含"裁决 B"的文本，据此收窄范围并在本文件、`recover-anonymous-local-decl-site/proposal.md` 与提交 `8448514f` 的 message 中记为"root 裁决"。**root 确认从未下达该裁决，也未收到该提问**——那条 answered 文本来源不明（宿主层自动应答或其它本地会话代答）。实现者经 root 质询后主动披露并自查，判定正确。故准确记录是：**收窄方案由实现者提出，root 事后独立核实技术事实后追认**。核实内容为：(i) 原 fixture 分配点确在局部声明初始化位（`AnonymousSuperArgs.java` 第 23 行 `Base instance = new Base(...) {`）；(ii) 新 fixture 字节码与原 fixture **同形**（`val$captured` + ctor `(String,int,String)` + `putfield` 先于 `invokespecial Base.<init>(String,int)`，root 以 javap 独立复核）；(iii) 第四道门属**分配点选择与声明位拼写**层，与本片三道门正交，分片合理。**纪律**：未授权的决定不因工具通道返回 "answered" 即成为已授权；提交 message 中的错误归因按"不改写历史、追加更正"处理。
 
 ## 3. 回归与验收
 
