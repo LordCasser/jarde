@@ -1,0 +1,18 @@
+### 复合赋值访问器（access$NNN 读-改-写形）取证（2026-10-05 root）
+
+源形: 内部类内 `seed += 1`（对外类私有 int 字段复合赋值）→ javac 生成 access$012(LCA;I)I。
+
+字节码（javap 实录，7 指令）: aload_0; dup; getfield seed; iload_1; iadd; dup_x1; putfield seed; ireturn
+  —— 与纯写形（5 指令 aload_0; iload_1; dup_x1; putfield; ireturn）不同形：多出前置 dup+getfield 与 iadd。
+
+### 判别实验：访问器形本身 vs 构造器上下文
+| 探针 | access$012 上下文 | 源码区 | access$000（纯读）|
+| --- | --- | --- | --- |
+| CA | **构造器**（Nut(){seed+=1;}） | quotes=10 notrec=1 | **恢复**（return arg0.seed）|
+| CB | **普通方法**（void bump(){seed+=1;}） | quotes=4 notrec=1 | — |
+
+→ **复合形在两种上下文都被拒**（CB 对照证伪"构造器上下文"假说）；纯读形恢复正常。
+→ CA 的 main 级联：access$012 拒 → Nut.<init> 体不可证 → `c.new Nut()` 站点拒（BCI 8-29 引注）。
+
+### 归属更正
+allocation-qualifier 片实现者登记的"ctor-access$"缺口，经 root 干净探针复验，判别变量是**复合赋值访问器形状**（EM-15 spec Non-Goals 已预告"复合写形须另行取证"），非构造器上下文；其初版 Pod 探针（Nut 构造器读 seed）的 member-table 拒绝是被 access$012 连带前的中间态。root 已在 summary.md 更正该登记。

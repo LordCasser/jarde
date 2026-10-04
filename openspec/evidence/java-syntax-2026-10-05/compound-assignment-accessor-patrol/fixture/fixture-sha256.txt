@@ -1,0 +1,4 @@
+952e249017924c5933941cb3e617b3ce7dd80e49ce1d409900a3da0469b06816  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-05/compound-assignment-accessor-patrol/fixture/CA.class
+90cafd37c6bd37a926ccfe87b160ebb417f1e7bd6bce34a6e0dbea2247b60a4c  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-05/compound-assignment-accessor-patrol/fixture/CA$Nut.class
+0a3c5d2d123a7ccdc24baca5e8c2aa9e68ec46d657dda54ede69f523051988db  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-05/compound-assignment-accessor-patrol/fixture/CB.class
+244f751e938cd559011449b095d3b20a3b3869636a6f8cfdb6b38e24295dc323  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-05/compound-assignment-accessor-patrol/fixture/CB$Nut.class

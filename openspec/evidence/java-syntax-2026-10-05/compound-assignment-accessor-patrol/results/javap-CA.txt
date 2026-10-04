@@ -1,0 +1,50 @@
+Compiled from "CA.java"
+public class CA {
+  private int seed;
+
+  public CA();
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: bipush        7
+       7: putfield      #1                  // Field seed:I
+      10: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: new           #2                  // class CA
+       3: dup
+       4: invokespecial #13                 // Method "<init>":()V
+       7: astore_1
+       8: new           #14                 // class CA$Nut
+      11: dup
+      12: aload_1
+      13: dup
+      14: invokestatic  #16                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      17: pop
+      18: invokespecial #22                 // Method CA$Nut."<init>":(LCA;)V
+      21: astore_2
+      22: getstatic     #25                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      25: aload_2
+      26: invokevirtual #31                 // Method CA$Nut.peek:()I
+      29: invokevirtual #35                 // Method java/io/PrintStream.println:(I)V
+      32: return
+
+  static int access$012(CA, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #1                  // Field seed:I
+       5: iload_1
+       6: iadd
+       7: dup_x1
+       8: putfield      #1                  // Field seed:I
+      11: ireturn
+
+  static int access$000(CA);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field seed:I
+       4: ireturn
+}
