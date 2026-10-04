@@ -6775,6 +6775,61 @@
       "blake3": "ad9a6a7709485bfae595600137b7cdbca65db1a1c243d8884bc1ed8734ad69dd",
       "bytes": 290,
       "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap.java"
+    },
+    {
+      "blake3": "8b14a235bc3fa882b6545f3dcf662e15bce7e322b793dd59f5709640adcf428d",
+      "bytes": 572,
+      "path": "tests/fixtures/shared-latch-nested-loops/ExitDiverges.class"
+    },
+    {
+      "blake3": "6af90d34e3eef13ce31e9f16ecad6d8441b15aada5acb12842b9790974c39e93",
+      "bytes": 355,
+      "path": "tests/fixtures/shared-latch-nested-loops/ExitDiverges.java"
+    },
+    {
+      "blake3": "28dfb0b5bc6d345e51337dc09786b78ec405b8a49bda4c0e9a9cc607f1d47f8c",
+      "bytes": 589,
+      "path": "tests/fixtures/shared-latch-nested-loops/LabeledBreakOuter.class"
+    },
+    {
+      "blake3": "3d9126ad5532d0c2458aeb86018e495158a7da8a995dc54e7f9e5aeea40f9d6b",
+      "bytes": 407,
+      "path": "tests/fixtures/shared-latch-nested-loops/LabeledBreakOuter.java"
+    },
+    {
+      "blake3": "74e74ae4d3d2076471b927a78fb27c260d3a7c6da936b06a4dea5698c7258662",
+      "bytes": 594,
+      "path": "tests/fixtures/shared-latch-nested-loops/Overlap.class"
+    },
+    {
+      "blake3": "2e5928ff7d81fb2027824b009d2071ebbfb8553179e8676ea9f8ffd05e571e57",
+      "bytes": 441,
+      "path": "tests/fixtures/shared-latch-nested-loops/Overlap.java"
+    },
+    {
+      "blake3": "e8c6b4af4330e17626d0802fd9f963a7f07a4fa6b887051ad27bdf8a8b9310fc",
+      "bytes": 2383,
+      "path": "tests/fixtures/shared-latch-nested-loops/S3.class"
+    },
+    {
+      "blake3": "af58498850e522dc24ec93396f8276facf2c621549b60ca75008cef267766b8a",
+      "bytes": 808,
+      "path": "tests/fixtures/shared-latch-nested-loops/S5.class"
+    },
+    {
+      "blake3": "5af1fa4bd022f9a9df2e788da9763b48c1c93c514ce6081dc243467762e4624a",
+      "bytes": 1260,
+      "path": "tests/fixtures/shared-latch-nested-loops/S5.java"
+    },
+    {
+      "blake3": "b9b27462dcf03f1dcc07b195d7e1336a048c8930167aa6fc9bbbef996ae1dd0a",
+      "bytes": 608,
+      "path": "tests/fixtures/shared-latch-nested-loops/ThreeLevel.class"
+    },
+    {
+      "blake3": "d8ba00e217f530fe4148fe099323f7887bfd2b952c49689a32b6fca134e935ba",
+      "bytes": 1777,
+      "path": "tests/fixtures/shared-latch-nested-loops/ThreeLevel.java"
     }
   ],
   "known_gaps": [

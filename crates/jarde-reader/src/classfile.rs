@@ -11900,7 +11900,11 @@ mod tests {
             // getClass-leg anchors: the `N1x` parameter-qualifier family three, the `Wrap`
             // local-variable qualifier two, and the explicit-statement negative `G` two, seven
             // classes, nineteen bodies) moved it again.
-            (552, 2400, 251, 1692, 8),
+            // The 2026-10-04 shared-latch-nested-loops fixtures (the patrol anchors `S5` six
+            // bodies and `S3` five bodies byte-identical to their patrol records, plus the
+            // slice's `ThreeLevel`/`ExitDiverges`/`LabeledBreakOuter`/`Overlap` three bodies
+            // each, six classes, twenty-three bodies) moved it again.
+            (558, 2423, 251, 1761, 8),
             "fixture population changed: re-measure these counts"
         );
     }
