@@ -30,6 +30,8 @@
 
 ## Goals / Non-Goals
 
+> **实施协调（root 2026-10-04 决策，派发前生效）**：本片将与姊妹片 `recover-parameterized-superclass-nested-headers`（父类嵌套名参数化投影，放宽 `class_source.rs` 的 `parent.binary_name.contains(&b'$')` 拒绝）**合并为一片** `recover-parameterized-class-headers` 再派发。理由：二者改**同一函数** `project_generic_signature` 的相邻分支（接口走三道门放行、父类走 `$` 拒绝放宽），串行实施必然 rebase 冲突（本会话已两次遭遇：ncl 使 bridge 的 facade 锚点漂移 170 行）；且二者建立**同一不变量**（类头携带类型实参 → 桥可隐藏）、解锁**同一** bridge 前置（接口边 for `Impl`、父类边 for `Spec`/`BR$StrBox`）。**合并推迟到临近派发时做**（而非现在），以免本片的精确行号在队列等待期再次漂移失效。合并后本片 design 的"精确落点"与姊妹片的父类落点并入同一 Context。**优先级**：低于在飞的 `recover-bridge-superclass-header-precondition`（那是正确性 bug 修复；本片是 bug 修复后的呈现改善——修复落地后裸头形已"可编译且行为正确"，本片只是让它进一步"隐藏桥 + 参数化头"更优）。
+
 **Goals:** 类头 `implements` 子句按 Signature 投影类型实参；不可解析时保留裸类型并拒绝该类桥投影。**Non-Goals:** 嵌套/多层参数化接口（`Map<K,V>.Entry` 形按既有裸回退）；类自身有类型参数的形（`class C<T> implements I<T>`——属 nested-headers 域）；接口方法声明的泛型签名（成员域，已由 9/9 片覆盖）；不改父类投影既有行为（含 6354 的窄边界）；不放宽 `recover-bridge-admission-gates` 的消隐前置（本片只**供给**其依赖的类头事实）。
 
 ## Decisions
