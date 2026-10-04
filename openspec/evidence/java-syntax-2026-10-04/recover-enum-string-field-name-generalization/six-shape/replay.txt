@@ -1,0 +1,29 @@
+C1: baseline-projection=1 fixed-projection=1
+C2: baseline-projection=0 fixed-projection=1
+C3: baseline-projection=1 fixed-projection=1
+C4: baseline-projection=0 fixed-projection=1
+C5: baseline-projection=0 fixed-projection=1
+C6: baseline-projection=0 fixed-projection=1
+
+Fixture: the frozen six-shape family jar (../enum-string-field-name-hardcode/fixture/fam.jar,
+demo/ prefix + IOps intact). Render: `jarde-cli class-source --policy plain-jar --class demo.Cn`,
+projection detected as `TIMES("*") {` in the class text (the constant-list form).
+
+| shape | field | getter | baseline (c226413c) | fixed |
+| --- | --- | --- | --- | --- |
+| C1 | op    | getOp    | projects (1) | projects (1) |
+| C2 | t     | getT     | degrades (0) | projects (1) |
+| C3 | op    | getT     | projects (1) | projects (1) |
+| C4 | t     | getOp    | degrades (0) | projects (1) |
+| C5 | value | getValue | degrades (0) | projects (1) |
+| C6 | x     | getX     | degrades (0) | projects (1) |
+
+The discriminating variable is the field name itself, exactly as root's forensics table states:
+getter name, constant bodies and jar composition do not change the outcome. After the fix every
+shape projects from its constructor bytecode's putfield target.
+
+Method note (scaffold self-check): the first replay attempt packed the per-class fixture files
+without the `demo/` prefix and without `IOps.class` — every leg read 0, including the known-good
+C1; the empty output was treated as a harness defect (per handoff), and the frozen `fam.jar` was
+used instead. A second harness defect (a grep pattern expecting `C1("…")` where constants spell
+`TIMES("…")`) was caught the same way before any conclusion was drawn.

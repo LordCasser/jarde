@@ -1,0 +1,25 @@
+baseline-jarde-source/demo/LabeledOps.java:8: 错误: 此处需要枚举常量
+    public static final demo.LabeledOps TIMES;
+    ^
+baseline-jarde-source/demo/LabeledOps.java:54: 错误: 需要')'或','
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+                               ^
+baseline-jarde-source/demo/LabeledOps.java:54: 错误: 需要';'
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+                                                    ^
+baseline-jarde-source/demo/LabeledOps.java:54: 错误: 需要',', '}'或';'
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+                                                         ^
+baseline-jarde-source/demo/LabeledOps.java:54: 错误: 需要',', '}'或';'
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+                                                                ^
+baseline-jarde-source/demo/LabeledOps.java:54: 错误: 需要',', '}'或';'
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+                                                                           ^
+baseline-jarde-source/demo/LabeledOps.java:54: 错误: 需要',', '}'或';'
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+                                                                                        ^
+baseline-jarde-source/demo/LabeledOps.java:54: 错误: 需要',', '}'或';'
+    LabeledOps(java.lang.String arg1, int arg2, java.lang.String arg3, demo.LabeledOps$1 arg4) {
+                                                                                             ^
+8 个错误

@@ -13944,6 +13944,21 @@ pub(crate) struct PendingEnumConstructorEdge {
     pub(crate) call_bci: u32,
     pub(crate) target_owner: Vec<u8>,
     pub(crate) target_descriptor: Vec<u8>,
+    /// The instance String field the proved constructor body stores its one source argument
+    /// into: the `putfield` target's field-table index with the raw name and descriptor the
+    /// bytecode names. Carried only by the String-argument shape's private constructor edge;
+    /// every other edge proves no field identity.
+    pub(crate) assigned_field: Option<PendingEnumAssignedField>,
+}
+
+/// The proved `putfield` target of the String-argument constructor: one identity, resolved to
+/// this class's own field-table index while the physical records are still at hand, so the
+/// emission stage locates the same field without matching by name a second time.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumAssignedField {
+    pub(crate) index: u64,
+    pub(crate) name: Vec<u8>,
+    pub(crate) descriptor: Vec<u8>,
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -14133,16 +14148,21 @@ fn prove_enum_constructor_candidate(
         call_bci,
         target_owner: target_owner.to_vec(),
         target_descriptor: target_descriptor.to_vec(),
+        assigned_field: None,
     })
 }
 
 /// Prove the one DT-12 source constructor: enum name/ordinal go unchanged to Enum, then the
-/// sole source String argument is assigned to the sole proved `op` field.
+/// sole source String argument is stored into the one String instance field the `putfield`
+/// names. The written field's own identity — field-table index with raw name and descriptor —
+/// is resolved here from this class's physical field records and carried on the edge; the
+/// emission stage owns the source-level presentation checks against that same index.
 fn prove_enum_string_constructor_candidate(
     candidates: &[crate::enum_constants::EnumMethodCodeCandidate],
     member: &PendingEnumConstantBodyMember,
     identity: &PhysicalMethodId,
     enum_owner: &[u8],
+    fields: &[jarde_reader::classfile::MemberHeader],
 ) -> std::result::Result<PendingEnumConstructorEdge, String> {
     use crate::enum_constants::EnumCodeReference;
     let matches: Vec<_> = candidates
@@ -14183,7 +14203,9 @@ fn prove_enum_string_constructor_candidate(
                     _ => None,
                 }
         {
-            return Err("the String constructor is not a pure `op = arg0` constructor".to_owned());
+            return Err(
+                "the String constructor is not a pure single-argument field store".to_owned(),
+            );
         }
         next_bci = next_bci
             .checked_add(instruction.width)
@@ -14192,17 +14214,57 @@ fn prove_enum_string_constructor_candidate(
     if !matches!(&instructions[3].reference,
         Some(EnumCodeReference::Method { owner, name, descriptor, interface: false })
             if owner == b"java/lang/Enum" && name == b"<init>" && descriptor == b"(Ljava/lang/String;I)V")
-        || !matches!(&instructions[6].reference,
-            Some(EnumCodeReference::Field { owner, name, descriptor })
-                if owner == enum_owner && name == b"op" && descriptor == b"Ljava/lang/String;")
     {
-        return Err("the String constructor does not preserve Enum and op semantics".to_owned());
+        return Err(
+            "the String constructor does not preserve Enum and the assigned field semantics"
+                .to_owned(),
+        );
     }
+    let Some(EnumCodeReference::Field {
+        owner,
+        name,
+        descriptor,
+    }) = &instructions[6].reference
+    else {
+        return Err(
+            "the String constructor does not preserve Enum and the assigned field semantics"
+                .to_owned(),
+        );
+    };
+    if owner.as_slice() != enum_owner || descriptor.as_slice() != b"Ljava/lang/String;" {
+        return Err(
+            "the String constructor does not preserve Enum and the assigned field semantics"
+                .to_owned(),
+        );
+    }
+    // One physical field records this write target. The match keys on the written name and
+    // descriptor and skips the static and enum-flagged records, exactly like the arbitrary
+    // tail's own store proof; the source-level presentation checks stay at the emission stage.
+    let matching: Vec<_> = fields
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| {
+            field.name.raw().0 == name.as_slice()
+                && field.descriptor.raw().0 == descriptor.as_slice()
+                && field.access_flags & (0x0008 | 0x4000) == 0
+        })
+        .map(|(index, _)| index)
+        .collect();
+    let [field_index] = matching.as_slice() else {
+        return Err(
+            "the String constructor's assigned field target is absent or ambiguous".to_owned(),
+        );
+    };
     Ok(PendingEnumConstructorEdge {
         caller: identity.clone(),
         call_bci: instructions[3].bci,
         target_owner: b"java/lang/Enum".to_vec(),
         target_descriptor: b"(Ljava/lang/String;I)V".to_vec(),
+        assigned_field: Some(PendingEnumAssignedField {
+            index: u64::try_from(*field_index).unwrap_or(u64::MAX),
+            name: name.clone(),
+            descriptor: descriptor.clone(),
+        }),
     })
 }
 
@@ -14334,6 +14396,7 @@ fn prove_enum_physical_constructor(
         call_bci,
         target_owner: enum_owner.to_vec(),
         target_descriptor: access_descriptor.to_vec(),
+        assigned_field: None,
     });
     Ok(result)
 }
@@ -15089,6 +15152,7 @@ fn resolve_enum_constant_body_relations(
                     private,
                     &constructor_identity(private),
                     enum_owner,
+                    fields,
                 )?,
                 None,
             )
@@ -15120,6 +15184,7 @@ fn resolve_enum_constant_body_relations(
                     call_bci: super_call_bci,
                     target_owner: b"java/lang/Enum".to_vec(),
                     target_descriptor: crate::enum_constants::ENUM_CTOR_DESCRIPTOR.to_vec(),
+                    assigned_field: None,
                 },
                 Some(tail),
             )
@@ -16005,30 +16070,55 @@ fn prove_enum_constant_body_group(
                 "the source String constructor signature is not safely presentable",
             ));
         }
-        let Some(op_field) = source_fields.iter().find(|field| {
-            field.item.name.raw().0 == b"op"
-                && field.item.descriptor.raw().0 == b"Ljava/lang/String;"
-                && field.item.identity.owner == declaration.item.definition
-                && field.item.access_flags & (0x0008 | 0x0040 | 0x1000) == 0
-                && field.item.access_flags & 0x0002 != 0
-                && field.declaration.is_some()
-                && field.markers.is_empty()
-        }) else {
+        // The proof carried the written field's identity from the constructor bytecode. The
+        // source field at that index owns the presentation checks — the same attribute filter
+        // as before, now keyed on the proved position instead of one hardcoded name — and the
+        // emitted text spells that field's own declaration name.
+        let Some(assigned) = chain.first().and_then(|edge| edge.assigned_field.as_ref()) else {
             return Ok(refuse(
                 "the assigned String field is not uniquely presentable",
             ));
         };
+        let Some(field) = usize::try_from(assigned.index)
+            .ok()
+            .and_then(|index| source_fields.get(index))
+        else {
+            return Ok(refuse(
+                "the assigned String field is not uniquely presentable",
+            ));
+        };
+        if field.item.name.raw().0 != assigned.name.as_slice()
+            || field.item.descriptor.raw().0 != assigned.descriptor.as_slice()
+            || field.item.descriptor.raw().0 != b"Ljava/lang/String;"
+            || field.item.identity.owner != declaration.item.definition
+            || field.item.access_flags & (0x0008 | 0x0040 | 0x1000) != 0
+            || field.item.access_flags & 0x0002 == 0
+            || field.declaration.is_none()
+            || !field.markers.is_empty()
+        {
+            return Ok(refuse(
+                "the assigned String field is not uniquely presentable",
+            ));
+        }
         if source_fields
             .iter()
-            .filter(|field| field.item.name.raw().0 == b"op")
+            .filter(|field| {
+                field.item.name.raw().0 == assigned.name.as_slice()
+                    && field.item.descriptor.raw().0 == assigned.descriptor.as_slice()
+            })
             .count()
             != 1
-            || op_field.item.name.raw().0 != b"op"
         {
             return Ok(refuse("the source String field is ambiguous"));
         }
+        let Some(assigned_name) = String::from_utf16(field.item.name.utf16()).ok() else {
+            return Ok(refuse("the assigned String field name is not Java text"));
+        };
+        if !jarde_java::is_java_identifier(&assigned_name) {
+            return Ok(refuse("the assigned String field name is not Java text"));
+        }
         Some(format!(
-            "    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n",
+            "    private {}(java.lang.String arg0) {{\n        this.{assigned_name} = arg0;\n    }}\n",
             declaration.name
         ))
     } else {
@@ -26703,6 +26793,16 @@ mod enum_constant_body_relation_tests {
         debug: bool,
         enum_source: &str,
     ) -> Vec<(Vec<u8>, Vec<u8>)> {
+        compiled_enum_body_source(debug, "DoubleOperations", enum_source)
+    }
+
+    /// One enum-with-constant-bodies source beside its `IOps` interface, compiled to the same
+    /// `demo/` entry layout the DT-12 harness reads. The file stem must name the public class.
+    fn compiled_enum_body_source(
+        debug: bool,
+        class_name: &str,
+        enum_source: &str,
+    ) -> Vec<(Vec<u8>, Vec<u8>)> {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -26715,14 +26815,18 @@ mod enum_constant_body_relation_tests {
         fs::create_dir_all(dir.join("source/demo")).unwrap();
         let classes = dir.join("classes");
         fs::create_dir_all(&classes).unwrap();
-        fs::write(dir.join("source/demo/DoubleOperations.java"), enum_source).unwrap();
+        fs::write(
+            dir.join("source/demo").join(format!("{class_name}.java")),
+            enum_source,
+        )
+        .unwrap();
         fs::write(dir.join("source/demo/IOps.java"), IOPS).unwrap();
         let compile = Command::new("javac")
             .args(["--release", "8"])
             .arg(if debug { "-g" } else { "-g:none" })
             .arg("-d")
             .arg(&classes)
-            .arg(dir.join("source/demo/DoubleOperations.java"))
+            .arg(dir.join("source/demo").join(format!("{class_name}.java")))
             .arg(dir.join("source/demo/IOps.java"))
             .output()
             .expect("javac is available for the frozen DT-12 source");
@@ -27873,6 +27977,443 @@ public class Probe {
             crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
         ));
         assert!(!three_report.text.contains("EXTRA(\"+\")"));
+    }
+
+    /// The labeled twin of the DT-12 anchor: structurally the same two-constant anonymous-body
+    /// enum, but the String source argument lands in a field named `label`, never `op`. The
+    /// field name is the one variable this proof must take from the constructor bytecode, so
+    /// the projection spells the assignment with the proved name.
+    const LABELED_OPS: &str = r#"package demo;
+
+public enum LabeledOps implements IOps {
+    TIMES("*") {
+        @Override
+        public double apply(double x, double y) {
+            return x * y;
+        }
+    },
+    DIVIDE("/") {
+        @Override
+        public double apply(double x, double y) {
+            return x / y;
+        }
+    };
+
+    private final String label;
+
+    LabeledOps(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+}
+"#;
+
+    #[test]
+    fn labeled_field_name_string_bodies_project_from_the_proved_name() {
+        const PROBE: &str = r#"package demo;
+public class Probe {
+    public static void main(String[] args) {
+        System.out.println(LabeledOps.TIMES.name() + "=" + LabeledOps.TIMES.getLabel()
+            + ":" + LabeledOps.TIMES.ordinal() + ":" + LabeledOps.TIMES.apply(2, 3)
+            + ":" + LabeledOps.TIMES.getClass().getName());
+        System.out.println(LabeledOps.DIVIDE.name() + "=" + LabeledOps.DIVIDE.getLabel()
+            + ":" + LabeledOps.DIVIDE.ordinal() + ":" + LabeledOps.DIVIDE.apply(10, 5)
+            + ":" + LabeledOps.DIVIDE.getClass().getName());
+    }
+}"#;
+        let expected = "TIMES=*:0:6.0:demo.LabeledOps$1\nDIVIDE=/:1:2.0:demo.LabeledOps$2\n";
+        for debug in [true, false] {
+            let entries = compiled_enum_body_source(debug, "LabeledOps", LABELED_OPS);
+            let source_report = report(&entries, "demo/LabeledOps");
+            let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                crate::enum_constants::ProvedEnumConstantGroup::Body(_),
+            ) = &source_report.enum_constant_proof
+            else {
+                panic!(
+                    "the labeled String-arg group must prove: {:?}",
+                    source_report.enum_constant_proof
+                );
+            };
+            let text = &source_report.text;
+            assert!(text.contains("TIMES(\"*\")"), "{}", text);
+            assert!(text.contains("DIVIDE(\"/\")"), "{}", text);
+            assert!(
+                text.contains("private LabeledOps(java.lang.String arg0)"),
+                "{}",
+                text
+            );
+            assert!(text.contains("this.label = arg0;"), "{}", text);
+            assert!(!text.contains("this.op = arg0;"), "{}", text);
+            assert!(
+                !text.contains("public static final demo.LabeledOps TIMES;"),
+                "{}",
+                text
+            );
+            let nonce = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let directory = std::env::temp_dir().join(format!(
+                "jarde-labeled-projection-{}-{nonce}",
+                std::process::id()
+            ));
+            let original = run_enum_source(
+                &directory,
+                "labeled-original",
+                "LabeledOps",
+                None,
+                PROBE,
+                &entries,
+                debug,
+            );
+            let projected = run_enum_source(
+                &directory,
+                "labeled-jarde",
+                "LabeledOps",
+                Some(text),
+                PROBE,
+                &entries,
+                debug,
+            );
+            assert_eq!(original, expected);
+            assert_eq!(projected, original);
+            fs::remove_dir_all(directory).unwrap();
+        }
+    }
+
+    #[test]
+    fn a_second_unwritten_string_field_leaves_the_proved_target_unique() {
+        // The relaxation this proof names: two String instance fields, one written. The write
+        // target is unique, so the projection accepts; the ambiguity gate fires only when the
+        // written target itself is not one field.
+        let two_fields = DOUBLE_OPERATIONS.replace(
+            "    private final String op;",
+            "    private final String op;\n\n    private String spare;",
+        );
+        assert!(
+            two_fields.contains("private String spare;"),
+            "fixture text drifted"
+        );
+        let entries = compiled_double_operations_source(false, &two_fields);
+        let source_report = report(&entries, "demo/DoubleOperations");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(_) =
+            &source_report.enum_constant_proof
+        else {
+            panic!(
+                "one written target must prove: {:?}",
+                source_report.enum_constant_proof
+            );
+        };
+        assert!(source_report.text.contains("this.op = arg0;"));
+        assert!(
+            source_report
+                .text
+                .contains("private java.lang.String spare;")
+        );
+    }
+
+    #[test]
+    fn string_constructor_negatives_refuse_loudly() {
+        let entries = compiled_double_operations(false);
+        const STRING_CTOR: &[u8] = b"(Ljava/lang/String;ILjava/lang/String;)V";
+
+        // The constructor stores the argument into a second String field: the written target is
+        // no longer one field, so the shape proof refuses the whole group.
+        let two_stores = DOUBLE_OPERATIONS
+            .replace(
+                "    private final String op;",
+                "    private final String op;\n\n    private String spare;",
+            )
+            .replace(
+                "        this.op = op;",
+                "        this.op = op;\n        this.spare = op;",
+            );
+        assert!(
+            two_stores.contains("this.spare = op;") && two_stores.contains("private String spare;"),
+            "fixture text drifted"
+        );
+        let two_store_entries = compiled_double_operations_source(false, &two_stores);
+        let two_store_report = report(&two_store_entries, "demo/DoubleOperations");
+        assert!(matches!(
+            two_store_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(!two_store_report.text.contains("TIMES(\"*\")"));
+
+        // A broken constructor instruction shape: the store is no longer the pure one-field
+        // store, and the Code no longer reads as the complete canonical shape.
+        for (bci, opcode) in [(2usize, 0x04u8), (6, 0xb6)] {
+            let mut changed = entries.clone();
+            let main = &mut changed
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/DoubleOperations.class")
+                .unwrap()
+                .1;
+            *main = mutate_constructor_byte(main, STRING_CTOR, bci as u32, opcode);
+            let changed_report = report(&changed, "demo/DoubleOperations");
+            assert!(
+                !matches!(
+                    changed_report.enum_constant_proof,
+                    crate::enum_constants::ClassSourceEnumConstantProof::Proved { .. }
+                ),
+                "constructor edit at {bci} must not prove"
+            );
+            assert!(!changed_report.text.contains("TIMES(\"*\")"));
+        }
+    }
+
+    /// One physical member record with the given raw name, descriptor and access flags. The
+    /// constructor identity proof reads only these three facts.
+    fn member_record(name: &[u8], descriptor: &[u8], access_flags: u16) -> MemberHeader {
+        let jvm_string = |text: &[u8]| {
+            serde_json::from_value::<JvmString>(serde_json::json!({
+                "raw": text,
+                "utf16": text.iter().map(|byte| *byte as u16).collect::<Vec<_>>(),
+                "escaped": String::from_utf8_lossy(text),
+            }))
+            .unwrap()
+        };
+        MemberHeader {
+            name: jvm_string(name),
+            descriptor: jvm_string(descriptor),
+            access_flags,
+            attributes: Vec::new(),
+        }
+    }
+
+    /// The canonical eight-instruction String-argument constructor candidate with its store
+    /// targeting `field_name`.
+    fn string_constructor_candidate(
+        field_name: &[u8],
+        field_descriptor: &[u8],
+        owner: &[u8],
+    ) -> crate::enum_constants::EnumMethodCodeCandidate {
+        use crate::enum_constants::{EnumCodeInstruction, EnumCodeReference};
+        let reference = |index: usize| {
+            (index == 3)
+                .then(|| EnumCodeReference::Method {
+                    owner: b"java/lang/Enum".to_vec(),
+                    name: b"<init>".to_vec(),
+                    descriptor: b"(Ljava/lang/String;I)V".to_vec(),
+                    interface: false,
+                })
+                .or_else(|| {
+                    (index == 6).then(|| EnumCodeReference::Field {
+                        owner: owner.to_vec(),
+                        name: field_name.to_vec(),
+                        descriptor: field_descriptor.to_vec(),
+                    })
+                })
+        };
+        let opcodes = [0x2au8, 0x2b, 0x1c, 0xb7, 0x2a, 0x2d, 0xb5, 0xb1];
+        let locals: [Option<u16>; 8] = [
+            Some(0),
+            Some(1),
+            Some(2),
+            None,
+            Some(0),
+            Some(3),
+            None,
+            None,
+        ];
+        crate::enum_constants::EnumMethodCodeCandidate {
+            table_index: 0,
+            member: None,
+            complete: true,
+            exception_handler_count: 0,
+            instructions: opcodes
+                .iter()
+                .enumerate()
+                .map(|(index, opcode)| EnumCodeInstruction {
+                    // The real BCI layout: three 1-byte loads, the 3-byte super call, two
+                    // 1-byte loads, the 3-byte store, and the bare return.
+                    bci: [0, 1, 2, 3, 6, 7, 8, 11][index],
+                    width: if *opcode == 0xb7 || *opcode == 0xb5 {
+                        3
+                    } else {
+                        1
+                    },
+                    opcode: *opcode,
+                    immediate: None,
+                    local: locals[index],
+                    increment: None,
+                    interface_count: None,
+                    reference: reference(index),
+                    branch_target_bci: None,
+                })
+                .collect(),
+            member_uses: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn string_constructor_identity_binds_the_written_field_and_refuses_everything_else() {
+        let entries = compiled_enum_body_source(false, "LabeledOps", LABELED_OPS);
+        let definition = report(&entries, "demo/LabeledOps").class;
+        let member_record_ctor = member_record(
+            b"<init>",
+            b"(Ljava/lang/String;ILjava/lang/String;)V",
+            0x0002,
+        );
+        let identity = member_identity(&definition, &member_record_ctor);
+        let candidate = |field_name: &[u8], field_descriptor: &[u8], owner: &[u8]| {
+            let mut built = string_constructor_candidate(field_name, field_descriptor, owner);
+            built.member = Some(identity.clone());
+            built
+        };
+        let member = PendingEnumConstantBodyMember {
+            table_index: 0,
+            name: b"<init>".to_vec(),
+            descriptor: b"(Ljava/lang/String;ILjava/lang/String;)V".to_vec(),
+            access_flags: 0x0002,
+            has_code: true,
+            access_marker_owner: None,
+        };
+        let fields = [
+            member_record(b"TIMES", b"Ldemo/LabeledOps;", 0x4019),
+            member_record(b"DIVIDE", b"Ldemo/LabeledOps;", 0x4019),
+            member_record(b"label", b"Ljava/lang/String;", 0x0012),
+            member_record(b"$VALUES", b"[Ldemo/LabeledOps;", 0x1018),
+        ];
+
+        // The proven binding: the store's field resolves to the field table index, with the
+        // raw name and descriptor carried for the emission stage.
+        let edge = prove_enum_string_constructor_candidate(
+            &[candidate(
+                b"label",
+                b"Ljava/lang/String;",
+                b"demo/LabeledOps",
+            )],
+            &member,
+            &identity,
+            b"demo/LabeledOps",
+            &fields,
+        )
+        .expect("the canonical store proves");
+        let assigned = edge
+            .assigned_field
+            .expect("the edge carries the field identity");
+        assert_eq!(assigned.index, 2);
+        assert_eq!(assigned.name, b"label");
+        assert_eq!(assigned.descriptor, b"Ljava/lang/String;");
+
+        // A store whose target type is not the String field: refused before any field search.
+        let error = prove_enum_string_constructor_candidate(
+            &[candidate(
+                b"$VALUES",
+                b"[Ldemo/LabeledOps;",
+                b"demo/LabeledOps",
+            )],
+            &member,
+            &identity,
+            b"demo/LabeledOps",
+            &fields,
+        )
+        .expect_err("a non-String store target is refused");
+        assert_eq!(
+            error,
+            "the String constructor does not preserve Enum and the assigned field semantics"
+        );
+
+        // A store whose owner is another class: refused the same way.
+        let error = prove_enum_string_constructor_candidate(
+            &[candidate(
+                b"label",
+                b"Ljava/lang/String;",
+                b"demo/LabeledOps$1",
+            )],
+            &member,
+            &identity,
+            b"demo/LabeledOps",
+            &fields,
+        )
+        .expect_err("a foreign owner is refused");
+        assert_eq!(
+            error,
+            "the String constructor does not preserve Enum and the assigned field semantics"
+        );
+
+        // The written name/descriptor pair matches no field record: refused.
+        let error = prove_enum_string_constructor_candidate(
+            &[candidate(
+                b"absent",
+                b"Ljava/lang/String;",
+                b"demo/LabeledOps",
+            )],
+            &member,
+            &identity,
+            b"demo/LabeledOps",
+            &fields,
+        )
+        .expect_err("an absent target is refused");
+        assert_eq!(
+            error,
+            "the String constructor's assigned field target is absent or ambiguous"
+        );
+
+        // Two field records carry the written name and descriptor: the target is not one field.
+        let doubled = [
+            member_record(b"label", b"Ljava/lang/String;", 0x0012),
+            member_record(b"label", b"Ljava/lang/String;", 0x0012),
+        ];
+        let error = prove_enum_string_constructor_candidate(
+            &[candidate(
+                b"label",
+                b"Ljava/lang/String;",
+                b"demo/LabeledOps",
+            )],
+            &member,
+            &identity,
+            b"demo/LabeledOps",
+            &doubled,
+        )
+        .expect_err("an ambiguous target is refused");
+        assert_eq!(
+            error,
+            "the String constructor's assigned field target is absent or ambiguous"
+        );
+
+        // A static or enum-flagged record never counts as the store target, so a store that
+        // only matches those refuses instead of binding one.
+        let flagged = [
+            member_record(b"label", b"Ljava/lang/String;", 0x0018),
+            member_record(b"label", b"Ljava/lang/String;", 0x4012),
+        ];
+        let error = prove_enum_string_constructor_candidate(
+            &[candidate(
+                b"label",
+                b"Ljava/lang/String;",
+                b"demo/LabeledOps",
+            )],
+            &member,
+            &identity,
+            b"demo/LabeledOps",
+            &flagged,
+        )
+        .expect_err("static and enum-flagged records are not store targets");
+        assert_eq!(
+            error,
+            "the String constructor's assigned field target is absent or ambiguous"
+        );
+
+        // And a store reference that never resolved: refused before the identity work.
+        let mut unresolved = candidate(b"label", b"Ljava/lang/String;", b"demo/LabeledOps");
+        unresolved.instructions[6].reference = None;
+        let error = prove_enum_string_constructor_candidate(
+            &[unresolved],
+            &member,
+            &identity,
+            b"demo/LabeledOps",
+            &fields,
+        )
+        .expect_err("an unresolved store is refused");
+        assert_eq!(
+            error,
+            "the String constructor does not preserve Enum and the assigned field semantics"
+        );
     }
 
     #[test]

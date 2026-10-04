@@ -1,0 +1,2 @@
+$ javac --release 8 -g:none -d javac-op-out op/jarde-source/demo/IOps.java op/jarde-source/demo/DoubleOperations.java
+exit=0

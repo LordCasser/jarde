@@ -1292,6 +1292,51 @@
       "path": "tests/fixtures/em27-inline-string/em27/Probe.class"
     },
     {
+      "blake3": "60e498ffc580e7a5197695d3aa88e2f08d07e5aa1f38c38a2d04649f5ca2b990",
+      "bytes": 482,
+      "path": "tests/fixtures/enum-string-field-name/LabeledOps.java"
+    },
+    {
+      "blake3": "fa11a08e076306bb31359570831e068424691c85406d5af4da94ac0ccc392116",
+      "bytes": 87,
+      "path": "tests/fixtures/enum-string-field-name/LabeledValue.java"
+    },
+    {
+      "blake3": "ff64d13172baec964da31f5cc76ea5eacc771276ad94d7b4013577cbe0fc1340",
+      "bytes": 557,
+      "path": "tests/fixtures/enum-string-field-name/Probe.java"
+    },
+    {
+      "blake3": "3ccfc6dee4ee95cdcf4ff2efe3e5b274c269b1e813c6405f6056790906a89fa2",
+      "bytes": 377,
+      "path": "tests/fixtures/enum-string-field-name/demo/LabeledOps$1.class"
+    },
+    {
+      "blake3": "febbbf6ebb72a63f015e206ae2308808e3496eb66d3fad91ed0483046ab00c9a",
+      "bytes": 408,
+      "path": "tests/fixtures/enum-string-field-name/demo/LabeledOps$2.class"
+    },
+    {
+      "blake3": "e0f2db3a6b576b8f5b57c1c64125c709b367716242630f6af93db17c464d3472",
+      "bytes": 1242,
+      "path": "tests/fixtures/enum-string-field-name/demo/LabeledOps.class"
+    },
+    {
+      "blake3": "09c2abca02b031f0a71f083d2aea82e65f38fb7273007f8e2cd7bea7c47f26e6",
+      "bytes": 93,
+      "path": "tests/fixtures/enum-string-field-name/demo/LabeledValue.class"
+    },
+    {
+      "blake3": "573771e3fdf51c09aa6fe97332c71a8f770b875611d0d7111912c98349c737d7",
+      "bytes": 1024,
+      "path": "tests/fixtures/enum-string-field-name/demo/Probe.class"
+    },
+    {
+      "blake3": "a73e73de23549d38a1f978282a8452847aa5c95c8ac10edf460b503097b6f118",
+      "bytes": 65,
+      "path": "tests/fixtures/enum-string-field-name/original-behavior.txt"
+    },
+    {
       "blake3": "3856f83dd932214e8ebf98abe429ba5b3ab514ba9ea72da259081eaeda4e8527",
       "bytes": 268,
       "path": "tests/fixtures/historical/ecj-4.6.1/src/HistoricalControlFlow.java"
