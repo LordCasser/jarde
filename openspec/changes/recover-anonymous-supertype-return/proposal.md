@@ -32,6 +32,8 @@
 
 `src/facade.rs`（返回段判据与拼写来源；可能需把门检查移到 `parent_read` 解析之后）。`crates/jarde-java` 预期无改动（`ClassMemberFacts.interfaces`/`super_class` 已可读）。**不改** `emit.rs`（环 1 已提供声明位重拼通道）、**不改**站点扫描。
 
+**实现修订（施工取证追加，详见 design 的补充决策与 tasks 2.5/2.6）**：锚在返回门之后还撞共享 owner 普查 `prove_anonymous_owner_xrefs`（child 体 `invokevirtual 自身.seed` 的符号 owner 引用）——本环同时为该普查新增"父类路径 ∧ DirectReturn 站点形"的匿名体自调用允许臂，以具名判别类型显式遏制（接口路径与 LocalDeclInitializer 形保持既有拒绝），`InvokeSpecial` 分支不开放；判据、健全性与归因见 design/tasks 与证据目录 `root-replies-verbatim.md`。
+
 冻结锚：`tests/fixtures/proved-java-structure/anonymous-top-level/`（`static Renderer create()`，父类 `Base` 顶层、`Base implements Renderer`）。其当前状态须实测记录（root 已测：撞 `anonymous_super_return_type_unproved`，渲染为物理文本 `return new AnonymousTopLevel$1(choose());`，渲染源集 `javac` 应 exit 1）。
 
 **顺序约束**：本环改的门与环 3 改的是**同一处**（环 3 刚把它条件化为 `plain_return`/`capture_return` 两条恰等判据）。环 3 已合入主线（`d906464e`），故顺序满足；但实现前须**重验行号锚点**（本会话 facade.rs 已两次因相邻片漂移 100+ 行）。

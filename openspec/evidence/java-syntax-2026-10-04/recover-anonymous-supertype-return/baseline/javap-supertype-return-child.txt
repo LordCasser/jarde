@@ -1,0 +1,9 @@
+class ParameterizedSupertypeReturn$1 extends Base {
+  final java.lang.String val$captured;
+  ParameterizedSupertypeReturn$1(java.lang.String);
+  public java.lang.String render();
+}
+abstract class Base implements Renderer {
+  Base();
+  public abstract java.lang.String render();
+}

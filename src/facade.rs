@@ -3748,6 +3748,7 @@ impl Engine {
             }),
             capture_proof.as_ref(),
             None,
+            AnonymousOwnerCensusPath::Unwidened,
             &mut child_execution,
             budget,
         )?;
@@ -4353,6 +4354,7 @@ impl Engine {
             b"()V",
             None,
             Some(&descendant_xrefs),
+            AnonymousOwnerCensusPath::Unwidened,
             &mut nested_execution,
             budget,
         )?;
@@ -4369,6 +4371,7 @@ impl Engine {
             &capture_proof.constructor.descriptor.0,
             Some(&capture_proof),
             None,
+            AnonymousOwnerCensusPath::Unwidened,
             &mut nested_execution,
             budget,
         )?;
@@ -4704,11 +4707,7 @@ impl Engine {
             ));
         };
         if parent_name.as_slice() == b"java/lang/Object"
-            || internal_package(&parent_name) != internal_package(&root_name)
-            || !std::str::from_utf8(&parent_name).is_ok_and(|name| {
-                name.split('/')
-                    .all(|part| !part.contains('$') && jarde_java::names::is_java_identifier(part))
-            })
+            || !spellable_source_type(&parent_name, &root_name)
         {
             return Err(Error::unsupported(
                 "anonymous_super_source_type_unproved",
@@ -4716,45 +4715,23 @@ impl Engine {
             ));
         }
         // Design `recover-anonymous-local-decl-site`, criterion 1: the direct-return shape keeps
-        // its exact gate — the root method returns the superclass, so the return descriptor IS
-        // the declared type and must match exactly. The local-declaration initializer shape
-        // replaces that information source: the declared type's spelling comes from the
-        // initializer's own `new` operand (`allocation_type`), and the root method is frequently
-        // `void` (the anchor's `main` is), so no return-descriptor check exists for it. Dropping
-        // the check for this one shape is not "ignoring the return type": the direct-return shape
-        // still refuses every descriptor but the superclass's own.
+        // a root return-descriptor gate; the local-declaration initializer shape replaces that
+        // information source: the declared type's spelling comes from the initializer's own
+        // `new` operand (`allocation_type`), and the root method is frequently `void` (the
+        // anchor's `main` is), so no return-descriptor check exists for it. That shape is
+        // untouched by every widening below.
         //
-        // Design `recover-anonymous-parameterized-root`, decision 1: only the parameter table
-        // widens — to the proved capture field's own descriptor, `(P)Lparent;` for the single
-        // `val$` field P the child shape gate above already closed (a child with fields has
-        // exactly that one). The return part stays exactly the superclass type: a supertype
-        // return is ring 2's separate, unproven slice and keeps this refusal. Any other
-        // parameter count or type keeps it too. The descriptor match alone proves nothing about
-        // the value flow — the capture site below closes the argument to the unmodified
+        // Design `recover-anonymous-parameterized-root`, decision 1, widened by design
+        // `recover-anonymous-supertype-return` (ring 2), decisions 1/2/6: the direct-return
+        // gate's acceptance set is the product of two independent facts, so the gate sits after
+        // the parent read below — the declared return type is proved against the parent's own
+        // class-file facts. The return segment is the superclass or one of its proved one-layer
+        // supertypes (`super_class` or `interfaces`, internal-name equality, no hierarchy walk —
+        // a grandparent or an indirectly implemented interface keeps the refusal). The parameter
+        // table is empty or exactly the single proved capture descriptor `(P)`; any other
+        // parameter count or type keeps the refusal. The descriptor facts alone prove nothing
+        // about the value flow — the capture site below closes the argument to the unmodified
         // parameter slot 0 before anything is projected.
-        if site_shape == jarde_java::report::AnonymousSiteShape::DirectReturn {
-            let plain_return =
-                [b"()L".as_slice(), parent_name.as_slice(), b";".as_slice()].concat();
-            let capture_return =
-                anonymous_val_capture_field(&child_facts).map(|(_, field_descriptor)| {
-                    [
-                        b"(".as_slice(),
-                        field_descriptor.as_slice(),
-                        b")L".as_slice(),
-                        parent_name.as_slice(),
-                        b";".as_slice(),
-                    ]
-                    .concat()
-                });
-            if root_method.descriptor.0 != plain_return
-                && capture_return.as_deref() != Some(root_method.descriptor.0.as_slice())
-            {
-                return Err(Error::unsupported(
-                    "anonymous_super_return_type_unproved",
-                    "the root method return descriptor is not the exact superclass type",
-                ));
-            }
-        }
         let Some((_parent_definition, parent_read)) = resolve_class_source_dependency_read_raw(
             content,
             environment,
@@ -4783,6 +4760,95 @@ impl Engine {
                 "the direct superclass is not a source-accessible Java 8 non-final class",
             ));
         }
+        // The gate itself (see the ring 2/3 note above): the declared return type and the
+        // parameter table compose independently, and the accepted parameter table travels to the
+        // capture-site proof below, which closes its value flow.
+        let direct_return_parameters: Option<Vec<Vec<u8>>> = if site_shape
+            == jarde_java::report::AnonymousSiteShape::DirectReturn
+        {
+            let descriptor = match jarde_reader::classfile::descriptor_facts(
+                &root_method.descriptor.0,
+                jarde_reader::classfile::DescriptorKind::Method,
+            ) {
+                Ok(descriptor) => descriptor,
+                Err(_) => {
+                    return Err(Error::unsupported(
+                        "anonymous_super_return_type_unproved",
+                        "the root method descriptor does not parse",
+                    ));
+                }
+            };
+            // A reference return names a class directly: an array component or a primitive
+            // result is not a source-level declared type of this shape and keeps the
+            // refusal (ring 2's non-reference boundary).
+            let declared_return = match descriptor.result() {
+                Some(component) if !component.is_array() => {
+                    component.object_name().map(|name| name.0.as_slice())
+                }
+                _ => None,
+            };
+            let Some(declared_return) = declared_return else {
+                return Err(Error::unsupported(
+                    "anonymous_super_return_type_unproved",
+                    "the root method return type is not a directly named reference type",
+                ));
+            };
+            if !spellable_source_type(declared_return, &root_name) {
+                return Err(Error::unsupported(
+                    "anonymous_super_source_type_unproved",
+                    "the declared return type is not a same-package, directly spellable source type",
+                ));
+            }
+            let mut proved_supertypes = std::iter::once(parent_name.as_slice())
+                .chain(
+                    parent_read
+                        .facts
+                        .super_class
+                        .as_ref()
+                        .map(|name| name.raw().0.as_slice()),
+                )
+                .chain(
+                    parent_read
+                        .facts
+                        .interfaces
+                        .iter()
+                        .map(|interface| interface.raw().0.as_slice()),
+                );
+            if !proved_supertypes.any(|proved| proved == declared_return) {
+                return Err(Error::unsupported(
+                    "anonymous_super_return_type_unproved",
+                    "the root method return type is neither the superclass nor one of its proved direct supertypes",
+                ));
+            }
+            let parameters: Option<Vec<&[u8]>> = descriptor
+                .parameters()
+                .iter()
+                .map(|parameter| parameter.bytes(&root_method.descriptor.0))
+                .collect();
+            let capture_descriptor =
+                anonymous_val_capture_field(&child_facts).map(|(_, descriptor)| descriptor);
+            let parameter_table_carries_the_capture =
+                parameters.as_deref().is_some_and(|table| match table {
+                    [] => true,
+                    [only] => capture_descriptor.as_deref() == Some(*only),
+                    [_, _, ..] => false,
+                });
+            if !parameter_table_carries_the_capture {
+                return Err(Error::unsupported(
+                    "anonymous_super_return_type_unproved",
+                    "the root method parameter table is neither empty nor the single proved capture descriptor",
+                ));
+            }
+            Some(
+                parameters
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(<[u8]>::to_vec)
+                    .collect(),
+            )
+        } else {
+            None
+        };
         let constructors: Vec<_> = child_facts
             .methods
             .iter()
@@ -4831,6 +4897,14 @@ impl Engine {
             &constructor_descriptor,
             mixed.as_ref().map(|mixed| &mixed.proof),
             None,
+            if site_shape == jarde_java::report::AnonymousSiteShape::DirectReturn {
+                // Ring 2's proved shape only: the census's child-self-invocation arm stays off
+                // for the same path's local-declaration initializer shape, whose
+                // `unresolvable-child-read` refusal is ring 1's own frozen boundary.
+                AnonymousOwnerCensusPath::DirectSuperclassDirectReturn
+            } else {
+                AnonymousOwnerCensusPath::Unwidened
+            },
             &mut child_execution,
             budget,
         )?;
@@ -5075,17 +5149,18 @@ impl Engine {
                 // the interface path's parameter precedent (`captured_root_parameter`) as the
                 // criterion source. The shape is the direct-return descriptor whose sole
                 // parameter is the proved capture field's own type.
-                let parameterized_shape = site_shape
-                    == jarde_java::report::AnonymousSiteShape::DirectReturn
-                    && root_method.descriptor.0
-                        == [
-                            b"(".as_slice(),
-                            mixed.field_descriptor.as_slice(),
-                            b")L".as_slice(),
-                            parent_name.as_slice(),
-                            b";".as_slice(),
-                        ]
-                        .concat();
+                // The parameterized shape is the direct-return descriptor whose parameter table
+                // is exactly the proved capture field's own descriptor. The return segment was
+                // proved at the root gate and composes independently (design
+                // `recover-anonymous-supertype-return`, decision 6), so it is not re-checked
+                // here: both `Lparent;` and the proved supertype `LT;` carry the parameter.
+                let parameterized_shape =
+                    direct_return_parameters.as_ref().is_some_and(|parameters| {
+                        matches!(
+                            parameters.as_slice(),
+                            [only] if only == &mixed.field_descriptor
+                        )
+                    });
                 // The precedent's scan conjunct: the census counts every allocation of the
                 // method, so a parameterized projection reads only a complete one.
                 if parameterized_shape && !root_scan.complete {
@@ -5557,6 +5632,7 @@ impl Engine {
         constructor_descriptor: &[u8],
         capture: Option<&class_source::MemberCaptureProof>,
         descendant_capture: Option<&AnonymousDescendantCaptureXrefs<'_>>,
+        census_path: AnonymousOwnerCensusPath,
         execution: &mut ExecutionReport,
         budget: &mut Budget,
     ) -> Result<()> {
@@ -5832,11 +5908,49 @@ impl Engine {
                     }) && item.operation == XrefOperation::InnerClass
                         && item.consumer == Some(ConsumerKind::InnerNest)
                 );
+                // Ring 2 (`recover-anonymous-supertype-return`): an invocation whose symbolic
+                // owner is the anonymous child itself, located inside the child's own body, is
+                // the anonymous body calling an inherited or own instance method on `this` —
+                // javac names the receiver's own class in the constant pool
+                // (`invokevirtual seed:()J` owned by `AnonymousTopLevel$1`). The child-body
+                // gate proved every child method a complete structured body that the emission
+                // carries verbatim, so javac regenerates the same symbolic form against the
+                // new anonymous class: the receiver is `this` and resolution walks the same
+                // direct superclass, independently of the pool owner. The child shape gate
+                // bounds the child to at most the one `val$` field with no `<clinit>` and no
+                // static methods (a javac 8 anonymous body cannot declare either), so this arm
+                // cannot reopen the child-body self-allocation refusal — an allocation is a
+                // Class symbol under the arms above, not a Method symbol here. Only
+                // `InvokeVirtual` is admitted: the ring 2 acceptance attributed the widening to
+                // the anchor's own shape, and a private self-helper call (`invokespecial`,
+                // reachable from a javac 8 anonymous body's private method) is a different,
+                // unproven shape that keeps its refusal — an unreachable or unproven branch
+                // must not open a production acceptance set. The census path discriminant keeps
+                // the arm off for every other caller and site shape: the interface and
+                // grandchild paths share this census, and the superclass path's
+                // local-declaration initializer shape freezes the same refusal
+                // (`unresolvable-child-read`) — neither opens as a side effect (the ring 1
+                // containment pattern).
+                let allowed_child_self_invocation = census_path
+                    == AnonymousOwnerCensusPath::DirectSuperclassDirectReturn
+                    && matches!(
+                        (&item.source.location, &item.target, item.operation),
+                        (
+                            Location::Code { method, .. },
+                            XrefTarget::Symbol {
+                                value: SymbolRef::Method { owner, .. },
+                            },
+                            XrefOperation::InvokeVirtual,
+                        ) if method.owner == *child && owner.0 == child_name
+                    );
                 if allowed_nesting {
                     nesting_uses += 1;
                 }
                 if item.certainty != XrefCertainty::Exact
-                    || !(allowed_code || allowed_nesting || allowed_descendant_capture)
+                    || !(allowed_code
+                        || allowed_nesting
+                        || allowed_descendant_capture
+                        || allowed_child_self_invocation)
                 {
                     let location = match &item.source.location {
                         Location::Code { method, bci } => {
@@ -11228,10 +11342,39 @@ fn complete_anonymous_method(method: &ClassSourceMethod) -> bool {
     )
 }
 
+/// Which anonymous projection path and site shape owns an owner census, as the ring 2
+/// containment discriminant (the `AnonymousSiteShape` pattern): a child-body self-invocation —
+/// a method symbol owned by the anonymous child itself, from inside the child's own body — is
+/// admitted only for [`AnonymousOwnerCensusPath::DirectSuperclassDirectReturn`], the one
+/// path-and-shape combination whose slice (`recover-anonymous-supertype-return`) proved that
+/// shape against its anchor. Every other path keeps the census's exact acceptance set: the
+/// interface and grandchild paths share the same census, and the superclass path's
+/// local-declaration initializer shape has its own frozen boundary
+/// (`anonymous-local-decl-site-refusals/unresolvable-child-read` refuses exactly this shape) —
+/// a widening on one slice can never open another slice's acceptance set as a side effect.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum AnonymousOwnerCensusPath {
+    DirectSuperclassDirectReturn,
+    Unwidened,
+}
+
 fn internal_package(name: &[u8]) -> &[u8] {
     name.iter()
         .rposition(|byte| *byte == b'/')
         .map_or(&[], |slash| &name[..slash])
+}
+
+/// Whether a class's internal name is directly spellable source text at the root class's
+/// package: no `$`, every `/` segment a legal Java identifier, and the same package. The
+/// anonymous superclass projection's source-type refusals (`anonymous_super_source_type_unproved`)
+/// share this one predicate for the direct superclass and — since ring 2
+/// (`recover-anonymous-supertype-return`) — for the root method's declared return type.
+fn spellable_source_type(name: &[u8], root: &[u8]) -> bool {
+    internal_package(name) == internal_package(root)
+        && std::str::from_utf8(name).is_ok_and(|name| {
+            name.split('/')
+                .all(|part| !part.contains('$') && jarde_java::names::is_java_identifier(part))
+        })
 }
 
 #[cfg(test)]

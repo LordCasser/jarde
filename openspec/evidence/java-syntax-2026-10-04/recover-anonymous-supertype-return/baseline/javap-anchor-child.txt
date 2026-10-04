@@ -1,0 +1,138 @@
+Classfile /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a105e8-2e55-77c2-932c-ecb635e59c04/tests/fixtures/proved-java-structure/anonymous-top-level/AnonymousTopLevel$1.class
+  Last modified 2026年9月25日; size 895 bytes
+  SHA-256 checksum 89db5ebc180357b82dd2824637037a1b926f022209378b9cfdc48e38c1de6d28
+  Compiled from "AnonymousTopLevel.java"
+class AnonymousTopLevel$1 extends Base
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #2                          // AnonymousTopLevel$1
+  super_class: #8                         // Base
+  interfaces: 0, fields: 1, methods: 2, attributes: 3
+Constant pool:
+   #1 = Fieldref           #2.#3          // AnonymousTopLevel$1.val$captured:Ljava/lang/String;
+   #2 = Class              #4             // AnonymousTopLevel$1
+   #3 = NameAndType        #5:#6          // val$captured:Ljava/lang/String;
+   #4 = Utf8               AnonymousTopLevel$1
+   #5 = Utf8               val$captured
+   #6 = Utf8               Ljava/lang/String;
+   #7 = Methodref          #8.#9          // Base."<init>":(J)V
+   #8 = Class              #10            // Base
+   #9 = NameAndType        #11:#12        // "<init>":(J)V
+  #10 = Utf8               Base
+  #11 = Utf8               <init>
+  #12 = Utf8               (J)V
+  #13 = Fieldref           #14.#15        // AnonymousTopLevel.renderCalls:I
+  #14 = Class              #16            // AnonymousTopLevel
+  #15 = NameAndType        #17:#18        // renderCalls:I
+  #16 = Utf8               AnonymousTopLevel
+  #17 = Utf8               renderCalls
+  #18 = Utf8               I
+  #19 = String             #20            // render
+  #20 = Utf8               render
+  #21 = Methodref          #14.#22        // AnonymousTopLevel.event:(Ljava/lang/String;)V
+  #22 = NameAndType        #23:#24        // event:(Ljava/lang/String;)V
+  #23 = Utf8               event
+  #24 = Utf8               (Ljava/lang/String;)V
+  #25 = Class              #26            // java/lang/StringBuilder
+  #26 = Utf8               java/lang/StringBuilder
+  #27 = Methodref          #25.#28        // java/lang/StringBuilder."<init>":()V
+  #28 = NameAndType        #11:#29        // "<init>":()V
+  #29 = Utf8               ()V
+  #30 = Methodref          #2.#31         // AnonymousTopLevel$1.seed:()J
+  #31 = NameAndType        #32:#33        // seed:()J
+  #32 = Utf8               seed
+  #33 = Utf8               ()J
+  #34 = Methodref          #25.#35        // java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+  #35 = NameAndType        #36:#37        // append:(J)Ljava/lang/StringBuilder;
+  #36 = Utf8               append
+  #37 = Utf8               (J)Ljava/lang/StringBuilder;
+  #38 = String             #39            // :
+  #39 = Utf8               :
+  #40 = Methodref          #25.#41        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #41 = NameAndType        #36:#42        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #42 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #43 = Methodref          #25.#44        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #44 = NameAndType        #45:#46        // toString:()Ljava/lang/String;
+  #45 = Utf8               toString
+  #46 = Utf8               ()Ljava/lang/String;
+  #47 = Utf8               (JLjava/lang/String;)V
+  #48 = Utf8               Code
+  #49 = Utf8               LineNumberTable
+  #50 = Utf8               LocalVariableTable
+  #51 = Utf8               this
+  #52 = Utf8               LAnonymousTopLevel$1;
+  #53 = Utf8               J
+  #54 = Utf8               SourceFile
+  #55 = Utf8               AnonymousTopLevel.java
+  #56 = Utf8               EnclosingMethod
+  #57 = NameAndType        #58:#59        // create:()LRenderer;
+  #58 = Utf8               create
+  #59 = Utf8               ()LRenderer;
+  #60 = Utf8               InnerClasses
+{
+  final java.lang.String val$captured;
+    descriptor: Ljava/lang/String;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  AnonymousTopLevel$1(long, java.lang.String);
+    descriptor: (JLjava/lang/String;)V
+    flags: (0x0000)
+    Code:
+      stack=3, locals=4, args_size=3
+         0: aload_0
+         1: aload_3
+         2: putfield      #1                  // Field val$captured:Ljava/lang/String;
+         5: aload_0
+         6: lload_1
+         7: invokespecial #7                  // Method Base."<init>":(J)V
+        10: return
+      LineNumberTable:
+        line 47: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0  this   LAnonymousTopLevel$1;
+            0      11     1  seed   J
+
+  public java.lang.String render();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #13                 // Field AnonymousTopLevel.renderCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #13                 // Field AnonymousTopLevel.renderCalls:I
+         8: ldc           #19                 // String render
+        10: invokestatic  #21                 // Method AnonymousTopLevel.event:(Ljava/lang/String;)V
+        13: new           #25                 // class java/lang/StringBuilder
+        16: dup
+        17: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+        20: aload_0
+        21: invokevirtual #30                 // Method seed:()J
+        24: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+        27: ldc           #38                 // String :
+        29: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        32: aload_0
+        33: getfield      #1                  // Field val$captured:Ljava/lang/String;
+        36: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        39: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        42: areturn
+      LineNumberTable:
+        line 50: 0
+        line 51: 8
+        line 52: 13
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      43     0  this   LAnonymousTopLevel$1;
+}
+SourceFile: "AnonymousTopLevel.java"
+EnclosingMethod: #14.#57                // AnonymousTopLevel.create
+InnerClasses:
+  #2;                                     // class AnonymousTopLevel$1
+Compiled from "AnonymousTopLevel.java"
+class AnonymousTopLevel$1 extends Base {
+  final java.lang.String val$captured;
+  AnonymousTopLevel$1(long, java.lang.String);
+  public java.lang.String render();
+}

@@ -1,0 +1,3 @@
+value=23:captured
+events=capture,choose,base(23),render
+counts=1,1,1,1

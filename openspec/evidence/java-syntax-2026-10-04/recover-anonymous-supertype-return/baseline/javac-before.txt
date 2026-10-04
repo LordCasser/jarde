@@ -1,0 +1,6 @@
+openspec/evidence/java-syntax-2026-10-04/recover-anonymous-supertype-return/baseline/source-set-before/AnonymousTopLevel.java:56: 错误: 找不到符号
+        return new AnonymousTopLevel$1(choose(), captured);
+                   ^
+  符号:   类 AnonymousTopLevel$1
+  位置: 类 AnonymousTopLevel
+1 个错误
