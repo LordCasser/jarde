@@ -49,6 +49,8 @@ root 实测 `P01` 字符串拼接（javac 9+ 的重大变化是 `invokedynamic` 
 
 **推论（须优先排查的构造类）**：凡 javac 9+ 做过"内部 codegen 优化"且**不涉及新 API** 的构造都在风险区。已知候选：TWR（已证）、限定外部实例 null-check（已证）、访问器栈重排（已证）；**尚未排查**的高风险候选——`switch` 的 table/lookup 阈值与 `default` 分支布局、字符串 switch 的 `$SwitchMap` 合成数组形态、`synchronized` 的 monitor 序列、lambda 的 `altMetafactory` 参数与捕获形、自动装箱的 `valueOf` 缓存路径、`assert` 的 `$assertionsDisabled` 合成字段形。这些属后续扫描范围，本巡查不外推（**未实测的构造一律不下断言**）。
 
+> **状态更新（2026-10-04 同日）**：上段"尚未排查"的六项候选**已由 [codegen-differential-sweep](../codegen-differential-sweep/README.md) 全部排查完毕，均无版本盲区**（整类 opcode 序列 SHA 双腿一致）；lambda 亦已补测（opcode 序列 + `BootstrapMethods` + `InnerClasses` + 合成方法命名四维一致，无盲区）。该普查同时暴露了 opcode-序列扫描器对 `invokedynamic` 系构造的盲区（BSM 参数须属性级比对），已登记。故本节推论的候选清单**已结清**；剩余待排查方向见该普查第三节末（compact-string、nestmate、接口私有方法等，均未实测、不外推）。
+
 ## 三、P07 的"程度版本相关"（两缺口的叠加，非第四例）
 
 P07（内部类读写外部私有字段 + `o.new In()`）真 javac 8 引注 **13**、javac 23 引注 **3**——两腿都拒，但真 javac 8 拒得更多。root 核实这是**已登记两缺口的叠加**，不是第四例版本耦合：
