@@ -1,17 +1,31 @@
-# HANDOFF — jarde 接续说明（2026-09-30）
+# HANDOFF — jarde 接续说明（2026-09-30 立；**2026-10-04 更新当前状态**）
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态
+## 当前状态（2026-10-04，最新）
+
+- 长期 Java 语法恢复 `/goal` 状态为 **active**（用户已恢复并持续给指令）。工作模式是 patrol → spec → 派发 coder subagent（`bigmodel/glm-5.3-flash`）→ root 独立验收 → 写回账本；**一次只允许一个 subagent 构建**（磁盘串行约束，见下"磁盘纪律"）。
+- 本会话（10-03→10-04）已验收合入 **四个切片**，全部 CI ALL GREEN（4 jobs：stable / fuzz smoke / supply chain / MSRV）：
+  1. `recover-bridge-admission-gates`（merge `5f07e13c`）——协变返回擦除门改快照层级 walk + 体形门接受规范参数 cast 形 + 三项可重建性门。
+  2. `recover-ctor-reorder-dispatch-guard`（merge `fc868aba`）——**修复上一片引入的静默行为回归**（构造期虚分派下重排捕获写入使 `visibleDuringSuper` true→false）。
+  3. `recover-nested-class-literal-values`（merge `78db127b`）——嵌套类字面量准入（反射入口高频形）；含两道守卫（结构反射陷阱、折叠失败回退），修复过程中 root 两次实证退回阻塞点。
+  4. `recover-bridge-superclass-header-precondition`（merge `cc4b6f11`）——**修复 1 的潜伏错值**：裸父类头下隐藏参数收窄桥会使擦除派发静默路由到父类体。
+- 验收基线（root 在干净合并态实测）：**296 目标 / 2934 passed / 0 failed**；fmt 干净；clippy 从 ci.yml 逐字生成（含 `--all-features`、29 项 `-A`）exit 0；`openspec validate --all --strict` **269/269**。已知 flake 家族见下"磁盘纪律"第 (4) 条，单测复跑两轮判定。
+- **在飞**：`recover-anonymous-mixed-super-capture`（`present-proved-java-structure` 5.3 里程碑的精确剩余范围）由 coder subagent 实施中。
+- **队列**（串行，均已立 spec、落点已核实）：`parameterized-class-headers`（interface + superclass 两片派发时合并——同改 `project_generic_signature`，串行必 rebase 冲突）→ `recover-shared-latch-nested-loops`（CF-11 子形，落点 `region.rs::latch_tested_loop` 的 `latches.len() != 1`）→ `recover-fixture-behavior-guard-coverage`（8 个冻结 fixture 无 CI 守卫，正是回归曾静默通过 CI 的原因）→ `recover-statement-position-news`（spn，qwen 通道取证停滞后已终止，取证结论已固化进其 design）→ `recover-boxed-number-widening`。
+- **本会话巡查的净产出**（除四片外）：CF-18 嵌套 handler 定性为硬前沿（JADX 自身错放 handler，Jarde 诚实拒绝更安全，不立片）；枚举 switch 常量标签归入既有未完成 change `project-proved-enum-switch-labels`（1/9，不重复立项）；接口 default/static 方法体**验证健康**（非缺口）；方法引用六形归入 DT-27 已登记残留（绑定接收者拒绝理由有原则：NPE 时机）；泛型声明三形与注解泛型元素 + 默认值均为**低危保真度缺口**（可编译、行为一致、仅反射元数据降级），登记不立片，并记录了"`class_source.rs` 约 3934 行的 `attributes.default.is_some()` 是保护性门，naive 放宽会吞掉注解默认值"的架构警示。
+- 下方"最近一次主线收口"等段为 **2026-09-30 的历史记录**，仅作背景；其中"目标 paused"、CI 36606512666、target 清理数字等均已过期，以本节为准。
+
+## 当前状态（2026-09-30 历史记录，已过期）
 
 - 13 条被工作树占用的历史分支已在 `aeb18c0f` **全部合入并推送到 `main`**；该合并的文件树与合并前 `056709b8` 完全一致。随后释放全部分支占用并删除旧引用；本地只剩 `main`，远端只剩 `origin/main`。本文档提交后以 `git status` 和 `git rev-parse HEAD` 核对新的仓库状态。
-- 长期 Java 语法恢复 `/goal` 当前状态为 **paused**。用户恢复该目标前，不自行派发新语法点或继续无边界巡查。本文件记录接续路径，不代表目标已恢复。
+- ~~长期 Java 语法恢复 `/goal` 当前状态为 **paused**。~~ **（已过期，勿据此停工）**：目标自 2026-10-04 起为 **active**，用户持续给指令并要求持续推进。以下两条同为历史记录。
 - 最近一次已确认的代码 CI 是 [GitHub Actions 36606512666](https://github.com/LordCasser/jarde/actions/runs/36606512666)，所有 job 成功。它验证的是 `fcc864ce` 的代码；后续 `056709b8` 仅增本文档，`aeb18c0f` 仅合并历史、文件树无变化。新提交的 CI 状态需单独查看。
 - 根目录 Cargo `target` 已清理约 10.4 GiB；先前隔离构建产物清理约 103 MiB，本次又从 `dt13-nested-enum` 清理 158 MiB。后续测试会重新占用磁盘，Rust 工作结束后留意 `target`。
 
 ## 用户确定的工作方向
 
-先以本地 `/Users/lordcasser/workspace/testzone/jadx` 的测试和实现为基础，明确语法特性清单，逐项追平 **可证明正确** 的 JADX 已有能力；之后再探索双方都未覆盖的情况。可以参考 JADX 的反编译代码和算法，避免重复试错，但不能照搬其错误转写。对每个语法点：读相关测试和生产 visitor/region 实现，构造 Java 源码并编译，对照原 class、JADX、Jarde 的完整源码、Java 8 重编和执行；确认差距与 JVM/架构证据后写独立 OpenSpec。确定性、简单的实现任务派 Luna subagent（按难度调整思维强度），由主 agent 独立重放验收。同批互不冲突的点可并行。不要漫无目的地追加场景，也不要把一个窄 fixture 通过称为整个特性追平。
+先以本地 `/Users/lordcasser/workspace/testzone/jadx` 的测试和实现为基础，明确语法特性清单，逐项追平 **可证明正确** 的 JADX 已有能力；之后再探索双方都未覆盖的情况。可以参考 JADX 的反编译代码和算法，避免重复试错，但不能照搬其错误转写。对每个语法点：读相关测试和生产 visitor/region 实现，构造 Java 源码并编译，对照原 class、JADX、Jarde 的完整源码、Java 8 重编和执行；确认差距与 JVM/架构证据后写独立 OpenSpec。确定性、简单的实现任务派 **`bigmodel/glm-5.3-flash`** subagent（2026-10-04 用户指定的实现模型；按难度调整思维强度），由主 agent 独立重放验收。同批互不冲突的点可并行——**但磁盘串行约束下同一时刻只允许一个 subagent 构建**（见"磁盘纪律"）。不要漫无目的地追加场景，也不要把一个窄 fixture 通过称为整个特性追平。
 
 入口是 [JADX 特性清单](openspec/evidence/jadx-feature-inventory-2026-09-27/README.md)、[71 个验收单元与状态账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)、[路线图中的 Java 8 对标章节](openspec/roadmap.md)。清单基于 JADX `2fb1b16386941660fda07e9017285aec40fcb37f` 的 612 个集成测试文件，去重得到 71 个工程验收单元；这个数字不是已追平数。状态账本目前记载 46 个“冻结差距已修复但待扩验”、23 个“部分已测”、1 个“已证差距”（CF-16 的剩余 `finally` 形态）、1 个“JADX 未完成”。这些是文档最后登记的状态，恢复工作时先复核源码和最新主线，避免按旧统计重复开工。
 
