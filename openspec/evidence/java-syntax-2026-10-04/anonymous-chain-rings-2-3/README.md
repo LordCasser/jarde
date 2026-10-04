@@ -5,7 +5,7 @@
 | 环 | 阻塞门 | 受影响 fixture | 状态 |
 | --- | --- | --- | --- |
 | 环 1 | 分配点在局部声明初始化位 + 赋值左端匿名类型名不可拼写 | `anonymous-super-args` | 已立项 `recover-anonymous-local-decl-site`（实施中） |
-| **环 2** | `anonymous_super_return_type_unproved`：根方法返回类型必须**恰为**父类 `()Lparent;` | `anonymous-capture`、`anonymous-top-level`（根方法返回 `Renderer`，而父类是 `Base`） | **未立项** |
+| **环 2** | `anonymous_super_return_type_unproved`：根方法返回类型必须**恰为**父类 `()Lparent;` | **仅 `anonymous-top-level`**（父类 `Base` 顶层可拼写、返回 `Renderer` 是 `Base` 实现的接口）。**更正**：`anonymous-capture` 不属本环单独可解——其父类 `AnonymousCaptureCases$Base` 与返回类型 `AnonymousCaptureCases$Renderer` 均含 `$`，**先撞 `anonymous_super_source_type_unproved`**，需环 2 + 嵌套父类名可拼写两者（root 2026-10-04 第三次实测以 javap 核实） | **未立项** |
 | **环 3** | 同一门：根方法必须**无参** | `anonymous-super-dispatch`（根方法 `create(String captured)` 带参） | **未立项** |
 
 本文件回答 Goal 要求的"是否一定要新增机制"，结论是**两环不同**：环 3 有同文件内的既有先例可复用（**不需要新机制**），环 2 需要一个新的类级可赋值性证明（**需要新能力，但可能可复用既有层级 walk**）。
@@ -56,15 +56,24 @@ private static Renderer baseArgumentAndCapture() {       // 声明返回类型�
 
 | 设施 | 位置 | 能否用于环 2 |
 | --- | --- | --- |
-| `prove_snapshot_hierarchy_widenings` | `facade.rs:17561` | **不能**。它证明的是方法 IR 内**值**的快照层级放宽（为 `recover-bridge-admission-gates` 的协变返回擦除门而建），输入是 `MethodIr`，不回答"类 P 是否可赋给类型 T" |
+| `prove_snapshot_hierarchy_widenings` | `facade.rs:17743` | **不能**。它证明的是方法 IR 内**值**的快照层级放宽（为 `recover-bridge-admission-gates` 的协变返回擦除门而建），输入是 `MethodIr`，不回答"类 P 是否可赋给类型 T" |
 | `subtype_of` | `crates/jarde-jvm/src/members.rs:1490` | **概念匹配但不能直接复用**。它确实做类层级 walk（`caller.supertypes()` + `Layers` 展开 + 命中 `declaring` 判定），但为 `fn`（私有）且绑定 `HeaderClosure`/`Search`/`ClassSite` 这套**成员访问检查**机制，facade 的匿名投影拿不到这些上下文。可选做法是把该 walk 的层级遍历能力**提取为可复用件**（在 `jarde-jvm` 或 reader 层暴露一个"给定两个类名，证明子类型关系"的入口），再由环 2 消费——这算**新增一个小的共享能力**，但不算新机制族（层级 walk 的语义与缓存策略已存在，只是所有权与可见性需调整） |
-| `prove_direct_generic_superclass_parent` | `facade.rs:13419` 附近 | 部分可参考：它已用 `resolve_class_source_dependency_read_raw` 解析父类定义并读其 `super_class`/`interfaces`，说明"解析一个类的直接超类型集合"这条通道是通的；但它只做**一层**且服务于泛型父类投影，不含传递闭包与接口继承 |
+| `prove_direct_generic_superclass_parent` | `facade.rs:13593` | 部分可参考：它已用 `resolve_class_source_dependency_read_raw` 解析父类定义并读其 `super_class`/`interfaces`，说明"解析一个类的直接超类型集合"这条通道是通的；但它只做**一层**且服务于泛型父类投影，不含传递闭包与接口继承 |
+| `prove_no_body_generic_hierarchy` | `src/class_source.rs:3133` | **不能，且方向相反**。它不 walk 层级，而是**保守拒绝**：`!matches!(no_body_kind, Abstract) ‖ class_flags&(ACC_ANNOTATION\|ACC_ENUM)≠0 ‖ class_internal.contains('$') ‖ class_superclass≠Some("java/lang/Object") ‖ !class_interfaces.is_empty()` 即 `Err(generic_inherited_contract_unproved)`——只接受"Object 父类 + 无接口"的顶层类 |
+| `hierarchy_complete` | `crates/jarde-jvm/src/members.rs:234` | **不能（易误判，root 已踩）**。它是 `MemberOutcome` 上的**成员解析搜索读取完备性**（`self.unread.is_empty()`，"本次 member 搜索进入的每个层级分支是否都读到"），服务于 `resolve_member`/`resolver.rs`，**不是**类级子类型关系判据 |
+| `scan_hierarchy` | `crates/jarde-query/src/xref/metadata.rs:546` | **不能**。只做 xref 元数据记录（对 `super_class` 与各 `interface` 各发一个 `XrefOperation::SuperClass`/接口站点），**单层、不传递、不做子类型判定**；`jarde-query` 亦无公开的超类型查询 API（`grep -rnE "pub fn .*(supertype\|hierarchy\|ancestors\|implements)" crates/jarde-query/src` 无命中） |
 
 **故环 2 的判定是**：需要一个**类级可赋值性证明**入口（传递闭包 + 接口继承 + 快照内可解析性 + 层级不完整时拒绝）。实现上有两条路：
 - **优先**：把 `members.rs::subtype_of` 的层级 walk 提取为共享能力，环 2 消费它（避免第二套层级遍历，符合"不新增平行状态"）。
 - 次选：在 facade 内用 `resolve_class_source_dependency_read_raw` 自建一层层 walk。代价是与 `members.rs` 形成两套层级遍历，**root 不推荐**（本会话已两次因"两套逻辑漂移"被迫加同形判据：`bridge_superclass_contract_generic` 刻意与投影的 `parameterized_superclass` 计算同形以防漂移）。
 
-**环 2 的验收锚**：`anonymous-capture`（`Renderer baseArgumentAndCapture()`）与 `anonymous-top-level`（`static Renderer create()`）两者完整源集 `javac --release 8` 从当前状态转为 exit 0，且 `java -Xverify:all` 事件日志与原 class 逐行一致。**负例必须包含**：声明返回类型与父类**无关**的形（须响亮拒绝，不得发射不可编译文本）、层级在快照内**不可完整解析**的形（`hierarchy_complete` 为假时拒绝）、以及返回类型为**子类型**（比 `P` 更窄）的形——后者在 Java 源码里不可能由 javac 生成，若出现说明输入非 javac 产物，应拒绝。
+**环 2 的验收锚（2026-10-04 root 第三次实测后更正）**：**只能是 `anonymous-top-level`**（`static Renderer create()`，父类 `Base` 顶层可拼写、返回类型 `Renderer` 是 `Base` 直接实现的接口）——其完整源集 `javac --release 8` 须从当前状态转为 exit 0，且 `java -Xverify:all` 事件日志与原 class 逐行一致。**`anonymous-capture` 不能单独作为环 2 的锚**：其父类 `AnonymousCaptureCases$Base` 与返回类型 `AnonymousCaptureCases$Renderer` 均含 `$`，先撞 `anonymous_super_source_type_unproved`（父类须为"同包、可直接拼写的源码类型"），故须待"嵌套父类名可拼写"能力落地后才可能被环 2 解锁——把它当环 2 锚会让实现者误判自己已完成而实际仍拒绝。
+
+**MVP 判据（root 降成本的实测发现）**：两 fixture 中父类→返回类型都是**一层直接**关系（`Base implements Renderer`，javap 核实 `abstract class AnonymousCaptureCases$Base implements AnonymousCaptureCases$Renderer`；`abstract class Base implements Renderer`），而投影本就解析父类 class file（`prove_direct_generic_superclass_parent` 已用 `resolve_class_source_dependency_read_raw` 读父类定义，`ClassMemberFacts.interfaces` 可直接取到）。故**环 2 的 MVP 可只做一层判据**（声明返回类型 ∈ 父类的 `super_class` ∪ `interfaces`），把传递闭包留作后续，避免一上来就新建层级 walk 共享件。
+
+**负例必须包含**：声明返回类型与父类**无关**的形（须响亮拒绝，不得发射不可编译文本）、父类 class file 在快照内**不可解析**的形（拒绝而非猜测）、以及返回类型为**子类型**（比父类更窄）的形——后者在 Java 源码里不可能由 javac 生成，若出现说明输入非 javac 产物，应拒绝。
+
+> **一处 root 自查更正**：本文件早先版本写"层级在快照内不可完整解析的形（`hierarchy_complete` 为假时拒绝）"。root 复核发现 `crates/jarde-jvm/src/members.rs:234` 的 `hierarchy_complete` 是**成员解析搜索的读取完备性**（`self.unread.is_empty()`，即"本次 member 搜索进入的每个层级分支是否都读到了"，服务于 `resolve_member`），**不是**类级子类型关系的完备性判据，不可直接用于环 2。上文已改为按"父类 class file 可解析"表述。
 
 ## 优先级建议（按 Goal "优先大颗粒里程碑 + MVP 思维"）
 
