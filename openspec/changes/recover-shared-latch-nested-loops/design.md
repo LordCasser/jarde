@@ -20,6 +20,12 @@ loop 域共 19 个 change，其中已验收的相邻片经逐读其 Why 段确�
 
 **Goals:** 外层 continue 与内层循环退出共享 latch 的双层循环恢复；带标签 `continue outer` 同形恢复；真实业务形（Map.Entry 双层 + 前缀过滤）体恢复。**Non-Goals:** 泛型 Signature 投影（`Svc.lookup` 的返回 `List<String>` 投影属 same-class/nested-headers 域，本片只锚体恢复，投影按既有通道如实呈现或拒绝）；三层以上共享 latch（验一形登记）；irreducible 图（CF-18 硬前沿，不碰）；同体双跳转（dj 片已闭合，不动）。
 
+### 账本归属与落点（root 2026-10-04 补记）
+
+- **inventory 单元归属**：本片属 **CF-11**（"嵌套/顺序循环及循环体内条件、取值更新的嵌套区域恢复"，状态"部分已测、仍待扩验"）——CF-11 的边界原文即"只覆盖 CFG 支配/回边信息可形成嵌套区域的形态"，本片正是该边界内尚未覆盖的一个子形（外层 continue 与内层退出共享 latch）。落地后须回写 CF-11 行。**与 CF-09（循环出口 break/continue/标签/嵌套出口）相邻但不同**：CF-09 处理单循环的多出口归类，本片处理**跨两层**的 latch 归属。
+- **落点（root 已定位，行号会漂移、以锚点名为准）**：`crates/jarde-java/src/region.rs` 的 `fn latch_tested_loop`（ncl 合并后约 10470），其 `if latches.len() != 1 { return Ok(None) }`（约 10484）即"latch 归属单一所有者"的现约束——本片要放宽的正是它。相关既有件：`fn latch_test_chain`（约 10133）、`fn first_latch_test_suffix`（约 10389）、`fn latch_test_suffix_is_effect_free`（约 10424）；另一处 LoopShape 产生点在约 8244（`self.latch_test_chain(...)` 之后 `loop_of.latches().iter().find_map(...)`）。
+- **与既有五片的正交性已核实**（见 Context 的查重表）：`recover-loop-body-double-jumps`(7/7)、`recover-proved-loop-exit-gateways`(5/5)、`recover-effectful-dual-loop-exits`(5/5)、`recover-switch-local-join-before-loop-continue`(6/6)、`recover-loop-arm-join-continuation`(6/6) 均不覆盖跨层 latch 共享。
+
 ## Decisions
 
 1. **latch 共享判据（CFG 结构事实）**：三条同时成立才准入——(a) 内层循环的块集完全包含于外层循环体（支配关系既有）；(b) 内层循环的退出边目标 == 外层 latch 块；(c) 外层 continue 边目标 == 同一 latch 块。任一不成立保持现拒绝（不放宽到任意共享）。
