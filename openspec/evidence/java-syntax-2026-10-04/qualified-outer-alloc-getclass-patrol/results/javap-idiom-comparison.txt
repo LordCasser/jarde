@@ -1,0 +1,60 @@
+### 冻结 fixture（javac 23 --release 8）N1$Stat.use:
+  int use(N1);
+    Code:
+       0: new           #7                  // class N1$Inner
+       3: dup
+       4: aload_1
+       5: dup
+       6: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+       9: pop
+      10: bipush        9
+      12: invokespecial #15                 // Method N1$Inner."<init>":(LN1;I)V
+      15: invokevirtual #18                 // Method N1$Inner.total:()I
+      18: ireturn
+}
+
+### 真 javac 8（Corretto 1.8.0_432）同源码 N1$Stat.use:
+  int use(N1);
+    Code:
+       0: new           #2                  // class N1$Inner
+       3: dup
+       4: aload_1
+       5: dup
+       6: invokevirtual #3                  // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       9: pop
+      10: bipush        9
+      12: invokespecial #4                  // Method N1$Inner."<init>":(LN1;I)V
+      15: invokevirtual #5                  // Method N1$Inner.total:()I
+      18: ireturn
+}
+
+### class 文件版本（二者相同 → java_release 无法区分）:
+  frozen:   major version: 52
+  real-8:   major version: 52
+
+### 显式 getClass 负例（真 javac 8）——用户语句 vs javac null-check 的位置差异:
+  G$In explicit(G);
+    Code:
+       0: aload_1
+       1: invokevirtual #2                  // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       4: pop
+       5: new           #3                  // class G$In
+       8: dup
+       9: aload_1
+      10: dup
+      11: invokevirtual #2                  // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      14: pop
+      15: invokespecial #4                  // Method G$In."<init>":(LG;)V
+      18: areturn
+
+  G$In plain(G);
+    Code:
+       0: new           #3                  // class G$In
+       3: dup
+       4: aload_1
+       5: dup
+       6: invokevirtual #2                  // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       9: pop
+      10: invokespecial #4                  // Method G$In."<init>":(LG;)V
+      13: areturn
+}

@@ -1,0 +1,4 @@
+d4679a3a02cad399088dda3e3ed8a765eaf69aeee192e33e3c51b0a0eed4fd0d  openspec/evidence/java-syntax-2026-10-04/qualified-outer-alloc-getclass-patrol/fixture/N1-realjavac8.jar
+23a391a54ed02bb025e16f73a6698a4ec89598eea5893ec403c01279d4e806fb  openspec/evidence/java-syntax-2026-10-04/qualified-outer-alloc-getclass-patrol/fixture/real-javac8/N1.class
+c799a6e345a61def1e80cc7085c51361b199944a018ba28d230099516e5d17ba  openspec/evidence/java-syntax-2026-10-04/qualified-outer-alloc-getclass-patrol/fixture/real-javac8/N1$Inner.class
+a563455582b5e55f34528f754b588b459be8864def86748da87d2335f54c1431  openspec/evidence/java-syntax-2026-10-04/qualified-outer-alloc-getclass-patrol/fixture/real-javac8/N1$Stat.class
