@@ -16,7 +16,7 @@ CF-18 区域相交域定向取证（主线 `30e54613`，复用 spn worktree 的 
 1. **`run`（irreducible）**：javac 把 loop-in-try-with-continue 降低为**物理块级不可规约图**（源码本身规约，但异常边 + continue 回边 + break 使标准 region decomposition 无法单入口归约）。恢复它需要**新机制**——不可规约图的结构化处理（节点分裂/多入口循环建模），触及 region 层核心，非窄切片。
 2. **`nestedTry`（exception-edge reachability）**：内层 try 的 handler 使部分块仅经异常边可达，normal-flow 视图遗漏。这是 CF-18 账本登记的"区域层既有拒绝"，与 `recover-crossing-array-read-values` 追踪时记录的"真嵌套 try 两形态为区域/图构建层既有拒绝"同族——需区域层异常边归属扩展，同为中等以上机制变更。
 
-**关键安全判断**：[CF-18 账本](../../jadx-feature-inventory-2026-09-27/cf18-exception-regions/report.md) 已记录**固定 JADX 在 `run` 同形上把外层 handler 错放到负值分支、改变异常传播语义**（运行在输入 2 处失败）——即 JADX 输出是**错的**。Jarde 保守整方法拒绝（诚实标注不可编、不发布错误源码）**比 JADX 更安全**。因此这不是"Jarde 落后于 JADX"的追赶缺口，而是"两者都不完美、Jarde 选择诚实失败"的权衡点。
+**关键安全判断**：[CF-18 账本](../../java-syntax-2026-09-27/cf18-exception-regions/report.md) 已记录**固定 JADX 在 `run` 同形上把外层 handler 错放到负值分支、改变异常传播语义**（运行在输入 2 处失败）——即 JADX 输出是**错的**。Jarde 保守整方法拒绝（诚实标注不可编、不发布错误源码）**比 JADX 更安全**。因此这不是"Jarde 落后于 JADX"的追赶缺口，而是"两者都不完美、Jarde 选择诚实失败"的权衡点。
 
 ## 处置
 
