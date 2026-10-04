@@ -11885,7 +11885,11 @@ mod tests {
             // The 2026-10-04 recover-anonymous-local-decl-site fixtures (the declaration-site
             // anchor's `-g` control leg three, the interface-hold containment two, and the five
             // refusal families twenty-one, twenty-six classes) moved it again.
-            (508, 2310, 251, 1689, 8),
+            // The 2026-10-04 recover-anonymous-parameterized-root fixtures (the `-g:none`
+            // control leg three, and the five refusal families sixteen — the supertype-return
+            // family freezes its `Renderer` interface beside `Base`, nineteen classes,
+            // thirty-six bodies) moved it again.
+            (527, 2346, 251, 1692, 8),
             "fixture population changed: re-measure these counts"
         );
     }
