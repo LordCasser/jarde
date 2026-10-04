@@ -4,11 +4,11 @@
 
 | 环 | 阻塞门 | 受影响 fixture | 状态 |
 | --- | --- | --- | --- |
-| 环 1 | 分配点在局部声明初始化位 + 赋值左端匿名类型名不可拼写 | `anonymous-super-args` | 已立项 `recover-anonymous-local-decl-site`（实施中） |
-| **环 2** | `anonymous_super_return_type_unproved`：根方法返回类型必须**恰为**父类 `()Lparent;` | **仅 `anonymous-top-level`**（父类 `Base` 顶层可拼写、返回 `Renderer` 是 `Base` 实现的接口）。**更正**：`anonymous-capture` 不属本环单独可解——其父类 `AnonymousCaptureCases$Base` 与返回类型 `AnonymousCaptureCases$Renderer` 均含 `$`，**先撞 `anonymous_super_source_type_unproved`**，需环 2 + 嵌套父类名可拼写两者（root 2026-10-04 第三次实测以 javap 核实） | **未立项** |
-| **环 3** | 同一门：根方法必须**无参** | `anonymous-super-dispatch`（根方法 `create(String captured)` 带参） | **未立项** |
+| 环 1 | 分配点在局部声明初始化位 + 赋值左端匿名类型名不可拼写 | `anonymous-super-args` | **已落地** `recover-anonymous-local-decl-site`（合入 `25f2589e`） |
+| **环 2** | `anonymous_super_return_type_unproved`：根方法返回类型必须**恰为**父类 `()Lparent;` | **仅 `anonymous-top-level`**（父类 `Base` 顶层可拼写、返回 `Renderer` 是 `Base` 实现的接口）。**更正**：`anonymous-capture` 不属本环单独可解——其父类 `AnonymousCaptureCases$Base` 与返回类型 `AnonymousCaptureCases$Renderer` 均含 `$`，**先撞 `anonymous_super_source_type_unproved`**，需环 2 + 嵌套父类名可拼写两者（root 2026-10-04 第三次实测以 javap 核实） | **已立项** [recover-anonymous-supertype-return](../../../changes/recover-anonymous-supertype-return/)（未派发） |
+| **环 3** | 同一门：根方法必须**无参** | `anonymous-super-dispatch`（根方法 `create(String captured)` 带参） | **已落地** `recover-anonymous-parameterized-root`（合入 `d906464e`） |
 
-本文件回答 Goal 要求的"是否一定要新增机制"，结论是**两环不同**：环 3 有同文件内的既有先例可复用（**不需要新机制**），环 2 需要一个新的类级可赋值性证明（**需要新能力，但可能可复用既有层级 walk**）。
+本文件回答 Goal 要求的"是否一定要新增机制"，结论是**两环不同**：环 3 有同文件内的既有先例可复用（**不需要新机制**，已按此落地）；环 2 原判定"需要一个新的类级可赋值性证明"，但 **root 后续实测已把它收窄**——两个 fixture 的父类→返回类型都是**一层直接**关系（`Base implements Renderer`），而门之后紧接的约 4758 行就已由 `resolve_class_source_dependency_read_raw` 解析出 `parent_read`（`ClassMemberFacts.interfaces`/`super_class` 可直接读），故环 2 的 **MVP 不需要新建层级 walk 共享件**，只需一层判据；传递闭包（两层以上，如 `Iterable` ← `List` ← `ArrayList`）留作后续，届时才需评估提取 `members.rs::subtype_of` 为共享件。详见 [recover-anonymous-supertype-return/design.md](../../../changes/recover-anonymous-supertype-return/design.md) 的决策 1/2。
 
 ## 环 3（根方法带参数）：不需要新机制——同文件内已有可复用先例
 
