@@ -56,6 +56,8 @@ fixture 以 `javac --release 8 -g:none` 冻结（README 第 5–9 行），故 *
 
 proposal.md 第 3 行写"还要越过**四道**本片未钉死的前置"，但其后只列出 3 项（站点扫描、根方法门、左端重拼）。root 复核确认**实际就是 3 道**——第 4 道（"父类 binary 名不含 `$`、可拼写"）不是本片新增前置，而是 `recover-anonymous-mixed-super-capture` 已存在且本片**必须继续遵守**的既有门（判据 3 第一条）。实现者按 3 道新增 + 1 道既有约束理解，不要因为找不到"第四道"而自行发明。
 
+> **判据 4 更正（2026-10-04，root 裁决）**：实测发现第二道既有约束 `anonymous_child_methods_incomplete`（facade.rs ~4905，源自 `4898159b`）——它要求 child 每方法 `scan.complete && allocations.is_empty()`。本片将其放宽为**与接口路径对齐**（保留 `scan.complete` + `complete_anonymous_method` 全量判据，仅去掉 `allocations.is_empty()`）。grandchild 路径（~4400）同款合取**不动**。配套的三类负例（不可拼写 owner 的分配、嵌套匿名分配、自引用分配）与对齐核实、corpus 双腿扫描约束见 root 2026-10-04 裁答与本片 tasks 1.5。
+
 ### 判据 5（root 2026-10-04 追加，**架构决定性**）：站点扫描是**两路径共享**的，放宽必须显式遏制在父类路径内
 
 root 读码确认的调用链（实现者不得假设两路径各自独立扫描）：
