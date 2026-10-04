@@ -46,6 +46,9 @@ CF-16 审计状态：**已证 finally 重复执行差距，调用型、静态字
 
 - **CF-17 — try-with-resources**：`jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryWithResources.java` 中唯一测试带 `@NotYetImplemented`，断言目标是 `try (` 且不出现显式 `close()`。本轮所查 `regions`/`finaly`/codegen 路径未找到专用的 try-with-resources pattern restoration，因此它是未完成目标，不是 JADX 已恢复能力。相邻负对照 `jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryCatchNoMoveExc.java` 断言普通 `if (closeable != null) { try { close(); } catch ... }` 仍保留显式结构；该文件计入 CF-18 的异常区域边界证据。
 
+  > **Jarde 侧已证差距（2026-10-04 root 巡查补记，与上面的 JADX 状态无关）**：Jarde 此后已交付 CF-17a/CF-17b 切片（`recover-twrcall-statement-bodies` 等，见 `tests/p3_twr_discarded_call.rs`），但 root 实测其**只覆盖 javac 9+ 的 TWR codegen**：同一 `TR.java` 用 javac 23 `--release 8` 编译 → `one()` 22 指令 / 7 异常表项 → **quotes=0、`try (TR local1 = …)` 正常恢复**；用**真 javac 8**（Corretto 1.8.0_432）编译 → `one()` **48 指令 / 16 异常表项**（含 `aconst_null; astore` 资源副本前置 + `ifnull` 守卫关闭序列）→ **整方法 `not recovered`、quotes=6**（响亮失败，非静默偏离）。**CF-17 的两族验收 fixture 均经结构指纹判定由 javac 9+ 编译**（`cf17-twrcatch-patrol/fixture/T2.class`：`instrs=107`/`aconst_null=0`；`try-with-resources/root-replay/core/original.class` 即 `TwrAudit`：`instrs=138`/`aconst_null=1`；两者都与 javac 23 重编逐值一致，真 javac 8 分别为 `211`/`4` 与 `204`/`4`），故该缺口对既有验收结构性不可见。且版本耦合**不限于 return-in-try 子形**（root 用探针证伪了自己的该假设：无 return-in-try 的 `noReturn` 真8/javac23 = 50/24 instrs，有 return 的 `withReturn` = 48/22，ratio 均 ~2.1）——耦合是 JDK 9 对 TWR codegen 的全局简化，故"挑一个子形修"不足以覆盖。TWR 是本会话发现的第三例"语料由 javac 9+ 编译、真实 Java 8 产物有盲区"缺口（前两例：DT-03 的 `getClass` null-check、EM-15 的返回值形写访问器），但**颗粒度最大**——DT-03 是一条 idiom 拼写差异（结构同构），TWR 是整个 region 的指令序列与异常表结构差异，**不是一条 idiom 能覆盖的**，须先独立取证其 region 证明能否扩展到 JDK 8 关闭序列。**尚未立 spec**（取证未做），取证与全部实验记录见 [twr-javac8-codegen-patrol](../java-syntax-2026-10-04/twr-javac8-codegen-patrol/README.md)。
+
+
 ## `@NotYetImplemented` 测试标记
 
 本范围共发现 12 个带 `@NotYetImplemented` 的测试方法/场景（注解只标记相应方法，不代表整份文件的其他测试都未实现）：
