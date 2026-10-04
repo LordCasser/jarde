@@ -34,12 +34,12 @@
 | --- | --- |
 | `enum_constants.rs:655` 的 doc 注释（"frozen by the Measure/Counted fixtures … deliberately keep this first slice narrow"） | **是**（唯一记载处） |
 | OpenSpec：`grep -rln "prove_static_assignment_suffix\|static_assignment_suffix\|StaticAssignment" openspec/changes/ openspec/specs/` | **无命中**（除本片自己的 design 提及） |
-| inventory 账本：`grep -rln "Measure\|Counted\|静态赋值后缀\|static assignment" openspec/evidence/jadx-feature-inventory-2026-09-27/*.md` | **无命中**——无任何 DT/CF/EM 单元承载"枚举用户静态初始化后缀"这一能力 |
+| inventory 账本：`grep -rln "Measure\|Counted\|静态赋值后缀\|static assignment" openspec/evidence/jadx-feature-inventory-2026-09-27/*.md` | 审计当时 **无命中**（无任何 DT/CF/EM 单元承载"枚举用户静态初始化后缀"）→ **已于同日补记到 DT-11**（见下"登记为独立债务"段） |
 | 其自身证据 [user-static-boundary/README.md](../../java-syntax-2026-09-22/enum-declaration/user-static-boundary/README.md) | **未记载名字依赖**——它逐处描述该 fixture（"Jarde already preserves the user `totalUnits` field, the body of `sumUnits()`"），但**没有**说明这些名字是被硬编码要求的，故读者会误以为能力对任意用户静态字段名成立 |
 
 引入提交为 `2ad29cee`（"feat: expand Java syntax recovery and differential evidence"，一次批量提交，未附带独立 change）。
 
-**风险与 `op` 同型**：能力边界只活在代码注释里，一旦该函数被重构或注释丢失，窄性就无人知晓；而账本与证据都不记载，未来巡查者可能把"枚举用户静态初始化已恢复"当成既成事实，或反过来重复实现一遍。**处置**：不立修复片（窄首片可接受；其回退按代码自述契约保持物理 `<clinit>` 呈现、不产出半投影，故非静默偏离——但如上所述 root 未实测该形），但**须补两处记载**——(1) 在其证据 README 追加名字依赖说明（**已于 2026-10-04 完成**，见 [user-static-boundary/README.md](../../java-syntax-2026-09-22/enum-declaration/user-static-boundary/README.md) 的 "Known limitation" 段）；(2) 在 inventory 账本相应单元（枚举域 DT-10 或新开单元）登记"仅覆盖 `Measure/Counted` 形，其它用户静态后缀形保持 `<clinit>` 呈现"——**此项仍未做**（DT-10 现记载为"空枚举、普通枚举常量"，未涉用户静态初始化后缀；该能力当前无任何账本单元承载，见上表）。这两项属文档债，(2) 可并入 `recover-fixture-behavior-guard-coverage` 或单独一次 docs 提交完成。
+**风险与 `op` 同型**：能力边界只活在代码注释里，一旦该函数被重构或注释丢失，窄性就无人知晓；而账本与证据都不记载，未来巡查者可能把"枚举用户静态初始化已恢复"当成既成事实，或反过来重复实现一遍。**处置**：不立修复片（窄首片可接受；其回退按代码自述契约保持物理 `<clinit>` 呈现、不产出半投影，故非静默偏离——但如上所述 root 未实测该形），但**须补两处记载**——(1) 在其证据 README 追加名字依赖说明（**已于 2026-10-04 完成**，见 [user-static-boundary/README.md](../../java-syntax-2026-09-22/enum-declaration/user-static-boundary/README.md) 的 "Known limitation" 段）；(2) 在 inventory 账本相应单元登记"仅覆盖 `Measure/Counted` 形，其它用户静态后缀形保持 `<clinit>` 呈现"——**已于 2026-10-04 完成**：该能力实测归属 **DT-11**（"带构造参数、字段及构造器的枚举"，`Measure` 正是此形）而非 DT-10，已在 [declarations-types.md 的 DT-11 行](../../jadx-feature-inventory-2026-09-27/declarations-types.md) 与 summary.md 的 DT-11 行各补一条交叉引用。两项文档债至此**全部结清**。
 
 ## 系统性教训（本审计的价值）
 
