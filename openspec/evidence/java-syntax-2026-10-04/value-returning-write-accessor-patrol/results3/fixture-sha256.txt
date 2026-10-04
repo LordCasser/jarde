@@ -1,0 +1,2 @@
+00576b2556f6491648dd86c1a1c25a4e9a4142217f041d5222202a9a3789cf7a  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/WA/WA.class
+f981b690710db5dbb5a39b50a9ec35180e43f59f3d053bac40e4300c4d2ec1a4  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/fixture/WA/WA$S.class

@@ -63,6 +63,22 @@ public class BA {
 >
 > **另有一次假零事故（诚实登记）**：root 首次跑本探针时 `cd /tmp/boolacc` 后用**相对**路径调 `target/debug/jarde-cli`，而该二进制此前已被 `rm -rf target` 清掉，得 exit 127、输出文件只有 104 字节错误信息；对其计 `@bytecode` 得 **0**，一度被读成"两个访问器都恢复了"。这正是 handoff「假零结果」纪律描述的情形，且是 root **在把该纪律写进 handoff 之后**又犯的一次。改用绝对路径 + 重建二进制 + 检查文件含 jarde 自述头后，才得到上表（quotes=3、int 形拒绝）。
 
+## 一之三、9 类型全量测量：**8/9 被拒**，泛化所需的每型事实已齐（root 2026-10-04，立项依据）
+
+[fixture/WA](fixture/WA/)（真 javac 8，内部类 9 个 setter 各写外部一个不同类型的私有字段）逐访问器实测（[results3/nine-type-measurement.txt](results3/nine-type-measurement.txt)，javap 原始记录 [results3/WA-javap-code.txt](results3/WA-javap-code.txt)、[results3/WA-javap-verbose.txt](results3/WA-javap-verbose.txt)）：
+
+| 字段类型 | 装载/返回 | 复制 | max_stack/locals | jarde |
+| --- | --- | --- | --- | --- |
+| `boolean` | `iload_1`+`ireturn` | `dup_x1` | 3/2 | **恢复** |
+| `int` `byte` `short` `char` | `iload_1`+`ireturn` | `dup_x1` | 3/2 | **拒** |
+| `float` | `fload_1`+`freturn` | `dup_x1` | 3/2 | **拒** |
+| 引用型（`String` 等） | `aload_1`+`areturn` | `dup_x1` | 3/2 | **拒** |
+| `long` | `lload_1`+`lreturn` | **`dup2_x1`** | **5/3** | **拒** |
+| `double` | `dload_1`+`dreturn` | **`dup2_x1`** | **5/3** | **拒** |
+
+BCI 布局九型完全一致（`0,1,2,3,6`）。**编译对照**：渲染源集 `javac --release 8` **exit 1、8 个错误全部 "缺少返回语句"**（8 个空 stub 各一个，[results3/WA-javac-errors.txt](results3/WA-javac-errors.txt)）——**整类不可编译**。**泛化的落点事实**：现有 `BooleanAccessorAssignment`（`build.rs:8755` 起）把描述符 `(L{owner};Z)Z`、opcode 表 `[0x2a,0x1b,0x5a,0xb5,0xac]`、BCI `[0,1,2,3,6]`、`max_stack<3`/`max_locals<2` 下限、`field.descriptor=="Z"` **全部硬编码为 boolean**；泛化 = 把这些常量改为"按描述符查的每型表"（单槽值型与 boolean 同 opcode 同栈形；float/引用型只换 load/return；long/double 换 `dup2_x1`+`l/dreturn` 且 stack/locals 下限放宽为 5/3）。**不引入新机制**——是把一个已验证的处理器从单类型放宽到封闭的类型集合，判据仍由描述符唯一决定。
+
+
 ## 二、拒绝是有意的，且渲染为空 stub（响亮，非静默）
 
 > **本节及第五节的"一律拒绝/从未被行使"表述已被第一节之二收窄**（boolean 写访问器经 `d09f5dea` 的 `BooleanAccessorAssignment` 通路**已恢复**，缺口实为该处理器的**字段类型限定为 `Z`**）。下文保留原始记录不改写，阅读时以第一节之二为准。

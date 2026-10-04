@@ -1,0 +1,23 @@
+### 9 类型写访问器全量测量（真 javac 8 / Corretto 1.8.0_432，fixture/WA）
+
+源形: 内部类 S 的 9 个 setter 各写外部一类私有字段（boolean/int/long/double/String/byte/short/char/float）。
+
+| accessor | 描述符 | max_stack/max_locals | opcode@BCI | jarde 呈现 |
+| --- | --- | --- | --- | --- |
+| access$002 (boolean) | (LWA;Z)Z | 3/2 | aload_0@0 iload_1@1 dup_x1@2 putfield@3 ireturn@6 | **恢复** arg0.flag=arg1; return arg1 |
+| access$102 (int) | (LWA;I)I | 3/2 | aload_0@0 iload_1@1 dup_x1@2 putfield@3 ireturn@6 | **拒** → 空 stub |
+| access$202 (long) | (LWA;J)J | 5/3 | aload_0@0 lload_1@1 dup2_x1@2 putfield@3 lreturn@6 | **拒** → 空 stub |
+| access$302 (double) | (LWA;D)D | 5/3 | aload_0@0 dload_1@1 dup2_x1@2 putfield@3 dreturn@6 | **拒** → 空 stub |
+| access$402 (String) | (LWA;Ljava/lang/String;)Ljava/lang/String; | 3/2 | aload_0@0 aload_1@1 dup_x1@2 putfield@3 areturn@6 | **拒** → 空 stub |
+| access$502 (byte) | (LWA;B)B | 3/2 | aload_0@0 iload_1@1 dup_x1@2 putfield@3 ireturn@6 | **拒** → 空 stub |
+| access$602 (short) | (LWA;S)S | 3/2 | aload_0@0 iload_1@1 dup_x1@2 putfield@3 ireturn@6 | **拒** → 空 stub |
+| access$702 (char) | (LWA;C)C | 3/2 | aload_0@0 iload_1@1 dup_x1@2 putfield@3 ireturn@6 | **拒** → 空 stub |
+| access$802 (float) | (LWA;F)F | 3/2 | aload_0@0 fload_1@1 dup_x1@2 putfield@3 freturn@6 | **拒** → 空 stub |
+
+**9 中 8 拒**。判别变量仅字段描述符（现有 build.rs:8848-8851 的 BooleanAccessorAssignment 硬编码 descriptor=="Z"）。
+
+**整类不可编译（编译对照）**: 渲染源集 javac --release 8 exit=1，**8 个错误，全部为 "缺少返回语句"**（8 个被拒访问器的空 stub 各一个；见 WA-javac-errors.txt，末行汇总 "8 个错误"）。
+
+**泛化所需的每型事实（供实现片直接用）**: 单槽值型 int/byte/short/char 复用 dup_x1+ireturn（与 boolean 同 opcode、同 BCI、同 stack/locals）；float 用 fload_1+freturn；引用型用 aload_1+areturn；long/double 用 lload_1/dload_1+dup2_x1+l/dreturn（stack 5/locals 3——现有门 code.max_stack<3 || code.max_locals<2 需放宽为按槽型判定）。
+
+记录: root 2026-10-04，二进制=主线合并态（docs-only 提交后未重建，代码等价）。
