@@ -3290,11 +3290,17 @@ impl Engine {
             Option<jarde_java::report::GenericConstructorCandidate>,
             Option<jarde_java::report::AnonymousAllocationScan>,
         )],
-        sites: &[(PhysicalMethodId, u32, u32, String)],
+        sites: &[(
+            PhysicalMethodId,
+            u32,
+            u32,
+            String,
+            jarde_java::report::AnonymousSiteShape,
+        )],
         root_nesting: &class_source::ClassSourceAssemblyContext,
         budget: &mut Budget,
     ) -> Result<()> {
-        let [(root_method, root_bci, constructor_bci, allocation_type)] = sites else {
+        let [(root_method, root_bci, constructor_bci, allocation_type, site_shape)] = sites else {
             return Err(Error::unsupported(
                 "anonymous_interface_site_not_unique",
                 "anonymous interface projection needs exactly one direct-return allocation",
@@ -3375,6 +3381,7 @@ impl Engine {
                 *root_bci,
                 *constructor_bci,
                 allocation_type,
+                *site_shape,
                 root_ast,
                 root_asts,
                 root_nesting,
@@ -3383,6 +3390,18 @@ impl Engine {
                 child_execution,
                 budget,
             );
+        }
+        // The explicit containment of design `recover-anonymous-local-decl-site`, criterion 5:
+        // the site scan is shared with the superclass projection, whose local-declaration
+        // initializer shape would otherwise activate this interface path with no evidence and no
+        // test of its own. Requiring the direct-return shape here states, as a design invariant,
+        // what the write-back gate only happened to refuse before. The superclass delegation
+        // above deliberately runs before this check — it accepts both shapes.
+        if *site_shape != jarde_java::report::AnonymousSiteShape::DirectReturn {
+            return Err(Error::unsupported(
+                "anonymous_interface_site_shape_unsupported",
+                "the interface projection keeps the direct-return site shape; a local-declaration initializer site belongs to the superclass projection only",
+            ));
         }
         let pool = class_constant_pool(&child_read.bytes, budget)?;
         let child_shells: Vec<_> = child_facts
@@ -3497,7 +3516,7 @@ impl Engine {
             let returned = jarde_java::report::class_source_anonymous_return_site(root_ast);
             let allocation_argument_bcis = returned
                 .as_ref()
-                .map(|(_, _, arguments)| arguments.as_slice());
+                .map(|(_, _, arguments, _)| arguments.as_slice());
             let matching_scan = root_asts
                 .iter()
                 .find(|(method, _, _, _)| method == root_method)
@@ -4613,6 +4632,7 @@ impl Engine {
         allocation_bci: u32,
         constructor_bci: u32,
         allocation_type: &str,
+        site_shape: jarde_java::report::AnonymousSiteShape,
         root_ast: &jarde_java::report::ClassSourceMethodAst,
         root_asts: &[(
             PhysicalMethodId,
@@ -4695,12 +4715,23 @@ impl Engine {
                 "the superclass is not a same-package, directly spellable source type",
             ));
         }
-        let expected_return = [b"()L".as_slice(), parent_name.as_slice(), b";".as_slice()].concat();
-        if root_method.descriptor.0 != expected_return {
-            return Err(Error::unsupported(
-                "anonymous_super_return_type_unproved",
-                "the root method return descriptor is not the exact superclass type",
-            ));
+        // Design `recover-anonymous-local-decl-site`, criterion 1: the direct-return shape keeps
+        // its exact gate — the root method returns the superclass, so the return descriptor IS
+        // the declared type and must match exactly. The local-declaration initializer shape
+        // replaces that information source: the declared type's spelling comes from the
+        // initializer's own `new` operand (`allocation_type`), and the root method is frequently
+        // `void` (the anchor's `main` is), so no return-descriptor check exists for it. Dropping
+        // the check for this one shape is not "ignoring the return type": the direct-return shape
+        // still refuses every descriptor but the superclass's own.
+        if site_shape == jarde_java::report::AnonymousSiteShape::DirectReturn {
+            let expected_return =
+                [b"()L".as_slice(), parent_name.as_slice(), b";".as_slice()].concat();
+            if root_method.descriptor.0 != expected_return {
+                return Err(Error::unsupported(
+                    "anonymous_super_return_type_unproved",
+                    "the root method return descriptor is not the exact superclass type",
+                ));
+            }
         }
         let Some((_parent_definition, parent_read)) = resolve_class_source_dependency_read_raw(
             content,
@@ -4873,13 +4904,21 @@ impl Engine {
             true,
             budget,
         )?;
+        // The child-body gate is the interface path's own gate verbatim (facade
+        // `project_class_source_anonymous_interface`): a complete same-run allocation scan per
+        // method plus `complete_anonymous_method`'s structured, fallback-free, declared bodies.
+        // The superseded `allocations.is_empty()` conjunct of the 2026-09-27 superclass slice
+        // was that slice's MVP guard — the interface path has presented allocation-bearing child
+        // bodies under exactly these remaining conjuncts since then. Root ruling 2026-10-04
+        // (recover-anonymous-local-decl-site): align on it rather than keep a second, stricter
+        // shape. An allocation the source set cannot spell still ends loud: either the projected
+        // body keeps a pool-form name (refused below) or the text does not compile.
         if !matches!(child.execution, ExecutionReport::Complete { .. })
             || child.methods.len() != child_facts.methods.len()
             || child_asts.len() != child_facts.methods.len()
-            || child_asts.iter().any(|(_, _, _, scan)| {
-                scan.as_ref()
-                    .is_none_or(|scan| !scan.complete || !scan.allocations.is_empty())
-            })
+            || child_asts
+                .iter()
+                .any(|(_, _, _, scan)| scan.as_ref().is_none_or(|scan| !scan.complete))
             || child.methods.iter().any(|method| {
                 !matches!(
                     method.outcome,
@@ -5033,12 +5072,12 @@ impl Engine {
                         "the site's constructor arguments do not match the proved parameter roles",
                     ));
                 }
-                let Some((_, _, argument_bcis)) =
+                let Some((_, _, argument_bcis, _)) =
                     jarde_java::report::class_source_anonymous_return_site(root_ast)
                 else {
                     return Err(Error::unsupported(
                         "anonymous_capture_argument_unproved",
-                        "the allocation has no same-run direct-return expression",
+                        "the allocation has no same-run site expression",
                     ));
                 };
                 if argument_bcis != site.argument_bcis.as_slice() {
@@ -5255,6 +5294,31 @@ impl Engine {
                 "the root emitter could not match the exact allocation node",
             ));
         };
+        // Design `recover-anonymous-local-decl-site`, criterion 2's boundary: the statements
+        // around a local-declaration initializer site are not themselves projected — the
+        // whole-method re-emission above carries them unchanged, and any quoted (fallback)
+        // statement in it would publish a text that mixes the projected declaration with
+        // quoted bytecode. Such a body falls back to the physical presentation whole. The
+        // direct-return shape cannot hold one (its body is only declaration statements and the
+        // one return), so its behavior is unchanged.
+        if site_shape == jarde_java::report::AnonymousSiteShape::LocalDeclInitializer
+            && body.text.contains("// @bytecode")
+        {
+            return Err(Error::unsupported(
+                "anonymous_decl_site_body_unproved",
+                "the statements around the initializer site are not wholly structured",
+            ));
+        }
+        // Criterion 3's second check: a pool-form name that survives into the projected text is
+        // a name the source set cannot spell — the structural-reflection guard of the
+        // nested-class-literal work applies to it a fortiori. The retype must have removed the
+        // anonymous child's own name from the declaration and the `new` operand alike.
+        if body.text.contains(allocation_type) {
+            return Err(Error::unsupported(
+                "anonymous_decl_site_retype_incomplete",
+                "the anonymous child's pool-form name survives the left-hand retype",
+            ));
+        }
         let Some(index) = root
             .methods
             .iter()
@@ -5735,7 +5799,13 @@ impl Engine {
             Option<jarde_java::report::GenericConstructorCandidate>,
             Option<jarde_java::report::AnonymousAllocationScan>,
         )>,
-        Vec<(PhysicalMethodId, u32, u32, String)>,
+        Vec<(
+            PhysicalMethodId,
+            u32,
+            u32,
+            String,
+            jarde_java::report::AnonymousSiteShape,
+        )>,
         class_source::ClassSourceAssemblyContext,
         Option<jarde_java::report::ProvedStaticMemberTarget>,
     )> {
@@ -8886,7 +8956,7 @@ impl Engine {
         for (member, ast, _, _) in method_asts.iter().filter(|_| {
             structure_complete && to_u64(methods.len()).ok() == Some(read.facts.method_count)
         }) {
-            let Some((origin_bcis, target, argument_bcis)) =
+            let Some((origin_bcis, target, argument_bcis, site_shape)) =
                 jarde_java::report::class_source_anonymous_return_site(ast)
             else {
                 continue;
@@ -8906,12 +8976,17 @@ impl Engine {
                     .is_some_and(|bci| origin_bcis.contains(&bci))
                 && site.argument_bcis == argument_bcis
             {
+                // The site's statement shape travels with it (design
+                // `recover-anonymous-local-decl-site`, criterion 5): the shared scan feeds two
+                // projections, and only the superclass one may consume the local-declaration
+                // initializer shape.
                 anonymous_return_sites.push((
                     member.clone(),
                     site.head_bci,
                     site.constructor_bci
                         .expect("verified allocation has constructor BCI"),
                     target,
+                    site_shape,
                 ));
             }
         }
@@ -10986,8 +11061,12 @@ fn proved_nested_anonymous_site<'a>(
     else {
         return Ok(None);
     };
-    let Some((origin_bcis, target, argument_bcis)) =
-        jarde_java::report::class_source_anonymous_return_site(ast)
+    let Some((
+        origin_bcis,
+        target,
+        argument_bcis,
+        jarde_java::report::AnonymousSiteShape::DirectReturn,
+    )) = jarde_java::report::class_source_anonymous_return_site(ast)
     else {
         return Ok(None);
     };

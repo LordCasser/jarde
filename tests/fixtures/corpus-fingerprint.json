@@ -5682,6 +5682,176 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-interface-basic/javap.txt"
     },
     {
+      "blake3": "addf1cef4c1c802905ace7fab092017c65358f5bdfb8ab8d670ff8e857cceab0",
+      "bytes": 621,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold$1.class"
+    },
+    {
+      "blake3": "506c78bc1bd223a8fe309af12112066b1b22d8d180769268faa65d23eb123908",
+      "bytes": 1082,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold.class"
+    },
+    {
+      "blake3": "ebe248b0442dac54c0723f8740d7e6a7bba7bfa87801e6a0a8e60094b32aa12b",
+      "bytes": 687,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold.java"
+    },
+    {
+      "blake3": "780d4e4dcfdfb05993797e9400708d85c59807b2e875779ceeb8ffd5595dce02",
+      "bytes": 2429,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-interface-hold/LocalDeclInterfaceHold.root.rendered.txt"
+    },
+    {
+      "blake3": "a590f88f2db0f62596728deff82b2efaf0278cee52f2ef7585c3c044b0842058",
+      "bytes": 594,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/Base.class"
+    },
+    {
+      "blake3": "75951b6cd94eaf438ce671e00d3f270d7ab5fb684a3df3b00138f77741583786",
+      "bytes": 260,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/Base.java"
+    },
+    {
+      "blake3": "a88809bb6febdec31b75af47fd335078b70db25574bb88bb96547c7cd433dcac",
+      "bytes": 513,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc$1$1.class"
+    },
+    {
+      "blake3": "2333c79f3995fc254b2c62ddf653b3f04658c6041f6901cdeab1825c93f70bfa",
+      "bytes": 460,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc$1.class"
+    },
+    {
+      "blake3": "325c383fad10c5690b339f453cccbe1ffde0c1245d169d7ceee732a9a8d83be7",
+      "bytes": 1173,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc.class"
+    },
+    {
+      "blake3": "287d57f6ef8b3ea1d8283cd6961bfb71c687200d871b845d324f6532e7aaa7fc",
+      "bytes": 1044,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-anon-alloc/NestedAnonAlloc.java"
+    },
+    {
+      "blake3": "c8a59ea2e9da965234315ebe0260fcf1cfb6941858794d91879be1db07981de4",
+      "bytes": 589,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/NestedSuperParentHold$1.class"
+    },
+    {
+      "blake3": "2efd5c611e1842b35bf3ca98ceb6b3ae7073952bfd7b07a89ba0d4a44d440ceb",
+      "bytes": 1153,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/NestedSuperParentHold.class"
+    },
+    {
+      "blake3": "96e5900022062fedd8fe48010ce55e713380f5b43ee11db014f9471f720e298c",
+      "bytes": 985,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/NestedSuperParentHold.java"
+    },
+    {
+      "blake3": "a709fc219c795c8a49124751cbc9444e12b98287f59019120c3ae80c32c3695e",
+      "bytes": 267,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/ParentCarrier$Holder.class"
+    },
+    {
+      "blake3": "06b7921880e69e70d82f16c3119d586806b2888c5c20486c225adf3488730225",
+      "bytes": 194,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/nested-super-parent/ParentCarrier.class"
+    },
+    {
+      "blake3": "e66831f21088b2f1f268b78dbea041638261a0f54f8b2f249cd717a438d33f7d",
+      "bytes": 591,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/Base.class"
+    },
+    {
+      "blake3": "68c0a86d7ebbd350f42106d65a8e115ac01f84ff8697ba1591c352ea1609ddfd",
+      "bytes": 257,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/Base.java"
+    },
+    {
+      "blake3": "b5805318203ad1dcb015acd030507e029444fd02743ce078e5125b2e0e3dcfcd",
+      "bytes": 546,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites$1.class"
+    },
+    {
+      "blake3": "2b8997c3b70015390f67b85e398be0b19f6de731a676d0cab67a98b4e5f77c20",
+      "bytes": 548,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites$2.class"
+    },
+    {
+      "blake3": "4f60fc835b927f5c72c71cde74e14d76d9f195e7e4367a60582f1ae9141d183a",
+      "bytes": 1252,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites.class"
+    },
+    {
+      "blake3": "8cf4869d06ebe75f747018890f2aa718e02551a1c8672bb11767d14c03ebd9cd",
+      "bytes": 1112,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/two-decl-sites/TwoDeclSites.java"
+    },
+    {
+      "blake3": "b9768725e6d3aef925a695418827fc628157ef36e2180fd0261e503308c46cf2",
+      "bytes": 600,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/Base.class"
+    },
+    {
+      "blake3": "56cd07207e8794d9fb04648b88de8673cdf9bb3c9479491eef7ca3bfda64f268",
+      "bytes": 266,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/Base.java"
+    },
+    {
+      "blake3": "923b8779d471d54f37ef6289b87cf1ca3a3e50f27eb69d68f4157c9a884a534b",
+      "bytes": 448,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/UnresolvableChildRead$1.class"
+    },
+    {
+      "blake3": "f7a58853327e54a454ee29b7549edbc218d4a1dd9c6294b294c30ae840def28a",
+      "bytes": 1185,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/UnresolvableChildRead.class"
+    },
+    {
+      "blake3": "14113ae94205999d31d619fb3c630175f1705afa12464ac37ba27af5afb1b5d8",
+      "bytes": 912,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unresolvable-child-read/UnresolvableChildRead.java"
+    },
+    {
+      "blake3": "84f50dc3fb474a308f7da3c06da9cf7568e35e9a892c0cbf5cd828c3f5215056",
+      "bytes": 600,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/Base.class"
+    },
+    {
+      "blake3": "70d9d2de6593b874108ea84579311c8089b7aeea13fddb6adef035fb9b3bef02",
+      "bytes": 266,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/Base.java"
+    },
+    {
+      "blake3": "f8f400534e7d6982a3505412e304e831e5c0e3b8e57d3057f4b0580d981e1969",
+      "bytes": 225,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/DeepCarrier$Mid$Leaf.class"
+    },
+    {
+      "blake3": "ee27820cab1c0b9ca009020b6714189364224203bef21dd4f06e6cfe14dd5fc0",
+      "bytes": 225,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/DeepCarrier$Mid.class"
+    },
+    {
+      "blake3": "2154c79164a21468d25c43189e3de9b4a0a098e1472eb7a0c4881de5b648763c",
+      "bytes": 184,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/DeepCarrier.class"
+    },
+    {
+      "blake3": "28e35f94802783d16ede2c1efa9eb3233fb819ebe09f6c39745d7c821b805553",
+      "bytes": 527,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc$1.class"
+    },
+    {
+      "blake3": "100a0d0b65a6214d0957b0b62801997a7f2851174c6d80016268b78d2ee9d0ba",
+      "bytes": 1185,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc.class"
+    },
+    {
+      "blake3": "a9d99107e8bb5162429918efdb93dc1a50649c46a8c013d50fe07cd5b1804869",
+      "bytes": 988,
+      "path": "tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc.java"
+    },
+    {
       "blake3": "e48c67e39f9571754dfa5065616fc54eec54da9b8f02dea374b022ab0469171e",
       "bytes": 849,
       "path": "tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase$1.class"
@@ -5715,6 +5885,31 @@
       "blake3": "be87f3d238a4548848fc818f872566372fd063082d5d5a2ad1a95f757c7f01c0",
       "bytes": 382,
       "path": "tests/fixtures/proved-java-structure/anonymous-member-base/run.sh"
+    },
+    {
+      "blake3": "cfef9dfd3ea056aac79bd244f11240cec8a853c83466b1fe70641c394a76f7e6",
+      "bytes": 904,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/AnonymousSuperArgs$1.class"
+    },
+    {
+      "blake3": "620bea5b568d2c7a5e588af0f943f8c73176a39b9139a9b39e932b94201842e9",
+      "bytes": 1704,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/AnonymousSuperArgs.class"
+    },
+    {
+      "blake3": "a7590852385bbe424df5677dc31a417847a41269f3ec28dd69846c84ef5a9080",
+      "bytes": 800,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/AnonymousSuperArgs.java"
+    },
+    {
+      "blake3": "5520bb74a8720770541cd3e3878dfdcb6e43b11a3ffa82d5a122b768cdbd43de",
+      "bytes": 781,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/Base.class"
+    },
+    {
+      "blake3": "d5cdb995fa42d9a0c3ecfaab6b264dcab9d1018dbaa5e150a696ce133fac5b76",
+      "bytes": 263,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/Base.java"
     },
     {
       "blake3": "289c31e8d066293da23b6da1bef00447f8b7a69599d0ae2004e58ccc8542d464",

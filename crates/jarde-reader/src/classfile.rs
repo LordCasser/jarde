@@ -11882,7 +11882,10 @@ mod tests {
             // capture-value anchor, three classes, twelve bodies) and the mixed-refusals
             // fixtures (two source families: two capture fields and two mixed sites, seven
             // classes, sixteen bodies) moved it again.
-            (482, 2233, 251, 1682, 8),
+            // The 2026-10-04 recover-anonymous-local-decl-site fixtures (the declaration-site
+            // anchor's `-g` control leg three, the interface-hold containment two, and the five
+            // refusal families twenty-one, twenty-six classes) moved it again.
+            (508, 2310, 251, 1689, 8),
             "fixture population changed: re-measure these counts"
         );
     }
