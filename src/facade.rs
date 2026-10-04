@@ -3376,6 +3376,7 @@ impl Engine {
                 *constructor_bci,
                 allocation_type,
                 root_ast,
+                root_asts,
                 root_nesting,
                 child_definition,
                 child_read,
@@ -3447,6 +3448,18 @@ impl Engine {
         let capture_descriptor = capture_proof
             .as_ref()
             .map(|_| child_facts.fields[0].descriptor.raw().0.clone());
+        // The val$ capture kind is proved for the superclass projection; the interface body's
+        // rewrite channels only know the double parameter and the enclosing instance, so any
+        // other proved capture kind keeps the physical class rather than a mis-typed rewrite.
+        if capture_descriptor.as_deref().is_some_and(|descriptor| {
+            descriptor != b"D"
+                && descriptor != [b"L".as_slice(), root_name.as_slice(), b";"].concat()
+        }) {
+            return Err(Error::unsupported(
+                "anonymous_child_capture_kind_unsupported",
+                "only the double and enclosing-instance capture kinds present here",
+            ));
+        }
         if child_facts.stopped_at.is_some()
             || child_read
                 .bytes
@@ -3801,6 +3814,7 @@ impl Engine {
                         field_descriptor: "D".to_owned(),
                         parameter_slot: *parameter_slot,
                         parameter_name: parameter_name.clone(),
+                        parameter_presented: Some(JavaType::Double),
                         constructor: capture_proof
                             .as_ref()
                             .expect("a captured read has a capture proof")
@@ -4600,6 +4614,12 @@ impl Engine {
         constructor_bci: u32,
         allocation_type: &str,
         root_ast: &jarde_java::report::ClassSourceMethodAst,
+        root_asts: &[(
+            PhysicalMethodId,
+            jarde_java::report::ClassSourceMethodAst,
+            Option<jarde_java::report::GenericConstructorCandidate>,
+            Option<jarde_java::report::AnonymousAllocationScan>,
+        )],
         root_nesting: &class_source::ClassSourceAssemblyContext,
         child_definition: PhysicalDefinitionId,
         child_read: ConfirmedRead,
@@ -4630,8 +4650,8 @@ impl Engine {
                 .bytes
                 .get(6..8)
                 .is_none_or(|v| u16::from_be_bytes([v[0], v[1]]) > 52)
-            || child_facts.field_count != 0
-            || !child_facts.fields.is_empty()
+            || (child_facts.field_count != 0 && anonymous_val_capture_field(&child_facts).is_none())
+            || child_facts.fields.len() as u64 != child_facts.field_count
             || child_facts.methods.len() as u64 != child_facts.method_count
             || child_facts.methods.is_empty()
             || child_facts
@@ -4650,7 +4670,7 @@ impl Engine {
         {
             return Err(Error::unsupported(
                 "anonymous_super_child_shape_unproved",
-                "the child is not a complete, field-free Java 8 direct superclass subclass",
+                "the child is not a complete Java 8 direct superclass subclass with at most one proved capture field",
             ));
         }
         let Some(parent_name) = child_facts
@@ -4710,6 +4730,41 @@ impl Engine {
                 "the direct superclass is not a source-accessible Java 8 non-final class",
             ));
         }
+        let constructors: Vec<_> = child_facts
+            .methods
+            .iter()
+            .filter(|m| m.name.raw().0 == b"<init>")
+            .collect();
+        if constructors.len() != 1 {
+            return Err(Error::unsupported(
+                "anonymous_child_constructor_unproved",
+                "the child does not have exactly one physical constructor",
+            ));
+        }
+        let constructor_descriptor = constructors[0].descriptor.raw().0.clone();
+        // One proved capture field beside real superclass arguments is the mixed form: the val$
+        // proof closes the child's field identity, single write and every read, and the role
+        // partition splits the constructor's physical parameters. Both travel to the owner
+        // census, the superclass descriptor match and the emission below.
+        let mixed = match anonymous_val_capture_field(&child_facts) {
+            Some((field_name, field_descriptor)) => Some(self.prove_anonymous_super_val_capture(
+                content,
+                environment,
+                &child_definition,
+                &child_facts,
+                &root_name,
+                &field_name,
+                &field_descriptor,
+                &constructor_descriptor,
+                &mut child_execution,
+                budget,
+            )?),
+            None => None,
+        };
+        let census_capture_descriptor = mixed.as_ref().map_or(
+            [b"L".as_slice(), root_name.as_slice(), b";"].concat(),
+            |mixed| mixed.field_descriptor.clone(),
+        );
         self.prove_anonymous_owner_xrefs(
             content,
             environment,
@@ -4719,14 +4774,9 @@ impl Engine {
             allocation_bci,
             constructor_bci,
             child_name.as_bytes(),
-            &[b"L".as_slice(), root_name.as_slice(), b";"].concat(),
-            child_facts
-                .methods
-                .iter()
-                .find(|m| m.name.raw().0 == b"<init>")
-                .map(|m| m.descriptor.raw().0.as_slice())
-                .unwrap_or_default(),
-            None,
+            &census_capture_descriptor,
+            &constructor_descriptor,
+            mixed.as_ref().map(|mixed| &mixed.proof),
             None,
             &mut child_execution,
             budget,
@@ -4775,24 +4825,17 @@ impl Engine {
                 "the child lacks the exact typed EnclosingMethod and anonymous self row",
             ));
         }
-        let constructors: Vec<_> = child_facts
-            .methods
-            .iter()
-            .filter(|m| m.name.raw().0 == b"<init>")
-            .collect();
-        if constructors.len() != 1 {
-            return Err(Error::unsupported(
-                "anonymous_child_constructor_unproved",
-                "the child does not have exactly one physical constructor",
-            ));
-        }
-        let constructor_descriptor = constructors[0].descriptor.raw().0.clone();
+        let expected_super_descriptor = mixed
+            .as_ref()
+            .map_or(constructor_descriptor.clone(), |mixed| {
+                mixed.partition.super_descriptor.clone()
+            });
         let matching_super_constructors: Vec<_> = parent_read
             .facts
             .methods
             .iter()
             .filter(|m| {
-                m.name.raw().0 == b"<init>" && m.descriptor.raw().0 == constructor_descriptor
+                m.name.raw().0 == b"<init>" && m.descriptor.raw().0 == expected_super_descriptor
             })
             .collect();
         if matching_super_constructors.len() != 1
@@ -4866,7 +4909,23 @@ impl Engine {
         };
         let constructor_initializer =
             jarde_java::report::class_source_anonymous_constructor_initializer_bci(constructor_ast);
-        let initializer_text = if let Some(proof) = proof {
+        let initializer_text = if let Some(mixed) = mixed.as_ref() {
+            // The whole constructor is the proved capture store plus the forwarded super call:
+            // javac rebuilds both from the anonymous expression, so nothing of it is presented.
+            if proof.is_some() || constructor_initializer.is_some() {
+                return Err(Error::unsupported(
+                    "anonymous_super_forwarding_unproved",
+                    "the mixed constructor must hide behind the proved parameter partition alone",
+                ));
+            }
+            if mixed.proof.constructor.descriptor.0 != constructor_descriptor {
+                return Err(Error::unsupported(
+                    "anonymous_super_forwarding_unproved",
+                    "the proved capture constructor is not the selected physical constructor",
+                ));
+            }
+            String::new()
+        } else if let Some(proof) = proof {
             let forwarded: Vec<u16> = proof.parameters.iter().map(|(slot, _)| *slot).collect();
             if proof.forwarded_parameter_slots != forwarded
                 || proof.init.class.as_deref() != std::str::from_utf8(&parent_name).ok()
@@ -4922,6 +4981,173 @@ impl Engine {
                 "the constructor lacks its same-run forwarding or initializer proof",
             ));
         };
+        // The captured constructor argument hides from the emitted argument list, and its root
+        // local replaces every proved capture read. The alignment closes, on the same-run scan
+        // and the same-run root recovery: exactly one verified site whose argument producers are
+        // the AST's own arguments, the trailing argument spelling one root local, and that local
+        // assigned exactly once — the effectively-final fact javac's own recapture needs.
+        let capture_site = match mixed.as_ref() {
+            Some(mixed) => {
+                let [capture_slot] = mixed.partition.capture_parameter_slots.as_slice() else {
+                    return Err(Error::unsupported(
+                        "anonymous_super_capture_unsupported",
+                        "only one capture parameter is projectable",
+                    ));
+                };
+                let Some((_, _, _, root_scan)) = root_asts
+                    .iter()
+                    .find(|(member, _, _, _)| member == root_method)
+                else {
+                    return Err(Error::unsupported(
+                        "anonymous_root_ast_missing",
+                        "the selected allocation has no retained root method AST",
+                    ));
+                };
+                let Some(root_scan) = root_scan.as_ref() else {
+                    return Err(Error::unsupported(
+                        "anonymous_root_ast_missing",
+                        "the root method has no complete allocation scan",
+                    ));
+                };
+                let sites: Vec<_> = root_scan
+                    .allocations
+                    .iter()
+                    .filter(|site| {
+                        site.member == *root_method
+                            && site.head_bci == allocation_bci
+                            && site.class == child_name
+                            && site.constructor_bci == Some(constructor_bci)
+                    })
+                    .collect();
+                let [site] = sites.as_slice() else {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the allocation has no unique same-run site proof",
+                    ));
+                };
+                if !site.verified
+                    || site.argument_bcis.len() != mixed.partition.super_parameter_slots.len() + 1
+                {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the site's constructor arguments do not match the proved parameter roles",
+                    ));
+                }
+                let Some((_, _, argument_bcis)) =
+                    jarde_java::report::class_source_anonymous_return_site(root_ast)
+                else {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the allocation has no same-run direct-return expression",
+                    ));
+                };
+                if argument_bcis != site.argument_bcis.as_slice() {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the same-run AST arguments and the verified site disagree",
+                    ));
+                }
+                let capture_argument_bci = site.argument_bcis[site.argument_bcis.len() - 1];
+                let Some((capture_name, capture_presented)) =
+                    jarde_java::report::class_source_anonymous_argument_local(
+                        root_ast,
+                        argument_bcis.len() - 1,
+                    )
+                else {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the captured constructor argument is not a root local reference",
+                    ));
+                };
+                // The argument's physical producer is one load of a local the root method writes
+                // exactly once; that is the fact that makes the recapture behavior-identical.
+                let analyzed = jarde_jvm::analyze_method_ir(
+                    content,
+                    &crate::ir::MethodAnalysisRequest {
+                        environment: environment.clone(),
+                        method: root_method.clone(),
+                        stages: MethodOperation::Analysis.stages().to_vec(),
+                    },
+                    budget,
+                )?;
+                merge_execution(&mut root.execution, analyzed.report().execution.clone());
+                if analyzed.report().method != *root_method
+                    || !matches!(
+                        analyzed.report().execution,
+                        ExecutionReport::Complete { .. }
+                    )
+                {
+                    return Err(Error::unsupported(
+                        "anonymous_super_capture_ir_incomplete",
+                        "the root method SSA analysis did not complete",
+                    ));
+                }
+                let (Some(root_code), Some(root_ssa)) = (analyzed.ir().code(), analyzed.ir().ssa())
+                else {
+                    return Err(Error::unsupported(
+                        "anonymous_super_capture_ir_incomplete",
+                        "the root method code or SSA is unavailable",
+                    ));
+                };
+                if root_code.stopped_at.is_some() {
+                    return Err(Error::unsupported(
+                        "anonymous_super_capture_ir_incomplete",
+                        "the root method code is incomplete",
+                    ));
+                }
+                let Some(argument_instruction) = root_ssa
+                    .blocks()
+                    .iter()
+                    .flat_map(|block| block.instructions())
+                    .find(|instruction| instruction.bci() == capture_argument_bci)
+                else {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the captured argument's producing instruction is absent",
+                    ));
+                };
+                if argument_instruction.writes().len() != 1 {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the captured argument is not a single-value producer",
+                    ));
+                };
+                let Some((jarde_jvm::method_ir::Slot::Local(slot), local_value)) =
+                    argument_instruction.reads().first()
+                else {
+                    return Err(Error::unsupported(
+                        "anonymous_capture_argument_unproved",
+                        "the captured argument does not load a root local",
+                    ));
+                };
+                // The name must denote one value: either the slot's single assignment (an
+                // effectively final local) or its never-written entry value (a parameter).
+                match (
+                    root_ssa.value(*local_value).def(),
+                    crate::member_inner::local_slot_single_write(root_ssa, *slot),
+                ) {
+                    (
+                        jarde_jvm::method_ir::Definition::Instruction { bci: write_bci, .. },
+                        Ok(Some(assigned_bci)),
+                    ) if *write_bci == assigned_bci => {}
+                    (jarde_jvm::method_ir::Definition::Entry { .. }, Ok(None)) => {}
+                    _ => {
+                        return Err(Error::unsupported(
+                            "anonymous_capture_argument_unproved",
+                            "the captured root local does not denote one value",
+                        ));
+                    }
+                };
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                Some(AnonymousSuperCaptureSite {
+                    argument_bci: capture_argument_bci,
+                    slot: *capture_slot,
+                    local_name: capture_name,
+                    presented: capture_presented,
+                })
+            }
+            None => None,
+        };
         let mut method_texts = Vec::new();
         for method in &child.methods {
             if method.item.identity == constructor_identity {
@@ -4936,7 +5162,58 @@ impl Engine {
                     "a child method has no same-run AST",
                 ));
             };
-            let body = jarde_java::report::emit_class_source_method_ast(ast, 4, budget).map_err(
+            let ast = match mixed.as_ref() {
+                Some(mixed) => {
+                    // Every proved read of the capture field spells the hidden allocation
+                    // argument's root local instead; the site proof below fixed that name.
+                    let site = capture_site
+                        .as_ref()
+                        .expect("a mixed capture carries its allocation-site proof");
+                    let reads: Vec<_> = mixed
+                        .proof
+                        .reads
+                        .iter()
+                        .filter(|read| read.method == method.item.identity)
+                        .map(|read| jarde_java::report::ProvedCapturedParameterRead {
+                            method: method.item.identity.clone(),
+                            read_bci: read.bci,
+                            field_owner: child_name.clone(),
+                            field_name: mixed.field_name.clone(),
+                            field_descriptor: String::from_utf8_lossy(&mixed.field_descriptor)
+                                .into_owned(),
+                            parameter_slot: site.slot,
+                            parameter_name: site.local_name.clone(),
+                            parameter_presented: site.presented.clone(),
+                            constructor: mixed.proof.constructor.clone(),
+                            constructor_write_bci: mixed.proof.write_bci,
+                        })
+                        .collect();
+                    if reads.is_empty() {
+                        (*ast).clone()
+                    } else {
+                        jarde_java::report::project_class_source_captured_parameter_reads(
+                            ast,
+                            &reads,
+                            budget,
+                        )
+                        .map_err(|stop| {
+                            enum_projection_stop_error(
+                                stop,
+                                "anonymous superclass capture projection",
+                                "anonymous_super_ir_missing",
+                            )
+                        })?
+                        .ok_or_else(|| {
+                            Error::unsupported(
+                                "anonymous_child_capture_ast_mismatch",
+                                "each proved capture read must map to exactly one matching field expression in the same-run AST",
+                            )
+                        })?
+                    }
+                }
+                None => (*ast).clone(),
+            };
+            let body = jarde_java::report::emit_class_source_method_ast(&ast, 4, budget).map_err(
                 |stop| {
                     enum_projection_stop_error(
                         stop,
@@ -4962,7 +5239,7 @@ impl Engine {
             allocation_type,
             &source_type,
             &format!("{initializer_text}{}", method_texts.concat()),
-            None,
+            capture_site.as_ref().map(|site| site.argument_bci),
             budget,
         )
         .map_err(|stop| {
@@ -5006,6 +5283,97 @@ impl Engine {
         root.methods[index].text = projected;
         root.usage = budget.usage();
         Ok(())
+    }
+
+    /// Prove the mixed-form capture: the val$ proof closes the child's field identity, single
+    /// constructor write and every read, and the role partition re-reads the constructor through
+    /// the same analysis entry the proof used. `MemberCaptureProof` deliberately does not carry
+    /// the partition; the projection needs it for the descriptor match and the site alignment.
+    #[allow(clippy::too_many_arguments)]
+    fn prove_anonymous_super_val_capture(
+        &self,
+        content: &[ArtifactSnapshot],
+        environment: &ResolutionEnvironment,
+        child_definition: &PhysicalDefinitionId,
+        child_facts: &jarde_reader::classfile::ClassMemberFacts,
+        outer_name: &[u8],
+        field_name: &[u8],
+        field_descriptor: &[u8],
+        constructor_descriptor: &[u8],
+        execution: &mut ExecutionReport,
+        budget: &mut Budget,
+    ) -> Result<AnonymousSuperValCapture> {
+        let Some(proof) = prove_anonymous_capture(
+            content,
+            environment,
+            child_definition,
+            outer_name,
+            child_facts,
+            execution,
+            budget,
+        )?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_super_capture_unproved",
+                "the child's synthetic capture does not close under the proved val shape",
+            ));
+        };
+        if proof.constructor.descriptor.0 != constructor_descriptor
+            || proof.field_name.as_bytes() != field_name
+        {
+            return Err(Error::unsupported(
+                "anonymous_super_capture_unproved",
+                "the proved capture does not bind the selected field and constructor",
+            ));
+        }
+        let constructor_id = PhysicalMethodId {
+            owner: child_definition.clone(),
+            name: JvmBytes(b"<init>".to_vec()),
+            descriptor: JvmBytes(constructor_descriptor.to_vec()),
+        };
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: constructor_id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != constructor_id
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return Err(Error::unsupported(
+                "anonymous_super_capture_ir_incomplete",
+                "the constructor SSA analysis did not complete",
+            ));
+        }
+        let partition = match crate::member_inner::partition_anonymous_val_constructor(
+            child_facts,
+            field_name,
+            field_descriptor,
+            analyzed.ir(),
+            constructor_descriptor,
+            budget,
+        )? {
+            Ok(partition) => partition,
+            Err(reason) => {
+                return Err(Error::unsupported(
+                    "anonymous_super_parameter_partition_unproved",
+                    reason,
+                ));
+            }
+        };
+        Ok(AnonymousSuperValCapture {
+            proof,
+            partition,
+            field_name: String::from_utf8_lossy(field_name).into_owned(),
+            field_descriptor: field_descriptor.to_vec(),
+        })
     }
 
     fn prove_anonymous_owner_xrefs(
@@ -17531,6 +17899,47 @@ fn prove_class_source_member_capture(
     }
 }
 
+/// The proved mixed-form facts one superclass projection carries beside its `MemberCaptureProof`:
+/// the constructor's parameter-role partition, the field identity, and the allocation-site local
+/// the capture value comes from. The proof contract deliberately does not carry the partition;
+/// the facade re-derives it from the constructor's own SSA (decision in the change's design).
+struct AnonymousSuperValCapture {
+    proof: class_source::MemberCaptureProof,
+    partition: crate::member_inner::AnonymousValConstructorPartition,
+    field_name: String,
+    field_descriptor: Vec<u8>,
+}
+
+/// The allocation-site facts the mixed emission needs: which argument hides, and which root
+/// local (assigned exactly once, effectively final) replaces every proved capture read.
+struct AnonymousSuperCaptureSite {
+    argument_bci: u32,
+    slot: u16,
+    local_name: String,
+    presented: Option<JavaType>,
+}
+
+/// The single-field javac local-capture shape the superclass projection may keep beside real
+/// constructor arguments: one synthetic final instance field with a `val$` name. Everything the
+/// shape only names is proved afterwards by the capture proof and the role partition.
+fn anonymous_val_capture_field(
+    child: &jarde_reader::classfile::ClassMemberFacts,
+) -> Option<(Vec<u8>, Vec<u8>)> {
+    if child.stopped_at.is_some()
+        || child.fields.len() != 1
+        || child.fields.len() as u64 != child.field_count
+    {
+        return None;
+    }
+    let field = &child.fields[0];
+    if field.access_flags & (0x1000 | 0x0010 | 0x0008) != 0x1010
+        || !field.name.raw().0.starts_with(b"val$")
+    {
+        return None;
+    }
+    Some((field.name.raw().0.clone(), field.descriptor.raw().0.clone()))
+}
+
 /// Prove one supported anonymous capture field. The caller has already proved owner and
 /// `EnclosingMethod` identity; this function proves only the field/constructor/SSA chain and never
 /// authorizes source projection by itself.
@@ -17590,6 +17999,8 @@ fn prove_anonymous_capture(
         .collect();
     let result = if child.fields[0].descriptor.raw().0 == b"D" {
         crate::member_inner::prove_anonymous_double_capture(child, &irs, budget)?
+    } else if child.fields[0].name.raw().0.starts_with(b"val$") {
+        crate::member_inner::prove_anonymous_val_capture(child, &irs, budget)?
     } else {
         crate::member_inner::prove_family_capture(outer_name, child, &irs, budget)?
     };

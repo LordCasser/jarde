@@ -1,0 +1,3 @@
+f89eb629c66cf9f43e1812c59d6c9c0c59bb7fb7328e9ae579006104cf82d17d  tests/fixtures/proved-java-structure/anonymous-super-mixed-direct/AnonymousSuperMixedDirect.class
+cf8d8b3ec41f778fee2c8ec5618d4e864ee6be3291d94d61dcdcf591e111744d  tests/fixtures/proved-java-structure/anonymous-super-mixed-direct/AnonymousSuperMixedDirect$1.class
+2b6bbab6632549388a40a94ffdb2368c7162c86f3753757b7bea7491d9d9501a  tests/fixtures/proved-java-structure/anonymous-super-mixed-direct/Base.class

@@ -1,0 +1,4 @@
+capture:one|arg:a|arg:b|base:x:1|capture:two|arg:c|arg:d|base:y:2
+x:1
+y:2
+capture:one|arg:a|arg:b|base:x:1|capture:two|arg:c|arg:d|base:y:2|one|two

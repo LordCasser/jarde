@@ -211,6 +211,8 @@ pub struct ProvedCapturedOuterRead {
 }
 
 /// A physical capture-field read replaced by a root method's exactly proved parameter value.
+/// The superclass projection admits the same handoff for a root **local**: the slot is then the
+/// local's own, and the presented type is the one the same-run allocation argument carried.
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProvedCapturedParameterRead {
@@ -221,6 +223,7 @@ pub struct ProvedCapturedParameterRead {
     pub field_descriptor: String,
     pub parameter_slot: u16,
     pub parameter_name: String,
+    pub parameter_presented: Option<Type>,
     pub constructor: PhysicalMethodId,
     pub constructor_write_bci: u32,
 }
@@ -559,6 +562,24 @@ pub fn class_source_anonymous_single_argument_bci(ast: &ClassSourceMethodAst) ->
     let (_, _, args) = class_source_direct_return_new(&ast.projection.program)?;
     let [argument] = args else { return None };
     Some(argument.origin.primary().bci())
+}
+
+/// The same-run source spelling of one direct-return allocation argument: the local name and the
+/// presented type when — and only when — the argument is exactly a local reference. The facade
+/// may hide the argument and re-spell the proved capture reads as this local only after the role
+/// partition and the allocation-site scan have closed the value; any other expression shape
+/// returns `None` and keeps the physical presentation.
+#[doc(hidden)]
+pub fn class_source_anonymous_argument_local(
+    ast: &ClassSourceMethodAst,
+    index: usize,
+) -> Option<(String, Option<Type>)> {
+    let (_, _, args) = class_source_direct_return_new(&ast.projection.program)?;
+    let argument = args.get(index)?;
+    let crate::ast::ExprKind::Local(name) = &argument.kind else {
+        return None;
+    };
+    Some((name.clone(), argument.presented.clone()))
 }
 
 /// The same-run spelling for the sole physical parameter at `slot`. This bounded helper is used
@@ -1226,7 +1247,7 @@ fn project_captured_expr(
                 CapturedReadReplacement::Parameter(read) => {
                     *matched.entry(read.read_bci).or_default() += 1;
                     expr.kind = ExprKind::Local(read.parameter_name.clone());
-                    expr.presented = Some(Type::Double);
+                    expr.presented = read.parameter_presented.clone();
                 }
             }
             return Ok(());
@@ -6573,12 +6594,23 @@ fn program_node_count(program: &build::Program) -> u64 {
 }
 
 fn class_source_direct_return_new(program: &build::Program) -> Option<(Vec<u32>, &str, &[Expr])> {
-    if program.stmts.len() != 1 || program.statements != 1 || program.ragged {
+    // The method returns one anonymous allocation directly. A prologue of local declarations may
+    // precede the return — javac still evaluates every statement in order, and the projected
+    // `new Super(args) { ... }` replays them unchanged — but no other statement shape: the
+    // retained body is exactly local declarations and the one return.
+    if program.ragged || program.statements != program.stmts.len() {
+        return None;
+    }
+    let (last, leading) = program.stmts.split_last()?;
+    if !leading
+        .iter()
+        .all(|statement| matches!(statement.kind, StmtKind::Declare { .. }))
+    {
         return None;
     }
     let StmtKind::Return {
         value: Some(expression),
-    } = &program.stmts[0].kind
+    } = &last.kind
     else {
         return None;
     };
