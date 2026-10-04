@@ -6,8 +6,8 @@
 
 缺陷跨**两个不同函数**，二者当前都硬编码 `op`：
 
-1. **构造器边证明**（`facade.rs`，`prove_enum_constructor_candidate` 一带，约 14094）：核对构造器 BCI 6 是 `putfield`，其 `EnumCodeReference::Field { owner, name, descriptor }` 的 `name == b"op"`。**这个 `name` 就是已证字段名**（构造器真实写入的目标），但被 `matches!` 消费后**丢弃**——承载结果的 `PendingEnumConstructorEdge`（约 13839）只有 `caller`/`call_bci`/`target_owner`/`target_descriptor` 四项，**不携带字段身份**。
-2. **常量体组证明与发射**（`prove_enum_constant_body_group`，约 15495；发射文本约 15928）：另起三处 `== b"op"` 检查（约 15906 查源字段、15920 唯一性计数、15923 再核对），并在 15928 **字面发射** `"    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n"`。此函数的输入是 `relations: &[PendingEnumConstantBodyRelation]`（约 13812，含 `field_index`/`allocation_bci`/`constructor_bci`/`constructor_descriptor`/`subclass`/`group_shape` 等），**当前不含被写入字段的名字或 index**。
+1. **构造器边证明**（`facade.rs`，`prove_enum_constructor_candidate` 一带，约 14197）：核对构造器 BCI 6 是 `putfield`，其 `EnumCodeReference::Field { owner, name, descriptor }` 的 `name == b"op"`。**这个 `name` 就是已证字段名**（构造器真实写入的目标），但被 `matches!` 消费后**丢弃**——承载结果的 `PendingEnumConstructorEdge`（约 13942）只有 `caller`/`call_bci`/`target_owner`/`target_descriptor` 四项，**不携带字段身份**。
+2. **常量体组证明与发射**（`prove_enum_constant_body_group`，约 15598；发射文本约 16031）：另起三处 `== b"op"` 检查（约 16009 查源字段、16023 唯一性计数、16026 再核对），并在 16031 **字面发射** `"    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n"`。此函数的输入是 `relations: &[PendingEnumConstantBodyRelation]`（约 13915，含 `field_index`/`allocation_bci`/`constructor_bci`/`constructor_descriptor`/`subclass`/`group_shape` 等），**当前不含被写入字段的名字或 index**。
 
 **故数据通路缺口是跨函数的**：字段身份的权威来源在 (1) 的 `putfield` 目标，而发射在 (2)，中间没有把它传过去。
 
@@ -15,9 +15,9 @@
 
 1. **权威来源唯一：构造器字节码里 `putfield` 的目标字段。** 不用源字段表里的"某个 String 字段"猜测，不用常量名推导，不回退任何字面量。(1) 处 `matches!` 已绑定该 `name`（及可得的 field 常量池 index）——把它**保留**下来而非丢弃。
 2. **优先传 `field_index`（u64，指向 `source_fields`/`field_headers` 的已证位置）而非裸名字字节**，理由：发射处 (2) 的三处检查本就在 `source_fields` 上按属性筛选（描述符 `Ljava/lang/String;`、owner==本枚举、非 static/synthetic/隐式枚举成员、`ACC_PRIVATE`、有 `declaration`、无 markers）——若传 index，可直接定位到那个已证字段并复用其 `declaration.name`，避免"按名字再查一遍"引入的第二套匹配逻辑（本会话已两次因"两套逻辑漂移"被迫加同形判据，见 `bridge_superclass_contract_generic` 的教训）。**若取证发现 index 通路不可得**（例如 (1) 与 (2) 的字段表非同一序号空间），退回传已证名字字节，但须在报告中说明为何 index 不可用。
-3. **发射文本用已证名拼写**：15928 的 `this.op` 改为 `this.<已证字段名>`（从定位到的 `ClassSourceField.declaration.name` 取，与其余成员呈现同源）。**不得**继续硬写 `op`，也不得用常量名或类名推导。
-4. **唯一性判据改为"被该构造器 `putfield` 写入的 String 字段恰一个"**：15920 的 `filter(name == b"op").count() != 1` 改为按已证 field 身份计数；其余属性检查逐字保留。15923 的 `op_field.item.name.raw().0 != b"op"` 改为核对"定位到的字段就是已证 `putfield` 目标"。
-5. **错误文本去 `op` 化**：14094 的 `"the String constructor does not preserve Enum and op semantics"` 改为不含固定名（如 `"the String constructor does not preserve Enum and the assigned field semantics"`）。**该文本可能出现在既有测试断言里**——须核实并如实更新断言，不得为让旧断言变绿而削弱判据（与 `recover-bridge-superclass-header-precondition` 更新 BR$StrBox 断言同一纪律）。
+3. **发射文本用已证名拼写**：16031 的 `this.op` 改为 `this.<已证字段名>`（从定位到的 `ClassSourceField.declaration.name` 取，与其余成员呈现同源）。**不得**继续硬写 `op`，也不得用常量名或类名推导。
+4. **唯一性判据改为"被该构造器 `putfield` 写入的 String 字段恰一个"**：16023 的 `filter(name == b"op").count() != 1` 改为按已证 field 身份计数；其余属性检查逐字保留。16026 的 `op_field.item.name.raw().0 != b"op"` 改为核对"定位到的字段就是已证 `putfield` 目标"。
+5. **错误文本去 `op` 化**：14197 的 `"the String constructor does not preserve Enum and op semantics"` 改为不含固定名（如 `"the String constructor does not preserve Enum and the assigned field semantics"`）。**该文本可能出现在既有测试断言里**——须核实并如实更新断言，不得为让旧断言变绿而削弱判据（与 `recover-bridge-superclass-header-precondition` 更新 BR$StrBox 断言同一纪律）。
 
 ## Goals / Non-Goals
 

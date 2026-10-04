@@ -57,13 +57,13 @@ javac --release 8 -Xlint:-options -d o2 demo/IOps.java demo/C2.java
 
 | 落点 | 内容 |
 | --- | --- |
-| `src/facade.rs:14094` | 构造器 BCI 6 的 `putfield` 必须 `name == b"op"`，否则 `Err("the String constructor does not preserve Enum and op semantics")` |
-| `src/facade.rs:15906` | 查找源字段时要求 `field.item.name.raw().0 == b"op"` |
-| `src/facade.rs:15920` | 唯一性检查按 `== b"op"` 计数 |
-| `src/facade.rs:15923` | 再核对 `op_field.item.name.raw().0 != b"op"` |
-| `src/facade.rs:15928` | **发射文本字面量** `"    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n"` |
+| `src/facade.rs:14197` | 构造器 BCI 6 的 `putfield` 必须 `name == b"op"`，否则 `Err("the String constructor does not preserve Enum and op semantics")` |
+| `src/facade.rs:16009` | 查找源字段时要求 `field.item.name.raw().0 == b"op"` |
+| `src/facade.rs:16023` | 唯一性检查按 `== b"op"` 计数 |
+| `src/facade.rs:16026` | 再核对 `op_field.item.name.raw().0 != b"op"` |
+| `src/facade.rs:16031` | **发射文本字面量** `"    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n"` |
 
-**数据通路缺口**：14094 处 `EnumCodeReference::Field { owner, name, descriptor }` 的 `name` **就是已证字段名**（它是构造器字节码里真实 `putfield` 的目标），但被 `matches!` 消费后即丢弃——承载证明结果的 `PendingEnumConstructorEdge`（`facade.rs:13839`）只有 `caller` / `call_bci` / `target_owner` / `target_descriptor` 四项，**不携带字段名**。故修复须打通"已证名 → 发射处"的通路，并把 15928 的 `this.op` 改为 `this.<已证名>`。
+**数据通路缺口**：14197 处 `EnumCodeReference::Field { owner, name, descriptor }` 的 `name` **就是已证字段名**（它是构造器字节码里真实 `putfield` 的目标），但被 `matches!` 消费后即丢弃——承载证明结果的 `PendingEnumConstructorEdge`（`facade.rs:13942`）只有 `caller` / `call_bci` / `target_owner` / `target_descriptor` 四项，**不携带字段名**。故修复须打通"已证名 → 发射处"的通路，并把 16031 的 `this.op` 改为 `this.<已证名>`。
 
 **spec 无字段名条件**：root 实测 `grep -niE "op\b|字段名|field name"` 于该 change 的 `specs/java8-recovery/spec.md` **无命中**；其 Requirement 原文的能力边界是"每个常量只带一个可无损拼写的 ASCII 字符串字面量源实参"。故实现**窄于其自身 spec**。
 
