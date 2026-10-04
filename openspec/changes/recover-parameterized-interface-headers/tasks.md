@@ -1,6 +1,6 @@
 ## 1. 取证与基线
 
-- [ ] 1.1 重放固定 BR 家族（SHA 核对）：读 `src/class_source.rs` 的三道门（6360 总门不看 interfaces、6422–6428 `direct_parent_candidate` 分支互斥拒绝接口、6437–6451 else 分支要求全部接口无实参）与既有拼写循环（6504–6511，已对 `parsed.interfaces` 逐项 `spell_ordinary_signature_type`）；读 `src/facade.rs:13013` 的 `prove_direct_generic_superclass_parent` 确认其 13042 行 `ACC_INTERFACE → false`（不可复用）与 5747 的注入方式；确认 reader 的 `prove_class_signature_erasure`（signature.rs:263，315–340 已逐个校验 interfaces 擦除）无需扩展；记录 `BR$Impl`（`implements Comparable` 裸）基线类头文本与 bridge 片前置的现拒绝态。
+- [ ] 1.1 重放固定 BR 家族（SHA 核对）：读 `src/class_source.rs` 的三道门（6372 总门不看 interfaces、6435–6441 `direct_parent_candidate` 分支互斥拒绝接口、6455–6461 else 分支要求全部接口无实参）与既有拼写循环（6516–6519，已对 `parsed.interfaces` 逐项 `spell_ordinary_signature_type`，交 `class_declaration_with_types` 6526）；读 `src/facade.rs:13736` 的 `prove_direct_generic_superclass_parent` 确认其 13765 行 `ACC_INTERFACE → false`（不可复用）与 5747 的注入方式；确认 reader 的 `prove_class_signature_erasure`（signature.rs:263，315–340 已逐个校验 interfaces 擦除）无需扩展；记录 `BR$Impl`（`implements Comparable` 裸）基线类头文本与 bridge 片前置的现拒绝态。
 - [ ] 1.2 冻结至少四个变体/负例：单接口参数化（`implements Comparable<Impl>`，正例）、多接口部分可证（`implements A<X>, B`）、接口不可解析（保留裸类型 + **桥保持可见**）、arity/擦除不符（拒绝）；各自 `java -Xverify:all` 通过并记录实现前后类头文本与桥可见性。
 
 ## 2. 类头接口投影
