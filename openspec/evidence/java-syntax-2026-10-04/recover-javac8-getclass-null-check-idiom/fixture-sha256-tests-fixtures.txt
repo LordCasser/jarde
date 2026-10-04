@@ -1,0 +1,11 @@
+fd9ea9099c530d9f5dd7996af122d8fdb32d27bc7edf7d3e2555122a9439995c  tests/fixtures/recover-javac8-getclass-null-check-idiom/g/G.class
+821edd0163f13bbc94b55fc0e78d5a540d2ac3888bdcaec3df42020c4f2a534d  tests/fixtures/recover-javac8-getclass-null-check-idiom/g/G.java
+804cacecaa22a087dcf6c81d41a9588f5e991455dd8fef83079842ba78a8d234  tests/fixtures/recover-javac8-getclass-null-check-idiom/g/G$In.class
+e75762f0a48f6e04f83eb7f15cd591bd5e4cdd61c65791e3cbef198a99dd8c82  tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x.class
+6d42190636fcb978044ddc9eb021de784a2bcddee659800c0974e6ee23d5d671  tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x.java
+7d7bdb9afdb2d9fa3dba5d70033402f47fca0da53734a6fa1e3f8a6ef7e9f82b  tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x$Inner.class
+f138f6933fbddd1461ff25d52e4be99944e10e44f31ecc3ab087fcfa6b27f85e  tests/fixtures/recover-javac8-getclass-null-check-idiom/n1x/N1x$Stat.class
+7b1200bc200f20ce736696635a2689740696871a244751dd12e88f8c97ea5b7f  tests/fixtures/recover-javac8-getclass-null-check-idiom/README.md
+13d881fc9893306b6491790aa45263e9e092921c07b976aa4027a4d488fa1b66  tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap.class
+b723556d557d5a77fea59c02eba2e2e73484437309981fc3aad6738ac13fc9da  tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap.java
+10b66161cf53953f772016c384e8a27eaa6caa2be92942822a06b467863c38b1  tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap$Seed.class

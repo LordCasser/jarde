@@ -1,0 +1,58 @@
+# 负例 C（G.java，真 javac 8）——修复前后对照与三方验证
+
+## 呈现对照（class-source，--class G）
+
+修复前（baseline 923349e2 二进制）：explicit/plain 中 o.new In() 整方法 not recovered，getClass 语句被引注；
+修复后：explicit 保留用户语句 arg1.getClass(); 且折叠 return arg1.new In();，plain 同样折叠，In 成员折叠进根文本。
+（前/后全文转录见 prefix/postfix 记录；下为修复后全文）
+
+```java
+// jarde: presentation of `G` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class G extends java.lang.Object {
+    public G() {
+        // @method <init>()V
+        // @declaration a constructor of `G`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    G$In explicit(G arg1) {
+        // @method explicit(LG;)LG$In;
+        // @declaration an instance method of `G`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        arg1.getClass();
+        return arg1.new In();
+    }
+
+    G$In plain(G arg1) {
+        // @method plain(LG;)LG$In;
+        // @declaration an instance method of `G`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1.new In();
+    }
+
+    class In extends java.lang.Object {
+        In() {
+            super();
+            return;
+        }
+
+        int t() {
+            // @method t()I
+            // @declaration an instance method of `G$In`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return 1;
+        }
+    }
+}
+```
+
+## 双编译器腿验证（sibling-unit 重编集合：G$In 顶层声明 + Driver）
+- javac（真 8）-cp 原 jar：exit 0；java -Xverify:all → explicit->1 / plain->1（与原 class 一致）
+- javac 23 --release 8：exit 0；java -Xverify:all → explicit->1 / plain->1（与原 class 一致）
+
+## javac 23 腿的同形对照
+G 源码以 javac 23 --release 8 编译后（null 检查为 requireNonNull），baseline 与 fixed 二进制呈现逐字相同——
+证明本片未改变窄通道的既有呈现约定（签名保持池形 G$In），也没有改变 javac 23 腿的任何行为。

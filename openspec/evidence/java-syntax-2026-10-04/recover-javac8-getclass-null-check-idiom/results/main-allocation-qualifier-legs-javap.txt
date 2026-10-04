@@ -1,0 +1,64 @@
+# N1.main 的分配限定符形 —— 两腿字节码逐条对照（本片停手报告的核心证据）
+
+root 在 spec/design/tasks 中的记载是『两处的 null 检查均为 dup; aload_1; dup; invokevirtual Object.getClass:()Class; pop』。
+实测：该说法只对参数限定符形（N1$Stat.use）成立；分配限定符形（N1.main 的 new N1().new Inner(3)）两腿发射的形状不同：
+
+## javac 23 --release 8（fam.jar 冻结类，本仓库既有验收锚所用）
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #27                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: invokestatic  #33                 // Method useStatic:()I
+       6: invokevirtual #36                 // Method java/io/PrintStream.println:(I)V
+       9: getstatic     #27                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      12: new           #13                 // class N1$Inner
+      15: dup
+      16: new           #2                  // class N1
+      19: dup
+      20: invokespecial #18                 // Method "<init>":()V
+      23: iconst_3
+      24: invokespecial #15                 // Method N1$Inner."<init>":(LN1;I)V
+      27: invokevirtual #23                 // Method N1$Inner.total:()I
+      30: invokevirtual #36                 // Method java/io/PrintStream.println:(I)V
+      33: getstatic     #27                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      36: new           #42                 // class N1$Stat
+      39: dup
+      40: invokespecial #44                 // Method N1$Stat."<init>":()V
+      43: new           #2                  // class N1
+
+## 真 javac 8（Corretto 1.8.0_432，本片冻结的 N1 重编类）
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: invokestatic  #10                 // Method useStatic:()I
+       6: invokevirtual #11                 // Method java/io/PrintStream.println:(I)V
+       9: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      12: new           #3                  // class N1$Inner
+      15: dup
+      16: new           #5                  // class N1
+      19: dup
+      20: invokespecial #6                  // Method "<init>":()V
+      23: dup
+      24: invokevirtual #12                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      27: pop
+      28: iconst_3
+      29: invokespecial #4                  // Method N1$Inner."<init>":(LN1;I)V
+      32: invokevirtual #8                  // Method N1$Inner.total:()I
+      35: invokevirtual #11                 // Method java/io/PrintStream.println:(I)V
+      38: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      41: new           #13                 // class N1$Stat
+      44: dup
+      45: invokespecial #14                 // Method N1$Stat."<init>":()V
+      48: new           #5                  // class N1
+      51: dup
+      52: invokespecial #6                  // Method "<init>":()V
+      55: invokevirtual #15                 // Method N1$Stat.use:(LN1;)I
+
+## 差异
+- javac 23：嵌套构造 N1.<init>（BCI 20）之后**直接** iconst_3 → N1$Inner.<init> —— 无任何 null 检查（新分配的外层可证非空）。
+- 真 javac 8：同一位置插入 dup; invokevirtual Object.getClass; pop（BCI 23-27）——检查落在嵌套构造之后、成员构造器之前，
+  即 init.rs 分配限定符臂的 member_ordinary_arguments 实参窗口（必须全部是构造器实参的值依赖）内。
+- 该窗口内出现任何非实参依赖指令都按既有门 jre_new_member_order 拒绝（『the instruction at BCI … is not an ordinary argument dependency』），
+  与 null 检查拼写无关 —— 即使 requireNonNull 形出现在该位置也同样拒绝。
+- 因此主锚（N1 族 18→0、含 new N1().new Inner(3)）不能由本片两处拼写判据的修改达成：
+  拼写判据（init.rs verify_member 臂、member_inner.rs prove_family_call_site 臂）只服务参数限定符形；
+  分配限定符形需要新的机制扩展（嵌套位置接受被丢弃的 null 检查舞蹈 + member_inner.rs 的 6 条窗口新形），超出本片『不改机制』的设计前提。

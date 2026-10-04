@@ -1,0 +1,14 @@
+note: self-check negative absent on this tree: tests/fixtures/anonymous-cross-class-use/Main.class
+self-check OK: 8/8 requireNonNull positives hit, 4/4 getClass positives hit, 1 user-level-getClass negatives counted 0
+== census: tests/fixtures
+   classes scanned: 545  errs: 0
+   requireNonNull: 8 classes
+     - p3-lambda-adaptation/v8/BoundNullLambdaAdaptationProbe.class
+     - proved-java-structure/anonymous-member-base/AnonymousMemberBase$1.class
+     - proved-java-structure/anonymous-member-base/AnonymousMemberBase$2.class
+     - proved-java-structure/anonymous-member-base/AnonymousMemberBase.class
+     - recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.class
+     - recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.class
+     - recover-generic-enclosing-member-call-sites/matrix/UsePlain.class
+     - recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class
+   getClass: 0 classes

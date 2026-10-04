@@ -1,0 +1,16 @@
+# javac 9+ 零回退：8 个 requireNonNull 形 fixture 类渲染逐字节不变
+
+（整库 545 类基线/修复双二进制逐类渲染对比：corpus_dual_leg_scan.py 输出 545 identical / 0 differing；
+  本表为 8 个携带 requireNonNull 惯用法类的显式记录。内部名取 list-classes 的 this_class，
+  jar 条目按该内部名书写；此前几版空渲染均为脚本 bug，按脚手架纪律重跑。）
+
+- IDENTICAL tests/fixtures/p3-lambda-adaptation/v8/BoundNullLambdaAdaptationProbe.class as BoundNullLambdaAdaptationProbe (post-fix sha256[:16]=d92f2219fec1370d, 1985 bytes)
+- IDENTICAL tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase.class as AnonymousMemberBase (post-fix sha256[:16]=0e6bb1bac5f9c1a1, 5637 bytes)
+- IDENTICAL tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase$1.class as AnonymousMemberBase$1 (post-fix sha256[:16]=cbb43d3dd20b3890, 1401 bytes)
+- IDENTICAL tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase$2.class as AnonymousMemberBase$2 (post-fix sha256[:16]=9f746df0530fd855, 1406 bytes)
+- IDENTICAL tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.class as matrix/UseGenericObject (post-fix sha256[:16]=25b0e7c36f4de78c, 2139 bytes)
+- IDENTICAL tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.class as matrix/UseGenericTyped (post-fix sha256[:16]=4264eb8e727eea91, 2158 bytes)
+- IDENTICAL tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlain.class as matrix/UsePlain (post-fix sha256[:16]=d1b63faadc4dbac9, 2096 bytes)
+- IDENTICAL tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class as matrix/UsePlainRaw (post-fix sha256[:16]=cd3ba5234f579c3d, 1899 bytes)
+
+ALL IDENTICAL AND NON-EMPTY: True (empty renders: 0)
