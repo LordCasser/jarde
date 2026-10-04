@@ -10,7 +10,9 @@
 - `code.max_stack < 3 || code.max_locals < 2` 下限
 - `field.descriptor != "Z"` 即拒（build.rs:8848-8851）
 
-**相邻但不相干的姊妹路径（勿动、勿混）**：`LongAssignmentResult::prove`（`build.rs:8559`）也认 `dup2_x1`（`OPCODE_LLOAD_1=0x1f`/`OPCODE_DUP2_X1=0x5d`/`OPCODE_LRETURN=0xad`，8577-8582），但其判据 `has_receiver && parameters == 3`（8606-8607）表明它服务的是**实例方法**的 `this.f = v; return v;` 赋值表达式（普通方法体内的 `(o.f = v)` 消费形），**不是** static `access$NNN`。实测旁证：`WA` 的 static `access$202`（long）被拒（"BCI 2 not part of the provable subset"），因为 static 形 `has_receiver=false` 直接不匹配该路径；而 boolean 的 static `access$002` 由 `BooleanAccessorAssignment` 恢复——该 wrapper 在 8915 附近**手工构造** `LongAssignmentResult`（绕过 prove 的实例门）。**即 static 写访问器路径只有 boolean wrapper 一条**，本片泛化的就是它；`LongAssignmentResult::prove` 的实例形判据**逐字不动**。
+**相邻但不相干的姊妹路径（勿动、勿混）**
+
+> **root 勘误（2026-10-05，实现者发现）**：上方"消费链零改动"的预审计结论**漏记了一道门**——`assignment_result_statement`（build.rs:22538 附近）持有 `evidence.descriptor != if boolean_accessor {"Z"} else {"J"}` 的描述符检查（两调用点 18390/18401），非 Z/J 描述符必被它拒成空 stub。该门的 `"Z"`/`"J"` 常量与 prove 侧 `field.descriptor != "Z"` 是**同一类型事实的两个副本**，泛化它们属决策 1 字面范围（root 已裁决，附带条件：J 臂改后渲染逐字节实证、本勘误留档、零回退锚不放松）。：`LongAssignmentResult::prove`（`build.rs:8559`）也认 `dup2_x1`（`OPCODE_LLOAD_1=0x1f`/`OPCODE_DUP2_X1=0x5d`/`OPCODE_LRETURN=0xad`，8577-8582），但其判据 `has_receiver && parameters == 3`（8606-8607）表明它服务的是**实例方法**的 `this.f = v; return v;` 赋值表达式（普通方法体内的 `(o.f = v)` 消费形），**不是** static `access$NNN`。实测旁证：`WA` 的 static `access$202`（long）被拒（"BCI 2 not part of the provable subset"），因为 static 形 `has_receiver=false` 直接不匹配该路径；而 boolean 的 static `access$002` 由 `BooleanAccessorAssignment` 恢复——该 wrapper 在 8915 附近**手工构造** `LongAssignmentResult`（绕过 prove 的实例门）。**即 static 写访问器路径只有 boolean wrapper 一条**，本片泛化的就是它；`LongAssignmentResult::prove` 的实例形判据**逐字不动**。
 
 ## 决策 1：按描述符查的每型事实表（封闭集合）
 
