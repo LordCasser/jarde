@@ -1,0 +1,93 @@
+TOTAL_CLASSES=482
+  DECL_NOMATCH: tests/fixtures/cf04-nested-int/cf04/Negative.class :: public final class cf04.Negative {
+  DECL_NOMATCH: tests/fixtures/cf04-nested-int/cf04/TernaryCases.class :: public class cf04.TernaryCases {
+  DECL_NOMATCH: tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class :: public final class cf08.NotIndexedLoop {
+  DECL_NOMATCH: tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoopNegatives.class :: public final class cf08.NotIndexedLoopNegatives {
+  DECL_NOMATCH: tests/fixtures/cf08-constructor-predicate/cf08/VerifierRunner.class :: public final class cf08.VerifierRunner {
+  DECL_NOMATCH: tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class :: public final class cf08nested.NestedEffectful {
+  DECL_NOMATCH: tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class :: public final class cf08nested.NestedEffectfulNegatives {
+  DECL_NOMATCH: tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class :: public final class cf08twolvl.TwoLevelIfNegatives {
+  DECL_NOMATCH: tests/fixtures/cf08-two-level-effectful/cf08twolvl/VerifierRunner.class :: public final class cf08twolvl.VerifierRunner {
+  DECL_NOMATCH: tests/fixtures/dt22-nested-annotation/Dollar$A.class :: public interface dt22.Dollar$A extends java.lang.annotation.Annotation {
+  DECL_NOMATCH: tests/fixtures/dt22-nested-annotation/Holder$A.class :: public interface dt22.Holder$A extends java.lang.annotation.Annotation {
+  DECL_NOMATCH: tests/fixtures/dt22-nested-annotation/Holder.class :: public class dt22.Holder {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape$A.class :: public abstract class em01.Shape$A {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape$I.class :: public interface em01.Shape$I {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape-I-field.class :: public interface em01.Shape$I {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape-I-interface-default.class :: public interface em01.Shape$I {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape-I-interface-static.class :: public interface em01.Shape$I {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape-I-signature.class :: public interface em01.Shape$I {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape-I-wrong-self.class :: public interface em01.Shape$I {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape-root-use.class :: public class em01.Shape {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape-third-child.class :: public class em01.Shape {
+  DECL_NOMATCH: tests/fixtures/em01-member-pair/Shape.class :: public class em01.Shape {
+  DECL_NOMATCH: tests/fixtures/em20-monitor-reuse/LocalScopes.class :: public class em20.LocalScopes {
+  DECL_NOMATCH: tests/fixtures/em27-inline-string/em27/Probe$Holder.class :: public final class em27.Probe$Holder {
+  DECL_NOMATCH: tests/fixtures/em27-inline-string/em27/Probe.class :: public final class em27.Probe {
+  DECL_NOMATCH: tests/fixtures/p3-conditional-finally/Test14-handler-call.class :: public class jadx.tests.integration.trycatch.TestTryCatchFinally14$TestCls {
+  DECL_NOMATCH: tests/fixtures/p3-conditional-finally/Test14-minimal.class :: public class jadx.tests.integration.trycatch.TestTryCatchFinally14$TestCls {
+  DECL_NOMATCH: tests/fixtures/p3-conditional-finally/Test14-second-field.class :: public class jadx.tests.integration.trycatch.TestTryCatchFinally14$TestCls {
+  DECL_NOMATCH: tests/fixtures/p3-conditional-finally/Test14-slot0.class :: public class jadx.tests.integration.trycatch.TestTryCatchFinally14$TestCls {
+  DECL_NOMATCH: tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.class :: public class p.NarrowException {
+  DECL_NOMATCH: tests/fixtures/p3-declarations/v8/p/Consts.class :: class p.Consts {
+  DECL_NOMATCH: tests/fixtures/p3-declarations/v8/p/Ops2.class :: public interface p.Ops2 {
+  DECL_NOMATCH: tests/fixtures/p3-dt29-branched/v8/BranchedBits.class :: public class dt29p3.BranchedBits {
+  DECL_NOMATCH: tests/fixtures/p3-dt29-branched/v8/BranchedBitsAlternate.class :: public class dt29p3.BranchedBitsAlternate {
+  DECL_NOMATCH: tests/fixtures/p3-dt29-branched/v8/BranchedBitsNegatives.class :: public class dt29p3.BranchedBitsNegatives {
+  DECL_NOMATCH: tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExitNegatives.class :: public final class cf08effects.EffectfulExitNegatives {
+  DECL_NOMATCH: tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExits.class :: public final class cf08effects.EffectfulExits {
+  DECL_NOMATCH: tests/fixtures/p3-inner-assignment/ExtraCopy.class :: public class cf06.InnerAssignCases {
+  DECL_NOMATCH: tests/fixtures/p3-inner-assignment/WrongType.class :: public class cf06.InnerAssignCases {
+  DECL_NOMATCH: tests/fixtures/p3-inner-assignment/cf06/InnerAssignCases.class :: public class cf06.InnerAssignCases {
+  DECL_NOMATCH: tests/fixtures/p3-inner-assignment/cf06/NegativeAssignments.class :: public final class cf06.NegativeAssignments {
+  DECL_NOMATCH: tests/fixtures/p3-loop-arm-join/v8/LoopIfJoin.class :: public final class cf08join.LoopIfJoin {
+  DECL_NOMATCH: tests/fixtures/p3-loop-gateway/EndlessInts.class :: public final class cf08.EndlessInts {
+  DECL_NOMATCH: tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class :: public final class cf08.LoopGatewayNegatives {
+  DECL_NOMATCH: tests/fixtures/p3-loop-gateway/cf08/LoopGatewayNegatives.class :: public final class cf08.LoopGatewayNegatives {
+  DECL_NOMATCH: tests/fixtures/p3-loop-terminal/LoopCases.class :: public class cf07.LoopCases {
+  DECL_NOMATCH: tests/fixtures/p3-loop-terminal/LoopTerminalExtraEntry.class :: public class cf07.LoopTerminalNegatives {
+  DECL_NOMATCH: tests/fixtures/p3-loop-terminal/cf07/LoopTerminalNegatives.class :: public class cf07.LoopTerminalNegatives {
+  DECL_NOMATCH: tests/fixtures/p3-shared-tail/cf03/BranchShapes.class :: public class cf03.BranchShapes {
+  DECL_NOMATCH: tests/fixtures/p3-special-dispatch/interface-super-proof/proof/BothDefault.class :: interface proof.BothDefault extends proof.LeftDefault,proof.RightDefault {
+  DECL_NOMATCH: tests/fixtures/p3-special-dispatch/interface-super-proof/proof/LeftDefault.class :: interface proof.LeftDefault {
+  DECL_NOMATCH: tests/fixtures/p3-special-dispatch/interface-super-proof/proof/RightDefault.class :: interface proof.RightDefault {
+  DECL_NOMATCH: tests/fixtures/p4-modern/v17/p4/sample/Provider.class :: public class p4.sample.Provider implements java.util.spi.ToolProvider {
+  DECL_NOMATCH: tests/fixtures/proved-java-structure/enum-arity/v8/probe/Empty.class :: public final class probe.Empty extends java.lang.Enum<probe.Empty> {
+  DECL_NOMATCH: tests/fixtures/proved-java-structure/enum-arity/v8/probe/EnumArityRunner.class :: public final class probe.EnumArityRunner {
+  DECL_NOMATCH: tests/fixtures/proved-java-structure/enum-arity/v8/probe/Four.class :: public final class probe.Four extends java.lang.Enum<probe.Four> {
+  DECL_NOMATCH: tests/fixtures/proved-java-structure/enum-arity/v8/probe/One.class :: public final class probe.One extends java.lang.Enum<probe.One> {
+  DECL_NOMATCH: tests/fixtures/proved-java-structure/package-info-basic/v8/p/Check.class :: public class p.Check {
+  DECL_NOMATCH: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class :: interface p.package-info {
+  DECL_NOMATCH: tests/fixtures/qualified-super-default/v8/pkg/PackedSuper$I.class :: public interface pkg.PackedSuper$I {
+  DECL_NOMATCH: tests/fixtures/qualified-super-default/v8/pkg/PackedSuper$Use.class :: public class pkg.PackedSuper$Use implements pkg.PackedSuper$I {
+  DECL_NOMATCH: tests/fixtures/qualified-super-default/v8/pkg/PackedSuper.class :: public class pkg.PackedSuper {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Generic.class :: public class matrix.Outer$A$Generic<V> {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Plain.class :: public class matrix.Outer$A$Plain {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A.class :: public class matrix.Outer$A<T> {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer.class :: public class matrix.Outer {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.class :: public final class matrix.UseGenericObject {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.class :: public final class matrix.UseGenericTyped {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlain.class :: public final class matrix.UsePlain {
+  DECL_NOMATCH: tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class :: public final class matrix.UsePlainRaw {
+
+=== SUPERCLASS LEG: $-spelled parent WITH type args (2) ===
+  BR$StrBox extends BR$Box<java.lang.String>
+     tests/fixtures/p3-bridge-projection/br-family/v8/BR$StrBox.class
+  Spec extends Outer$Box<java.lang.String>
+     tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Spec.class
+
+=== INTERFACE LEG: implements WITH type args (2) ===
+  BR$Impl implements java.lang.Comparable<BR$Impl>
+     tests/fixtures/p3-bridge-projection/br-family/v8/BR$Impl.class
+  BridgeProbe implements BridgeApi<java.lang.String>
+     tests/fixtures/p3-bridge-projection/positive/v8/BridgeProbe.class
+
+=== $-parent WITHOUT type args (6) -- out of scope ===
+  BR2$Mid extends BR2$Node2
+  MixedInstanceControls$DerivedBox extends MixedInstanceControls$BaseBox
+  AnonymousCaptureCases$1 extends AnonymousCaptureCases$Base
+  AnonymousMemberBase$1 extends AnonymousMemberBase$Outer$Base
+  AnonymousMemberBase$2 extends AnonymousMemberBase$Outer$Base
+  NestedSuper$Sub extends NestedSuper$A
+
+ERRS=0 NO_DECL_LINE=1

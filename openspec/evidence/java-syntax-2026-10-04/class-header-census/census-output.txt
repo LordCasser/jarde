@@ -1,0 +1,24 @@
+TOTAL_CLASSES=482
+
+=== SUPERCLASS LEG: $-spelled parent WITH type args (2) ===
+  BR$StrBox extends BR$Box<java.lang.String>
+     tests/fixtures/p3-bridge-projection/br-family/v8/BR$StrBox.class
+  Spec extends Outer$Box<java.lang.String>
+     tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Spec.class
+
+=== INTERFACE LEG: implements WITH type args (2) ===
+  BR$Impl implements java.lang.Comparable<BR$Impl>
+     tests/fixtures/p3-bridge-projection/br-family/v8/BR$Impl.class
+  BridgeProbe implements BridgeApi<java.lang.String>
+     tests/fixtures/p3-bridge-projection/positive/v8/BridgeProbe.class
+
+=== $-parent WITHOUT type args (6) -- out of scope ===
+  BR2$Mid extends BR2$Node2
+  MixedInstanceControls$DerivedBox extends MixedInstanceControls$BaseBox
+  AnonymousCaptureCases$1 extends AnonymousCaptureCases$Base
+  AnonymousMemberBase$1 extends AnonymousMemberBase$Outer$Base
+  AnonymousMemberBase$2 extends AnonymousMemberBase$Outer$Base
+  NestedSuper$Sub extends NestedSuper$A
+
+ERRS=0 NO_DECL_LINE=1 DECL_NOMATCH=1
+  STILL_NOMATCH: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class :: interface p.package-info {
