@@ -13,7 +13,7 @@
 
 ## Goals / Non-Goals
 
-**Goals:** 参数收窄桥在裸父类头下保持可见（响亮、可编译、行为正确）；协变返回桥隐藏不受影响；接口边既有前置零回退。**Non-Goals:** 父类参数化投影覆盖嵌套父名（`class_source.rs:6432` 的 `$` 拒绝——那是姊妹片 `recover-parameterized-superclass-nested-headers` 的根治域，本片不碰）；接口边判据改动（已验收）；门 1/门 2/`negative/`/`orphan/` 负例改动。
+**Goals:** 参数收窄桥在裸父类头下保持可见（响亮、可编译、行为正确）；协变返回桥隐藏不受影响；接口边既有前置零回退。**Non-Goals:** 父类参数化投影覆盖嵌套父名（`class_source.rs:6444` 的 `$` 拒绝——那是 `recover-parameterized-superclass-nested-headers`（**待立项**，见本文件下方协调段的 root 更正）的根治域，本片不碰）；接口边判据改动（已验收）；门 1/门 2/`negative/`/`orphan/` 负例改动。
 
 ## Decisions
 
@@ -27,5 +27,6 @@
 - **corpus 面变化**：`BR$StrBox` 等父类体不可观察的形从"桥隐藏"变"桥可见"，corpus 双腿扫描会出现差异（桥声明从无到有）——须如实记录，且确认差异**仅**桥成员声明、无行为变化（其空体两侧一致）。这是本片预期的差异，不是回归。
 - **前置过宽误伤协变返回桥** → 决策 2 的 `parameter_cast_form` 约束钉死；`Specialized.get`/`Spec.get` 双向正例证明协变形仍隐藏。
 - **与 `recover-parameterized-superclass-nested-headers`（姊妹片）的协调**：本片堵行为洞（拒绝隐藏），姊妹片做根治（父类头参数化投影覆盖嵌套名，使桥可安全隐藏）。两片串行：本片先落地（消除已合入代码的静默错值），姊妹片随后（让该形恢复"隐藏桥 + 参数化头"的更优呈现）。本片的前置在姊妹片落地后自动失效（父类头带类型实参 → `superclass_contract_is_generic_but_header_raw` 为假 → 允许隐藏），无需回退本片。
+  > **root 更正（2026-10-04，本片验收后）**：该"姊妹片" **从未立项**——`openspec/changes/recover-parameterized-superclass-nested-headers/` 目录不存在（root 用 `ls -d` 核实）。故上文的"两片串行"是**对一个尚未存在的 change 的引用**，属 root 自己在写本片 design 时的规划性表述被当成了既有事实。实际状态：本片已落地（合并 `cc4b6f11`），其前置仍在生效（父类头仍裸），根治工作**尚未立项**。同类错误也出现在 [recover-parameterized-interface-headers](../recover-parameterized-interface-headers/design.md) 的"实施协调"段（称要与本姊妹片合并为 `recover-parameterized-class-headers` 再派发——同样无对象）。**教训已登记**：spec 里引用另一个 change 时必须先 `ls` 核实其存在，"计划要立的片"须写成"待立项"而非"姊妹片"，否则读者（含未来的 root 与实现者）会把它当作已存在的依赖。父类嵌套名根治的落点已由 root 核实为 `class_source.rs:6444`（`parent.binary_name.contains(&b'$')` 拒绝），取证见 [bridge-superclass-rawheader-misdispatch](../../evidence/java-syntax-2026-10-04/bridge-superclass-rawheader-misdispatch/README.md)；待与 interface-headers 片一并评估是否合并立项。
 - **打破一个已验收 bridge 测试是预期效果（root 已核实，勿误判为回归）**：`tests/class_source.rs:7439-7445`（`recover-bridge-admission-gates` 的 BR$StrBox 测试）断言两个桥都 `admitted`/`projected` 且文本不含 `void set(java.lang.Object`。但 root 用 javap 核实 `BR$Box<T>` 是泛型父（Signature `<T:Ljava/lang/Object;>…`）、源码 `StrBox extends Box<String>`、binary 名 `BR$Box` 含 `$` → 父类投影退裸头 → BR$StrBox 的 `set(Object)` 参数收窄桥**恰命中本片新前置** → 从隐藏变可见。故那三条断言（当初断言的正是 bug 行为）必须**更新为修复后期望**：`get()` 协变桥仍隐藏、`set(Object)` 桥现在可见（`!admitted`/`!projected`、文本含 `void set(java.lang.Object`）、源级 `set(String)`/`get()` 仍在。**不得为让旧断言变绿而削弱父类边前置**（那等于留着 bug）。BR$StrBox 行为不变（`BR$Box.set` 是空体），故该形须用**可观察** set 体（证据目录 `Spec`，`Outer.Box.set` 打印）实测 `SPEC.set(String) ran` 才算证明修复。
 - **接口边前置的对称性**：本片把父类边纳入后，接口边与父类边判据应结构对称（都读类 Signature、都只对 parameter_cast_form 生效）；实现时抽公共 helper 避免两套逻辑漂移，但不得改动接口边已验收的拒绝文本。
