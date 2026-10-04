@@ -3551,8 +3551,149 @@ impl Walker<'_> {
                         }
                         Some(nested.clone())
                     })();
+                    // The shared-latch two-edge body: this loop's own `continue` edge and the
+                    // nested loop's exit edge route onto the same back-edge destination, so
+                    // the arms' post-dominator is that destination and electing it ends the
+                    // body walk with the nested loop's blocks unclaimed. The structural facts
+                    // — each read from the graph, none from the addresses — that admit
+                    // re-electing the join to where the continuing arm's own statements end:
+                    // the elected join is this loop's continue destination (the update block
+                    // a proved for-header owns, or the header of a loop none does); one arm
+                    // is a goto bridge onto that destination (the edge a `continue` spells,
+                    // exclusively owned by this branch); the other arm's walk ended at a
+                    // nested loop header whose blocks this loop's body holds; and every exit
+                    // of that nested loop lands on one of this loop's own latch blocks — the
+                    // two edges' routes onto the one back edge, whether they name the
+                    // destination itself (an update block both edges share) or a latch whose
+                    // own transfer is the header. The jump arm then carries its own edge as
+                    // the loop continue — the attribution by edge semantics the readings
+                    // above use, with the same exclusive-ownership classifier, not a third
+                    // one.
+                    let shared_latch_join = (|| {
+                        let last = frame.loop_targets.last()?;
+                        let elected = join_node?;
+                        let destination = last.continue_target;
+                        if elected != destination {
+                            return None;
+                        }
+                        let loop_of = self.view.loop_entered_at(last.header)?;
+                        let latches = loop_of.latches();
+                        let blocks = loop_of.blocks();
+                        let (bridge, jump_is_then) = [then_node, else_node]
+                            .into_iter()
+                            .flatten()
+                            .find_map(|entry| {
+                            self.loop_continue_bridge(node, entry, destination, blocks)
+                                .then_some((entry, then_node == Some(entry)))
+                        })?;
+                        let (run, next) = if jump_is_then {
+                            (&then_run, &else_next)
+                        } else {
+                            (&else_run, &then_next)
+                        };
+                        // The jumping arm is nothing but its bridge block: the one-transfer
+                        // run the re-elected join no longer stands for.
+                        let [Region::Straight { blocks: bridge_run }] = run.as_slice() else {
+                            return None;
+                        };
+                        if bridge_run.len() != 1
+                            || self.view.index_of(bridge_run.first()?) != Some(bridge)
+                        {
+                            return None;
+                        }
+                        let source_bci = self.terminal_bci(bridge_run.first()?)?;
+                        let nested = next.as_ref()?;
+                        let nested_node = self.view.index_of(nested)?;
+                        if self.visited.contains(&nested_node)
+                            || frame.boundary == Some(nested_node)
+                        {
+                            return None;
+                        }
+                        let Some(nested_of) = self.view.loop_entered_at(nested_node) else {
+                            return None;
+                        };
+                        let nested_blocks = nested_of.blocks();
+                        if !nested_blocks.is_subset(blocks) {
+                            return None;
+                        }
+                        let nested_exits: BTreeSet<usize> = nested_blocks
+                            .iter()
+                            .flat_map(|member| self.view.successors(*member))
+                            .filter(|successor| !nested_blocks.contains(successor))
+                            .collect();
+                        // Every exit lands on a latch of this loop — directly (the test
+                        // exit onto a shared update block, or onto the back-edge transfer a
+                        // loop whose continue target is its header ends in) or through its
+                        // own one transfer (an inner `break` goto onto that same block).
+                        // Anything else leaves the loop past its back edge, and no exit may:
+                        // this shape's post-dominator is the continue destination only
+                        // because both routes regroup there.
+                        let mut landings: BTreeSet<usize> = BTreeSet::new();
+                        for exit in &nested_exits {
+                            let landing = if latches.contains(exit) {
+                                *exit
+                            } else {
+                                let successors = self.view.successors(*exit);
+                                if successors.len() != 1 || !latches.contains(&successors[0]) {
+                                    return None;
+                                }
+                                successors[0]
+                            };
+                            landings.insert(landing);
+                        }
+                        // The loop's back edges are exactly the routes this shape accounts
+                        // for: the landings, plus the bridge itself when a `continue` in a
+                        // loop whose continue target is its header is a back edge of its own.
+                        // Any other back edge is a jump this reading does not classify.
+                        let mut accounted: BTreeSet<usize> = landings;
+                        if self.view.successors(bridge) == [last.header] {
+                            accounted.insert(bridge);
+                        }
+                        let held: BTreeSet<usize> = latches.iter().copied().collect();
+                        if held != accounted {
+                            return None;
+                        }
+                        Some((jump_is_then, source_bci))
+                    })();
                     let continuing_join_elected = continuing_join.is_some();
-                    let join = continuing_join.or(join);
+                    let shared_latch_elected = shared_latch_join.is_some();
+                    let shared_latch = shared_latch_join.and_then(|(jump_is_then, source_bci)| {
+                        let loop_header =
+                            self.view.id_of(frame.loop_targets.last()?.header)?.clone();
+                        let run = if jump_is_then {
+                            &mut then_run
+                        } else {
+                            &mut else_run
+                        };
+                        *run = vec![Region::LoopContinue {
+                            source_bci,
+                            loop_header,
+                        }];
+                        // The continuing arm's trailing straight run is this loop's own
+                        // continuation, and it goes back to the body walk: a counted loop's
+                        // header clause reads its initialisation from a preceding sibling
+                        // statement, not from inside an arm. The run's blocks leave the arm's
+                        // ownership with it — the walk re-claims them at the re-elected join,
+                        // and a claimed block the walk re-enters would be quoted instead.
+                        let continuing = if jump_is_then {
+                            &mut else_run
+                        } else {
+                            &mut then_run
+                        };
+                        let [Region::Straight { blocks: lead }] = continuing.as_slice() else {
+                            return None;
+                        };
+                        let join_block = lead.first()?.clone();
+                        for block in lead {
+                            let node = self.view.index_of(block)?;
+                            if !self.visited.remove(&node) {
+                                return None;
+                            }
+                        }
+                        *continuing = Vec::new();
+                        Some(join_block)
+                    });
+                    let join = continuing_join.or(shared_latch).or(join);
                     let join_node = join.as_ref().and_then(|join| self.view.index_of(join));
                     // A nested value can meet at its own join before this arm meets the outer
                     // join. Keep that intervening straight run inside the *same* arm and frame.
@@ -3680,6 +3821,13 @@ impl Walker<'_> {
                             }))
                             && !(local_switch_join
                                 && ((then_meets && else_breaks) || (else_meets && then_breaks)))
+                            // The shared-latch re-election proved both arms' edges from the graph
+                            // already — the continue bridge by exclusive ownership, the nested
+                            // loop by containment and its exit set — and the one arm ends at
+                            // this loop's own latch, a destination the forward reachability of
+                            // the other arm's continuation never states. The re-election, not a
+                            // reaches reading, is what the join stands on.
+                            && !shared_latch_elected
                         {
                             let reason = FallbackReason::ArmsDoNotMeet {
                                 block_bci: branch.bci(),
