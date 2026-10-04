@@ -1,0 +1,43 @@
+# 复合赋值访问器运算段全族事实表（javac 23 --release 8 腿；EM-15 姊妹片的 spec 基础）
+
+## 规律（16 个实测访问器归纳）
+
+骨架恒定: `aload_0; dup; getfield; <load_1>; <算术op>; [收窄]; <copy>; putfield; <return>`
+
+| 字段类型与运算 | 算术段 | 收窄段 | 复制段 | 实测样例 (accessor/参数) |
+| --- | --- | --- | --- | --- |
+| int 的 11 运算符 +=,-=,*=,/=,%=,&=,\|=,^=,<<=,>>=,>>>= | iadd,isub,imul,idiv,irem,iand,ior,ixor,ishl,ishr,iushr | 无 | dup_x1 | 012,020,028,036,044,072,076,080,060,064,068 (均 int 参数) |
+| long += | ladd | 无 | dup2_x1 | 114 (long 参数) |
+| byte 的 &=,\|= | iand / ior | **i2b**（收窄回 byte） | dup_x1 | 272,276 (**int 参数**, 字段 byte) |
+| String += | StringBuilder 链 (new;dup;invokespecial;aload_0;dup_x1;getfield;invokevirtual append;aload_1;invokevirtual append;dup_x1;putfield;areturn) | — | dup_x1 | 384 (Object 参数) |
+
+## 姊妹片设计输入
+
+1. **MVP**：int 家族 11 运算符 + long/double/float 同型算术（每型 load/op/copy 表可从 EM-15 的每型事实表扩展）。
+2. byte/short/char 复合（i2b/i2s/i2c 收窄段）单独一格：**参数是 int、字段是窄型**——呈现须带显式收窄（与源复合赋值语义一致）。
+3. String +=（384 形）是 StringBuilder 展开——属普通字符串拼接 idiom 的载体，**不并入**算术姊妹片。
+4. **双腿实测（2026-10-05 补）：重大版本耦合**——真 javac 8（Corretto 1.8.0_432）对同一 `OP.java` 生成 **8 个纯读/纯写访问器**（`+=` 拆为 read+write 两步：如 `int` 字段 → `(OP)I` 读 + `(OP,I)I` 写），**15 个复合形 0 个存在**；复合读-改-写形是 **javac 9+ codegen**（`--release 8` 不回退——与 TWR/null-check 同族，符合 dual-javac-sweep 规则）。原始对照：javap-OP-realjavac8.txt。
+
+## 结论修订
+
+- **真 javac 8（jarde 的目标平台）不需要复合访问器形状**——`seed += 1` 在真 8 下是 read+write 两访问器，而**纯读已恢复、纯写正是 EM-15 在实现的**。即 EM-15 落地后，**真 javac 8 的复合赋值访问器路径大概率随之全通**（CA 探针是 javac23 腿编译的——见 CA/CB fixture 编译命令记录）。
+- **姊妹片结论作废**：按 javac23 腿立项复合形状 = 为非目标平台实现。待 EM-15 落地后**以真 javac 8 腿重测 CA 探针**验证全通，通则关闭该登记；javac23 复合形（若语料出现）属"交叉编译产物"域，按既有版本标记拒绝语义处理，不立项。
+- 本表现降级为 javac23 腿的**形态学记录**（若将来支持交叉编译产物再启用）。
+
+## 原始序列
+
+access$012 (OP, int) :: aload_0 dup getfield iload_1 iadd dup_x1 putfield ireturn
+access$020 (OP, int) :: aload_0 dup getfield iload_1 isub dup_x1 putfield ireturn
+access$028 (OP, int) :: aload_0 dup getfield iload_1 imul dup_x1 putfield ireturn
+access$036 (OP, int) :: aload_0 dup getfield iload_1 idiv dup_x1 putfield ireturn
+access$044 (OP, int) :: aload_0 dup getfield iload_1 irem dup_x1 putfield ireturn
+access$072 (OP, int) :: aload_0 dup getfield iload_1 iand dup_x1 putfield ireturn
+access$076 (OP, int) :: aload_0 dup getfield iload_1 ior dup_x1 putfield ireturn
+access$080 (OP, int) :: aload_0 dup getfield iload_1 ixor dup_x1 putfield ireturn
+access$060 (OP, int) :: aload_0 dup getfield iload_1 ishl dup_x1 putfield ireturn
+access$064 (OP, int) :: aload_0 dup getfield iload_1 ishr dup_x1 putfield ireturn
+access$068 (OP, int) :: aload_0 dup getfield iload_1 iushr dup_x1 putfield ireturn
+access$114 (OP, long) :: aload_0 dup getfield lload_1 ladd dup2_x1 putfield lreturn
+access$272 (OP, int) :: aload_0 dup getfield iload_1 iand i2b dup_x1 putfield ireturn
+access$276 (OP, int) :: aload_0 dup getfield iload_1 ior i2b dup_x1 putfield ireturn
+access$384 (OP, java.lang.Object) :: new dup invokespecial aload_0 dup_x1 getfield invokevirtual aload_1 invokevirtual invokevirtual dup_x1 putfield areturn

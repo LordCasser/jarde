@@ -21,6 +21,14 @@ allocation-qualifier 片（`38b50d19`）实现者登记的"子类构造器内 `a
 
 EM-15（`recover-write-accessor-field-types`，在飞）的 Non-Goals 明确排除复合写形："`i += 1` 生成的读-改-写访问器——那有不同的 opcode 结构，须另行取证"。本巡查即该取证：形状已定型（前置 `dup; getfield` + 运算 + 后半与纯写形同构的 `dup_x1; putfield; xreturn`）。**颗粒度：窄到中**——与 EM-15 同族（描述符封闭表 + 结构判据），但 opcode 序列更长且含运算段（每运算符一族：`+ - * / % & | ^ << >> >>>`，及值类型），宜在 EM-15 落地后作为姊妹片复用其表。**暂不立项**（等 EM-15 落地，避免同函数双开）。
 
+## 二、双腿复核（2026-10-05 同日追加，推翻本 README 第一节的姊妹片建议）
+
+**版本耦合发现**：真 javac 8（Corretto 1.8.0_432）对同一 `OP.java`（11 个 int 运算符 + long/byte/String 复合）生成 **8 个纯读/纯写访问器**——复合赋值被拆成 read+write 两步，**15 个复合读-改-写形 0 个存在**（operator-family-table.txt 的双腿对照）。复合形是 **javac 9+ codegen**（`--release 8` 不回退，与 TWR/null-check 同族，符合 dual-javac-sweep 规则）。
+
+**本 README 第一节的 CA/CB 探针是 javac 23 `--release 8` 腿编译的**（当时的疏漏：未记编译腿）——其拒绝的 `access$012` 复合形在目标平台（真 javac 8）根本不出现。**真 8 腿闭环重测**（[results/jarde-CA-realjavac8.txt](results/jarde-CA-realjavac8.txt)）：纯读 `access$000` **恢复** ✓；剩余缺口 = `access$002` 纯写形（**正在 EM-15 实现**）+ `main` 的 `c.new Nut()` 级联。即 **EM-15 落地后，真 javac 8 的复合赋值访问器路径预计全通**。
+
+**处置修订**：~~姊妹片立项~~ → **EM-15 落地后以真 8 腿重测 CA 关闭本登记**（预测：quotes 归零、`c.new Nut()` 折叠）；javac 9+ 交叉编译产物的复合形属版本标记域，不立项。javac 23 复合形表保留为形态学记录。
+
 ## 处置
 
 取证归档；登记到 summary.md 独立缺口行（已更正原 ctor-access$ 登记）；EM-15 落地后按姊妹片立项。

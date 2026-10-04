@@ -1,0 +1,244 @@
+Compiled from "OP.java"
+public class OP {
+  private int i;
+
+  private long l;
+
+  private boolean b;
+
+  private java.lang.String s;
+
+  public OP();
+    Code:
+       0: aload_0
+       1: invokespecial #36                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: bipush        10
+       7: putfield      #32                 // Field i:I
+      10: aload_0
+      11: ldc2_w        #39                 // long 10l
+      14: putfield      #28                 // Field l:J
+      17: aload_0
+      18: iconst_1
+      19: putfield      #24                 // Field b:Z
+      22: aload_0
+      23: ldc           #41                 // String x
+      25: putfield      #7                  // Field s:Ljava/lang/String;
+      28: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: new           #8                  // class OP
+       3: dup
+       4: invokespecial #43                 // Method "<init>":()V
+       7: astore_1
+       8: new           #44                 // class OP$N
+      11: dup
+      12: aload_1
+      13: dup
+      14: invokestatic  #46                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      17: pop
+      18: invokespecial #52                 // Method OP$N."<init>":(LOP;)V
+      21: astore_2
+      22: aload_2
+      23: invokevirtual #55                 // Method OP$N.p:()V
+      26: aload_2
+      27: invokevirtual #58                 // Method OP$N.q:()V
+      30: getstatic     #61                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      33: new           #1                  // class java/lang/StringBuilder
+      36: dup
+      37: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+      40: aload_1
+      41: getfield      #32                 // Field i:I
+      44: invokevirtual #67                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      47: ldc           #70                 // String /
+      49: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      52: aload_1
+      53: getfield      #28                 // Field l:J
+      56: invokevirtual #72                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      59: ldc           #70                 // String /
+      61: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: aload_1
+      65: getfield      #24                 // Field b:Z
+      68: invokevirtual #75                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      71: ldc           #70                 // String /
+      73: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: aload_1
+      77: getfield      #7                  // Field s:Ljava/lang/String;
+      80: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: invokevirtual #20                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      86: invokevirtual #78                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      89: return
+
+  static int access$012(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: iadd
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$020(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: isub
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$028(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: imul
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$036(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: idiv
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$044(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: irem
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$072(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: iand
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$076(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: ior
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$080(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: ixor
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$060(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: ishl
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$064(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: ishr
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static int access$068(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #32                 // Field i:I
+       5: iload_1
+       6: iushr
+       7: dup_x1
+       8: putfield      #32                 // Field i:I
+      11: ireturn
+
+  static long access$114(OP, long);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #28                 // Field l:J
+       5: lload_1
+       6: ladd
+       7: dup2_x1
+       8: putfield      #28                 // Field l:J
+      11: lreturn
+
+  static boolean access$272(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #24                 // Field b:Z
+       5: iload_1
+       6: iand
+       7: i2b
+       8: dup_x1
+       9: putfield      #24                 // Field b:Z
+      12: ireturn
+
+  static boolean access$276(OP, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #24                 // Field b:Z
+       5: iload_1
+       6: ior
+       7: i2b
+       8: dup_x1
+       9: putfield      #24                 // Field b:Z
+      12: ireturn
+
+  static java.lang.String access$384(OP, java.lang.Object);
+    Code:
+       0: new           #1                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+       7: aload_0
+       8: dup_x1
+       9: getfield      #7                  // Field s:Ljava/lang/String;
+      12: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      15: aload_1
+      16: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      19: invokevirtual #20                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      22: dup_x1
+      23: putfield      #7                  // Field s:Ljava/lang/String;
+      26: areturn
+}
