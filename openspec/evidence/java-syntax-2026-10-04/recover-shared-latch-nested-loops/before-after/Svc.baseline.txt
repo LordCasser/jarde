@@ -1,0 +1,63 @@
+// jarde: presentation of `Svc` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Svc extends java.lang.Object {
+    // jarde: field Signature projection refused for `cacheLjava/util/Map;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    private final java.util.Map cache;
+
+    private int hits;
+
+    public Svc() {
+        // @method <init>()V
+        // @declaration a constructor of `Svc`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.cache = new java.util.HashMap();
+        return;
+    }
+
+    public java.util.List lookup(java.lang.String arg1, Mode arg2) {
+        // jarde: not recovered: the recovery run for `lookup(Ljava/lang/String;LSvc$Mode;)Ljava/util/List;` produced no statement (explanation only); the artifact's own comment lines are below
+        // jarde: generic Signature projection refused for `lookup(Ljava/lang/String;LSvc$Mode;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+        // @method lookup(Ljava/lang/String;LSvc$Mode;)Ljava/util/List;
+        // @declaration an instance method of `Svc`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 24 34 63 66 83 93 112 120 123 166 169
+        // local 3 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public java.lang.String summarize() {
+        // @method summarize()Ljava/lang/String;
+        // @declaration an instance method of `Svc`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local1;
+        java.util.Iterator local3;
+        local1 = new java.lang.StringBuilder();
+        java.util.ArrayList local2 = new java.util.ArrayList();
+        local2.add((java.lang.Object) new Svc$Entry("a", 1));
+        local2.add((java.lang.Object) new Svc$Entry("b", 2));
+        local3 = local2.iterator();
+        while (local3.hasNext()) {
+            Svc$Entry local4 = (Svc$Entry) local3.next();
+            local1.append((java.lang.String) local4.render()).append(';');
+        }
+        return local1.append("hits=").append(this.hits).toString();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Svc`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Svc local1 = new Svc();
+        java.util.Map saved0 = local1.cache;
+        saved0.put((java.lang.Object) "px", (java.lang.Object) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(3), java.lang.Integer.valueOf(-1), java.lang.Integer.valueOf(5)}));
+        java.lang.System.out.println((java.lang.Object) local1.lookup("p", Mode.SAFE));
+        java.lang.System.out.println((java.lang.String) local1.summarize());
+        java.lang.System.out.println(local1.lookup("z", Mode.FAST).isEmpty());
+        return;
+    }
+
+    enum Mode {
+        FAST,
+        SAFE;
+    }
+}
