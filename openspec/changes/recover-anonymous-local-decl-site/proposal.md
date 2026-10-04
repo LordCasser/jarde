@@ -1,6 +1,6 @@
 ## Why
 
-`recover-anonymous-mixed-super-capture` 交付时按 root 裁决（2026-10-04，选项 B）把锚定在**直返位置**的混合参数匿名类内联为源级 `new Base(args…) { … }`。实现取证发现冻结 fixture `anonymous-super-args/AnonymousSuperArgs$1` 的分配点在 `main` 内的**局部声明初始化位置**（`AnonymousSuperArgs$1 local2 = new …`），它还要越过四道本片未钉死的前置：
+`recover-anonymous-mixed-super-capture` 交付时把锚定在**直返位置**的混合参数匿名类内联为源级 `new Base(args…) { … }`（范围收窄由实现者提出、root 2026-10-04 独立核实技术事实后追认；此前记录为"root 裁决（选项 B）"属归因错误——root 从未下达该裁决，详见 mixed-super-capture tasks.md 2.3 的归因更正段）。实现取证发现冻结 fixture `anonymous-super-args/AnonymousSuperArgs$1` 的分配点在 `main` 内的**局部声明初始化位置**（`AnonymousSuperArgs$1 local2 = new …`），它还要越过四道本片未钉死的前置：
 
 1. 站点扫描只认整方法直返形（`class_source_direct_return_new`）；本片已把它放宽为"局部声明前奏 + 直返"，但赋值初始化形（分配表达式是声明初始化值而非 return 值）仍不产站点。
 2. `project_class_source_anonymous_super` 要求 `root_method.descriptor == "()L{parent};"`（直返形判据）。
