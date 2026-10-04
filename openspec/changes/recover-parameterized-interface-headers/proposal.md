@@ -16,7 +16,7 @@ public class ParamI implements java.lang.Comparable<ParamI> { public int compare
 
 ## What Changes
 
-- 类头 `implements` 子句按类自身 `Signature` 属性投影类型实参（`implements Comparable<Impl>`）。**reader 擦除证明与拼写机制均已就绪、无需扩展**（`prove_class_signature_erasure` 已逐个校验 `interfaces` 擦除、`ClassSignatureErasureProof.interfaces` 已填充；`class_source.rs:6504–6511` 已对 `parsed.interfaces` 逐项 `spell_ordinary_signature_type`）；本片缺的是 `class_source.rs` **三道门放行**（总门 6360 不看 interfaces、`direct_parent_candidate` 分支 6422 互斥拒绝接口、else 分支 6437 要求全部接口无实参）+ facade 侧**一个并列的接口可解析证明器**（不能复用 `prove_direct_generic_superclass_parent`，其 facade.rs:13042 显式拒 `ACC_INTERFACE`）。不新建第二套 Signature 解析、不改父类闭包判据。
+- 类头 `implements` 子句按类自身 `Signature` 属性投影类型实参（`implements Comparable<Impl>`）。**reader 擦除证明与拼写机制均已就绪、无需扩展**（`prove_class_signature_erasure` 已逐个校验 `interfaces` 擦除、`ClassSignatureErasureProof.interfaces` 已填充；`class_source.rs:6516–6519` 已对 `parsed.interfaces` 逐项 `spell_ordinary_signature_type`，交 `class_declaration_with_types` 6526）；本片缺的是 `class_source.rs` **三道门放行**（总门 6372 不看 interfaces、`direct_parent_candidate` 分支 6435 互斥拒绝接口、else 分支 6455 要求全部接口无实参）+ facade 侧**一个并列的接口可解析证明器**（不能复用 `prove_direct_generic_superclass_parent`，其 facade.rs:13765 显式拒 `ACC_INTERFACE`）。不新建第二套 Signature 解析、不改父类闭包判据。
 - 接口定义不可解析（无 JRE image、非选定环境、arity 不符、擦除不一致）时保留裸类型与物理来源，**并拒绝该类的桥投影**（见下）。
 - **确立消隐前置不变量**：桥成员投影仅在"该擦除契约所属父类型在类头文本中已带类型实参"时进行；类头留在裸类型时 SHALL 保持桥可见（现行为），不得产出"桥已隐藏但类头裸类型"的中间态（javac 会报 missing-override）。该前置在 `recover-bridge-admission-gates` 内实现，本片提供其依赖的类头投影。
 

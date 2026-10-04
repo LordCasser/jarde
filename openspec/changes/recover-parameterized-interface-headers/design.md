@@ -4,7 +4,7 @@
 
 ### 精确落点（root 已定位：reader 与拼写侧无需扩展，但需三道门放行 + facade 并列证明器）
 
-- **类头投影处**：`src/class_source.rs:6349` 的 `parameterized_superclass`（由 `parsed.superclass.segments` 是否带 `arguments` 判定）与 6354 的 `direct_parent_candidate`（当前**硬编码** `java/lang/String` 单形参父类）。6360 的 `if parsed.type_parameters.is_empty() && !parameterized_superclass { return Ok(None) }` 是当前"无泛型即不投影"的总门。
+- **类头投影处**：`src/class_source.rs:6361` 的 `parameterized_superclass`（由 `parsed.superclass.segments` 是否带 `arguments` 判定）与 6367 的 `direct_parent_candidate`（当前**硬编码** `java/lang/String` 单形参父类）。6372 的 `if parsed.type_parameters.is_empty() && !parameterized_superclass { return Ok(None) }` 是当前"无泛型即不投影"的总门。
 - **接口事实已就绪**：`crates/jarde-reader/src/signature.rs` 的 `parse_class_signature`（134 行）**已完整解析** `ClassSignature.interfaces: Vec<ClassType>`（结构定义 22 行、填充 139–148 行），且 `class_references()`（27 行起）已把 interfaces 纳入引用收集。
 - **擦除证明已就绪**：`ClassSignatureErasureProof`（signature.rs:222）**已含** `interfaces: Vec<Vec<u8>>`（225 行），且 `prove_class_signature_erasure`（263 行）已接受 `interfaces` 参数并逐个校验擦除（详见下节）。
 
@@ -12,31 +12,35 @@
 
 先前本片被描述为"接线"，实测**不成立**，三处阻塞：
 
-1. **注入闭包显式排除接口**：`prove_direct_generic_superclass_parent`（`src/facade.rs:13013`）的准入条件含 `facts.access_flags & (ACC_INTERFACE | ACC_ANNOTATION | 0x4000) != 0 → false`（13042 行），并要求 `super_class == java/lang/Object` 且 `facts.interfaces.is_empty()`（13045–13047）——即它只证"单参数普通父类"，对接口一律返回 `false`。故本片需要一个**并列的接口证明器**（同样走 `resolve_class_source_dependency_read_raw`，但判据改为：`ACC_INTERFACE` 置位、形参个数与 Signature 实参个数相符、擦除与物理 `interfaces` 项一致），不能改父类闭包的判据（那会放宽已验收片的边界）。
-2. **总门不看 interfaces**：`class_source.rs:6360` 是 `if parsed.type_parameters.is_empty() && !parameterized_superclass { return Ok(None) }`——**只看 `type_parameters` 与 `parameterized_superclass`**，故 `implements Comparable<Impl>` 且无自有类型参数、父类非参数化时，在总门就返回 `Ok(None)`，根本到不了拼写循环。需增加"参数化接口"这一条进入条件。
-3. **`direct_parent_candidate` 分支互斥拒绝接口**：6422–6428 明写 `if !parsed.interfaces.is_empty() || !physical_interfaces.is_empty() → Err("direct parameterized superclass projection does not include interfaces")`；而 6437–6451 的 else 分支要求**全部** `parsed.interfaces` 的 `arguments.is_empty()`。即现有三条路径都把"参数化接口"排除在外，本片须新增第四条路径（无自有类型参数、父类非参数化、但接口参数化），并保持前三条逐字不变。
+1. **注入闭包显式排除接口**：`prove_direct_generic_superclass_parent`（`src/facade.rs:13736`）的准入条件含 `facts.access_flags & (ACC_INTERFACE | ACC_ANNOTATION | 0x4000) != 0 → false`（13765 行），并要求 `super_class == java/lang/Object` 且 `facts.interfaces.is_empty()`（13767–13770）——即它只证"单参数普通父类"，对接口一律返回 `false`。故本片需要一个**并列的接口证明器**（同样走 `resolve_class_source_dependency_read_raw`，但判据改为：`ACC_INTERFACE` 置位、形参个数与 Signature 实参个数相符、擦除与物理 `interfaces` 项一致），不能改父类闭包的判据（那会放宽已验收片的边界）。
+2. **总门不看 interfaces**：`class_source.rs:6372` 是 `if parsed.type_parameters.is_empty() && !parameterized_superclass { return Ok(None) }`——**只看 `type_parameters` 与 `parameterized_superclass`**，故 `implements Comparable<Impl>` 且无自有类型参数、父类非参数化时，在总门就返回 `Ok(None)`，根本到不了拼写循环。需增加"参数化接口"这一条进入条件。
+3. **`direct_parent_candidate` 分支互斥拒绝接口**：6435–6441 明写 `if !parsed.interfaces.is_empty() || !physical_interfaces.is_empty() → Err("direct parameterized superclass projection does not include interfaces")`；而 6455–6461 的 else 分支要求**全部** `parsed.interfaces` 的 `arguments.is_empty()`。即现有三条路径都把"参数化接口"排除在外，本片须新增第四条路径（无自有类型参数、父类非参数化、但接口参数化），并保持前三条逐字不变。
 
 **拼写侧与 reader 擦除侧均已就绪（root 三次取证确认，本片工作量因此收窄）**：
 
-- 6504–6511 的循环已对 `parsed.interfaces` 逐项调用 `spell_ordinary_signature_type` 并交给 `class_declaration_with_types`（6513）——接口拼写机制已存在。
+- 6516–6519 的循环已对 `parsed.interfaces` 逐项调用 `spell_ordinary_signature_type` 并交给 `class_declaration_with_types`（6526）——接口拼写机制已存在。
 - reader 的 `prove_class_signature_erasure`（`crates/jarde-reader/src/signature.rs:263`）**已接受 `interfaces: &[Vec<u8>]` 并逐个校验擦除**（315–340：`class_internal_name(interface)` 与物理项比对，不符即 `erasure_mismatch("interface {index}")`），且 `ClassSignatureErasureProof.interfaces: Vec<Vec<u8>>`（225 行）已被填充。**故 reader 侧无需扩展**——取证义务 (b) 关闭。
 - 本片缺的只是"让参数化接口能走到既有拼写循环"的**准入放行**（上述三道门）+ **facade 侧一个并列的接口可解析证明器**（下述）。
 
-**第一个取证义务（收敛后，仅剩一项）**：(c) 确认新增第四条路径与 `recover-nested-generic-class-headers`（类自有类型参数形）的互斥边界——本片 Non-Goals 已排除自有类型参数形，须验证新路径不会误纳（6349 的 `parsed.type_parameters.is_empty()` 前置应已保证，须测试钉死）。
+**第一个取证义务（收敛后，仅剩一项）**：(c) 确认新增第四条路径与 `recover-nested-generic-class-headers`（类自有类型参数形）的互斥边界——本片 Non-Goals 已排除自有类型参数形，须验证新路径不会误纳（6361 的 `parsed.type_parameters.is_empty()` 前置应已保证，须测试钉死）。
 
 **取证义务 (a) 已由 root 关闭**：`spell_ordinary_signature_type_with_member_path`（class_source.rs:4335）**已处理类型实参**——4465 行 `if !segment.arguments.is_empty()` 递归拼每个 `TypeArgument`（`Exact`/`Extends`/`Any`）并以 `<…>` 连接，`TypeArgument::Exact(Class(Impl))` 经同一函数拼为 `BR$Impl`。这正是既有 `direct_parent_candidate` 为 `Parent<String>` 用的同一路径（已验收），故 `Comparable<LImpl;>` 会拼为 `java.lang.Comparable<BR$Impl>`（单 segment 走 `simple_generic_class_name` 得全限定名 + `<…>`）。**拼写侧确认可直接复用，无需扩展。**
 
-**facade 侧接口证明器**：`prove_direct_generic_superclass_parent`（facade.rs:13013）不可复用（13042 显式拒 `ACC_INTERFACE`）。本片需一个并列证明器，同样走 `resolve_class_source_dependency_read_raw` 取接口定义，但判据改为：`ACC_INTERFACE` 置位（而非要求非接口）、形参个数 == Signature 实参个数、擦除与物理 `interfaces` 对应项一致（此项已由 reader 的 `prove_class_signature_erasure` 覆盖，证明器只需确认接口定义可解析且 arity 相符）。**不改父类闭包判据**（那会放宽 `recover-proved-direct-parameterized-superclass` 已验收的边界）。
+**facade 侧接口证明器**：`prove_direct_generic_superclass_parent`（facade.rs:13736）不可复用（13765 显式拒 `ACC_INTERFACE`）。本片需一个并列证明器，同样走 `resolve_class_source_dependency_read_raw` 取接口定义，但判据改为：`ACC_INTERFACE` 置位（而非要求非接口）、形参个数 == Signature 实参个数、擦除与物理 `interfaces` 对应项一致（此项已由 reader 的 `prove_class_signature_erasure` 覆盖，证明器只需确认接口定义可解析且 arity 相符）。**不改父类闭包判据**（那会放宽 `recover-proved-direct-parameterized-superclass` 已验收的边界）。
 
 ## Goals / Non-Goals
 
-> **实施协调（root 2026-10-04 决策，派发前生效）**：本片将与姊妹片 `recover-parameterized-superclass-nested-headers`（父类嵌套名参数化投影，放宽 `class_source.rs` 的 `parent.binary_name.contains(&b'$')` 拒绝）**合并为一片** `recover-parameterized-class-headers` 再派发。理由：二者改**同一函数** `project_generic_signature` 的相邻分支（接口走三道门放行、父类走 `$` 拒绝放宽），串行实施必然 rebase 冲突（本会话已两次遭遇：ncl 使 bridge 的 facade 锚点漂移 170 行）；且二者建立**同一不变量**（类头携带类型实参 → 桥可隐藏）、解锁**同一** bridge 前置（接口边 for `Impl`、父类边 for `Spec`/`BR$StrBox`）。**合并推迟到临近派发时做**（而非现在），以免本片的精确行号在队列等待期再次漂移失效。合并后本片 design 的"精确落点"与姊妹片的父类落点并入同一 Context。**优先级**：低于在飞的 `recover-bridge-superclass-header-precondition`（那是正确性 bug 修复；本片是 bug 修复后的呈现改善——修复落地后裸头形已"可编译且行为正确"，本片只是让它进一步"隐藏桥 + 参数化头"更优）。
+> **实施协调（root 2026-10-04 决策，派发前生效；行号已于主线 `a7d6a2b7` 态重验）**：本片将与姊妹片 `recover-parameterized-superclass-nested-headers`（父类嵌套名参数化投影，放宽 `class_source.rs` 的 `parent.binary_name.contains(&b'$')` 拒绝）**合并为一片** `recover-parameterized-class-headers` 再派发。理由：二者改**同一函数** `project_generic_signature` 的相邻分支（接口走三道门放行、父类走 `$` 拒绝放宽），串行实施必然 rebase 冲突（本会话已两次遭遇：ncl 使 bridge 的 facade 锚点漂移 170 行）；且二者建立**同一不变量**（类头携带类型实参 → 桥可隐藏）、解锁**同一** bridge 前置（接口边 for `Impl`、父类边 for `Spec`/`BR$StrBox`）。合并后本片 design 的"精确落点"与姊妹片的父类落点并入同一 Context。
+>
+> **行号漂移已处置（root 2026-10-04）**：原决策写"合并推迟到临近派发时做，以免精确行号在队列等待期再次漂移失效"——漂移**确已发生**：`1cb359d6`（ncl 的结构反射重跑修复）触碰了 `class_source.rs`，使 `project_generic_signature` 6330→6334、`parameterized_superclass` 6349→**6361**、`direct_parent_candidate` 6354→**6367**、总门 6360→**6372**、接口互斥判据 6422–6428→**6435–6441**、else 分支 6437–6451→**6455–6461**、接口拼写循环 6504–6511→**6516–6519**、`class_declaration_with_types` 6513→**6526**；`facade.rs` 侧 `prove_direct_generic_superclass_parent` 13013→**13736**、`ACC_INTERFACE` 判据 13042→**13765**、`super_class`/`interfaces` 判据 13045–13047→**13767–13770**（drift 恒为 +723）。**以上九处 class_source + 三处 facade 引用已全部按现状更正并逐一核实**（`crates/jarde-reader/src/signature.rs:263` 的 `prove_class_signature_erasure` 未漂移，仍准确）。故"推迟合并以避免漂移"的理由已不成立——**合并可在派发时执行**，且合并后须按同一方法（锚点名重验，勿照抄行号）再核一遍。
+>
+> **优先级更正**：原写"低于在飞的 `recover-bridge-superclass-header-precondition`"——该片**已落地并 root 验收**（合并 `cc4b6f11`，验收记录 `9ca2db6a`；注意勿与 `recover-bridge-admission-gates` 的合并 `5f07e13c` 混淆，那是另一片）。本片仍属"呈现改善"而非正确性修复：bridge 前置修复落地后，裸头形已"可编译且行为正确"（桥保持可见、派发正确），本片只是让它进一步"隐藏桥 + 参数化头"更优。故优先级低于正在处理的**正确性/真 Java 8 覆盖**类缺口（DT-03 分配限定符残留、TWR javac 8 codegen、EM-15 写访问器），高于纯呈现润色。
 
-**Goals:** 类头 `implements` 子句按 Signature 投影类型实参；不可解析时保留裸类型并拒绝该类桥投影。**Non-Goals:** 嵌套/多层参数化接口（`Map<K,V>.Entry` 形按既有裸回退）；类自身有类型参数的形（`class C<T> implements I<T>`——属 nested-headers 域）；接口方法声明的泛型签名（成员域，已由 9/9 片覆盖）；不改父类投影既有行为（含 6354 的窄边界）；不放宽 `recover-bridge-admission-gates` 的消隐前置（本片只**供给**其依赖的类头事实）。
+**Goals:** 类头 `implements` 子句按 Signature 投影类型实参；不可解析时保留裸类型并拒绝该类桥投影。**Non-Goals:** 嵌套/多层参数化接口（`Map<K,V>.Entry` 形按既有裸回退）；类自身有类型参数的形（`class C<T> implements I<T>`——属 nested-headers 域）；接口方法声明的泛型签名（成员域，已由 9/9 片覆盖）；不改父类投影既有行为（含 6367 的窄边界）；不放宽 `recover-bridge-admission-gates` 的消隐前置（本片只**供给**其依赖的类头事实）。
 
 ## Decisions
 
-1. **复用既有类头投影通道**：与 `recover-proved-direct-parameterized-superclass` 同一选定环境、同一"擦除 == 物理 header"核对、同一原子性（整个类头一次决定，不从调用或局部猜类型）。接口列表逐个投影：任一接口不满足判据则该接口保持裸类型（不整体回退已可证的其它接口，除非既有通道的原子性要求整体一致——**按既有实现的原子性口径执行，并在报告中说明选择依据**）。实现上是在 `class_source.rs:6349/6360` 的既有门处并列加入 `parsed.interfaces` 的判定，而非新建一条类头装配路径。
+1. **复用既有类头投影通道**：与 `recover-proved-direct-parameterized-superclass` 同一选定环境、同一"擦除 == 物理 header"核对、同一原子性（整个类头一次决定，不从调用或局部猜类型）。接口列表逐个投影：任一接口不满足判据则该接口保持裸类型（不整体回退已可证的其它接口，除非既有通道的原子性要求整体一致——**按既有实现的原子性口径执行，并在报告中说明选择依据**）。实现上是在 `class_source.rs:6361/6372` 的既有门处并列加入 `parsed.interfaces` 的判定，而非新建一条类头装配路径。
 2. **消隐前置不变量（跨切面共享契约，已由 bridge 片实现）**：擦除桥的可重建性来自类头类型实参。`recover-bridge-admission-gates`（**已验收合入** `5f07e13c`）已实现该前置：参数 cast 形桥若其契约属主为接口边、且类自身 `Signature` 把该接口拼为带类型实参（=泛型接口）而投影头未携带，则**拒绝桥投影、保持桥可见**（`bridge_interface_contract_generic`，验收记录见其 tasks 3.3）。**本片不改该前置**，只提供它依赖的类头投影——即让 `BR$Impl` 的类头呈现 `implements java.lang.Comparable<BR$Impl>`，从而使 bridge 片的拒绝分支转为准入分支（owner 分离：类头文本 owner 是本片，消隐决策 owner 是桥准入片）。
 3. **验收锚定**：`BR$Impl`（`implements Comparable<BR$Impl>`）类头投影 → 桥投影随之启用 → 整类 `javac --release 8` 通过、`-Xverify:all` 运行与原 class 一致（`0`，含经接口引用的 `compareTo` 调用）；多接口形（`implements A<X>, B`）部分可证时按决策 1 的原子性口径呈现；负例（接口不可解析、arity 不符、擦除不一致）保留裸类型且桥**保持可见**（bridge 片前置的现行为，不得回退）。
 
