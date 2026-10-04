@@ -121,6 +121,7 @@ sed -n '46,76p' .github/workflows/ci.yml | sed 's/^ *//' | grep -E "^cargo|^-A" 
 >
 > **规则（新增）**：(a) **凡"引注数/命中数 = 0"的结论，必须先确认输出文件不是错误信息**——检查 jarde 自述头（`// jarde: presentation of …`、`// jarde: not a compilable project …`）是否在文件中，或检查产出文件的首行/大小；(b) `cd` 之后一律用**绝对路径**调用二进制与脚本产物；(c) 统计前先用 `wc -l`/首行抽样确认被统计的文件确实是预期产物；(d) 字面 grep 不能用于**字节码惯用法**普查，必须按指令序列匹配（且扫描器先用已知正例自检命中）。
 >
+> **错误 JSON 输出（第 7 例，2026-10-05 匿名类巡查自踩后自查）**：`--policy single-class` 配 jar 输入会得到 JSON 错误（`environment_policy_snapshot_kind_mismatch`），输出文件**不含源码**——对它计 `@bytecode` 同样得 0。规则升级：**自述头断言（`// jarde: presentation of`）必须是计数的硬前置门**（脚本在无头时立即退出报错，而非打印 0）；错误 JSON 与错误文本是同类假零源。
 > **假版本标记（第 6 例，2026-10-04 root 巡查局部类时自踩后自查修正）**：探针用**裸 `javac`**（无 `--release 8`）编译，产物含 Java 9+ 惯用法（`StringConcatFactory` 的 invokedynamic 拼接），jarde 对它引注是**正确的版本标记拒绝**，却被误读成"局部类有缺口"。规则：**巡查/验收探针必须显式 `--release 8`（或真 javac 8）编译**；见到 `StringConcatFactory` 类 Java 9+ 惯用法，先查探针编译命令再谈缺口。同段实证：局部类方法体 quotes=0 全恢复（`new LC$1L(arg0).run()` 形），整类不可编译撞的是**池形伴生名无声明**债务（与 `Svc$Entry` 同源；判别变量是"池形伴生名是否在源码区有声明"，与成员类/局部类无关）——归成员折叠通道拼写域，勿当控制流缺口立项。
 >
 > **空结果不能自证扫描器正确**：扫描器报"全部 SAME/全部 0"时，必须先用**已知正例**自检（本会话的 codegen 差异扫描器移植后，root 用已知版本耦合的 `TR` 复验，确认它仍正确报 `VERSION-COUPLED` 且能区分同类内非耦合方法，之后才采信其六个构造的 SAME 结论）。**扫描器的比较维度还必须覆盖该构造的版本敏感数据**：opcode-only 扫描对 `invokedynamic` 系构造（lambda/方法引用/字符串拼接）不足——BSM 参数变化不改变 opcode 序列；root 因此对 lambda 补做了 `BootstrapMethods` / `InnerClasses` / 合成方法命名三项属性级比对才下结论。
