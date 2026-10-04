@@ -1,0 +1,4 @@
+174eb6b15bc9360756178e4090885acd7755d6dea3b4d4ac5fb8751deba3a00a  openspec/evidence/java-syntax-2026-10-05/generic-static-field-init-patrol/fixture/MN.class
+7ad1949b336320cbeee87b99195cbfecbfbb89b738398ecd284692e5ba6f77b2  openspec/evidence/java-syntax-2026-10-05/generic-static-field-init-patrol/fixture/MN$Hold.class
+dec8bdc4721ccf96a192024318eb09a684dba7fd44d4407c7f52fdb66ed4148f  openspec/evidence/java-syntax-2026-10-05/generic-static-field-init-patrol/fixture/RG.class
+bc0083342da5c6e0a296f17828bcc5f6591606a5293009e8c354f4cfb7471bdd  openspec/evidence/java-syntax-2026-10-05/generic-static-field-init-patrol/fixture/RG$Hold.class

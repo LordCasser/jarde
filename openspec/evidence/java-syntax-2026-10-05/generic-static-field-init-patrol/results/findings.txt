@@ -1,0 +1,12 @@
+# 泛型静态字段初始化缺口取证（2026-10-05 root）
+
+最小复现 [fixture/MN.java]（--release 8）：static Hold<String> f1 = new Hold<>("a") 与显式 f2 = new Hold<String>("b") 皆渲染为：
+  `static Hold f1 = new MN$Holdava.lang.Object) "a");`
+——丢 、丢类型实参、类名与池形/ 纠缠（）——**不可编译**（javac exit 1：需要 \'(\' 或 \'[\'）。
+
+判别：菱形与显式类型实参**同样坏**（f1/f2 同错）→ 与 diamond 无关，是静态泛型字段的初始化表达式呈现路径缺陷；实例字段 f3 退化为构造器赋值（保守合法）。
+
+jadx 对照（results/jadx-MN.java）：完整恢复 ——jadx 有解，非语言层不可恢复。
+
+关联拒绝：（class_source.rs:5891 一带）——字段 Signature 投影拒绝后，**初始化表达式**走了错误的呈现路径（构造器调用文本拼坏）。
+RG 探针（results/rg.txt）叠加显示嵌套菱形  更长同样坏。

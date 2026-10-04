@@ -1,0 +1,7 @@
+MN.java:2: 错误: 需要'('或'['
+    static Hold f1 = new MN$Holdava.lang.Object) "a");
+                                               ^
+MN.java:4: 错误: 需要'('或'['
+    static Hold f2 = new MN$Holdava.lang.Object) "b");
+                                               ^
+2 个错误
