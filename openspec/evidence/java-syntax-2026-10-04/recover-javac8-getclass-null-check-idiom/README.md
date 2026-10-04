@@ -110,6 +110,22 @@ design 明言本片是「并列增加一种拼写」而非「新增机制」。
   即：**两处拼写判据的修复无法触达主锚**——诊断过程与证据见
   `postfix-realjavac8-N1-rendered.txt` 的 diagnostics 与本目录的 javap 对照。
 
+> ## root 验收裁定（2026-10-04，追加于实现者记录之后；上文为实现者原文，不改写）
+>
+> **实现者的停手结论成立、处置正确，予以接受**：分配限定符形确实不被本片的拼写判据触达，主锚未达成，属机制扩展而非本片范围。实现者未自行扩权，符合任务书停手条件 (a)。
+>
+> **但其机制归因中的"第一道门是 `jre_new_member_order`"属实现者的内部推断，root 未复核、亦未证伪。** root 以**合并态**二进制重渲染真 javac 8 的 `N1.main` 并读其 diagnostics，实测的**表层**拒绝码为 `jre_new_interleaved_effect` + `jre_new_shape` + `jre_new_sites`，诊断原文：
+>
+> - `"the construction at BCI 12 was not presented: the instruction at BCI 16 is an Allocate { ty: \"N1\" } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else"`
+> - `"the construction at BCI 16 was not presented: the instance the allocation at BCI 16 builds is read only by instructions this build quotes (BCIs 23), so the construction has no place in the body"`
+> - `"4 construction candidate(s) read under new@1: 2 presented as \`new\`, 2 refused"`
+>
+> **`jre_new_member_order` 不在 `main` 的诊断列表中。** 但 root **只实测了表层诊断码、未用插桩复现实现者的连锁**，故**不宣称其连锁为假**——其连锁末步（"new@1 效果扫描拒绝 `jre_new_interleaved_effect`"）恰与 root 实测码相符，两者可能在不同层级各自成立（root 测的是 `main`，实现者的连锁同时涉及 `main` 与 `use`）。
+>
+> **对后续片的强制要求**：第一道门究竟在 `verify_member` 的实参窗口、还是在 `new@1` 的嵌套站点"实例读者集合"判定，**必须由后续片自行以插桩或增量实验重新推导，不得继承本文件任一方的归因**。该问题决定修复落点与健全性负例的设计，两者工作量与风险完全不同。root 的疏失已如实登记于 `openspec/changes/recover-javac8-getclass-null-check-idiom/tasks.md` 3.5：先未经核实照录实现者归因，后又用"证伪"这种超出自身证据强度的措辞去更正它——两处都不对。
+>
+> **本片实际达成范围（root 独立实测）**：参数限定符形 + 隐式 this 形已修。`N1x`/`Wrap` 族（真 javac 8 产物，root 用 javap 核实其 `getClass`≥1 / `requireNonNull`=0 / major=52）源码区 quotes=0、not-recovered=0，渲染源 `javac --release 8` **exit 0**，root 自建 driver 运行 `java -Xverify:all` 输出 **`7`/`13`/`10`** 与原 class 同 driver 输出**逐行一致**。分配限定符形仍未折叠（`N1` 族源码区 quotes=13）。
+
 **为什么不在本片内修**：接受分配限定符位置的舞蹈需要 (a) init.rs 嵌套/分配限定符臂在
 实参窗口内接受一条被丢弃的 null 检查调用（`member_ordinary_arguments` 现在拒绝一切非实参
 依赖指令），(b) member_inner.rs 的 6 条窗口 `[new, dup, aload, dup, check, pop]` 为该位置
