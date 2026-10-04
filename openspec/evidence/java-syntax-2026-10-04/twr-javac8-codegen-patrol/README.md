@@ -8,12 +8,12 @@
 
 root 构造无 widening 混淆的 TWR 探针 [fixture/TR.java](fixture/TR.java)（`one()` 单一资源、`two()` 双资源，资源类自实现 `AutoCloseable`）：
 
-| 编译工具链 | `one()` 指令数 | `two()` 指令数 | 异常表项 | jarde 渲染引注 | `one()`/`two()` 恢复 |
+| 编译工具链 | `one()` 指令数（单资源，单方法） | `two()` 指令数（双资源，单方法） | 异常表行数（**整类**） | jarde 渲染引注 | `one()`/`two()` 恢复 |
 | --- | --- | --- | --- | --- | --- |
-| javac 23 `--release 8` | 22 | 61 | 7 | **0** | ✓ `try (TR local1 = new TR(arg0)) { … }` |
-| **真 javac 8**（Corretto 1.8.0_432） | **48** | **113** | **16** | **6** | ✗ 整方法 `not recovered` |
+| javac 23 `--release 8` | 22 | 61 | 7（`one()` 2 / `two()` 5） | **0** | ✓ `try (TR local1 = new TR(arg0)) { … }` |
+| **真 javac 8**（Corretto 1.8.0_432） | **48** | **113** | **16**（`one()` 5 / `two()` 11） | **6** | ✗ 整方法 `not recovered` |
 
-即真 javac 8 的 TWR codegen 约为 javac 9+ 的 **2.2 倍指令量、2.3 倍异常表项**（JDK 9 对 TWR 做了重大 codegen 简化），jarde 只恢复了后者。
+即真 javac 8 的 TWR codegen 约为 javac 9+ 的 **2.2 倍指令量**（`one()` 48/22、`two()` 113/61）、**2.2 倍异常表行**（整类 16/7；单方法 `one()` 5/2、`two()` 11/5），且真 javac 8 独有 **`any` catch-all 行**（`one()` 2 条、`two()` 4 条；javac 9+ 两方法均 **0** 条）与 `aconst_null` 资源副本引导（JDK 9 对 TWR 做了重大 codegen 简化）。jarde 只恢复了后者。
 
 - **javac 23 腿**（[results/TR-javac23-rendered.txt](results/TR-javac23-rendered.txt)）：`one()` 呈现 `try (TR local1 = new TR(arg0)) { java.lang.String local2 = local1.use(); return local2; }`，`two()` 呈现双资源 `try (TR local1 = …; TR local2 = …)`，quotes=0。
 - **真 javac 8 腿**（[results/TR-realjavac8-rendered.txt](results/TR-realjavac8-rendered.txt)）：`one()`/`two()` 均 `// jarde: not recovered: … produced no statement`，引注 `local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound declaration`，quotes=6。
@@ -36,43 +36,64 @@ CF-17 有**两族**验收 fixture，root 逐一核实**均由 javac 9+ 编译**�
 
 ## 三、颗粒度取证（root 零构建读码 + 异常表实测，回答"是否一定要新增机制"）
 
-**判据是 CFG/异常表驱动，不是指令序列匹配**。root 读码核实：TWR 的形证明在 `crates/jarde-java/src/guard.rs`（`Shape::NullableResourceFinally` 声明于 `guard.rs:363`、构造于 `3853`），其证明通篇用**块与异常表事实**——`facts.blocks_in((body_start, cleanup_start))`、`facts.covering(bci)` 的 row ordinal 集合恰等、`view.successor_ids(&handler_entry)` 须恰为 `{handler_call_block, rethrow_block}`、`successor_ids(&handler_call_block) == [rethrow_block]`、`successor_ids(&rethrow_block).is_empty()`、以及每条 `CanonicalEdgeKind::{Exception,Normal,Return}` 边的端点归属校验。区域侧 `region.rs:5252` `nullable_resource_finally_regions` 消费该 shape。
+**判据是 CFG/异常表驱动，不是指令序列匹配**。root 读码核实 TWR 的形证明归属，并**更正本节初稿的一处错误归属**：
 
-**而两腿的异常表拓扑不同**（root javap 实测 `P08_twr.one()`）：
+> **root 自查纠错**：本节初稿把 TWR 的形证明归到 `Shape::NullableResourceFinally`（`guard.rs:363`/`3853`）与 `region.rs:5252` `nullable_resource_finally_regions`。**错误**——该变体的文档自述是"The **two-row** nullable local cleanup with a **saved reference return**"，属 `finally` 族（`build.rs:1021`/`2682`/`12072`/`14719` 消费），不是 TWR。TWR 由**独立的 `Shape::Resources` 变体**承载，其证明函数是 `fn twr`（`guard.rs:14128`，构造点 `14645`）。root 的实测证据：javac 23 腿把 `P08_twr.one()` 呈现为 `try (P08_twr local0 = new P08_twr()) { … }`——这正是 `Shape::Resources` 文档自述的形（"`try (T n = …; …) { body }`, with the resources in **declaration** order"）。
+
+`fn twr` 的证明通篇用**块与异常表事实**，无指令序列硬匹配（root 核实 `guard.rs:3700-3860` 段内 **opcode 字面量 = 0**，而该段是 `finally` 族的证明；TWR 侧同理用几何判据）：`facts.blocks_in((…))`、`facts.covering(bci)` 的 row ordinal 集合恰等、`view.successor_ids(&…)` 的恰等集合、每条 `CanonicalEdgeKind::{Exception,Normal,Return}` 边的端点归属校验；TWR 特有的资源链由**异常表行的几何嵌套**构造（`guard.rs:14140-14162`）。
+
+**而两腿的异常表拓扑不同**（root javap 实测 `TR.one()`）：
 
 | 腿 | 异常表行数 | `any`（catch-all）行 | 保护区间 |
 | --- | --- | --- | --- |
 | javac 23 `--release 8` | **2** | **0** | `8→11 target 17`、`18→22 target 25`（均 `Class java/lang/Throwable`） |
 | 真 javac 8 | **5** | **2** | `21→25 target 28`、`10→13 target 43`、**`10→13 target 48 any`**、`58→62 target 65`、**`43→50 target 48 any`** |
 
-即真 javac 8 的 TWR 用**两条 `any` catch-all 行**表达"正常路径与异常路径都要关闭资源"的 JDK 8 codegen，且保护区间与关闭块被复制多份（`one()` 48 指令 / 16 异常表项 vs javac 9+ 的 22 / 7）。
+即真 javac 8 的 TWR 用**两条 `any` catch-all 行**表达"正常路径与异常路径都要关闭资源"的 JDK 8 codegen，且保护区间与关闭块被复制多份。（数字口径更正：`one()` **单方法**为 48 指令 / **5** 异常表行 vs javac 9+ 的 22 指令 / 2 行；root 初稿此处误写"16 异常表项"，那是 `TR` **整类**的行数——含 `two()` 的 11 行——非 `one()` 单方法。以单方法口径为准。）
 
-**结论（对 Goal 核心问题的回答：不需要新增机制，需要一个沿用既有惯例的新 shape 变体）**：TWR **不是"再认一种 idiom 拼写"能覆盖的**——它要求 `guard` 的 `NullableResourceFinally` 形证明**接受一套不同的块/异常表拓扑**。但 root 进一步取证发现**该拓扑在本仓已有已验收的同构先例**：
+**结论（对 Goal 核心问题的回答：不需要新增机制，也不需要新增 shape 变体；需要扩展现有 `fn twr` 的几何/初始化判据以接受 javac 8 拓扑）**：
 
-真 javac 8 的 `one()` 拓扑清点（root 实测）：
+TWR **不是"再认一种 idiom 拼写"能覆盖的**——javac 8 与 javac 9+ 的 TWR 是**两套块/异常表拓扑**。但 root 读码核实：**TWR 在本仓已由一个变长 shape 承载，无需新增变体**。
 
-| 维度 | 真 javac 8 TWR `one()` | 既有 `Shape::SegmentedFinally`（已验收） |
+- **TWR 的现有证明是变长的**：`fn twr`（`guard.rs:14128`，构造点 `14645` `Shape::Resources`）由**异常表行的几何嵌套**构造资源链 `chain: Vec<&ExceptionHandlerFact>`（`14140-14162`），再 `Vec::with_capacity(chain.len())` 建 `resources`/`handlers`；`Shape::Resources` 持 `resources: Vec<Resource>`、`cleanup: Vec<u32>`（皆变长），文档自述形为 "`try (T n = …; …) { body }`, with the resources in **declaration** order"。javac 23 腿把 `P08_twr.one()` 呈现为 `try (P08_twr local0 = new P08_twr()) { … }` 即经此路径。**故资源数本就变长，多资源不是容量问题**（仓内另有 `recover-multi-resource-twr` 变更 7/8 项专处理多资源）。
+- **与 `finally` 定长族无关（更正初稿的误导对照）**：初稿把真 javac 8 TWR 的"5 行/2 段/4 副本"与 `Shape::SegmentedFinally { rows:[u32;5], … }` 逐维对照、并建议新增 `NullableResourceFinallyJdk8 { rows:[u32;5] }` 定长变体——**方向错误**。`SegmentedFinally`/`NullableResourceFinally`/`NestedCleanupFinally` 等是 **`finally`/`synchronized` 族的定长 shape**（`build.rs:1021/2682/12072/14719` 消费 `NullableResourceFinally`），与 TWR 的 `Shape::Resources` **不同族**。TWR 修复应落在 `fn twr` 内，**不新增定长变体、不并入 finally 族**。
+- **`any` 行在事实模型中可表示、可区分**：`ExceptionHandlerFact`（`crates/jarde-reader/src/classfile.rs:285-291`）持 `ordinal: u32` + `catch_type_index: Option<u16>`，`None` 即 catch-all，两条 `any` 行由 ordinal 区分。`fn twr` 现有行几何判据（`closes_something(row)`、按 `(end-start, start)` 取最小行、`unexplained-row` 检查，`guard.rs:14150-14154` 注释记载其职责是**拒绝**把"编译器包在整个语句外的 `catch`"误吸收为资源层级）已读 `catch_type_index`（`14625` `row.catch_type_index?`），故区分 `any` 与 `Throwable` 行的事实基础已在。
+- **root 的失败机制假设（未验证，须实现片取证）**：`fn initialisation`（`guard.rs:1502`）用 `facts.previous_bci(end)`（`end`=行 `start_bci`）**向后找资源 store** 并取其 `Operation::Store{slot}` 作资源槽。真 javac 8 在资源 store（`astore_0`，BCI 7）与保护区起点（BCI 10）之间插入 `aconst_null; astore_1`（BCI 8-9），故 `previous_bci(10)==9` 命中 **slot 1（null 引导）而非 slot 0（资源）**——若成立则资源槽认错、后续判据失败、整方法拒绝（`Unproven::ResourceInit`）。**这是读码假设**：确证需构建后取诊断（本次为零构建取证，构建由在飞的 DT-03 片占用），故不作结论。
+
+**颗粒度判定**：**中颗粒、架构上常规**——在 `fn twr` 的资源链几何与 `initialisation` 判据内**识别并跳过 javac 8 的 `aconst_null` 引导、按 `catch_type_index` 区分 `any`/`Throwable` 行、把复制的关闭段（含 `addSuppressed`）归入既有变长 `cleanup`**，使真 javac 8 拓扑走通现有 `Shape::Resources`。**不需要新机制、不需要新 shape 变体、不需要平行状态**；javac 9+ 产物走原几何、零回退。显著大于 DT-03（换一条调用拼写）但小于"新增机制"，因变长 TWR 证明与事实模型都已就位。
+
+- **不并入 DT-03 片**（落点 `guard.rs`/`init.rs` 不同、判据性质不同、颗粒度不同）。
+- **立项前的剩余取证**（root 未做，不外推）：(1) 确证上面 `initialisation` 的 `aconst_null` 引导假设（构建后取 `Unproven::ResourceInit` 诊断的确切 BCI）；(2) 把真 javac 8 `one()`/`two()` 的**规范块图**逐块画出，确认 `fn twr` 的行几何（`closes_something`、最小行选择、`unexplained-row`）在 `any` 行 + 复制关闭段下是否只需局部扩展、还是会撞上"资源链几何"与"unexplained-row 检查"的冲突；(3) 确认 `addSuppressed` 在区域侧（`region.rs` 消费 `Shape::Resources` 处）的呈现归属；(4) 单资源先行还是单/双资源合并，由 (2) 的块图结果决定（不预设）。
+- **风险登记（保留，重述）**：不得为覆盖 javac 8 形而放宽 `fn twr` 的行几何判据（`closes_something(row)`、最小行选择、`unexplained-row` 检查）——放宽会让 `try(…){…}catch(E e){…}` 被误读成多资源 TWR，属静默语义偏离。javac 8 形的覆盖必须通过**精确识别 `any` 行与 `aconst_null` 引导**达成。
+
+## 三之二、单资源 vs 多资源：MVP 边界的实测依据（root 补充取证，含一处自我更正）
+
+上面第三节的"5 行 / 2 段 / 4 副本"是**单资源** `one()` 的拓扑。root 追加实测**双资源** `two()`（`try (TR a = …; TR b = …)`），拓扑显著更大：
+
+| 维度 | 单资源 `one()` | 双资源 `two()` |
 | --- | --- | --- |
-| 异常表行数 | **5**（3 条 `Class java/lang/Throwable` + **2 条 `any`**） | `rows: [u32; 5]` ← **同为 5 行** |
-| 段数 | **2**（正常关闭副本 BCI 13-41 / 异常关闭副本 BCI 48-82） | `segments: [(u32, u32); 2]` ← **同为 2 段** |
-| 关闭序列副本 | **4**（`invokevirtual close` 于 BCI 22、38、59、77）+ `addSuppressed` ×2（BCI 31、70） | `cleanup: [(u32, u32); 4]` ← **同为 4 份** |
-| 保存返回值 | `ldc "in"; astore_2`（BCI 10-12），恢复于 `aload_2; areturn`（41-42） | `early_return: u32` / `saved_return` 同族字段 |
+| 指令数 | 48 | **113** |
+| 异常表行数 | **5**（3 Throwable + 2 any） | **11**（7 Throwable + 4 any） |
+| `invokevirtual close` 副本 | 4 | **8** |
+| `addSuppressed` | 2 | **4** |
+| `ifnull` 资源守卫 | 4 | **8** |
 
-即 `SegmentedFinally` 的文档自述"**The one five-row, two-segment, four-copy Java 8 finally certificate**"与真 javac 8 TWR 的拓扑**逐维吻合**。差别只在语义角色：`SegmentedFinally` 建模的是 **`catch`-型** finally（持 `catch_type`/`catch_handler`/`catch_body`/`catch_parameter`），而 javac 8 TWR 用的是 **`any` catch-all 行 + 资源 null 守卫**（`aload_0; ifnull`、`aload_1; ifnull`）。
+**root 自我更正（本节初稿的结论是错的，已推翻）**：初稿据"仓内定长 Shape 变体的行数组最大为 `[u32;5]`（`SegmentedFinally`）"推断"双资源 11 行超出现有全部变体容量、须新增 `[u32;11]` 定长变体或引入变长行集（机制决策）"。**该推断错误**——它把 TWR 归到了定长 `finally` 变体族，而 TWR 实际由**独立的 `Shape::Resources` 变体**承载，该变体用**变长集合**：`resources: Vec<Resource>`、`cleanup: Vec<u32>`、`returns: Option<u32>`、`inner_finally: Option<Box<InnerTwrFinally>>`、`trailing_finally`，其文档自述形为 "`try (T n = …; …) { body }`, with the resources in **declaration** order"。
 
-**且 `any` 行在事实模型中可表示、可区分**：`ExceptionHandlerFact`（`crates/jarde-reader/src/classfile.rs:285-291`）持 `ordinal: u32` + `catch_type_index: Option<u16>`，`None` 即 catch-all，两条 `any` 行由 ordinal 区分。（注意 `guard.rs:12169` 的 `CatchTypes::ProvenThrowable` 文档写"**A single** catch-all"——那是 `try`/`catch` **语句**（`Catches`）的模型，不是 finally certificate 的行模型；root 核实二者是不同结构，故"单 catch-all"限制不约束本形。此点须在立项时由实现者复核，root 已标注为唯一未完全排除的风险。）
+root 读码核实：证明函数 `fn twr`（`guard.rs:14128`）先由**异常表行的几何嵌套**构造资源链 `chain: Vec<&ExceptionHandlerFact>`（`14140-14162`：从最内层行向外找 `start_bci <= inner.start_bci && end_bci >= inner.end_bci && closes_something(row)` 的行，按 `(end-start, start)` 取最小者），再 `Vec::with_capacity(chain.len())` 建 `resources`/`handlers`。即**资源数本就是变长的**，双资源不是容量问题；且仓内已有 `recover-multi-resource-twr` 变更（7/8 项）专门处理多资源 TWR。故：
 
-**故颗粒度判定为**：**中大颗粒、但架构上常规**——按 `SegmentedFinally`/`NestedCleanupFinally`/`TwoCatchReturnFinally`（`rows: [u32; 4]`）的既有惯例**新增一个 shape 变体**（如 `NullableResourceFinallyJdk8 { rows: [u32;5], segments: …, cleanup: [(u32,u32);4], saved_return: … }`），并让 `region.rs:5252` 的区域侧消费它。**不需要新机制、不需要平行状态、不需要放宽既有 shape 的判据**（新变体与 `NullableResourceFinally` 并列，javac 9+ 产物走原变体、零回退）。
-
-- **不并入 DT-03 片**（落点、判据性质、颗粒度都不同）。
-- **立项前的剩余取证**（root 未做，不外推）：(1) 把 `one()`/`two()` 的**规范块图**（canonical blocks + edges）逐块画出，确认 `successor_ids` 恰等集合能否用单一新变体表达，还是需要按"单资源 / 多资源"分两个变体（`two()` 有 113 指令、双资源逆序关闭，可能需独立形）；(2) 复核上面标注的 `CatchTypes::ProvenThrowable` "single catch-all" 是否真的不约束 finally 行模型；(3) 确认 `addSuppressed` 调用（javac 8 TWR 特有、javac 9+ 简化后位置不同）在区域侧的呈现归属。
+- **"多资源需要前所未有的定长容量"这一论断作废**。`Shape::Resources` 的变长设计已覆盖任意资源数，`[u32;N]` 定长族（`Finally`/`LoopFinally`/`SegmentedFinally` 等）是 **`finally`/`synchronized` 的 shape**，与 TWR 不同族，二者不应混为一谈。
+- **MVP 边界的正确依据不是容量，而是 javac 8 拓扑与 `fn twr` 现有几何判据的相容性**。真 javac 8 的 TWR 与 javac 9+ 的差异在于：(a) 资源初始化后**插入 `aconst_null; astore_1` 引导**（`one()` BCI 8-9）；(b) 每个资源的关闭路径含**双 `ifnull` 守卫 + `addSuppressed`**；(c) 异常表多出 **`any` catch-all 行**（`catch_type_index == None`）与复制的关闭段。
+- **root 的机制假设（未验证，须实现片取证）**：`fn initialisation`（`guard.rs:1502`）用 `facts.previous_bci(end)`（`end` = 行的 `start_bci`）**向后找资源 store**，并取其 `Operation::Store { slot }` 作为资源槽。真 javac 8 在资源 store（`astore_0`，BCI 7）与保护区起点（BCI 10）之间**插入了 `aconst_null; astore_1`（BCI 8-9）**，故 `previous_bci(10) == 9` 命中的是 **slot 1（null 引导）而非 slot 0（资源）**——若成立，则资源槽被认成 null 引导槽，后续判据失败并整方法拒绝。**这只是读码假设**：确证需构建后取 `Unproven::ResourceInit` 诊断（本次取证为零构建，构建由在飞的 DT-03 片占用），故**不作为结论**。
+- **因此 MVP 建议仍成立但依据改变**：单资源先行（`one()`，48 指令 / 5 行）→ 双资源后续（`two()`，113 指令 / 11 行）。依据不是"容量上限"，而是**双资源的关闭段复制与 `any` 行嵌套深度显著更高**（8 份 close、4 份 addSuppressed、3 条 any），在单资源形跑通前一次性覆盖两形会放大取证面。若实现片取证发现单/双资源共用同一条 `chain` 几何判据即可覆盖，则**可以合并为一片**——由取证结果决定，不预设。
+- **风险登记（保留，但重述）**：不得为覆盖 javac 8 形而放宽 `fn twr` 的行几何判据（`closes_something(row)`、按 `(end-start, start)` 取最小行、`unexplained-row` 检查）——`guard.rs:14150-14154` 的注释明确记载该检查的职责是**拒绝**把"编译器包在整个语句外的 `catch`"误吸收为资源层级。放宽它会让 `try(…){…}catch(E e){…}` 被误读成多资源 TWR，属静默语义偏离。javac 8 形的覆盖必须通过**精确识别 `any` 行与 null 引导**达成，而非放宽行吸收判据。
 - **优先级判断**：TWR 是 Java 8 极常见形且当前真 javac 8 产物**整方法拒绝**（响亮，非静默），价值高；但颗粒度显著大于 DT-03/EM-15，须单独排期，不与窄片混批。
 
 ## 四、健全性与严重性
 
 - **失败是响亮的**：真 javac 8 的 TWR 方法 `not recovered` + 引注 + 整方法不投影，**不产生"可编译但行为不同"的文本**，符合核心不变量。故这不是静默偏离事故。
 - **但它是目标层级上的真实覆盖缺口**：jarde 的唯一目标输出层级是 Java 8（`classfile.rs:145` `OutputLevel::Java8`），而真 javac 8 的 TWR 是 Java 8 极常见形（`try (Resource r = …) { … }`）。真 javac 8 产物与 javac 9+ `--release 8` 产物**都是 major version 52 的 Java 8 class**（root 实测四份产物 major 均 52），故真实世界的 JDK-8 编译产物会命中该缺口，而 `--release 8` 交叉编译产物不会。
-- **TWR 缺口比 DT-03 大**：DT-03 只是 null-check 一条调用的拼写差异（`requireNonNull` vs `getClass`，结构同构），而 TWR 是整个 region 的指令序列与异常表结构差异（48 vs 22 指令、16 vs 7 异常表项），涉及 `aconst_null` 资源副本、`ifnull` 守卫关闭序列的 region/latch 证明。故 TWR **不是一条 idiom 拼写能覆盖的**，须独立取证其 region 证明能否扩展到 JDK 8 关闭序列——可能是中等到大颗粒的机制工作，非窄切片。
+- **TWR 缺口比 DT-03 大**：DT-03 只是 null-check 一条调用的拼写差异（`requireNonNull` vs `getClass`，结构同构），而 TWR 是整个 region 的指令序列与异常表结构差异（单方法 `one()`：48 vs 22 指令、5 vs 2 异常表行；整类 `TR`：16 vs 7 行，含双资源 `two()` 的 11 行），涉及 `aconst_null` 资源副本、`ifnull` 守卫关闭序列的 region/latch 证明。故 TWR **不是一条 idiom 拼写能覆盖的**，须独立取证其 region 证明能否扩展到 JDK 8 关闭序列——可能是中等到大颗粒的机制工作，非窄切片。
 
 ## 五、系统性归属（三例同根，这是本巡查的主要产出）
 
@@ -82,9 +103,9 @@ CF-17 有**两族**验收 fixture，root 逐一核实**均由 javac 9+ 编译**�
 | --- | --- | --- | --- | --- |
 | DT-03 限定外部实例构造 | `Objects.requireNonNull(Object)Object` | `Object.getClass()Class` | `init.rs` / `member_inner.rs` | 窄（一条 idiom 拼写，结构同构）|
 | 写访问器 | （读形 `getfield;ireturn` 已覆盖） | 返回值形 `dup_x1;putfield;ireturn` `(LC;D)D` | `accessor.rs:480` | 中（判据扩返回值形 + 健全性负例）|
-| try-with-resources | 优化 codegen（22 指令 / 7 异常表）| `aconst_null`+`ifnull` 守卫（48 指令 / 16 异常表）| TWR region 证明 | 大（region/异常表结构，非 idiom）|
+| try-with-resources | 优化 codegen（`one()` 22 指令 / 2 异常表行）| `aconst_null` 引导 + `ifnull` 双守卫 + `addSuppressed` + `any` 行（`one()` 48 指令 / 5 行，其中 2 条 `any`）| `guard.rs` `fn twr`（14128）→ `Shape::Resources` | 中（变长 TWR 证明与事实模型已就位，扩展几何/初始化判据即可，**无需新机制或新 shape 变体**；见第三节更正后的判定）|
 
-**共同根因**：整个 `tests/fixtures` 与 `openspec/evidence` 语料由 **javac 9+（含 `--release 8` 交叉编译）**产出，无真 javac 8 产物。故凡"编译器版本耦合的 codegen 惯用法"，其真 javac 8 形**对既有验收结构性不可见**——CI 全绿不代表真 Java 8 产物被覆盖。root 全仓普查佐证：`requireNonNull` 形 8 类 / `getClass` 形 **0** 类；含 `access$` 的真实 class **0** 个；CF-17 的 `T2.class` 为 javac 9+ 指纹。
+**共同根因**：整个 `tests/fixtures` 与 `openspec/evidence` 语料由 **javac 9+（含 `--release 8` 交叉编译）**产出，无真 javac 8 产物。故凡"编译器版本耦合的 codegen 惯用法"，其真 javac 8 形**对既有验收结构性不可见**——CI 全绿不代表真 Java 8 产物被覆盖。root 全仓普查佐证：`requireNonNull` null-check 形 8 类 / `getClass` 形 **0** 类；含 `access$` 的真实 class **0** 个；CF-17 的**两族** fixture 均为 javac 9+ 指纹（`cf17-twrcatch-patrol/T2.class` = 107 instrs / 0 `aconst_null`；`try-with-resources/original.class` 即 `TwrAudit` = 138 / 1，皆与 javac 23 重编逐值一致）。
 
 **这不要求为每个构造新增机制**（Goal 的核心问题）：DT-03 与写访问器是"判据认事实而非认某一版本的拼写"，在既有架构内扩展即可（DT-03 已派发 [recover-javac8-getclass-null-check-idiom](../../../changes/recover-javac8-getclass-null-check-idiom/)，其 design 决策 1 的"单一所有者谓词 + 两处投影"就是该原则的落地）；TWR 则须先取证其 region 证明的可扩展性，可能是真实的机制工作。
 
