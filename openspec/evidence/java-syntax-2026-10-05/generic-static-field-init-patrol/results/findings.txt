@@ -1,12 +1,31 @@
 # 泛型静态字段初始化缺口取证（2026-10-05 root）
 
-最小复现 [fixture/MN.java]（--release 8）：static Hold<String> f1 = new Hold<>("a") 与显式 f2 = new Hold<String>("b") 皆渲染为：
-  `static Hold f1 = new MN$Holdava.lang.Object) "a");`
-——丢 、丢类型实参、类名与池形/ 纠缠（）——**不可编译**（javac exit 1：需要 \'(\' 或 \'[\'）。
+## 最小复现
 
-判别：菱形与显式类型实参**同样坏**（f1/f2 同错）→ 与 diamond 无关，是静态泛型字段的初始化表达式呈现路径缺陷；实例字段 f3 退化为构造器赋值（保守合法）。
+[fixture/MN.java](../fixture/MN.java)（`javac --release 8`）：`static Hold<String> f1 = new Hold<>("a")`（菱形）与 `f2 = new Hold<String>("b")`（显式类型实参）。
 
-jadx 对照（results/jadx-MN.java）：完整恢复 ——jadx 有解，非语言层不可恢复。
+## 渲染结果（坏）
 
-关联拒绝：（class_source.rs:5891 一带）——字段 Signature 投影拒绝后，**初始化表达式**走了错误的呈现路径（构造器调用文本拼坏）。
-RG 探针（results/rg.txt）叠加显示嵌套菱形  更长同样坏。
+两字段均渲染为（逐字，见 [jarde-MN.txt](jarde-MN.txt)，证据根 `results/` 的渲染冻结件 `mn.txt`）：
+
+    static Hold f1 = new MN$Holdava.lang.Object) "a");
+
+——丢左括号、丢类型实参、类名与池形和 `java.lang.Object` 纠缠（嵌套形出现 `Hold.lang.Object` 片段）。**渲染源集 javac exit 1**（"需要 '(' 或 '['"，见 [javac-errors.txt](javac-errors.txt)）。
+
+## 判别
+
+- 菱形与显式类型实参**同样坏** → 与 diamond 语法无关；
+- 实例字段 `f3` 退化为构造器赋值（保守但合法）→ 仅**静态**字段初始化表达式走坏路径；
+- 伴生 `Hold<T>` 自身的 `T v` 投影正常（"field Signature `TT;` projected after descriptor erasure"）→ 泛型类成员投影无恙。
+
+## jadx 对照
+
+[jadx-MN.java](jadx-MN.java)：`static MN.Hold<java.lang.String> f1 = new MN.Hold<>("a");` —— **完整恢复**，证明该形语言层可恢复（有解）。
+
+## 关联拒绝与候选落点
+
+渲染带注释 `field Signature projection refused for f1LMN$Hold;: unsupported (field_generic_body_unproved)`——refusal 常量在 `src/class_source.rs` 约 5891 行一带。触发链：字段 Signature 投影被拒 → 初始化表达式呈现路径把泛型类构造调用的接收者/实参拼坏。RG 探针（[rg.txt](rg.txt)）显示嵌套菱形损坏更长（`new RG$Holdava.lang.Object) new RG$HolHold.lang.Object) …`）。
+
+## 处置建议
+
+窄片：先把损坏文本修为**响亮拒绝或裸类型正确形**（满足"从不产出可编译但行为不同文本"不变量的下界——现状是不可编译但也非忠实引注形）；随后独立片考虑静态字段 Signature 投影。
