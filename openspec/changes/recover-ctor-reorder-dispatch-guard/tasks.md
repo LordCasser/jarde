@@ -22,5 +22,16 @@
 > **析取不变量 root 独立复现**（`/tmp/guard-verify`，非采信 `repro.sh` 记录）：原类基线 `observed=captured-value`/`visibleDuringSuper=true` 不变；guard 渲染为 verbatim 序（`this.val$captured = arg1;` 在 `super();` 之前）→ `javac --release 8` **exit 1**（"灵活构造器是预览功能"，响亮失败）。即"可编译且行为不同"的静默态已消除，退回忠实但不可编，符合 spec 决策 3。测试断言的可判伪性亦经复核：基线先钉 `visibleDuringSuper=true`，若重排回归则 javac 会接受且输出 `false` → `assert_eq!` 失败。
 > **实现者普查勘误经 root 独立确认**：`anonymous-top-level/AnonymousTopLevel$1` 是同形第四处（javap 实测 `putfield val$captured(arg3)` → `invokespecial Base.<init>(J)V`，其 `Base(long)` ctor 的 `invokevirtual` 全在新建 StringBuilder 上、无 `this` 分派），我原 README 普查表漏计；其 2026-09-25 既有证据（`anonymous-top-level/evidence.md` 第 80 行）登记的正是 verbatim 序 + javac exit 1 + "构造器顺序是 OpenSpec 2.10 的独立缺口，在 5.3 投影前不能把该类源码当作可编译的匿名体证明"——守卫使其**恢复该登记状态**，非新损失。据此修正 3.2 的"两处非 Object super fixture"表述：实为**四处**（`anonymous-super-dispatch`、`anonymous-super-args`、`anonymous-capture`、`anonymous-top-level`），corpus 双腿扫描（465 类）的 4 处差异即此四类、全是 ctor 语句序，无其它渲染变化。
 > **保守判据的已知代价（root 复核确认属 spec 内取舍）**：`anonymous-super-args`/`anonymous-capture`/`anonymous-top-level` 三处的 super ctor 实测**无** `this` 虚分派，其重排本是行为安全的，但单档判据使其退回 verbatim（不可编译）。这是 design 决策 1 明确接受的取舍（换取"无需跨类读方法体、无新机制"），终局解见下。
-> **终局解关联**：本片是过渡收敛（响亮失败）；四处 fixture 的可编译性终局解是 [recover-anonymous-mixed-super-capture](../recover-anonymous-mixed-super-capture/)（5.3 类级匿名语法，`new Base(...) { ... }` 让 javac 自行重建前置写入）。`present-proved-java-structure` 2.10 的"不声称可编译"一半已由本片交付，"可编译"一半留 5.3。
+> **终局解关联（2026-10-04 root 实测更正：原写"5.3 是四处 fixture 的终局解"不成立）**：本片是过渡收敛（响亮失败）。[recover-anonymous-mixed-super-capture](../recover-anonymous-mixed-super-capture/)（5.3，合并 `e1c89d57`）已落地，但**只覆盖"根方法为无参、返回类型恰为父类 `()Lparent;`、分配点在直返位"的混合形**，其新锚是新建 fixture `anonymous-super-mixed-direct/`（root 实测：完整源集 `javac --release 8` exit 0、`java -Xverify:all` 事件日志与原 class **逐字一致**，且 javac 自行重建 `putfield val$local0` 先于 `invokespecial Base.<init>` —— 该形确已不依赖 ctor 重排）。
+>
+> **四处 ctor-reorder fixture 实测仍全部未内联**（root 用合并后二进制逐类渲染取证，拒绝码为 `facade.rs:4694/4701` 的**既有**门，非本片或 5.3 引入）：
+>
+> | fixture | 根方法签名 | 阻塞门 | 5.3 是否解决 | 后续片是否解决 |
+> | --- | --- | --- | --- | --- |
+> | `anonymous-super-args` | `main` 内 `Base instance = new Base(…)` | 分配点在**局部声明初始化位** | 否 | 是（`recover-anonymous-local-decl-site`） |
+> | `anonymous-top-level` | `static Renderer create()` | `anonymous_super_return_type_unproved`：返回类型是 `Renderer`，门要求 `()LBase;` | 否 | **否**（需放宽返回类型门） |
+> | `anonymous-capture` | `private static Renderer baseArgumentAndCapture()` | 同上 | 否 | **否** |
+> | `anonymous-super-dispatch` | `private static Base create(final String captured)` | 同上：根方法**带参数**，门要求无参 | 否 | **否** |
+>
+> **故"四处 fixture 可编译"的终局解不是单一片，而是一条链**：(1) 局部声明位站点选择 + 赋值左端匿名类型名重拼（已立项 `recover-anonymous-local-decl-site`）；(2) 根方法返回类型门的放宽（允许返回父类的**子类型/接口**而非恰为父类）；(3) 根方法**带参数**形的支持。三者都未立项的 (2)(3) 需在推进前单独取证其判据安全性（返回类型门放宽会牵动"分配点唯一性"与"捕获值来源可证"两条既有不变量，不可草率）。`present-proved-java-structure` 2.10 的"可编译"一半**仅部分交付**（直返无参形）。
 > **遗留**：handoff 记载的测试基线 2918 与实测 2919（bridge 验收后）差 1，属历史计数漂移，不影响门禁判定；测试数基线已在 handoff 更正。
