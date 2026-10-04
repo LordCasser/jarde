@@ -31,7 +31,13 @@
 > | `anonymous-super-args` | `main` 内 `Base instance = new Base(…)` | 分配点在**局部声明初始化位** | **已内联**（环 1 [recover-anonymous-local-decl-site](../recover-anonymous-local-decl-site/) `25f2589e`；root 实测渲染源集 `javac` exit 0、事件日志与原 class 逐行一致） |
 > | `anonymous-super-dispatch` | `private static Base create(final String captured)` | 同上门：根方法**带参数** | **已内联**（环 3 [recover-anonymous-parameterized-root](../recover-anonymous-parameterized-root/) `d906464e`；root 实测渲染源集 `javac` exit 0、输出 `observed=captured-value`/`visibleDuringSuper=true` 与原 class 逐行一致；`-g:none` 腿同样通过，证明不依赖 LVT） |
 > | `anonymous-top-level` | `static Renderer create()` | `anonymous_super_return_type_unproved`：返回类型是 `Renderer`，门要求 `()LBase;` | 仍未内联 → **环 2**（未立项） |
-> | `anonymous-capture` | `private static Renderer baseArgumentAndCapture()` | 同上 | 仍未内联 → **环 2**（未立项） |
+> | `anonymous-capture` | `private static Renderer baseArgumentAndCapture()` | **`anonymous_super_source_type_unproved`**（root 2026-10-04 第三次实测更正：此前误记为返回类型门）——其父类是**嵌套** `AnonymousCaptureCases$Base`（含 `$`），先撞父类可拼写门 | 仍未内联 → 需**环 2 + 嵌套父类名可拼写**两者 |
 >
-> **故四处中已闭合两处，终局解只剩环 2**：根方法返回父类的**超类型**（返回接口 `Renderer` 而父类为 `Base`）。环 3 的 `supertype-return` 负例经 root 实测**仍按既有码拒绝**，证明环 3 只放宽了参数表、未顺带打开环 2 的门。环 2 需要一个新的**类级可赋值性证明**能力（盘点：`prove_snapshot_hierarchy_widenings` 证值不证类；`members.rs::subtype_of` 概念匹配但私有且绑定访问检查机制），放宽前须取证其对"分配点唯一性"与"捕获值来源可证"两条不变量的影响——机制判定与优先级见 [anonymous-chain-rings-2-3](../../evidence/java-syntax-2026-10-04/anonymous-chain-rings-2-3/README.md)。`present-proved-java-structure` 2.10 的"可编译"一半已交付直返无参形 + 局部声明初始化形 + 根方法带参形。
+> **故四处中已闭合两处，但剩余两处的阻塞并不相同（root 以 javap 权威核实 `super_class` 常量与根方法返回描述符）**：
+> - `anonymous-top-level`：父类 `Base` 顶层可拼写，返回 `Renderer` 是 `Base` 实现的接口 → **只需环 2**（返回父类超类型的可赋值性证明）。
+> - `anonymous-capture`：父类 `AnonymousCaptureCases$Base` 与返回类型 `AnonymousCaptureCases$Renderer` **都含 `$`**（均为嵌套类）→ 先撞 `anonymous_super_source_type_unproved`，即使放宽该门也还需环 2。**故环 2 单独落地只能闭合 `anonymous-top-level`，不能闭合 `anonymous-capture`**；后者还需嵌套父类名可拼写能力（属 `recover-parameterized-class-headers` 的嵌套名域或独立片）。
+>
+> **环 2 需要一个新的类级可赋值性证明**（root 盘点已确认无现成可用件：`prove_no_body_generic_hierarchy` 是**保守拒绝**非层级 walk——它只接受 `Object` 父类且无接口的顶层类；`prove_snapshot_hierarchy_widenings` 证 IR 内的**值**放宽不证**类**关系；`members.rs::subtype_of` 概念匹配但为私有 `fn` 且绑定 `HeaderClosure`/`Search`/`ClassSite` 访问检查机制；`jarde-query` 无公开超类型查询 API，其 `scan_hierarchy` 只做 xref 元数据的一层记录）。**但 root 另有一项降成本的实测发现**：两个 fixture 中父类→返回类型的关系都是**一层直接**关系（`Base implements Renderer`），而投影本就会解析父类 class file（`prove_direct_generic_superclass_parent` 已用 `resolve_class_source_dependency_read_raw` 读父类定义，`ClassMemberFacts.interfaces` 可直接取到）——故**环 2 的 MVP 可以只做一层判据**（父类的 `super_class`/`interfaces` 直接包含声明返回类型），把传递闭包留作后续，避免一上来就新建层级 walk 共享件。放宽前仍须取证其对"分配点唯一性"与"捕获值来源可证"两条不变量的影响，并含"声明返回类型与父类无关"的负例（须响亮拒绝，不得发射不可编译文本）。
+>
+> 环 3 的 `supertype-return` 负例经 root 实测**仍按既有码拒绝**，证明环 3 只放宽了参数表、未顺带打开环 2 的门。机制判定见 [anonymous-chain-rings-2-3](../../evidence/java-syntax-2026-10-04/anonymous-chain-rings-2-3/README.md)。`present-proved-java-structure` 2.10 的"可编译"一半已交付直返无参形 + 局部声明初始化形 + 根方法带参形。
 > **遗留**：handoff 记载的测试基线 2918 与实测 2919（bridge 验收后）差 1，属历史计数漂移，不影响门禁判定；测试数基线已在 handoff 更正。
