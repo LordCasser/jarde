@@ -20,7 +20,7 @@
 
 ## 3. 验收
 
-- [ ] 3.1 锚 `anonymous-super-dispatch` 完整源集 `javac --release 8` 通过、`java -Xverify:all` 输出与原 class 逐行一致；`-g:none` 对照腿同样通过且呈现与 `-g` 腿一致（证明不依赖调试信息）。
+- [ ] 3.1 **渲染源集**（root 已实测钉死基线口径，勿混淆两种源集）：用主线二进制渲染 `anonymous-super-dispatch` 后抽取源码区、与 fixture 的 `Base.java` 组成源集，`javac --release 8` 从**当前 exit 1**（`找不到符号`——渲染文本引用 `AnonymousSuperDispatch$1`，非法 Java 标识符）转为 **exit 0**；`java -Xverify:all` 运行输出与原 class 逐行一致（原 class 基线实测为 `observed=captured-value` / `visibleDuringSuper=true`）。注意：**fixture 的原始 `.java` 源集本来就 `javac` exit 0**，故"源集能编译"不是验收信号——必须用**渲染产物**组成的源集。`-g:none` 对照腿（1.2）同样从 exit 1 转 exit 0 且呈现与 `-g` 腿一致（证明不依赖 `LocalVariableTable`）。
 - [ ] 3.2 零回退：`recover-anonymous-mixed-super-capture` 的全部正负例（新锚 `anonymous-super-mixed-direct` 须**逐字节相同**、六个 mixed refusals 仍响亮拒绝）、`recover-anonymous-local-decl-site`（环 1）的锚与遏制负例、`recover-proved-anonymous-local-capture`(6/6)、`recover-proved-anonymous-inner-this`(8/8)、`inline-proved-anonymous-super-arguments`(8/8)、`recover-ctor-reorder-dispatch-guard` 三向负例全部逐字通过。
 - [ ] 3.3 门禁：`cargo test --workspace --tests --locked --no-fail-fast`（基线数字以开工时主线实测为准，环 1 合入后会高于 296/2937；已知 flake 家族见 handoff.md，单测复跑两轮判定）；`cargo fmt --all -- --check`；clippy **从 `.github/workflows/ci.yml` 46–76 行逐字生成**（含 `--all-features`、29 项 `-A`、`-D warnings`）；`openspec validate --all --strict`；corpus 双腿扫描（差异应仅本形；**出现第 2 个差异类即越界信号，停下报告**）；`git diff --check`。磁盘纪律：每轮构建前 `df -h /`，低于 12Gi 先 `cargo clean`，**报告前必 clean**，同一时刻只允许一个 cargo target。
 - [ ] 3.4 root 独立复核根方法门放宽的边界（返回部分是否仍恰等）、参数名来源是否真为 AST（用 `-g:none` 腿验证）、划分退化形、接口路径零波及（`b"D"` 五处未改）、三方行为与账本更新（DT-06 匿名父类域 + `present-proved-java-structure` 5.3 剩余范围）。（留 root）
