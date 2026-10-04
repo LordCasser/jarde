@@ -10,4 +10,3 @@ abstract class Base {
 
     abstract void observe();
 }
-
