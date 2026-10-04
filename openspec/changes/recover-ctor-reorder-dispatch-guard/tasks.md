@@ -30,7 +30,7 @@
 > | --- | --- | --- | --- |
 > | `anonymous-super-args` | `main` 内 `Base instance = new Base(…)` | 分配点在**局部声明初始化位** | **已内联**（环 1 [recover-anonymous-local-decl-site](../recover-anonymous-local-decl-site/) `25f2589e`；root 实测渲染源集 `javac` exit 0、事件日志与原 class 逐行一致） |
 > | `anonymous-super-dispatch` | `private static Base create(final String captured)` | 同上门：根方法**带参数** | **已内联**（环 3 [recover-anonymous-parameterized-root](../recover-anonymous-parameterized-root/) `d906464e`；root 实测渲染源集 `javac` exit 0、输出 `observed=captured-value`/`visibleDuringSuper=true` 与原 class 逐行一致；`-g:none` 腿同样通过，证明不依赖 LVT） |
-> | `anonymous-top-level` | `static Renderer create()` | `anonymous_super_return_type_unproved`：返回类型是 `Renderer`，门要求 `()LBase;` | 仍未内联 → **环 2**（未立项） |
+> | `anonymous-top-level` | `static Renderer create()` | `anonymous_super_return_type_unproved`：返回类型是 `Renderer`，门要求 `()LBase;` | 仍未内联 → **环 2 已立项** [recover-anonymous-supertype-return](../recover-anonymous-supertype-return/)（未派发） |
 > | `anonymous-capture` | `private static Renderer baseArgumentAndCapture()` | **`anonymous_super_source_type_unproved`**（root 2026-10-04 第三次实测更正：此前误记为返回类型门）——其父类是**嵌套** `AnonymousCaptureCases$Base`（含 `$`），先撞父类可拼写门 | 仍未内联 → 需**环 2 + 嵌套父类名可拼写**两者 |
 >
 > **故四处中已闭合两处，但剩余两处的阻塞并不相同（root 以 javap 权威核实 `super_class` 常量与根方法返回描述符）**：
