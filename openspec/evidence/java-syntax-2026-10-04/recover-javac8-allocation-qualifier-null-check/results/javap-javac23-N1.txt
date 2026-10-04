@@ -1,0 +1,90 @@
+Compiled from "N1.java"
+public class N1 {
+  private int base;
+
+  public N1();
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_4
+       6: putfield      #1                  // Field base:I
+       9: return
+
+  N1$Inner make(int);
+    Code:
+       0: new           #13                 // class N1$Inner
+       3: dup
+       4: aload_0
+       5: iload_1
+       6: invokespecial #15                 // Method N1$Inner."<init>":(LN1;I)V
+       9: areturn
+
+  static int useStatic();
+    Code:
+       0: new           #2                  // class N1
+       3: dup
+       4: invokespecial #18                 // Method "<init>":()V
+       7: bipush        6
+       9: invokevirtual #19                 // Method make:(I)LN1$Inner;
+      12: invokevirtual #23                 // Method N1$Inner.total:()I
+      15: ireturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #27                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: invokestatic  #33                 // Method useStatic:()I
+       6: invokevirtual #36                 // Method java/io/PrintStream.println:(I)V
+       9: getstatic     #27                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      12: new           #13                 // class N1$Inner
+      15: dup
+      16: new           #2                  // class N1
+      19: dup
+      20: invokespecial #18                 // Method "<init>":()V
+      23: iconst_3
+      24: invokespecial #15                 // Method N1$Inner."<init>":(LN1;I)V
+      27: invokevirtual #23                 // Method N1$Inner.total:()I
+      30: invokevirtual #36                 // Method java/io/PrintStream.println:(I)V
+      33: getstatic     #27                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      36: new           #42                 // class N1$Stat
+      39: dup
+      40: invokespecial #44                 // Method N1$Stat."<init>":()V
+      43: new           #2                  // class N1
+      46: dup
+      47: invokespecial #18                 // Method "<init>":()V
+      50: invokevirtual #45                 // Method N1$Stat.use:(LN1;)I
+      53: invokevirtual #36                 // Method java/io/PrintStream.println:(I)V
+      56: return
+
+  static int access$000(N1);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field base:I
+       4: ireturn
+}
+Compiled from "N1.java"
+class N1$Stat {
+  N1$Stat();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  int m();
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  int use(N1);
+    Code:
+       0: new           #7                  // class N1$Inner
+       3: dup
+       4: aload_1
+       5: dup
+       6: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+       9: pop
+      10: bipush        9
+      12: invokespecial #15                 // Method N1$Inner."<init>":(LN1;I)V
+      15: invokevirtual #18                 // Method N1$Inner.total:()I
+      18: ireturn
+}

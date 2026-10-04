@@ -1,0 +1,42 @@
+// jarde: presentation of `Pod` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Pod extends java.lang.Object {
+    private int seed;
+
+    public Pod() {
+        // @method <init>()V
+        // @declaration a constructor of `Pod`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.seed = 6;
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Pod`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(new Pod().new Nut().mark());
+        return;
+    }
+
+    class Nut extends java.lang.Object {
+        private int mark;
+
+        Nut() {
+            // @method <init>(LPod;)V
+            // @declaration a constructor of `Pod$Nut`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            this.mark = 21;
+            return;
+        }
+
+        int mark() {
+            // @method mark()I
+            // @declaration an instance method of `Pod$Nut`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return this.mark + Pod.this.seed;
+        }
+    }
+}

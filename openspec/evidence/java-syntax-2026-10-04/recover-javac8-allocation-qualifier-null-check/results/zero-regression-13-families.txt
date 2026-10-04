@@ -1,0 +1,13 @@
+IDENTICAL anonymous-member-base.txt
+IDENTICAL boundnull-v8.txt
+IDENTICAL g-real8.txt
+IDENTICAL javac23-g.txt
+IDENTICAL javac23-N1.txt
+IDENTICAL javac23-n1x.txt
+IDENTICAL javac23-wrap.txt
+IDENTICAL n1x-real8.txt
+IDENTICAL use-generic-object.txt
+IDENTICAL use-generic-typed.txt
+IDENTICAL use-plain-raw.txt
+IDENTICAL use-plain.txt
+IDENTICAL wrap-real8.txt

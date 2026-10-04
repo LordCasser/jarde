@@ -1,0 +1,9 @@
+corpus classes found (excluding this slice): 558
+self-check ok: the anchor renders differ (13 quotes -> 0) and both carry the jarde header
+scanned: 558  identical: 558  differing: 0  empty-both: 0
+--- slice families (root render, whole family in the jar) ---
+  n1       DIFFERS  header-ok(baseline=True, fixed=True)  baseline-quotes=13 fixed-quotes=0
+  pod      DIFFERS  header-ok(baseline=True, fixed=True)  baseline-quotes=8 fixed-quotes=0
+  d2       IDENTICAL  header-ok(baseline=True, fixed=True)  baseline-quotes=0 fixed-quotes=0
+  d3       IDENTICAL  header-ok(baseline=True, fixed=True)  baseline-quotes=3 fixed-quotes=3
+  e1-kept  IDENTICAL  header-ok(baseline=True, fixed=True)  baseline-quotes=10 fixed-quotes=10
