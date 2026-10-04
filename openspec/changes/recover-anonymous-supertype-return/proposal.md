@@ -11,7 +11,7 @@
 3. **两处未闭合 fixture 的阻塞门不同**（root 以 javap 核实 `super_class` 常量与根方法返回描述符）：
    - `anonymous-top-level`：父类 `Base` **顶层可拼写**，返回 `Renderer` 是 `Base` **直接实现**的接口 → **只需本环**。
    - `anonymous-capture`：父类 `AnonymousCaptureCases$Base` 与返回类型 `AnonymousCaptureCases$Renderer` **均含 `$`**（都是嵌套类）→ **先撞 `anonymous_super_source_type_unproved`**（父类须为"同包、可直接拼写的源码类型"），本环**无法单独闭合它**，还需嵌套父类名可拼写能力。
-   
+
    **故本环的验收锚只能是 `anonymous-top-level`**；把 `anonymous-capture` 当锚会让实现者误判完成而实际仍拒绝。
 4. **无现成的类级可赋值性证明件**（root 已逐个核实四个候选，详见上述证据的设施盘点表）：`prove_no_body_generic_hierarchy` 是**保守拒绝**而非层级 walk；`prove_snapshot_hierarchy_widenings` 证 IR 内的**值**放宽不证**类**关系；`members.rs::subtype_of` 概念匹配但为私有 `fn` 且绑定 `HeaderClosure`/`Search`/`ClassSite` 访问检查机制；`jarde-query` 无公开超类型 API（`scan_hierarchy` 只做单层 xref 元数据）。**但按事实 2，本环 MVP 不需要传递闭包**——两 fixture 的关系都是一层直接关系。
 

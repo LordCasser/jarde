@@ -77,8 +77,8 @@ javac --release 8 -Xlint:-options -d o2 demo/IOps.java demo/C2.java
 
 ## 处置
 
-- **已立 spec**：[recover-enum-string-field-name-generalization](../../../changes/recover-enum-string-field-name-generalization/proposal.md)（含五处落点、数据通路缺口、Non-Goals，以及"`TestEnums2a` 呈现必须逐字节不变"这一零回退锚——它同时是"名字恰为 `op`"与"名字由字节码证明"两种实现的共同正例）。
-- **优先级**：属**已验收能力的正确性缺口**（非新能力），按 root "correctness-before-capability" 纪律应排在纯呈现润色之前；但其失败是响亮的（不产生静默偏离），故不属紧急正确性事故。
-- **附带登记**：`recover-proved-string-arg-enum-constant-bodies` 的验收应补一个**非 `op` 字段名**的冻结正例，否则同类"验收锚恰为满足硬编码而设计"的缺陷无法被 CI 发现。
+- **已修复并 root 验收（2026-10-04 同日）**：[recover-enum-string-field-name-generalization](../../../changes/recover-enum-string-field-name-generalization/proposal.md)（合并 `4734a4a1`；含五处落点、数据通路缺口、Non-Goals，以及"`TestEnums2a` 呈现必须逐字节不变"这一零回退锚——它同时是"名字恰为 `op`"与"名字由字节码证明"两种实现的共同正例）。**验收结果**：root 用自己的六形探针复测，判别变量已消除（`t`/`value`/`x` 三形由不投影转为投影，`op` 两形零回退）；**跨时零回退**——以 `javac -g:none` 重编 DT-12 冻结源后用合并后二进制渲染 `demo.DoubleOperations`，与本目录取证时对照的 **2026-09-27 已验收转录逐行 diff 完全一致**；新冻结非 `op` 正例（字段名 `label`）渲染源集 `javac` **exit 1→0**、`java -Xverify:all` 输出与原 class 逐行一致（含匿名子类名与 ordinal）。DT-12 账本状态已由"有差距"恢复为"冻结差距已修复"。
+- **优先级**：属**已验收能力的正确性缺口**（非新能力），按 root "correctness-before-capability" 纪律排在纯呈现润色之前——本会话据此把它插到 5.3 链环 2 之前派发。其失败是响亮的（不产生静默偏离），故非紧急正确性事故，但真实能力缺口须修。
+- **附带登记（已由修复片落实）**：`recover-proved-string-arg-enum-constant-bodies` 的验收应补一个**非 `op` 字段名**的冻结正例，否则同类"验收锚恰为满足硬编码而设计"的缺陷无法被 CI 发现——修复片已冻结 `tests/fixtures/enum-string-field-name/`（字段名 `label`）并加 CI 测试 `tests/enum_string_field_name.rs`（含 `assert!(!text.contains("this.op"))` 守卫），该缺陷类现已被 CI 自动捕获。此教训已固化进 handoff "验收锚不得是唯一正例"纪律。
 
 原 class 为行为基准（各探针原 class 均可编译运行，`TIMES`/`DIVIDE` 的 `apply` 语义为乘/除）。
