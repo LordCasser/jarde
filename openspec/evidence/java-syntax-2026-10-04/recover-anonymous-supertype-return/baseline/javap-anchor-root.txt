@@ -1,0 +1,129 @@
+Compiled from "AnonymousTopLevel.java"
+public final class AnonymousTopLevel {
+  private static final java.lang.StringBuilder EVENTS;
+
+  private static int captureCalls;
+
+  private static int chooseCalls;
+
+  static int baseCalls;
+
+  static int renderCalls;
+
+  public AnonymousTopLevel();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static java.lang.String captureLocal();
+    Code:
+       0: getstatic     #7                  // Field captureCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field captureCalls:I
+       8: ldc           #13                 // String capture
+      10: invokestatic  #15                 // Method event:(Ljava/lang/String;)V
+      13: ldc           #19                 // String captured
+      15: areturn
+
+  private static long choose();
+    Code:
+       0: getstatic     #21                 // Field chooseCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #21                 // Field chooseCalls:I
+       8: ldc           #24                 // String choose
+      10: invokestatic  #15                 // Method event:(Ljava/lang/String;)V
+      13: ldc2_w        #26                 // long 23l
+      16: lreturn
+
+  static void event(java.lang.String);
+    Code:
+       0: getstatic     #28                 // Field EVENTS:Ljava/lang/StringBuilder;
+       3: invokevirtual #32                 // Method java/lang/StringBuilder.length:()I
+       6: ifle          18
+       9: getstatic     #28                 // Field EVENTS:Ljava/lang/StringBuilder;
+      12: bipush        44
+      14: invokevirtual #38                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      17: pop
+      18: getstatic     #28                 // Field EVENTS:Ljava/lang/StringBuilder;
+      21: aload_0
+      22: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: pop
+      26: return
+
+  static Renderer create();
+    Code:
+       0: invokestatic  #45                 // Method captureLocal:()Ljava/lang/String;
+       3: astore_0
+       4: new           #49                 // class AnonymousTopLevel$1
+       7: dup
+       8: invokestatic  #51                 // Method choose:()J
+      11: aload_0
+      12: invokespecial #54                 // Method AnonymousTopLevel$1."<init>":(JLjava/lang/String;)V
+      15: areturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: invokestatic  #57                 // Method create:()LRenderer;
+       3: astore_1
+       4: getstatic     #61                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       7: new           #33                 // class java/lang/StringBuilder
+      10: dup
+      11: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+      14: ldc           #68                 // String value=
+      16: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: aload_1
+      20: invokeinterface #70,  1           // InterfaceMethod Renderer.render:()Ljava/lang/String;
+      25: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      28: invokevirtual #75                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      31: invokevirtual #78                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      34: getstatic     #61                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      37: new           #33                 // class java/lang/StringBuilder
+      40: dup
+      41: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+      44: ldc           #83                 // String events=
+      46: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      49: getstatic     #28                 // Field EVENTS:Ljava/lang/StringBuilder;
+      52: invokevirtual #85                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      55: invokevirtual #75                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      58: invokevirtual #78                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      61: getstatic     #61                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      64: new           #33                 // class java/lang/StringBuilder
+      67: dup
+      68: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+      71: ldc           #88                 // String counts=
+      73: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: getstatic     #7                  // Field captureCalls:I
+      79: invokevirtual #90                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      82: ldc           #93                 // String ,
+      84: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: getstatic     #21                 // Field chooseCalls:I
+      90: invokevirtual #90                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      93: ldc           #93                 // String ,
+      95: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      98: getstatic     #95                 // Field baseCalls:I
+     101: invokevirtual #90                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     104: ldc           #93                 // String ,
+     106: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     109: getstatic     #98                 // Field renderCalls:I
+     112: invokevirtual #90                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     115: invokevirtual #75                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     118: invokevirtual #78                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     121: return
+
+  static {};
+    Code:
+       0: new           #33                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+       7: putstatic     #28                 // Field EVENTS:Ljava/lang/StringBuilder;
+      10: return
+}
+Compiled from "AnonymousTopLevel.java"
+abstract class Base implements Renderer {
+  private final long seed;
+  Base(long);
+  long seed();
+}
