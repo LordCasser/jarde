@@ -6,11 +6,11 @@
 
 | 落点 | 内容 |
 | --- | --- |
-| `src/facade.rs:14094` | 构造器 BCI 6 的 `putfield` 必须 `name == b"op"`，否则 `Err("the String constructor does not preserve Enum and op semantics")` |
-| `src/facade.rs:15906` | 查找源字段时要求 `field.item.name.raw().0 == b"op"` |
-| `src/facade.rs:15920` | 唯一性检查按 `== b"op"` 计数 |
-| `src/facade.rs:15923` | 再核对 `op_field.item.name.raw().0 != b"op"` |
-| `src/facade.rs:15928` | **发射文本字面量** `"    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n"` —— 构造器体内硬写 `this.op` |
+| `src/facade.rs:14197` | 构造器 BCI 6 的 `putfield` 必须 `name == b"op"`，否则 `Err("the String constructor does not preserve Enum and op semantics")` |
+| `src/facade.rs:16009` | 查找源字段时要求 `field.item.name.raw().0 == b"op"` |
+| `src/facade.rs:16023` | 唯一性检查按 `== b"op"` 计数 |
+| `src/facade.rs:16026` | 再核对 `op_field.item.name.raw().0 != b"op"` |
+| `src/facade.rs:16031` | **发射文本字面量** `"    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n"` —— 构造器体内硬写 `this.op` |
 
 而 `op` **正是该切片验收锚 `TestEnums2a/DoubleOperations` 的字段名**（`private final String op;`）。故该验收是**自我实现的**：锚能通过不代表能力成立。
 
@@ -33,7 +33,7 @@
 
 ## What Changes
 
-- 把五处 `op` 字面量改为**由字节码证明的字段名**：构造器 BCI 6 的 `putfield` 目标名（`EnumCodeReference::Field { name, … }`，该绑定在 `facade.rs:14094` 已经存在、但被 `matches!` 丢弃）即为唯一权威来源；把它随证明结果传递到发射处，`this.op` 改为 `this.<已证字段名>`。
+- 把五处 `op` 字面量改为**由字节码证明的字段名**：构造器 BCI 6 的 `putfield` 目标名（`EnumCodeReference::Field { name, … }`，该绑定在 `facade.rs:14197` 已经存在、但被 `matches!` 丢弃）即为唯一权威来源；把它随证明结果传递到发射处，`this.op` 改为 `this.<已证字段名>`。
 - 唯一性判据从"名为 `op` 的字段恰一个"改为"**被构造器 `putfield` 写入的 String 字段**恰一个"，其余既有属性检查（描述符 `Ljava/lang/String;`、owner == 本枚举定义、非 static/synthetic/enum-implicit、`ACC_PRIVATE`、有 `declaration`、无 markers）逐字保留。
 - 发射的构造器文本用已证字段名拼写；**不得**继续硬写 `op`。
 
