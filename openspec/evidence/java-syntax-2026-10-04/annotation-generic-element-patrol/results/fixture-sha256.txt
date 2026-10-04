@@ -1,0 +1,6 @@
+a8c96aee4bdda719bc36fe0b872d846e9e2489382871e7b7da30bc77fde926bb  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/annotation-generic-element-patrol/fixture/A2.class
+049420bd484db83d76ded7b55dfc00bcf7654c0c406c530989f74191bb8d9119  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/annotation-generic-element-patrol/fixture/A2$Meta.class
+b7cfdf602ed6da80ae6697a435edcf7ecf25ee5f1a0ce101da0f211bc2f8d834  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/annotation-generic-element-patrol/fixture/A2$Target.class
+4006f18087370f95285a410c9806bab3de1b670e4156f6177dfd4ca8fa1f7791  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/annotation-generic-element-patrol/fixture/A3.class
+53293136f73636dbb9b80d71e4d223c2aa8df6ee695b84dcab295d422c0e6305  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/annotation-generic-element-patrol/fixture/A3$Meta.class
+bca5b8a90f00e5f63c93190d61fb5111015571a45fa92d01a57b872601baa1dd  /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/annotation-generic-element-patrol/fixture/A3$Target.class

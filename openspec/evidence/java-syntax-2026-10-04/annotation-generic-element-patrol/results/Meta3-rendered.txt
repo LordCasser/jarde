@@ -1,0 +1,21 @@
+// jarde: presentation of `A3$Meta` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+@java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
+
+@interface A3$Meta {
+    // jarde: no body: the member `noDefault()Ljava/lang/Class;` is declared abstract and its declaration carries no Code attribute
+    // jarde: generic Signature `()Ljava/lang/Class<*>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+    public abstract java.lang.Class<?> noDefault();
+
+    // jarde: generic Signature projection refused for `withDefault()Ljava/lang/Class;`: unsupported (ordinary_generic_source_unproved): member flags, annotation positions, or source name cannot be preserved
+    // jarde: no body: the member `withDefault()Ljava/lang/Class;` is declared abstract and its declaration carries no Code attribute
+    public abstract java.lang.Class withDefault() default java.lang.Object.class;
+
+    // jarde: generic Signature projection refused for `boundDefault()Ljava/lang/Class;`: unsupported (ordinary_generic_source_unproved): member flags, annotation positions, or source name cannot be preserved
+    // jarde: no body: the member `boundDefault()Ljava/lang/Class;` is declared abstract and its declaration carries no Code attribute
+    public abstract java.lang.Class boundDefault() default java.lang.Integer.class;
+
+    // jarde: generic Signature projection refused for `arrayDefault()[Ljava/lang/Class;`: unsupported (ordinary_generic_source_unproved): member flags, annotation positions, or source name cannot be preserved
+    // jarde: no body: the member `arrayDefault()[Ljava/lang/Class;` is declared abstract and its declaration carries no Code attribute
+    public abstract java.lang.Class[] arrayDefault() default {};
+}

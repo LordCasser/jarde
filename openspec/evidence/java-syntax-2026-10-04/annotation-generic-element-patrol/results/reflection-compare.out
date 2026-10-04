@@ -1,0 +1,7 @@
+# original class (A3.java compiled) — both elements carry <?>
+withDefault genericReturn=java.lang.Class<?>
+noDefault genericReturn=java.lang.Class<?>
+
+# recompiled from jarde rendering — withDefault lost <?>, noDefault kept it
+withDefault genericReturn=class java.lang.Class
+noDefault genericReturn=java.lang.Class<?>
