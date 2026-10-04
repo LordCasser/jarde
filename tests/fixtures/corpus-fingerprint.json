@@ -5792,6 +5792,71 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-super-dispatch/run.sh"
     },
     {
+      "blake3": "2cd68016c9138344c07178e81cff4e2c02ce7377e849a0c9cbe196df85ddbed8",
+      "bytes": 488,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-direct/AnonymousSuperMixedDirect$1.class"
+    },
+    {
+      "blake3": "1fa239f500c7f33704209d6b391028b667bf42eee2f2b24bb56676b94fdb7c53",
+      "bytes": 1384,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-direct/AnonymousSuperMixedDirect.class"
+    },
+    {
+      "blake3": "e5caffba91eb6d3562b5b80e61550a7a36213cb63723618a13dbeefa5f7480a7",
+      "bytes": 1634,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-direct/AnonymousSuperMixedDirect.java"
+    },
+    {
+      "blake3": "72ad5dcc4395d968509830d774e64f54ed70dd748b8d7b773d30deccd6c41f1b",
+      "bytes": 716,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-direct/Base.class"
+    },
+    {
+      "blake3": "234e87c830a4aabb91197b06567ca68f9b07e8046ff580702056f97245771ce5",
+      "bytes": 595,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-capture-fields/Base.class"
+    },
+    {
+      "blake3": "0cb458de01c4c1e79c99a715d700b9e7f7f9b2656508495e906b996c6c5cb03c",
+      "bytes": 529,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-capture-fields/TwoCaptureFields$1.class"
+    },
+    {
+      "blake3": "6771755a95dfeda3dd340f849863d18e0ede699d2d344d8ebeaa764eafd32223",
+      "bytes": 1468,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-capture-fields/TwoCaptureFields.class"
+    },
+    {
+      "blake3": "e45b4350cd3d0776f899d6142b8af4b257d79daab2b2998e6050f320ee172f74",
+      "bytes": 1499,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-capture-fields/TwoCaptureFields.java"
+    },
+    {
+      "blake3": "32b66289718f491f42b371f386fd7138618725b0080f03a701e9563e88e3f76b",
+      "bytes": 592,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/Base.class"
+    },
+    {
+      "blake3": "901814a6cdd1d3f7a323dcf0f169b35dbbcb2330d90a315de76205b7aa860f93",
+      "bytes": 465,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites$1.class"
+    },
+    {
+      "blake3": "f0aa8f7b09961906e48f58d1a57c32cfd642ed239420b581bbc5e1774a45ebd1",
+      "bytes": 465,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites$2.class"
+    },
+    {
+      "blake3": "926e8a05ebb1d51ad2e84bcd9f87e93206f7ffde4898d0d23830bc22bab8e0c7",
+      "bytes": 1546,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites.class"
+    },
+    {
+      "blake3": "134996d99889a3caacb8c00e61457b4d69c24f7e44e6c9adecc558ba540c2f87",
+      "bytes": 1749,
+      "path": "tests/fixtures/proved-java-structure/anonymous-super-mixed-refusals/two-mixed-sites/TwoMixedSites.java"
+    },
+    {
       "blake3": "5cf106a3e87e8966a632806150e9424af212972b6da548aeb1dba45020ef04e6",
       "bytes": 895,
       "path": "tests/fixtures/proved-java-structure/anonymous-top-level/AnonymousTopLevel$1.class"
