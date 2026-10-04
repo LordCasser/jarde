@@ -1,6 +1,8 @@
 # 5.3 链第二、三环的机制判定（2026-10-04，root）——回答"是否一定要新增机制"
 
-`recover-anonymous-mixed-super-capture`（已验收 `e1c89d57`）落地后，root 实测四处 ctor-reorder fixture **仍全部未内联**，其阻塞链共三环（详见 [recover-ctor-reorder-dispatch-guard/tasks.md](../../../changes/recover-ctor-reorder-dispatch-guard/tasks.md) 的"终局解关联（实测更正）"表）：
+`recover-anonymous-mixed-super-capture`（已验收 `e1c89d57`）落地后，root 实测四处 ctor-reorder fixture **仍全部未内联**，其阻塞链共三环（详见 [recover-ctor-reorder-dispatch-guard/tasks.md](../../../changes/recover-ctor-reorder-dispatch-guard/tasks.md) 的"四处 ctor-reorder fixture 的状态"表）：
+
+> **状态更新（2026-10-04，环 1/环 3 落地后）**：本文件最初写于环 0 落地、环 1/2/3 均未落地时。此后**环 1（局部声明位）与环 3（根方法带参）已落地**（合并 `25f2589e`/`d906464e`，四处 fixture 中 `anonymous-super-args`、`anonymous-super-dispatch` 已内联），**环 2（返回超类型）已立项** [recover-anonymous-supertype-return](../../../changes/recover-anonymous-supertype-return/)（未派发）。下文对环 2 的机制判定也已按实测收窄（一层直接关系判据、复用 `parent_read`，无需新建层级 walk 共享件）——见下表与设施盘点表的更正。故"仍全部未内联"仅描述本文件撰写当时的状态。
 
 | 环 | 阻塞门 | 受影响 fixture | 状态 |
 | --- | --- | --- | --- |

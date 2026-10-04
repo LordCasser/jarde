@@ -73,4 +73,4 @@
 
 **实现者自查（如实登记，root 认可）**：其报告披露两起自身流程事故并已修正——裸 `cargo build` 不构建 `jarde-cli` 成员导致一次旧二进制假象（全部证据以最终源码态二进制重采）；脚手架自检抓到负例 javac 证据被 `cp` 覆盖的假绿。与 root 本次踩到的两类脚手架错误**同型**，印证该纪律的必要性。
 
-**遗留（如实登记）**：(1) `-g` 腿拼源名 `captured`、`-g:none` 腿拼发明名 `arg0`——二者**机制一致**（同一 AST 命名通道，有 LVT 时用真名），行为与可编译性均相同，spec 的"两腿重拼结果相同"按机制一致口径满足（与环 1 双腿先例同口径），root 认可；(2) 环 2（返回父类超类型）仍未立项，机制判定见 [anonymous-chain-rings-2-3](../../evidence/java-syntax-2026-10-04/anonymous-chain-rings-2-3/README.md)；(3) `LocalDeclInitializer` 形下的参数捕获属环 1 已发布行为，本片未触碰，其判据对齐留作后续范围决定。）
+**遗留（如实登记）**：(1) `-g` 腿拼源名 `captured`、`-g:none` 腿拼发明名 `arg0`——二者**机制一致**（同一 AST 命名通道，有 LVT 时用真名），行为与可编译性均相同，spec 的"两腿重拼结果相同"按机制一致口径满足（与环 1 双腿先例同口径），root 认可；(2) 环 2（返回父类超类型）**已立项** [recover-anonymous-supertype-return](../recover-anonymous-supertype-return/)（未派发；root 实测其 MVP 只需一层直接关系判据、复用门后紧接的 `parent_read`，无需新建层级 walk 共享件——机制判定见 [anonymous-chain-rings-2-3](../../evidence/java-syntax-2026-10-04/anonymous-chain-rings-2-3/README.md)）；(3) `LocalDeclInitializer` 形下的参数捕获属环 1 已发布行为，本片未触碰，其判据对齐留作后续范围决定。）
