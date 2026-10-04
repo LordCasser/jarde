@@ -5992,11 +5992,6 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/Renderer.class"
     },
     {
-      "blake3": "078e3f63052be571c11555690a8e4f1cd409d8e67741dad3ab5160546fc7a9ab",
-      "bytes": 244,
-      "path": "tests/fixtures/proved-java-structure/anonymous-parameterized-root-refusals/supertype-return/compile.log"
-    },
-    {
       "blake3": "cfef9dfd3ea056aac79bd244f11240cec8a853c83466b1fe70641c394a76f7e6",
       "bytes": 904,
       "path": "tests/fixtures/proved-java-structure/anonymous-super-args-debuginfo/AnonymousSuperArgs$1.class"
