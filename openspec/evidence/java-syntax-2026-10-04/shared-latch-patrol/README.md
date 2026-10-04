@@ -51,5 +51,7 @@ root 核实该路线有**既有同构先例**：`region.rs:3267` 的 `in_loop_su
 **基线重验（tasks 1.1 的另一半，实现者已做、root 认可其结论）**：spec 记载的期望输出在当前 HEAD **全部成立、零漂移**——S3/S4/S5.class 的 SHA256 与本巡查记录逐字一致，javap 锚点（header@4 / latch@35 / 退出@41 / 内层@20/@29）逐指令吻合，原 class 行为基线复现（o5 = `13`/`9`/`20`/`13`、orig = `[px:3]`），当前主线渲染的拒绝与本巡查逐字相同，`outerContinueOnly`/`innerOnly` 照常恢复。故本 README 上文的所有事实性记载**仍然有效**，只有"落点是 `latches.len() != 1`"这一条被更正。
 
 **待 root 在验收时执行的文档更正**（不在本文件内改，以免与实现片 worktree 冲突）：`openspec/changes/recover-shared-latch-nested-loops/{tasks.md,design.md,proposal.md}` 中所有把 `latches.len() != 1` 记为"要放宽的现约束"的表述，须按本段更正为"落点是 join 选举；`latches.len() != 1` 在 S5 流程从未被行使（实现者门控实验证伪，2→2 不变）"。
+>
+> **✅ 已执行（root 2026-10-04 验收时完成）**：上述文档更正已在合并 `6a94285a` 后落地——`tasks.md` 追加 3.3 验收记录（含门控实验证伪、真实落点为 join 选举、8 道 fail-closed guard 合取的判据复核）、`design.md` 决策 1 追加更正段、`spec.md` 的 Requirement 与负例 Scenario 措辞已更正。**同时更正了 spec 的两处字面判据**（均由 root javap 实测证伪）：(1) "内层退出边目标 **==** 外层 latch 块"过窄——必收锚 `S3.nestedBreak` 的内层退出是 `84: ifeq 153` → `153: goto 20`，即**经一次自身 transfer** 落到 latch，故须为"路由到"；(2) "三层以上共享 SHALL 保持既有拒绝"与实测不符——`ThreeLevel` 冻结 fixture 渲染 quotes=0、恢复成功且行为一致（SHA `68ca3fba…`），系同一机制逐层组合。CF-11 账本状态由"部分已测、窄首片未见差距"改为"**部分已测、首片质量差距已修复**"（总数仍 71，计数句的 45 冻结/1 已证差距不受影响）。
 
 **教训（与 getClass 片同源，root 自己第二次犯）**：spec 的"落点"不能只靠**读代码找到看起来相关的判据**来钉死，必须用**最小门控实验**（只放宽该判据、看目标锚的行为是否变化）证伪或证成。root 两片的 spec 都因跳过这一步而把落点写错：getClass 片漏了"检查落在实参窗口内"的位置差异（实际第一道门是 `init.rs:687` 的实例读者门），本片把"latch 归属计数"当成了落点（实际是 join 选举）。两次都由实现者的取证纠正。**已固化进 handoff：写 spec 钉落点前，须先做一次最小门控实验确认该判据确实在目标锚的流程上被行使。**
