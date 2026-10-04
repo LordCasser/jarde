@@ -1,0 +1,2 @@
+state: refused
+reason: unsupported (anonymous_interface_site_shape_unsupported): the interface projection keeps the direct-return site shape; a local-declaration initializer site belongs to the superclass projection only

@@ -293,9 +293,13 @@ fn frozen_anonymous_interface_return_bci_matches_its_allocation_scan() {
         panic!("expected one allocation BCI: {scan:?}");
     };
     let ast = recovered.ast.as_ref().expect("direct-return AST sidecar");
-    let (origin_bcis, target, argument_bcis) =
+    let (origin_bcis, target, argument_bcis, site_shape) =
         jarde_java::report::class_source_anonymous_return_site(ast)
             .expect("one direct return New from the method AST");
+    assert_eq!(
+        site_shape,
+        jarde_java::report::AnonymousSiteShape::DirectReturn
+    );
     assert_eq!(
         origin_bcis.first(),
         Some(&4),
