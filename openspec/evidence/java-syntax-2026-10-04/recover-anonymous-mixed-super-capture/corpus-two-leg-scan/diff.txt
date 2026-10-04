@@ -1,0 +1,1 @@
+Files /tmp/corpus-scan/old/anonymous-super-mixed-direct__AnonymousSuperMixedDirect.java and /tmp/corpus-scan/new/anonymous-super-mixed-direct__AnonymousSuperMixedDirect.java differ
