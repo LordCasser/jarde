@@ -1,0 +1,18 @@
+# codegen differential: 2 candidates (javap-only, zero cargo build)
+  F1                   SAME-CODEGEN     methods=6 differing=0
+      [same] public F1()                                  instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 14->14  exc 0->0  any 0->0
+      [same] static int catchFin(java.lang.String)        instrs 22->22  exc 3->3  any 2->2
+      [same] static int nested(java.lang.String)          instrs 23->23  exc 3->3  any 3->3
+      [same] static int noRet(java.lang.String)           instrs 15->15  exc 1->1  any 1->1
+      [same] static int plain(java.lang.String)           instrs 14->14  exc 1->1  any 1->1
+  F2                   SAME-CODEGEN     methods=5 differing=0
+      [same] public F2()                                  instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 14->14  exc 0->0  any 0->0
+      [same] static int finLoop(int)                      instrs 31->31  exc 1->1  any 1->1
+      [same] static int loopFin(int)                      instrs 25->25  exc 1->1  any 1->1
+      [same] static int multiRet(int)                     instrs 22->22  exc 2->2  any 2->2
+
+=== VERDICT SUMMARY ===
+  F1: same codegen (0/6 methods differ)
+  F2: same codegen (0/5 methods differ)

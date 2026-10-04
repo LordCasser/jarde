@@ -1,0 +1,29 @@
+### try-finally 的版本不变性（决定性证据）
+
+### [1] 整类 opcode 序列 SHA-256 双腿对照
+  F1   realjavac8=e67dae668d75749f0672bd595e26f4a2 javac23=e67dae668d75749f0672bd595e26f4a2  IDENTICAL
+  F2   realjavac8=d7a3b1572ca45cb3c91d79f71382973d javac23=d7a3b1572ca45cb3c91d79f71382973d  IDENTICAL
+
+### [2] F1 各方法异常表逐行对照（finally 的关键结构）
+  plain      SAME  rows=[0 5 15 any ;]
+  noRet      SAME  rows=[0 7 18 any ;]
+  catchFin   SAME  rows=[0 5 15 Class java/lang/RuntimeException;0 5 28 any ;15 18 28 any ;]
+  nested     SAME  rows=[0 5 23 any ;0 13 34 any ;23 35 34 any ;]
+
+### [3] 逐方法指令数/异常表行/any 行数（扫描器输出，11 方法全 same）
+      [same] public F1()                                  instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 14->14  exc 0->0  any 0->0
+      [same] static int catchFin(java.lang.String)        instrs 22->22  exc 3->3  any 2->2
+      [same] static int nested(java.lang.String)          instrs 23->23  exc 3->3  any 3->3
+      [same] static int noRet(java.lang.String)           instrs 15->15  exc 1->1  any 1->1
+      [same] static int plain(java.lang.String)           instrs 14->14  exc 1->1  any 1->1
+      [same] public F2()                                  instrs 3->3  exc 0->0  any 0->0
+      [same] public static void main(java.lang.String[])  instrs 14->14  exc 0->0  any 0->0
+      [same] static int finLoop(int)                      instrs 31->31  exc 1->1  any 1->1
+      [same] static int loopFin(int)                      instrs 25->25  exc 1->1  any 1->1
+      [same] static int multiRet(int)                     instrs 22->22  exc 2->2  any 2->2
+
+### [4] 对照：TWR 在同样扫描器下报 VERSION-COUPLED（证明扫描器有判别力）
+  自检（扫描器移植到本目录后先用已知正例 TR 复验）：
+    TR: 6 方法中 2 个 DIFF（one: 22->48 instrs, 2->5 exc, 0->2 any；two: 61->113, 5->11, 0->4），4 个 same
+    => 扫描器对已知耦合构造正确报警、对同类内非耦合方法正确放行，故本文件 F1/F2 的 SAME-CODEGEN 可信。
