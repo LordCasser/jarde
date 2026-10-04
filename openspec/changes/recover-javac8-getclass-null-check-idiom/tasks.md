@@ -63,5 +63,12 @@
 **处置（root 裁决）**：
 1. **本片按部分交付验收**——四条决策的实现全部正确、零回退、门禁绿、参数限定符形与隐式 this 形在真 javac 8 上端到端修好并有 CI 覆盖。合入主线（`307571a6`）。
 2. **分配限定符形另立后续片**（不并入本片）：需要 `init.rs` 的分配限定符臂接受"实参窗口内出现被丢弃的 null 检查三元组"，并复用本片已交付的 `is_discarded_null_check` 谓词——属机制扩展，须独立取证与健全性负例。root 已更正 DT-03 账本为"部分修复"，并把该残留缺口登记在案。
+   > **root 追加取证（2026-10-04，合并后实测 + 读码，把"第一道门"从推断变为实测）**：上文与实现者停手报告对"第一道门在哪一层"各执一词（root 测到表层码 `jre_new_interleaved_effect`+`jre_new_shape`，实现者归因到 `verify_member` 的 `jre_new_member_order`）。root 已就 **`N1.main` 的嵌套分配（BCI 16 = `new N1`）** 把第一道门**实测钉死**：
+   > - 实测诊断原文 `"the instance the allocation at BCI 16 builds is read only by instructions this build quotes (BCIs 23), so the construction has no place in the body"` **逐字匹配** `init.rs:694` 的模板（`{head}`=16、readers=`{}`=23）；
+   > - BCI 23 在真 javac 8 正是为 null-check 插入的 **`dup`**（`23: dup; 24: invokevirtual getClass; 27: pop`，javap 实录）；
+   > - `renders_its_reads`（`init.rs:1331-1347`，`_ => false` 在 1345）的接受集为 `Store/Invoke/InvokeDynamic/Return/Throw/Comparison/Switch/Arithmetic/Negate/Field(owns)`，**不含 `Operation::Duplicate`**（落 `_ => false`）；故 BCI 23 这个读者不计入 `written`，`written.is_empty()` → `init.rs:687` 返回 694 的 shape 错误（对外码 `jre_new_shape`）。
+   > - **即：对 `main` 的分配限定符形，第一道门是 new@1 的"实例读者"门（687-701），不是 `verify_member` 的实参窗口门。** 这与 root 的表层实测一致；实现者的 `jre_new_member_order` 归因若成立，也只可能是**更下游**（`main` 的 BCI 12 外层构造另因 `jre_new_interleaved_effect` 被拒，是第二处、非第一道门）。
+   >
+   > **仍属推断、须后续片自行取证的部分（root 未做，不外推）**：(1) 为何 `outside_readers` 对 BCI 16 的实例只返回 `[23]` 而非 `[23, 29]`（BCI 29 的成员构造器也读该实例）——涉及 SSA 值定义归属与"已被其它站点认领的读者是否排除"的逻辑，root 未逐值追证；(2) `N1$Stat.use`（参数限定符形，本片已修）与 `main`（分配限定符形，未修）的诊断链是否共用同一门。**后续片必须先做块图 + SSA 值级取证回答 (1)，再决定修复是"让 687 门认得被丢弃的检查三元组为合法读者"还是别的落点**——不得继承 root 或实现者的任一方归因。
 3. **root 自己 spec 的错误前提已在 proposal/design 就地更正**（保留原文 + 追加更正段，不改写历史）。
 - [ ] 3.6 **独立债务登记（不并入本片）**：(a) `accessor.rs:480` 有意拒绝**返回值形写访问器** `(LC;I)I`（真 javac 8 对内部类写外部私有字段发射 `dup_x1; putfield; ireturn`），呈现为空 stub → 整类不可编译（响亮）；root 普查 `tests/fixtures` 532 类中**含 `access$` 的类为 0**、`p3_accessor_edges.rs:146-149` 合成访问器**全为读形**，故写臂从未被真实产物行使。取证须先读 `d09f5dea`（"recover proved parent field writes and private setter helper"，已合入主线，改 `build.rs`+250/`field.rs`+40）已交付的通路。(b) 整个 `tests/fixtures` 语料对该构造**只有 javac 9+ 拼写**（`getClass` 形 0 类），CI 结构性地无法发现此类版本耦合——是否做一次"真 javac 8 双腿语料"的系统性补强属独立大颗粒项，须单独评估。（留 root）

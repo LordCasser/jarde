@@ -114,13 +114,13 @@ design 明言本片是「并列增加一种拼写」而非「新增机制」。
 >
 > **实现者的停手结论成立、处置正确，予以接受**：分配限定符形确实不被本片的拼写判据触达，主锚未达成，属机制扩展而非本片范围。实现者未自行扩权，符合任务书停手条件 (a)。
 >
-> **但其机制归因中的"第一道门是 `jre_new_member_order`"属实现者的内部推断，root 未复核、亦未证伪。** root 以**合并态**二进制重渲染真 javac 8 的 `N1.main` 并读其 diagnostics，实测的**表层**拒绝码为 `jre_new_interleaved_effect` + `jre_new_shape` + `jre_new_sites`，诊断原文：
+> **但其机制归因中的"第一道门是 `jre_new_member_order`"，root 已实测证否（就 `main` 的嵌套分配 BCI 16 而言）**。root 先以**合并态**二进制重渲染真 javac 8 的 `N1.main` 并读其 diagnostics，实测**表层**拒绝码为 `jre_new_interleaved_effect` + `jre_new_shape` + `jre_new_sites`，**`jre_new_member_order` 不在其中**；随后读码把第一道门**实测钉死**为 new@1 的"实例读者"门：
 >
-> - `"the construction at BCI 12 was not presented: the instruction at BCI 16 is an Allocate { ty: \"N1\" } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else"`
-> - `"the construction at BCI 16 was not presented: the instance the allocation at BCI 16 builds is read only by instructions this build quotes (BCIs 23), so the construction has no place in the body"`
-> - `"4 construction candidate(s) read under new@1: 2 presented as \`new\`, 2 refused"`
+> - 实测诊断 `"the instance the allocation at BCI 16 builds is read only by instructions this build quotes (BCIs 23), so the construction has no place in the body"` **逐字匹配** `init.rs:694` 的模板（`{head}`=16、readers=23）；
+> - BCI 23 在真 javac 8 正是为 null-check 插入的 **`dup`**（`23: dup; 24: invokevirtual getClass; 27: pop`，javap 实录）；
+> - `renders_its_reads`（`init.rs:1331-1347`，`_ => false` 在 1345）的接受集为 `Store/Invoke/InvokeDynamic/Return/Throw/Comparison/Switch/Arithmetic/Negate/Field(owns)`，**不含 `Operation::Duplicate`**（落 `_ => false`），故 BCI 23 不计入 `written`，`written.is_empty()` → `init.rs:687` 报 694 的 shape 错误（对外码 `jre_new_shape`）。
 >
-> **`jre_new_member_order` 不在 `main` 的诊断列表中。** 但 root **只实测了表层诊断码、未用插桩复现实现者的连锁**，故**不宣称其连锁为假**——其连锁末步（"new@1 效果扫描拒绝 `jre_new_interleaved_effect`"）恰与 root 实测码相符，两者可能在不同层级各自成立（root 测的是 `main`，实现者的连锁同时涉及 `main` 与 `use`）。
+> **即对 `main` 的分配限定符形，第一道门是 new@1 的实例读者门（687-701），不是 `verify_member` 的实参窗口门。** root 未用插桩复现实现者的完整连锁（该连锁同时涉及 `main` 与 `use`），故就"实现者的连锁整体是否为假"不下断言；实现者的 `jre_new_member_order` 若成立只可能是**更下游**（`main` 的 BCI 12 外层构造另因 `jre_new_interleaved_effect` 被拒，是第二处、非第一道门）。
 >
 > **对后续片的强制要求**：第一道门究竟在 `verify_member` 的实参窗口、还是在 `new@1` 的嵌套站点"实例读者集合"判定，**必须由后续片自行以插桩或增量实验重新推导，不得继承本文件任一方的归因**。该问题决定修复落点与健全性负例的设计，两者工作量与风险完全不同。root 的疏失已如实登记于 `openspec/changes/recover-javac8-getclass-null-check-idiom/tasks.md` 3.5：先未经核实照录实现者归因，后又用"证伪"这种超出自身证据强度的措辞去更正它——两处都不对。
 >
