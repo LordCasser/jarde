@@ -528,18 +528,37 @@ pub struct ClassSourceAnonymousConstructorInitializer {
     pub descriptor: String,
 }
 
-/// The exact direct-return allocation retained from one class-source recovery run, when present.
+/// The statement position that produced one proved anonymous allocation site.
+///
+/// The site scan is shared by the anonymous interface projection and the anonymous superclass
+/// projection (design `recover-anonymous-local-decl-site`, criterion 5), so the shape travels as a
+/// first-class fact on the site tuple: the interface projection keeps requiring
+/// [`AnonymousSiteShape::DirectReturn`] — byte-equivalent with the pre-relaxation gate — while the
+/// superclass projection accepts both shapes.
+#[doc(hidden)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AnonymousSiteShape {
+    /// The allocation is its method's returned expression (a leading local-declaration prologue
+    /// may precede the return).
+    DirectReturn,
+    /// The allocation is the sole initializer of one local variable declaration, at any statement
+    /// position of the method body.
+    LocalDeclInitializer,
+}
+
+/// The exact anonymous allocation retained from one class-source recovery run, when present, with
+/// the statement position that produced it.
 #[doc(hidden)]
 pub fn class_source_anonymous_return_site(
     ast: &ClassSourceMethodAst,
-) -> Option<(Vec<u32>, String, Vec<u32>)> {
-    class_source_direct_return_new(&ast.projection.program).map(|(bcis, ty, args)| {
-        (
-            bcis,
-            ty.to_owned(),
-            args.iter().map(|arg| arg.origin.primary().bci()).collect(),
-        )
-    })
+) -> Option<(Vec<u32>, String, Vec<u32>, AnonymousSiteShape)> {
+    let (bcis, ty, args, shape) = class_source_anonymous_site(&ast.projection.program)?;
+    Some((
+        bcis,
+        ty.to_owned(),
+        args.iter().map(|arg| arg.origin.primary().bci()).collect(),
+        shape,
+    ))
 }
 
 /// The exact first argument BCI only when the direct-return allocation passes its own receiver as
@@ -564,17 +583,18 @@ pub fn class_source_anonymous_single_argument_bci(ast: &ClassSourceMethodAst) ->
     Some(argument.origin.primary().bci())
 }
 
-/// The same-run source spelling of one direct-return allocation argument: the local name and the
-/// presented type when — and only when — the argument is exactly a local reference. The facade
-/// may hide the argument and re-spell the proved capture reads as this local only after the role
-/// partition and the allocation-site scan have closed the value; any other expression shape
-/// returns `None` and keeps the physical presentation.
+/// The same-run source spelling of one site argument: the local name and the presented type when
+/// — and only when — the argument is exactly a local reference. The facade may hide the argument
+/// and re-spell the proved capture reads as this local only after the role partition and the
+/// allocation-site scan have closed the value; any other expression shape returns `None` and keeps
+/// the physical presentation. Both site shapes are taken: the only caller is the superclass
+/// projection's capture-site proof, which consumes direct-return and local-declaration sites.
 #[doc(hidden)]
 pub fn class_source_anonymous_argument_local(
     ast: &ClassSourceMethodAst,
     index: usize,
 ) -> Option<(String, Option<Type>)> {
-    let (_, _, args) = class_source_direct_return_new(&ast.projection.program)?;
+    let (_, _, args, _) = class_source_anonymous_site(&ast.projection.program)?;
     let argument = args.get(index)?;
     let crate::ast::ExprKind::Local(name) = &argument.kind else {
         return None;
@@ -5591,7 +5611,7 @@ fn recover_inner(
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     if let Some(slot) = class_source_ast.as_deref_mut()
-        && (retain_all_method_asts || class_source_direct_return_new(&program).is_some())
+        && (retain_all_method_asts || class_source_anonymous_site(&program).is_some())
         && let Some(member) = request
             .ir
             .declaration()
@@ -6635,6 +6655,78 @@ fn class_source_direct_return_new(program: &build::Program) -> Option<(Vec<u32>,
             .filter(|bci| *bci != primary),
     );
     Some((bcis, ty.as_str(), args))
+}
+
+/// One local-declaration statement whose sole initializer is an anonymous allocation. The target
+/// must spell pool-form (`$` in its binary name): this shape serves the anonymous projection, and
+/// an ordinary nameable class's allocation (`Inner inner = new Inner();`) is not an anonymous
+/// site — counting one would consume the proved-site count and suppress an unrelated anonymous
+/// projection in the same class.
+fn class_source_local_decl_initializer_new(
+    statement: &crate::ast::Stmt,
+) -> Option<(Vec<u32>, &str, &[Expr])> {
+    let StmtKind::Declare {
+        value: Some(expression),
+        ..
+    } = &statement.kind
+    else {
+        return None;
+    };
+    // The declared initializer is exactly the allocation, and the same expression shape the
+    // direct-return scan takes: one `new Child(args)` with no qualifier, no explicit constructor
+    // body reference and no diamond. The expression-level match is the shared scan's core; only
+    // the statement position differs (design criterion 5: the shape is stated by where the
+    // statement sits).
+    let ExprKind::New {
+        ty,
+        qualifier: None,
+        member_name: None,
+        args,
+        ..
+    } = &expression.kind
+    else {
+        return None;
+    };
+    if !ty.contains('$') {
+        return None;
+    }
+    let primary = expression.origin.primary().bci();
+    let mut bcis = vec![primary];
+    bcis.extend(
+        expression
+            .origin
+            .derived()
+            .iter()
+            .map(|origin| origin.bci())
+            .filter(|bci| *bci != primary),
+    );
+    Some((bcis, ty.as_str(), args))
+}
+
+/// The proved anonymous allocation site of one retained method body, over both shapes the
+/// superclass projection consumes. A direct-return match always wins, so every body the
+/// pre-relaxation scan accepted produces the same site with the same shape; the local-declaration
+/// initializer shape is only derived when no direct return matches, and then only when the body
+/// holds exactly one such declaration (two or more initializer sites leave the method without a
+/// proved site — design criterion 2 keeps the proved-allocation count at one).
+pub(crate) fn class_source_anonymous_site(
+    program: &build::Program,
+) -> Option<(Vec<u32>, &str, &[Expr], AnonymousSiteShape)> {
+    if program.ragged || program.statements != program.stmts.len() {
+        return None;
+    }
+    if let Some((bcis, ty, args)) = class_source_direct_return_new(program) {
+        return Some((bcis, ty, args, AnonymousSiteShape::DirectReturn));
+    }
+    let mut candidates = program
+        .stmts
+        .iter()
+        .filter_map(class_source_local_decl_initializer_new);
+    let (bcis, ty, args) = match (candidates.next(), candidates.next()) {
+        (Some(site), None) => site,
+        _ => return None,
+    };
+    Some((bcis, ty, args, AnonymousSiteShape::LocalDeclInitializer))
 }
 
 /// Captures the class initializer's already-built top-level statements and the field identities

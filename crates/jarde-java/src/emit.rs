@@ -629,6 +629,38 @@ impl<'a> Emitter<'a> {
         }
     }
 
+    /// Whether one expression is exactly the matched allocation the override rewrites, returning
+    /// the allocation's own type name when it is. The declaration path compares its declared
+    /// spelling against it to re-spell the anonymous child's pool-form name as the superclass
+    /// source name (design `recover-anonymous-local-decl-site`, criterion 3); the predicate is
+    /// the expression path's allocation match, so the two spellings of one projection cannot
+    /// drift.
+    fn anonymous_override_matches(&self, value: Option<&Expr>) -> Option<&'a str> {
+        let expr = value?;
+        let override_ = self.anonymous_override.as_ref()?;
+        let ExprKind::New {
+            ty,
+            qualifier: None,
+            member_name: None,
+            diamond: false,
+            ..
+        } = &expr.kind
+        else {
+            return None;
+        };
+        if ty != override_.allocation_type
+            || (expr.origin.primary().bci() != override_.allocation_bci
+                && !expr
+                    .origin
+                    .derived()
+                    .iter()
+                    .any(|origin| origin.bci() == override_.allocation_bci))
+        {
+            return None;
+        }
+        Some(override_.allocation_type)
+    }
+
     /// Writes a proved `for` header assignment without the statement terminator.
     fn for_clause(&mut self, stmt: &Stmt) -> Result<(), Halt> {
         let at = Some(stmt.origin.primary().bci());
@@ -693,9 +725,29 @@ impl<'a> Emitter<'a> {
                 value,
             } => {
                 self.put(&pad, at)?;
-                match source_type_name {
-                    Some(source) => self.put(source, at)?,
-                    None => self.put_type(ty.spell(), at)?,
+                // The projected allocation's own declaration (design
+                // `recover-anonymous-local-decl-site`, criterion 3): an anonymous type cannot be
+                // named in source, so when the declared initializer IS the matched allocation and
+                // the left-hand side spells the anonymous child's pool-form name, that name is
+                // re-spelled as the superclass source name at the same seam that rewrites the
+                // `new` operand. The re-spell is load-bearing — the physical left-hand name would
+                // not compile — and a declaration that does not spell the child's own name is
+                // left untouched.
+                let declared: &str = source_type_name.as_deref().unwrap_or_else(|| ty.spell());
+                let matched = self.anonymous_override_matches(value.as_ref());
+                let retype = matched.is_some_and(|allocation_type| declared == allocation_type);
+                if retype {
+                    let source_type = self
+                        .anonymous_override
+                        .as_ref()
+                        .expect("a matched allocation carries its override")
+                        .source_type;
+                    self.put(source_type, at)?;
+                } else {
+                    match source_type_name {
+                        Some(source) => self.put(source, at)?,
+                        None => self.put_type(ty.spell(), at)?,
+                    }
                 }
                 self.put(" ", at)?;
                 self.put(name, at)?;
