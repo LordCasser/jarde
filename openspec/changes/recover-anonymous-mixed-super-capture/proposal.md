@@ -9,7 +9,7 @@
 
 混合形 fixture `AnonymousSuperArgs$1` 的字段是 `val$captured: Ljava/lang/String;`（非 `D`、非 `Lroot;`），故落入第二分支并因字段描述符不匹配被拒（"capture requires one synthetic final instance Outer field"）——**即当前根本没有处理 `val$` 型捕获的证明器**（全仓生产代码中 `val$` 只出现在 `ctor_order.rs:247` 的名字模式回退里，`grep -rn 'val\$' --include=*.rs crates src` 实证）。
 
-另一侧的门是 `src/facade.rs::project_class_source_anonymous_super` 第 4606 行：`child_facts.field_count != 0` 即拒绝 —— 转发父类实参的投影要求**无捕获字段**。这正是 `inline-proved-anonymous-super-arguments` 排除"构造参数中混入捕获值"的实现位置。
+另一侧有**两道**门（root 2026-10-04 第五次取证补全，行号随代码漂移、以锚点名为准）：`src/facade.rs::project_class_source_anonymous_super` 的 (i) `child_facts.field_count != 0` 即拒绝（当前约 4633 行）——转发父类实参的投影要求**无捕获字段**；(ii) `matching_super_constructors` 要求父构造器 descriptor **恰等于** child 构造器 descriptor（当前约 4796 行）——混合形下二者不等（`(Ljava/lang/String;ILjava/lang/String;)V` vs `(Ljava/lang/String;I)V`），故即使捕获证明通过，投影仍在此拒绝。这正是 `inline-proved-anonymous-super-arguments` 排除"构造参数中混入捕获值"的实现位置。
 
 措辞实证（两片自述排除）：
 
@@ -51,4 +51,4 @@ AnonymousSuperArgs$1(java.lang.String, int, java.lang.String);
 
 ## Impact
 
-`src/member_inner.rs`（`prove_family_capture` 的 270 行零参数门）、`src/facade.rs`（`project_class_source_anonymous_super` 的 4606 行 field_count 门与参数角色划分）、`src/enum_constants.rs` 若参与装配则同步；`crates/jarde-java` 预期无改动（捕获词法替换与构造器序呈现均已有通道）。既有三个匿名片与 ctor-reorder-guard 的负例零回退。
+`src/member_inner.rs`（新增 `val$` 型捕获证明路径；**不改** `prove_family_capture` 与 `prove_anonymous_double_capture` 的既有判据）、`src/facade.rs`（`prove_anonymous_capture` 的分派处新增第三分支；`project_class_source_anonymous_super` 放宽 `field_count != 0` 门**与** descriptor 恰等门两处）；`src/class_source.rs` 若参与装配则同步。**`MemberCaptureProof` 契约预计无需扩展**（root 取证：投影侧可自行对 ctor 取 IR 做划分，见 design 补充取证）；`crates/jarde-java` 预期无改动（捕获词法替换与构造器序呈现均已有通道）。既有三个匿名片与 ctor-reorder-guard 的负例零回退。

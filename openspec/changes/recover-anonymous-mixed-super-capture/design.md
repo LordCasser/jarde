@@ -27,10 +27,16 @@ pub struct MemberCaptureProof {
 约束与选项（实现者须在取证阶段选定并在报告说明）：
 
 1. 该结构是 `pub` + `#[serde(deny_unknown_fields)]` + `Serialize`，故**新增字段会影响 JSON 契约**。若新增，须用 `#[serde(default, skip_serializing_if = "Option::is_none")]` 保持向后兼容（既有消费者与 golden 不受影响），并核实是否有 golden 断言其序列化形状。
-2. 波及面已量化：**约 12 处消费者**跨三文件（`src/class_source.rs` 3 处：971/8758/987；`src/facade.rs` 6 处：5023/17544/19731/22605/22807/24297；`src/member_inner.rs` 8 处含 9/163/312）。扩展契约须逐一核实不被破坏——这是本片的主要风险面，不是判据本身。
+2. 波及面已量化：**约 12 处消费者**跨三文件（`src/class_source.rs` 3 处；`src/facade.rs` 6 处；`src/member_inner.rs` 8 处含 `prove_family_capture`/`prove_anonymous_double_capture` 的构造点）。扩展契约须逐一核实不被破坏。
 3. **备选**：不动 `MemberCaptureProof`，另用一个并列结构承载参数角色划分（只在混合形路径产生与消费）。若消费者波及面证明扩展代价过高，优先此路——它把新复杂度关在新路径内，不触碰已验收的具名内部类/double 两条路径的契约。
 
-**故本片的真实工作量在"契约如何承载划分"，不在判据**（判据是对既有 SSA 消费点事实的分类）。取证义务 (d) 的结论会决定选 1 还是选 3。
+**root 补充取证（2026-10-04，进一步降低本片风险）**：
+
+- **划分可能根本不需要跨层传递**。`prove_anonymous_capture`（`src/facade.rs:17537`）已对 child 的**每个**方法调用 `jarde_jvm::analyze_method_ir` 并把 `(id, analyzed)` 收集进局部 `irs`（17560–17590 区域），随后仅把 `MemberCaptureProof` 返回、**丢弃 `irs`**。故构造器 IR/SSA 在 facade 层本就唾手可得——投影侧可自行对 ctor 再取一次 IR（同一 `analyze_method_ir` 入口、同一 `content`/`environment`），直接在其 SSA 上做角色划分，**无需扩展 `MemberCaptureProof` 契约**。这使上面选项 3 成为首选路径，本片的主要风险从"契约波及面"降为"划分判据的正确性"。
+- **super 实参是物理参数的严格前缀（三个冻结 fixture 全部实证）**：`AnonymousSuperArgs$1(String,int,String)` → `Base.<init>(String,int)`；`AnonymousTopLevel$1(long,String)` → `Base.<init>(J)`；`AnonymousSuperDispatch$1(String)` → `Base.<init>()V`。故划分判据可先按前缀假设实现并以 SSA 消费点核对（不得仅凭前缀长度猜测——仍须逐个确认参数确实流入 `invokespecial` 实参位 / 捕获 `putfield` 值位）；若将来出现非前缀形（捕获参数在前），按拒绝处理并登记，不在本片泛化。
+- **第二处阻塞门（root 新发现，spec 原先只写了一处）**：`src/facade.rs:4796` 要求 `matching_super_constructors` 的 descriptor **恰等于** child 构造器 descriptor（`m.descriptor.raw().0 == constructor_descriptor`）。混合形下二者不等（`(Ljava/lang/String;ILjava/lang/String;)V` vs `(Ljava/lang/String;I)V`），故**即使捕获证明通过，投影仍会在此拒绝**。本片必须同时放宽这道门为"父构造器 descriptor 等于 child descriptor 去掉捕获参数后的形状"，否则修了捕获路径仍不通。
+
+**故本片的真实工作量在划分判据与这道 descriptor 门的放宽，不在契约扩展。**
 
 ## Goals / Non-Goals
 

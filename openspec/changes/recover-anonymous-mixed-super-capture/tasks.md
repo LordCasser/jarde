@@ -1,13 +1,13 @@
 ## 1. 取证与基线
 
-- [ ] 1.1 读 design"第一个取证义务"的四项并逐条回答：(a) `prove_anonymous_double_capture`（member_inner.rs:541–660）哪些判据是 double 专属、哪些可泛化，尤其 `anonymous_double_constructor_shape`（759，6 指令固定形）对三参形为何不适用、如何按参数角色重写为按序核对（含 long/double 占两槽的 slot 宽度）；(b) `prove_family_capture`（158）的 `this$0` 判据（179–191）与新路径的边界（具名内部类形必须仍走原路径）；(c) `project_class_source_anonymous_super`（facade.rs:4562 起）的实参发射路径当前如何假设"全部物理实参都是父类实参"，改为子集后序保持与副作用计数如何调整；(d) 两侧原子发布接缝是否同一个（决定本片是一个投影还是两个投影的组合）。
+- [ ] 1.1 读 design"第一个取证义务"的四项并逐条回答：(a) `prove_anonymous_double_capture`（member_inner.rs:541–660）哪些判据是 double 专属、哪些可泛化，尤其 `anonymous_double_constructor_shape`（759，6 指令固定形）对三参形为何不适用、如何按参数角色重写为按序核对（含 long/double 占两槽的 slot 宽度）；(b) `prove_family_capture`（158）的 `this$0` 判据（179–191）与新路径的边界（具名内部类形必须仍走原路径）；(c) `project_class_source_anonymous_super`（facade.rs，合并后约 4589 起）的实参发射路径当前如何假设"全部物理实参都是父类实参"，改为子集后序保持与副作用计数如何调整；(d) 两侧原子发布接缝是否同一个（决定本片是一个投影还是两个投影的组合）。
 - [ ] 1.2 重放冻结 fixture `tests/fixtures/proved-java-structure/anonymous-super-args/`（SHA 核对）：记录当前基线（完整源集 `javac --release 8` 退出 1、`AnonymousSuperArgs$1` ctor 的 verbatim 呈现——即 `recover-ctor-reorder-dispatch-guard` 合入后的状态）、原 class 的事件日志（`java -Xverify:all`）与 JADX 对照。
 - [ ] 1.3 冻结至少六个负例：参数无消费、同一参数被两类角色消费、super 实参序与物理序不一致、捕获字段二次写入、多分配点、多 `val$` 字段；各自 `java -Xverify:all` 通过并记录实现前后呈现。
 
 ## 2. 新捕获路径与参数角色划分
 
-- [ ] 2.1 在 `prove_anonymous_capture`（facade.rs:17563 分派处）新增第三条分支与 `prove_anonymous_val_capture`（沿用 double-capture 骨架，descriptor 按字段实际类型、构造器形按角色划分核对）；`prove_family_capture` 与 `prove_anonymous_double_capture` 判据**逐字不动**（design 决策 1）。
-- [ ] 2.2 放宽 `facade.rs:4606` 的 `field_count != 0` 门为"允许捕获字段存在，每个物理参数角色被唯一证明"（决策 2）；实现参数角色划分判据与全部拒绝条件（决策 3）。
+- [ ] 2.1 在 `prove_anonymous_capture`（`src/facade.rs`，ncl/bridge-superclass 合并后约 17537 行；其内按 `child.fields[0].descriptor == b"D"` 二选一分派处，约 17563 行）新增第三条分支与 `prove_anonymous_val_capture`（沿用 double-capture 骨架，descriptor 按字段实际类型、构造器形按角色划分核对）；`prove_family_capture` 与 `prove_anonymous_double_capture` 判据**逐字不动**（design 决策 1）。行号会漂移，以锚点名为准。
+- [ ] 2.2 放宽 `project_class_source_anonymous_super` 的**两道**门（design 补充取证）：(i) `child_facts.field_count != 0`（约 4633 行）→"允许捕获字段存在，每个物理参数角色被唯一证明"；(ii) 父构造器 descriptor **恰等**门（约 4796 行）→"父 descriptor 等于 child descriptor 去掉捕获参数后的形状"。只放宽其一不足以打通（root 已核实）。实现参数角色划分判据与全部拒绝条件（决策 3）；**优先不扩展 `MemberCaptureProof` 契约**——投影侧对 ctor 自行 `analyze_method_ir` 取 IR 做划分（root 取证确认该能力已在 facade 层可得，见 design）。
 - [ ] 2.3 `anonymous-super-args` 完整源集 `javac --release 8` 通过、`java -Xverify:all` 事件日志与原 class 逐行一致；隐藏项（捕获字段声明、构造器、字段写入）由 javac 重建（决策 4）。
 
 ## 3. 回归与验收
