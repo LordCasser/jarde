@@ -1,0 +1,157 @@
+Compiled from "NA.java"
+public class NA {
+  public NA();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int a(int);
+    Code:
+       0: bipush        100
+       2: iload_0
+       3: idiv
+       4: ireturn
+       5: astore_1
+       6: iconst_1
+       7: ireturn
+       8: astore_2
+       9: iconst_m1
+      10: ireturn
+    Exception table:
+       from    to  target type
+           0     4     5   Class java/lang/Exception
+           6     7     8   Class java/lang/Exception
+
+  static int b(int);
+    Code:
+       0: bipush        100
+       2: iload_0
+       3: idiv
+       4: istore_1
+       5: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       8: ldc           #15                 // String f
+      10: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      13: iload_1
+      14: ireturn
+      15: astore_1
+      16: iconst_1
+      17: istore_2
+      18: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      21: ldc           #15                 // String f
+      23: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      26: iload_2
+      27: ireturn
+      28: astore_3
+      29: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      32: ldc           #15                 // String f
+      34: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      37: aload_3
+      38: athrow
+    Exception table:
+       from    to  target type
+           0     5    15   Class java/lang/Exception
+           0     5    28   any
+          15    18    28   any
+
+  static int c(int);
+    Code:
+       0: bipush        100
+       2: iload_0
+       3: idiv
+       4: istore_1
+       5: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       8: new           #23                 // class java/lang/StringBuilder
+      11: dup
+      12: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      15: ldc           #26                 // String f:
+      17: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      20: iload_0
+      21: invokevirtual #32                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      24: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      27: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      30: iload_1
+      31: ireturn
+      32: astore_1
+      33: iload_0
+      34: invokestatic  #39                 // Method nested2:(I)I
+      37: istore_2
+      38: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      41: new           #23                 // class java/lang/StringBuilder
+      44: dup
+      45: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      48: ldc           #26                 // String f:
+      50: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: iload_0
+      54: invokevirtual #32                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      57: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      60: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      63: iload_2
+      64: ireturn
+      65: astore_2
+      66: iconst_m1
+      67: istore_3
+      68: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      71: new           #23                 // class java/lang/StringBuilder
+      74: dup
+      75: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      78: ldc           #26                 // String f:
+      80: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: iload_0
+      84: invokevirtual #32                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      87: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      90: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      93: iload_3
+      94: ireturn
+      95: astore        4
+      97: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+     100: new           #23                 // class java/lang/StringBuilder
+     103: dup
+     104: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+     107: ldc           #26                 // String f:
+     109: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     112: iload_0
+     113: invokevirtual #32                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     116: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     119: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     122: aload         4
+     124: athrow
+    Exception table:
+       from    to  target type
+           0     5    32   Class java/lang/Exception
+          33    38    65   Class java/lang/Exception
+           0     5    95   any
+          32    38    95   any
+          65    68    95   any
+          95    97    95   any
+
+  static int nested2(int);
+    Code:
+       0: iload_0
+       1: ireturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: new           #23                 // class java/lang/StringBuilder
+       6: dup
+       7: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      10: ldc           #45                 // String
+      12: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      15: iconst_0
+      16: invokestatic  #47                 // Method a:(I)I
+      19: invokevirtual #32                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      22: ldc           #50                 // String /
+      24: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: iconst_0
+      28: invokestatic  #52                 // Method b:(I)I
+      31: invokevirtual #32                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      34: ldc           #50                 // String /
+      36: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: iconst_0
+      40: invokestatic  #55                 // Method c:(I)I
+      43: invokevirtual #32                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      46: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      49: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      52: return
+}
