@@ -1,0 +1,19 @@
+### Mk 四方法的指令序列（root javap 实测，仅名字不同、序列逐字相同）
+  make      instrs=5 ops=[new dup aload_0 invokespecial areturn]
+  create    instrs=5 ops=[new dup aload_0 invokespecial areturn]
+  newInner  instrs=5 ops=[new dup aload_0 invokespecial areturn]
+  get       instrs=5 ops=[new dup aload_0 invokespecial areturn]
+
+  不同序列种数: 1  (1 = 四方法字节码同形)
+
+### init.rs:833 硬编码的生产区/测试区归属核实
+  生产区 (NR<1832) 命中 name()=="make": 1
+  测试区 (NR>=1832) 命中 "make": 7
+  init.rs 测试模块起点: 1832（root 初稿误用 facade.rs 的 11237 边界，已更正；833 < 1832 故属生产区，结论不变）
+  build.rs 测试模块起点: 26829  (27252 > 该值 => 测试区)
+
+### 正例测试使用的方法名（证明硬编码对 CI 不可见）
+  init.rs 测试区 392:            "make",
+  init.rs 测试区 419:            "make",
+  init.rs 测试区 427:            "make",
+  init.rs 测试区 436:            "make",

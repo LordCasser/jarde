@@ -1,0 +1,2 @@
+a72ae51387b062778daebef21031b59e454a1eee61cddaf61d083c62c4cf7d06  openspec/evidence/java-syntax-2026-10-04/hardcoded-method-name-make-patrol/fixture/Mk.class
+b4e4f5fe1453cf7e169448741f8536f075edfe3bb8fb543ae27da221b540f01a  openspec/evidence/java-syntax-2026-10-04/hardcoded-method-name-make-patrol/fixture/Mk$In.class
