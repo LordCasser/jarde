@@ -1,0 +1,45 @@
+// jarde: presentation of `I1$Greeter` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+interface I1$Greeter {
+    // jarde: omitted physical lambda helper "lambda$upper$0" after proving its single class-wide use
+    // jarde: no body: the member `greet(Ljava/lang/String;)Ljava/lang/String;` is declared abstract and its declaration carries no Code attribute
+    public abstract java.lang.String greet(java.lang.String arg1);
+
+    public default java.lang.String hello() {
+        // @method hello()Ljava/lang/String;
+        // @declaration an interface's default method of `I1$Greeter`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.greet("world");
+    }
+
+    public default int count(java.lang.String arg1) {
+        // @method count(Ljava/lang/String;)I
+        // @declaration an interface's default method of `I1$Greeter`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local2;
+        char[] local3;
+        local2 = 0;
+        local3 = arg1.toCharArray();
+        for (char local6 : local3) {
+            if (local6 == 97) {
+                local2 = local2 + 1;
+            }
+        }
+        return local2;
+    }
+
+    public static I1$Greeter upper() {
+        // jarde: lambda companion body inlined at invokedynamic@0
+        // @method upper()LI1$Greeter;
+        // @declaration an interface's static method of `I1$Greeter`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String arg0) -> arg0.toUpperCase();
+    }
+
+    public default java.lang.String compose() {
+        // @method compose()Ljava/lang/String;
+        // @declaration an interface's default method of `I1$Greeter`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return "x" + this.hello() + this.count("banana");
+    }
+}
