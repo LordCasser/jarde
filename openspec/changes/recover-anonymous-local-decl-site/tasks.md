@@ -42,4 +42,25 @@
 - [x] 3.2 门禁：fmt、clippy **从 `.github/workflows/ci.yml` 46–76 行逐字生成**（含 `--all-features`、29 项 `-A`）、`openspec validate --all --strict`、corpus 双腿扫描（差异应仅赋值初始化形；**若出现第 2 个差异类即越界信号，停下报告**）、全仓测试（当前主线基线 **296 目标 / 2937 passed**）、`git diff --check`。磁盘纪律：每轮构建前 `df -h /`，低于 12Gi 先 `cargo clean`，报告前必 clean；**同一时刻只允许一个 cargo target 存在**。
 
   实测数字见证据 `report.md`（全部门禁在本 worktree 最终文件状态上重跑；corpus 差异恰为锚 + 同形 `-g` 腿两处，无第 2 个差异类；接口匿名形零差异）。
-- [ ] 3.3 root 独立复核五处判据的实现（尤其判据 5 的接口路径显式遏制是否成立：遏制负例逐字节不变 + 接口匿名形 corpus 零差异）、左端重拼的健全性、双腿调试信息对照、三方行为与 `anonymous-super-args` 的可编译性转变，更新 DT-06 账本与 `present-proved-java-structure` 5.3 剩余范围说明。（留 root）
+- [x] 3.3 root 独立复核五处判据的实现（尤其判据 5 的接口路径显式遏制是否成立：遏制负例逐字节不变 + 接口匿名形 corpus 零差异）、左端重拼的健全性、双腿调试信息对照、三方行为与 `anonymous-super-args` 的可编译性转变，更新 DT-06 账本与 `present-proved-java-structure` 5.3 剩余范围说明。（**root 2026-10-04 验收记录**；合并主线 `25f2589e`，实现者 tip `b1d72868`；全部独立复跑与端到端实测，不采信实现者自报：
+
+**门禁（root 在干净合并态实测）**：`cargo test --workspace --tests --locked --no-fail-fast` → **296 目标 / 2943 passed / 0 failed**（主线基线 2937 + 本片 6 个新测试，与实现者报告一致）；`cargo fmt --all -- --check` 通过；clippy 从 `ci.yml` 46–76 行逐字生成（含 `--all-features`、29 项 `-A`、`-D warnings`）**exit 0**；`openspec validate --all --strict` **271/271**；`git diff --check` 干净。
+
+**核心验收（root 用实现者二进制独立端到端实测）**：锚 `anonymous-super-args` 呈现为 `Base local2 = new Base((java.lang.String) text("super-label", "explicit"), number("super-value", 17)) { … }`——**左端类型重拼为父类源码名、分配点内联、0 处引注、无物理 `AnonymousSuperArgs$1` 构造调用**。完整源集（root + `Base`）`javac --release 8` **exit 0**（基线为 exit 1），`java -Xverify:all` 输出与原 class **逐行一致**（`arg:capture|arg:super-label|arg:super-value|base:explicit:17` / `explicit:17:captured`；末行含捕获值本身，证明捕获值可观察且非 null）。
+
+**判据 5 的遏制（root 独立复核，架构决定性项）**：(i) 代码级——`AnonymousSiteShape::{DirectReturn, LocalDeclInitializer}` 判别位定义于 `report.rs:540`，接口路径前置 `if *site_shape != …DirectReturn` 位于 `facade.rs:3400`，而父类委派在 `facade.rs:3373`——**委派确在检查之前**，与实现者注释所述一致（父类路径接受两位、接口自身路径只认直返）。(ii) 行为级——遏制负例 `anonymous-local-decl-interface-hold` 的渲染**源码区 50 行、SHA-256 `1badfcb5b9dcb9a46bf017e3b285073e8424c8143a239f3a6bac9606efc98ce5`，与冻结基线逐字节相同**（root 用 `cmp` 实测；注：该冻结文件是**源码区**而非含报告段的全文，root 首次比对时因未截断报告段而误判为"不同"，已按 README 记载口径重测）。(iii) 诊断级——`anonymous_interface_projection.state` 由 `absent` 变 `refused`（新码 `anonymous_interface_site_shape_unsupported`），与 [interface-path-activation-probe](../../evidence/java-syntax-2026-10-04/interface-path-activation-probe/README.md) 记录的上一环情况同类，**渲染与行为零变化**，属诊断级泄漏，已登记为独立债务（corpus 双腿扫描宜增比对报告 JSON 状态字段）。
+
+**判据 4 更正涉及的门放宽——root 独立追认（关键：该放宽并非 root 授权）**：实现者据一份**来源不明**的"root 裁答"移除了父类路径 `anonymous_child_methods_incomplete` 的 `allocations.is_empty()` 合取（`facade.rs` 基线约 4881 → 实现后约 4921）。root 用 `list_active_sessions` 核实当时**无其它活跃会话**，故该"裁答"非 root 发出——本会话**第二起**同类事件（第一起为上一环的"root 决策 B"）。按 handoff 新增纪律"subagent 的 `ask_parent` 答复不可当作 root 授权"，root 未因"已批准"跳过审查，而是独立复核，结论**追认成立**：
+- 不对称确为真实缺陷：接口路径（约 3682）从来只有 `!scan.complete`，父类路径多出 `!scan.allocations.is_empty()`，两路径无架构理由地分叉；
+- 放宽有真实需求：javac 8 字符串拼接发射 `StringBuilder` 分配，故该合取使**任何含字符串拼接的匿名体**都无法投影（锚的 `render()` 正是此形）；
+- 无静默偏离分支：`complete_anonymous_method` 判据全量保留（实现后仍在 5 处使用）、grandchild 路径同款合取未动；三类负例（不可拼写 owner 的分配 / 嵌套匿名分配 / 自引用分配）均已冻结并有 CI 测试，实测为响亮拒绝。
+
+**零回退（root 实测）**：上一环新锚 `anonymous-super-mixed-direct` 的 corpus 渲染**逐字节不变**（实现者报告 + root 复核 `class_source_direct_return_new` 零字节改动，直返候选恒优先）；实现者自查还抓到一处真实回归并已修复（`anonymous-inner-this` 因普通可命名类的声明初始化被误计为站点而失去投影，修复为声明初始化位候选**仅接受池形 `$` 目标**）——该修复方向正确，root 复核既有匿名片测试全数通过。
+
+**双腿调试信息对照（root 复核判据 2）**：新冻结 `anonymous-super-args-debuginfo/`（LVT 5 张）与锚（`-g:none`，LVT 0 张）两腿均投影成功且左端类型来源一致为 `new` owner，证明实现**不依赖调试信息**。
+
+**冻结 fixture 的 CI 守卫（handoff 强制纪律）**：`anonymous-local-decl-interface-hold`、`anonymous-local-decl-site-refusals/{nested-anon-alloc,nested-super-parent,two-decl-sites,unresolvable-child-read,unspellable-owner-alloc}`、`anonymous-super-args-debuginfo` 均有测试引用；`corpus-fingerprint.json` 已随新增 fixture 更新（含一次"从 fingerprint 剔除构建日志"的修正提交 `b1d72868`）。
+
+**CI 状况（root 独立查证，与本片无关）**：本片合入前主线连续两次 CI 红（`bc23ae59`、`39ad7614`）均为**同一测试** `one_declaration_bounds_the_librarys_own_presentation_too`，且这两个提交经 `git show --name-only` 核实为 **docs-only**（后者含根目录 `handoff.md`）；该测试本地单测两轮均 `1 passed / 0 failed`。属 handoff 已登记的 `bulk_recovery_delivery` flake 家族，**非本片引入**。
+
+**遗留（如实登记）**：5.3 链的环 2（根方法返回父类的**超类型**，撞 `anonymous_super_return_type_unproved`）与环 3（根方法**带参数**）仍未落地——环 3 已立项 [recover-anonymous-parameterized-root](../recover-anonymous-parameterized-root/)（**顺序约束已满足**：本片合入后方可派发），环 2 需新的类级可赋值性证明（机制判定见 [anonymous-chain-rings-2-3](../../evidence/java-syntax-2026-10-04/anonymous-chain-rings-2-3/README.md)）。判据 3 的理论边界（无 LVT 时原声明类型不可恢复，重拼为更精确类型可能改变重载选择）按 design 钉死口径实现并登记。corpus 双腿扫描增比对报告 JSON 状态字段为独立债务。）
