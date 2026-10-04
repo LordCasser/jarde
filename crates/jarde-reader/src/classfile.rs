@@ -11904,7 +11904,12 @@ mod tests {
             // bodies and `S3` five bodies byte-identical to their patrol records, plus the
             // slice's `ThreeLevel`/`ExitDiverges`/`LabeledBreakOuter`/`Overlap` three bodies
             // each, six classes, twenty-three bodies) moved it again.
-            (558, 2423, 251, 1761, 8),
+            // The 2026-10-04 recover-javac8-allocation-qualifier-null-check fixtures (the real
+            // javac 8 allocation-qualifier anchors: the `N1` family three, the no-argument
+            // control `Pod` two, the statement-preservation companion `D2` two, the
+            // discarded-construction negative `D3` two, and the kept-result byte-patched probe
+            // `E1` two, eleven classes, thirty bodies) moved it again.
+            (569, 2453, 251, 1763, 8),
             "fixture population changed: re-measure these counts"
         );
     }

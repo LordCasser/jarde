@@ -6727,6 +6727,86 @@
       "path": "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class"
     },
     {
+      "blake3": "f220de9df12a0af26f267845a1714e7bfa96b1151998a17b875f3a12714791db",
+      "bytes": 365,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d2/D2$In.class"
+    },
+    {
+      "blake3": "84ddc281053df5e9d2d12aae3bddca4e0c552b1a9485dd094fa22d0bde296925",
+      "bytes": 769,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d2/D2.class"
+    },
+    {
+      "blake3": "655b7a778af71db59e2c7eff78299ea67a134e10208080a478b65fd192001263",
+      "bytes": 320,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d2/D2.java"
+    },
+    {
+      "blake3": "8ad1b34d15c11f262c2580d90777e4c1db838c52d049b0129feb9f51723b05e5",
+      "bytes": 354,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d3/D3$In.class"
+    },
+    {
+      "blake3": "4045b083481f947de855cc117cb4851267b6d4a39cbed4ab6c6ea708ff525c7e",
+      "bytes": 493,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d3/D3.class"
+    },
+    {
+      "blake3": "778d87049360c903b743ba3b8a075460834d103fce44e1ddc04383b267eb328f",
+      "bytes": 185,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d3/D3.java"
+    },
+    {
+      "blake3": "178a460e7174a6196653da2747190211b005604c38a0c6bc1a826741f73be0e4",
+      "bytes": 324,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/e1-kept/E1$In.class"
+    },
+    {
+      "blake3": "778ad653a6f6ce6b056c0f006af0d8a5a2e763e136cd67b4f2e89d8bec550a76",
+      "bytes": 662,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/e1-kept/E1.class"
+    },
+    {
+      "blake3": "f6b82be3b231b7fa0622d7fa8f01a5d38afda4421e25a1fbc6d3c8abe465ece6",
+      "bytes": 238,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/e1-kept/E1.java"
+    },
+    {
+      "blake3": "f6aeb4a063ff52a18569a963674db1c86571431caabd5a9517828c43f33e0fb6",
+      "bytes": 412,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/n1/N1$Inner.class"
+    },
+    {
+      "blake3": "cca4488df4893ad88c465c5ba89bef913c299633f4acecb3efd180dcb44a76d1",
+      "bytes": 464,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/n1/N1$Stat.class"
+    },
+    {
+      "blake3": "c9896da23218e026885f5b1fa736fd4eb084306ce46828d462efd9d35b1c0bfb",
+      "bytes": 892,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/n1/N1.class"
+    },
+    {
+      "blake3": "105e2a746dd738433e6056594f1518b6cc64e10eed65f736fad94054c2747378",
+      "bytes": 615,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/n1/N1.java"
+    },
+    {
+      "blake3": "edd8f6042bb9f5751e562edfd99c9e6ae2be6bb7ba2068e88bf0a0711d36967c",
+      "bytes": 407,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/pod/Pod$Nut.class"
+    },
+    {
+      "blake3": "5a3581a1ded5ee34c100bb68ad91bbe4e23d5748dff3ab029ed12c75489b9d02",
+      "bytes": 645,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/pod/Pod.class"
+    },
+    {
+      "blake3": "7ff6228ce707b0027f6ff5a5cfea57ef0b4bf6fb266dd76472e679a85dbb62cc",
+      "bytes": 279,
+      "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/pod/Pod.java"
+    },
+    {
       "blake3": "70d20b974846fe43738401ce084cea740bc333c584da481440621dbc415a68ca",
       "bytes": 319,
       "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/g/G$In.class"
