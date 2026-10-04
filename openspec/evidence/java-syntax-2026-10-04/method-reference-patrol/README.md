@@ -29,7 +29,7 @@
 
 ## 归属（查重结果，不重复立项）
 
-- **inventory DT-27**（"静态、实例、构造器方法引用"）已有两片验收：[非泛型隔离对照](../jadx-feature-inventory-2026-09-27/dt27-method-ref-audit/report.md) 证明 `Math::abs`、`this::number`、`RuntimeException::new` 三方一致；[泛型目标首片](../java-syntax-2026-09-28/dt27-typed-functional/root-acceptance.md) 证明 `Function<String,Integer>` 的 `Integer::parseInt`、`this::length` 与 `Supplier<String>` 的 `this::label`。其登记原文即：**"其它泛型目标、`Object::toString` TODO、重载选择与参数/返回适配仍待扩验，不能据此清项"** —— 本巡查的形 1/3/4/5/6（呈现为显式 lambda 而非 `::`）与形 2（绑定接收者适配）正落在该残留内。
+- **inventory DT-27**（"静态、实例、构造器方法引用"）已有两片验收：[非泛型隔离对照](../../java-syntax-2026-09-27/dt27-method-ref-audit/report.md) 证明 `Math::abs`、`this::number`、`RuntimeException::new` 三方一致；[泛型目标首片](../../java-syntax-2026-09-28/dt27-typed-functional/root-acceptance.md) 证明 `Function<String,Integer>` 的 `Integer::parseInt`、`this::length` 与 `Supplier<String>` 的 `this::label`。其登记原文即：**"其它泛型目标、`Object::toString` TODO、重载选择与参数/返回适配仍待扩验，不能据此清项"** —— 本巡查的形 1/3/4/5/6（呈现为显式 lambda 而非 `::`）与形 2（绑定接收者适配）正落在该残留内。
 - `recover-lambda-inline-bodies`（7/7）明写：**"`::` 方法引用语法不在本片（行为已对，登记后续）"**。
 - 故 `::` 源码形恢复与绑定接收者适配都是**已登记的后续工作**，不是未发现的缺口。
 
