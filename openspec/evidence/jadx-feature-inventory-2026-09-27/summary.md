@@ -152,4 +152,6 @@ Jarde 已在同次方法恢复中采集 `AnonymousAllocationScan`（每个 `new`
 
 EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-calls/README.md)也显示，JADX 虽能把简单调用写成展开形式，却会把单个 `null`、`String[]` 传 `Object...` 等边界展开成改变运行时数组形状的源码。我们只借鉴其目标方法识别与调用投影入口；数组是不是语法糖由原 class 行为和唯一消费证明决定，不能把所有 `new T[]{...}` 机械展开。**大颗粒（2026-10-05，[loop-body-catch 巡查](../java-syntax-2026-10-05/loop-body-catch-patrol/README.md)）**：循环体内具名 try-catch **全形拒绝**（纯 for/while/for-each 三形皆 "graph is not reducible"；无 try 循环恢复、循环内 try-finally 恢复——仅具名 catch 破坏可归约性）；解析/重试循环是业务最高频模式；**jadx 产出行为错码**（throw 提出 try 外→永不被捕获）；既有两机制（fragmented-loop-catches f8be28ae + proved_loop_catch_joins region.rs:1639）均不覆盖此简单形 → 立项 recover-loop-body-try-catch。
 
+**新窄缺口（2026-10-05，[switch-nonlocal-exit 巡查](../java-syntax-2026-10-05/switch-nonlocal-exit-patrol/README.md)）**：循环内 switch **case 内非局部出口**全拒——`return`（jadx 完整正确恢复=有解）与 `break outer`（jadx 行为错码：单迭代重构，{9,1,5} 原 10/jadx 9）；局部出口（break/continue）与同构 if+return 全恢复；诊断文本与 local-scope 同但无异常结构（落点关系待插桩）→ 立项 recover-switch-case-nonlocal-exits。
+
 
