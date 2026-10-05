@@ -114,6 +114,8 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 
 2026-10-05 新证窄缺口（响亮拒绝、jadx 有解）：**数组初始化 dance 值的非法位**——`new T[]{…}` 的 dup 引用跨内层 iastore 存活后作**任意表达式值**（预存数组元素存储 `a[0]=new int[]{7}`、立即下标 `new int[]{9}[0]`）被拒（"copy … has no proved local assignment"）；局部/字段赋值、实参、外层初始化器元素四位合格（非 dance 本身）；裸数组立即消费合格（非立即消费机制）。取证见 [array-initializer-value-patrol](../java-syntax-2026-10-05/array-initializer-value-patrol/README.md)。
 
+2026-10-05 新证窄缺口（响亮拒绝、平台扩宽族第 3 员）：**String/装箱型 → Serializable 实参扩宽**——多重界泛型方法 `both(Serializable&Comparable, …)` 的调用点 `both("a","b")` 拒（"declared Serializable presents String"）；与 CharSequence/Comparable 同因（DIRECT_EDGES 只覆盖 java.util）；Serializable 的 java.lang 实现者封闭集 = String + 全部装箱型（Byte…Boolean 共 8）+ CharSequence 族按 javadoc 核——jadx 恢复。取证见 [generics-edge-patrol](../java-syntax-2026-10-05/generics-edge-patrol/README.md)。
+
 2026-10-05 新证窄缺口（响亮拒绝、与 CharSequence 同族）：**String/装箱型 → Comparable 实参扩宽**——`max("a","b")`（泛型方法调用点，擦除后参数声明 Comparable）拒绝（"presents java.lang.String/Integer"）；机制同 DIRECT_EDGES 只覆盖 java.util；Comparable 的 java.lang 实现者封闭集 = String + 8 装箱型（用户类走 snapshot 通道）。取证见 [recursive-generic-patrol](../java-syntax-2026-10-05/recursive-generic-patrol/README.md)。
 
 2026-10-05 新证窄缺口（响亮拒绝、jadx 有解）：**boolean–int 混合位运算**——`r ^= x` 布尔累积（javac 编为 int 计数器 xor 布尔）与 `a & !b`（`!b` 编为 int）被拒（"operands presented as `int` and `boolean`"）；同型 boolean^boolean / int^int / Kernighan 位技巧全恢复；jadx 以 boolean 累积变量/`z & (!z2)` 呈现两形（int 化布尔可一致回投）。取证见 [boolean-int-bitwise-patrol](../java-syntax-2026-10-05/boolean-int-bitwise-patrol/README.md)。
