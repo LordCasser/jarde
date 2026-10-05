@@ -30,7 +30,7 @@
 
 #### Scenario: 匿名类实参引用转换锚点（第 6 族触发）
 - **WHEN** 输入为固定 `CP.byAnon`（`Collections.sort(c, new Comparator<User>(){...})`——匿名类作实参，诊断 "the parameter 1 of the invocation at BCI N is declared \`T\` presents \`CP$1\` but the invocation requires \`T\` and this layer has no safe reference conversion evidence"）的 Java 8 class 并恢复
-- **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`[10, 20, 30]`）；否则编译失败或整方法拒绝——不得出现 sort 调用被静默吞掉的可编译文本（`[30, 10, 20]`）；同 fixture 的 `Comparator.comparing(User::getName).thenComparing(User::getAge).reversed()` 全链与 `Arrays.sort` lambda 形的完整恢复 SHALL 保持
+- **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`[10, 20, 30]`）；否则编译失败或整方法拒绝——不得出现 sort 调用被静默吞掉的可编译文本（`[30, 10, 20]`）；同 fixture 的 `Comparator.comparing(User::getName).thenComparing(User::getAge).reversed()` 全链与 `Arrays.sort` lambda 形的完整恢复 SHALL 保持；同族 JDK ctor 实参形（`new Thread(new Runnable(){...})`，幸存空 try 可编译返回空串 vs 原 `T`）SHALL 同判；own（same-run）接口参数位的 cast 呈现（`(AN$Op) new AN$1()`）完整恢复 SHALL 保持
 
 #### Scenario: 绑定接收者适配锚点（第 5 族触发）
 - **WHEN** 输入为固定 `OP.sideEffect`（`o.ifPresent(sb::append)`——绑定接收者为捕获局部，诊断 "adapting this bound receiver would move its null failure from functional-value creation to invocation"）的 Java 8 class 并恢复
