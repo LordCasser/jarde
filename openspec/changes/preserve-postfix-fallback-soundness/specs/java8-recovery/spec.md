@@ -30,4 +30,4 @@
 
 #### Scenario: 诊断不改
 - **WHEN** 值来源证明失败（任一诊断族）
-- **THEN** 诊断文本族（"the value at BCI N is the value local X held at BCI M…"、"the copy at BCI N has no proved local assignment…"、"the dependency chain from BCI N to final consumer M is not bounded…" 与 "the saved producer at BCI N has M consumers, so one local binding cannot prove its execution count…"）SHALL 保持，不发明新拒绝码
+- **THEN** 诊断文本族——四主族（"the value at BCI N is the value local X held at BCI M…"、"the copy at BCI N has no proved local assignment…"、"the dependency chain from BCI N to final consumer M is not bounded…"、"the saved producer at BCI N has M consumers, so one local binding cannot prove its execution count…"）及其级联伴随行（"the saved producer at BCI N has no bounded final expression consumer"、"the value at BCI N comes from an Other…"、"the value at BCI N was produced by a saved declaration this run could not commit"、"the instruction at BCI N is not part of the provable subset"、"the value at BCI N is the entry state of stack depth N…"，[诊断普查](../../../../evidence/java-syntax-2026-10-05/diagnosis-census/README.md)）SHALL 保持，不发明新拒绝码
