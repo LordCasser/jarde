@@ -2,7 +2,7 @@
 
 > **root 锚数据点（2026-10-05）**：最小常见形实测——平铺 `try{return 100/n}catch(Exception){return 1}finally{println}`（[NA-b 探针](../../evidence/java-syntax-2026-10-05/try-catch-finally-slot-reuse-patrol/README.md)）整方法拒绝（"local 1 crosses a quoted fallback region"）：javac 复制 finally 进三出口并复用 slot 1 为 try 结果 int 与 catch 异常对象。**catch 内嵌 try 本身已恢复**（同探针 NA-a）。建议 NA-b 并入 task 2.3 验收锚。同因追加：`EX.nestedFin`（finally 嵌 finally，[exception-shape-family-patrol](../../evidence/java-syntax-2026-10-05/exception-shape-family-patrol/README.md)）——锚家族 = NA-b（平铺 t/c/f）+ EX.nestedFin（嵌 finally），同一 "local crosses a quoted fallback region" 拒绝。
 
-> **root 追加锚（2026-10-05，[rethrow 巡查](../../evidence/java-syntax-2026-10-05/finally-rethrow-patrol/README.md)）**：`rethrow`（try 抛出+catch 打印+finally 打印+尾部 return——finally 复制三出口中的**异常 slot 跨引注区**）同因拒绝；同巡查证健康面：catch 内重抛 `throw e`、**multi-catch 精确 rethrow**（`catch(A|B e){ throw e; }`）全部恢复且行为精确。锚家族四形。
+> **root 追加锚（2026-10-05，[rethrow 巡查](../../evidence/java-syntax-2026-10-05/finally-rethrow-patrol/README.md)）**：`rethrow`（try 抛出+catch 打印+finally 打印+尾部 return——finally 复制三出口中的**异常 slot 跨引注区**）同因拒绝；同巡查证健康面：catch 内重抛 `throw e`、**multi-catch 精确 rethrow**（`catch(A|B e){ throw e; }`）全部恢复且行为精确。锚家族四形、[catch 链+finally 第 5 数据点](../../evidence/java-syntax-2026-10-05/catch-order-recursion-patrol/README.md)（order：三段 catch 层级序+finally 的异常 slot 跨区）。
 
 恢复器目前把跨 try/catch 的局部变量按方法级“已声明”状态处理，可能在 catch 块内声明变量，却在 catch 之后输出读取它的语句；生成文本因此连 Java 词法作用域都不成立。该缺口已由真实 Java 8 class、原/JADX 行为及 javac 错误确认，需要先让局部声明可见性与 region 结构一致，再谈更广的异常路径恢复。
 
