@@ -4,6 +4,10 @@
 
 **判别（完整）**：无捕获形（`DB$1`）健康——super 后内联合法；仅**捕获形**（有 val$ 字段赋值先于 super）损坏。**jadx 有解**：识别整个模式（匿名子类+纯实例块体+单分配点）在分配点直接呈现源级双括号形 `new ArrayList<String>() {{ add(str); }}`——绕开 ctor 排序问题。
 
+
+
+> **root 追加锚（2026-10-05，[thread-anonymous 巡查](../../evidence/java-syntax-2026-10-05/thread-anonymous-patrol/README.md)）**：**Thread 匿名形 + 同形异序**——匿名 Thread 子类伴生（无尾随字段初始化）保持非法原始序（`this$0 = arg; super();` 编译失败），而字节码**逐条相同**的匿名 Runnable 伴生（有尾随 `local = 0`）被合法重排（`super(); this$0 = arg; local = 0;`）——重排路径仅在有后续初始化时触发；实现时统一两形。
+
 ## What Changes
 
 **MVP（路径 A——伴生 ctor 重排）**：当伴生 ctor 的 **pre-super 语句全部是捕获字段赋值**（`this.val$x = argN`）且**其赋的值不流入 super() 调用的实参**（数据流可证）时，把渲染重排为 `super(); this.val$x = argN; …实例块语句…`——重排在"super 实参不依赖捕获值"的前提下语义等价（super 只是不读这些字段；javac8 之所以前置仅因需要，非语义必需）。不可证时**保持现状**（响亮——渲染头本就声明 not claimed to compile）。
