@@ -162,4 +162,6 @@ EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-cal
 
 **守卫落地（2026-10-06，preserve-postfix-fallback-soundness 合入）**：六诊断族值级拒绝在幸存语句仍可呈现时整方法升级响亮拒（诊断 reason 逐字保留）；零语句 void 体加 `jarde_refused_body()` 编译期拒绝标记（解释性呈现）。19 个 compilable-wrong 锚全部转 SAFE（root 独立复验 SA/BF/XS/LK/CP/OP/NI 7 锚+123 fixture 零回退定性：35 六族 void 升级+2 标记、86 逐字节不变）。**锚账本自此语义变化：六族 compilable-wrong 面关闭，剩余开口=第 7/8 族（monitor 时序、数组元素接收者）及恢复性族**；体内嵌套引注（loop/if/try 内）为下一取证面。
 
+**第 20/21 锚修复落地（2026-10-06）**：`preserve-monitor-exit-evaluation-order`（案 a：InnerMonitor.returns + expression_inside 值链 fail-closed）——NL 判别锚往返 `nY`，第 7 族关闭；`recover-array-element-field-receiver`（闭包注入：array_of_value 组件类型接入 field.rs 身份证明）——RG `put(c.label,c)` 恢复、12/12 锚方法零引注，第 8 族关闭。**compilable-wrong 开口面至此全部关闭**（六族=守卫升级拒，7/8 族=源头修复）；剩余为可恢复性缺口（local-scope 十四数据点、平台接口单边扩宽、体内嵌套引注等）。
+
 
