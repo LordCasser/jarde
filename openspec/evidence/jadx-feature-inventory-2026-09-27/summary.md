@@ -154,4 +154,6 @@ EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-cal
 
 **新窄缺口（2026-10-05，[switch-nonlocal-exit 巡查](../java-syntax-2026-10-05/switch-nonlocal-exit-patrol/README.md)）**：循环内 switch **case 内非局部出口**全拒——`return`（jadx 完整正确恢复=有解）与 `break outer`（jadx 行为错码：单迭代重构，{9,1,5} 原 10/jadx 9）；局部出口（break/continue）与同构 if+return 全恢复；诊断文本与 local-scope 同但无异常结构（落点关系待插桩）→ 立项 recover-switch-case-nonlocal-exits。
 
+**新窄缺口（2026-10-05，[return-effectful-finally 巡查](../java-syntax-2026-10-05/return-effectful-finally-patrol/README.md)）**：**try 返回 + finally 落穿带副作用**全位置拒（循环内/无循环皆拒；空 finally、continue/break 穿副作用、finally 返回值形均恢复——等价分布机制已存在只缺此员）；**求值序陷阱**（return 表达式先求值一次、finally 后副作用——FO 基准 1/100）要求 temp 绑定形；jadx 以路径复制解（行为精确）→ 立项 recover-return-through-effectful-finally。
+
 
