@@ -9,6 +9,7 @@
 
 
 > **root 追加锚（2026-10-05，[equals-contract 巡查](../../evidence/java-syntax-2026-10-05/equals-contract-patrol/README.md)）**：**equals 契约无异常表形**——`HE that = (HE) o` cast 局部 + getClass 分支 + 字段比较链触发同一 "local crosses a quoted fallback region" 诊断（无异常表参与）；剥离文本编译失败=安全方向，但 equals 是最普遍方法形状应可恢复；实现时核实与异常区形是否同一 crosses 机制（锚家族第 6 形）。**第 7 锚（[composite-scanner 巡查](../../evidence/java-syntax-2026-10-05/composite-scanner-patrol/README.md)）**：for+switch 复合（词法扫描器形状：局部 SB 在循环 switch 各分支消费+continue+prev 状态）整方法 crosses——幸存文本空=安全，jadx 完整解；新控制流形状（循环×switch 交叉，无异常表）。**第 8 锚（[nested-loop 巡查](../../evidence/java-syntax-2026-10-05/nested-loop-accumulation-patrol/README.md)）**：嵌套循环累积（`for(i){ for(j){ s += m[i][j]; } }`）整方法 crosses——幸存空 body 编译失败=安全，jadx 完整解；判别点：单层循环累积恢复（#103）、嵌套层拒——局部定义-使用切片跨外层循环。
+**第 9 锚（[triple-nested-labels 巡查](../../evidence/java-syntax-2026-10-05/triple-nested-labels-patrol/README.md)）**：三层标签矩阵 + 同体内多标签出口并存（continue outer + break outer + 裸 continue）整方法 crosses——空 body 缺 return=SAFE；jadx 全解；判别 vs #11（两层单出口恢复）：≥2 种标签出口或三层深度触发。
 
 ## What Changes
 
