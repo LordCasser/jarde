@@ -462,7 +462,12 @@ impl LambdaRefusal {
 /// Decides what one dynamic site is.
 ///
 /// `captures` are the values the site reads, in the order it reads them: each one's BCI (as far as
-/// the run states one) and the type the frames state for it — `None` when this run states no type.
+/// the run states one) and the type the run states for it — `None` when this run states no type.
+/// The type is the frame's own named reference, spelled from the descriptor the class file states,
+/// or, for the one reference the frame pass leaves unknown by design (`newarray`'s primitive array,
+/// whose element type the bootstrap loader defines and this request does not declare), the array the
+/// creating instruction's own `atype` states — see `crate::build`'s `capture_value_type`. A type
+/// nobody stated is not a type this layer may guess.
 /// Capture types must agree exactly with the site and implementation descriptors. A site whose
 /// captures are not *readable from this run's facts* is refused as well.
 #[allow(
@@ -700,8 +705,10 @@ pub(crate) fn plan(
     };
     debug_assert_eq!(instantiated_params.len(), sam_params.len());
     // Every captured value's type has to be stated by this run: the alignment below compares shapes,
-    // and a shape nobody stated cannot be compared. The names table is where that fact lives, so the
-    // requirement is stated as that table's — and a site is refused, never guessed at.
+    // and a shape nobody stated cannot be compared. The run's value-flow table is where that fact
+    // lives (its frame entry, or the array the creating instruction's own `atype` states where the
+    // frame is unknown by design — `crate::build`'s `capture_value_type`), so the requirement is
+    // stated as that table's — and a site is refused, never guessed at.
     let Some(capture_types) = captures
         .iter()
         .map(|(_, ty)| ty.clone())

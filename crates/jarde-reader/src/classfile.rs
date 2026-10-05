@@ -11781,6 +11781,14 @@ mod tests {
     /// subroutines, bringing the census to 356 classes and 1,817 bodies. Subsequent committed
     /// fixtures were re-measured at 431 classes, 2,079 bodies, 245 handlers and 1,633
     /// branch/switch targets; the eight historical subroutines remain unchanged.
+    ///
+    /// The 2026-10-05 recover-lambda-primitive-array-capture fixtures add the frozen dual legs of
+    /// the DT-26 lambda array-capture anchor: `v8/P02_lambda.class` (real javac 8, six bodies) and
+    /// `v23/P02_lambda.class` (`javac --release 8`, six bodies), plus the `int[][]` control of the
+    /// same probe in both legs (`P02_multianewarray.class`, four bodies each). All eight members are
+    /// straight-line or `invokedynamic` bodies with no branch and no handler, so the four classes
+    /// add twenty Code bodies and nothing else. The measured census is 585 classes, 2,589 bodies,
+    /// 252 handler records, 1,763 branch/switch targets and the same eight subroutines.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -11914,7 +11922,7 @@ mod tests {
             // pair, the eight byte-patched `probes` negatives — twelve classes, one hundred
             // sixteen bodies, one jar; the `wb` dual leg is source-only and compiles in-test)
             // moved it again.
-            (581, 2569, 252, 1763, 8),
+            (585, 2589, 252, 1763, 8),
             "fixture population changed: re-measure these counts"
         );
     }

@@ -1,0 +1,62 @@
+// jarde: presentation of `P02_lambda` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class P02_lambda extends java.lang.Object {
+    // jarde: renamed physical lambda helper "lambda$map$1" after proving its single class-wide use
+    public P02_lambda() {
+        // @method <init>()V
+        // @declaration a constructor of `P02_lambda`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `sum(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static int sum(java.util.List arg0) {
+        // @method sum(Ljava/util/List;)I
+        // @declaration a static method of `P02_lambda`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local1 = new int[]{0};
+        // @bytecode 15 8 9
+        // captured operand 0 is `Object` in the frame, `int[]` in the site descriptor and `int[]` in the implementation: the capture conversion and its creation-time effects are not proven
+        return local1[0];
+    }
+
+    static java.lang.String map(java.util.List arg0) {
+        // jarde: generic Signature projection refused for `map(Ljava/util/List;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+        // jarde: lambda companion call renamed at invokedynamic@10
+        // @method map(Ljava/util/List;)Ljava/lang/String;
+        // @declaration a static method of `P02_lambda`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local1 = new java.lang.StringBuilder();
+        arg0.forEach((java.util.function.Consumer) ((java.lang.Object p0) -> P02_lambda.lambda$map$1$jarde(local1, (java.lang.String) p0)));
+        return local1.toString();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `P02_lambda`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.PrintStream saved0 = java.lang.System.out;
+        saved0.println(sum((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(1), java.lang.Integer.valueOf(2), java.lang.Integer.valueOf(3)})));
+        java.io.PrintStream saved1 = java.lang.System.out;
+        saved1.println((java.lang.String) map((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"a", "b"})));
+        return;
+    }
+
+    private static void lambda$map$1$jarde(java.lang.StringBuilder arg0, java.lang.String arg1) {
+        // jarde: renamed physical lambda helper "lambda$map$1" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // @method lambda$map$1(Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        // @declaration a static method of `P02_lambda`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.append(arg1);
+        return;
+    }
+
+    private static void lambda$sum$0(int[] arg0, java.lang.Integer arg1) {
+        // @method lambda$sum$0([ILjava/lang/Integer;)V
+        // @declaration a static method of `P02_lambda`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0[0] += arg1.intValue();
+        return;
+    }
+}
