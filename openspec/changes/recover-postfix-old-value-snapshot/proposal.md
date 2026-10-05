@@ -2,7 +2,9 @@
 
 [后缀旧值巡查](../../evidence/java-syntax-2026-10-05/postfix-old-value-patrol/README.md)实证（四形判别完整）：javac 为 `i++`（值被消费时）发射快照序列——**旧值 load 先于 iinc 入栈、跨 iinc 被消费**。`int j = i++;` 与 `return i++ + 10;` 拒绝："the value at BCI N is the value local 0 held at BCI M, and the slot does not hold it at BCI N"（时间引注）+ "reads `local1`, and no statement of this body declared that local"。
 
-**判别**：`++i` 前缀（无快照）、`i++; j = i;` 拆两语句（无快照）、复合赋值表达式捕获（捕获**新**值）**全部恢复**——缺口仅在"旧值快照被消费"这一时间序形。**jadx 有解**（语句级 `i++` 或 `i2 = (i - 1) - 1` 旧值算术等价形）。
+**判别**：`++i` 前缀（无快照）
+
+> **root 追加锚（2026-10-05，链式赋值巡查）**：**下标消费位变体**——`arr[idx++] = 10`/读位 `arr[idx--]`（旧值作数组下标）同因拒；jadx 以展开 temp 形解（`int i = idx; idx = i+1; iArr[i] = 10;`）——消费位扩至下标位，呈现可取 temp 形（不必内联 `i++`）。见 [chained-assign-sideeffect-patrol](../../evidence/java-syntax-2026-10-05/chained-assign-sideeffect-patrol/README.md)。、`i++; j = i;` 拆两语句（无快照）、复合赋值表达式捕获（捕获**新**值）**全部恢复**——缺口仅在"旧值快照被消费"这一时间序形。**jadx 有解**（语句级 `i++` 或 `i2 = (i - 1) - 1` 旧值算术等价形）。
 
 ## What Changes
 
