@@ -4,6 +4,10 @@
 
 **判别（完整）**：局部链 `x = y = 7`（dup 跨 **istore**）**已恢复**（拆双赋值）——唯一变量是存储目标为字段（putfield）。这是与数组 dance 片（#8）、后缀旧值片（#9）同族的第三个 dup/快照值形状：**dup 跨 putfield**。
 
+
+
+> **root 追加锚（2026-10-05，[field-compound 巡查](../../evidence/java-syntax-2026-10-05/field-compound-soundness-patrol/README.md)）**：**dup 跨 getfield+putfield 的复合 RMW**（`this.flags |= 1 << bit`——receiver dup 双读者：getfield 与 putfield 各一次）当前整语句拒；静态形（无 dup）恢复。实现时核实与本片 dup-跨-putfield 机制是否同门（同门则一并覆盖，异门则如实记录移交）。
+
 ## What Changes
 
 把链式字段赋值识别为多赋值语句组：当 dup 值跨**恰好 n 个 putfield** 存活且最终无剩余消费时，呈现为 n 个独立字段赋值（按字节码序=源求值序从右到左）。判据=dup 单源（常量/表达式求值一次）+全部消费是 putfield——**求值一次语义**由拆分后各赋值共享同一已求值表达式文本保证（jadx 同构）。
