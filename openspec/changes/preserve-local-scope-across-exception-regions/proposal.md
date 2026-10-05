@@ -6,6 +6,10 @@
 
 恢复器目前把跨 try/catch 的局部变量按方法级“已声明”状态处理，可能在 catch 块内声明变量，却在 catch 之后输出读取它的语句；生成文本因此连 Java 词法作用域都不成立。该缺口已由真实 Java 8 class、原/JADX 行为及 javac 错误确认，需要先让局部声明可见性与 region 结构一致，再谈更广的异常路径恢复。
 
+
+
+> **root 追加锚（2026-10-05，[equals-contract 巡查](../../evidence/java-syntax-2026-10-05/equals-contract-patrol/README.md)）**：**equals 契约无异常表形**——`HE that = (HE) o` cast 局部 + getClass 分支 + 字段比较链触发同一 "local crosses a quoted fallback region" 诊断（无异常表参与）；剥离文本编译失败=安全方向，但 equals 是最普遍方法形状应可恢复；实现时核实与异常区形是否同一 crosses 机制（锚家族第 6 形）。
+
 ## What Changes
 
 - 恢复输出中的局部声明与读取遵守 Java 词法作用域；嵌套 region 内声明的局部离开作用域后不得被继续引用。
