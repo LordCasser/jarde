@@ -8,7 +8,7 @@
 
 
 
-> **root 追加锚（2026-10-05，[equals-contract 巡查](../../evidence/java-syntax-2026-10-05/equals-contract-patrol/README.md)）**：**equals 契约无异常表形**——`HE that = (HE) o` cast 局部 + getClass 分支 + 字段比较链触发同一 "local crosses a quoted fallback region" 诊断（无异常表参与）；剥离文本编译失败=安全方向，但 equals 是最普遍方法形状应可恢复；实现时核实与异常区形是否同一 crosses 机制（锚家族第 6 形）。
+> **root 追加锚（2026-10-05，[equals-contract 巡查](../../evidence/java-syntax-2026-10-05/equals-contract-patrol/README.md)）**：**equals 契约无异常表形**——`HE that = (HE) o` cast 局部 + getClass 分支 + 字段比较链触发同一 "local crosses a quoted fallback region" 诊断（无异常表参与）；剥离文本编译失败=安全方向，但 equals 是最普遍方法形状应可恢复；实现时核实与异常区形是否同一 crosses 机制（锚家族第 6 形）。**第 7 锚（[composite-scanner 巡查](../../evidence/java-syntax-2026-10-05/composite-scanner-patrol/README.md)）**：for+switch 复合（词法扫描器形状：局部 SB 在循环 switch 各分支消费+continue+prev 状态）整方法 crosses——幸存文本空=安全，jadx 完整解；新控制流形状（循环×switch 交叉，无异常表）。
 
 ## What Changes
 
