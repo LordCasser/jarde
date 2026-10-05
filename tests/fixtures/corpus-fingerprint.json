@@ -6857,6 +6857,36 @@
       "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap.java"
     },
     {
+      "blake3": "dbcea7d3ee51e2d2ea56d781531ac7c6818818acdf72f56fa0588e37c0501d7f",
+      "bytes": 434,
+      "path": "tests/fixtures/recover-lambda-primitive-array-capture/P02_lambda.java"
+    },
+    {
+      "blake3": "b7c7cccb5c1df908bae880d4b4b6436e713e0740ed077d2d475ef3517cf301d4",
+      "bytes": 246,
+      "path": "tests/fixtures/recover-lambda-primitive-array-capture/P02_multianewarray.java"
+    },
+    {
+      "blake3": "776c69a1d1b75837fb68a354bbcf34fe8d56949bf26f00ee9386bbf49572121e",
+      "bytes": 2107,
+      "path": "tests/fixtures/recover-lambda-primitive-array-capture/v23/P02_lambda.class"
+    },
+    {
+      "blake3": "44c2a55b00f9485c3a4d2ec9ec35674c9208034aef23b843f461ebd1d83c3d20",
+      "bytes": 1513,
+      "path": "tests/fixtures/recover-lambda-primitive-array-capture/v23/P02_multianewarray.class"
+    },
+    {
+      "blake3": "0002d75e37fa35e75d02798a0c611aa23a7e8cd1ebb20bc8e89849c4c5f15dc7",
+      "bytes": 2107,
+      "path": "tests/fixtures/recover-lambda-primitive-array-capture/v8/P02_lambda.class"
+    },
+    {
+      "blake3": "da72d85bdcdd9d377d0776b16fc98622385b08e1f01724009d7ded80a5d21f8c",
+      "bytes": 1513,
+      "path": "tests/fixtures/recover-lambda-primitive-array-capture/v8/P02_multianewarray.class"
+    },
+    {
       "blake3": "718f1cdc5a307c1f64822eb7c6eff9002f1bc799d71eb1d265611c4f7512faf4",
       "bytes": 2197,
       "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-bcishift.class"
