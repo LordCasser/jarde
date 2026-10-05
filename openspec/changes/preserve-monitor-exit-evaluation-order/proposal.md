@@ -13,6 +13,10 @@
 - synchronized 形状的**求值次序不变量**：被 return 消费的表达式，其呈现位置必须使求值发生在配对 `monitorexit` 之前。两种等价呈现：return 语句留在该层 synchronized 体内；或引入合成局部在体内赋值、return 移到体外（jadx 先例）。单层现状已满足（`retInside` 原样），本片只修嵌套内层 return 归属错置。
 - 落点：build.rs synchronized return 形（嵌套 pair 的 `returns` 归属）；无新机制，不放宽任何判据。
 
+## Root 验收口径修正（2026-10-06）
+
+"既有 monitor 巡查 corpus 渲染逐字节不变"的精确读法：**单层 synchronized 形与一切拒绝面逐字节不变、零新增降级**；嵌套内层 return 形（NL/SR.nestedLock/GuardReturnEffects#nested 等同形 fixture）按本变更不变量**收敛**（return 移入内层 braces）——这正是修复对象，非回退。root 独立复验：NL 纯宿主渲染往返 `nY`、SR 差异恰为 void 标记（soundness 片）+nestedLock 收敛两处、591 fixture 扫描仅 1 处同形收敛。
+
 ## 硬不变量
 
 1. 单层 synchronized（return 内/局部跨锁）与既有 monitor 巡查渲染**逐字节不变**；
