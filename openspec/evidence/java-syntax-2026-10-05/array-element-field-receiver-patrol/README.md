@@ -16,6 +16,7 @@
 | `xs[0].label` 直接（RK/RL `selfElem`/`innerElem`） | 整方法拒（非 void 缺 return=SAFE）——同根因的安全面 |
 | 元素先入显式类型局部再读（RK.viaElemLocal） | **仍拒**——呈现写出了 `Item local1 = arg0[0];` 但字段身份证明不用该声明 |
 | 当前类数组（RL.selfElem）与伴生类数组（RL.innerElem） | 同败——与组件是否当前类无关 |
+| 数组元素**方法调用**（RM：`xs[0].len()` 与 for-each `x.len()`） | **全恢复**（quotes=0 于两方法）——失败面钉死为**字段身份证明独有**，invocation 身份不受 aaload 影响 |
 
 ## 归因（初步）
 
