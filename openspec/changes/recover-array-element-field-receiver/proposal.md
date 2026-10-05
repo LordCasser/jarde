@@ -2,10 +2,15 @@
 
 [array-element-field-receiver 巡查](../../evidence/java-syntax-2026-10-05/array-element-field-receiver-patrol/README.md)：`for(Item c : all) map.put(c.label, c)` 的循环体被 "field access … not one this run proved names the member its own receiver's type declares" 引注吞空，静态块其余部分幸存——**剥离编译后查找表静默为空（null/null/null vs 两对象+null，可编译错码）**。判别矩阵钉死根因：直接参数/局部别名字段读恢复；一切 **`aaload` 来源接收者**（for-each 元素、`xs[0]`、元素先入显式类型局部）失败；当前类/伴生类组件同败——元素值未携带数组组件类型，字段身份证明无从成立。jadx 完整解。
 
+## Root 预审计（2026-10-06，读码）
+
+- 拒绝发出点：build.rs:18997（`fields.claim(at)` 为 None）；字段身份证明在 field.rs:685 `verify`，接收者类型来自 **field.rs:786 `stated_type`——只读 SSA 命名引用**，aaload 结果在此通道无类型；
+- **既有通道已能回答**：build.rs:25393 `array_of_value` 对 `Operation::ArrayElementLoad` 递归数组操作数并降一维（注释明言"a subscript reads the element the array's own type names"）；参数数组（SSA 命名 `[LItem;`）与 newarray 局部链都被它覆盖；
+- field.rs:540 `plan` 的签名**已持有 `operations`**——最小修法是把该通道（直接调用或以闭包/小 trait 注入，避免 field→build 反向依赖）接入接收者类型判定；全局 SSA 类型注入是更宽的替代，非 MVP 首选。
+
 ## What Changes
 
-- `aaload` 的结果值携带**数组组件类型**（从操作数数组引用的既有类型推导——字节码验证器事实，不是新类型系统）；
-- 字段身份证明消费该类型：`xs[i].field` / `for(T x : xs) x.field` 与直接参数字段读同判；
+- 字段身份证明的接收者类型判定接入**既有数组组件通道**（`array_of_value` 或等价注入）：`xs[i].field` / `for(T x : xs) x.field` 与直接参数字段读同判；不新建类型系统；
 - 无诊断文本变更：本例的正确终态是**恢复**（无引注），不是新拒形。
 
 ## 硬不变量
