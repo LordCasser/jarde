@@ -6,6 +6,10 @@
 
 **jadx 有解**：`return i + 1 > 0;`——参数槽的赋值**不可观察**（无后续读者），jadx 直接消除 store、表达式原样进条件。保守化判据：store 目标在 store 后**无任何读者**时可消除；有读者时需保留赋值语句（拆为先赋值再条件）。
 
+
+
+> **root 追加锚（2026-10-05，[cond-assign 巡查](../../evidence/java-syntax-2026-10-05/cond-assign-soundness-patrol/README.md)）**：**引用型/null 分支形**——`while((line = read()) != null)`（javac 形 `invoke;dup;astore;ifnull`，最经典 Java IO 惯用法）整方法拒（"local crosses"）；与 int 形（`iadd;dup;istore;ifle`）同一 dup-store 舞蹈、不同类型与分支 opcode——实现时按双读者判据统一处理（store 读者=槽赋值、分支读者=条件）。
+
 ## What Changes
 
 dup-store 舞蹈的呈现分两分支：
