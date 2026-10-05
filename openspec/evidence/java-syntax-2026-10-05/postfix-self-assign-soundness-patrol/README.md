@@ -2,13 +2,14 @@
 
 ## 发现：可编译但行为不同的文本（违反第一不变量）
 
-三锚全部实证（渲染去注释后 javac exit 0、运行输出与原 class 不同）：
+三锚全部实证（渲染去注释后 javac exit 0、运行输出与原 class 不同）——**第 4 锚（复合混合形）与健全性扫描后补**：`i += i++ + 1`（11→6，FS）；字段版（`f = f++`/`f--`）整方法引注安全；已知部分引注 fixture（CA/FW）碰巧缺 return 不可编译=安全：
 
 | 源 | 原行为 | 渲染行为 | 渲染文本 |
 |---|---|---|---|
 | `int i=5; i=i++; return i;` | **5** | **6** | `local0 = local0 + 1; return local0;` |
 | `int i=5; i=i--; return i;` | **5** | **4** | `local0 = local0 - 1; return local0;` |
 | `a[i]=i++` 后 `return a[1]*100+i` | **102** | **2** | 数组存语句**整条丢失**，`local0 = local0 + 1` 保留 |
+| `int i=5; i += i++ + 1; return i;` | **11** | **6** | `local1 = local1 + 1; return local1;`（复合混合形，第 4 锚 FS） |
 
 机制：`iload_0(旧值); iinc; istore_0` 的 store 旧值来源证明失败时，引注只圈 store+load（`// @bytecode 6 2` + 诊断），但 **iinc 的语句仍以"已证明"身份呈现**（`local0 = local0 + 1`）——引注机制靠"文本碰巧不完整"保证不可编译（postOther 因缺 return 而不可编译），本族文本碰巧完整且语义错。**jadx 对照**：`int i = 5 + 1; return 5;`——行为正确（[results/jadx-SA.java](results/jadx-SA.java)）。
 
