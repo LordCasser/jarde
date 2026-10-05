@@ -46,6 +46,14 @@ the two-dimensional compound assignment `t[0][0] += i`, which is DT-26's existin
 not the capture gate. The rendering is byte-identical before and after this slice in both legs
 (4 Code bodies per leg).
 
+**Consequence of that pre-existing state, measured and not introduced here**: the rendered companion
+loses the statement entirely (`arg0[0][0] += arg1.intValue();` is quoted away, leaving `return;`), so
+the text **compiles under `javac --release 8` (exit 0) yet prints `0` where the original class prints
+`6`** — compilable-wrong (silent), the opposite direction from this slice's loud refusal. It is
+unchanged by this slice: `baseline/` and `fixed/` are byte-identical for this class in both legs, and
+the `[[I` capture never takes the unknown-frame path this change reads. Flagged in the change's
+`instrumentation.md` §1.2(e) for root to decide whether it becomes its own change.
+
 ## Frozen renderings
 
 `openspec/evidence/java-syntax-2026-10-05/recover-lambda-primitive-array-capture/`
