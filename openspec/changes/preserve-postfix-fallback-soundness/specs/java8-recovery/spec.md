@@ -20,6 +20,10 @@
 - **WHEN** 输入为固定 `AD`（`this.elems[this.size++] = arg1`——字段数组 dup_x1 副作用下标舞蹈，诊断 "the dependency chain from BCI N to final consumer M is not bounded"）的 Java 8 class 并恢复
 - **THEN** 去注释呈现文本经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`x/y`）；否则编译失败或整方法拒绝——不得出现可编译且存储静默丢弃的文本（`null/null`）
 
+#### Scenario: 实参消费位锚点（链实参与方法实参）
+- **WHEN** 输入为固定 `PC`（`sb.append("n").append(t++)` 链实参位与 `list.set(idx++, "X")` 方法实参位）的 Java 8 class 并恢复
+- **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`n5:6` 与 `1`）；否则编译失败或整方法拒绝——不得出现旧值被吞的可编译文本（`n:6`、`0`）；`return x++` 返回位的整方法响亮拒绝 SHALL 保持
+
 #### Scenario: 诊断不改
 - **WHEN** 值来源证明失败（任一诊断族）
 - **THEN** 诊断文本族（"the value at BCI N is the value local X held at BCI M…"、"the copy at BCI N has no proved local assignment…" 与 "the dependency chain from BCI N to final consumer M is not bounded…"）SHALL 保持，不发明新拒绝码
