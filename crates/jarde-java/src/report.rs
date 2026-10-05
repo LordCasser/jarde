@@ -5290,9 +5290,13 @@ fn recover_inner(
         .is_some_and(|ty| matches!(ty, crate::ast::Type::Boolean));
     // These plans depend only on this run's decoded SSA facts. Build them before Region because
     // Guard needs read-only access to verified construction sites while proving resource headers.
+    // The field plan is handed the one receiver reading it cannot take itself: an element read's
+    // type, which the array operand's own shape states and [`build`] reads (`element_receiver_type`).
+    let element_receiver_type = |value| build::element_receiver_type(ssa, &operations, value);
     let fields = match field::plan(
         ssa,
         &operations,
+        &element_receiver_type,
         request.facts.method().declaring_class(),
         request.facts.method().name(),
         request.facts.method().descriptor(),
