@@ -3086,6 +3086,73 @@ fn arbitrary_bootstrap_class() -> Vec<u8> {
     )
 }
 
+/// `()` → `Runnable`, capturing an `int[]` the body created with `newarray` (DT-26).
+///
+/// The frame pass leaves that value an unknown reference — the array of a primitive element type is
+/// defined by the bootstrap loader, which a standalone read does not declare — while the site's own
+/// descriptor `([I)…` and the implementation `([I)V` both state `int[]`. The capture check therefore
+/// needs the type the **creating instruction** states: its `atype` operand (`newarray int` is the
+/// code `0xbc 0x0a`), which is the same fact this crate's `written_type` reads to declare the local.
+fn newarray_capture_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            descriptor: "([I)Ljava/lang/Runnable;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()V",
+            implementation: ("Test", "lambda$method$0", "([I)V", 6),
+            instantiated: "()V",
+            flags: None,
+        },
+        vec![
+            0x04, // 0: iconst_1          the length
+            0xbc, 0x0a, // 1: newarray     int  (atype 10)
+            0x4c, // 3: astore_1          local1 = the new array
+            0x2b, // 4: aload_1           the captured value
+            0xba, 0x00, 0x00, 0x00, 0x00, // 5: invokedynamic
+            0x4d, // 10: astore_2
+            0xb1, // 11: return
+        ],
+        5,
+        1,
+        3,
+    )
+}
+
+/// The same `newarray` capture with an implementation that states a **different** type for it:
+/// the site binds `([I)` and the implementation takes `(Ljava/lang/Object;)V`.
+///
+/// The three statements genuinely disagree, so the unchanged check refuses the site. This is the
+/// probe that answers "did giving the frame a real array type relax the check?" — the frame's type
+/// is now evidence, and evidence that contradicts the site is a contradiction, not a pass.
+fn newarray_capture_object_implementation_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            descriptor: "([I)Ljava/lang/Runnable;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()V",
+            implementation: ("Test", "lambda$method$0", "(Ljava/lang/Object;)V", 6),
+            instantiated: "()V",
+            flags: None,
+        },
+        vec![
+            0x04, // 0: iconst_1
+            0xbc, 0x0a, // 1: newarray     int
+            0x4c, // 3: astore_1
+            0x2b, // 4: aload_1
+            0xba, 0x00, 0x00, 0x00, 0x00, // 5: invokedynamic
+            0x4d, // 10: astore_2
+            0xb1, // 11: return
+        ],
+        5,
+        1,
+        3,
+    )
+}
+
 /// A verified factory whose implementation does **not** line up with its SAM: `(III)I` where the
 /// site binds one capture and the SAM takes one parameter.
 fn arity_mismatch_class() -> Vec<u8> {
@@ -3630,6 +3697,75 @@ fn an_arbitrary_bootstrap_is_never_presented_as_a_lambda() {
         "the site is refused as a *statement*, not as a region: {:?}",
         report.fallbacks
     );
+}
+
+#[test]
+fn a_newarray_capture_is_written_with_the_array_type_its_instruction_states() {
+    // DT-26: the frame leaves `newarray`'s result an unknown reference on purpose, and the capture
+    // check used to compare that absence against two descriptors that both say `int[]`. The type now
+    // comes from the creating instruction's own `atype`, which the body also uses to declare the
+    // local — so the site is the same inline capture any reference capture is.
+    let class = newarray_capture_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}\nregions: {:?}\nfallbacks: {:?}",
+        report.text,
+        report.regions,
+        report.fallbacks
+    );
+    assert!(
+        report.text.contains("() -> Test.lambda$method$0("),
+        "the capture is presented inline, not quoted:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("@bytecode"),
+        "the site carries no quote:\n{}",
+        report.text
+    );
+    // The declaration and the captured argument are one and the same array type, stated twice by
+    // this run: the `newarray int` the body ran and the `[I` the descriptor spells.
+    assert!(
+        report.text.contains("int[] local1"),
+        "the local keeps its array type:\n{}",
+        report.text
+    );
+    let site = site_of(&report, 5);
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::Lambda), "{site:?}");
+    assert_eq!(site.refusal, None, "{site:?}");
+    assert_eq!(
+        site.captures,
+        vec![jarde_java::LambdaCapture { bci: Some(4) }],
+        "the capture is the load of the array the creation stored"
+    );
+}
+
+#[test]
+fn a_newarray_capture_whose_implementation_disagrees_still_refuses() {
+    // The negative of the change above, and the falsifier for "the check was relaxed": the frame now
+    // states `int[]` (from the `atype`), the site descriptor states `int[]`, and the implementation
+    // states `java.lang.Object`. That is a genuine three-way disagreement, so the unchanged check
+    // refuses the site exactly as it refused the same shape when the frame said nothing.
+    let class = newarray_capture_object_implementation_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("->"), "{}", report.text);
+    let site = site_of(&report, 5);
+    assert_eq!(site.form, None, "{site:?}");
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_lambda_sam_types", "{refusal:?}");
+    assert!(
+        refusal.message.contains("int[]")
+            && refusal
+                .message
+                .contains("`java.lang.Object` in the implementation"),
+        "the diagnosis states the frame's evidence and the implementation's contradiction: {}",
+        refusal.message
+    );
+    assert_eq!(report.representation, Representation::Mixed);
 }
 
 #[test]

@@ -23581,7 +23581,14 @@ impl Builder<'_> {
                     // unstated capture type under its own preconditions: the site is refused with
                     // its record and the capture's BCI, which is the answer a spelling failure gets
                     // here rather than a second refusal vocabulary.
-                    value_type(self.ssa.value(*value).ty()).ok().flatten(),
+                    //
+                    // The type is read by [`capture_value_type`], which spells the frames' own
+                    // named reference and, for the one reference the frames leave unknown by
+                    // design (`newarray`'s primitive array), reads the `atype` the creating
+                    // instruction states — the same fact [`written_type`] declares that local with.
+                    capture_value_type(self.ssa, self.operations, *value)
+                        .ok()
+                        .flatten(),
                 )
             })
             .collect();
@@ -25545,6 +25552,37 @@ fn written_type(
     }
     if let Some(ty) = constant_of_value(ssa, operations, value, 0) {
         return Ok(Some(ty));
+    }
+    value_type(ssa.value(value).ty())
+}
+
+/// The type one captured operand is stated as, for the three-way capture check of
+/// [`crate::lambda::plan`].
+///
+/// The frames answer first, exactly as [`value_type`] reads them: a reference the frames *name*
+/// carries the class file's own descriptor (`[I`, `Ljava/lang/StringBuilder;`) and is spelled from
+/// it. The one case this entry point adds is the reference the frames deliberately leave **unknown**
+/// because no pool entry names it: `newarray`'s primitive array, whose element type the bootstrap
+/// loader defines and this request does not declare (`crate::jarde_jvm::frame`'s own comment states
+/// that conservatism). For that value the class file still states the type elsewhere — at the
+/// instruction that created the array, in its `atype` operand — and [`array_of_value`] is this
+/// crate's one reading of that fact (the same channel [`written_type`] uses to declare
+/// `int[] local1 = new int[]{0};`). The check therefore compares a type the bytecode stated rather
+/// than the absence of a statement, which is what DT-26's primitive-array capture was refused on.
+///
+/// Nothing here invents a type: an operand whose frames name a reference, whose value is `null`, or
+/// whose producer states no array keeps the byte-for-byte previous answer, so a site whose frame,
+/// site descriptor and implementation genuinely disagree is still refused by the unchanged check.
+fn capture_value_type(
+    ssa: &SsaTable,
+    operations: &Operations,
+    value: ValueId,
+) -> Result<Option<Type>, String> {
+    if matches!(ssa.value(value).ty(), Value::Ref(RefType::Unknown))
+        && let Some((element, dimensions)) = array_of_value(ssa, operations, value, 0)
+        && let Some(spelled) = array_spelling(&element, dimensions)
+    {
+        return Ok(Some(spelled));
     }
     value_type(ssa.value(value).ty())
 }
