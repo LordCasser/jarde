@@ -156,4 +156,6 @@ EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-cal
 
 **新窄缺口（2026-10-05，[return-effectful-finally 巡查](../java-syntax-2026-10-05/return-effectful-finally-patrol/README.md)）**：**try 返回 + finally 落穿带副作用**全位置拒（循环内/无循环皆拒；空 finally、continue/break 穿副作用、finally 返回值形均恢复——等价分布机制已存在只缺此员）；**求值序陷阱**（return 表达式先求值一次、finally 后副作用——FO 基准 1/100）要求 temp 绑定形；jadx 以路径复制解（行为精确）→ 立项 recover-return-through-effectful-finally。
 
+**最严重级（2026-10-05，[postfix-self-assign 健全性巡查](../java-syntax-2026-10-05/postfix-self-assign-soundness-patrol/README.md)）**：后缀自赋值陷阱 `i = i++`/`i = i--`/`a[i] = i++` 渲染**可编译但行为不同**的文本（6≠5/4≠5/2≠102——违反第一不变量；jadx 行为正确）——旧值 store 证明失败时 iinc 语句仍以已证明身份呈现，引注靠文本不完整保证不可编译的机制在本族碰巧失效 → 立项 preserve-postfix-fallback-soundness（健全性守卫）+ 在队恢复片补三锚。
+
 
