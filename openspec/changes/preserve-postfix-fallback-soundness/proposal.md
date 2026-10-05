@@ -4,6 +4,7 @@
 
 
 
+> **root 追加 void 验收 fixture（2026-10-05，[explicit-lock 巡查](../../evidence/java-syntax-2026-10-05/explicit-lock-patrol/README.md)）**：`LK.put()`（ReentrantLock+Condition，void）当前触发既有 whole-method-quote 守卫后仍呈现空 void 体（可编译静默 no-op）——void 呈现修复的**现成活例**；验收时该 fixture 剥离注释 SHALL 编译失败（`jarde_refused_body()` 生效）。
 > **root 追加数据点（2026-10-05，[numeric-idioms 巡查](../../evidence/java-syntax-2026-10-05/numeric-idioms-patrol/README.md)）**：XOR swap（`p[0]^=p[1]` 三链接力）= family 3（dependency-chain）verbatim 诊断的**数组元素复合链新形状**——空 body 非 void 缺 return 编译失败=SAFE（现状安全）；最高频经典形状，恢复侧归 compound/RMW 域队列；守卫验收时此形 SHALL 保持 SAFE。
 
 ## What Changes
