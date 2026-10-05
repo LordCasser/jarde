@@ -197,3 +197,11 @@ root 按 §5 的 **(A)** 落地：更新受本变更有意改变之呈现影响�
 | `LK`（`explicit-lock-patrol/fixture/lk.jar`） | `1/0/true` | 失败：`LK.java:17 找不到符号`（1 处标记） | SAFE：void 呈现修复 |
 | `P02_multianewarray` v8 | `6` | 失败：`找不到符号`（1 处标记） | SAFE：整方法拒；渲染与 §6.1 的 fixed 记录逐字节相同 |
 | `P02_multianewarray` v23 | `6` | 同上 | 同上 |
+
+## 7. Root 独立验收（2026-10-06，HEAD=0b82f70e）
+
+- **门禁复现**：`cargo test --workspace --tests --locked --no-fail-fast` 311 targets / 2993 passed / 1 failed=`p4_plugins::the_plugin_plane…`（elapsed_millis 0 vs 1 负载敏感；隔离复跑 25/25 绿）；`cargo fmt --all -- --check` exit 0；clippy 按 ci.yml 46–76 逐字（29 allow + `-D warnings`）exit 0；`openspec validate --all --strict` 300/0。
+- **锚独立复验（真 javac 1.8.0_432，HEAD 重编 jarde-cli）**：SA（缺 return）、BF（找不到符号×2 标记）、XS（缺 return）、LK（找不到符号×1）、CP、OP、NI（缺 return/找不到符号）——7/7 剥离编译失败=SAFE，失败原因与设计一致。
+- **零回退面**：123 个巡查 fixture 顶层类 spared(7a2f92c9) vs HEAD 源段对比：86 逐字节不变；37 变更全数定性——35=旧渲染含六族诊断的 **void 成员** fail-closed 升级整方法拒（诊断 reason 行逐字保留、BCI 集扩为全方法、非引注语句清零）、2=`LK.put`/`SR.voidBody` 零语句 void 体加 `jarde_refused_body()` 标记。无健康渲染被触碰。
+- **裁决追认**：void 成员一律升级（不逐体判可编译性）是 fail-closed 取向——`completes_normally` 无 javac 级编译性 oracle，void 的幸存语句静默 no-op 风险优先于最小 diff；接受。
+- **残留（转队列）**：verification §4.2——幸存 loop/if/try 体内的六族引注仍保留外层呈现（p3_for_add_store 钉住），为下一窄片取证对象；§4.4 generic 前置门切换未触碰。
