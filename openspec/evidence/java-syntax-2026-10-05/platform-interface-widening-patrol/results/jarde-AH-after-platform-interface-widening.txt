@@ -1,0 +1,35 @@
+# `AH` from platform-interface-widening-patrol, re-rendered after change `recover-platform-interface-widening`.
+# Entry: class-source over the patrol's own container (`--policy plain-jar`, snapshot scope), evidence = essential + source map; the fixture bytes are the patrol's own.
+# What moved: the reference-conversion refusal of the argument whose class-file header names the required platform interface is closed; every other member is unchanged.
+reports.the_argument_widening.refusals = 0
+
+// jarde: presentation of `AH` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class AH extends java.lang.Object {
+    public AH() {
+        // @method <init>()V
+        // @declaration a constructor of `AH`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `byTop(Ljava/util/List;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.List byTop(java.util.List arg0) {
+        // @method byTop(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `AH`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1 = new java.util.ArrayList((java.util.Collection) arg0);
+        java.util.Collections.sort((java.util.List) local1, (java.util.Comparator) new AC());
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `AH`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.PrintStream saved0 = java.lang.System.out;
+        saved0.println((java.lang.Object) byTop((java.util.List) new java.util.ArrayList((java.util.Collection) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"bb", "a", "ccc"}))));
+        return;
+    }
+}

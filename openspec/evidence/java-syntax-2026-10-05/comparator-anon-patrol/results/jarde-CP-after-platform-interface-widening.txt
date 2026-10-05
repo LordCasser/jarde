@@ -1,0 +1,61 @@
+# `CP` from comparator-anon-patrol, re-rendered after change `recover-platform-interface-widening`.
+# Entry: class-source over the patrol's own container (`--policy plain-jar`, snapshot scope), evidence = essential + source map; the fixture bytes are the patrol's own.
+# What moved: the reference-conversion refusal of the argument whose class-file header names the required platform interface is closed; every other member is unchanged.
+reports.the_argument_widening.refusals = 0
+
+// jarde: presentation of `CP` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CP extends java.lang.Object {
+    // jarde: omitted physical lambda helper "lambda$byLen$0" after proving its single class-wide use
+    public CP() {
+        // @method <init>()V
+        // @declaration a constructor of `CP`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `byNameAge(Ljava/util/List;)Ljava/util/List;`: unsupported (generic_source_shape_unproved): class name has no unambiguous Java source spelling
+    static java.util.List byNameAge(java.util.List arg0) {
+        // @method byNameAge(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `CP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1 = new java.util.ArrayList((java.util.Collection) arg0);
+        java.util.Collections.sort((java.util.List) local1, (java.util.Comparator) java.util.Comparator.comparing((java.util.function.Function) ((java.lang.Object p0) -> ((CP$User) p0).getName())).thenComparing((java.util.function.Function) ((java.lang.Object p0_) -> ((CP$User) p0_).getAge())).reversed());
+        return local1;
+    }
+
+    // jarde: generic Signature projection refused for `byAnon(Ljava/util/List;)Ljava/util/List;`: unsupported (generic_source_shape_unproved): class name has no unambiguous Java source spelling
+    static java.util.List byAnon(java.util.List arg0) {
+        // @method byAnon(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `CP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1 = new java.util.ArrayList((java.util.Collection) arg0);
+        java.util.Collections.sort((java.util.List) local1, (java.util.Comparator) new CP$1());
+        return local1;
+    }
+
+    static java.lang.String[] byLen(java.lang.String[] arg0) {
+        // jarde: lambda companion body inlined at invokedynamic@9
+        // @method byLen([Ljava/lang/String;)[Ljava/lang/String;
+        // @declaration a static method of `CP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String[] local1 = (java.lang.String[]) arg0.clone();
+        java.util.Arrays.sort((java.lang.Object[]) local1, (java.util.Comparator) ((java.lang.Object p0, java.lang.Object p1) -> ((java.lang.String) p0).length() - ((java.lang.String) p1).length()));
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `CP`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1 = new java.util.ArrayList();
+        local1.add((java.lang.Object) new CP$User("bo", 30));
+        local1.add((java.lang.Object) new CP$User("al", 40));
+        local1.add((java.lang.Object) new CP$User("al", 20));
+        java.io.PrintStream saved0 = java.lang.System.out;
+        java.lang.StringBuilder saved1 = new java.lang.StringBuilder().append("").append((java.lang.Object) byNameAge((java.util.List) local1)).append("/").append((java.lang.Object) byAnon((java.util.List) local1)).append("/");
+        saved0.println((java.lang.String) saved1.append((java.lang.String) java.util.Arrays.toString((java.lang.Object[]) byLen(new java.lang.String[]{"ccc", "a", "bb"}))).toString());
+        return;
+    }
+}

@@ -24,3 +24,21 @@ byAnon（**匿名 Comparator 实参——pre-lambda 排序最常见形**）：so
 ## 处置
 
 soundness spec 补第 6 族锚场景；census 记第 7 条；账本 **18 锚/6 族**。
+
+## 处置（2026-10-06，change `recover-platform-interface-argument-widening`）
+
+第 6 族的实参侧关闭：`snapshot_header_chain_widens_with` 走到目标名时**先判命中、后取目标
+header**——`CP$1` 自己的 class-file header 逐字列出的 `java/util/Comparator` 就是单边证明，
+平台的 header 不必在快照里（源侧 header 链仍逐级完整证明；不查 classpath）。
+
+- `cp.jar` 重渲染（同一冻结字节、同一入口）：[`results/jarde-CP-after-platform-interface-widening.txt`](results/jarde-CP-after-platform-interface-widening.txt)
+  ——`refusals = 0`，`CP.byAnon` 写出整条 `java.util.Collections.sort((java.util.List) local1, (java.util.Comparator) new CP$1());`；
+- 本巡查的隔离判别形（`[30, 10, 20]` vs `[10, 20, 30]`）以可编译源 `IS` 冻结在
+  [`tests/fixtures/recover-platform-interface-argument-widening/IS.java`](../../../../tests/fixtures/recover-platform-interface-argument-widening/IS.java)，
+  剥离、编译（installed javac `--release 8` + 真 javac 8）并运行回答 `[10, 20, 30]`
+  （[`tests/recover_platform_interface_argument_widening.rs`](../../../../tests/recover_platform_interface_argument_widening.rs)，ignored replay）；
+- `AN` own-interface 四位逐字节零回退（同一测试钉住）；
+- 同源 `AD` 实测 `refusals = 0`：[`results/jarde-AD-after-platform-interface-widening.txt`](results/jarde-AD-after-platform-interface-widening.txt)
+  ——`new java.lang.Thread((java.lang.Runnable) new AD$2(local1, arg0))` 与随后的 `start()`/`join()`
+  一并恢复，巡查记录的 viaThread 可恢复性缺口（此前孤立渲染吞掉 Thread/匿名/start/join）随之关闭；
+  `viaSort`/`viaGeneric` 同族位一并呈现。

@@ -1,0 +1,66 @@
+# `AD` from the comparator-anon patrol's own source, re-rendered after change `recover-platform-interface-argument-widening`.
+# The patrol's fixture holds `AD.java` only: compiled here by `javac --release 8 -Xlint:-options` (javac 23.0.1) into one container with its companions, class-source over it (`--policy plain-jar`, snapshot scope), evidence = essential + source map.
+# The patrol's viaThread recoverability gap (Thread ctor + anonymous Runnable + start/join once lost) and the viaSort / viaGeneric positions are closed together.
+reports.the_argument_widening.refusals = 0
+
+// jarde: presentation of `AD` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class AD extends java.lang.Object {
+    public AD() {
+        // @method <init>()V
+        // @declaration a constructor of `AD`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `runGen(Ljava/lang/Object;I)I`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    static int runGen(java.lang.Object arg0, int arg1) {
+        // @method runGen(Ljava/lang/Object;I)I
+        // @declaration a static method of `AD`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1 + 1;
+    }
+
+    // jarde: generic Signature projection refused for `viaGeneric(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static int viaGeneric(java.util.List arg0) {
+        // @method viaGeneric(Ljava/util/List;)I
+        // @declaration a static method of `AD`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return runGen((java.lang.Object) new AD$1(), arg0.size());
+    }
+
+    static java.lang.String viaThread(java.lang.String arg0) {
+        // @method viaThread(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `AD`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local1;
+        local1 = new java.lang.StringBuilder();
+        java.lang.Thread local2 = new java.lang.Thread((java.lang.Runnable) new AD$2(local1, arg0));
+        local2.start();
+        try {
+            local2.join();
+        } catch (java.lang.InterruptedException local3) {
+        }
+        return local1.toString();
+    }
+
+    // jarde: generic Signature projection refused for `viaSort(Ljava/util/List;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.List viaSort(java.util.List arg0) {
+        // @method viaSort(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `AD`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1 = new java.util.ArrayList((java.util.Collection) arg0);
+        java.util.Collections.sort((java.util.List) local1, (java.util.Comparator) new AD$3());
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `AD`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local1 = new java.util.ArrayList((java.util.Collection) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"a", "c", "b"}));
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(viaGeneric((java.util.List) new java.util.ArrayList((java.util.Collection) local1))).append("/").append((java.lang.String) viaThread("T")).append("/").append((java.lang.Object) viaSort((java.util.List) local1)).toString());
+        return;
+    }
+}
