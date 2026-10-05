@@ -25670,6 +25670,35 @@ fn element_of_dimension(element: &Type, dimensions: u32) -> Option<Type> {
     }
 }
 
+/// The type one value's own array reading names for it, in the class file's internal form: what a
+/// receiver that **is** an element read gets instead of a frame-stated class name.
+///
+/// An `aaload` states no type of its own, so the frames leave its result the conservative unknown
+/// reference — and the array it indexed states the element: [`array_of_value`]'s `ArrayElementLoad`
+/// step already drops the one dimension the read does, and [`array_spelling`] spells the answer the
+/// same way [`written_type`] declares a local holding that value (`Item local1 = arg0[0];`). What
+/// this entry point adds is the spelling a member's owner is compared in: the pool states an owner
+/// as an internal class name, while the frames and [`crate::lambda`] spell an object name in source
+/// form, so the two readings meet through the one conversion [`local_declaration_source_type_name`]
+/// already reads a binary name with.
+///
+/// It is published for [`crate::field`], whose field identity proof compares a receiver's type with
+/// the owner the pool states: that rule is handed a receiver it cannot type from the frames alone,
+/// and the array a value holds is read here, not there. Nothing is guessed — a shape no descriptor,
+/// no frame entry and no creation instruction states answers `None`, and an array spelling (`Item[]`)
+/// is no class name to compare with an owner.
+pub(crate) fn element_receiver_type(
+    ssa: &SsaTable,
+    operations: &Operations,
+    value: ValueId,
+) -> Option<String> {
+    let (element, dimensions) = array_of_value(ssa, operations, value, 0)?;
+    match array_spelling(&element, dimensions)? {
+        Type::Reference(name) => Some(name.replace('.', "/")),
+        _ => None,
+    }
+}
+
 /// The element type one array instruction's **opcode** states, with nothing else consulted.
 ///
 /// This is the second source [`array_element`] falls back to, and it is deliberately a reading of the

@@ -12,7 +12,12 @@
 //! * for an **instance** access the receiver's static type has to be exactly the member's owner.
 //!   A class-source run may also supply one exact, selected parent declaration proof for a write;
 //!   this plan rechecks its BCI, member identity and receiver type, then spells an explicit owner
-//!   cast. A subtype's bare `receiver.f` could instead name a shadowing field;
+//!   cast. A subtype's bare `receiver.f` could instead name a shadowing field. The receiver's type
+//!   is what the frames state for it — and, for the one value they cannot state, the **element type
+//!   the array operand of the read names** ([`crate::build::element_receiver_type`], handed in by
+//!   the caller): an `aaload` states no type of its own, so `xs[i].f` and `for (T x : xs) x.f` are
+//!   proved by the same comparison as a directly stated receiver, and an array this run cannot read
+//!   leaves the receiver untyped rather than guessing one;
 //! * for a **static** access there is no receiver and no shadowing question: the owner type and the
 //!   field name are the member, and the text spells them.
 //!
@@ -536,12 +541,21 @@ impl Shape {
 /// exactly one thing: the writes an instance initializer makes on its own `UninitializedThis` before
 /// its constructor call, which JVMS 4.10.1.9 allows only through a `Fieldref` that names that class.
 ///
+/// `element_receiver_type` is the one fact about a receiver this plan cannot read for itself. A
+/// receiver whose frames state a class name is typed by them, and the one value they leave unknown
+/// is an element read: `aaload` states no type of its own, while the array operand's own shape
+/// states the element's. The array a value holds is read in [`crate::build`], not here, so the
+/// caller hands that reading in ([`crate::build::element_receiver_type`]) and the answer faces
+/// [`verify`]'s comparison exactly as a frame-stated name does — an array no fact states leaves the
+/// receiver untyped.
+///
 /// Every instruction is read and decided for every selection; no owning record is built here. The
 /// verdicts stay in the [`Plan`] and [`Plan::materialize`] writes the records from them after the
 /// artifact is committed.
 pub(crate) fn plan(
     ssa: &SsaTable,
     operations: &Operations,
+    element_receiver_type: &dyn Fn(ValueId) -> Option<String>,
     declaring: Option<&DeclaringClass>,
     method_name: &str,
     method_descriptor: &str,
@@ -576,7 +590,14 @@ pub(crate) fn plan(
             u64::try_from(superclass_writes.len()).unwrap_or(u64::MAX),
             Some(at),
         )?;
-        match verify(instruction, &evidence, ssa, declaring, superclass_writes) {
+        match verify(
+            instruction,
+            &evidence,
+            ssa,
+            element_receiver_type,
+            declaring,
+            superclass_writes,
+        ) {
             Ok(shape) => {
                 plan.claimed.insert(at, (evidence, shape));
             }
@@ -686,6 +707,7 @@ fn verify(
     instruction: &SsaInstruction,
     evidence: &Evidence,
     ssa: &SsaTable,
+    element_receiver_type: &dyn Fn(ValueId) -> Option<String>,
     declaring: Option<&DeclaringClass>,
     superclass_writes: &[crate::report::ProvedSuperclassFieldWrite],
 ) -> Result<Shape, Refusal> {
@@ -718,7 +740,11 @@ fn verify(
             "the field access at BCI {at} reads no receiver this run states"
         )));
     };
-    let receiver_type = stated_type(ssa, receiver);
+    // The frames state the receiver's type for every value an instruction, a descriptor or the entry
+    // state names. The one receiver they leave unstated is an element read, and the array operand of
+    // that read states its element: the caller's reading answers there, and whatever it answers is
+    // held to the comparison below exactly as a frame-stated name is.
+    let receiver_type = stated_type(ssa, receiver).or_else(|| element_receiver_type(receiver));
     let owner_cast = superclass_writes.iter().any(|proof| {
         proof.bci == at
             && evidence.access == FieldAccess::Write
