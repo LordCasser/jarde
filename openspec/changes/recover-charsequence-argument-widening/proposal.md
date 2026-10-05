@@ -6,6 +6,10 @@
 
 **高频命中面**：`String.join(CharSequence, CharSequence…)`、`Appendable.append(CharSequence)`、`CharSequence` 参数位的一切 JDK8 API。
 
+
+
+> **root 追加（2026-10-05，[generics-edge 巡查](../../evidence/java-syntax-2026-10-05/generics-edge-patrol/README.md)）**：平台扩宽族第 3 员 **Serializable**（多重界调用点 `both("a","b")` 同因拒）已登记——三员（CharSequence/Comparable/Serializable）同机制同落点，**实现时作为同一表族的三张封闭表合并处理**（javadoc 各自核对实现者集；数组型的 Serializable 走 snapshot 待插桩）。
+
 ## What Changes
 
 在 `platform_reference_argument_widens`（或并列的同族小函数，实现者按代码结构定）新增 **java.lang.CharSequence 实现者封闭表**：`java.lang.String → java.lang.CharSequence`、`java.lang.StringBuilder → java.lang.CharSequence`、`java.nio.CharBuffer → java.lang.CharSequence`（javadoc 声明的实现者全集；release 8 无新增）。命中即 `cast_argument` 呈现——与既有两条通道**完全同构**，零新机制。
