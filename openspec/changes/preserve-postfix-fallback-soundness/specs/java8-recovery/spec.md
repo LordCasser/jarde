@@ -1,6 +1,6 @@
 ## ADDED Requirements
 
-### Requirement: 值来源、依赖链或多消费者证明失败（旧值 store / copy / 依赖链 / 多消费者四诊断族）时呈现文本不得可编译出不同行为
+### Requirement: 值来源、依赖链、多消费者或绑定接收者证明失败（旧值 store / copy / 依赖链 / 多消费者 / 绑定接收者适配五诊断族）时呈现文本不得可编译出不同行为
 
 当 Java 8 方法的后缀自增/自减旧值 store 的值来源证明失败时，系统 SHALL 将与该未证明值语义绑定的整条语句并入引注区，使呈现文本（去注释后）不可编译、或行为与原 class 一致、或整方法响亮拒绝。
 
@@ -28,6 +28,10 @@
 - **WHEN** 输入为固定 `NI`（main 中局部被单表达式消费 4 次，诊断 "the saved producer at BCI N has M consumers, so one local binding cannot prove its execution count"）的 Java 8 class 并恢复
 - **THEN** 去注释呈现文本经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`3/10/5/true`）；否则编译失败或整方法拒绝——不得出现可编译且整条表达式静默丢失的文本（无输出）；2 次消费单调用形（`NJ`）的完整恢复 SHALL 保持
 
+#### Scenario: 绑定接收者适配锚点（第 5 族触发）
+- **WHEN** 输入为固定 `OP.sideEffect`（`o.ifPresent(sb::append)`——绑定接收者为捕获局部，诊断 "adapting this bound receiver would move its null failure from functional-value creation to invocation"）的 Java 8 class 并恢复
+- **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`[S]/[]`）；否则编译失败或整方法拒绝——不得出现 ifPresent 调用被静默吞掉的可编译文本（`[]/[]`）；绑定到参数的方法引用（`OP.name` 的 `String::trim`）与普通 lambda 的完整恢复 SHALL 保持
+
 #### Scenario: 诊断不改
 - **WHEN** 值来源证明失败（任一诊断族）
-- **THEN** 诊断文本族——四主族（"the value at BCI N is the value local X held at BCI M…"、"the copy at BCI N has no proved local assignment…"、"the dependency chain from BCI N to final consumer M is not bounded…"、"the saved producer at BCI N has M consumers, so one local binding cannot prove its execution count…"）及其级联伴随行（"the saved producer at BCI N has no bounded final expression consumer"、"the value at BCI N comes from an Other…"、"the value at BCI N was produced by a saved declaration this run could not commit"、"the instruction at BCI N is not part of the provable subset"、"the value at BCI N is the entry state of stack depth N…"，[诊断普查](../../../../evidence/java-syntax-2026-10-05/diagnosis-census/README.md)）SHALL 保持，不发明新拒绝码
+- **THEN** 诊断文本族——五主族（"the value at BCI N is the value local X held at BCI M…"、"the copy at BCI N has no proved local assignment…"、"the dependency chain from BCI N to final consumer M is not bounded…"、"the saved producer at BCI N has M consumers, so one local binding cannot prove its execution count…"、"adapting this bound receiver would move its null failure from functional-value creation to invocation…"）及其级联伴随行（"the saved producer at BCI N has no bounded final expression consumer"、"the value at BCI N comes from an Other…"、"the value at BCI N was produced by a saved declaration this run could not commit"、"the instruction at BCI N is not part of the provable subset"、"the value at BCI N is the entry state of stack depth N…"，[诊断普查](../../../../evidence/java-syntax-2026-10-05/diagnosis-census/README.md)）SHALL 保持，不发明新拒绝码
