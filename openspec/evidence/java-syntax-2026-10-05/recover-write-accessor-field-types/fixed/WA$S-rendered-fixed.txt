@@ -1,0 +1,90 @@
+// jarde: presentation of `WA$S` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+class WA$S extends java.lang.Object {
+    final WA this$0;
+
+    WA$S(WA arg1) {
+        // @method <init>(LWA;)V
+        // @declaration a constructor of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.this$0 = arg1;
+        return;
+    }
+
+    void sB(boolean arg1) {
+        // @method sB(Z)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$002(this.this$0, arg1);
+        return;
+    }
+
+    void sI(int arg1) {
+        // @method sI(I)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$102(this.this$0, arg1);
+        return;
+    }
+
+    void sL(long arg1) {
+        // @method sL(J)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$202(this.this$0, arg1);
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        return;
+    }
+
+    void sD(double arg1) {
+        // @method sD(D)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$302(this.this$0, arg1);
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        return;
+    }
+
+    void sS(java.lang.String arg1) {
+        // @method sS(Ljava/lang/String;)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$402(this.this$0, arg1);
+        return;
+    }
+
+    void sBy(byte arg1) {
+        // @method sBy(B)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$502(this.this$0, arg1);
+        return;
+    }
+
+    void sSh(short arg1) {
+        // @method sSh(S)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$602(this.this$0, arg1);
+        return;
+    }
+
+    void sC(char arg1) {
+        // @method sC(C)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$702(this.this$0, arg1);
+        return;
+    }
+
+    void sF(float arg1) {
+        // @method sF(F)V
+        // @declaration an instance method of `WA$S`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        WA.access$802(this.this$0, arg1);
+        return;
+    }
+}

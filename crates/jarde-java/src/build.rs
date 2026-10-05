@@ -7290,7 +7290,7 @@ pub(crate) fn build(
         inputs.return_type.as_ref(),
         budget,
     )?;
-    let boolean_accessor_assignment = BooleanAccessorAssignment::prove(
+    let write_accessor_assignment = WriteAccessorAssignment::prove(
         canonical,
         ssa,
         operations,
@@ -7394,7 +7394,7 @@ pub(crate) fn build(
         compounds,
         unit_field_updates,
         long_assignment_result,
-        boolean_accessor_assignment,
+        write_accessor_assignment,
         assignment_result_refused: false,
         postfix: PostfixUpdates::default(),
         array_initializers: inputs.array_initializers,
@@ -8218,7 +8218,9 @@ struct Builder<'a> {
     unit_field_updates: UnitFieldUpdates,
     /// The one closed category-2 assignment-result shape, if this body proves it completely.
     long_assignment_result: Option<LongAssignmentResult>,
-    boolean_accessor_assignment: Option<BooleanAccessorAssignment>,
+    /// The one value-returning write accessor this body proves completely, with the field
+    /// descriptor (the closed table's key) the proof matched.
+    write_accessor_assignment: Option<WriteAccessorAssignment>,
     /// The closed field/return pair is quoted as one unit if its prepared rendering cannot commit.
     assignment_result_refused: bool,
     /// Complete postfix old-value returns, owned only after the SSA and evaluation-order proof.
@@ -8748,13 +8750,123 @@ impl LongAssignmentResult {
     }
 }
 
-/// The Java 8 private boolean setter helper's complete physical body. Its `dup_x1` has exactly
-/// three consumers: the receiver and value of one `putfield`, and the returned copy of that value.
-/// The two source statements below are committed together only after this closed proof succeeds.
-#[derive(Clone)]
-struct BooleanAccessorAssignment(LongAssignmentResult);
+/// The frame-model shape of one write-accessor value: what [`Value`] the loaded value and both of
+/// its copies carry. `boolean` is one [`AccessorSlotKind::Int`]: the frames state a single shape
+/// for a `Z` and an `I` slot, exactly as for the boolean first slice this table generalizes.
+#[derive(Clone, Copy)]
+enum AccessorSlotKind {
+    Int,
+    Float,
+    Long,
+    Double,
+    Reference,
+}
 
-impl BooleanAccessorAssignment {
+/// One field type's physical facts for the value-returning write accessor body. Every opcode here
+/// is a repository fact, not a remembered one: the loads sit in `jarde-jvm`'s own decode table
+/// (`frame.rs` — `0x1a..=0x1d` iload_0..3, `0x1e..=0x21` lload_0..3, `0x22..=0x25` fload_0..3,
+/// `0x26..=0x29` dload_0..3, `0x2a..=0x2d` aload_0..3, and `0xac`..=`0xb0` one row per typed
+/// return), the copies are the existing `OPCODE_DUP_X1` and `OPCODE_DUP2_X1` constants, and the
+/// stack/locals lower bounds are the javap-measured per-type maxima of the frozen patrol fixture
+/// (`value-returning-write-accessor-patrol/results3/WA-javap-code.txt`). The set is closed by
+/// design: a descriptor outside it stays refused, and a new one enters only through measured
+/// evidence.
+struct WriteAccessorShape {
+    /// The value's own load (`iload_1`, `lload_1`, `fload_1`, `dload_1` or `aload_1`).
+    load_value: u8,
+    /// The stack copy the field write and the return share (`dup_x1`, or `dup2_x1` when the value
+    /// occupies two slots).
+    copy: u8,
+    /// The typed return of the written value.
+    ret: u8,
+    /// What the frames must state for the loaded value and both of its copies.
+    value: AccessorSlotKind,
+    /// The local slots the value itself occupies (1, or 2 for one category-2 value).
+    slots: u16,
+    /// The smallest `max_stack`/`max_locals` the body can spell the shape with.
+    min_stack: u16,
+    min_locals: u16,
+}
+
+/// The closed set of field types a value-returning write accessor is proved for, keyed by the
+/// field's own descriptor — which the accessor also spells as its parameter and return descriptor.
+fn write_accessor_shape(descriptor: &str) -> Option<WriteAccessorShape> {
+    const OPCODE_ILOAD_1: u8 = 0x1b;
+    const OPCODE_LLOAD_1: u8 = 0x1f;
+    const OPCODE_FLOAD_1: u8 = 0x23;
+    const OPCODE_DLOAD_1: u8 = 0x27;
+    const OPCODE_ALOAD_1: u8 = 0x2b;
+    const OPCODE_DUP2_X1: u8 = 0x5d;
+    const OPCODE_IRETURN: u8 = 0xac;
+    const OPCODE_LRETURN: u8 = 0xad;
+    const OPCODE_FRETURN: u8 = 0xae;
+    const OPCODE_DRETURN: u8 = 0xaf;
+    const OPCODE_ARETURN: u8 = 0xb0;
+    let single_slot = |load_value: u8, ret: u8, value: AccessorSlotKind| {
+        Some(WriteAccessorShape {
+            load_value,
+            copy: OPCODE_DUP_X1,
+            ret,
+            value,
+            slots: 1,
+            min_stack: 3,
+            min_locals: 2,
+        })
+    };
+    let two_slot = |load_value: u8, ret: u8, value: AccessorSlotKind| {
+        Some(WriteAccessorShape {
+            load_value,
+            copy: OPCODE_DUP2_X1,
+            ret,
+            value,
+            slots: 2,
+            min_stack: 5,
+            min_locals: 3,
+        })
+    };
+    match descriptor {
+        "Z" | "I" | "B" | "S" | "C" => {
+            single_slot(OPCODE_ILOAD_1, OPCODE_IRETURN, AccessorSlotKind::Int)
+        }
+        "F" => single_slot(OPCODE_FLOAD_1, OPCODE_FRETURN, AccessorSlotKind::Float),
+        "J" => two_slot(OPCODE_LLOAD_1, OPCODE_LRETURN, AccessorSlotKind::Long),
+        "D" => two_slot(OPCODE_DLOAD_1, OPCODE_DRETURN, AccessorSlotKind::Double),
+        value if value.starts_with('L') || value.starts_with('[') => {
+            single_slot(OPCODE_ALOAD_1, OPCODE_ARETURN, AccessorSlotKind::Reference)
+        }
+        _ => None,
+    }
+}
+
+/// The accessor's one field type: the descriptor its parameter and its return spell, which the
+/// field it writes states again. The body is the exact `(L{owner};V)V` form and `V` must be in
+/// the closed type set — anything else is refused, as the boolean first slice refused it.
+fn write_accessor_key(owner: &str, descriptor: &[u8]) -> Option<String> {
+    let descriptor = std::str::from_utf8(descriptor).ok()?;
+    let rest = descriptor.strip_prefix(format!("(L{owner};").as_str())?;
+    let (value, returned) = rest.split_once(')')?;
+    if returned != value {
+        return None;
+    }
+    write_accessor_shape(value)?;
+    Some(value.to_owned())
+}
+
+/// The Java 8 private-setter helper's complete physical body: the value-returning write accessor
+/// javac emits when a nested class writes an outer class's private field. Its stack copy has
+/// exactly three consumers: the receiver and value of one `putfield`, and the returned copy of
+/// that value. The type facts are one closed per-descriptor table (`write_accessor_shape`); every
+/// structural requirement below is the one the boolean first slice proved, unchanged. The two
+/// source statements are committed together only after this closed proof succeeds.
+#[derive(Clone)]
+struct WriteAccessorAssignment {
+    assignment: LongAssignmentResult,
+    /// The accessor's field descriptor — the table key the proof matched — restated where the
+    /// emitted statements re-check their field evidence.
+    expected_descriptor: String,
+}
+
+impl WriteAccessorAssignment {
     #[allow(clippy::too_many_arguments)]
     fn prove(
         canonical: &CanonicalCfg,
@@ -8775,14 +8887,21 @@ impl BooleanAccessorAssignment {
         let Some(owner) = declaring_class else {
             return Ok(None);
         };
+        let Some(key) = method.and_then(|method| write_accessor_key(owner, &method.descriptor.0))
+        else {
+            return Ok(None);
+        };
+        let Some(table) = write_accessor_shape(&key) else {
+            return Ok(None);
+        };
         if !method.is_some_and(|method| method.name.0.starts_with(b"access$"))
             || !flags.is_some_and(|flags| flags & (0x1000 | 0x0008) == (0x1000 | 0x0008))
             || has_receiver
-            || parameters != 2
+            // The accessor's parameters are the receiver slot plus the value's own slots — one
+            // more slot per category-2 field type, the width the table row carries.
+            || parameters != 1 + table.slots
             || parameter_types.len() != 2
             || parameter_types.get(&0) != Some(&Type::Reference(owner.replace('/', ".")))
-            || parameter_types.get(&1) != Some(&Type::Boolean)
-            || return_type != Some(&Type::Boolean)
             || !canonical.completeness().is_complete()
             || !canonical.unreachable().is_empty()
             || canonical.blocks().len() != 1
@@ -8790,13 +8909,19 @@ impl BooleanAccessorAssignment {
             || canonical.blocks().iter().any(|block| block.id().is_clone())
             || ssa.blocks().len() != 1
             || !code.exception_handlers.is_empty()
-            || code.max_locals < 2
-            || code.max_stack < 3
         {
             return Ok(None);
-        }
-        let descriptor = format!("(L{owner};Z)Z");
-        if method.is_none_or(|method| method.descriptor.0 != descriptor.as_bytes()) {
+        };
+        // The parsed parameter and return types state the same field type the descriptor spelled:
+        // one more copy of the fact, checked the way the boolean slice checked it.
+        let Some(expected_type) = descriptor_type(&key) else {
+            return Ok(None);
+        };
+        if parameter_types.get(&1) != Some(&expected_type)
+            || return_type != Some(&expected_type)
+            || code.max_locals < table.min_locals
+            || code.max_stack < table.min_stack
+        {
             return Ok(None);
         }
         let [load_receiver, load_value, duplicate, store, returns] = code.instructions.as_slice()
@@ -8816,7 +8941,7 @@ impl BooleanAccessorAssignment {
                 duplicate.opcode,
                 store.opcode,
                 returns.opcode,
-            ] != [0x2a, 0x1b, 0x5a, 0xb5, 0xac]
+            ] != [0x2a, table.load_value, table.copy, 0xb5, table.ret]
             || !matches!(operations.get(0), Some(Operation::Load { slot: 0 }))
             || !matches!(operations.get(1), Some(Operation::Load { slot: 1 }))
             || !matches!(operations.get(2), Some(Operation::Other))
@@ -8837,7 +8962,7 @@ impl BooleanAccessorAssignment {
         else {
             return Ok(None);
         };
-        if duplicate.opcode() != 0x5a {
+        if duplicate.opcode() != table.copy {
             return Ok(None);
         }
         poll(budget, Some(2))?;
@@ -8846,7 +8971,7 @@ impl BooleanAccessorAssignment {
             return Ok(None);
         };
         if field.owner != owner
-            || field.descriptor != "Z"
+            || field.descriptor != key
             || field.access != FieldAccess::Write
             || field.is_static
         {
@@ -8866,7 +8991,7 @@ impl BooleanAccessorAssignment {
             .filter(|candidate| candidate.name.raw().0 == field.name.as_bytes())
             .collect();
         if matching.len() != 1
-            || matching[0].descriptor.raw().0 != b"Z"
+            || matching[0].descriptor.raw().0 != key.as_bytes()
             || matching[0].access_flags & (0x0002 | 0x0008) != 0x0002
         {
             return Ok(None);
@@ -8885,13 +9010,26 @@ impl BooleanAccessorAssignment {
         let (Some(receiver_copy), Some(field_copy)) = (shape.receiver, shape.value) else {
             return Ok(None);
         };
+        // What the frames must state for the loaded value and both of its copies: one slot kind
+        // per table row, the way the boolean slice stated `Value::Int` outright.
+        let value_type_matches = |actual: &Value| match table.value {
+            AccessorSlotKind::Int => matches!(actual, Value::Int),
+            AccessorSlotKind::Float => matches!(actual, Value::Float),
+            AccessorSlotKind::Long => matches!(actual, Value::Long),
+            AccessorSlotKind::Double => matches!(actual, Value::Double),
+            // A reference slot is named with the component's own descriptor spelling — the table
+            // key itself, `L…;` and `[…` alike (`frame.rs`'s `component_frame_type`).
+            AccessorSlotKind::Reference => {
+                matches!(actual, Value::Ref(RefType::Named { name, .. }) if name.as_slice() == key.as_bytes())
+            }
+        };
         let outputs = stack_writes(duplicate);
         if outputs.len() != 3
             || receiver_source != &receiver_loaded
             || value_source != &value_loaded
-            || ssa.value(value_loaded).ty() != &Value::Int
-            || ssa.value(field_copy).ty() != &Value::Int
-            || ssa.value(return_copy).ty() != &Value::Int
+            || !value_type_matches(ssa.value(value_loaded).ty())
+            || !value_type_matches(ssa.value(field_copy).ty())
+            || !value_type_matches(ssa.value(return_copy).ty())
             || duplicate
                 .reads()
                 .iter()
@@ -8912,15 +9050,18 @@ impl BooleanAccessorAssignment {
         {
             return Ok(None);
         }
-        Ok(Some(Self(LongAssignmentResult {
-            receiver_source: receiver_loaded,
-            parameter_source: value_loaded,
-            receiver_copy,
-            field_copy,
-            store_bci: 3,
-            return_bci: 6,
-            anchors: [0, 1, 2],
-        })))
+        Ok(Some(Self {
+            assignment: LongAssignmentResult {
+                receiver_source: receiver_loaded,
+                parameter_source: value_loaded,
+                receiver_copy,
+                field_copy,
+                store_bci: 3,
+                return_bci: 6,
+                anchors: [0, 1, 2],
+            },
+            expected_descriptor: key,
+        }))
     }
 }
 
@@ -18387,18 +18528,18 @@ impl Builder<'_> {
             if self.assignment_result_refused || at != result.store_bci {
                 return Ok(());
             }
-            return self.assignment_result_statement(&result, false);
+            return self.assignment_result_statement(&result, "J");
         }
-        if let Some(result) = self
-            .boolean_accessor_assignment
+        if let Some((result, expected_descriptor)) = self
+            .write_accessor_assignment
             .as_ref()
-            .map(|shape| shape.0.clone())
-            .filter(|result| result.owns(at))
+            .map(|shape| (shape.assignment.clone(), shape.expected_descriptor.clone()))
+            .filter(|(result, _)| result.owns(at))
         {
             if self.assignment_result_refused || at != result.store_bci {
                 return Ok(());
             }
-            return self.assignment_result_statement(&result, true);
+            return self.assignment_result_statement(&result, &expected_descriptor);
         }
         if let Some(update) = self.unit_field_updates.statement_at(at).cloned() {
             return self.unit_field_update_statement(&update);
@@ -22511,11 +22652,13 @@ impl Builder<'_> {
 
     /// Publishes a proved field store and return as one prepared pair. The stack copy is never
     /// rendered: both statements read the same side-effect-free parameter load only after the
-    /// proof established the distinct SSA consumers.
+    /// proof established the distinct SSA consumers. `expected_descriptor` is the field type the
+    /// proof matched — the closed write-accessor table's key, or the long assignment's own `J` —
+    /// and the field evidence is re-checked against it here, where the statements commit.
     fn assignment_result_statement(
         &mut self,
         result: &LongAssignmentResult,
-        boolean_accessor: bool,
+        expected_descriptor: &str,
     ) -> Result<(), StopReason> {
         let bcis = [
             result.anchors[0],
@@ -22535,7 +22678,7 @@ impl Builder<'_> {
         };
         if evidence.access != FieldAccess::Write
             || evidence.is_static
-            || evidence.descriptor != if boolean_accessor { "Z" } else { "J" }
+            || evidence.descriptor != expected_descriptor
             || shape.receiver != Some(result.receiver_copy)
             || shape.value != Some(result.field_copy)
         {

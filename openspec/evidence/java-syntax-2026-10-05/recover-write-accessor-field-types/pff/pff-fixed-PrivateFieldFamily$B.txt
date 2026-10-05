@@ -1,0 +1,26 @@
+// jarde: presentation of `dt29/PrivateFieldFamily$B` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt29;
+
+public class PrivateFieldFamily$B extends dt29.PrivateFieldFamily$A {
+    public boolean visible;
+
+    public PrivateFieldFamily$B() {
+        // @method <init>()V
+        // @declaration a constructor of `dt29.PrivateFieldFamily$B`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void set(boolean arg1, boolean arg2) {
+        // @method set(ZZ)V
+        // @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the field access at BCI 2 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven
+        // @bytecode 7 10 5 6
+        // the parameter 0 of the invocation at BCI 7 is declared `dt29.PrivateFieldFamily$A` presents `dt29.PrivateFieldFamily$B` but the invocation requires `dt29.PrivateFieldFamily$A` and this layer has no safe reference conversion evidence
+        return;
+    }
+}
