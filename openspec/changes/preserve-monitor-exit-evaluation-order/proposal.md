@@ -2,6 +2,12 @@
 
 [sync-return-timing 巡查](../../evidence/java-syntax-2026-10-05/sync-return-timing-patrol/README.md)：嵌套 `synchronized` 的内层 `return expr;` 被渲染为内层空块 + return 外移——求值越过内层 `monitorexit`。判别探针 `NL`（`Thread.holdsLock(NL.class)` 在 `toString` 内）剥离编译 exit 0、运行 `nN` vs 原 `nY`：**可编译但行为不同**（第一不变量违反）。javap 证实原字节码求值（BCI 11–27）先于内层 `monitorexit`（BCI 31）。jadx 以锁内 temp 赋值+锁外 return 保真——有解，呈现层归因。
 
+## Root 预审计（2026-10-06，读码）
+
+- 字节码事实：`NL.probe` 求值 BCI 11–27 在内层 `monitorexit` BCI 31 之前（javap 已档）；
+- 归属错置：guard.rs `Shape::Monitor { returns }` 的文档要求 return 写在**该层** braces 内（guard.rs:320–327），但 `InnerMonitor`（guard.rs:160）**没有自己的 returns 字段**——嵌套形下 return 只属于外层 shape；build.rs synchronized return 分支（~14525 注释/`body.push(statement)`）因此把 return 语句追加到**外层 body 的嵌套块之后**，内层块渲染为空；
+- 最小修法二选一（实现插桩定夺）：给 `InnerMonitor` 增加自身 returns（return 语句入内层 body）；或外层渲染时为内层体生成 temp 赋值（求值留内层、return 留外层——jadx 形）。两者都在既有 Monitor/InnerMonitor 证明结构内，无需新机制。
+
 ## What Changes
 
 - synchronized 形状的**求值次序不变量**：被 return 消费的表达式，其呈现位置必须使求值发生在配对 `monitorexit` 之前。两种等价呈现：return 语句留在该层 synchronized 体内；或引入合成局部在体内赋值、return 移到体外（jadx 先例）。单层现状已满足（`retInside` 原样），本片只修嵌套内层 return 归属错置。
