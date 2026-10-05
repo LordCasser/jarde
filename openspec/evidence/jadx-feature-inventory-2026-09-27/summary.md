@@ -150,4 +150,6 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 
 Jarde 已在同次方法恢复中采集 `AnonymousAllocationScan`（每个 `new` 的 BCI、目标、构造调用、完整性），并在类装配层保留扫描；因此 DT-05～09 无需先发明第二套全局分配计数。真正待证明的是：唯一分配点、匿名体方法与合成捕获字段能否作为**同一组物理类**原子投影；如果任一成员、来源或预算不完整，就保留物理类表示。这是下一批 OpenSpec 的架构切入点，不先把 JADX 的 `DONT_GENERATE` 标记照搬进 Jarde。
 
-EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-calls/README.md)也显示，JADX 虽能把简单调用写成展开形式，却会把单个 `null`、`String[]` 传 `Object...` 等边界展开成改变运行时数组形状的源码。我们只借鉴其目标方法识别与调用投影入口；数组是不是语法糖由原 class 行为和唯一消费证明决定，不能把所有 `new T[]{...}` 机械展开。
+EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-calls/README.md)也显示，JADX 虽能把简单调用写成展开形式，却会把单个 `null`、`String[]` 传 `Object...` 等边界展开成改变运行时数组形状的源码。我们只借鉴其目标方法识别与调用投影入口；数组是不是语法糖由原 class 行为和唯一消费证明决定，不能把所有 `new T[]{...}` 机械展开。**大颗粒（2026-10-05，[loop-body-catch 巡查](../java-syntax-2026-10-05/loop-body-catch-patrol/README.md)）**：循环体内具名 try-catch **全形拒绝**（纯 for/while/for-each 三形皆 "graph is not reducible"；无 try 循环恢复、循环内 try-finally 恢复——仅具名 catch 破坏可归约性）；解析/重试循环是业务最高频模式；**jadx 产出行为错码**（throw 提出 try 外→永不被捕获）；既有两机制（fragmented-loop-catches f8be28ae + proved_loop_catch_joins region.rs:1639）均不覆盖此简单形 → 立项 recover-loop-body-try-catch。
+
+
