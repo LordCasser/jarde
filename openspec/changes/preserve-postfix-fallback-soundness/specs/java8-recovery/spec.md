@@ -28,6 +28,10 @@
 - **WHEN** 输入为固定 `NI`（main 中局部被单表达式消费 4 次，诊断 "the saved producer at BCI N has M consumers, so one local binding cannot prove its execution count"）的 Java 8 class 并恢复
 - **THEN** 去注释呈现文本经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`3/10/5/true`）；否则编译失败或整方法拒绝——不得出现可编译且整条表达式静默丢失的文本（无输出）；2 次消费单调用形（`NJ`）的完整恢复 SHALL 保持
 
+#### Scenario: 匿名类实参引用转换锚点（第 6 族触发）
+- **WHEN** 输入为固定 `CP.byAnon`（`Collections.sort(c, new Comparator<User>(){...})`——匿名类作实参，诊断 "the parameter 1 of the invocation at BCI N is declared \`T\` presents \`CP$1\` but the invocation requires \`T\` and this layer has no safe reference conversion evidence"）的 Java 8 class 并恢复
+- **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`[10, 20, 30]`）；否则编译失败或整方法拒绝——不得出现 sort 调用被静默吞掉的可编译文本（`[30, 10, 20]`）；同 fixture 的 `Comparator.comparing(User::getName).thenComparing(User::getAge).reversed()` 全链与 `Arrays.sort` lambda 形的完整恢复 SHALL 保持
+
 #### Scenario: 绑定接收者适配锚点（第 5 族触发）
 - **WHEN** 输入为固定 `OP.sideEffect`（`o.ifPresent(sb::append)`——绑定接收者为捕获局部，诊断 "adapting this bound receiver would move its null failure from functional-value creation to invocation"）的 Java 8 class 并恢复
 - **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`[S]/[]`）；否则编译失败或整方法拒绝——不得出现 ifPresent 调用被静默吞掉的可编译文本（`[]/[]`）；绑定到参数的方法引用（`OP.name` 的 `String::trim`）与普通 lambda 的完整恢复 SHALL 保持
