@@ -204,6 +204,34 @@ fn standalone_source(bytes: &[u8], class: &str) -> ClassSourceReport {
     }
 }
 
+/// The unit a runtime leg compiles: this run's assembled source without the members it refused.
+///
+/// A refused member's body presents as its quotes alone, and a `void` body that wrote no statement
+/// carries `jarde_refused_body();` — a symbol this project reserves and never declares — so the
+/// assembled source of a class with a refused member is not compilable, by design: change
+/// `preserve-postfix-fallback-soundness` replaced the partial text that compiled while dropping
+/// the statement it could not prove with a refusal that states itself. The anchors of this file are
+/// the members the run *proved*, so their runtime legs compile those, and each caller states the
+/// refusal it leaves out.
+fn proved_unit(report: &ClassSourceReport) -> String {
+    let mut unit = report.text.clone();
+    for method in &report.methods {
+        if matches!(
+            &method.outcome,
+            ClassSourceOutcome::Recovered { report: run, .. }
+                if run.content == RecoveryContent::ExplanationOnly
+        ) {
+            assert!(
+                unit.contains(&method.text),
+                "the refused member's own text is a substring of the assembled source:\n{}",
+                report.text
+            );
+            unit = unit.replace(&method.text, "");
+        }
+    }
+    unit
+}
+
 /// Compiles one recovered unit beside its own family jar, then runs a runner under
 /// `-Xverify:all` — once against the recompiled unit and once against the original family — and
 /// returns both outputs: behavior and generic reflection must agree path by path.
@@ -407,15 +435,36 @@ fn same_class_method_call_proves_binding_and_reflects_like_the_original() {
         "{}",
         note.text
     );
+    // `main` sits on another slice's boundary: a `java.lang.String` argument for the erased
+    // `java.lang.Comparable` parameter, a platform conversion this layer holds no evidence for.
+    // `preserve-postfix-fallback-soundness` makes that refusal loud where the body is `void` —
+    // the whole body presents as its quotes alone, and the reserved, undeclared symbol stands
+    // where a statement would — instead of publishing the statements beside the refused call. The
+    // binding this test accepts is `note`'s, so the runtime leg compiles the members the run
+    // proved, and the runner spells the call `main` made.
+    let main = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"main")
+        .expect("the physical main remains");
+    assert!(
+        main.text.contains("jarde_refused_body();")
+            && main.text.contains("no safe reference conversion evidence"),
+        "{}",
+        main.text
+    );
     // The recovered family recompiles, verifies, runs and reflects exactly like the original:
     // the binding proof admitted a call the original bytecode still owns.
     reflect_and_run(
         "scg-method",
-        &report.text,
+        &proved_unit(&report),
         "SCGA",
         "public class Runner { public static void main(String[] a) throws Exception {\n\
          System.out.println(Class.forName(\"SCGA\").getMethod(\"note\", java.lang.Comparable.class).getGenericParameterTypes()[0]);\n\
-         SCGA.main(a);\n} }",
+         SCGA z = new SCGA<java.lang.String>();\n\
+         java.lang.Comparable word = \"b\";\n\
+         z.note(word);\n\
+         System.out.println(\"note:\" + word.equals(\"b\"));\n} }",
         &jar,
     );
 }
@@ -633,12 +682,26 @@ fn receiver_consumed_field_read_keeps_the_field_refusal() {
         "{}",
         report.text
     );
+    // This fixture's `main` sits on the same platform-conversion boundary as the method-call
+    // family's, and `preserve-postfix-fallback-soundness` refuses a `void` body whole where such a
+    // refusal stands at its top level. The field refusal this test keeps is `kept`'s, so the
+    // runtime leg compiles the members the run proved, with the runner spelling the call `main`
+    // made.
+    let main = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"main")
+        .expect("the physical main remains");
+    assert!(main.text.contains("jarde_refused_body();"), "{}", main.text);
     reflect_and_run(
         "scg-receiver",
-        &report.text,
+        &proved_unit(&report),
         "SCGF",
         "public class Runner { public static void main(String[] a) throws Exception {\n\
-         SCGF.main(a);\n} }",
+         SCGF z = new SCGF<java.lang.String>();\n\
+         java.lang.Comparable word = \"b\";\n\
+         z.add(word);\n\
+         System.out.println(\"kept:added\");\n} }",
         &jar,
     );
 }

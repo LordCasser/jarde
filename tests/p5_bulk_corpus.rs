@@ -753,10 +753,21 @@ impl Billing {
         // slots), and no other dimension moved. The 2026-10-02 do-while return slice re-measured
         // again: the failure-closure classification bills the edges it scans for the corpus's
         // quoted bodies (+6 `AnalysisSteps`), and no other dimension moved.
+        //
+        // `preserve-postfix-fallback-soundness` re-measured the row on `output_bytes` alone: this
+        // case's `Guarded` is the corpus's one class with `void` bodies that wrote no statement
+        // (`branching`, `fin`, `catchFinally`, `suppressedCatching` — the four the case's
+        // `explanation_only=4` has named since the whole-construct catch), and each now carries
+        // `jarde_refused_body();` where it used to present the empty body a reader could compile
+        // into a silent no-op. Four markers bill +104 `output_bytes`; `BooleanContexts` and the
+        // generated `p/WideClass` (64 non-`void` members, no refusal among them) are unchanged
+        // byte for byte, no member's classification moved, and no read, decode or delivery
+        // dimension moved. The two arms move by the same +104. The row was read with
+        // `record_the_billing_table`.
         ir_items: 20327,
         analysis_steps: 10539,
         result_items: 122,
-        output_bytes: 23229,
+        output_bytes: 23333,
     };
     /// `damaged-tail`: the readable classes only; the damaged entries cost their own attempts.
     ///
@@ -831,10 +842,13 @@ impl Billing {
         // array spelling (the corpus's reused primitive slots), and no other dimension moved.
         // +6 with the 2026-10-02 do-while return slice: the failure-closure classification
         // bills the edges it scans for the corpus's quoted bodies.
+        // +104 with `preserve-postfix-fallback-soundness`, for the reason
+        // [`Billing::MANY_METHOD_CLASS`] records: the four `jarde_refused_body();` statements a
+        // refused `void` body now states, over this corpus's `Guarded`, and no other dimension.
         ir_items: 33780,
         analysis_steps: 17324,
         result_items: 1378,
-        output_bytes: 39513,
+        output_bytes: 39617,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -866,10 +880,12 @@ impl Billing {
         // records, and retention still touches only the read dimensions.
         // +23 with the 2026-10-01 array-slot-retype split, the same work the direct arm records.
         // +6 with the 2026-10-02 do-while return slice, the same work the direct arm records.
+        // +104 with `preserve-postfix-fallback-soundness`, the same work the direct arm records,
+        // and retention still touches only the read dimensions.
         ir_items: 33780,
         analysis_steps: 17324,
         result_items: 26,
-        output_bytes: 39513,
+        output_bytes: 39617,
     };
 }
 // ---------------------------------------------------------------------------------------------

@@ -323,24 +323,48 @@ fn negatives_keep_the_refusal_and_the_original_runtime() {
 fn the_walk_proves_the_eighth_edge_and_refuses_the_ninth() {
     let report = recover(HIER_DEPTH_JAR, "H3");
     let text = &report.text;
-    // `L7` reaches `Sig` in eight chain edges (`L7`..`L0` plus `Sig`): the last proved depth.
-    assert!(
-        text.contains("via((H3$Sig) new H3$L7())"),
-        "the cap's own edge recovers:\n{text}"
-    );
-    // `L8` needs a ninth edge: beyond the bound, the position keeps its refusal exactly as it
-    // stood before this slice — a true widening the walk declines on depth, not a false pair.
+    // `L7` reaches `Sig` in eight chain edges (`L7`..`L0` plus `Sig`): the last proved depth. The
+    // walk still proves it — no refusal is written for `L7`, so the ninth edge's is the only
+    // reference-conversion refusal that stands — but its presentation no longer reaches the text:
+    // `main` is `void`, and `preserve-postfix-fallback-soundness` refuses the whole body where a
+    // value-level refusal stands at its top level, in place of the text that kept the proved
+    // `via((H3$Sig) new H3$L7())` beside the refused `L8` call (that text compiled and dropped the
+    // call it could not present).
     assert_eq!(
         text.matches("no safe reference conversion evidence")
             .count(),
         1,
         "only the ninth edge stays refused:\n{text}"
     );
+    // `L8` needs a ninth edge: beyond the bound, the position keeps its refusal exactly as it
+    // stood before this slice — a true widening the walk declines on depth, not a false pair.
     assert!(
         text.contains(
             "presents `H3$L8` but the invocation requires `H3$Sig` and this layer has no safe reference conversion evidence"
         ),
         "{text}"
+    );
+    // The refusal is loud and not partial: the member's run is an explanation-only one, and its
+    // `void` body carries the reserved, undeclared symbol this layer writes where it would
+    // otherwise publish a body that compiles and does nothing.
+    let main = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"main")
+        .expect("the physical main remains");
+    assert!(
+        matches!(
+            &main.outcome,
+            ClassSourceOutcome::Recovered { report: run, .. }
+                if run.content == RecoveryContent::ExplanationOnly
+        ),
+        "the ninth edge's refusal takes the whole body:\n{}",
+        main.text
+    );
+    assert!(
+        main.text.contains("jarde_refused_body();"),
+        "a refused `void` body states the refusal where a statement would stand:\n{}",
+        main.text
     );
 
     let original_dir = scratch("hier-depth-original");
