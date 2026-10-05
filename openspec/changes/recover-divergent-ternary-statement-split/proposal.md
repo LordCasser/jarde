@@ -4,6 +4,8 @@
 
 **判别（已实测）**：同型分支（int 嵌套链
 
+> **root 追加锚维度 4（2026-10-05，[clinit/unbox 巡查](../../evidence/java-syntax-2026-10-05/clinit-throw-unbox-patrol/README.md)）**：**布尔字面量分支（boolean 返回位）**——`b ? true : false` 拒但 javap 证实与恢复的 `b ? 1 : 0` **指令完全相同**（iconst join at ireturn）——差异纯在布尔返回位的类型检查；jadx 恒等折叠 `return b`。五数据点。
+
 > **root 追加锚维度 3（2026-10-05，[catch-order/recursion 巡查](../../evidence/java-syntax-2026-10-05/catch-order-recursion-patrol/README.md)）**：**布尔字面量 vs 调用返回**——`n==0 ? true : odd(n-1)`（互递归三元）拒（同 "two values joined" 诊断）；判别矩阵：同型 int 三元+自递归✓、if/else 互递归✓、字面量-vs-调用✗——四变体（异型引用/上转型/短路条件/字面量-vs-调用）实现时插桩确认落点关系。
 
 > **root 追加锚维度 2（2026-10-05，[ternary-chain 巡查](../../evidence/java-syntax-2026-10-05/ternary-chain-patrol/README.md)）**：**短路复合条件作三元条件**——`(a && b) ? "x" : "y"`（分支**同型** String/String！）也拒——判别矩阵：短路复合条件 if 消费✓/三元消费✗（简单条件两者✓）。jadx 直接还原 `(z && z2) ? …`。**注意**：该形与异型汇合前提无关（分支同型仍拒）——是"短路位技巧进三元"的独立维度；若实现发现三变体（异型汇合/上转型汇合/短路条件）不同落点，按变体分派报告。
