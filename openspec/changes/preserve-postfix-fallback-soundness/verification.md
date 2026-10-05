@@ -120,3 +120,80 @@ void 规矩不一致。**本提交不动这 8 条记录**（属其它切片账�
 - 未执行：tasks 3.2 的 corpus 指纹再生（`fixture 双协议`后半）、root 独立重放、CI。
 - 未验证为"行为一致"的编译成功样本：`NJ`（`3/10` = 原）、`FA`（`6/3/30/11` = 原）；其余锚均为"编译失败=SAFE"。
 - 残留洞（因既有测试钉住，本片不动，见 §4.2）：结构体内部的族引注形（`p3_for_add_store` 的 `extraConsumer`）。
+
+## 6. 收尾：期望记录与测试期望的更新（2026-10-05，coder）
+
+root 按 §5 的 **(A)** 落地：更新受本变更有意改变之呈现影响的记录，实现与设计不动（§1 的两个落点一行未改）。
+收录口径只有三类——**整方法拒绝**、**族引注 BCI 集加宽**、**void 零语句体的 `jarde_refused_body();` 标记**；
+工作树 diff 逐行复核，未接受其它任何改动。patrol 的 `results/` 冻结件是 §2 的 before 证据，全部保持原样；
+`tests/fixtures/`、`fuzz/corpus/` 的源 fixture/jar 一个字节未动（`tests/fixtures/corpus-fingerprint.json` 的根只覆盖
+这两处，本片改动的文件都不在其中，指纹无需再生）。
+
+### 6.1 期望渲染记录（5 个文件，`git diff` 逐行核对）
+
+| 文件 | 变更（三类之内） | 原因 |
+|---|---|---|
+| `.../recover-lambda-primitive-array-capture/baseline/P02_multianewarray-v8.baseline.txt` | ① `@bytecode 2 5` → `2 5 0 1 3 4 6 7 10 11 12`；② 新增成员级 "not recovered … produced no statement (explanation only)" 行；③ `return;` → `jarde_refused_body();` | `lambda$sum$0` 的 void companion 体整方法拒：丢弃非引注语句、族引注承担本方法全部 BCI、零语句 void 体写标记。旧记录钉住的 `引注 + return;` 实测可编译且跑出 `0`（原 class `6`），即第一不变量违反 |
+| `.../recover-lambda-primitive-array-capture/baseline/P02_multianewarray-v23.baseline.txt` | 同上 | 同上（v23 腿） |
+| `.../recover-lambda-primitive-array-capture/fixed/P02_multianewarray-v8.fixed.txt` | 同上 | 同上（fixed 腿与 baseline 腿逐字节相同） |
+| `.../recover-lambda-primitive-array-capture/fixed/P02_multianewarray-v23.fixed.txt` | 同上 | 同上（v23 腿） |
+| `.../recover-write-accessor-field-types/pff/pff-baseline-PrivateFieldFamily$B.txt` | ① `@bytecode 7 10 5 6` → `7 10 5 6 0 1 2 11`；② 新增 explanation-only 行；③ `return;` → `jarde_refused_body();` | `set(ZZ)V` 同上；旧记录实测可编译且静默丢弃字段写 |
+
+这些记录的旧文本不是"另一份合法事实"：§3 的实测已证明它们是可编译错文本。测试已按新记录逐字节核对
+（`recover_lambda_primitive_array_capture` 与 `recover_write_accessor_field_types` 两个 target 转绿，见 §6.4）。
+
+### 6.2 其它切片的测试期望（4 文件 7 例；期望随已裁决行为移动，断言面不放宽）
+
+| 测试 | 旧期望 | 新期望（本片后实测） | 说明 |
+|---|---|---|---|
+| `p3_snapshot_hierarchy_widening.rs::the_walk_proves_the_eighth_edge_and_refuses_the_ninth` | `H3.main` 呈现 `via((H3$Sig) new H3$L7())` | 拒绝计数仍 = 1（第八边无拒绝 ⇒ walk 仍证明它）、第九边理由行逐字保留；新增断言 `main` 的 run 是 `ExplanationOnly` 且体写 `jarde_refused_body();` | `main` 是 void 且顶层有第六族引注；旧文本编译过并吞掉 L8 调用 |
+| `p3_throw.rs::lower_parameter_stack_value_is_not_an_extra_throw_read` | 引注 + 呈现的 `throw arg0;`（计数 = 1） | 整方法拒：`!text.contains("throw arg0;")`；"恰好一次"断言移入 `assert_boundary_value_or_quote` 仍允许的呈现分支 | 同上（void + 顶层族引注）；旧文本编译过并丢弃其前的那次调用 |
+| `p5_bulk_corpus.rs::the_fixed_shape_bills_the_counts_the_corpus_pins` | `many-method-class` `output_bytes = 23229` | `23333`（+104） | 归因见 §6.3 |
+| `p5_bulk_corpus.rs::the_old_per_method_arms_keep_their_ledger_and_the_same_text` | `DIRECT_ARM` / `SHARED_ARM` `output_bytes = 39513` | `39617`（+104，两臂同） | 同上 |
+| `same_class_generic_binding.rs::same_class_method_call_proves_binding_and_reflects_like_the_original` | 整类渲染编译 + `-Xverify:all` 运行 + 反射 | `SCGA.main`（平台转换族：`String` → 擦除后的 `Comparable`）整方法拒，运行时腿改为编译并运行**本 run 证明的成员**（新增 `proved_unit()`：剔除 `ExplanationOnly` 成员），runner 写出 `main` 所做的调用 | `note` 的声明、签名、绑定理由与"反射 + 行为"对照全部保留 |
+| `same_class_generic_binding.rs::receiver_consumed_field_read_keeps_the_field_refusal` | 同上 | 同上（字段 `kept` 的拒绝断言保留；`main` 整方法拒） | 同上 |
+
+§5 表里还有 1 例未列出（第 8 条）：上表两行 `same_class_generic_binding` 的失败当时只记了一行，此处一并记录。
+
+### 6.3 `+104 output_bytes` 的归因（改前/改后二进制同口径实测）
+
+- `many-method-class` 的三个类逐一实测 usage `output_bytes`：`Guarded` 56605 → **56709（+104）**；
+  `BooleanContexts` 5371 → 5371（0）；生成的 `p/WideClass` 是 64 个 `public static int memberN(int)`（非 void、
+  无六族诊断）——emit 的标记只对 void 成员生效、build 的守卫只对六族诊断生效，两者都不可能移动。
+- 因此 case 行与两臂行的 +104 = `Guarded` 四个 explanation-only void 体各多一行 `jarde_refused_body();`；
+  `explanation_only` 改前改后都是 4（recorder 实测输出），另外五张 case 行与两臂行的其它七个维度全部未动。
+- 行值由 `cargo test --test p5_bulk_corpus --locked -- --ignored --nocapture record_the_billing_table` 读出，
+  注释按本文件既有惯例记录重测原因；没有手改其它数字。
+
+### 6.4 收尾后的门禁（本 worktree 实测）
+
+| 门禁 | 结果 |
+|---|---|
+| `cargo test --workspace --tests --locked --no-fail-fast` | **304 个 run block / 2993 passed / 46 ignored**；本片与 §6.1–6.2 涉及的 target 全绿（收尾前为 4 个 target 红，全部是 §6.1/§6.2 的旧期望） |
+| `cargo fmt --all -- --check` | exit 0 |
+| clippy（`.github/workflows/ci.yml` 46–76 逐字 29 项 `-A` + `-D warnings`，`--workspace --all-targets --all-features --locked`） | exit 0 |
+| `openspec validate --all --strict` | `Totals: 300 passed, 0 failed (300 items)` |
+| `cargo test --test p3_execution_comparison --locked -- --ignored`（CI 的 JDK 步骤，本片额外跑） | 3 passed / 0 failed（渲染仍可编译并运行的那个语料未受本片影响） |
+
+三次全量运行里出现过两条**与本片无关的计时抖动**，两次都不在收尾前失败过、单独重跑均通过：
+`p4_plugins::the_plugin_plane_leaves_the_structural_planes_own_answer_untouched` 与
+`p1_multi_release::physical_evidence_is_the_single_provider_result_it_reports`——两者都把两份报告的
+`UsageSnapshot`（含 `elapsed_millis`）整体比较，机器有负载时 0ms/1ms 会互差。隔离重复实测：两条各 25/25 通过。
+本片不触碰 plugin/多版本选择路径（改动只在 class-source 的守卫与 void 呈现标记），未改动这两条测试。
+
+`tests/fixtures/corpus-fingerprint.json` 的 `ROOTS` 只有 `tests/fixtures`、`fuzz/corpus`；本片改动的
+5 个渲染记录都在 `openspec/evidence/` 下，指纹（§5 记为"未执行"的 tasks 3.2 后半）确认无需再生。
+
+### 6.5 复测锚（真 `javac 1.8.0_432` / `corretto-1.8.0_432`）
+
+协议：`jarde-cli class-source --input <patrol jar> --class <C> --format text`（P02 用 `--policy single-class`），
+剥离 `^[[:space:]]*//` 后按 8 号编译器编译，编译成功则运行并与原 class 运行对照。
+
+| 锚 | 原 class 运行 | 剥离后编译（8 号编译器） | 判定 |
+|---|---|---|---|
+| `SA`（`postfix-self-assign-soundness-patrol/fixture/sa.jar`） | `5/6/65/7/1/aAb/y` | 失败：`SA.java:10/22 缺少返回语句` | SAFE：整方法拒（改前 `SA.postSelf` 可编译、跑出 6） |
+| `BF`（`field-compound-soundness-patrol/fixture/bf.jar`） | `true/false/true/false/3/false/2` | 失败：`BF.java:11/15 找不到符号`（2 处标记 = `enable`/`disable`） | SAFE：整方法拒 + void 标记 |
+| `XS`（`numeric-idioms-patrol/fixture/xs.jar`） | `8/2/9/10/7/6` | 失败：`XS.java:8 缺少返回语句` | SAFE：整方法拒（改前为可编译错文本 `3/2/…`） |
+| `LK`（`explicit-lock-patrol/fixture/lk.jar`） | `1/0/true` | 失败：`LK.java:17 找不到符号`（1 处标记） | SAFE：void 呈现修复 |
+| `P02_multianewarray` v8 | `6` | 失败：`找不到符号`（1 处标记） | SAFE：整方法拒；渲染与 §6.1 的 fixed 记录逐字节相同 |
+| `P02_multianewarray` v23 | `6` | 同上 | 同上 |
