@@ -92,3 +92,10 @@
    "不另计锚"。本片只在文本面锚定 `EM.<clinit>` 的循环体，并以 ignored 测试记录"该文本必须保持不可编译"。
 5. **语料扫的既有面变化为 0**：与 preserve-monitor-exit-evaluation-order 不同（那一轮有 1 处既有 fixture
    同形变化），本片 631 个 fixture class 中变更的 12 个全部是本片新增文件（§3）。
+
+## Root 独立验收（2026-10-06，HEAD=dc90e93f）
+
+- **门禁复现**：`cargo test --workspace --tests --locked --no-fail-fast` 313 targets / 3007 passed / 0 failed / 50 ignored；fmt exit 0；clippy ci.yml 46–76 逐字 exit 0；`openspec validate --all --strict` 300/0。
+- **锚独立复验（HEAD 重编 jarde-cli）**：RG `<clinit>` `BY_LABEL.put(local4.label, local4)` 零引注（第 21 锚 compilable-wrong 关闭）；RH.total/RK.viaElemLocal/RK.viaElemDirect/RL.selfElem/RL.innerElem/RM.loopCall/RM.elemCall/RJ.direct/RJ.viaLocal/RO 双形 **12/12 方法 quotes=0**；类级余留引注均在 `main`（内联数组实参 copy 族升级拒=范围外既有域）。
+- **行为往返**：RH 驱动（Item 并入）编译 exit 0、`-Xverify:all` `5/ab`（驱动自定输入的正确语义；total=5 与原一致）。
+- **实现审查**：闭包注入案与预审计逐点吻合——build.rs `element_receiver_type`（array_of_value+array_spelling 既有读法转内部名）→ field.rs `verify` 一行 `or_else`，`pub(crate)` 无仓外暴露；判据文本零变化；写侧自然恢复已如实记录（读写共用同一比较，非新增判据）。
