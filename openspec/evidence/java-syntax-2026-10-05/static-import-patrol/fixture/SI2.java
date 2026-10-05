@@ -1,0 +1,1 @@
+public class SI2 { int useSV(){ return Lib.SV; } int useAdd(){ return Lib.add(1, 2); } int useNS(){ return Lib.Nested.NS; } public static void main(String[] a){ SI2 s = new SI2(); System.out.println(""+s.useSV()+"/"+s.useAdd()+"/"+s.useNS()); } }
