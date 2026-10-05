@@ -14,6 +14,10 @@
 
 > **root 追加锚（2026-10-05，[stream-chain 巡查](../../evidence/java-syntax-2026-10-05/stream-chain-patrol/README.md)）**：`Collectors.joining(",")` 的 String→CharSequence 实参（java.util.stream 方法——java.lang 族扩宽在 DIRECT_EDGES java.util-only 表外的第 5 位点）；同巡查证健康面：unbound 实例方法引用（String::toUpperCase→lambda 包装）、IntStream 原生特化全链、groupingBy——扩宽片实现时同名 javadoc 行补入。
 
+
+
+> **root 追加（2026-10-05）**：第 4 员 [recover-enum-argument-widening](../recover-enum-argument-widening/)（`EnumSet.of` 枚举常量——**首个类位（java.lang.Enum 父类）扩宽**，接口三表外的同构新表）已立项；合并派发范围由三表扩为**四表**。
+
 ## What Changes
 
 在 `platform_reference_argument_widens`（或并列的同族小函数，实现者按代码结构定）新增 **java.lang.CharSequence 实现者封闭表**：`java.lang.String → java.lang.CharSequence`、`java.lang.StringBuilder → java.lang.CharSequence`、`java.nio.CharBuffer → java.lang.CharSequence`（javadoc 声明的实现者全集；release 8 无新增）。命中即 `cast_argument` 呈现——与既有两条通道**完全同构**，零新机制。
