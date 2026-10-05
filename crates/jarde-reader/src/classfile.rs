@@ -11928,7 +11928,11 @@ mod tests {
             // The 2026-10-06 recover-array-element-field-receiver fixtures (the patrol's own
             // `RG`…`RO` shapes plus the `RJ`/`EM`/`RP` controls, ten families on both compiler
             // legs: forty classes, one hundred twenty-three bodies) moved it again.
-            (631, 2738, 282, 1803, 8),
+            // The 2026-10-06 recover-platform-interface-argument-widening fixtures (the two
+            // patrols' `CP`/`AH`/`AC`/`AN` shapes plus this change's `AW` boundary and `IS`
+            // isolated anchor, seventeen classes on both compiler legs: thirty-four classes, one
+            // hundred bodies) moved it again.
+            (665, 2838, 282, 1803, 8),
             "fixture population changed: re-measure these counts"
         );
     }

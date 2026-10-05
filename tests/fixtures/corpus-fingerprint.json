@@ -7177,6 +7177,206 @@
       "path": "tests/fixtures/recover-lambda-primitive-array-capture/v8/P02_multianewarray.class"
     },
     {
+      "blake3": "941c9847c40aab86f779566dafc7604a76fe6f7ce004b2c772f53cbf351c173c",
+      "bytes": 197,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/AC.java"
+    },
+    {
+      "blake3": "b2e43b4c87f5268a404a0c89a8856efd7af6195f7c3680f1df230046e4a24a8e",
+      "bytes": 397,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/AH.java"
+    },
+    {
+      "blake3": "767809e56d0c1c3959854f7d797e99e9583f1f531a7cc0d15eb582571be86d80",
+      "bytes": 726,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/AN.java"
+    },
+    {
+      "blake3": "f88b40a5c90a8bf6a0735d15b7873cc2b857f337f4edc26446ef6716acd660c5",
+      "bytes": 677,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/AW.java"
+    },
+    {
+      "blake3": "b92bbc95b586f1ef79e4c56187b018e9a6aabc3855904e25bf75f537ffa07c62",
+      "bytes": 1384,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/CP.java"
+    },
+    {
+      "blake3": "e00a99c18bb1f75fd31f86d0e1db8415bc478e16f75346ace6f52f6ebe8186fa",
+      "bytes": 556,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/IS.java"
+    },
+    {
+      "blake3": "da37a2e9ac5510cad44be0a24b5f345997b9af869c7d38398cf5bb4c807d4821",
+      "bytes": 539,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AC.class"
+    },
+    {
+      "blake3": "65bf65a5adff1a9b560a12769531b540a94cf872a046a3ccca8b44a7ca260270",
+      "bytes": 929,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AH.class"
+    },
+    {
+      "blake3": "eab1f11f356151646b0d59e7f1a42cc28299047468b3819af55f07bc47405beb",
+      "bytes": 358,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AN$1.class"
+    },
+    {
+      "blake3": "85aacff256919e3681534bfd0bf6d2d3a8f04c57468dec0bb7691181f5ff87ff",
+      "bytes": 343,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AN$2.class"
+    },
+    {
+      "blake3": "b50b7c2bff72a1ecbc60ede58a8bd4187a20f77fbb531da25dd3d57f64dce645",
+      "bytes": 330,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AN$3.class"
+    },
+    {
+      "blake3": "99900e9ea0f44f07c7465838d4319c59a89c9ed247e7cd07798296f74030ac4f",
+      "bytes": 352,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AN$4.class"
+    },
+    {
+      "blake3": "9b5ead15f745f8df83ce52e66108a2198928fbfbbf077c3d5e92645ffae34873",
+      "bytes": 155,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AN$Op.class"
+    },
+    {
+      "blake3": "12a631415afdf69f70ae2924a3d614cec9f70ee98cec34f3ad3f25945fadbbf9",
+      "bytes": 1219,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AN.class"
+    },
+    {
+      "blake3": "e3a5ca9ec8c48c019d8fb8fe6136385c7b9c46191cd7faee25cdc2b4ad1dd8ba",
+      "bytes": 234,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AW$MyErr.class"
+    },
+    {
+      "blake3": "c38bb8306e9783dc9c7e345f3450bc8bba21f91695e05c142883c2b1ef446a5c",
+      "bytes": 300,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AW$Work.class"
+    },
+    {
+      "blake3": "af9bce5969f229cd334b217a753021222eec2637d85854d5e71b4334cd60fd64",
+      "bytes": 709,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/AW.class"
+    },
+    {
+      "blake3": "b5f03287100abc35aa0183b4a8f5eff57d489065eb19fc78a60865164a583331",
+      "bytes": 633,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/CP$1.class"
+    },
+    {
+      "blake3": "43791f2609a417d788290d98369f19ec696dfe9a2126996ec0e0e18cd3fbaea6",
+      "bytes": 710,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/CP$User.class"
+    },
+    {
+      "blake3": "3a9d3e16f01640236ecaebbe54764100d79a273bec0d1903ec95dfae6d39eef9",
+      "bytes": 2804,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/CP.class"
+    },
+    {
+      "blake3": "1b9839e7d84dbf57cdd44c8308444b1b3228da69412e88f8c7b5ade1aa7d2071",
+      "bytes": 480,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/IS$1.class"
+    },
+    {
+      "blake3": "7e3b6f8d0ca22935446d2734c390fe04ca0452681dce110a2bb541e358f8aea4",
+      "bytes": 522,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/IS$User.class"
+    },
+    {
+      "blake3": "a7e312827cd5200e71ed5ee1753821182feba8a0f4eee92aed8a96aebc6c64af",
+      "bytes": 881,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8-javac8/IS.class"
+    },
+    {
+      "blake3": "366a354c10deea5c5af811ac51dfee33b38dbc85d9150f03bb60f2b9ad5a0f33",
+      "bytes": 573,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AC.class"
+    },
+    {
+      "blake3": "71adca9b69d15271862fb49da7734b1b2b375c9c03e3933428cb7e726b0b0f95",
+      "bytes": 929,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AH.class"
+    },
+    {
+      "blake3": "395a9aa4e2af0a3c19cc63b1b2738c9e0eef0c09512077cec44f77c6df4e0456",
+      "bytes": 358,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AN$1.class"
+    },
+    {
+      "blake3": "33cf6c86d4b6924e36068787aca84c975a8ff55f132917ace3fd156219859e51",
+      "bytes": 343,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AN$2.class"
+    },
+    {
+      "blake3": "081e8e07ab8bdbdfe348b58e3be36816cae27a0386ac5fea32ae8f3a411816e5",
+      "bytes": 330,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AN$3.class"
+    },
+    {
+      "blake3": "45c98e71ae113ce8f0eac4e4ae0679e76035acf722ec9b51b3ce6c13eecea875",
+      "bytes": 352,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AN$4.class"
+    },
+    {
+      "blake3": "69f96490a0f5bd465e62c8f39d3148fe4cdcfb6528f6c9c4014e1a680c38316b",
+      "bytes": 155,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AN$Op.class"
+    },
+    {
+      "blake3": "e59c605b86b3d2dc5f1691ee7528420594c501ef83e87c889a1e4cc2042d5910",
+      "bytes": 1219,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AN.class"
+    },
+    {
+      "blake3": "e2ce4de71734e81ea5830a6d701fcb25ab191d186c1b7d73873bb5d83ab7a647",
+      "bytes": 234,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AW$MyErr.class"
+    },
+    {
+      "blake3": "0829f2847cb3da636e1d3b548d60ff33256690bcaed6597ff5f2ea2bdb92f513",
+      "bytes": 300,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AW$Work.class"
+    },
+    {
+      "blake3": "68424796c1df0211d159ddb120eebe5fe696e205e5f3c75c9ffef8e359930ed8",
+      "bytes": 709,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/AW.class"
+    },
+    {
+      "blake3": "47d8f2244484b945efe4f7756b3aa599de8375ef2b5b0685f5f6dfb080b7eab7",
+      "bytes": 667,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/CP$1.class"
+    },
+    {
+      "blake3": "752d2f9b5b66d67f9119658837abc2249fe27aca760be20d6b664ecf7da8d7fb",
+      "bytes": 710,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/CP$User.class"
+    },
+    {
+      "blake3": "3653c57bbb13ec0c7bb66429510217065d930e1280de81a0487d68f3bdd51e23",
+      "bytes": 2801,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/CP.class"
+    },
+    {
+      "blake3": "ec7e3bd3292d131936dbff446630e0ff51cc40cdef008310f764aa56c4067199",
+      "bytes": 480,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS$1.class"
+    },
+    {
+      "blake3": "a229af704128a378495fa7af31d6ea3a440fe880777bd88edd790f511eb6bf5b",
+      "bytes": 522,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS$User.class"
+    },
+    {
+      "blake3": "d4dec216c24d3ed9705be627c7ab54f48faf3e61f1c597caadb4de3c68bd9a44",
+      "bytes": 881,
+      "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS.class"
+    },
+    {
       "blake3": "718f1cdc5a307c1f64822eb7c6eff9002f1bc799d71eb1d265611c4f7512faf4",
       "bytes": 2197,
       "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-bcishift.class"
