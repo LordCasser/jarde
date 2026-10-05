@@ -775,7 +775,19 @@ fn lower_parameter_stack_value_is_not_an_extra_throw_read() {
             !text.contains("ThrowEffects.problem();"),
             "an unproved call effect must not be presented as a statement: {text}"
         );
+        // `parameter` is `void` and the refusal above stands at the top level of its body, so
+        // `preserve-postfix-fallback-soundness` refuses the body whole: no statement survives
+        // beside the quotes, and the reserved, undeclared symbol states that. The operand is
+        // therefore not rendered at all — the stronger form of this test's claim. The earlier
+        // presentation kept `throw arg0;` beside the refused call, and that text compiled and
+        // threw with the call dropped: the very presentation the refusal replaces.
+        assert!(
+            !text.contains("throw arg0;"),
+            "a body refused whole presents no statement: {text}"
+        );
     } else {
+        // The other shape `assert_boundary_value_or_quote` admits: the run presented the
+        // statements it had proved. This fixture's `parameter` takes the branch above.
         let effect = text
             .find("ThrowEffects.problem();")
             .expect("the lower stack effect remains presented");
@@ -791,10 +803,10 @@ fn lower_parameter_stack_value_is_not_an_extra_throw_read() {
             1,
             "the lower stack producer is evaluated once: {text}"
         );
+        assert_eq!(
+            text.matches("throw arg0;").count(),
+            1,
+            "the athrow operand is rendered once: {text}"
+        );
     }
-    assert_eq!(
-        text.matches("throw arg0;").count(),
-        1,
-        "the athrow operand is rendered once: {text}"
-    );
 }
