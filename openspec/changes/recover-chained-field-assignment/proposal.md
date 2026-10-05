@@ -6,7 +6,7 @@
 
 
 
-> **root 追加锚（2026-10-05，[field-compound 巡查](../../evidence/java-syntax-2026-10-05/field-compound-soundness-patrol/README.md)）**：**dup 跨 getfield+putfield 的复合 RMW**（`this.flags |= 1 << bit`——receiver dup 双读者：getfield 与 putfield 各一次）当前整语句拒；静态形（无 dup）恢复。实现时核实与本片 dup-跨-putfield 机制是否同门（同门则一并覆盖，异门则如实记录移交）。
+> **root 追加锚（2026-10-05，[field-compound 巡查](../../evidence/java-syntax-2026-10-05/field-compound-soundness-patrol/README.md)）**：**dup 跨 getfield+putfield 的复合 RMW**（`this.flags |= 1 << bit`——receiver dup 双读者：getfield 与 putfield 各一次）当前整语句拒；静态形（无 dup）恢复。实现时核实与本片 dup-跨-putfield 机制是否同门（同门则一并覆盖，异门则如实记录移交）。**String 复合形（[field-string-compound 巡查](../../evidence/java-syntax-2026-10-05/field-string-compound-patrol/README.md)）**：`this.field += "…" + x`（javac 发 `new SB; dup_x1; getfield; append…; toString; putfield`——receiver dup_x1 跨整条 SB 链，copy+依赖链双族诊断）整方法吞剩 `return this;` 可编译错（f vs f[x][y]）——最高频字符串累积模式；局部版已健康（SB 链折回 + 链），字段版为本片核心锚。
 
 ## What Changes
 
