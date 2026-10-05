@@ -9,7 +9,7 @@
 - ctor/getter 防御性拷贝完整（`(int[]) arg1.clone()` / `return (int[]) this.data.clone();`——covariant cast 如实）；
 - for-each 原生数组（`for (int local5 : local2)` 增强 for 形保留）+ 内部数组快照局部（local2 = this.data）；
 - `Arrays.copyOf` 扩容链 + 嵌套 ctor 调用完整；arraycopy 五实参（含两次 `(Object)` 擦除 cast——物理事实）；
-- 行为往返 `6/1/6/456` 逐行 IDENTICAL（隔离性精确：改 out[0] 不影响 d.sum()=6、d.data()[0]=1）。
+- **行为验证修正（root 自查）**：main 剥离注释后**编译失败**（级联吞掉 `DF local1`/`int[] out` 声明留下孤儿 `local2[0]=99`——未声明局部）= 级联 SAFE 响亮拒绝，**非**行为一致；初版 README 误写"行为往返一致"已当场更正（诚实纪律：验证失败必须如实记）。**四个被测成员（ctor/data/grow/copyRow）quotes=0 结构完整**；sum 的 for-each 完整。行为等价性由结构完整性 + clone/copyOf/arraycopy 既有族结论支撑，不由本次 main 往返证明。
 
 ## 处置
 
