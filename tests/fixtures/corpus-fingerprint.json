@@ -6662,6 +6662,256 @@
       "path": "tests/fixtures/r2-annotation-positions/v8/CodeOnly.class"
     },
     {
+      "blake3": "02e5274a6b1249d8d9146116f2a7fb66c81ff92da107e218f854fd5f8a099b4d",
+      "bytes": 545,
+      "path": "tests/fixtures/recover-array-element-field-receiver/EM.java"
+    },
+    {
+      "blake3": "13ffcd9f2326df7fd6629197b757980b5df5fcd5de77f1b77ea77885cd1b8c0c",
+      "bytes": 754,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RG.java"
+    },
+    {
+      "blake3": "df56913a0e61b54a26b657c1d4b2629d98f3e38dbdf22f22f6f815b71bacbcfd",
+      "bytes": 941,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RH.java"
+    },
+    {
+      "blake3": "f17261d9ee4539c5d30bf1f53b8b86549cd13446756b0c82ffb251a64ebc0a63",
+      "bytes": 437,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RJ.java"
+    },
+    {
+      "blake3": "79ccea84111ec0c54f7a7b4abf5d4351b86ae2369e8933d49cc69a2d7dbd3cdd",
+      "bytes": 500,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RK.java"
+    },
+    {
+      "blake3": "0068230f2ea6f2368aae63a3a1cb0b9e4bd917c51e924621ee1bb1814b47d12e",
+      "bytes": 612,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RL.java"
+    },
+    {
+      "blake3": "3a2f4b515aef8c155f164f9bc6345f56a42b54fa8659b34a1728829dc5ef043c",
+      "bytes": 680,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RM.java"
+    },
+    {
+      "blake3": "3923fce2fd3022be7e766858f73f61f84582370b4b0b327dab70f403987e77d4",
+      "bytes": 533,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RN.java"
+    },
+    {
+      "blake3": "464b77bc14f1a0b4568cba5e007488b14b76f8b1129c4ba9ac19cc0144e85472",
+      "bytes": 429,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RO.java"
+    },
+    {
+      "blake3": "a5e493e66beb3b4b311b202b8e1be5b6b774d0786c4e7f9b62038ac47a8c59b4",
+      "bytes": 699,
+      "path": "tests/fixtures/recover-array-element-field-receiver/RP.java"
+    },
+    {
+      "blake3": "557ee5381e8b9d7e9134567d1cb5f5a1c7d8966c25ce2d60d1a80b8ef0a8191f",
+      "bytes": 1832,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/EM.class"
+    },
+    {
+      "blake3": "4a5aa16a7261be679d32d90ea57e56f93d4ef15f9c23f407169dd2bd9f9a4d24",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RG$Item.class"
+    },
+    {
+      "blake3": "31128bcc388fda2765d7a3d84bcc887b07fd3625148ffe86cce0e86237f4c72a",
+      "bytes": 1503,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RG.class"
+    },
+    {
+      "blake3": "dddeef8e9a01b37739de73894923301e9e8b21ab82c2a909a58358ad2d8a46a9",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RH$Item.class"
+    },
+    {
+      "blake3": "4cdccd39a99f15ecaaa1577a2e3f7a50fe4d956a09dcd659ceffce926b908298",
+      "bytes": 1283,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RH.class"
+    },
+    {
+      "blake3": "e3497b0e3ce1ad5bfe86a92ac00e535e24e4ed686150a79fee41bcc4ecb144dc",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RJ$Item.class"
+    },
+    {
+      "blake3": "2b0dff4f8d2d376b087275689f5d75ba214c55eddaed0aaeb846d38506a43cf3",
+      "bytes": 945,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RJ.class"
+    },
+    {
+      "blake3": "98dc4655c83eb937db10265768aff81ba60d11edfb5e60b0f2e3341e6df46092",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RK$Item.class"
+    },
+    {
+      "blake3": "a1eaabf4812a370c1587f548d83e9e25e25376f885c16150de8cbb2777702256",
+      "bytes": 968,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RK.class"
+    },
+    {
+      "blake3": "7ffe0c1105ad0dfd2425b6110c931bda41a3c9b7c159cbe797b62819cc6319e2",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RL$Inner.class"
+    },
+    {
+      "blake3": "c103092581179c1a4070ae9c1ef7e6dbb801cb92d3919274b46f1e619f9d11d9",
+      "bytes": 1099,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RL.class"
+    },
+    {
+      "blake3": "1231ac88ed04dc0003c4bfe2e821aa8bf4d9bd98e56dccd344e5d183658f6af9",
+      "bytes": 404,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RM$Item.class"
+    },
+    {
+      "blake3": "7df9d5289558c87277392b3ed5bc5ac68344284d89d897a8b68eb0f5bad5d799",
+      "bytes": 1181,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RM.class"
+    },
+    {
+      "blake3": "1433bf7024b311f92251536716b06b95b7c9b4ff615ed0f5641343d71cdefc3d",
+      "bytes": 303,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RN$Item.class"
+    },
+    {
+      "blake3": "180ed1f89cb147d8264022525c49236b2560dafc12d819a637bf417ec253225a",
+      "bytes": 1262,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RN.class"
+    },
+    {
+      "blake3": "ff5fa09bc38609782fb44be499e598f872e541a78e3c1199ed2063bd58587af6",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RO$Item.class"
+    },
+    {
+      "blake3": "0087b75e023dd71d11ea63bb583a8da09b66118c7f3d8710bc969ad92e771f10",
+      "bytes": 899,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RO.class"
+    },
+    {
+      "blake3": "4832d384ade7afcf70195a7d47e03d408d06c8946b2469df9a4f326e1dab04ce",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RP$Item.class"
+    },
+    {
+      "blake3": "f031f7b17b91c661a268aeac3c25b0252a99c94cb24be8001c9d537a47552ebf",
+      "bytes": 252,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RP$Sub.class"
+    },
+    {
+      "blake3": "8a085276f45a5aa8f204a6088bd2d5eebf7a0c0c7e2b3f11190e3dafe17e1b63",
+      "bytes": 1159,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8-javac8/RP.class"
+    },
+    {
+      "blake3": "fe91da9f2f85665eb917e4af8e9ed51833b4adde67de103a4214af9af63844f5",
+      "bytes": 1940,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/EM.class"
+    },
+    {
+      "blake3": "1de0ff0266ef2b8c0d7ca86b0856203fe9c08960a1d17ac0e6be2a78c23514fd",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RG$Item.class"
+    },
+    {
+      "blake3": "79493d2d25f70ba7dab4a5194c01cfc20f8df48c9649579d49f6330e1380d89e",
+      "bytes": 1503,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RG.class"
+    },
+    {
+      "blake3": "aeeca34e22f91fa3258228dcd3748b5a3bde6f728b8d4defbab356e25af248f0",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RH$Item.class"
+    },
+    {
+      "blake3": "6a616baff184ae5a84dbe513ac033040aa98bfc524393a3766f4b172490cda3d",
+      "bytes": 1283,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RH.class"
+    },
+    {
+      "blake3": "496dcf4414c78e51593db28e3206f0b289ca14ddc8a1e19f537be5497404e31e",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RJ$Item.class"
+    },
+    {
+      "blake3": "0c5e80284c921143a919d209042ba3999b10fed7aea2ccb99f88eda94887edb6",
+      "bytes": 945,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RJ.class"
+    },
+    {
+      "blake3": "cbf247fbaaa3c2523fa5d21c69bc14af3743e6ce2db8cad11dab076937ee80d8",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RK$Item.class"
+    },
+    {
+      "blake3": "3839290f8f85ef1bd162fc690207fe892a34583609349a14723473eab455a4f0",
+      "bytes": 968,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RK.class"
+    },
+    {
+      "blake3": "e79fefd1d512ff29c1d96ca8822639e69f31558643cdd5a9f1efc835cd524b30",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RL$Inner.class"
+    },
+    {
+      "blake3": "023349c3303dbe33b14328c49dbf55b89cc7aaa4619af60ca412ad490604190c",
+      "bytes": 1099,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RL.class"
+    },
+    {
+      "blake3": "c8747d7052628d2ee8d57adac39136645115968b06cd76bd1f0c36ad466cc008",
+      "bytes": 404,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RM$Item.class"
+    },
+    {
+      "blake3": "25467db8d219599f719df5387e85c9aaa8f8f8c077d4f15849984fbb6499ad85",
+      "bytes": 1181,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RM.class"
+    },
+    {
+      "blake3": "135fd8447b1bafb57c17d7ad23a30dad5989f2ed8b3760ebaa34ac940b12750e",
+      "bytes": 303,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RN$Item.class"
+    },
+    {
+      "blake3": "eb71ee9d9ff7056f62f20423f1e98dd733833a4b5faf359a1cc56102fb91248f",
+      "bytes": 1262,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RN.class"
+    },
+    {
+      "blake3": "63cb203f505b4c555baba856a2a35ccc7a36862249fe287e6c43f44b576a18d3",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RO$Item.class"
+    },
+    {
+      "blake3": "b8497ac7076637597fb3cd456c5f39a7d9198858f73a2a218b9aae2adae5f26d",
+      "bytes": 899,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RO.class"
+    },
+    {
+      "blake3": "44cdb24bf026c970924d57df518546c41631898ef2038af8f22eb96481a84ec8",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RP$Item.class"
+    },
+    {
+      "blake3": "a119ba391ce65addd7397047c0ea3513e216e06e7ac19e67a5f44ae09a0badde",
+      "bytes": 252,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RP$Sub.class"
+    },
+    {
+      "blake3": "ca42084de3be8b9edef50b634f3e27806d28dee41cd20d966d4ad4fda1916bd8",
+      "bytes": 1159,
+      "path": "tests/fixtures/recover-array-element-field-receiver/v8/RP.class"
+    },
+    {
       "blake3": "9dc79d6d4c2dbefd0f65c8b7cc1604dfa067c1490f4322c28f9eca76d06cec00",
       "bytes": 123,
       "path": "tests/fixtures/recover-class-type-variable-signatures/negative/InterfaceMismatch.java"

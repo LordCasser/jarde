@@ -11925,7 +11925,10 @@ mod tests {
             // The 2026-10-06 preserve-monitor-exit-evaluation-order fixtures (the sync-return
             // patrol's `NL`/`SR` sources on both compiler legs: `NL`, its `NL$Box` companion and
             // `SR`, six classes, twenty-six bodies) moved it again.
-            (591, 2615, 282, 1775, 8),
+            // The 2026-10-06 recover-array-element-field-receiver fixtures (the patrol's own
+            // `RG`…`RO` shapes plus the `RJ`/`EM`/`RP` controls, ten families on both compiler
+            // legs: forty classes, one hundred twenty-three bodies) moved it again.
+            (631, 2738, 282, 1803, 8),
             "fixture population changed: re-measure these counts"
         );
     }
