@@ -2,6 +2,10 @@
 
 [unicode-identifier 巡查](../../evidence/java-syntax-2026-10-05/unicode-identifier-patrol/README.md)：CJK 标识符（`变量`/`描述`/`方法`）在**声明层**被 `is_java_identifier`（names.rs:125，ASCII-only：`is_ascii_alphabetic`）判为非标识符，替换为 `__`——两个中文字段同名碰撞、渲染不可编译；方法体内同一名字的引用却正确呈现（双源不一致）。手工还原 3 处 `__` 后全链编译并行为一致，证明唯一根因是该判定。呈现缺陷级（与响亮拒绝同级严重性：字段名错导致后续引用全部失配）。
 
+
+
+> **root 追加关联（2026-10-05，[package-info 巡查](../../evidence/java-syntax-2026-10-05/package-info-patrol/README.md)）**：声明行名字拼接路径（类名/包声明）同样缺合法性检查——`package-info`（连字符非合法标识符）被原样拼成 `interface package-info {`（语法错误=SAFE，不编译）。本片实现时核对类/包声明行是否与字段/方法同源走 `is_java_identifier`，若是同源修复则一并覆盖；不另立项。
+
 ## What Changes
 
 - `is_java_identifier` 的字符判定从 ASCII-only 扩为 **JLS Character.isJavaIdentifierStart/Part 语义**（Java 语义超集：CJK/Unicode 字母/数字；保持关键字排除与 `_$` 规则不变）。
