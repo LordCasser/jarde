@@ -20,6 +20,17 @@
 
 与 postfix 自赋值四锚**同缺陷类、不同触发**：postfix 族触发于 old-value store 证明失败（"the value at BCI N is the value local X held…"）；本族触发于 copy/receiver-dup 证明失败（"the copy at BCI N has no proved local assignment"）。**泛化结论**：任何引注 fallback 剩余文本不得可编译出不同行为——健全性守卫须覆盖两诊断族。恢复侧：dup 跨 getfield+putfield 的复合 RMW（与在队 chained-field-assignment 的 dup-跨-putfield 相邻，实现时核实是否同门）。
 
+## 边界锐化（root 复核，修正提取 bug 后的权威矩阵）
+
+| 形 | 结果 |
+|---|---|
+| 静态复合全类型（String/long/double，`getstatic…putstatic` 无 receiver dup） | **恢复**（SB 链/`+` 折回） |
+| 实例 `this.i++` 语句位（iinc 语义等价路径） | **恢复**（`this.i++;`） |
+| 实例复合赋值（任何类型：int `\|=`、String `+=` 简单/复杂 RHS、long `+=` dup2_x1） | **QUOTED**（void 单语句形剩 `return;` → 可编译错） |
+
+失败判据因此精确为：**实例 receiver dup/dup2_x1 参与的复合 RMW**；静态与语句位自增不在族内。root 自查：本轮曾因 `
+    ` 前缀匹配 8 空格行的提取 bug 得出"SG 全恢复"的假反转，打印方法体后修正——教训同 handoff 假零族（提取器必须在证据 README 附原始渲染切片）。
+
 ## 处置
 
 扩展 `preserve-postfix-fallback-soundness`（改名语义见其 proposal——触发族泛化为 copy/old-value 两族）；账本 critical 行更新；chained-field-assignment 片补锚。
