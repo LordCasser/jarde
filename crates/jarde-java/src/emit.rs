@@ -88,6 +88,24 @@ pub(crate) struct Emitted {
     pub(crate) statements: usize,
 }
 
+/// Whether the member a body belongs to is a `void` one, which is the fact the presentation of a
+/// body with no statement to present needs (`preserve-postfix-fallback-soundness`).
+///
+/// `{ }` *is* a complete `void` body: it compiles and does nothing, so a `void` body the run could
+/// only quote would compile while silently dropping everything it refused. A non-`void` body needs
+/// nothing of the kind — an empty one already fails `javac`'s missing-return check — so only this
+/// member shape is read, and only for that one line. `None` for the return type is `V`
+/// ([`crate::lambda::parse_method`]); a descriptor this layer cannot read states nothing, and the
+/// text is then left exactly as it stands.
+///
+/// Commit and replay both ask here, so the two writings of one body cannot drift.
+fn refuses_void_body(facts: &RecoveryFacts) -> bool {
+    matches!(
+        crate::lambda::parse_method(facts.method().descriptor()),
+        Some((_, None))
+    )
+}
+
 /// Emits one method body.
 ///
 /// `declaration` is what [`crate::declaration`] read of the member's declaration, when the run could
@@ -115,9 +133,10 @@ pub(crate) fn emit(
         None => (None, &[]),
     };
     let mut emitter = Emitter::commit(budget, member, current_class, nested_class_members);
+    let void_member = refuses_void_body(facts);
     match emitter
         .envelope(facts, declaration)
-        .and_then(|()| emitter.body(stmts, declaration))
+        .and_then(|()| emitter.body(stmts, declaration, void_member))
     {
         Ok(()) => Ok(emitter.finish()),
         // A committing pass has no phase to stop for and no artifact to disagree with: what it
@@ -290,7 +309,7 @@ pub(crate) fn emit_source_map(
     );
     let halt = emitter
         .envelope(facts, declaration)
-        .and_then(|()| emitter.body(stmts, declaration))
+        .and_then(|()| emitter.body(stmts, declaration, refuses_void_body(facts)))
         .err();
     let (map, covered) = emitter.finish_replay();
     match halt {
@@ -607,7 +626,12 @@ impl<'a> Emitter<'a> {
     /// span. Only the top-level final statement is eligible this way; a nested return — including
     /// the same terminator after the region structure moved it inside a block — is skipped by
     /// [`Self::stmts`], which is what keeps every other statement of the body in place.
-    fn body(&mut self, stmts: &[Stmt], declaration: Option<&Declaration>) -> Result<(), Halt> {
+    fn body(
+        &mut self,
+        stmts: &[Stmt],
+        declaration: Option<&Declaration>,
+        void_member: bool,
+    ) -> Result<(), Halt> {
         self.initializer = declaration.is_some_and(|declaration| {
             declaration.form == crate::declaration::DeclarationForm::StaticInitializer
         });
@@ -621,6 +645,18 @@ impl<'a> Emitter<'a> {
             .map(|_| &stmts[..stmts.len() - 1])
             .unwrap_or(stmts);
         self.stmts(body_stmts, 1)?;
+        // A body that wrote no statement at all, in a `void` member, is the one presentation the
+        // quotes alone cannot keep honest: read as comments they leave `{ }`, which compiles and
+        // does nothing, so the reader would get a method that silently performs none of the work it
+        // refused. The line is the run's own refusal marker in code position — a symbol this project
+        // reserves and never declares, so the stripped text fails `javac` with "cannot find symbol"
+        // — and it is *explanation only*: it is not a statement, it is written past
+        // [`Self::stmt`], and the count the report classifies from therefore still reads zero
+        // (`preserve-postfix-fallback-soundness`). A body that is not empty wrote a statement, and a
+        // non-`void` body needs no marker, so neither is touched.
+        if void_member && self.statements == 0 && !body_stmts.is_empty() {
+            self.put("    jarde_refused_body();\n", None)?;
+        }
         if let Some(stmt) = projected_return {
             let at = Some(stmt.origin.primary().bci());
             self.node(&stmt.origin, |emitter| emitter.put("}\n", at))
