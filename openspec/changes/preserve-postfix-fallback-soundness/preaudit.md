@@ -21,3 +21,9 @@ So the guard belongs at the **statement partition**: when a statement's render f
 ## Feasibility note
 
 `local_assignments`, `instructions` (names record) and the SSA value graph are all available at the partition layer (same file). No new mechanism; this is a tightening of the existing quote-region selection. Worst case (over-quoting) degrades presentation to loud refusal — the safe direction.
+
+## 预审计修正（2026-10-05，实现者发现 + root 独立验证）
+
+**void 方法的"整方法退化到引注"不安全（既有洞）**：explanation-only 的 void 方法体剥离注释后是**空方法体——可编译且静默 no-op**（root 探针 V/V2 独立复现：`flags |= 1<<3` 原 8 vs 引注形 0）。非 void 靠缺 return 语句不可编译；void 无此安全网。**当前主线任何 explanation-only void 方法都在发可编译静默错文本**（先例 BS/CB/TC 恰全非 void，故未被巡查撞见）。BF/BG（void 复合 RMW 锚）的 spec 验收因此必须有呈现修复。
+
+**裁决**：呈现修复属本片范围——零语句 + void 描述符的体加一行代码态拒绝标记 `jarde_refused_body();`（未定义符号→剥离注释编译必败，符号名自文档化；jarde 保留名）。非 void explanation-only 渲染逐字节不变；签名行不动；除此之外不发明文本。守卫本体复用 build.rs ~7520/~7569 的 `stmts.clear()` + 全 BCI fallback 先例（无新结构）。
