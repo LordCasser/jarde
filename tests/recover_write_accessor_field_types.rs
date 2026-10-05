@@ -352,6 +352,13 @@ fn the_frozen_baseline_of_the_same_anchor_refused_eight_of_nine() {
 // 2. Zero regression: the boolean precedent renders byte-identical.
 // ---------------------------------------------------------------------------------------------
 
+/// `dt29/PrivateFieldFamily$B`'s record was re-rendered by change
+/// `recover-platform-interface-argument-widening`: its `set(ZZ)V` passes the subclass `this` to the
+/// superclass' `access$002(dt29/PrivateFieldFamily$A, Z)`, and in the standalone snapshot that holds
+/// only `$B` the presented type's own class-file header names the required `dt29/PrivateFieldFamily$A`
+/// as its superclass — so the one-sided widening this change proves now renders
+/// `dt29.PrivateFieldFamily$A.access$002((dt29.PrivateFieldFamily$A) this, arg2);` where the
+/// reference-conversion refusal used to consume the whole body. Both other records are untouched.
 #[test]
 fn the_boolean_precedent_renders_byte_identical_to_its_frozen_record() {
     // `d09f5dea`'s boolean family, in the standalone posture its frozen records were taken in.
