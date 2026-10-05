@@ -107,3 +107,10 @@ checked-exception 形态影响，不在本片判据内）。
   `…/jarde-AD-after-platform-interface-widening.txt`；
   `openspec/evidence/java-syntax-2026-10-05/platform-interface-widening-patrol/results/jarde-AH-after-platform-interface-widening.txt`
   （各自入口与 refusals 计数在文件头）。
+
+## Root 独立验收（2026-10-06，HEAD=995de89a）
+
+- 门禁复现：tests 314 targets / 3012 passed / 0 failed / 51 ignored；fmt exit 0；clippy ci.yml 46–76 逐字 exit 0；openspec 300/0。
+- 锚独立复验（HEAD 重编 jarde-cli）：CP.byAnon `Collections.sort((java.util.List) local1, (java.util.Comparator) new CP$1())` 全类 refusals=0；AH `(java.util.Comparator) new AC()` 恢复——第 6 族最小机制面落地。
+- 实现审查：facade.rs 单点交换（命中判定前移于 header 读取，13 行含注释），与预审计逐字吻合；p3_snapshot 零回退（6/6 + 文件零字节改动）由 agent 对拍与 root 全量门禁双重确认。
+- 偏差追认：pff-baseline-$B 一处同源 pin 迁移（standalone 快照子类→父类单边，严格更好）；附带 AD Thread/Runnable 恢复（viaThread 可恢复性缺口关闭）——均为本片语义的自然外延，接受。
