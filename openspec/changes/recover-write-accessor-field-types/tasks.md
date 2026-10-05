@@ -2,8 +2,8 @@
 
 - [x] 1.1 9 类型每型事实表已实测冻结（javap + jarde 现状 8/9 拒 + 编译对照 exit 1/8 错误），见 [results3](../../evidence/java-syntax-2026-10-04/value-returning-write-accessor-patrol/results3/nine-type-measurement.txt)。（root 已完成）
 - [x] 1.2 boolean/int 决定性对照（opcode 逐字相同、仅描述符差异）已冻结（results2）。（root 已完成）
-- [ ] 1.3 实现片开工时重验基线：以主线二进制渲染 `WA` 族确认 8/9 拒仍成立（防主线漂移；若 `d09f5dea` 后有相关改动，以重验为准并报告）。
-- [ ] 1.4 确认 `LongAssignmentResult` 与调用链（`build.rs:7293`、`8221`）对双槽是否需要区分（design Open Question 1）。
+- [x] 1.3 实现片开工时重验基线：以主线二进制渲染 `WA` 族确认 8/9 拒仍成立（防主线漂移；若 `d09f5dea` 后有相关改动，以重验为准并报告）。（实现片 2026-10-05 完成：HEAD `60072413` 全新构建二进制渲染，8/9 拒、boolean 恢复，文本面前 178 行与冻结件逐字节相同；fixture SHA256 与冻结件逐一相同。证据 `openspec/evidence/java-syntax-2026-10-05/recover-write-accessor-field-types/baseline/`）
+- [x] 1.4 确认 `LongAssignmentResult` 与调用链（`build.rs:7293`、`8221`）对双槽是否需要区分（design Open Question 1）。（实现片 2026-10-05 读码完成：双槽**不需要**槽宽区分——`LongAssignmentResult` 无槽宽字段、消费按 SSA 值、槽宽语义在 `field_value` 描述符分支；`fields.claim` 为只读查找。但发现消费侧 `assignment_result_statement` ~22538 的描述符常量门 `!= if boolean_accessor {"Z"} else {"J"}` 必须随表泛化，否则 7/9 类型 prove 通过后仍被拒成空 stub——root 预审计"消费链零改动"漏记该门；已按停手条件 (b) 上报待裁决，证据 `FINDING.md`）
 
 ## 2. 泛化实现
 
