@@ -1,19 +1,14 @@
 # 内部类跨类私有访问 + long 位掩码巡查（2026-10-05 root）
 
-## 发现：`access$002` 跨类 int 写-返回赋值形 not recovered（EM-15 家族残留位点）
+## ⚠️ 结论作废声明（同日 root 复核后更正）
 
-内部类写外部私有字段（`secret = v` in Probe）→ javac8 生成 `access$002(LIA;I)I`（**返回赋值结果的跨类写访问器**）——IA 端整方法 not recovered（"instruction at BCI 2 is not part of the provable subset"）。EM-15 已覆盖同类写访问器 9 类型（含 assignment_result 的 Z/J 描述符门 build.rs:22538）；**跨类 receiver 窗口形（首参 LIA;）为残留位点**——EM-15 spec 预期的"姊妹实例形路径隔离"确证。读取（access$000）与方法转发（access$100）跨类均恢复。
+初版曾登记"`access$002` 跨类形 = EM-15 残留位点 not recovered"——**证据无效**：判定所用 `/tmp/jarde-cli-spared` 构建于 11:03，早于 EM-15 合入 af6f65c4（11:51），**为 EM-15 前旧二进制**。真 javac 8 腿（corretto）同探针同拒复测确认是二进制陈旧而非新缺口；[账本 compound-accessor 行](../../jadx-feature-inventory-2026-09-27/summary.md)记载的"合入后真 8 腿 access$000+access$002 双恢复"为权威。**跨类 access$002 形维持已恢复结论，无新缺口。**
 
-## 健康面（负结果）
+## root 自纠错（本轮第 3 次提取级教训）
 
-- **Probe 端全域恢复**：`IA.access$000(this.this$0)` / `access$002(this.this$0, arg1)` / `access$100(this.this$0, arg1)` 合成桥调用+`this$0` 物理事实如实；
-- **静态 long 位掩码完美**：`lflags |= 1L << b` → `IA.lflags = IA.lflags | 1L << arg0`（>32 位惯用法，静态复合边界锐化再证）；`(lflags & 1L << b) != 0L` 测试位；行为 `true/false/1099511627778`；
-- roundTrip（宿主内 `new Probe()`+链式调用）恢复；行为 `56/50` 一致。
+**patrol 基础设施纪律新增**：spared 二进制在每次主线代码合入后即过时——巡查前必须比对 spared 构建时间与最近代码合入时间；涉受影响路径的结论必须用现二进制复测。近几轮巡查面（iterator/format/map-cache/equals/assign-chain/bool/array-sort 等）不受 EM-15 影响的论证：EM-15 变更全部集中于写访问器 expected_descriptor 表（build.rs 该路径），root 验收全门禁 2985 通过=既有行为零漂移，故仅涉 access$ 写访问器的结论需复测（仅本巡查）。**待办：DT-26 验收后重建 spared**（现主 target 已删，重建成本已评估）。
 
-## root 自纠错（提取教训 +1）
+## 有效结论（不受二进制陈旧影响）
 
-python -c 双引号内 `access$000` 被 bash `$000` 展开污染 → 假 absent；raw grep（单引号）为准。与第 84 前沿提取 bug 同列：**结论前必须 raw grep/打印原始切片**。
-
-## 处置
-
-access$002 跨类形登记为 EM-15 残留位点（账本 access$ 家族行）；不另立片（EM-15 已合，残留归其家族后续窄片）；long 位掩码不立项。
+- **Probe 端全域恢复**（桥调用+this$0 物理事实）；**静态 long 位掩码完美**：`lflags |= 1L << b` → `IA.lflags = IA.lflags | 1L << arg0`（>32 位惯用法）；`testBit` `(lflags & 1L << b) != 0L`；行为 `56/50` + `true/false/1099511627778` 一致；
+- access$000（跨类读）/access$100（跨类方法转发）恢复；CA 探针 javac23 腿 access$012 拒=账本已知独立缺口（读-改-写形）。
