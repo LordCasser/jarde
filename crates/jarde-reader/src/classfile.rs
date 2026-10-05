@@ -11909,7 +11909,12 @@ mod tests {
             // control `Pod` two, the statement-preservation companion `D2` two, the
             // discarded-construction negative `D3` two, and the kept-result byte-patched probe
             // `E1` two, eleven classes, thirty bodies) moved it again.
-            (569, 2453, 251, 1763, 8),
+            // The 2026-10-05 recover-write-accessor-field-types fixtures (the real javac 8
+            // write-accessor anchors: the byte-identical `wa` pair, the `st` table control
+            // pair, the eight byte-patched `probes` negatives — twelve classes, one hundred
+            // sixteen bodies, one jar; the `wb` dual leg is source-only and compiles in-test)
+            // moved it again.
+            (581, 2569, 252, 1763, 8),
             "fixture population changed: re-measure these counts"
         );
     }
