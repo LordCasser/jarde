@@ -1,0 +1,1 @@
+public class SD { static int postSelfDec(){ int i = 5; i = i--; return i; } static int arrSelf(){ int i = 1; int[] a = new int[3]; a[i] = i++; return a[1] * 100 + i; } public static void main(String[] a){ System.out.println(""+postSelfDec()+"/"+arrSelf()); } }

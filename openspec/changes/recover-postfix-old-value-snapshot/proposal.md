@@ -6,6 +6,10 @@
 
 > **root 追加锚（2026-10-05，链式赋值巡查）**：**下标消费位变体**——`arr[idx++] = 10`/读位 `arr[idx--]`（旧值作数组下标）同因拒；jadx 以展开 temp 形解（`int i = idx; idx = i+1; iArr[i] = 10;`）——消费位扩至下标位，呈现可取 temp 形（不必内联 `i++`）。见 [chained-assign-sideeffect-patrol](../../evidence/java-syntax-2026-10-05/chained-assign-sideeffect-patrol/README.md)。、`i++; j = i;` 拆两语句（无快照）、复合赋值表达式捕获（捕获**新**值）**全部恢复**——缺口仅在"旧值快照被消费"这一时间序形。**jadx 有解**（语句级 `i++` 或 `i2 = (i - 1) - 1` 旧值算术等价形）。
 
+
+
+> **root 追加锚（2026-10-05，[postfix-self-assign 健全性巡查](../../evidence/java-syntax-2026-10-05/postfix-self-assign-soundness-patrol/README.md)）**：三锚同族实证——`i = i++`/`i = i--`（自赋陷阱）/`a[i] = i++`（数组存 RHS 旧值，存语句整条丢失）当前产出**可编译但行为不同**的文本（6≠5/4≠5/2≠102）；恢复落地即覆盖；恢复前的健全性守卫由姊妹片 preserve-postfix-fallback-soundness 承担。
+
 ## What Changes
 
 把后缀自增识别为语句+表达式双形：当 iinc 的**旧值 load** 跨 iinc 被恰一个消费方读取时，呈现 `i++`（消费位收到旧值语义）——即把快照值建模为"iinc 前的 SSA 值"（distinct 值），呈现层选择 `i++` 表达式形而非两个赋值。**不引入新时间机器**：快照值在 SSA 里本就是 distinct 节点（load 先于 iinc），缺的是呈现层把它归因为后缀形而非"无来源的 local"。
