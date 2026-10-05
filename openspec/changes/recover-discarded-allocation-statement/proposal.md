@@ -4,6 +4,8 @@
 
 **真实命中面**：副作用构造形——`new Timer();`（自注册）、`new Thread(...).start();` 之外的裸 `new Foo();`、测试/初始化代码中的死分配。响亮拒绝（行为安全）但整方法损失。
 
+> **root 追加锚（2026-10-05，ctor-throw 巡查）**：`CE.main` 的 try 块内 `new CE(5); new CE();`（委派目标**抛异常**的构造——catch 捕获路径）同因拒绝（BCI 0/3/9/12 同族诊断）；ctor 侧（初始化器并入、提前 `throw` + else/return、委派后 unreachable 语句）**全部忠实**（行为逐行验证：`sc/ic/ctor ok:5/ic/caught:neg:-1`）。即第 5 片的 try-块变体 + ctor-抛异常交互已归档（[ctor-throw-interaction-patrol](../../evidence/java-syntax-2026-10-05/ctor-throw-init-patrol/README.md)），实现时以 `CE` 为追加验收锚。
+
 **根因推断（root 读码，待实现者插桩确认）**：现有分配证明链要求实例**恰有一个 Java 拼写位**（`single_use_at`/读者门 `readers.len() != 1` 的"实例只有一个拼写位"不变量）——丢弃形的读者数为 **0**，落入门外。注意这与"多处真实消费仍拒"是**同一不变量的两个方向**：>1 拒（防两个拼写位）、==1 恢复、==0 现状拒。
 
 ## What Changes
