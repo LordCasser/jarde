@@ -5557,6 +5557,46 @@
       "path": "tests/fixtures/preserve-guarded-return-expression/v8/GuardReturnEffectsRunner.class"
     },
     {
+      "blake3": "2b7a9218254e6a94601094ea5f577aa0300a06f638b2616b5d8d4ab2c9a9665b",
+      "bytes": 475,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/NL.java"
+    },
+    {
+      "blake3": "6ae34da9b687ef3102a51b005c6da4d8de19a16464000246754ddfec72aa1ab3",
+      "bytes": 1014,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/SR.java"
+    },
+    {
+      "blake3": "43b836300358f269a7d509da27aac1d3bc474d0427cc242c22fec0b7958f869d",
+      "bytes": 375,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/v8-javac8/NL$Box.class"
+    },
+    {
+      "blake3": "5ee37393e4f73bd085dd7f3ecd1658bdcfdc50e14f89888e679a7a6b76280b09",
+      "bytes": 932,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/v8-javac8/NL.class"
+    },
+    {
+      "blake3": "aed801f85d67f5fe50537715433fca392252709f85401963ffd2a7369ab8904b",
+      "bytes": 1399,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/v8-javac8/SR.class"
+    },
+    {
+      "blake3": "c782bcd0fd4d680cb39612a8ed0e205d8732244a918f23e59c19250c7eb74658",
+      "bytes": 448,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/v8/NL$Box.class"
+    },
+    {
+      "blake3": "aec44b7d89bb5329d29c7d2776484e875d9181ab921fbbdcaa0f2b4496d96129",
+      "bytes": 1034,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/v8/NL.class"
+    },
+    {
+      "blake3": "a4a1a3c504e6894dc24b0ddb02b3b0995fedc01c33f8db846db3f5753c76072f",
+      "bytes": 1554,
+      "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/v8/SR.class"
+    },
+    {
       "blake3": "0a5c23fbd7d6191d5a69fbc68e7ac000c9188c734241a302a9aed38cb86c3d81",
       "bytes": 1043,
       "path": "tests/fixtures/proved-java-structure/anonymous-capture/AnonymousCaptureCases$1.class"

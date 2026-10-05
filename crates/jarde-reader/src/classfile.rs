@@ -11922,7 +11922,10 @@ mod tests {
             // pair, the eight byte-patched `probes` negatives — twelve classes, one hundred
             // sixteen bodies, one jar; the `wb` dual leg is source-only and compiles in-test)
             // moved it again.
-            (585, 2589, 252, 1763, 8),
+            // The 2026-10-06 preserve-monitor-exit-evaluation-order fixtures (the sync-return
+            // patrol's `NL`/`SR` sources on both compiler legs: `NL`, its `NL$Box` companion and
+            // `SR`, six classes, twenty-six bodies) moved it again.
+            (591, 2615, 282, 1775, 8),
             "fixture population changed: re-measure these counts"
         );
     }
