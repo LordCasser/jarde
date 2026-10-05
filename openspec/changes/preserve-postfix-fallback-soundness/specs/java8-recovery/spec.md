@@ -36,6 +36,10 @@
 - **WHEN** 输入为固定 `OP.sideEffect`（`o.ifPresent(sb::append)`——绑定接收者为捕获局部，诊断 "adapting this bound receiver would move its null failure from functional-value creation to invocation"）的 Java 8 class 并恢复
 - **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`[S]/[]`）；否则编译失败或整方法拒绝——不得出现 ifPresent 调用被静默吞掉的可编译文本（`[]/[]`）；绑定到参数的方法引用（`OP.name` 的 `String::trim`）与普通 lambda 的完整恢复 SHALL 保持
 
+#### Scenario: lambda 体二维复合赋值锚点（第 19 锚，依赖链族）
+- **WHEN** 输入为固定 `P02_multianewarray`（`int[][] t`；lambda companion 体内 `t[0][0] += i` 二维下标复合赋值，DT-26 冻结控制腿）的 Java 8 class 并恢复
+- **THEN** 去注释呈现文本（单方法隔离）经 `javac --release 8` 编译若成功，运行输出 SHALL 与原 class 一致（`6`）；否则编译失败或整方法拒绝——不得出现复合赋值被静默吞掉的可编译文本（`0`）
+
 #### Scenario: 诊断不改
 - **WHEN** 值来源证明失败（任一诊断族）
 - **THEN** 诊断文本族——五主族（"the value at BCI N is the value local X held at BCI M…"、"the copy at BCI N has no proved local assignment…"、"the dependency chain from BCI N to final consumer M is not bounded…"、"the saved producer at BCI N has M consumers, so one local binding cannot prove its execution count…"、"adapting this bound receiver would move its null failure from functional-value creation to invocation…"）及其级联伴随行（"the saved producer at BCI N has no bounded final expression consumer"、"the value at BCI N comes from an Other…"、"the value at BCI N was produced by a saved declaration this run could not commit"、"the instruction at BCI N is not part of the provable subset"、"the value at BCI N is the entry state of stack depth N…"，[诊断普查](../../../../evidence/java-syntax-2026-10-05/diagnosis-census/README.md)）SHALL 保持，不发明新拒绝码
