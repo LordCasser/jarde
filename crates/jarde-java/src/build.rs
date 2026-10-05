@@ -8510,6 +8510,17 @@ struct NestedPairBraces {
     lock: Expr,
     /// The inner statement's origin anchors.
     origin: OriginSet,
+    /// The `return` the inner statement carries as its body's last statement, where the pair's own
+    /// proof read the returned value as the inner body's production ([`guard::InnerMonitor::returns`]):
+    /// the arm renders it once the walk left the body's own names, and the close writes it **inside**
+    /// the braces, before the inner `monitorexit` the pair proves. `None` is every pair whose
+    /// statement carries no such return.
+    returns: Option<u32>,
+    /// Whether the walk's own close took the braces (the pair's span ended inside the body it
+    /// renders) before the arm could render the `return` above. Such a close cannot place that
+    /// return, and the block it wrote is not the statement the proof needs: the arm refuses the
+    /// pair instead of publishing it.
+    closed_without_return: bool,
     /// The enclosing run's statements while the braces collect theirs; `None` until the walk
     /// reaches the header.
     opened: Option<Vec<Stmt>>,
@@ -14572,6 +14583,8 @@ impl Builder<'_> {
                                     body: pair.body(),
                                     lock: inner_lock,
                                     origin,
+                                    returns: pair.returns(),
+                                    closed_without_return: false,
                                     opened: None,
                                     engaged_once: false,
                                 });
@@ -14584,8 +14597,30 @@ impl Builder<'_> {
                                     .nested_pair
                                     .as_ref()
                                     .is_some_and(|pair| pair.engaged_once);
+                                // The pair's own `return`, where its proof read one: the statement
+                                // is the plan's own `guarded_return`, written **inside** the inner
+                                // braces — before the inner `monitorexit` the pair proves — because
+                                // the proof read the returned value as the inner body's own
+                                // production. It is rendered here, where the body's run left the
+                                // names its expression reads, and closed with the block below.
+                                let inner_return = if engaged {
+                                    match pair.returns() {
+                                        Some(return_bci) => match self.guarded_return(return_bci) {
+                                            Ok(statement) => Some(statement),
+                                            Err(reason) => {
+                                                self.nested_pair = None;
+                                                self.restore_finally(checkpoint);
+                                                let bcis = self.region_quote(region, return_bci);
+                                                return self.fallback(bcis, &reason, return_bci);
+                                            }
+                                        },
+                                        None => None,
+                                    }
+                                } else {
+                                    None
+                                };
                                 let closed = if engaged {
-                                    self.close_nested_pair()
+                                    self.close_nested_pair(inner_return)
                                 } else {
                                     Ok(())
                                 };
@@ -14610,6 +14645,24 @@ impl Builder<'_> {
                                         at,
                                     );
                                 }
+                                if rendered
+                                    .as_ref()
+                                    .is_some_and(|rendered| rendered.closed_without_return)
+                                {
+                                    // The walk closed the braces before this arm could write the
+                                    // `return` the pair's proof read for them: the block that close
+                                    // wrote is missing the statement, and publishing it would move
+                                    // the return's evaluation past the inner exit.
+                                    self.restore_finally(checkpoint);
+                                    let at = pair.enter_bci();
+                                    let bcis = self.region_quote(region, at);
+                                    return self.fallback(
+                                        bcis,
+                                        "the nested synchronized body closed before the return its \
+                                         proof read could be written",
+                                        at,
+                                    );
+                                }
                                 body
                             }
                             // A plan with a nested pair always carries its body tree: the walk
@@ -14629,7 +14682,17 @@ impl Builder<'_> {
                         // `return` **inside** its braces — the field read it names is written here,
                         // where the value is consumed, and not where the `getfield` runs, so the
                         // member is read exactly once and no local is invented for it.
-                        if let Some(return_bci) = *returns {
+                        //
+                        // A pair whose own proof read that same return as the inner body's own
+                        // production wrote it inside the inner braces ([`NestedPairBraces`]), where
+                        // the evaluation the return consumes stays before the inner `monitorexit`:
+                        // the outer braces end there, and nothing is appended after the inner block.
+                        let written_in_inner = nested
+                            .as_deref()
+                            .is_some_and(|pair| pair.returns().is_some());
+                        if let Some(return_bci) = *returns
+                            && !written_in_inner
+                        {
                             let statement = match self.guarded_return(return_bci) {
                                 Ok(statement) => statement,
                                 Err(reason) => {
@@ -16281,9 +16344,10 @@ impl Builder<'_> {
     }
 
     /// Closes a nested synchronized pair's braces: the statements collected since the header are
-    /// the inner block's body, and the statement — the same `synchronized (lock) { … }` node the
-    /// outer one is — takes its place in the enclosing run.
-    fn close_nested_pair(&mut self) -> Result<(), StopReason> {
+    /// the inner block's body — with the pair's own `return` last, where the arm rendered one — and
+    /// the statement, the same `synchronized (lock) { … }` node the outer one is, takes its place in
+    /// the enclosing run.
+    fn close_nested_pair(&mut self, inner_return: Option<Stmt>) -> Result<(), StopReason> {
         let Some(pair) = self.nested_pair.as_mut() else {
             return Ok(());
         };
@@ -16292,7 +16356,16 @@ impl Builder<'_> {
         };
         let lock = pair.lock.clone();
         let origin = pair.origin.clone();
-        let inner = std::mem::replace(&mut self.stmts, outer);
+        // A close the walk made for a pair whose statement carries a `return` the arm has not
+        // rendered yet cannot place it: the block written here would be the evaluation-after-exit
+        // text the proof refuses. The pair is marked so the arm refuses the whole statement.
+        if pair.returns.is_some() && inner_return.is_none() {
+            pair.closed_without_return = true;
+        }
+        let mut inner = std::mem::replace(&mut self.stmts, outer);
+        if let Some(statement) = inner_return {
+            inner.push(statement);
+        }
         self.push(Stmt::new(
             StmtKind::Synchronized { lock, body: inner },
             origin,
@@ -18603,7 +18676,11 @@ impl Builder<'_> {
                 pair.engaged_once = true;
                 pair.opened = Some(std::mem::take(&mut self.stmts));
             } else if pair.opened.is_some() && at >= pair.span.1 {
-                self.close_nested_pair()?;
+                // The walk's own close carries no `return`: where the pair's statement has one, it
+                // is rendered by the arm (which still has the region to quote on refusal) and only
+                // where the walk left the braces open long enough to place it. This close marks the
+                // pair so the arm refuses instead of publishing a block the return is missing from.
+                self.close_nested_pair(None)?;
             }
         }
         if let Some(pair) = self.nested_pair.as_ref() {

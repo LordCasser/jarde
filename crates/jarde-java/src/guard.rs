@@ -173,6 +173,14 @@ pub struct InnerMonitor {
     /// The inner handler's entry block: claimed with the statement because the inner block took
     /// its place, exactly as the outer's own handler's entry is.
     handler_entry: CanonicalBlockId,
+    /// The BCI of the `return` the normal path ends in, where the value it returns is the one the
+    /// **inner** body's own instructions produced — [`Shape::Monitor`]'s own `returns`, read
+    /// inside the pair: the `return` statement is written *inside* the inner braces, before the
+    /// inner `monitorexit` this pair proves, which is the order the bytecode already has and the
+    /// only placement that keeps the evaluation the `return` consumes from crossing that exit.
+    /// `None` is every pair whose statement does not carry that return — the outer shape's own
+    /// `returns` then stays where the single-monitor shape writes it, after the inner block.
+    returns: Option<u32>,
 }
 
 impl InnerMonitor {
@@ -195,6 +203,11 @@ impl InnerMonitor {
     /// The inner body, as a BCI range.
     pub fn body(&self) -> (u32, u32) {
         self.body
+    }
+
+    /// The `return` written inside the inner braces, where the pair carries one.
+    pub fn returns(&self) -> Option<u32> {
+        self.returns
     }
 }
 
@@ -13080,7 +13093,7 @@ fn monitor(
         .copied()
         .filter(|bci| matches!(facts.op(*bci), Some(Operation::Monitor { enter: false })))
         .collect();
-    let (normal_exit, handler_exit, nested, nested_facts) = match nested_enter {
+    let (normal_exit, handler_exit, mut nested, nested_facts) = match nested_enter {
         None => {
             let [normal_exit, handler_exit] = exits.as_slice() else {
                 return Ok(Some(refuse(Unproven::Monitor, enter)));
@@ -13123,6 +13136,7 @@ fn monitor(
                 normal_exit_bci: pair.normal_exit_bci,
                 body: (pair.body_start, pair.exit_load),
                 handler_entry: pair.handler_entry.clone(),
+                returns: None,
             });
             (*normal_exit, *handler_exit, Some(nested), nested_facts)
         }
@@ -13141,6 +13155,7 @@ fn monitor(
     let Some(after) = facts.next_bci(normal_exit) else {
         return Ok(Some(refuse(Unproven::Monitor, normal_exit)));
     };
+    let mut returned: Option<(ValueId, u32)> = None;
     let returns: Option<u32> = match facts.op(after) {
         // Today's shape: the statement's run continues at the transfer's own target.
         Some(Operation::Transfer) => None,
@@ -13169,10 +13184,32 @@ fn monitor(
             if *produced < row.start_bci || *produced >= exit_load {
                 return Ok(Some(refuse(Unproven::Monitor, after)));
             }
+            returned = Some((facts.resolve(*value), *produced));
             Some(after)
         }
         _ => return Ok(Some(refuse(Unproven::Monitor, after))),
     };
+    // The nested pair's own `return`, where the normal path returns: the value's own production
+    // decides which braces the statement's `return` belongs to. It belongs **inside** the inner
+    // braces exactly where the value and every instruction the expression under it evaluates lie in
+    // the inner body's own range — the order the bytecode already has, so the presented text moves
+    // no evaluation across the inner `monitorexit` (sync-return-timing patrol: `NL`'s
+    // `synchronized (LOCK) { synchronized (NL.class) { return "n" + o; } }`, whose evaluation the
+    // exit follows). Every other reading keeps the single-monitor placement: the `return` written
+    // after the inner block, inside the outer braces, where the outer shape's own `returns` puts it.
+    let inner_returns = match (nested.as_deref(), returns, returned) {
+        (Some(pair), Some(return_bci), Some((value, produced)))
+            if pair.body.0 <= produced
+                && produced < pair.body.1
+                && expression_inside(facts, value, pair.body)? =>
+        {
+            Some(return_bci)
+        }
+        _ => None,
+    };
+    if let (Some(pair), Some(return_bci)) = (nested.as_deref_mut(), inner_returns) {
+        pair.returns = Some(return_bci);
+    }
     if row.end_bci != after {
         return Ok(Some(refuse(Unproven::RangeEnd, row.end_bci)));
     }
@@ -13456,6 +13493,66 @@ fn inner_monitor_pair(
         header_start,
         body_start: inner_row.start_bci,
     }))
+}
+
+/// Whether every instruction the expression one value evaluates lies inside one half-open BCI
+/// range.
+///
+/// The walk is the renderer's own chain (`render_value`): the value's definition and, under it, the
+/// definitions of the operand-stack values its instruction reads. A read of a local slot is the
+/// name of a local — the text reads that name and does not evaluate the instruction that filled the
+/// slot — so the walk stops there, exactly as the renderer's does; a verified construction site's
+/// own instructions join the chain, because the text writes the whole `new` expression where the
+/// instance is consumed. A definition that is an entry is the method's own input, no bytecode of
+/// the expression; a merge or a caught exception is a control-flow boundary whose place in the text
+/// this reading does not prove, and the walk answers "no" rather than assume. Every visited value
+/// is charged, so a deep chain cannot turn the reading into unaccounted work.
+fn expression_inside(
+    facts: &mut Facts<'_>,
+    value: ValueId,
+    range: (u32, u32),
+) -> Result<bool, StopReason> {
+    let mut pending = vec![value];
+    let mut seen = BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        let value = facts.resolve(value);
+        if !seen.insert(value) {
+            continue;
+        }
+        let definition = facts.ssa.value(value).def().clone();
+        let at = match &definition {
+            Definition::Instruction { bci, .. } | Definition::Caught { bci, .. } => *bci,
+            Definition::Entry { block, .. } | Definition::Phi { block, .. } => block.bci(),
+        };
+        facts.charge(at)?;
+        match definition {
+            Definition::Instruction { bci, .. } => {
+                if !(range.0 <= bci && bci < range.1) {
+                    return Ok(false);
+                }
+                let Some(step) = facts.step(bci) else {
+                    return Ok(false);
+                };
+                if let Some(site) = facts.sites.site_of(bci) {
+                    let owned = site.owned.iter().chain(site.expression.iter());
+                    if owned
+                        .into_iter()
+                        .any(|owned| !(range.0 <= *owned && *owned < range.1))
+                    {
+                        return Ok(false);
+                    }
+                }
+                for (slot, operand) in step.instruction.reads() {
+                    if matches!(slot, Slot::Stack(_)) {
+                        pending.push(*operand);
+                    }
+                }
+            }
+            Definition::Entry { .. } => {}
+            Definition::Phi { .. } | Definition::Caught { .. } => return Ok(false),
+        }
+    }
+    Ok(true)
 }
 
 /// The tie every `synchronized` header states, outer or inner: the value the `monitorenter` locks
