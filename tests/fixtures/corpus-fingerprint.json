@@ -6857,6 +6857,81 @@
       "path": "tests/fixtures/recover-javac8-getclass-null-check-idiom/wrap/Wrap.java"
     },
     {
+      "blake3": "718f1cdc5a307c1f64822eb7c6eff9002f1bc799d71eb1d265611c4f7512faf4",
+      "bytes": 2197,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-bcishift.class"
+    },
+    {
+      "blake3": "a1c03085a2e46b219662eb28ebc0a08a681570e2357636b11c608a8c1d0997f5",
+      "bytes": 2196,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-dupbreak.class"
+    },
+    {
+      "blake3": "5c2986cf27420c15387f93afffc218d101df2ce2ba360d890dd0bcce4f9aede0",
+      "bytes": 2204,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-handler.class"
+    },
+    {
+      "blake3": "7867d9306ed2f999a2fb43e31c21f21a643030d95da87082324476c68b5c16e1",
+      "bytes": 2196,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-mismatch.class"
+    },
+    {
+      "blake3": "4abf35230f6e8077bb3a3d7202ac09eec9e5579bbb42d0774d30207d4c22667a",
+      "bytes": 2196,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-nullrecv.class"
+    },
+    {
+      "blake3": "c40d75bedf84601af97a2461ce45ad011a9f0fadb0dc6c78a8552021cd82463a",
+      "bytes": 2196,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-unsynth.class"
+    },
+    {
+      "blake3": "841ea8122ace8974a5aee6f3d526d49b7304367b9a772f6fc7187c86f15c491b",
+      "bytes": 2196,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-void.class"
+    },
+    {
+      "blake3": "da1453c98adad6fc0eae8a264c220c31dab582e098bc1692fb9ead696b73a831",
+      "bytes": 2196,
+      "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-wrongowner.class"
+    },
+    {
+      "blake3": "eea50ae4c962d8df257dcae56bfb84787fcd2cbe2af09c49190fcec44762895e",
+      "bytes": 494,
+      "path": "tests/fixtures/recover-write-accessor-field-types/st/ST$S.class"
+    },
+    {
+      "blake3": "0a86735fa70c9cd3742656bbc78fd219f35ef1110b8251056812e121e48191af",
+      "bytes": 1041,
+      "path": "tests/fixtures/recover-write-accessor-field-types/st/ST.class"
+    },
+    {
+      "blake3": "fa2a6557fa7f04950f17beeb49c8c426727d4e623e0a1f1d726619ea6de46c71",
+      "bytes": 329,
+      "path": "tests/fixtures/recover-write-accessor-field-types/st/ST.java"
+    },
+    {
+      "blake3": "793b1eaae0852b8d2caa7b6084ebb4df91ac436e5cf6e27594d10c8cc3555ad6",
+      "bytes": 1171,
+      "path": "tests/fixtures/recover-write-accessor-field-types/wa/WA$S.class"
+    },
+    {
+      "blake3": "4034cb22009a8208f3197c2fdaf0ff9275b03ff74d3d4cde136a8a5753c21f62",
+      "bytes": 2196,
+      "path": "tests/fixtures/recover-write-accessor-field-types/wa/WA.class"
+    },
+    {
+      "blake3": "b2d0b6f7cf3937cead247b77aaa7bcf27ef8a4c867e8b3f301084a4a902e9a0a",
+      "bytes": 753,
+      "path": "tests/fixtures/recover-write-accessor-field-types/wa/WA.java"
+    },
+    {
+      "blake3": "afc0ffbee854f2c3907a7b1b9bc9f27566232427bef973ae8dcec3245aff3b6a",
+      "bytes": 563,
+      "path": "tests/fixtures/recover-write-accessor-field-types/wb/WB.java"
+    },
+    {
       "blake3": "8b14a235bc3fa882b6545f3dcf662e15bce7e322b793dd59f5709640adcf428d",
       "bytes": 572,
       "path": "tests/fixtures/shared-latch-nested-loops/ExitDiverges.class"
