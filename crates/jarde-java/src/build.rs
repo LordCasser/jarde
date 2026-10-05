@@ -7572,6 +7572,73 @@ pub(crate) fn build(
         builder.statements = 0;
         builder.fallback(bcis, &reason, at)?;
     }
+    // The value-level soundness guard (`preserve-postfix-fallback-soundness`): the partition above
+    // is per statement, so a refusal of one of the six value families quotes the value's own
+    // statement while its siblings keep rendering — and the quote mechanism has relied on the text
+    // those siblings leave being incomplete for the stripped artifact not to compile. A postfix
+    // self-assignment (`i = i++`) leaves text that *is* complete: the `iinc` renders as its own
+    // assignment and the tail read renders on its own, so a reader who strips the comments is left
+    // with Java that compiles and behaves differently — the one partial presentation this layer
+    // never publishes. Where the survivors would still compile, the body is presented as its quotes
+    // alone: every statement that is not a quote is dropped, the quote that refused the value names
+    // every instruction BCI of this method (so the text accounts for what it no longer presents),
+    // and each quote keeps the reason and the bytecode indexes it already stated — no diagnostic
+    // line this slice did not already state moves, and a body with several refusals keeps all of
+    // them. [`completes_normally`] is the oracle for "the survivors would still compile" (the one
+    // the exit closure above reads, and a `void` member's body is the case it reads as one that
+    // always compiles). A class initializer's body is not a method body — its members are presented
+    // member by member and each one's own text and diagnostics are that plane's evidence — and a
+    // refusal quoted *inside* a surviving loop, `if` or `try` is the enclosing structure's own
+    // partition, which still presents with the gap marked where the refused statement was; neither
+    // is this guard's business, so the refusal is read off the statements of this body itself.
+    let class_initializer = inputs
+        .physical_method
+        .is_some_and(|method| method.name.0.as_slice() == b"<clinit>");
+    let refused_value = builder.stmts.iter().position(|stmt| {
+        matches!(&stmt.kind, StmtKind::Fallback { reason, .. } if value_level_refusal(reason))
+    });
+    if !class_initializer
+        && !builder.stmts.is_empty()
+        && refused_value.is_some()
+        && (builder.return_type.is_none() || !completes_normally(&builder.stmts))
+    {
+        // Every instruction BCI of this method, which is the set the escalating quote of the
+        // unproved local assignment above already names ([`Builder::fallback`] maps each BCI a quote
+        // names, so the text covers what the dropped statements covered before they were dropped).
+        let covered = builder
+            .instructions
+            .keys()
+            .copied()
+            .chain(regions.iter().flat_map(unaccounted_region_bcis))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        let refused = refused_value.expect("the guard read the refusal it tested");
+        let mut presented = Vec::new();
+        for (index, stmt) in builder.stmts.drain(..).enumerate() {
+            let Stmt { kind, origin } = stmt;
+            match kind {
+                // The value's own quote leads where it already led, and takes the dropped
+                // statements' indexes after the ones it stated itself, so its line grows only at the
+                // end.
+                StmtKind::Fallback { reason, mut bcis } if index == refused => {
+                    let mut stated = bcis.iter().copied().collect::<BTreeSet<_>>();
+                    let mut origin = origin;
+                    for bci in &covered {
+                        if stated.insert(*bci) {
+                            bcis.push(*bci);
+                            origin = origin.plus_derived(Origin::derived(*bci));
+                        }
+                    }
+                    presented.push(Stmt::new(StmtKind::Fallback { reason, bcis }, origin));
+                }
+                StmtKind::Fallback { .. } => presented.push(Stmt::new(kind, origin)),
+                _ => {}
+            }
+        }
+        builder.stmts = presented;
+        builder.statements = 0;
+    }
     let mut field_increments = BTreeMap::new();
     if let Some(plan) = builder.increments.get() {
         for increment in plan.statements.values() {
@@ -7694,6 +7761,39 @@ fn completes_normally(body: &[Stmt]) -> bool {
         StmtKind::Fallback { .. } => true,
         _ => true,
     }
+}
+
+/// The six families whose refusal is about a **value**, not about a region
+/// (`preserve-postfix-fallback-soundness`).
+///
+/// A region refusal quotes the statements it could not build, and the partition it leaves is
+/// exactly the statement it replaced: what the quote hides is what it stands for. These six refuse
+/// a *value* — a copy that had no proved local assignment, a store of a value the slot no longer
+/// holds, a dependency chain that is not bounded, a saved producer one local binding cannot bind, a
+/// bound receiver whose null failure would move, an argument no safe reference conversion covers —
+/// and the statements beside the quote then render on their own while they read or write the very
+/// slots, fields and elements the unproven value touched. Each string is the one its own site
+/// states, verbatim, so this list cannot drift from the diagnosis it recognizes.
+const VALUE_LEVEL_REFUSALS: [&str; 6] = [
+    // The copy family: `render_value`'s `Operation::Duplicate` arm.
+    "has no proved local assignment",
+    // The old-value store family: `render_value`'s `Operation::Load` arm.
+    "is the value local",
+    // The dependency-chain family: `prepare_deferred_bindings`'s bounded-closure refusal.
+    "the dependency chain",
+    // The multi-consumer family: the same proof, one local binding for more than one consumer.
+    "consumers, so one local binding",
+    // The bound-receiver family: `lambda@1`'s adaptation of a bound receiver.
+    "would move its null failure",
+    // The conversion-evidence family: an argument position no safe reference conversion covers.
+    "no safe reference conversion evidence",
+];
+
+/// Whether one refusal reason is one of [`VALUE_LEVEL_REFUSALS`].
+fn value_level_refusal(reason: &str) -> bool {
+    VALUE_LEVEL_REFUSALS
+        .iter()
+        .any(|family| reason.contains(family))
 }
 
 /// An explicit unlabelled break completes the nearest switch, including through either arm of
@@ -27020,6 +27120,35 @@ mod tests {
         assert!(!cross_exception_store_type_is_proven(Some(&boolean), true));
         assert!(cross_exception_store_type_is_proven(Some(&boolean), false));
         assert!(cross_exception_store_type_is_proven(Some(&integer), true));
+    }
+
+    /// The guard's family list is the one place the six value-level diagnoses are recognized, and
+    /// every string in it is stated by another site: the test pins them verbatim, and pins the
+    /// cascade lines the same diagnoses are accompanied by as *not* families of their own. A rename
+    /// at a render site would otherwise turn the guard off silently, which is the drift this list
+    /// exists to make impossible (`preserve-postfix-fallback-soundness`).
+    #[test]
+    fn value_level_refusals_are_the_six_diagnoses_and_not_their_cascade_lines() {
+        for family in [
+            "the copy at BCI 1 has no proved local assignment",
+            "the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6: the slot's name would read the value the body wrote in between",
+            "the dependency chain from BCI 3 to final consumer 8 is not bounded",
+            "the saved producer at BCI 15 has 6 consumers, so one local binding cannot prove its execution count",
+            "adapting this bound receiver would move its null failure from functional-value creation to invocation",
+            "the parameter 1 of the invocation at BCI 17 is declared `java.util.Comparator` presents `CP$1` but the invocation requires `java.util.Comparator` and this layer has no safe reference conversion evidence",
+        ] {
+            assert!(value_level_refusal(family), "{family}");
+        }
+        for cascade in [
+            "the saved producer at BCI 15 has no bounded final expression consumer",
+            "the instruction at BCI 5 is not part of the provable subset",
+            "the value at BCI 12 comes from an Other at BCI 9, which produces no expression this subset writes",
+            "the value at BCI 16 was produced by a saved declaration this run could not commit",
+            "the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds",
+            "the statement at BCI 13 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)",
+        ] {
+            assert!(!value_level_refusal(cascade), "{cascade}");
+        }
     }
 
     fn test_definition(name: &str) -> jarde_reader::model::PhysicalDefinitionId {
