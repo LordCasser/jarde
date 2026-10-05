@@ -4,6 +4,8 @@
 
 **判别（已实测）**：同型分支（int 嵌套链
 
+> **root 追加锚维度 2（2026-10-05，[ternary-chain 巡查](../../evidence/java-syntax-2026-10-05/ternary-chain-patrol/README.md)）**：**短路复合条件作三元条件**——`(a && b) ? "x" : "y"`（分支**同型** String/String！）也拒——判别矩阵：短路复合条件 if 消费✓/三元消费✗（简单条件两者✓）。jadx 直接还原 `(z && z2) ? …`。**注意**：该形与异型汇合前提无关（分支同型仍拒）——是"短路位技巧进三元"的独立维度；若实现发现三变体（异型汇合/上转型汇合/短路条件）不同落点，按变体分派报告。
+
 > **root 追加锚（2026-10-05，多态巡查）**：**子类上转型汇合形**——`c ? new Q() : new R()`（Q/R 同父 P，返回类型 P）：修复前诊断不同（两 new 各自的 copy 无局部证明 + "entry state of stack depth 0"，非 "two values joined" 文本）但**同因**（汇合点无可证条件类型）。task 1.1 定位时注意该变体可能走不同代码路径（栈深 0 的汇合值 vs 表达式内汇合）——若实现发现两变体不同落点，先报告再动。见 [polymorphic 残留巡查](../../evidence/java-syntax-2026-10-05/polymorphic-remainder-patrol/README.md)。 `a ? b ? x+1 : x-1 : x*2`、右结合链 `n<0 ? -1 : n==0 ? 0 : …`）**全部恢复**——缺口仅在引用型异型分支的 LUB 汇合形。**jadx 有解**：拆为 `if (z) { return 1; } return "s";` 语句形（[results/jadx-IF.java](../../evidence/java-syntax-2026-10-05/ternary-merge-type-patrol/results/jadx-IF.java)）——语句化回避了条件表达式静态类型证明，是既有合法路径。
 
 ## What Changes
