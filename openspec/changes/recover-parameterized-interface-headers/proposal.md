@@ -14,6 +14,8 @@ public class ParamI implements java.lang.Comparable<ParamI> { public int compare
 
 主线对 `implements Comparable<Impl>` 的类只投影裸类型（`class BR$Impl … implements java.lang.Comparable`），因为 `recover-proved-direct-parameterized-superclass`（6/6 全验收）的边界只覆盖**父类** `extends Parent<T>`，未覆盖**接口**。后果：`Comparable<T>` 实现、`Iterable<T>`/`Iterator<T>`、`Function<…>` 等泛型接口实现类既丢契约信息，又使桥投影无法安全进行。
 
+> **root 追加锚（2026-10-05，[递归泛型巡查](../../evidence/java-syntax-2026-10-05/recursive-generic-patrol/README.md)）**：`RG$IntNode extends RG$Node` 呈现裸形（class Signature `LRG$Node<Ljava/lang/Integer;>` not projected）——父类二进制名含 `$` 的又一实例（与 BR$StrBox 同族）。
+
 ## What Changes
 
 - 类头 `implements` 子句按类自身 `Signature` 属性投影类型实参（`implements Comparable<Impl>`）。**reader 擦除证明与拼写机制均已就绪、无需扩展**（`prove_class_signature_erasure` 已逐个校验 `interfaces` 擦除、`ClassSignatureErasureProof.interfaces` 已填充；`class_source.rs:6516–6519` 已对 `parsed.interfaces` 逐项 `spell_ordinary_signature_type`，交 `class_declaration_with_types` 6526）；本片缺的是 `class_source.rs` **三道门放行**（总门 6372 不看 interfaces、`direct_parent_candidate` 分支 6435 互斥拒绝接口、else 分支 6455 要求全部接口无实参）+ facade 侧**一个并列的接口可解析证明器**（不能复用 `prove_direct_generic_superclass_parent`，其 facade.rs:13765 显式拒 `ACC_INTERFACE`）。不新建第二套 Signature 解析、不改父类闭包判据。
