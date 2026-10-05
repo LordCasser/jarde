@@ -17191,10 +17191,15 @@ fn proved_reference_widening(
 /// its interfaces, and every next name is read the same way from this snapshot alone. A name the
 /// snapshot does not hold ends its branch — no classpath is consulted — and `java/lang/Object`
 /// carries no further facts, so a walk that reaches the `target` has read a physical definition of
-/// every class between the two, the target included. One charged header read per class, a visited
-/// set against cycles, a depth the caller bounds and `dependency_depth` observed at every step.
-/// The header reader is the caller's own: the widening proofs read through the analyzed method's
-/// class, the bridge admission through the prepared class's facts and the same dependency reads.
+/// every class between the two. The `target` itself is reached by **naming**, not by reading: the
+/// header read one step earlier states it literally in its own superclass/interfaces array, which
+/// is the whole relation — so a target the snapshot does not hold (a platform interface a user
+/// class implements) is proved by exactly the class file that implements it, while a target no
+/// snapshot header names is never reached and keeps its refusal. One charged header read per class
+/// the walk expands, a visited set against cycles, a depth the caller bounds and `dependency_depth`
+/// observed at every step. The header reader is the caller's own: the widening proofs read through
+/// the analyzed method's class, the bridge admission through the prepared class's facts and the
+/// same dependency reads.
 fn snapshot_header_chain_widens_with(
     source: &[u8],
     target: &[u8],
@@ -17214,12 +17219,12 @@ fn snapshot_header_chain_widens_with(
         if !visited.insert(name.clone()) {
             continue;
         }
-        let Some(header) = header(&name, budget)? else {
-            continue;
-        };
         if name == target {
             return Ok(true);
         }
+        let Some(header) = header(&name, budget)? else {
+            continue;
+        };
         if depth >= max_depth {
             continue;
         }
