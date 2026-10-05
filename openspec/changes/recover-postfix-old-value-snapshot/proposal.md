@@ -8,7 +8,7 @@
 
 
 
-> **root 追加锚（2026-10-05，[postfix-self-assign 健全性巡查](../../evidence/java-syntax-2026-10-05/postfix-self-assign-soundness-patrol/README.md)）**：三锚同族实证——`i = i++`/`i = i--`（自赋陷阱）/`a[i] = i++`（数组存 RHS 旧值，存语句整条丢失）当前产出**可编译但行为不同**的文本（6≠5/4≠5/2≠102）；恢复落地即覆盖；恢复前的健全性守卫由姊妹片 preserve-postfix-fallback-soundness 承担。
+> **root 追加锚（2026-10-05，[postfix-self-assign 健全性巡查](../../evidence/java-syntax-2026-10-05/postfix-self-assign-soundness-patrol/README.md)）**：三锚同族实证——`i = i++`/`i = i--`（自赋陷阱）/`a[i] = i++`（数组存 RHS 旧值，存语句整条丢失）当前产出**可编译但行为不同**的文本（6≠5/4≠5/2≠102）；恢复落地即覆盖；恢复前的健全性守卫由姊妹片 preserve-postfix-fallback-soundness 承担。**再追加（第 7 锚，[array-store 巡查](../../evidence/java-syntax-2026-10-05/array-store-soundness-patrol/README.md)）**：`elems[size++] = t`（字段数组+字段 post-inc 下标——dup_x1 舞蹈、依赖链诊断族）整语句拒且可编译错文本（null/null vs x/y）——恢复片实现时一并列锚。
 
 ## What Changes
 
