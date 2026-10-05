@@ -17,3 +17,4 @@
 2. **伴随行均为级联**（Other/saved-declaration/not-provable/entry-state-of-stack 在全部已档案例中与四主族同现，未见独立触发留可编译错文本）——四族封闭性维持；
 3. **第 5 扩宽表候选线索**：`java.util.Collection` 位（OB.flags 的 `retainAll(EnumSet)` 级联行，Enum 锚同方法）——**已否定（[collection-widening-probe](../collection-widening-probe/README.md)）**：retainAll/containsAll/disjoint/泛型擦除四形独立恢复——该行为 Enum 锚级联伴随，不升表；
 4. 已知独立域确认在案：irreducible（3）、conditional-type join（5）、short-circuit 共享消费（1）、bitwise 类型混合（2）、widening 四表族（2+2+1+1）、array-init 异构（2）。
+5. **后续新增（2026-10-05 晚，[binary-search 巡查](../binary-search-twopointer-patrol/README.md)）**：**canonical block multi-owner**（"canonical block at BCI N on jsr path [] has more than one owner in the completed Region tree"——二分查找 else-if+早退形触发；body 空=安全，可恢复性缺口，region 树几何层）——第 5 个可恢复性族（非 compilable-wrong）。
