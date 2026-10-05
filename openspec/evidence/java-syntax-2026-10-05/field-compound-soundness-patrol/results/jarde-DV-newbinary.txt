@@ -1,0 +1,92 @@
+// jarde: presentation of `DV` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class DV extends java.lang.Object {
+    int a;
+
+    int b;
+
+    public DV() {
+        // @method <init>()V
+        // @declaration a constructor of `DV`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.a = 0;
+        this.b = 0;
+        return;
+    }
+
+    void orAcc(int arg1) {
+        // @method orAcc(I)V
+        // @declaration an instance method of `DV`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 6 2
+        // the copy at BCI 1 has no proved local assignment
+        this.b++;
+        return;
+    }
+
+    void xorAcc(int arg1) {
+        // @method xorAcc(I)V
+        // @declaration an instance method of `DV`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 6 2
+        // the copy at BCI 1 has no proved local assignment
+        return;
+    }
+
+    void andAcc(int arg1) {
+        // @method andAcc(I)V
+        // @declaration an instance method of `DV`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 6 2
+        // the copy at BCI 1 has no proved local assignment
+        return;
+    }
+
+    void subAcc(int arg1) {
+        // @method subAcc(I)V
+        // @declaration an instance method of `DV`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.a -= arg1;
+        return;
+    }
+
+    void mulAcc(int arg1) {
+        // @method mulAcc(I)V
+        // @declaration an instance method of `DV`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 2
+        // the copy at BCI 1 has no proved local assignment
+        return;
+    }
+
+    void divAcc(int arg1) {
+        // @method divAcc(I)V
+        // @declaration an instance method of `DV`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 2
+        // the copy at BCI 1 has no proved local assignment
+        return;
+    }
+
+    void shlAcc(int arg1) {
+        // @method shlAcc(I)V
+        // @declaration an instance method of `DV`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 2
+        // the copy at BCI 1 has no proved local assignment
+        return;
+    }
+}
