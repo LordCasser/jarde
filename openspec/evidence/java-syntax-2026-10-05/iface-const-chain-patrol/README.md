@@ -8,7 +8,7 @@
 
 - 全部按 **javac 编译期常量折叠内联为字面量**（`return 3/10/1`、`LOCAL_CONST = 20`）——常量族既有忠实呈现域（接口常量恒 static final = ConstantValue 可折叠，与字段族结论一致）；
 - IB 的 `extends IA` 接口继承头正确；嵌套接口持有者 `IA.Inner` 拼写在池形路径验证（IC 消费位已折叠）；
-- 行为 `3/10/1/20` 逐行 IDENTICAL。
+- 行为验证：渲染 IC 与原 IA/IB class 同目录编译 exit 0、`-Xverify:all` 运行 `3/10/1/20` IDENTICAL（implementee 需在 classpath——jarde 只呈现单类）。
 
 ## 处置
 
