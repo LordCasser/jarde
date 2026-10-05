@@ -1,0 +1,5 @@
+- [ ] 1.1 重跑巡查 fixture（OB.java javac8）记录基线渲染与诊断
+- [ ] 1.2 Q-i：Enum 扩宽 checkcast 在渲染管线的现行投影点与三张接口表的表键差异（类位 vs 接口位是否同门）；Q-ii：无枚举调用点字节级零漂移的验证面
+- [ ] 2.1 平台扩宽表补 java.lang.Enum 行（含 EnumSet.of 变长形），按姊妹表协议（javadoc 行/hex/三方一致）
+- [ ] 3.1 全门禁 + fixture 双协议（人口计数 + corpus 指纹）
+- [ ] 3.2 四表合并派发协调（与 charsequence/comparable/serializable 同一实现片）
