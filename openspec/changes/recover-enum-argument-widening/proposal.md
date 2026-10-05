@@ -6,7 +6,7 @@
 
 
 
-> **root 追加级联位点（[诊断普查](../../evidence/java-syntax-2026-10-05/diagnosis-census/README.md)）**：OB.flags 内 `retainAll(fs)` 的 `EnumSet presents java.util.Collection`（Collection 接口位第 2 例）——Enum 锚同方法伴随行；实现时一并覆盖（同一 widen 通道）；若 Collection 位在其他类独立出现（非 EnumSet 实参）则升第 5 表。
+> **root 追加级联位点（[诊断普查](../../evidence/java-syntax-2026-10-05/diagnosis-census/README.md)）**：OB.flags 内 `retainAll(fs)` 的 `EnumSet presents java.util.Collection`（Collection 接口位第 2 例）——Enum 锚同方法伴随行；实现时一并覆盖（同一 widen 通道）；独立探针（[collection-widening-probe](../../evidence/java-syntax-2026-10-05/collection-widening-probe/README.md)，retainAll/containsAll/disjoint/泛型擦除四形）已证 Collection 位**不独立失败**——该行始终为本锚级联伴随；不升第 5 表。
 
 ## What Changes
 
