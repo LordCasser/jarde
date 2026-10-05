@@ -28,7 +28,9 @@
 | 实例 `this.i++` 语句位（iinc 语义等价路径） | **恢复**（`this.i++;`） |
 | 实例复合赋值（任何类型：int `\|=`、String `+=` 简单/复杂 RHS、long `+=` dup2_x1） | **QUOTED**（void 单语句形剩 `return;` → 可编译错） |
 
-失败判据因此精确为：**实例 receiver dup/dup2_x1 参与的复合 RMW**；静态与语句位自增不在族内。root 自查：本轮曾因 `
+失败判据因此精确为：**实例 receiver dup/dup2_x1 参与的复合 RMW**；静态与语句位自增不在族内。**边界再锐化（2026-10-05 晚，root 双二进制矩阵）**：同形状 `aload_0; dup; getfield; <op>; iload_1; putfield` 下，**仅 iadd/isub 恢复**（累积器惯用法既有规则覆盖——FA.add/addAll/循环累积全部恢复，双二进制一致），`ior/ixor/iand/imul/idiv/ishl` 全 QUOTED（[DV fixture](fixture/DV.java)，新二进制结果归档 jarde-DV-newbinary.txt）。**#84 矩阵"实例复合全 QUOTED"系过度泛化**——SG 探针恰好无 iadd 形；权威失败面 = 实例 receiver-dup 复合 **且** 运算符 ∉ {add,sub} **或** RHS 复杂。critical 锚计数不变（锚 5/6/11 均非 add/sub 简单形；诊断族守卫不受影响）。
+
+root 自查：本轮曾因 `
     ` 前缀匹配 8 空格行的提取 bug 得出"SG 全恢复"的假反转，打印方法体后修正——教训同 handoff 假零族（提取器必须在证据 README 附原始渲染切片）。
 
 ## 处置
