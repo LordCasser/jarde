@@ -36,7 +36,7 @@
 use std::collections::BTreeSet;
 
 use jarde_jvm::method_ir::{Definition, RefType, Slot, SsaInstruction, SsaTable, Value, ValueId};
-use jarde_reader::classfile::MethodCodeFacts;
+use jarde_reader::classfile::{Base, MethodCodeFacts};
 use serde::Serialize;
 
 use crate::ast::ConstructorTarget;
@@ -147,6 +147,11 @@ const MAX_NESTED_CONSTRUCTION_LAYERS: u32 = 2;
 pub(crate) struct Sites {
     sites: Vec<Site>,
     owned: BTreeSet<u32>,
+    /// Every dynamic site whose bound-receiver creation-time check this run proved dead, with the
+    /// three instructions of that check: owned exactly as a construction's own tail is, and read by
+    /// the lambda plan's refusal — the check cannot fail, so the site's two presentations of a
+    /// non-null receiver no longer disagree.
+    receiver_tails: Vec<ReceiverTail>,
     /// Every decoded `new` allocation in the body, including candidates reserved by another rule.
     /// A false `verified` value is evidence against a class-level unique allocation claim.
     allocation_candidates: Vec<AllocationCandidate>,
@@ -215,6 +220,7 @@ impl Sites {
         Self {
             sites: Vec::new(),
             owned: BTreeSet::new(),
+            receiver_tails: Vec::new(),
             allocation_candidates: Vec::new(),
             refusals: Vec::new(),
         }
@@ -223,6 +229,11 @@ impl Sites {
     /// Whether one instruction belongs to a verified site and so produces no statement of its own.
     pub(crate) fn owns(&self, bci: u32) -> bool {
         self.owned.contains(&bci)
+    }
+
+    /// The proved creation-time receiver check of one dynamic site, when this run proved one there.
+    pub(crate) fn receiver_tail_at(&self, site: u32) -> Option<&ReceiverTail> {
+        self.receiver_tails.iter().find(|tail| tail.site == site)
     }
 
     /// The site one instruction belongs to, when one of them produces the value it wrote.
@@ -373,6 +384,19 @@ pub(crate) fn sites(
     plan.allocation_candidates
         .sort_by_key(|candidate| candidate.head);
     plan.refusals.sort_by_key(|refused| refused.head);
+    // The bound-receiver tails of this body's dynamic sites, after the construction sites have
+    // claimed theirs: a window a verified construction already owns is that site's tail, and the
+    // first proof to claim three instructions owns them.
+    for tail in receiver_tails(ssa, operations) {
+        if plan.owned.contains(&tail.copy) {
+            continue;
+        }
+        plan.owned.insert(tail.copy);
+        plan.owned.insert(tail.check);
+        plan.owned.insert(tail.pop);
+        plan.receiver_tails.push(tail);
+    }
+    plan.receiver_tails.sort_by_key(|tail| tail.site);
     plan
 }
 
@@ -1220,12 +1244,9 @@ fn single_use_at(ssa: &SsaTable, value: ValueId, at: u32) -> bool {
 /// one: `dup; <discarded null check>; pop` as the three block instructions immediately after the
 /// constructor call.
 ///
-/// The `dup` must read the instance this site builds. The check is one of the two spellings
-/// [`crate::facts::is_discarded_null_check`] states, and it must consume one of the `dup`'s two
-/// writes **once**. The `pop` must be the category-1 discard and must consume the check's result
-/// **once** — a kept result (stored, called on) is not this tail and leaves the construction's
-/// refusal standing. The tail's contiguity is the same block-position discipline the checked
-/// qualifier's `[qualifier, copy, check, pop]` window applies.
+/// The `dup` must read the instance this site builds. The rest of the window's discipline is
+/// [`discarded_null_check_window`]'s, which the bound-receiver tail of a dynamic site shares: the
+/// two spellings of this shape differ only in the value the `dup` copies.
 fn discarded_null_check_tail(
     ssa: &SsaTable,
     operations: &Operations,
@@ -1236,14 +1257,40 @@ fn discarded_null_check_tail(
     let [copy, check, pop] = block.get(constructor_index + 1..constructor_index + 4)? else {
         return None;
     };
-    if operations.get(copy.bci()) != Some(&Operation::Duplicate)
-        || !copy
-            .reads()
-            .iter()
-            .any(|(_, read)| is_the_instance(ssa, *read, produced_by))
-    {
+    discarded_null_check_window(ssa, operations, copy, check, pop, |value| {
+        is_the_instance(ssa, value, produced_by).then_some(())
+    })
+    .map(|(bcis, ())| bcis)
+}
+
+/// The three-instruction window `dup; <discarded null check>; pop`, when `copy` duplicates the value
+/// the caller guards and every single-use link holds.
+///
+/// The check is one of the two spellings [`crate::facts::is_discarded_null_check`] states, and it
+/// must consume one of the `dup`'s two writes **once**. The `pop` must be the category-1 discard and
+/// must consume the check's result **once** — a kept result (stored, called on) is not this tail and
+/// leaves the caller's refusal standing. The tail's contiguity is the same position discipline the
+/// checked qualifier's `[qualifier, copy, check, pop]` window applies.
+///
+/// `reads_guarded` is the whole of what the two callers disagree about, and its answer is handed
+/// back: a construction's tail guards the instance that site builds ([`is_the_instance`]) and needs
+/// no more than the fact, and a dynamic site's tail guards the bound receiver value its own `dup`
+/// copies ([`receiver_tails`]), which has to name the class the receiver's allocation builds.
+fn discarded_null_check_window<Guarded>(
+    ssa: &SsaTable,
+    operations: &Operations,
+    copy: &SsaInstruction,
+    check: &SsaInstruction,
+    pop: &SsaInstruction,
+    reads_guarded: impl Fn(ValueId) -> Option<Guarded>,
+) -> Option<([u32; 3], Guarded)> {
+    if operations.get(copy.bci()) != Some(&Operation::Duplicate) {
         return None;
     }
+    let guarded = copy
+        .reads()
+        .iter()
+        .find_map(|(_, read)| reads_guarded(*read))?;
     let Some(Operation::Invoke(call)) = operations.get(check.bci()) else {
         return None;
     };
@@ -1271,7 +1318,159 @@ fn discarded_null_check_tail(
     {
         return None;
     }
-    Some([copy.bci(), check.bci(), pop.bci()])
+    Some(([copy.bci(), check.bci(), pop.bci()], guarded))
+}
+
+/// One dynamic site whose bound receiver this run proves non-null, with the creation-time null check
+/// javac wrote over that receiver.
+///
+/// The site's three tail instructions are owned by [`Sites`] exactly as a construction's are: the
+/// check cannot fail, so the bytecode that performs it produces no statement of its own, and the
+/// value the site captures is the receiver the `dup` copied.
+pub(crate) struct ReceiverTail {
+    /// The BCI of the `invokedynamic` site the tail belongs to.
+    pub(crate) site: u32,
+    /// The BCI of the `dup` that copies the receiver value.
+    pub(crate) copy: u32,
+    /// The BCI of the discarded null check.
+    pub(crate) check: u32,
+    /// The BCI of the `pop` that discards the check's result.
+    pub(crate) pop: u32,
+    /// The value the site captures: the receiver the `dup` copies.
+    pub(crate) receiver: ValueId,
+    /// The value the `dup` writes, which is the operand the site reads off the stack.
+    pub(crate) copy_value: ValueId,
+}
+
+/// Every dynamic site whose creation-time receiver check this run proves dead.
+///
+/// javac evaluates a bound method reference (`receiver::name`) by checking the receiver for null
+/// **while the functional value is created**, and writes that check as the same
+/// `dup; <discarded null check>; pop` window [`discarded_null_check_tail`] reads over a finished
+/// construction. The one difference is the value the `dup` copies: a construction's tail guards the
+/// instance the site builds, and this one guards the **receiver value**, whose move chain ends at an
+/// allocation ([`crate::build::allocation_behind_value`]) with no later store into the local that
+/// chain read ([`proved_receiver_class`]). Such a check cannot fail, so the site's creation and its
+/// invocation can no longer disagree about a null receiver — which is the whole of what the refusal
+/// over a bound receiver states.
+///
+/// The window is read in **BCI order across canonical blocks**, not inside one block: the check may
+/// throw, so the canonical CFG splits the block between the `dup` and the site, and a same-block
+/// window was measured to miss every real site of this shape.
+///
+/// Two more conditions belong to the site itself: it must consume the copy the tail made (or the
+/// three instructions are some other discarded check and the site's operand is another value), and
+/// its own descriptor must name the class the allocation builds for that value. The second is the
+/// frame/site half of the capture check the plan states three ways, and it is required here because
+/// a claim made without it would take the site's own check away from a site the plan still refuses
+/// (see [`captured_reference`]).
+fn receiver_tails(ssa: &SsaTable, operations: &Operations) -> Vec<ReceiverTail> {
+    let mut sequence: Vec<&SsaInstruction> = ssa
+        .blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .collect();
+    sequence.sort_by_key(|instruction| instruction.bci());
+    let mut tails = Vec::new();
+    for (index, site) in sequence.iter().enumerate() {
+        let Some(Operation::InvokeDynamic(dynamic)) = operations.get(site.bci()) else {
+            continue;
+        };
+        let Some(window) = index
+            .checked_sub(3)
+            .and_then(|start| sequence.get(start..index))
+        else {
+            continue;
+        };
+        let [copy, check, pop] = window else {
+            continue;
+        };
+        let Some(([copy_bci, check_bci, pop_bci], allocated)) =
+            discarded_null_check_window(ssa, operations, copy, check, pop, |value| {
+                proved_receiver_class(ssa, operations, value)
+            })
+        else {
+            continue;
+        };
+        // The site's own descriptor must name the class the allocation builds for the value it
+        // captures. A local declared as a supertype of what it holds (`List<String> out = new
+        // ArrayList<>()`) is the case the plan's three-way capture check refuses — the frame says
+        // `ArrayList`, the site says `List` — and there the site's own creation-time check must stay
+        // quoted with the site: the claim would take that quote away from a body that keeps the
+        // refusal, and a reader who strips the comments would be left with the refusal's statement
+        // gone and the rest of the body presented.
+        if captured_reference(dynamic.descriptor()) != Some(allocated) {
+            continue;
+        }
+        let copy_writes: Vec<ValueId> = copy.writes().iter().map(|(_, value)| *value).collect();
+        let reads = stack_operands(copy);
+        let [receiver] = reads.as_slice() else {
+            continue;
+        };
+        if !stack_operands(site)
+            .iter()
+            .any(|(_, value)| copy_writes.contains(value))
+        {
+            continue;
+        }
+        tails.push(ReceiverTail {
+            site: site.bci(),
+            copy: copy_bci,
+            check: check_bci,
+            pop: pop_bci,
+            receiver: receiver.1,
+            copy_value: copy_writes[0],
+        });
+    }
+    tails
+}
+
+/// The class the allocation one bound receiver's value chain ends at builds, when the value is
+/// provably non-null where the site captures it: its move chain ends at an allocation, and the local
+/// that chain read is not written again after the read.
+///
+/// The second half is what makes the value the *bytecode* captured and the slot a reader of the
+/// written text re-reads the same object: the site's text names the local, and a store after the
+/// read would put another object in that slot before the site's own invocation.
+fn proved_receiver_class(
+    ssa: &SsaTable,
+    operations: &Operations,
+    value: ValueId,
+) -> Option<String> {
+    let behind = crate::build::allocation_behind_value(ssa, operations, value)?;
+    if let Some((slot, read_at)) = behind.read
+        && operations.iter().any(|(bci, operation)| {
+            *bci > read_at
+                && matches!(
+                    operation,
+                    Operation::Store { slot: written } if *written == slot
+                )
+        })
+    {
+        return None;
+    }
+    Some(behind.class)
+}
+
+/// The internal name of the reference type one dynamic site's descriptor names for the first value
+/// it captures, when it names one.
+///
+/// The descriptor is read by the reader's own reading
+/// ([`jarde_reader::classfile::descriptor_facts`]) — the same one
+/// [`crate::build::array_descriptor`] uses — so the bytes are not walked a second time by hand, and
+/// the position is the descriptor's own: the values a site captures come before the SAM's
+/// parameters.
+fn captured_reference(descriptor: &str) -> Option<String> {
+    let facts = jarde_reader::classfile::descriptor_facts(
+        descriptor.as_bytes(),
+        jarde_reader::classfile::DescriptorKind::Method,
+    )
+    .ok()?;
+    let first = facts.parameters().first()?;
+    match first.base() {
+        Base::Object(name) => String::from_utf8(name.0.clone()).ok(),
+        Base::Primitive(_) => None,
+    }
 }
 
 /// The complete concat chains whose values are direct, unique constructor arguments.
@@ -2073,6 +2272,153 @@ mod tests {
             crossed.refusals().next().expect("handler refusal").code(),
             "jre_new_inline_char_array_exception_boundary"
         );
+    }
+
+    /// The change's own frozen fixtures: the Optional patrol's `OP` (whose `sideEffect` captures a
+    /// `new StringBuilder()` through the site's own discarded null check) and this change's `BRN`
+    /// with its three negatives, compiled on both javac legs.
+    const BOUND_RECEIVER_ANCHOR: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class"
+    );
+    const BOUND_RECEIVER_ANCHOR_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-proved-nonnull-bound-receivers/v8-javac8/OP.class"
+    );
+    const BOUND_RECEIVER_NEGATIVES: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-proved-nonnull-bound-receivers/v8/BRN.class"
+    );
+    const BOUND_RECEIVER_NEGATIVES_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-proved-nonnull-bound-receivers/v8-javac8/BRN.class"
+    );
+
+    /// The fourth shape the claim must not take: a proved receiver whose site names **another** type
+    /// than the class the allocation builds, because the local is declared as a supertype of what it
+    /// holds (`List<String> out = new ArrayList<>(); … forEach(out::add)`). The plan's three-way
+    /// capture check refuses that site, so its own check stays quoted with it.
+    const BOUND_RECEIVER_WIDENED: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-04/realistic-class-combination-patrol/fixture/C1.class"
+    );
+
+    /// One method's own `Sites` plan, over the fixture's own class file.
+    fn sites_of(class: &[u8], name: &str, descriptor: &str) -> Sites {
+        let (analysis, _) = analyzed_caller(class, name, descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let mut budget = proof_budget();
+        let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
+            .expect("array proof completes");
+        sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &arrays,
+            8,
+            &[],
+            &crate::facts::MethodFacts::new(name, descriptor, 0),
+            code,
+        )
+    }
+
+    /// The bound-receiver tail is claimed exactly where the receiver's own value chain ends at an
+    /// allocation and the slot it was read from is not written again — and nowhere else. Both legs
+    /// answer the same BCIs, so the proof reads the shape and not one compiler's spelling.
+    #[test]
+    fn the_bound_receiver_tail_is_claimed_exactly_where_the_receiver_is_proved() {
+        for (class, leg) in [
+            (BOUND_RECEIVER_ANCHOR, "javac 23 --release 8"),
+            (BOUND_RECEIVER_ANCHOR_JAVAC8, "real javac 8"),
+        ] {
+            let plan = sites_of(
+                class,
+                "sideEffect",
+                "(Ljava/util/Optional;)Ljava/lang/String;",
+            );
+            let tails: Vec<(&u32, &u32, &u32)> = plan
+                .receiver_tails
+                .iter()
+                .map(|tail| (&tail.copy, &tail.check, &tail.pop))
+                .collect();
+            assert_eq!(tails, [(&10, &11, &14)], "{leg}");
+            let tail = &plan.receiver_tails[0];
+            assert_eq!(
+                tail.site, 15,
+                "{leg}: the tail belongs to the site it guards"
+            );
+            assert!(
+                plan.owns(tail.copy) && plan.owns(tail.check) && plan.owns(tail.pop),
+                "{leg}: every instruction of the check is owned by the site"
+            );
+            // The construction the receiver comes from is a site of its own, and the two claims
+            // are disjoint: the tail's three instructions are the dynamic site's, not `new@1`'s.
+            assert_eq!(
+                plan.site_at_head(0)
+                    .expect("the receiver's own construction")
+                    .owned
+                    .iter()
+                    .copied()
+                    .collect::<Vec<u32>>(),
+                [0, 3, 4],
+                "{leg}"
+            );
+        }
+
+        // The three negatives: a parameter read, a field read, and a slot written again after the
+        // capture. None of them has a tail, and the three instructions of each one's own check stay
+        // unowned — the window is the same shape in all three, and it is the receiver's value chain
+        // that decides.
+        for (class, leg) in [
+            (BOUND_RECEIVER_NEGATIVES, "javac 23 --release 8"),
+            (BOUND_RECEIVER_NEGATIVES_JAVAC8, "real javac 8"),
+        ] {
+            for (name, descriptor, check) in [
+                (
+                    "nullableParameter",
+                    "(Ljava/util/Optional;Ljava/lang/StringBuilder;)Ljava/lang/String;",
+                    (2, 3, 6),
+                ),
+                (
+                    "nullableField",
+                    "(Ljava/util/Optional;)Ljava/lang/String;",
+                    (5, 6, 9),
+                ),
+                (
+                    "rewrittenAfterCapture",
+                    "(Ljava/util/Optional;)Ljava/lang/String;",
+                    (10, 11, 14),
+                ),
+            ] {
+                let plan = sites_of(class, name, descriptor);
+                assert!(
+                    plan.receiver_tails.is_empty(),
+                    "{leg}/{name}: no receiver is proved here"
+                );
+                let (copy, check, pop) = check;
+                for bci in [copy, check, pop] {
+                    assert!(!plan.owns(bci), "{leg}/{name}: BCI {bci} stays unowned");
+                }
+            }
+        }
+
+        // The widened declaration: the same `dup; check; pop` window over a proved receiver, with the
+        // site's own descriptor naming the supertype the local was declared as. The claim is refused
+        // there, so the window stays unowned and the site's refusal keeps its quote.
+        let plan = sites_of(
+            BOUND_RECEIVER_WIDENED,
+            "chain",
+            "(Ljava/util/List;)Ljava/util/List;",
+        );
+        assert!(
+            plan.receiver_tails.is_empty(),
+            "a site that names another type than the allocation builds is not claimed"
+        );
+        for bci in [40, 41, 44] {
+            assert!(!plan.owns(bci), "BCI {bci} stays unowned");
+        }
     }
 
     #[test]

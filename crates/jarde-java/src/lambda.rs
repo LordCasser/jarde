@@ -470,6 +470,13 @@ impl LambdaRefusal {
 /// nobody stated is not a type this layer may guess.
 /// Capture types must agree exactly with the site and implementation descriptors. A site whose
 /// captures are not *readable from this run's facts* is refused as well.
+///
+/// `receiver_nonnull` states that this run **proved** the site's bound receiver cannot be null where
+/// the site captures it: the value the site reads is the copy of a receiver whose move chain ends at
+/// an allocation, and the local that chain read is not written again after the read
+/// (`crate::init`'s bound-receiver tail, the one proof that also owns the creation-time check javac
+/// wrote over such a receiver). The check the refusal below is about is dead for such a site, so
+/// there is no null failure left to move from creation to invocation.
 #[allow(
     clippy::too_many_arguments,
     reason = "the one-site decision consumes its class, bootstrap, member, value-flow, profile and budget facts"
@@ -480,6 +487,7 @@ pub(crate) fn plan(
     pool: &[CpEntryFacts],
     members: Option<&ClassMembers>,
     captures: &[(Option<u32>, Option<Type>)],
+    receiver_nonnull: bool,
     profile: &RecoveryProfile,
     typed_target: Option<crate::report::TypedFunctionalTarget>,
     budget: &mut Budget,
@@ -867,6 +875,7 @@ pub(crate) fn plan(
         && parameter_adaptation
         && implementation.reach() == Reach::Receiver
         && captures.len() == 1
+        && !receiver_nonnull
     {
         return Ok(Verdict {
             evidence,
@@ -2289,6 +2298,7 @@ mod tests {
             &pool,
             members,
             captures,
+            false,
             &crate::pass::JAVA_8,
             None,
             &mut budget,
@@ -2473,6 +2483,7 @@ mod tests {
             &pool,
             None,
             &captures,
+            false,
             &crate::pass::JAVA_8,
             None,
             &mut budget,
@@ -2504,6 +2515,7 @@ mod tests {
             &pool,
             None,
             &captures,
+            false,
             &crate::pass::JAVA_8,
             None,
             &mut cancelled,

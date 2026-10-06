@@ -23765,6 +23765,18 @@ impl Builder<'_> {
         consumed: bool,
     ) -> Result<Expr, ValueRenderFailure> {
         let operands = stack_operands(instruction);
+        // A site whose bound-receiver creation-time check this run proved dead reads its receiver
+        // **through** that check: the value the bytecode hands the site is the tail's copy, and the
+        // value the source captured is what that copy duplicated — the receiver. The copy belongs to
+        // the site's own check, so reading it back to its receiver is what lets the capture's text
+        // be written where the site reads it (the copy itself is no expression this subset writes).
+        // The site's *own* reads stay the record's evidence (`operands`): the value the site reads
+        // off the stack is the copy, and the record says so.
+        let receiver_tail = self.sites.receiver_tail_at(bci);
+        let captured_value = |value: ValueId| match receiver_tail {
+            Some(tail) if value == tail.copy_value => tail.receiver,
+            _ => value,
+        };
         let captures: Vec<(Option<u32>, Option<Type>)> = operands
             .iter()
             .map(|(_, value)| {
@@ -23792,6 +23804,7 @@ impl Builder<'_> {
             self.pool,
             self.members,
             &captures,
+            receiver_tail.is_some(),
             &self.profile,
             self.typed_functional_target.filter(|target| {
                 target.use_site == bci
@@ -23884,6 +23897,7 @@ impl Builder<'_> {
         for index in 0..plan.captures {
             let (at, _) = captures[index];
             let (_, value) = operands[index];
+            let value = captured_value(value);
             if let Some(reason) = self.unreplayable(value) {
                 let refusal = Refusal::unmet(
                     &LAMBDA,
@@ -23914,7 +23928,7 @@ impl Builder<'_> {
         for index in 0..plan.captures {
             let (at, _) = captures[index];
             let (_, value) = operands[index];
-            let expr = match self.render_value(value, bci, 0) {
+            let expr = match self.render_value(captured_value(value), bci, 0) {
                 Ok(expr) => expr,
                 Err(ValueRenderFailure::Stop(stop)) => return Err(stop.into()),
                 Err(ValueRenderFailure::Refusal(_)) => {
@@ -25839,6 +25853,93 @@ pub(crate) fn array_of_value(
         }
         _ => None,
     }
+}
+
+/// What one value's own move chain states, when the chain ends at an allocation: the value is one a
+/// `new` built, and the caller knows the local (if any) that chain read it from.
+pub(crate) struct AllocationBehind {
+    /// The class the allocation builds, in internal form, exactly as the `new`'s own pool entry
+    /// states it.
+    pub(crate) class: String,
+    /// The local the chain's **first** load read, with the BCI it read it at, when the chain starts
+    /// at a load. A store at a later BCI would replace the value in that slot, which is the one
+    /// thing that can make "the value the bytecode captured" and "the slot a reader re-reads"
+    /// different objects.
+    pub(crate) read: Option<(u16, u32)>,
+}
+
+/// The read one value's own move chain starts from, when that chain ends at an allocation.
+///
+/// The chain is the one [`array_of_value`] walks, read through the instructions that only **move** a
+/// value and nothing else: a load reads the slot, a store's own value is the stack value it stored
+/// ([`store_operand`]), and a copy holds what it duplicated. A call's result, a field read and a
+/// value merged out of several definitions end the walk without an answer, exactly as they do for
+/// the array reading — a value whose producer is not an allocation states no allocation here.
+///
+/// What the answer is *for*: an SSA value whose chain ends at a `new` is a value that cannot be
+/// null, so the refusal `lambda@1` states over a bound receiver — that adapting the site as a lambda
+/// would move the receiver's null failure from creation to invocation — has no failure left to move.
+/// `crate::init`'s bound-receiver tail reads it, and the load it reports is the slot whose later
+/// writes that proof must rule out.
+pub(crate) fn allocation_behind_value(
+    ssa: &SsaTable,
+    operations: &Operations,
+    value: ValueId,
+) -> Option<AllocationBehind> {
+    fn walk(
+        ssa: &SsaTable,
+        operations: &Operations,
+        value: ValueId,
+        read: Option<(u16, u32)>,
+        depth: usize,
+    ) -> Option<AllocationBehind> {
+        if depth > MAX_VALUE_DEPTH {
+            return None;
+        }
+        let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+            return None;
+        };
+        let bci = *bci;
+        match operations.get(bci)? {
+            Operation::Allocate { ty } => Some(AllocationBehind {
+                class: ty.clone(),
+                read,
+            }),
+            Operation::Load { slot } => {
+                let loaded = local_read(instruction_at(ssa, bci)?, *slot)?;
+                walk(
+                    ssa,
+                    operations,
+                    loaded,
+                    read.or(Some((*slot, bci))),
+                    depth + 1,
+                )
+            }
+            Operation::Store { .. } => {
+                let stored = store_operand(operations, instruction_at(ssa, bci)?)?;
+                walk(ssa, operations, stored, read, depth + 1)
+            }
+            Operation::Duplicate => {
+                let (_, copied) = single_stack_read(instruction_at(ssa, bci)?)?;
+                walk(ssa, operations, copied, read, depth + 1)
+            }
+            // The value a constructor call produces is the instance it initialized: the receiver
+            // the call reads off the bottom of its own operand stack, which is the allocation's own
+            // value (a `new` this walk reaches, or the copy of one). A `new` cannot be null, so the
+            // instance its constructor finished cannot be either. Every other call's result ends
+            // the walk, exactly as it does for the array reading.
+            Operation::Invoke(call)
+                if call.kind() == crate::facts::InvokeKind::Special && call.name() == "<init>" =>
+            {
+                let (_, receiver) = stack_operands(instruction_at(ssa, bci)?)
+                    .into_iter()
+                    .next()?;
+                walk(ssa, operations, receiver, read, depth + 1)
+            }
+            _ => None,
+        }
+    }
+    walk(ssa, operations, value, None, 0)
 }
 
 /// The array one **descriptor** states, when this layer can spell it: its element type and its
