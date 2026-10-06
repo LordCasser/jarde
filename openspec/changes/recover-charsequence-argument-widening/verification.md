@@ -101,3 +101,29 @@
 
 已知 flake（`p4_plugins`、`p3_short_circuit_transfer_gateway`、`d3_artifact_binding`、
 `bulk_recovery_delivery`）本轮全量两次运行均未出现，无需隔离复跑。
+
+## 语料扫描（实测：**非空，但全部是放宽**，如实记录）
+
+方法与判别：语料 = `openspec/evidence/**` 的 **1987** 个 class 文件。先按 **表目标描述符**筛出候选
+（descriptor 里出现 `Ljava/lang/CharSequence;`/`Ljava/lang/Comparable;`/`Ljava/io/Serializable;`/
+`Ljava/util/{Collection,AbstractSet,Set};`/`Ljava/lang/Iterable;`/`[Ljava/lang/CharSequence;` 的任一）
+= **52** 个类；再用**同一入口**（`class-source --policy single-class`，两个二进制：base `370f72a1` 的
+`build.rs` 编出的 CLI 与 HEAD 的 CLI）逐类渲染并逐行 diff。
+
+| 类 | 结果 |
+| --- | --- |
+| `…/java-syntax-2026-10-05/charsequence-arg-widening-patrol/fixture/SB.class` | 1 条拒绝 → 恢复（本片主锚） |
+| `…/java-syntax-2026-10-05/recursive-generic-patrol/fixture/RG.class` | 2 条 → 恢复（comparable 锚） |
+| `…/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN.class` | 1 条（`EnumSet`→`Set`）→ 放行（枚举片 pin，已记录） |
+| `…/java-syntax-2026-10-03/nested-generic-header-patrol/scg/results/three-way/SCGA.class` | 1 条 → 恢复（`same_class_generic_binding` 的移动 pin） |
+| `…/java-syntax-2026-10-03/nested-generic-header-patrol/fixture/Z1.class` | 2 条 → 恢复（`main` 整段；**巡查之外的额外收益**） |
+| `…/java-syntax-2026-10-05/generic-static-field-init-patrol/fixture/RG.class` | 2 条 → 恢复（`consume()` 整段；**额外收益**） |
+
+**全 52 个候选类的 source text diff 只有上述 6 个，且新增行中出现的拒绝句为 0**（9 条拒绝被移除、
+0 条新增）——与实现的“只增不减”性质一致（既有通道与表逐字未动）。故 spec 预期“空 diff”**被实测否定**
+（语料确有真实 `Comparable`/`EnumSet` 调用点），但方向全部是放宽，无任何回退或新拒绝。
+
+两个额外收益的渲染与入口记在各自巡查目录：
+`nested-generic-header-patrol/results/jarde-Z1-after-platform-implementer-tables.txt`、
+`generic-static-field-init-patrol/results/jarde-RG-after-platform-implementer-tables.txt`（readme 未改，
+路由由文件名与文件头说明）。

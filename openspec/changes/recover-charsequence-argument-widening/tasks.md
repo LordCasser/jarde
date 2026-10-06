@@ -21,6 +21,7 @@
       → 实测：`java.lang.String.join((java.lang.CharSequence) "-", (java.lang.CharSequence[]) arg0);`；整类 refusals=0；ignored replay（双腿）答案 `p-q/a,b,c/b/s` 与 fixture 自身 class 一致。
 - [x] 3.2 零回退：集合/Throwable 扩宽既有测试全绿；负例两条仍拒；corpus 双腿扫描 diff 为空。
       → 既有集合/Throwable 测试全绿（其中集合表 `CWN` 的 `EnumSet→Set` 一行由**枚举片**的级联伴行移动，见该片 verification 与本节“移动的 pin”）；负例（`StringBuilder→Serializable`、`Segment→CharSequence`）实测仍拒；`SB`/`ST`/`GE` 之外的成员逐字未动。
+      **语料扫描实测（修正 spec 的“空 diff”预期）**：1987 个语料 class 里 52 个是表目标候选，逐类双腿（base/HEAD 二进制）渲染 diff = 6 类，**全部是“拒绝→恢复”**（新增行里 0 条拒绝句；含 2 个巡查之外的自然收益）——见本片 verification“语料扫描”节。
 - [x] 3.3 门禁全量（基线以合并态为准；flake 家族单测复跑两轮判定）+ fmt + CI-exact clippy + openspec strict + `git diff --check` + 再生 fingerprint。
       → 见本片 verification“门禁”节；fingerprint 与 fixture 人口计数按约定再生。
 - [ ] 3.4 root 独立复核：实现者全集与 javadoc 一致、表封闭不外推、零回退实测；关闭 summary.md 登记行。（留 root）

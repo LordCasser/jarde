@@ -20,6 +20,7 @@
       → 实测：`max((java.lang.Comparable) "a", …)` / `max((java.lang.Comparable) java.lang.Integer.valueOf(1), …)`；`RG` 整类 refusals=0；`CO` replay（双腿）答案 `1/b/2/b` 与 fixture 自身 class 一致。
 - [x] 3.2 零回退：三条姊妹通道测试全绿；负例仍拒；corpus 双腿扫描 diff 为空。
       → 既有集合/Throwable/平台接口测试全绿；`COX.big` 仍拒（计数恰 1）；两处既有 pin 因本表**严格更好地恢复**而移动（`same_class_generic_binding` 的 SCGA/SCGF `main`，见本片 verification“移动的 pin”）。
+      **语料扫描实测（修正 spec 的“空 diff”预期）**：52 个候选类里 6 类有 diff，全部“拒绝→恢复”（新增行 0 条拒绝句），其中本片相关 = `recursive-generic-patrol/RG`（2 条）、`same_class_generic_binding` 的 `SCGA`（1 条）、`nested-generic-header-patrol/Z1`（2 条，额外收益）、`generic-static-field-init-patrol/RG`（2 条，额外收益）——见 charsequence 片 verification“语料扫描”节。
 - [x] 3.3 门禁全量（基线以合并态为准；flake 家族单测复跑两轮判定）+ fmt + CI-exact clippy + openspec strict + `git diff --check` + 再生 fingerprint。
       → 见本片 verification“门禁”节。
 - [ ] 3.4 root 独立复核：javadoc 集核对、表封闭不外推、零回退实测；关闭 summary.md 登记行。（留 root）
