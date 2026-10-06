@@ -1,0 +1,76 @@
+corpus classes: 735
+SELF-TEST OK: BR$Impl raw -> parameterized; BareBox unchanged
+loose leg: 735 classes
+family leg: 735 classes
+moved classes: 12
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-bridge-projection/br-family/v8/BR$Impl.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-bridge-projection/br-family/v8/BR$StrBox.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Spec.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-bridge-projection/positive/v8/BridgeProbe.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8-javac8/Arity.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8-javac8/ErasedCall.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8-javac8/IfaceImpl.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8-javac8/MultiIface.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8/Arity.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8/ErasedCall.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8/IfaceImpl.class
+MOVED family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-interface-header-projection/v8/MultiIface.class
+error renders: 57
+ERROR-RENDER loose /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/assert-statement-sugar/AssertProbeExtraGuard.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/assert-statement-sugar/AssertProbeWrongOwner.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape$I.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape-I-field.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape-I-interface-default.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape-I-interface-static.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape-I-signature.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape-I-wrong-self.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape-root-use.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape-third-child.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/em01-member-pair/Shape.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-assert-core/AssertCore-non01-arms.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-assert-core/AssertCore-wrong-owner.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Drv-toplevel.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-bridge-projection/bridge-superclass-precondition/v8/Drv.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-concat-saved-finally/negatives/extra-consumer.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-concat-saved-finally/negatives/non-concat.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-concat-saved-finally/negatives/range-shrunk.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-finally/Test14-handler-call.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-finally/Test14-minimal.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-finally/Test14-second-field.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-finally/Test14-slot0.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-values/field-writes/ConditionalFieldWrites.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-values/field-writes/ConditionalFieldWritesNon01.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-values/short-circuit-transfer-gateway-controls/ChainExtraBoundary.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-conditional-values/short-circuit-transfer-gateway-controls/ChainExtraBoundaryException.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-exception-only-catchall/negatives/branch-cleanup.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-exception-only-catchall/negatives/competing-row.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-exception-only-catchall/negatives/external-entry.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-exception-only-catchall/negatives/normal-exit.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-exception-only-catchall/negatives/range-expanded.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-exception-only-catchall/negatives/range-shrunk.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-exception-only-catchall/negatives/wrong-rethrow.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-finally-proof/TargetCopies.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-finally-proof/TargetCopiesDifferentTarget.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-inner-assignment/ExtraCopy.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-inner-assignment/WrongType.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-local-postfix-array-elements/v8/ArrayPostfixElement-plus2.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-local-postfix-array-elements/v8/ArrayPostfixElement.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinEdge.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinRow.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinValueMismatch.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-two-exit-return/TernaryInIfProbe-int.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/p3-two-exit-return/TernaryInIfProbe-return2.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-unicode-identifiers/loc/Loc.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-unicode-identifiers/loc/Loc.punct.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-bcishift.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-dupbreak.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-handler.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-mismatch.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-nullrecv.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-unsynth.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-void.class (base=False patched=False)
+ERROR-RENDER family /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/tests/fixtures/recover-write-accessor-field-types/probes/WA-wrongowner.class (base=False patched=False)
+exit=0

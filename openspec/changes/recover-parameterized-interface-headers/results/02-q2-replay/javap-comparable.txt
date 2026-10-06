@@ -1,0 +1,32 @@
+Classfile jar:file:/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/jre/lib/rt.jar!/java/lang/Comparable.class
+  Last modified 2024-10-9; size 235 bytes
+  MD5 checksum 2586ab12964090614cc35867439b7a56
+  Compiled from "Comparable.java"
+public interface java.lang.Comparable<T extends java.lang.Object>
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+Constant pool:
+   #1 = Class              #10            // java/lang/Comparable
+   #2 = Class              #11            // java/lang/Object
+   #3 = Utf8               compareTo
+   #4 = Utf8               (Ljava/lang/Object;)I
+   #5 = Utf8               Signature
+   #6 = Utf8               (TT;)I
+   #7 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+   #8 = Utf8               SourceFile
+   #9 = Utf8               Comparable.java
+  #10 = Utf8               java/lang/Comparable
+  #11 = Utf8               java/lang/Object
+{
+  public abstract int compareTo(T);
+    descriptor: (Ljava/lang/Object;)I
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #6                           // (TT;)I
+}
+Signature: #7                           // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "Comparable.java"
+
+# the class file's own Signature attribute (arity 1)
+    Signature: #6                           // (TT;)I
+Signature: #7                           // <T:Ljava/lang/Object;>Ljava/lang/Object;

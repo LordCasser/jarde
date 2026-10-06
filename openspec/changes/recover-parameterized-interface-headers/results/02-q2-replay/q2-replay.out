@@ -1,0 +1,41 @@
+== javac 8 (Corretto 1.8.0_432) ==
+pool   Same javac8 exit=0
+source Same javac8 exit=0
+pool   SameRaw javac8 exit=0
+source SameRaw javac8 exit=0
+pool   SameDeep javac8 exit=0
+source SameDeep javac8 exit=0
+== javac 23.0.1 --release 8 ==
+pool   Same javac23 exit=0
+source Same javac23 exit=0
+pool   SameRaw javac23 exit=0
+source SameRaw javac23 exit=0
+pool   SameDeep javac23 exit=0
+source SameDeep javac23 exit=0
+== products: pool spelling vs source spelling, byte for byte ==
+javac8 Same: IDENTICAL
+javac8 SameRaw: IDENTICAL
+javac8 SameDeep: IDENTICAL
+javac23 Same: IDENTICAL
+javac23 SameRaw: IDENTICAL
+javac23 SameDeep: IDENTICAL
+== self-test: a missing flat name must fail ==
+SELF-TEST OK: missing name fails on both legs
+== the header facts the products carry ==
+Classfile /tmp/pih-q2-replay/pool8/Same.class
+  Last modified 2026-10-6; size 525 bytes
+  MD5 checksum 093c9b031754e58de56143a478c58f56
+  Compiled from "Same.java"
+  #17 = Utf8               InnerClasses
+  #18 = Utf8               LD$Base<Ljava/lang/String;>;
+  #19 = Utf8               SourceFile
+--
+Signature: #18                          // LD$Base<Ljava/lang/String;>;
+SourceFile: "Same.java"
+InnerClasses:
+     public static #16= #6 of #28; //Base=class D$Base of class D
+Classfile /tmp/pih-q2-replay/pool8/SameDeep.class
+  Last modified 2026-10-6; size 568 bytes
+  MD5 checksum 7828adca3bf9cf9f95e1d40d57fbe4d8
+  Compiled from "SameDeep.java"
+Q2 REPLAY OK

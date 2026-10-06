@@ -1,0 +1,27 @@
+pool   ImplI javac8 exit=0
+source ImplI javac8 exit=0
+pool   ImplI javac23 exit=0
+source ImplI javac23 exit=0
+javac8  ImplI: IDENTICAL
+javac23 ImplI: IDENTICAL
+pool self-name javac8 exit=0
+pool self-name javac23 exit=0
+public class Self$Name extends java.lang.Object implements java.lang.Comparable<Self$Name>
+   #6 = Methodref          #5.#29         // Self$Name.compareTo:(LSelf$Name;)I
+  #13 = Utf8               compareTo
+  #29 = NameAndType        #13:#14        // compareTo:(LSelf$Name;)I
+  public int compareTo(Self$Name);
+  public int compareTo(java.lang.Object);
+    flags: ACC_PUBLIC, ACC_BRIDGE, ACC_SYNTHETIC
+         5: invokevirtual #6                  // Method compareTo:(LSelf$Name;)I
+Signature: #19                          // Ljava/lang/Object;Ljava/lang/Comparable<LSelf$Name;>;
+== the bridge javac regenerates from the parameterized pool-spelled header ==
+public class ImplI extends java.lang.Object implements DI$Inner<java.lang.String>
+  minor version: 0
+--
+    flags: ACC_PUBLIC, ACC_BRIDGE, ACC_SYNTHETIC
+    Code:
+--
+Signature: #22                          // Ljava/lang/Object;LDI$Inner<Ljava/lang/String;>;
+SourceFile: "ImplI.java"
+IFACE POSITION OK

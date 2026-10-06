@@ -1,0 +1,30 @@
+SELF-TEST OK: self-header present on a real render; a missing name is not answered as source
+binary: /tmp/pih-bin/jarde-cli-patched
+== iface-single: public class IfaceImpl extends java.lang.Object implements java.lang.Comparable<IfaceImpl>
+   bridge compareTo(Ljava/lang/Object;)I: admitted=True projected=True refusal=-
+== iface-multi: public class MultiIface extends java.lang.Object implements java.lang.Comparable<MultiIface>, java.lang.Runnable
+   bridge compareTo(Ljava/lang/Object;)I: admitted=True projected=True refusal=-
+== iface-erased: public class ErasedCall extends java.lang.Object implements java.lang.Comparable<ErasedCall>
+   bridge compareTo(Ljava/lang/Object;)I: admitted=True projected=True refusal=-
+== iface-unresolved: public class Unresolved extends java.lang.Object implements MissingApi
+   bridge put(Ljava/lang/Object;)V: admitted=False projected=False refusal=a direct parent or interface needed for the erased method is unresolved
+== iface-arity: public class Arity extends java.lang.Object implements ArityApi
+   header refusal: unsupported (class_generic_source_unproved): an interface definition contradicts the class Signature's type arguments
+   bridge put(Ljava/lang/Object;)V: admitted=False projected=False refusal=a direct parent or interface needed for the erased method is unresolved
+== iface-typeuse: public class TypeUse extends java.lang.Object implements java.lang.Comparable
+   bridge compareTo(Ljava/lang/Object;)I: admitted=False projected=False refusal=the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge
+== br-impl: class BR$Impl extends java.lang.Object implements java.lang.Comparable<BR$Impl>
+   bridge compareTo(Ljava/lang/Object;)I: admitted=True projected=True refusal=-
+== br-strbox: class BR$StrBox extends BR$Box<java.lang.String>
+   bridge set(Ljava/lang/Object;)V: admitted=True projected=True refusal=-
+   bridge get()Ljava/lang/Object;: admitted=True projected=True refusal=-
+== parent-spec: public class Spec extends Outer$Box<java.lang.String>
+   bridge get()Ljava/lang/Object;: admitted=True projected=True refusal=-
+   bridge set(Ljava/lang/Object;)V: admitted=True projected=True refusal=-
+== parent-criteria-nested: public class NestedExtends extends NB$Box
+   header refusal: unsupported (class_generic_source_unproved): direct superclass does not resolve to one proved single-parameter parent definition
+== parent-criteria-bare: public class BareBox extends NB$Box
+== parent-arity: public class ArityExtends extends NB$Twin
+   header refusal: unsupported (class_generic_source_unproved): direct superclass does not resolve to one proved single-parameter parent definition
+== parent-multiseg: public class Multiseg extends MO$Mid
+   header refusal: unsupported (class_generic_source_unproved): only a single direct Parent<String> superclass is supported for a class without type parameters
