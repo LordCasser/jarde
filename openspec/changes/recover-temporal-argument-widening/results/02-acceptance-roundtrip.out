@@ -1,0 +1,21 @@
+# 命令：sh openspec/changes/recover-temporal-argument-widening/results/cli-roundtrip.sh
+# CLI = patched 二进制（sha256 c8e35f26…），fixture 源与 class 为仓库冻结件
+# 输出：
+render JT: 3109 bytes, 0 refusal sentence(s)
+render DT: 1862 bytes, 0 refusal sentence(s)
+render CF: 4853 bytes, 0 refusal sentence(s)
+installed javac --release 8: exit 0
+real javac 8 (/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac): exit 0
+JT: original | installed-javac | real-javac8
+  2026-10-06/2026-11-01/09:30|2026/01/02 03:04 -> 3:4|287
+  2026-10-06/2026-11-01/09:30|2026/01/02 03:04 -> 3:4|287
+  2026-10-06/2026-11-01/09:30|2026/01/02 03:04 -> 3:4|287
+DT: original | installed-javac | real-javac8
+  03:04/03:04
+  03:04/03:04
+  03:04/03:04
+CF: original | installed-javac | real-javac8
+  DATA!|fallback:java.lang.IllegalStateException: x|6
+  DATA!|fallback:java.lang.IllegalStateException: x|6
+  DATA!|fallback:java.lang.IllegalStateException: x|6
+ROUNDTRIP OK: both stripped legs answer exactly what the fixture's own classes answer
