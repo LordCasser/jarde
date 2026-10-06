@@ -3762,6 +3762,136 @@
       "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/forward-read/ForwardProbe.class"
     },
     {
+      "blake3": "8ec4d4632fb5fc5fb055af6ca8c62dd486705ca20ef922c333ac6a9740b8454f",
+      "bytes": 480,
+      "path": "tests/fixtures/p3-interface-header-projection/Arity.java"
+    },
+    {
+      "blake3": "8e8b38433d3651256a7d49b36718a663b999ed6cd2317cbb32ef31ce1597b960",
+      "bytes": 1039,
+      "path": "tests/fixtures/p3-interface-header-projection/ErasedCall.java"
+    },
+    {
+      "blake3": "8a8e9b20ed9d6b6f2af54dbbe8296086cbba3020bc1e23f71aa4ca127d6c9fdb",
+      "bytes": 138,
+      "path": "tests/fixtures/p3-interface-header-projection/IfaceImpl.java"
+    },
+    {
+      "blake3": "dd3a964883343b935000b571a3e05e9a8300be5cdded115e08da550153a6e121",
+      "bytes": 430,
+      "path": "tests/fixtures/p3-interface-header-projection/Mark.java"
+    },
+    {
+      "blake3": "e247280f386433eb48a2af4f170e54f8b770e0b9115331360f22dad714762184",
+      "bytes": 192,
+      "path": "tests/fixtures/p3-interface-header-projection/MultiIface.java"
+    },
+    {
+      "blake3": "3f26a06c32ac63a36bb277202709f412be5dc2649e5b80b3be560d94314f2475",
+      "bytes": 682,
+      "path": "tests/fixtures/p3-interface-header-projection/TypeUse.java"
+    },
+    {
+      "blake3": "1f0420e94ab40934834f804515af0da239e7fb2442c293e803669160be35fb35",
+      "bytes": 243,
+      "path": "tests/fixtures/p3-interface-header-projection/Unresolved.java"
+    },
+    {
+      "blake3": "7af005609a8407d3fe11d755ede583147504be5361ecab2b756c6ca3c9e69c6c",
+      "bytes": 188,
+      "path": "tests/fixtures/p3-interface-header-projection/api1/ArityApi.java"
+    },
+    {
+      "blake3": "6c35f48cfa5c16810b4cf88c304b3db853f3cb5f415507127d3dac01ea596eae",
+      "bytes": 331,
+      "path": "tests/fixtures/p3-interface-header-projection/api1/MissingApi.java"
+    },
+    {
+      "blake3": "84894883113c438994defbfe9f4958132d1ea8ab1cdba0ea9cf31caba3285637",
+      "bytes": 509,
+      "path": "tests/fixtures/p3-interface-header-projection/api2/ArityApi.java"
+    },
+    {
+      "blake3": "9dea2b279d0373645ee6183b37324f13d5ad40fdc97b22ce445dd2b9e68cd64d",
+      "bytes": 642,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/Arity.class"
+    },
+    {
+      "blake3": "f33c621a3191d4e4a4c9b663c9cafc5145a463e38d87d30ccea5e8487d7bbd30",
+      "bytes": 256,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/ArityApi.class"
+    },
+    {
+      "blake3": "3ddd0f8533dd10d6decdf582fa8e6cd9a0bd132078fdcf3a336ac8442cacdb61",
+      "bytes": 685,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/ErasedCall.class"
+    },
+    {
+      "blake3": "0b002284fb5f1c6519d064ad022edc9f7c2d3d1faa8061e0edc9e49962123d64",
+      "bytes": 446,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/IfaceImpl.class"
+    },
+    {
+      "blake3": "d129c34788183c18d9d5a8141b9fd6bea79e7797ea562337154956571ec4f909",
+      "bytes": 361,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/Mark.class"
+    },
+    {
+      "blake3": "117f5fd8bb7402d127676cb1e40bf9d4df3f196959d969b4846d834d62eea3f8",
+      "bytes": 541,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/MultiIface.class"
+    },
+    {
+      "blake3": "bb406a9b5e7cfd68b171093715a5cb8b7d525aefeb2989116137a9bf764b6135",
+      "bytes": 732,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/TypeUse.class"
+    },
+    {
+      "blake3": "f2083aee1828a10f0d709958acc87d6262760c32b7d5c051f4e05666d2cc3f98",
+      "bytes": 666,
+      "path": "tests/fixtures/p3-interface-header-projection/v8-javac8/Unresolved.class"
+    },
+    {
+      "blake3": "81884d9214a3d7fbecda43610a5bb7d7bb37bd571400991cf7a12fa47b1e7b1d",
+      "bytes": 672,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/Arity.class"
+    },
+    {
+      "blake3": "f5c1f8e9206695ff0cf6f2deb2cfbe0aa0388ca35aea5b0e6f3e1ca76d33a647",
+      "bytes": 256,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/ArityApi.class"
+    },
+    {
+      "blake3": "e226adf0cf7d7c23b3317a22d97bdfe4a1ac1add66a627de2b518537bd3c6df2",
+      "bytes": 715,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/ErasedCall.class"
+    },
+    {
+      "blake3": "8218261092cd4ef9fc2ab23e887d6cc9cb4a59a95e9b128c358a5a407d7856a5",
+      "bytes": 476,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/IfaceImpl.class"
+    },
+    {
+      "blake3": "5f440def119ae19da045194c66b79d2b78a06a0e379b92529d951b448a763de0",
+      "bytes": 361,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/Mark.class"
+    },
+    {
+      "blake3": "fc373538f49387e814ae301286a308ea7c9532791eced70c0b38a8c141a09417",
+      "bytes": 571,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/MultiIface.class"
+    },
+    {
+      "blake3": "7f7994b4fc967b904506ee2ab0cfffc98e81f15026ab3f35d4aeacad839334e2",
+      "bytes": 762,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/TypeUse.class"
+    },
+    {
+      "blake3": "c0975d5b626c74808f1456224d0f40143f002ecafabbabc2936b5d33e1eb1b0a",
+      "bytes": 696,
+      "path": "tests/fixtures/p3-interface-header-projection/v8/Unresolved.class"
+    },
+    {
       "blake3": "c5869e20c2e07c4f0102a56b36128f1104c15c148e98f45b2d4d4b241363660f",
       "bytes": 2125,
       "path": "tests/fixtures/p3-intermediate-join/GenerateBridgeControls.java"
@@ -4410,6 +4540,146 @@
       "blake3": "3697d4178bbed31ebe7811b7bcfb275f1530242197e12685878bbc6bdb22e8d7",
       "bytes": 361,
       "path": "tests/fixtures/p3-nested-eval/v8/NestedEval.class"
+    },
+    {
+      "blake3": "eba04836cfed44b93912ce4f5f36b944c41660cbc5ab74963a92b18b5455476c",
+      "bytes": 367,
+      "path": "tests/fixtures/p3-nested-parent-projection/ArityExtends.java"
+    },
+    {
+      "blake3": "33b27ab46bdc9e10c53253c9b70ee6c68b4321018fc6d3b6a1448030f5b6a06f",
+      "bytes": 306,
+      "path": "tests/fixtures/p3-nested-parent-projection/BareBox.java"
+    },
+    {
+      "blake3": "341b7a40d1caafd7d952b4ca3a3d87bc73f9d28c4d5a3334f5f37a0c2e807bbd",
+      "bytes": 74,
+      "path": "tests/fixtures/p3-nested-parent-projection/MO.java"
+    },
+    {
+      "blake3": "7ea95e4533b5ba16d19273d369fae698f64fe96e0dfc8be5046f1821bf5401c9",
+      "bytes": 602,
+      "path": "tests/fixtures/p3-nested-parent-projection/Multiseg.java"
+    },
+    {
+      "blake3": "5e4eabc7793e1ccfd6efa0d6702702fba2ba6a6e1df103b4f17b3534871041bc",
+      "bytes": 134,
+      "path": "tests/fixtures/p3-nested-parent-projection/NB.java"
+    },
+    {
+      "blake3": "910ae2f2c314cc127145442397bb4dc1f85ae52407b6ff5e5d58c180e59754db",
+      "bytes": 360,
+      "path": "tests/fixtures/p3-nested-parent-projection/NestedExtends.java"
+    },
+    {
+      "blake3": "37e08978bd7396abac188d6d6d3ae52fa7d0d55f86aea6c7eef2404cf53c451b",
+      "bytes": 218,
+      "path": "tests/fixtures/p3-nested-parent-projection/api1/NB$Twin.java"
+    },
+    {
+      "blake3": "a6fb632b4b807afad29920defcc7982e5e84c5adb7096350c883e8cea611df39",
+      "bytes": 362,
+      "path": "tests/fixtures/p3-nested-parent-projection/api2/NB$Twin.java"
+    },
+    {
+      "blake3": "c04d1ed4b68d06256297e47e03cc726523e1ed504277e754fa9d831b95214bf5",
+      "bytes": 466,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/ArityExtends.class"
+    },
+    {
+      "blake3": "250a22febde77f5efceb0511db641e2d0e339e9eb1dacb7c59d04115cd7f609f",
+      "bytes": 260,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/BareBox.class"
+    },
+    {
+      "blake3": "c40932dc4220ac1f420b0e4bf72981d2eb0a957b3e8038d1095cd3ae0b7fdedc",
+      "bytes": 337,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/MO$Mid.class"
+    },
+    {
+      "blake3": "b068d00df38eabf086057d3c8920a653507eb067997e00b323babfff343987bc",
+      "bytes": 290,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/MO.class"
+    },
+    {
+      "blake3": "a58c5364d926a6f3a83f19773f2b189c3e7b200ed4b3fc2195035c94507d330b",
+      "bytes": 504,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/Multiseg.class"
+    },
+    {
+      "blake3": "9c6bc4cef47cc841f8c5d135ba69f17365a1c1a9cc9bd0e54cb835dac2784744",
+      "bytes": 338,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/NB$Box.class"
+    },
+    {
+      "blake3": "6918ee87e1b70d38944667a3669d628b12dde93ab679bea26a76cbcc93ca7a9b",
+      "bytes": 229,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/NB$Root.class"
+    },
+    {
+      "blake3": "109b7cde5443aac05a7734e59c2cd92ac91e501e42e18025cea18db903b8d5e3",
+      "bytes": 353,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/NB$Twin.class"
+    },
+    {
+      "blake3": "63520e9bf4dac0a53bb76a8c7b857ae6486b8e604792ee0394736c00a41c85e7",
+      "bytes": 255,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/NB.class"
+    },
+    {
+      "blake3": "ee56fc1fc48bb17cd0d3684c80ccae929eade5034f4f41ad1ca01fd8e7043eb6",
+      "bytes": 512,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8-javac8/NestedExtends.class"
+    },
+    {
+      "blake3": "8dcdbe58ce044c9faf41abcd83d0034cad2c3b4d093c2471ccf55fc4bdf76964",
+      "bytes": 466,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/ArityExtends.class"
+    },
+    {
+      "blake3": "9d21c32b5b822450c181ff7f63e05f014f1f37e0a18e8d83510adf5d7023e9b5",
+      "bytes": 260,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/BareBox.class"
+    },
+    {
+      "blake3": "4e41ce6e2849ef57f658df6edaba8a721e893023a1abc06d6048f9d76d31c65a",
+      "bytes": 367,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/MO$Mid.class"
+    },
+    {
+      "blake3": "4a6dd815cb032c86eb1d19eb8abc7fa929da6be584e27ce0dd5b09e4604b7cd4",
+      "bytes": 290,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/MO.class"
+    },
+    {
+      "blake3": "646ef738e85878f306863cca471dd91a81f33e70e92684c077594e356e9e318d",
+      "bytes": 530,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/Multiseg.class"
+    },
+    {
+      "blake3": "d66e0f343e2edd3502b82ed86174cd48f824ab4340031a0367e1fbdfde6229c1",
+      "bytes": 338,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/NB$Box.class"
+    },
+    {
+      "blake3": "a5324175072921580b3bb834c5dac26f0bb9b30ce26b5bd252a410747d098845",
+      "bytes": 229,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/NB$Root.class"
+    },
+    {
+      "blake3": "dec18ae9ce30954949e8d44af30ea689eb54d0babbe2a705ff943dee4376a5dd",
+      "bytes": 353,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/NB$Twin.class"
+    },
+    {
+      "blake3": "69455ca0a359b163d234585c2af0df3cdb7f814f3a0bfd63405c5878814de21d",
+      "bytes": 255,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/NB.class"
+    },
+    {
+      "blake3": "49fc865715a9698600fe095f9a966b323fdc8aeb2716e8c9d0d82cd11a4a3024",
+      "bytes": 512,
+      "path": "tests/fixtures/p3-nested-parent-projection/v8/NestedExtends.class"
     },
     {
       "blake3": "e7387b7616fd2af41b98b7696ada01b21816d6156337142f655818e1d38c5ce2",
