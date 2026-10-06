@@ -136,3 +136,9 @@ ASCII 对照照旧通过——新检查确实能在旧行为上失败。
 2. **类/包声明行不经该表**（proposal 的 root 追加关联的核对结论）：类声明名走 `simple_name` 原样拼接，
    `is_java_identifier` 只在泛型头投影把关；`package-info` 的连字符因此既不被收也不被拒，保持现状（本片
    不加声明行合法性门，冻结文本钉住不变）。
+
+## 4.5 Root 独立验收（2026-10-06，HEAD=592d61e8）
+
+- 门禁复现：tests 3026 passed / 0 failed / 52 ignored（316 result 行；agent 报 309 targets 为 Running 头计数口径差，passed/failed/ignored 三项一致）；fmt/clippy（ci.yml 46–76 逐字）/openspec 300 全绿。
+- 锚独立复验（HEAD 重编 CLI）：UT 渲染 `__` 计数=0，声明 `变量`/`描述`/`方法(int)` 与引用 `UT.描述`/`方法(21)`/`local1.名字` 双源一致；剥离（UTF-8）编译 exit 0、`-Xverify:all` 输出 `变量=1/42/中文` 与巡查原版逐字相同。
+- 实现审查：单一谓词所有者（names.rs）+ ASCII 字节快路径逐字保留 + Unicode 超集双向边界文档化与单测钉住；2721 类语料扫描仅 2 锚类变化。基线计数疑点已核：口径差异非回归。
