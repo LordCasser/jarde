@@ -82,3 +82,7 @@
 52 ignored）、fmt 干净、CI-exact clippy exit 0、`openspec validate --all --strict` 300/0、
 `git diff --check` 干净；语料指纹再生、fixture 人口 `(687, 2932, 282, 1827, 8)`（+22 类/94 body，
 含本片 5 类 × 2 腿）。
+
+## Root 独立验收（2026-10-06，合并片 HEAD=ac41fbbd）
+
+门禁复现：tests 315 targets / 3021 passed / 0 failed / 52 ignored、fmt/clippy（ci.yml 46–76 逐字）/openspec 300 全绿。锚独立复验（HEAD 重编 CLI）：SB.join 双位（分隔符+`(CharSequence[])` 数组位）零引注恢复；OB `EnumSet.of((java.lang.Enum)…, …)`；GE `both((java.io.Serializable)…)`；GE `up()` 异构数组负例保持。偏差追认：enum 表实测修正（java.lang.Enum 行不可封闭、剩余拒绝为 EnumSet→Collection 级联，落 EnumSet javadoc 行）合理且证据在案；数组位首版越界（IllegalStateException[]→Throwable[]）由实现者自查修正并加 4 条钉边界；Segment/Enum 自实现两处 spec 事实差按保守行集处理。语料扫描 6 类 9 拒移除 0 新增=纯放宽。
