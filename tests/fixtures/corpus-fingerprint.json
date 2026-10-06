@@ -7182,6 +7182,86 @@
       "path": "tests/fixtures/recover-array-element-field-receiver/v8/RP.class"
     },
     {
+      "blake3": "1a4df2d676437d97c0ba88f41309f0391cd19330bf371d5908e939c37dbd767c",
+      "bytes": 3462,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/AV.java"
+    },
+    {
+      "blake3": "34efa2b26c1538569220cb4d8af1ab95346273f0bfb88e3957ee05b2c4acf5bc",
+      "bytes": 230,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/AVN.class"
+    },
+    {
+      "blake3": "d7eaea0e9f994c32b2795d027d0c46e9076175983855f376fadadd7a9a9151ab",
+      "bytes": 1552,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/AVT.java"
+    },
+    {
+      "blake3": "1bfd8f26dea7faf0b498ebeb6c904545d422d2fea677cb41cfd336000db4b576",
+      "bytes": 840,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/MD.java"
+    },
+    {
+      "blake3": "cda93de690177d2c84b21b451c78c6b330dedcc0017f127afdce42adaa18f524",
+      "bytes": 570,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/MD2.java"
+    },
+    {
+      "blake3": "bcd2f3182039b02d4d39bddb523aeaa7e84a4eea8e226945a69930466372f342",
+      "bytes": 413,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/MD3.java"
+    },
+    {
+      "blake3": "25a5901898605653e80236cd76d9ecef172274d2d1271ba1696492203367992b",
+      "bytes": 3051,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8-javac8/AV.class"
+    },
+    {
+      "blake3": "1d5590e0c3e4ffb44041f1787278fe26c47a72ec2faeb316526774fd9a8728e3",
+      "bytes": 1986,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8-javac8/AVT.class"
+    },
+    {
+      "blake3": "dec9b3d698daa1d66158bdf2673f78a1a9a8af5cef45e43a8b09320a75ddef4c",
+      "bytes": 1484,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8-javac8/MD.class"
+    },
+    {
+      "blake3": "9651d5ee02c7099c8afe265fd3e9fabee99b89d3fd53b02742c85d0affefab1f",
+      "bytes": 1167,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8-javac8/MD2.class"
+    },
+    {
+      "blake3": "369a42b539665ae4fc7e9e45d69b826eb1186c0bd5af651ea4028fa1cc662db8",
+      "bytes": 937,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8-javac8/MD3.class"
+    },
+    {
+      "blake3": "66f5fd8120471f12b952fdcf1b123a8f774e3a0ac23d9de332eb1a3dd02c6b2b",
+      "bytes": 3051,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8/AV.class"
+    },
+    {
+      "blake3": "d545764fca55321b402756c7a47563609dd31501bf72072cb7ceebc438f32523",
+      "bytes": 1986,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8/AVT.class"
+    },
+    {
+      "blake3": "4b0d8b05adca24dfde8d0d90ec518a59eb487f5573112f5811ca8e2a30376f9e",
+      "bytes": 1484,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8/MD.class"
+    },
+    {
+      "blake3": "3b770b11b9bd7ab96850ec7d965f3dae98b9845075c331430450bcd9f925ad16",
+      "bytes": 1167,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8/MD2.class"
+    },
+    {
+      "blake3": "5eebce835ef8d3b05d400e5587eca856a676f8f704d4abd59f70f096aebdad98",
+      "bytes": 937,
+      "path": "tests/fixtures/recover-array-initializer-value-positions/v8/MD3.class"
+    },
+    {
       "blake3": "e7ac9292a93c6bf9b27f4fd9dde5ac89daaa8c297d39943cc339f79a3505f2d1",
       "bytes": 1682,
       "path": "tests/fixtures/recover-chained-field-assignment/CF.java"
