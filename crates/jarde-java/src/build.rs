@@ -6870,7 +6870,13 @@ struct LocalAssignmentShape {
     store: u32,
     test: u32,
     source: ValueId,
+    /// The copy the test reads: the value the consumer's text is written for.
     tested: ValueId,
+    /// The copy the store takes: the value the assignment's right-hand side is written for.
+    stored: ValueId,
+    /// The value the store writes into the slot. Whether anything reads it is what decides how the
+    /// dance is presented (`recover-dup-store-conditional`).
+    written: ValueId,
     slot: u16,
 }
 
@@ -6970,6 +6976,8 @@ fn local_assignment_at(
         test: test_bci,
         source: source_value,
         tested,
+        stored: store_copy,
+        written: *written,
         slot: *slot,
     })
 }
@@ -6979,6 +6987,97 @@ struct LocalAssignment {
     shape: LocalAssignmentShape,
     name: String,
     ty: Type,
+    /// How this dance is written. The store target's own readers decide it, and the position of the
+    /// test decides what may be done with the assignment once it is observable
+    /// (`recover-dup-store-conditional`).
+    presentation: LocalAssignmentPresentation,
+}
+
+/// How one proved `dup; store; test` dance is written.
+///
+/// The two physical copies have exactly two consumers — the local store and the test — and the
+/// *store target's* own readers decide which of these three the text is:
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum LocalAssignmentPresentation {
+    /// The store target has **no** reader: the assignment is unobservable, so the store writes no
+    /// statement and the consumer's expression is the value the copy duplicated. This is jadx's own
+    /// elimination (`return i + 1 > 0;` for `return (i = i + 1) > 0;`).
+    Eliminated,
+    /// The store target **is** read later, and the test is the structure's own test — the one its
+    /// entry evaluates unconditionally. The assignment is written as a statement of its own in front
+    /// of the structure (the store instruction is walked where the test block's other effects are
+    /// walked) and the test reads the local's name.
+    Split,
+    /// The store target **is** read later, and the test is one step of a short-circuit chain, whose
+    /// later steps run only when the earlier ones answered for them. Hoisting the assignment in front
+    /// of the chain would run it on paths the bytecode did not run it on, so it stays at the
+    /// consumer's own position as a Java assignment expression — the presentation
+    /// `recover-proved-local-assignments-in-conditions` established.
+    Expression,
+}
+
+/// Which test of a region proved one dance, and what that position allows.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
+enum LocalAssignmentTest {
+    /// A `Region::If`'s own branch: evaluated once, unconditionally, when the structure is entered.
+    Structure,
+    /// A `Region::ShortCircuitValue` step: evaluated only where the chain's earlier steps asked.
+    Conditional,
+    /// A loop's own test: re-evaluated once per iteration, so an assignment in front of the loop
+    /// would run once where the bytecode ran it every time.
+    LoopTest,
+}
+
+/// Whether any instruction can read the value one local store wrote.
+///
+/// The store's value is read where an instruction names it, and it is **carried** through the merges
+/// it is an operand of: a phi at a join or a loop header hands the value on, and what a read after
+/// the merge sees is the merge's own value. The walk follows exactly those two edges — instruction
+/// readers, and the merge an operand record belongs to — so a value no instruction ever reads is a
+/// store the bytecode's own program cannot observe. That is the criterion
+/// `recover-dup-store-conditional` presents by: nothing reads it, so the assignment may be dropped.
+///
+/// A merge the walk cannot name is treated as a reader: the value is then reported observable, which
+/// keeps the store (and the refusal of a shape this slice does not present) rather than dropping an
+/// assignment on evidence that is not there.
+fn local_store_is_observed(
+    ssa: &SsaTable,
+    written: ValueId,
+    merges: &BTreeMap<(CanonicalBlockId, ValueId), Vec<ValueId>>,
+) -> bool {
+    let mut pending = vec![written];
+    let mut seen = BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        if !seen.insert(value) {
+            continue;
+        }
+        for use_ in ssa.value(value).uses() {
+            if use_.bci().is_some() {
+                return true;
+            }
+            let Some(carried) = merges.get(&(use_.block().clone(), value)) else {
+                return true;
+            };
+            pending.extend(carried.iter().copied());
+        }
+    }
+    false
+}
+
+/// The merges each value is an operand of: `(block, value)` → the values those phis define.
+fn merge_index(ssa: &SsaTable) -> BTreeMap<(CanonicalBlockId, ValueId), Vec<ValueId>> {
+    let mut merges: BTreeMap<(CanonicalBlockId, ValueId), Vec<ValueId>> = BTreeMap::new();
+    for phi in ssa.phis() {
+        for input in phi.inputs() {
+            if let PhiInput::Value(value) = input {
+                merges
+                    .entry((phi.block().clone(), *value))
+                    .or_default()
+                    .push(phi.value());
+            }
+        }
+    }
+    merges
 }
 
 /// Only physical copies whose local is already named and typed by the lexical plan are admitted.
@@ -6992,6 +7091,7 @@ fn prove_local_assignments(
     reuse: &reuse::Plan,
     declarations: &mut Declarations,
     parameters: u16,
+    parameter_types: &BTreeMap<u16, Type>,
     budget: &mut Budget,
 ) -> Result<BTreeMap<u32, LocalAssignment>, StopReason> {
     if !operations
@@ -7006,7 +7106,6 @@ fn prove_local_assignments(
         poll(budget, None)?;
         charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
         match region {
-            Region::Loop { .. } => {}
             Region::Sequence { regions } => pending.extend(regions),
             Region::If {
                 branch,
@@ -7015,11 +7114,32 @@ fn prove_local_assignments(
                 else_arm,
                 ..
             } => {
-                condition_tests.insert((branch.clone(), *branch_bci));
+                condition_tests.insert((
+                    branch.clone(),
+                    *branch_bci,
+                    LocalAssignmentTest::Structure,
+                ));
                 pending.extend([then_arm.as_ref(), else_arm.as_ref()]);
             }
-            // This proof never enters a loop, protected range, or handler body.
+            // This proof enters no protected range or handler body. A loop's own test is visited:
+            // its dance may still be *eliminated* when the store target is unobservable, which is
+            // the reference form's whole shape (`while ((line = read()) != null)`). A live target
+            // there is not proved at all — the split form cannot be written in front of a
+            // re-evaluated condition.
             Region::Try { .. } | Region::Guard { .. } => {}
+            Region::Loop { tests, .. } => {
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(tests.len()).unwrap_or(u64::MAX),
+                    tests.first().map(|(_, bci, _)| *bci),
+                )?;
+                condition_tests.extend(
+                    tests.iter().map(|(block, bci, _)| {
+                        (block.clone(), *bci, LocalAssignmentTest::LoopTest)
+                    }),
+                );
+            }
             Region::ShortCircuitValue { tests, tail, .. } => {
                 charge(
                     budget,
@@ -7027,7 +7147,11 @@ fn prove_local_assignments(
                     u64::try_from(tests.len()).unwrap_or(u64::MAX),
                     tests.first().map(|(_, bci)| *bci),
                 )?;
-                condition_tests.extend(tests.iter().cloned());
+                condition_tests.extend(
+                    tests.iter().map(|(block, bci)| {
+                        (block.clone(), *bci, LocalAssignmentTest::Conditional)
+                    }),
+                );
                 pending.extend(tail);
             }
             Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
@@ -7038,7 +7162,8 @@ fn prove_local_assignments(
     }
     let paths = region_paths(regions);
     let mut proved = BTreeMap::new();
-    for (owned_block, test_bci) in condition_tests {
+    let mut merges: Option<BTreeMap<(CanonicalBlockId, ValueId), Vec<ValueId>>> = None;
+    for (owned_block, test_bci, test_kind) in condition_tests {
         let Some(block) = ssa.block(&owned_block) else {
             continue;
         };
@@ -7095,52 +7220,113 @@ fn prove_local_assignments(
             let Some(name) = names.text(variable) else {
                 continue;
             };
-            if shape.slot < parameters {
-                continue;
-            }
-            let Some(Decided::Type(ty)) = declarations.decided.get(&variable) else {
-                continue;
+            // A parameter's type is the member's own descriptor — the plan keys its decisions by
+            // the write a variable's type is decided from, and a parameter is written by the caller.
+            let ty = if shape.slot < parameters {
+                match parameter_types.get(&shape.slot) {
+                    Some(ty) => ty.clone(),
+                    None => continue,
+                }
+            } else {
+                match declarations.decided.get(&variable) {
+                    Some(Decided::Type(ty)) => ty.clone(),
+                    _ => continue,
+                }
             };
             if !matches!(ty, Type::Int | Type::Reference(_)) {
                 continue;
             }
-            let Some(placement) = declarations.placements.get(&variable).cloned() else {
-                continue;
-            };
-            let owner = match &placement {
-                DeclarationPlacement::Local { owner }
-                | DeclarationPlacement::Elevated { owner } => owner.clone(),
-                DeclarationPlacement::Incomplete { .. } => continue,
-            };
-            let Some(block_path) = paths.paths.get(block.block()) else {
-                continue;
-            };
-            if !block_path.starts_with(&owner) {
-                continue;
+            // The store target's own readers decide how the dance is written: a value no
+            // instruction reads — directly or through the merges it is carried into — is an
+            // assignment the bytecode's own program cannot observe, so the store may be dropped
+            // (`recover-dup-store-conditional` decision 1).
+            if merges.is_none() {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(ssa.phis().iter().fold(0usize, |count, phi| {
+                        count.saturating_add(phi.inputs().len())
+                    }))
+                    .unwrap_or(u64::MAX),
+                    None,
+                )?;
+                poll(budget, None)?;
+                merges = Some(merge_index(ssa));
             }
-            if matches!(placement, DeclarationPlacement::Local { .. }) {
-                declarations.placements.insert(
-                    variable,
-                    DeclarationPlacement::Elevated {
-                        owner: owner.clone(),
-                    },
-                );
-                declarations
-                    .at_region
-                    .entry(owner)
-                    .or_default()
-                    .push(HoistedDeclaration {
+            let observed = local_store_is_observed(
+                ssa,
+                shape.written,
+                merges.as_ref().expect("the merge index was built above"),
+            );
+            let presentation = if !observed {
+                LocalAssignmentPresentation::Eliminated
+            } else if shape.slot >= parameters {
+                // A target the lexical plan declares is not this change's shape at all: the copy
+                // family's assignment rule (`recover-proved-local-assignments-in-conditions`) has
+                // presented it as the in-place assignment expression since it landed, with its own
+                // frozen acceptance record, and this change leaves that text byte-identical. The
+                // presentation here is the one that rule writes, at the position that rule writes
+                // it.
+                match test_kind {
+                    LocalAssignmentTest::Structure | LocalAssignmentTest::Conditional => {
+                        LocalAssignmentPresentation::Expression
+                    }
+                    LocalAssignmentTest::LoopTest => continue,
+                }
+            } else {
+                // A **parameter** target is the shape this change admits and the other rule never
+                // did (its proof skips every slot below the parameters). Its assignment is a
+                // statement the member's own descriptor already declares, so the design's split is
+                // written where the structure's own test is evaluated once. A short-circuit step is
+                // not that position: hoisting the assignment past the steps that decide whether it
+                // runs at all would run it on paths the bytecode did not, and the assignment
+                // expression is the other rule's presentation, not this one's — so the shape is not
+                // proved there and keeps the refusal it has today.
+                match test_kind {
+                    LocalAssignmentTest::Structure => LocalAssignmentPresentation::Split,
+                    LocalAssignmentTest::Conditional | LocalAssignmentTest::LoopTest => continue,
+                }
+            };
+            if shape.slot >= parameters && presentation != LocalAssignmentPresentation::Eliminated {
+                let Some(placement) = declarations.placements.get(&variable).cloned() else {
+                    continue;
+                };
+                let owner = match &placement {
+                    DeclarationPlacement::Local { owner }
+                    | DeclarationPlacement::Elevated { owner } => owner.clone(),
+                    DeclarationPlacement::Incomplete { .. } => continue,
+                };
+                let Some(block_path) = paths.paths.get(block.block()) else {
+                    continue;
+                };
+                if !block_path.starts_with(&owner) {
+                    continue;
+                }
+                if matches!(placement, DeclarationPlacement::Local { .. }) {
+                    declarations.placements.insert(
                         variable,
-                        ty: ty.clone(),
-                        at: shape.store,
-                    });
+                        DeclarationPlacement::Elevated {
+                            owner: owner.clone(),
+                        },
+                    );
+                    declarations
+                        .at_region
+                        .entry(owner)
+                        .or_default()
+                        .push(HoistedDeclaration {
+                            variable,
+                            ty: ty.clone(),
+                            at: shape.store,
+                        });
+                }
             }
             proved.insert(
                 shape.duplicate,
                 LocalAssignment {
                     shape,
                     name: name.to_string(),
-                    ty: ty.clone(),
+                    ty,
+                    presentation,
                 },
             );
         }
@@ -7354,6 +7540,7 @@ pub(crate) fn build(
         inputs.reuse,
         &mut declarations,
         inputs.parameters,
+        inputs.parameter_types,
         budget,
     )?;
     let mut builder = Builder {
@@ -7401,6 +7588,7 @@ pub(crate) fn build(
         snapshots_rendered: BTreeSet::new(),
         array_initializers: inputs.array_initializers,
         local_assignments,
+        assignment_presentations: BTreeMap::new(),
         instructions,
         block_of,
         budget,
@@ -7506,8 +7694,19 @@ pub(crate) fn build(
         let published = published_local_assignments(&builder.stmts, builder.budget)?;
         builder
             .local_assignments
-            .keys()
-            .any(|duplicate| published.get(duplicate) != Some(&1))
+            .iter()
+            .any(|(duplicate, assignment)| match assignment.presentation {
+                // The assignment expression is the statement tree's own owner: it must appear in
+                // it exactly once, as it always has.
+                LocalAssignmentPresentation::Expression => published.get(duplicate) != Some(&1),
+                // The eliminated and split forms write no assignment expression: what they publish
+                // is recorded where they were rendered (`recover-dup-store-conditional`), and a
+                // presentation rendered twice is as unaccounted for as one rendered never — the
+                // same two-sided check, on the side that has no node of its own to count.
+                LocalAssignmentPresentation::Eliminated | LocalAssignmentPresentation::Split => {
+                    builder.assignment_presentations.get(duplicate) != Some(&1)
+                }
+            })
     };
     if (early_return_tail || !builder.local_assignments.is_empty())
         && (builder.ragged || unconsumed_local_assignment)
@@ -8435,6 +8634,11 @@ struct Builder<'a> {
     array_initializers: ArrayInitializers,
     /// Exact local assignment expressions proved from one physical copy and one terminal test.
     local_assignments: BTreeMap<u32, LocalAssignment>,
+    /// How many times each proved copy's **statement-free** presentation was rendered: the
+    /// eliminated form's bare value and the split form's own statement write no assignment
+    /// expression, so the statement tree holds no node for them to be counted in
+    /// (`recover-dup-store-conditional`).
+    assignment_presentations: BTreeMap<u32, usize>,
     instructions: BTreeMap<u32, &'a SsaInstruction>,
     /// The block each instruction belongs to: which block's own entry state and writes state what a
     /// local slot holds where that instruction runs (P3 1.3d).
@@ -19555,10 +19759,10 @@ impl Builder<'_> {
             return Ok(());
         }
         if self.local_assignments.contains_key(&at)
-            || self
-                .local_assignments
-                .values()
-                .any(|assignment| assignment.shape.store == at)
+            || self.local_assignments.values().any(|assignment| {
+                assignment.shape.store == at
+                    && assignment.presentation != LocalAssignmentPresentation::Split
+            })
         {
             return Ok(());
         }
@@ -21331,6 +21535,12 @@ impl Builder<'_> {
             {
                 continue;
             }
+            // A store a proved dance **eliminated** writes no statement either
+            // (`recover-dup-store-conditional`): the store target has no reader, so the text states
+            // the consumer's expression directly and the slot still holds the value the read took.
+            if self.eliminated_store_at(slot, instruction.bci()) {
+                continue;
+            }
             for (written, value) in instruction.writes() {
                 if matches!(written, Slot::Local(written) if *written == slot) {
                     in_use = Some(*value);
@@ -21338,6 +21548,115 @@ impl Builder<'_> {
             }
         }
         in_use == Some(denotes)
+    }
+
+    /// Whether one local store a proved dance **eliminated** is the store at BCI `at` of local
+    /// `slot`.
+    ///
+    /// The eliminated form writes no statement for the store — that is what "no reader observes the
+    /// value" buys — so wherever the text evaluates a read of the slot, the store has not run. The
+    /// slot-name rule asks the same question of the bytecode, where it *did* run, and this is the
+    /// one exemption that keeps the two answers apart without weakening the rule for any other
+    /// write.
+    fn eliminated_store_at(&self, slot: u16, at: u32) -> bool {
+        self.local_assignments.values().any(|assignment| {
+            assignment.presentation == LocalAssignmentPresentation::Eliminated
+                && assignment.shape.slot == slot
+                && assignment.shape.store == at
+        })
+    }
+
+    /// The expression one proved copy is written as (`recover-dup-store-conditional`).
+    ///
+    /// A function of its own, and deliberately not inlined into [`Self::render_value`]: the render is
+    /// a **recursive** walk over the value graph, and the deepest bodies this layer renders (the
+    /// over-deep lambda helper, a three-hundred-term sum) sit at the recursion bound — a larger
+    /// frame in the render itself is what a stack the body already fills would overflow on. The
+    /// dance's own arm is reached only where a copy is rendered, so its frame is paid only there.
+    #[inline(never)]
+    fn duplicate_expression(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let assignment = self
+            .local_assignments
+            .get(&bci)
+            .cloned()
+            .ok_or_else(|| format!("the copy at BCI {bci} has no proved local assignment"))?;
+        // The value the copy duplicated, written where this copy is read. Every presentation of the
+        // dance writes it at most once: the eliminated form and the split form's own statement write
+        // it here, the assignment expression writes it inside the local's name.
+        let source = |this: &mut Self, at: u32| -> Result<Expr, ValueRenderFailure> {
+            this.render_value(assignment.shape.source, at, depth + 1)
+        };
+        match assignment.presentation {
+            // No reader can observe the assignment, so the store writes nothing and the consumer's
+            // text is the value itself (jadx's own elimination).
+            LocalAssignmentPresentation::Eliminated => {
+                if value != assignment.shape.tested || at != assignment.shape.test {
+                    return Err(format!(
+                        "the copy at BCI {bci} is not used by its proved test at BCI {}",
+                        assignment.shape.test
+                    )
+                    .into());
+                }
+                *self.assignment_presentations.entry(bci).or_default() += 1;
+                Ok(source(self, at)?.derived_from(bci))
+            }
+            // The assignment is a statement of its own in front of the structure. The store's own
+            // read writes its right-hand side; the test reads the local the statement filled.
+            LocalAssignmentPresentation::Split => {
+                if value == assignment.shape.stored && at == assignment.shape.store {
+                    *self.assignment_presentations.entry(bci).or_default() += 1;
+                    return Ok(source(self, at)?.derived_from(bci));
+                }
+                if value == assignment.shape.tested && at == assignment.shape.test {
+                    let Some(variable) = self.reuse.variable_at(assignment.shape.slot, at) else {
+                        return Err(format!(
+                            "the copy at BCI {bci} is read by the test at BCI {at}, and local {} has no stable slot identity there",
+                            assignment.shape.slot
+                        )
+                        .into());
+                    };
+                    return Ok(self.local(variable, &assignment.name, at));
+                }
+                Err(format!(
+                    "the copy at BCI {bci} is neither the value its store at BCI {} takes nor the value its proved test at BCI {} reads",
+                    assignment.shape.store, assignment.shape.test
+                )
+                .into())
+            }
+            LocalAssignmentPresentation::Expression => {
+                if value != assignment.shape.tested || at != assignment.shape.test {
+                    return Err(format!(
+                        "the copy at BCI {bci} is not used by its proved test at BCI {}",
+                        assignment.shape.test
+                    )
+                    .into());
+                }
+                let rhs = source(self, at)?;
+                if rhs.presented.as_ref() != Some(&assignment.ty) {
+                    return Err(format!(
+                        "the local assignment at BCI {} has Java type `{}`, but its right-hand value has no matching declared type",
+                        assignment.shape.store,
+                        assignment.ty.spell()
+                    )
+                    .into());
+                }
+                Ok(Expr::new(
+                    ExprKind::LocalAssign {
+                        name: assignment.name,
+                        value: Box::new(rhs),
+                        ty: assignment.ty,
+                    },
+                    OriginSet::new(Origin::direct(assignment.shape.store))
+                        .plus_derived(Origin::derived(assignment.shape.duplicate)),
+                ))
+            }
+        }
     }
 
     /// One local's name as the expression it is written as, presenting the type its **declaration**
@@ -21611,32 +21930,7 @@ impl Builder<'_> {
                         "the numeric comparison at BCI {bci} is not consumed by its proven zero branch"
                     ).into()),
                     Operation::Duplicate => {
-                        let assignment = self.local_assignments.get(&bci).cloned().ok_or_else(|| {
-                            format!("the copy at BCI {bci} has no proved local assignment")
-                        })?;
-                        if value != assignment.shape.tested || at != assignment.shape.test {
-                            return Err(format!(
-                                "the copy at BCI {bci} is not used by its proved test at BCI {}",
-                                assignment.shape.test
-                            ).into());
-                        }
-                        let rhs = self.render_value(assignment.shape.source, at, depth + 1)?;
-                        if rhs.presented.as_ref() != Some(&assignment.ty) {
-                            return Err(format!(
-                                "the local assignment at BCI {} has Java type `{}`, but its right-hand value has no matching declared type",
-                                assignment.shape.store,
-                                assignment.ty.spell()
-                            ).into());
-                        }
-                        Ok(Expr::new(
-                            ExprKind::LocalAssign {
-                                name: assignment.name,
-                                value: Box::new(rhs),
-                                ty: assignment.ty,
-                            },
-                            OriginSet::new(Origin::direct(assignment.shape.store))
-                                .plus_derived(Origin::derived(assignment.shape.duplicate)),
-                        ))
+                        self.duplicate_expression(bci, value, at, depth)
                     }
                     // A load yields the value its slot held *where the load ran*, and that value is
                     // what a reader of it means — not the slot. Writing the slot's name at the use
