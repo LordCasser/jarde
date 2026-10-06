@@ -2,7 +2,20 @@
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态（2026-10-06，最新）
+## 当前状态（2026-10-06 深夜续，最新）
+
+- **本续段新增合入（全部 root 独立验收）**：
+  5. `recover-static-generic-field-init-text`（真根因=facade.rs 静态折叠重拼循环的原地改写偏移漂移，13+/3- 修复；MN/RG 整类编译不可达裁定为既有 Hold<T> 擦除对投影债）；
+  6. `recover-postfix-old-value-snapshot` **A 相旗舰**（三条拒绝路径各自门控：时间引注/依赖链/条件臂；`elems[size++]=t` 依赖链族旗舰关闭；事后记账失败关闭检查；矩阵外三消费位追认为机制内外沿）；
+  7. `recover-dup-store-conditional`（copy 族第 4 员；双落点门控；三态呈现 Eliminated/Split/Expression，局部活目标保 CF-06 契约；condAssignOld 前提证伪=javac 发射裸 iinc，归 short-circuit-local 边界）。
+- **错立项关闭**：`recover-committed-local-multireads` —— 门控实验证伪（计数门从不见已提交局部；NI 的 3-consumers=phi 膨胀，全 114 处存档同型；多读能力本就存在）；真缺口重立 `recover-inline-conditional-concat-operands`（`+` 链内联分支值→jre_concat_split 跨块 toString；判别探针 NI/NI2/NMA/NMB/CMP 已冻结）——**已派发实施中**。
+- **CI 回归修复**：postfix 合并后 `p3_execution_comparison` 两 oracle 测试红（`p3-local-rewrite` 的 saved/conditional 翻 Executed 而期望钉旧 Quoted）——期望已同步（`ebd613c6`，CI 绿）。**新纪律**：corpus 移动片验收必本地跑 `cargo test --test p3_execution_comparison --all-features -- --ignored`。
+- **census 修正**：第 4 诊断族（多消费者）主行=phi 膨胀级联面，真因在上游（本例拼接跨块）；巡查见该诊断先剥离 phi 记录再归因。
+- **新教训**：(1) 测试总数判定用 exit 码 + `test result: FAILED` 行数 + ok 计数，宽匹配 awk 会把 `test result…` 开头的**测试名**行计入（本会话两次假 1-failed）；(2) 裸 `--test <name>` 不带 `--all-features` 时部分 target 跑 0 测试（d3 案例）——复跑判定必须 CI 同口径旗标；(3) 每条终端命令独立起于仓库根，`cd` 不跨命令残留（merge 误入 worktree 的虚惊来源）。
+- **派发队列**：在飞 inline-conditional-concat → `recover-chained-field-assignment`（copy 族 putfield 链）→ `recover-array-initializer-value-positions`（array dance）→ postfix Phase B（条件位）→ 低优先存量（spn/fixture-guard/boxed-widening/capture-ctor-super-order）。value 四族收口：copy（4 员全落地或就绪）/旧值（A 相落地）/依赖链（旗舰落地）/多消费者（重定位为 inline-concat，在飞）。
+- 磁盘 61Gi；全部已验收 worktree 已回收。
+
+## 当前状态（2026-10-06，背景保留）
 
 - 长期 Java 语法恢复 `/goal` active。本节由 2026-10-06 会话 root 更新（**终态**：四切片验收合入 + 两验收债关闭 + 一归因撤回）；下方 10-04 节保留作背景。
 - **本会话合入四切片（全部 root 独立验收 + CI 绿；末片 `b6cbaa94` CI 监控中）**：
