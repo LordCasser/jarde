@@ -7865,10 +7865,7 @@ fn collect_quoted_bcis(statements: &[Stmt], quoted: &mut BTreeSet<u32>) {
             | StmtKind::ForEach { body, .. }
             | StmtKind::Synchronized { body, .. } => collect_quoted_bcis(body, quoted),
             StmtKind::For {
-                init,
-                update,
-                body,
-                ..
+                init, update, body, ..
             } => {
                 collect_quoted_bcis(std::slice::from_ref(init.as_ref()), quoted);
                 collect_quoted_bcis(std::slice::from_ref(update.as_ref()), quoted);
@@ -9583,7 +9580,6 @@ impl Builder<'_> {
     /// Every limit the two proofs share is taken here: one use, one block, a position after the
     /// update, an interval that holds nothing but the expression's own plumbing, and an updated
     /// value nothing in that interval reads.
-    #[allow(clippy::too_many_arguments)]
     fn snapshot_consumer(
         &mut self,
         block: &jarde_jvm::method_ir::SsaBlock,
@@ -9613,7 +9609,9 @@ impl Builder<'_> {
         // increment where the bytecode had not run it yet.
         if self.ssa.value(updated).uses().iter().any(|use_| {
             use_.block() == block.block()
-                && use_.bci().is_some_and(|bci| bci > after && bci < consumer_bci)
+                && use_
+                    .bci()
+                    .is_some_and(|bci| bci > after && bci < consumer_bci)
         }) {
             return Ok(None);
         }
@@ -9695,8 +9693,7 @@ impl Builder<'_> {
                     -1 => PostfixDirection::Decrement,
                     _ => continue,
                 };
-                let Some(before) = position.checked_sub(1).map(|index| &instructions[index])
-                else {
+                let Some(before) = position.checked_sub(1).map(|index| &instructions[index]) else {
                     continue;
                 };
                 if !matches!(
@@ -9712,11 +9709,13 @@ impl Builder<'_> {
                     1,
                     Some(at),
                 )?;
-                let (Some(old), Some((_, loaded))) = (local_read(before, slot), one_stack_output(before))
+                let (Some(old), Some((_, loaded))) =
+                    (local_read(before, slot), one_stack_output(before))
                 else {
                     continue;
                 };
-                let (Some(update_read), Some(updated)) = (local_read(update, slot), local_write(update, slot))
+                let (Some(update_read), Some(updated)) =
+                    (local_read(update, slot), local_write(update, slot))
                 else {
                     continue;
                 };
@@ -9744,8 +9743,7 @@ impl Builder<'_> {
                 // old value twice. Anything else (`i += i++ + 1`, `i + i++`) is the multi-consumer
                 // form this slice keeps refused.
                 let mut shared = false;
-                let snapshot_reads_a_statement =
-                    !self.expression_value_instruction(consumer.bci);
+                let snapshot_reads_a_statement = !self.expression_value_instruction(consumer.bci);
                 let uses: Vec<(CanonicalBlockId, u32)> = self
                     .ssa
                     .value(old)
@@ -9868,7 +9866,8 @@ impl Builder<'_> {
                 };
                 // The value the copy duplicates is a field read's own output, read by this copy
                 // and by nothing else.
-                let Definition::Instruction { bci: read_bci, .. } = self.ssa.value(read_value).def()
+                let Definition::Instruction { bci: read_bci, .. } =
+                    self.ssa.value(read_value).def()
                 else {
                     continue;
                 };
@@ -9898,8 +9897,9 @@ impl Builder<'_> {
                 // same object.
                 let receiver = match below {
                     Some(below) => {
-                        let Definition::Instruction { bci: receiver_bci, .. } =
-                            self.ssa.value(below).def()
+                        let Definition::Instruction {
+                            bci: receiver_bci, ..
+                        } = self.ssa.value(below).def()
                         else {
                             continue;
                         };
@@ -9910,7 +9910,8 @@ impl Builder<'_> {
                         ) {
                             continue;
                         }
-                        let Some(receiver_instruction) = self.instructions.get(&receiver_bci).copied()
+                        let Some(receiver_instruction) =
+                            self.instructions.get(&receiver_bci).copied()
                         else {
                             continue;
                         };
@@ -9938,7 +9939,12 @@ impl Builder<'_> {
                 };
                 // The top copy is the `iadd`/`isub` that adds the constant `1`, and its result is
                 // the same member's write.
-                let Some((_, add_bci)) = self.ssa.value(top).uses().first().map(|use_| (use_.block(), use_.bci()))
+                let Some((_, add_bci)) = self
+                    .ssa
+                    .value(top)
+                    .uses()
+                    .first()
+                    .map(|use_| (use_.block(), use_.bci()))
                     .and_then(|(use_block, bci)| {
                         (use_block == block.block()).then_some((use_block, bci?))
                     })
@@ -10131,9 +10137,9 @@ impl Builder<'_> {
         at: u32,
     ) -> Result<Expr, ValueRenderFailure> {
         let target = match &snapshot.target {
-            SnapshotTarget::Local {
-                name, ty, load, ..
-            } => Expr::direct(ExprKind::Local(name.clone()), *load).presenting(ty.clone()),
+            SnapshotTarget::Local { name, ty, load, .. } => {
+                Expr::direct(ExprKind::Local(name.clone()), *load).presenting(ty.clone())
+            }
             SnapshotTarget::Field {
                 receiver,
                 name,
