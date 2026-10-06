@@ -23,3 +23,7 @@ totals: 319 targets / 3094 passed / 0 failed / 58 ignored (per-target lines: gre
 df at the last gate round: 51Gi available on /
 
 note: 7 further lines beginning 'test result...' are test *names* (e.g. result_budget_publishes...), not target summaries.
+
+flake classification (handoff 的已知家族纪律：单测复跑两轮判定)
+- `ordinary_generic_projection`：一次孤立复跑出现 1 failed（14 passed），随后 **10 次孤立复跑全绿**（2 + 8 轮）且全量 gate 轮 0 failed ⇒ 判为 handoff 已登记的该 target 临时目录碰撞家族瞬态，非本片回归。
+- 全量 gate 轮（319 目标 / 3094 passed / 0 failed / 58 ignored）本身是单轮完整绿跑，未出现任何家族瞬态。
