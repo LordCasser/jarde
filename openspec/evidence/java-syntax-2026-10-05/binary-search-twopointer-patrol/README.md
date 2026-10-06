@@ -22,3 +22,15 @@ bsearch（**二分查找——闭区间收缩 + else-if 链 + 早退 return**，
 ## 处置
 
 第 16 锚入四族 Requirement（旧值族新位点——写侧下标后缀）；canonical-block 族记 census+账本（第 5 可恢复性族）；bsearch 候选窄片（region 层）。
+
+## root 静态调查补充（2026-10-06，无构建窗口内的读码排查）
+
+对"类级上下文影响单方法 Region 树"的通道假设做了静态排除，收敛到需插桩/二分的候选：
+
+- **budget 残量通道：基本排除**。`region.rs` 全部 budget 用途为 `poll`/`charge`（纯 stop 语义，无压力下形状降级）；且渲染账本显示 bsearch 是 BS 类**第二个**分析的成员（methods.1，ctor 之后），请求级累计消耗差极小。budget stop 的诊断码是 `StopReason::Budget`，与实测 `jre_region_ownership_overlap` 不符。
+- **region::recover 的每方法输入：语义相同**。bsearch 无字段访问/无拼接/无分配/无异常表——`field::plan`/`chains`/`sites`（`init::sites` 的类级输入 `member_inner_targets` 两腿皆空）对本方法产出空计划；`class_fields`（BS 多 memo 字段）不被 bsearch 的计划触碰。
+- **剩余候选通道**（下一构建窗口按序实验）：
+  1. **类准备/binding 阶段的状态**（`analyze_method_ir` 之上的 class-source 管线，含 demand resolver 的 facts 缓存复用）；
+  2. **上游 IR 构建的类上下文敏感性**（同指令字节、不同池布局/类名下 canonical 或 view 的构建差异）；
+  3. **池布局敏感性**（bsearch 引用的池索引在两腿不同；若有按裸索引键控/比较的通道）。
+- **判别实验矩阵**（MVP 二分，全部用 `--release 8`）：BS 去掉 main / 去掉 fib / 去掉 memo+clinit / 去掉 twoPtr 各一腿，观察 bsearch 翻转点；翻转后用 `--jarde` 诊断逐字比对定位产生点；必要时加 P3LOST 式插桩对比两腿的 regions 几何。**任何"已定位"结论须有最小门控实验支撑**（handoff 纪律）。
