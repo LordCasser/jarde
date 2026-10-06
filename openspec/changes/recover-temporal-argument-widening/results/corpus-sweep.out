@@ -1,0 +1,52 @@
+# 命令：sh openspec/changes/recover-temporal-argument-widening/results/corpus-sweep.sh
+# base  = 本片 build.rs 行之前的树（HEAD^ 的 crates/jarde-java/src/build.rs）编出的 CLI，sha256 3572c73c2a3e320670b1b0a2c709ce25417624b4dd4db2246bd586795afc9f07
+# patched = 本片 build.rs 编出的 CLI，sha256 c8e35f26780922411c877592d2d9652b74388e546e5a8df0344e24cd625f7456
+# 输出：
+SELF-TEST OK: known positive JT 4 -> 0 refusals; known negative TWX 2 -> 2
+loose candidate classes (target descriptor in the pool): 0
+archive candidate classes: 3
+MOVED: openspec/evidence/java-syntax-2026-10-05/completable-future-patrol/fixture/cf.jar!CF.class (refusals 1 -> 0)
+--- /tmp/tw-render/sweep/jar_openspec_evidence_java-syntax-2026-10-05_completable-future-patrol_fixture_cf.jar_CF.base.txt	2026-10-06 14:07:38
++++ /tmp/tw-render/sweep/jar_openspec_evidence_java-syntax-2026-10-05_completable-future-patrol_fixture_cf.jar_CF.patched.txt	2026-10-06 14:07:38
+@@ -5,6 +5,8 @@
+     // jarde: omitted physical lambda helper "lambda$chain$1" after proving its single class-wide use
+     // jarde: renamed physical lambda helper "lambda$recover$2" after proving its single class-wide use
+     // jarde: omitted physical lambda helper "lambda$recover$3" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$combined$4" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$combined$5" after proving its single class-wide use
+     public CF() {
+         // @method <init>()V
+         // @declaration a constructor of `CF`, member flags 0x0001
+@@ -35,13 +37,14 @@
+     }
+ 
+MOVED: openspec/evidence/java-syntax-2026-10-05/java-time-temporal-patrol/fixture/jt.jar!JT.class (refusals 4 -> 0)
+--- /tmp/tw-render/sweep/jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_jt.jar_JT.base.txt	2026-10-06 14:07:38
++++ /tmp/tw-render/sweep/jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_jt.jar_JT.patched.txt	2026-10-06 14:07:38
+@@ -25,10 +25,8 @@
+         // recovered from bytecode; presentation is not claimed to compile
+         java.time.format.DateTimeFormatter local0 = java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+         java.time.LocalDateTime local1 = java.time.LocalDateTime.of(2026, 1, 2, 3, 4);
+-        // @bytecode 26 23 19 17 18 22
+-        // the parameter 0 of the invocation at BCI 19 is declared `java.time.temporal.TemporalAccessor` presents `java.time.LocalDateTime` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence
+-        // @bytecode 69
+-        // the parameter 0 of the invocation at BCI 36 is declared `java.time.temporal.TemporalAccessor` presents `java.time.LocalDateTime` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence
++        java.time.LocalDateTime local2 = java.time.LocalDateTime.parse((java.lang.CharSequence) local0.format((java.time.temporal.TemporalAccessor) local1), local0);
++        return local0.format((java.time.temporal.TemporalAccessor) local1) + " -> " + local2.getHour() + ":" + local2.getMinute();
+     }
+ 
+MOVED: openspec/evidence/java-syntax-2026-10-05/java-time-temporal-patrol/fixture/dt.jar!DT.class (refusals 1 -> 0)
+--- /tmp/tw-render/sweep/jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_dt.jar_DT.base.txt	2026-10-06 14:07:38
++++ /tmp/tw-render/sweep/jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_dt.jar_DT.patched.txt	2026-10-06 14:07:38
+@@ -15,8 +15,7 @@
+         // recovered from bytecode; presentation is not claimed to compile
+         java.time.format.DateTimeFormatter local0 = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+         java.time.LocalDateTime local1 = java.time.LocalDateTime.of(2026, 1, 2, 3, 4);
+-        // @bytecode 22 19 17 18
+-        // the parameter 0 of the invocation at BCI 19 is declared `java.time.temporal.TemporalAccessor` presents `java.time.LocalDateTime` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence
++        return local0.format((java.time.temporal.TemporalAccessor) local1);
+     }
+ 
+     static java.lang.String parse() {
+moved classes: 3
+refusal sentences across the candidates: 6 -> 0

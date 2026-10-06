@@ -1,0 +1,24 @@
+$ javap -classpath rt.jar java.time.LocalDateTime | sed -n 2p
+public final class java.time.LocalDateTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.time.chrono.ChronoLocalDateTime<java.time.LocalDate>, java.io.Serializable {
+$ javap -classpath rt.jar java.time.LocalDate | sed -n 2p
+public final class java.time.LocalDate implements java.time.temporal.Temporal,java.time.temporal.TemporalAdjuster,java.time.chrono.ChronoLocalDate,java.io.Serializable {
+$ javap -classpath rt.jar java.time.LocalTime | sed -n 2p
+public final class java.time.LocalTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.LocalTime>, java.io.Serializable {
+$ javap -classpath rt.jar java.time.Instant | sed -n 2p
+public final class java.time.Instant implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.Instant>, java.io.Serializable {
+$ javap -classpath rt.jar java.time.ZonedDateTime | sed -n 2p
+public final class java.time.ZonedDateTime implements java.time.temporal.Temporal, java.time.chrono.ChronoZonedDateTime<java.time.LocalDate>, java.io.Serializable {
+$ javap -classpath rt.jar java.time.OffsetDateTime | sed -n 2p
+public final class java.time.OffsetDateTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.OffsetDateTime>, java.io.Serializable {
+$ javap -classpath rt.jar java.time.OffsetTime | sed -n 2p
+public final class java.time.OffsetTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.OffsetTime>, java.io.Serializable {
+$ javap -classpath rt.jar java.time.temporal.Temporal | sed -n 2p
+public interface java.time.temporal.Temporal extends java.time.temporal.TemporalAccessor {
+$ javap -classpath rt.jar java.time.temporal.TemporalAccessor | sed -n 2p
+public interface java.time.temporal.TemporalAccessor {
+$ javap -classpath rt.jar java.util.concurrent.CompletableFuture | sed -n 2p
+public class java.util.concurrent.CompletableFuture<T> implements java.util.concurrent.Future<T>, java.util.concurrent.CompletionStage<T> {
+$ javap -classpath rt.jar java.util.concurrent.CompletionStage | sed -n 2p
+public interface java.util.concurrent.CompletionStage<T> {
+$ javap -classpath rt.jar java.util.concurrent.Future | sed -n 2p
+public interface java.util.concurrent.Future<V> {

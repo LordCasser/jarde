@@ -1,0 +1,95 @@
+# 三个候选类 base vs patched 的完整渲染 diff（命令：diff -u <base> <patched>，逐类）
+=== jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_jt.jar_JT
+--- jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_jt.jar_JT.base.txt	2026-10-06 14:07:38
++++ jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_jt.jar_JT.patched.txt	2026-10-06 14:07:38
+@@ -25,10 +25,8 @@
+         // recovered from bytecode; presentation is not claimed to compile
+         java.time.format.DateTimeFormatter local0 = java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+         java.time.LocalDateTime local1 = java.time.LocalDateTime.of(2026, 1, 2, 3, 4);
+-        // @bytecode 26 23 19 17 18 22
+-        // the parameter 0 of the invocation at BCI 19 is declared `java.time.temporal.TemporalAccessor` presents `java.time.LocalDateTime` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence
+-        // @bytecode 69
+-        // the parameter 0 of the invocation at BCI 36 is declared `java.time.temporal.TemporalAccessor` presents `java.time.LocalDateTime` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence
++        java.time.LocalDateTime local2 = java.time.LocalDateTime.parse((java.lang.CharSequence) local0.format((java.time.temporal.TemporalAccessor) local1), local0);
++        return local0.format((java.time.temporal.TemporalAccessor) local1) + " -> " + local2.getHour() + ":" + local2.getMinute();
+     }
+ 
+     static long spans() {
+@@ -37,11 +35,9 @@
+         // recovered from bytecode; presentation is not claimed to compile
+         java.time.LocalDate local0 = java.time.LocalDate.of(2026, 1, 1);
+         java.time.LocalDate local1 = java.time.LocalDate.of(2026, 3, 15);
+-        // @bytecode 30 27 20 24 19 23
+-        // the parameter 0 of the invocation at BCI 27 is declared `java.time.temporal.Temporal` presents `java.time.LocalDateTime` but the invocation requires `java.time.temporal.Temporal` and this layer has no safe reference conversion evidence
++        java.time.Duration local2 = java.time.Duration.between((java.time.temporal.Temporal) local0.atStartOfDay(), (java.time.temporal.Temporal) local1.atStartOfDay());
+         java.time.Period local3 = java.time.Period.between(local0, local1);
+-        // @bytecode 60 38 46 41 58 55 37 44 45 54
+-        // the parameter 0 of the invocation at BCI 46 is declared `java.time.temporal.Temporal` presents `java.time.LocalDate` but the invocation requires `java.time.temporal.Temporal` and this layer has no safe reference conversion evidence
++        return local2.toDays() + java.time.temporal.ChronoUnit.MONTHS.between((java.time.temporal.Temporal) local0, (java.time.temporal.Temporal) local1) * 100L + (long) local3.getDays();
+     }
+ 
+     public static void main(java.lang.String[] arg0) {
+=== jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_dt.jar_DT
+--- jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_dt.jar_DT.base.txt	2026-10-06 14:07:38
++++ jar_openspec_evidence_java-syntax-2026-10-05_java-time-temporal-patrol_fixture_dt.jar_DT.patched.txt	2026-10-06 14:07:38
+@@ -15,8 +15,7 @@
+         // recovered from bytecode; presentation is not claimed to compile
+         java.time.format.DateTimeFormatter local0 = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+         java.time.LocalDateTime local1 = java.time.LocalDateTime.of(2026, 1, 2, 3, 4);
+-        // @bytecode 22 19 17 18
+-        // the parameter 0 of the invocation at BCI 19 is declared `java.time.temporal.TemporalAccessor` presents `java.time.LocalDateTime` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence
++        return local0.format((java.time.temporal.TemporalAccessor) local1);
+     }
+ 
+     static java.lang.String parse() {
+=== jar_openspec_evidence_java-syntax-2026-10-05_completable-future-patrol_fixture_cf.jar_CF
+--- jar_openspec_evidence_java-syntax-2026-10-05_completable-future-patrol_fixture_cf.jar_CF.base.txt	2026-10-06 14:07:38
++++ jar_openspec_evidence_java-syntax-2026-10-05_completable-future-patrol_fixture_cf.jar_CF.patched.txt	2026-10-06 14:07:38
+@@ -5,6 +5,8 @@
+     // jarde: omitted physical lambda helper "lambda$chain$1" after proving its single class-wide use
+     // jarde: renamed physical lambda helper "lambda$recover$2" after proving its single class-wide use
+     // jarde: omitted physical lambda helper "lambda$recover$3" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$combined$4" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$combined$5" after proving its single class-wide use
+     public CF() {
+         // @method <init>()V
+         // @declaration a constructor of `CF`, member flags 0x0001
+@@ -35,13 +37,14 @@
+     }
+ 
+     static java.lang.String combined() throws java.lang.Exception {
++        // jarde: lambda companion body inlined at invokedynamic@8
++        // jarde: lambda companion body inlined at invokedynamic@19
+         // @method combined()Ljava/lang/String;
+         // @declaration a static method of `CF`, member flags 0x0008
+         // recovered from bytecode; presentation is not claimed to compile
+         java.util.concurrent.CompletableFuture local0 = java.util.concurrent.CompletableFuture.completedFuture((java.lang.Object) java.lang.Integer.valueOf(2));
+-        java.util.concurrent.CompletableFuture local1 = java.util.concurrent.CompletableFuture.supplyAsync((java.util.function.Supplier) (() -> CF.lambda$combined$4()));
+-        // @bytecode 36 33 30 27 24 17 18
+-        // the parameter 0 of the invocation at BCI 24 is declared `java.util.concurrent.CompletionStage` presents `java.util.concurrent.CompletableFuture` but the invocation requires `java.util.concurrent.CompletionStage` and this layer has no safe reference conversion evidence
++        java.util.concurrent.CompletableFuture local1 = java.util.concurrent.CompletableFuture.supplyAsync((java.util.function.Supplier) (() -> 3));
++        return ((java.lang.Integer) local0.thenCombine((java.util.concurrent.CompletionStage) local1, (java.util.function.BiFunction) ((java.lang.Object arg0, java.lang.Object arg1) -> java.lang.Integer.valueOf(((java.lang.Integer) arg0).intValue() * ((java.lang.Integer) arg1).intValue()))).get()).toString();
+     }
+ 
+     public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+@@ -54,20 +57,6 @@
+         return;
+     }
+ 
+-    private static java.lang.Integer lambda$combined$5(java.lang.Integer arg0, java.lang.Integer arg1) {
+-        // @method lambda$combined$5(Ljava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/Integer;
+-        // @declaration a static method of `CF`, member flags 0x100a
+-        // recovered from bytecode; presentation is not claimed to compile
+-        return java.lang.Integer.valueOf(arg0.intValue() * arg1.intValue());
+-    }
+-
+-    private static java.lang.Integer lambda$combined$4() {
+-        // @method lambda$combined$4()Ljava/lang/Integer;
+-        // @declaration a static method of `CF`, member flags 0x100a
+-        // recovered from bytecode; presentation is not claimed to compile
+-        return 3;
+-    }
+-
+     private static java.lang.String lambda$recover$2$jarde() {
+         // jarde: renamed physical lambda helper "lambda$recover$2" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+         // @method lambda$recover$2()Ljava/lang/String;
