@@ -18,8 +18,8 @@ mkdir -p "$WORK"
 for pair in "baseline:$BASE" "patched:$PATCHED"; do
     label=${pair%%:*}
     binary=${pair#*:}
-    (cd "$FIXTURES/v8" && jar cf "$WORK/leg.jar" MD.class MD2.class MD3.class AV.class)
-    for class in MD MD2 MD3 AV; do
+    (cd "$FIXTURES/v8" && jar cf "$WORK/leg.jar" MD.class MD2.class MD3.class AV.class AVT.class)
+    for class in MD MD2 MD3 AV AVT; do
         "$binary" class-source --policy plain-jar --input "$WORK/leg.jar" --class "$class" \
             --format text >"$WORK/$label-$class.txt" 2>/dev/null || true
         head -1 "$WORK/$label-$class.txt" | grep -q '// jarde: presentation of' || {
@@ -49,7 +49,7 @@ print(" ".join(k for k in a if k in b and a[k] != b[k]))
 PY
 }
 
-for class in MD MD2 MD3 AV; do
+for class in MD MD2 MD3 AV AVT; do
     echo "$class moved: $(moved_methods "$WORK/baseline-$class.txt" "$WORK/patched-$class.txt")"
 done
 
@@ -68,6 +68,7 @@ check MD "partSet"
 check MD2 "retPos"
 check MD3 "bareIdx2"
 check AV "elemStore immIdx immLen immIdxVar immIdxExpr immIdxSum twoIdx twoStores nestedIdx condIdx immIdxInCall order"
+check AVT "setS setL setD setB setC idxS idxL idxD idxB idxC lenD"
 avn_moved=$(moved_methods "$WORK/baseline-AVN.txt" "$WORK/patched-AVN.txt")
 if [ "$avn_moved" != "single" ]; then
     echo "SELF-TEST FAILED: the hand-built AVN moved [$avn_moved], wanted [single] (the two negatives must not move)"

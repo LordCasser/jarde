@@ -8,24 +8,24 @@ sh openspec/changes/recover-array-initializer-value-positions/results/04-corpus-
 cargo test --test p3_execution_comparison --all-features --locked -- --ignored               # the oracle leg
 ```
 
-The sweep renders every class committed under `openspec/evidence` and `tests/fixtures` (2807 loose
+The sweep renders every class committed under `openspec/evidence` and `tests/fixtures` (2809 loose
 `.class` files in pass A, every `.class` entry of every committed jar in pass C) with the baseline
 (parent commit `bd6ba671`) and the patched binary, and diffs the two texts. Full transcript:
 [05-corpus-sweep.out](05-corpus-sweep.out).
 
 ```
-SELF-TEST OK: MD/MD2/MD3/AV anchors 0 -> recovered; AVN byte-identical; CF/NEG/RC/RCN/ICM/ICN byte-identical
-pass A: moved=17 unrendered=1
+SELF-TEST OK: MD/MD2/MD3/AV/AVT anchors 0 -> recovered; AVN byte-identical; CF/NEG/RC/RCN/ICM/ICN byte-identical
+pass A: moved=19 unrendered=1
 pass C: moved=5 unrendered=1
-moved classes: single-class=17 jar=5 total=22
+moved classes: single-class=19 jar=5 total=24
 ```
 
 ## The moved set, in full
 
 | # | class | what moved | classification |
 | --- | --- | --- | --- |
-| 1 | `tests/fixtures/recover-array-initializer-value-positions/v8/{MD,MD2,MD3,AV}.class` | the change's own anchors | **the change's own fixtures** — replayed end to end (both legs, both compilers, `-Xverify:all`) |
-| 2 | the same four on the `v8-javac8` leg | idem | idem |
+| 1 | `tests/fixtures/recover-array-initializer-value-positions/v8/{MD,MD2,MD3,AV,AVT}.class` | the change's own anchors | **the change's own fixtures** — replayed end to end (both legs, both compilers, `-Xverify:all`) |
+| 2 | the same five on the `v8-javac8` leg | idem | idem |
 | 3 | `tests/fixtures/recover-array-initializer-value-positions/AVN.class` | `single` — the hand-built builder self-test | **the change's own fixture**; its two negatives did not move |
 | 4 | `openspec/evidence/…/array-initializer-value-patrol/fixture/md.jar!MD.class` | `partSet` — the patrol's own frozen anchor | **the change's own anchor** (the same class the v8 leg recompiles) |
 | 5 | `tests/fixtures/recover-loop-else-if-early-returns/{v8,v8-javac8}/{BS,CB,CB2,LB}.class` | their `main` (eight classes) | **the same admission, in another fixture family** — the dance as a *non-final* argument |
@@ -49,7 +49,8 @@ argument's run no longer hides the position — the same admission, in the argum
   ([dual-leg-replay.sh](dual-leg-replay.sh)) — each fixture's stripped whole class compiles with
   `javac --release 8` **and** with real javac 8 (Corretto 1.8.0_432), runs under `-Xverify:all`, and
   prints exactly what its own class prints: `MD 21/9/9/10`, `MD2 3/3/4/5`, `MD3 2/9/3`,
-  `AV 7/9/3/3/1/8/2/3/6/3/9/8/10/17/8/9/3/true/2/1/2`.
+  `AV 7/9/3/3/1/8/2/3/6/3/9/8/10/17/8/9/3/true/2/1/2`,
+  `AVT b/1/1.5/true/x/1/b/1/1.5/true/x`.
 * Rows 5–9: [04-corpus-delta-replay.sh](04-corpus-delta-replay.sh) compiles each moved `main` as a
   subclass unit (`public class XR extends X { <the recovered main body> }`, compiled with the
   fixture's own class on the class path, so every unqualified static call resolves through

@@ -16,10 +16,10 @@ rm -rf "$WORK"
 mkdir -p "$WORK"
 
 for leg in v8 v8-javac8; do
-    (cd "$FIXTURES/$leg" && jar cf "$WORK/$leg.jar" MD.class MD2.class MD3.class AV.class)
+    (cd "$FIXTURES/$leg" && jar cf "$WORK/$leg.jar" MD.class MD2.class MD3.class AV.class AVT.class)
     mkdir -p "$WORK/original.$leg"
     cp "$FIXTURES/$leg"/*.class "$WORK/original.$leg/"
-    for class in MD MD2 MD3 AV; do
+    for class in MD MD2 MD3 AV AVT; do
         "$CLI" class-source --policy plain-jar --input "$WORK/$leg.jar" --class "$class" \
             --format text >"$WORK/$class.$leg.txt" 2>/dev/null
         head -1 "$WORK/$class.$leg.txt" | grep -q '// jarde: presentation of' || {

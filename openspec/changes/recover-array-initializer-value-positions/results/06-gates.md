@@ -40,7 +40,7 @@ scratch) failed in this run, so no single-test rerun was needed.
 ## The change's own suite, and the suites the corpus delta touches
 
 ```
-tests/recover_array_initializer_value_positions.rs   4 passed; 0 failed; 1 ignored
+tests/recover_array_initializer_value_positions.rs   5 passed; 0 failed; 1 ignored
 tests/recover_loop_else_if_early_returns.rs          4 passed; 0 failed; 1 ignored
 ```
 
@@ -83,13 +83,13 @@ DIFF CHECK CLEAN
 ## The corpus census and fingerprint (the same commit's chore)
 
 * the fixture-population census in `crates/jarde-reader/src/classfile.rs` re-measured
-  `(811, 3445, 290, 2145, 8)` → `(820, 3536, 290, 2161, 8)`: +9 classes (the four dual-leg fixtures
-  `MD`/`MD2`/`MD3`/`AV` on two legs, plus the hand-built `AVN`), +91 bodies (`MD` 7, `MD2` 7, `MD3` 5
-  and `AV` 25 per leg, `AVN` 3), and +16 branch targets (`MD.sumJag`'s two loops and `AV`'s
-  `foreach` loop and `condIdx` comparison, per leg). No handler record and no subroutine was added.
-  A re-measure with its own comment paragraph, not a relaxation.
-* `tests/fixtures/corpus-fingerprint.json` regenerated: **+13 entries, 0 removed, 0 changed** (65
-  lines) — the four sources, the hand-built `AVN.class` and the eight leg class files; `README.md`
+  `(811, 3445, 290, 2145, 8)` → `(822, 3564, 290, 2161, 8)`: +11 classes (the five dual-leg fixtures
+  `MD`/`MD2`/`MD3`/`AV`/`AVT` on two legs, plus the hand-built `AVN`), +119 bodies (`MD` 7, `MD2` 7,
+  `MD3` 5, `AV` 25 and `AVT` 14 per leg, `AVN` 3), and +16 branch targets (`MD.sumJag`'s two loops
+  and `AV`'s `foreach` loop and `condIdx` comparison, per leg). No handler record and no subroutine
+  was added. A re-measure with its own comment paragraph, not a relaxation.
+* `tests/fixtures/corpus-fingerprint.json` regenerated: **+16 entries, 0 removed, 0 changed** (80
+  lines) — the five sources, the hand-built `AVN.class` and the ten leg class files; `README.md`
   and `build_avn.py` are excluded by the manifest's own rules (prose and the seed generators).
   No existing entry moved.
 

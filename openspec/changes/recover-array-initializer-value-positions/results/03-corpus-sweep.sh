@@ -84,8 +84,8 @@ render_jar() {
 # ---- self-tests -----------------------------------------------------------------------
 FIXTURES=$ROOT/tests/fixtures/recover-array-initializer-value-positions
 LEG_JAR=$WORK/selftest-leg.jar
-( cd "$FIXTURES/v8" && jar cf "$LEG_JAR" MD.class MD2.class MD3.class AV.class )
-for class in MD MD2 MD3 AV; do
+( cd "$FIXTURES/v8" && jar cf "$LEG_JAR" MD.class MD2.class MD3.class AV.class AVT.class )
+for class in MD MD2 MD3 AV AVT; do
     try_render "$BASE" plain-jar "$LEG_JAR" "$class" "$WORK/selftest-$class-base.txt"
     try_render "$PATCHED" plain-jar "$LEG_JAR" "$class" "$WORK/selftest-$class-patched.txt"
     if grep -q 'has no proved local assignment' "$WORK/selftest-$class-patched.txt"; then
@@ -137,7 +137,7 @@ for jar in "$CF_JAR" "$RC_JAR" "$ICM_JAR"; do
         fi
     done
 done
-echo "SELF-TEST OK: MD/MD2/MD3/AV anchors 0 -> recovered; AVN byte-identical; CF/NEG/RC/RCN/ICM/ICN byte-identical"
+echo "SELF-TEST OK: MD/MD2/MD3/AV/AVT anchors 0 -> recovered; AVN byte-identical; CF/NEG/RC/RCN/ICM/ICN byte-identical"
 
 # ---- pass A: the single-class posture, the whole loose corpus --------------------------
 cd "$ROOT"
