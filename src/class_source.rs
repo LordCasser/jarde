@@ -271,6 +271,15 @@ pub struct ClassSourceDeclaration {
     /// separately proved member-family pass and is deliberately absent from the JSON view.
     #[serde(skip)]
     pub(crate) generic_scope: Option<ClassSignatureErasureProof>,
+    /// The `implements` entries whose **published header text** carries the interface's own type
+    /// arguments, by binary name. This is the fact the bridge admission reads — the shared
+    /// contract of `recover-bridge-admission-gates` and this projection: a header that carries
+    /// the erased contract's type arguments is what lets a recompiled source regenerate the
+    /// bridge, so a bridge whose contract owner is one of these entries may hide, and every
+    /// other generic interface contract keeps its bridge visible. Empty for a header no
+    /// projection published, and deliberately absent from the JSON view.
+    #[serde(skip)]
+    pub(crate) header_interface_arguments: Vec<Vec<u8>>,
 }
 
 /// One class-level annotation attribute's original shell and its parsed annotation entries.
@@ -4332,10 +4341,61 @@ fn spell_ordinary_signature_type(
     spell_ordinary_signature_type_with_member_path(ty, class_scope, &[], budget, depth)
 }
 
+/// The class-header spelling of one `Signature` type — the `extends`/`implements` entries
+/// [`ClassSourceDeclaration::project_generic_signature`] publishes. It is the same recursion as
+/// the member and annotation positions, with one difference: a single-segment class name is
+/// spelled by [`binary_pool_class_name`], the class file's own name with `$` kept, because that
+/// is the name the raw header already states for every parent no `Signature` projects. A
+/// projected entry therefore adds its type arguments and changes no name.
+fn spell_class_header_signature_type(
+    ty: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<String> {
+    spell_signature_type_with_spelling(
+        ty,
+        class_scope,
+        &[],
+        ClassNameSpelling::BinaryPoolName,
+        budget,
+        depth,
+    )
+}
+
+/// How one class type's binary name becomes text.
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum ClassNameSpelling {
+    /// A member, annotation, `throws` or type-parameter position: a single-segment name is
+    /// spelled only when a member proof selected its source path
+    /// ([`simple_generic_class_name`]), so a `$` name without that proof has no spelling here.
+    SelectedSourcePath,
+    /// The class header's own `extends`/`implements` entries ([`binary_pool_class_name`]).
+    BinaryPoolName,
+}
+
 fn spell_ordinary_signature_type_with_member_path(
     ty: &SignatureType,
     class_scope: &[TypeParameterErasure],
     source_type_path: &[jarde_java::report::ProvedMemberInnerSourceSegment],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<String> {
+    spell_signature_type_with_spelling(
+        ty,
+        class_scope,
+        source_type_path,
+        ClassNameSpelling::SelectedSourcePath,
+        budget,
+        depth,
+    )
+}
+
+fn spell_signature_type_with_spelling(
+    ty: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    source_type_path: &[jarde_java::report::ProvedMemberInnerSourceSegment],
+    class_names: ClassNameSpelling,
     budget: &mut Budget,
     depth: usize,
 ) -> Result<String> {
@@ -4368,10 +4428,11 @@ fn spell_ordinary_signature_type_with_member_path(
         .to_owned()),
         SignatureType::Array(element) => Ok(format!(
             "{}[]",
-            spell_ordinary_signature_type_with_member_path(
+            spell_signature_type_with_spelling(
                 element,
                 class_scope,
                 source_type_path,
+                class_names,
                 budget,
                 nested,
             )?
@@ -4459,7 +4520,14 @@ fn spell_ordinary_signature_type_with_member_path(
                             "nested binary class path has no selected Java source spelling",
                         ));
                     }
-                    result = simple_generic_class_name(&segment.binary_name)?;
+                    result = match class_names {
+                        ClassNameSpelling::SelectedSourcePath => {
+                            simple_generic_class_name(&segment.binary_name)?
+                        }
+                        ClassNameSpelling::BinaryPoolName => {
+                            binary_pool_class_name(&segment.binary_name)?
+                        }
+                    };
                     previous_mapping = None;
                 }
                 if !segment.arguments.is_empty() {
@@ -4469,31 +4537,32 @@ fn spell_ordinary_signature_type_with_member_path(
                         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
                         let spelling = match argument {
                             TypeArgument::Any => "?".to_owned(),
-                            TypeArgument::Exact(ty) => {
-                                spell_ordinary_signature_type_with_member_path(
-                                    ty,
-                                    class_scope,
-                                    source_type_path,
-                                    budget,
-                                    nested,
-                                )?
-                            }
+                            TypeArgument::Exact(ty) => spell_signature_type_with_spelling(
+                                ty,
+                                class_scope,
+                                source_type_path,
+                                class_names,
+                                budget,
+                                nested,
+                            )?,
                             TypeArgument::Extends(ty) => format!(
                                 "? extends {}",
-                                spell_ordinary_signature_type_with_member_path(
+                                spell_signature_type_with_spelling(
                                     ty,
                                     class_scope,
                                     source_type_path,
+                                    class_names,
                                     budget,
                                     nested,
                                 )?
                             ),
                             TypeArgument::Super(ty) => format!(
                                 "? super {}",
-                                spell_ordinary_signature_type_with_member_path(
+                                spell_signature_type_with_spelling(
                                     ty,
                                     class_scope,
                                     source_type_path,
+                                    class_names,
                                     budget,
                                     nested,
                                 )?
@@ -5066,6 +5135,35 @@ fn simple_generic_class_name(raw: &[u8]) -> Result<String> {
         )
     })?;
     if text.contains('$') || text.split('/').any(|part| !is_java_identifier(part)) {
+        return Err(Error::unsupported(
+            "generic_source_shape_unproved",
+            "class name has no unambiguous Java source spelling",
+        ));
+    }
+    Ok(text.replace('/', "."))
+}
+
+/// The class-header spelling of one binary class name: the class file's own name, its package
+/// separators written as dots and every `$` kept — exactly the name [`class_name`] writes for
+/// every parent the raw header states, so a projected entry is the same reference the raw header
+/// already held and only its type arguments are new.
+///
+/// This is the one position where a `$` name needs no nesting proof: the presentation writes
+/// every class as the top-level unit its binary name states, and the class header is that unit's
+/// own declaration. A member, annotation or type-parameter position cannot call this — there a
+/// `$` name without the member proof that selected a source path keeps the raw descriptor
+/// declaration ([`simple_generic_class_name`]).
+///
+/// A name with a part that is not a Java identifier has no spelling at all, exactly as in the
+/// selected-source-path rule.
+fn binary_pool_class_name(raw: &[u8]) -> Result<String> {
+    let text = std::str::from_utf8(raw).map_err(|_| {
+        Error::unsupported(
+            "generic_source_shape_unproved",
+            "class name is not source UTF-8",
+        )
+    })?;
+    if text.split('/').any(|part| !is_java_identifier(part)) {
         return Err(Error::unsupported(
             "generic_source_shape_unproved",
             "class name has no unambiguous Java source spelling",
@@ -6306,6 +6404,34 @@ fn run_markers(
 // The members, as this presentation builds them
 // ---------------------------------------------------------------------------------------------
 
+/// Which class-header position one parent definition is proved for: the two positions
+/// [`ClassSourceDeclaration::project_generic_signature`] asks the selected environment about.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum ClassHeaderParentPosition {
+    /// The direct superclass the relaxed direct-parent path projects (`extends Parent<String>`,
+    /// whose parent name is the class file's own binary name).
+    DirectSuperclass,
+    /// One interface entry the class `Signature` spells with type arguments.
+    Interface,
+}
+
+/// What one class-header parent's definition in the selected environment states about the
+/// class's own `Signature` claim.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum ClassHeaderParentProof {
+    /// The definition proves the claim this position makes: one single-parameter class parent,
+    /// or one interface declaring exactly the number of type parameters the `Signature` spells
+    /// as arguments.
+    Proved,
+    /// The selected environment does not provide the definition. The entry then keeps its
+    /// physical spelling: an absent definition is not a claim the class file contradicts.
+    Unresolved,
+    /// The definition resolves and contradicts the claim — another kind, another arity, a
+    /// header this read cannot state. The projection refuses rather than spelling a header from
+    /// a contradicted claim.
+    Contradicted,
+}
+
 impl ClassSourceDeclaration {
     /// The declaration of one class-level item, as this presentation spells it: the simple name
     /// `this_class` states, and the declaration line the kind and the flags state.
@@ -6323,6 +6449,7 @@ impl ClassSourceDeclaration {
             generic_refusal: None,
             generic_type_parameters: None,
             generic_scope: None,
+            header_interface_arguments: Vec::new(),
         }
     }
 
@@ -6338,7 +6465,12 @@ impl ClassSourceDeclaration {
         pool: &[CpEntryFacts],
         nesting: &ClassSourceAssemblyContext,
         budget: &mut Budget,
-        mut prove_direct_parent: impl FnMut(&[u8], &mut Budget) -> Result<bool>,
+        mut prove_header_parent: impl FnMut(
+            ClassHeaderParentPosition,
+            &[u8],
+            usize,
+            &mut Budget,
+        ) -> Result<ClassHeaderParentProof>,
     ) -> Result<Option<ClassSignatureErasureProof>> {
         let signatures: Vec<_> = shells
             .iter()
@@ -6348,7 +6480,7 @@ impl ClassSourceDeclaration {
         if signatures.is_empty() {
             return Ok(None);
         }
-        let result = (|| -> Result<Option<(String, ClassSignatureErasureProof)>> {
+        let result = (|| -> Result<Option<(String, ClassSignatureErasureProof, Vec<Vec<u8>>)>> {
             let raw = attribute_facts(bytes, &signatures, pool, budget)?
                 .signature
                 .ok_or_else(|| {
@@ -6364,16 +6496,40 @@ impl ClassSourceDeclaration {
                     .segments
                     .iter()
                     .any(|segment| !segment.arguments.is_empty());
+            let parameterized_interfaces = parsed.interfaces.iter().any(|interface| {
+                interface
+                    .segments
+                    .iter()
+                    .any(|segment| !segment.arguments.is_empty())
+            });
             let direct_parent_candidate = parsed.type_parameters.is_empty()
                 && matches!(parsed.superclass.segments.as_slice(), [segment]
                     if matches!(segment.arguments.as_slice(), [TypeArgument::Exact(SignatureType::Class(class))]
                         if matches!(class.segments.as_slice(), [string]
                             if string.binary_name == b"java/lang/String" && string.arguments.is_empty())));
-            if parsed.type_parameters.is_empty() && !parameterized_superclass {
+            // The interface-only shape: no type parameters of its own and no parameterized
+            // superclass, so the one generic position the class `Signature` states is an
+            // `implements` entry. It is the fourth path below, and it also decides what the
+            // shared gates mean for this class: they ask about the class's **own** header
+            // position, and a class that entered the projection only through an interface keeps
+            // the raw header they would refuse — the `Ok(None)` this shape returned before an
+            // interface entry could enter the projection at all.
+            let interface_only = parsed.type_parameters.is_empty()
+                && !parameterized_superclass
+                && parameterized_interfaces;
+            if parsed.type_parameters.is_empty()
+                && !parameterized_superclass
+                && !parameterized_interfaces
+            {
                 return Ok(None);
             }
             self.generic_signature = Some(raw.clone());
             let facts = &self.item.declaration;
+            let own_header_gate = |error: Error| -> Result<
+                Option<(String, ClassSignatureErasureProof, Vec<Vec<u8>>)>,
+            > {
+                if interface_only { Ok(None) } else { Err(error) }
+            };
             if facts.access_flags & (ACC_ANNOTATION | ACC_ENUM) != 0
                 || !is_java_identifier(&self.name)
                 || shells.iter().any(|shell| {
@@ -6383,7 +6539,7 @@ impl ClassSourceDeclaration {
                     )
                 })
             {
-                return Err(Error::unsupported(
+                return own_header_gate(Error::unsupported(
                     "class_generic_source_unproved",
                     "class kind, nesting, name, or type-use annotations lack a faithful generic header position",
                 ));
@@ -6401,21 +6557,24 @@ impl ClassSourceDeclaration {
                     budget,
                 )?
             {
-                return Err(Error::unsupported(
+                return own_header_gate(Error::unsupported(
                     "class_generic_source_unproved",
                     "class kind, nesting, name, or type-use annotations lack a faithful generic header position",
                 ));
             }
-            let physical_super = facts.super_class.as_ref().ok_or_else(|| {
-                Error::unsupported(
-                    "class_generic_source_unproved",
-                    "physical superclass is absent",
-                )
-            })?;
+            let physical_super = match facts.super_class.as_ref() {
+                Some(physical_super) => physical_super,
+                None => {
+                    return own_header_gate(Error::unsupported(
+                        "class_generic_source_unproved",
+                        "physical superclass is absent",
+                    ));
+                }
+            };
             if facts.access_flags & ACC_INTERFACE != 0
                 && physical_super.raw().0 != b"java/lang/Object"
             {
-                return Err(Error::unsupported(
+                return own_header_gate(Error::unsupported(
                     "class_generic_source_unproved",
                     "interface physical superclass is not java/lang/Object",
                 ));
@@ -6431,6 +6590,8 @@ impl ClassSourceDeclaration {
                 &physical_interfaces,
                 budget,
             )?;
+            let mut header_interface_arguments: Vec<Vec<u8>> = Vec::new();
+            let mut projected_interfaces: Option<Vec<String>> = None;
             if direct_parent_candidate {
                 if !parsed.interfaces.is_empty() || !physical_interfaces.is_empty() {
                     return Err(Error::unsupported(
@@ -6441,22 +6602,89 @@ impl ClassSourceDeclaration {
                 let [parent] = parsed.superclass.segments.as_slice() else {
                     unreachable!("direct parent candidate has exactly one segment")
                 };
-                if parent.binary_name.contains(&b'$') || !prove_direct_parent(&parent.binary_name, budget)? {
-                    return Err(Error::unsupported(
-                        "class_generic_source_unproved",
-                        "direct superclass does not resolve to one proved single-parameter parent definition",
-                    ));
+                // The name proved here is the class file's own binary name (`$` kept): the raw
+                // header already spells every parent that way, so the projected entry adds the
+                // type arguments and changes no name.
+                match prove_header_parent(
+                    ClassHeaderParentPosition::DirectSuperclass,
+                    &parent.binary_name,
+                    parent.arguments.len(),
+                    budget,
+                )? {
+                    ClassHeaderParentProof::Proved => {}
+                    ClassHeaderParentProof::Unresolved | ClassHeaderParentProof::Contradicted => {
+                        return Err(Error::unsupported(
+                            "class_generic_source_unproved",
+                            "direct superclass does not resolve to one proved single-parameter parent definition",
+                        ));
+                    }
                 }
             } else if parameterized_superclass {
                 return Err(Error::unsupported(
                     "class_generic_source_unproved",
                     "only a single direct Parent<String> superclass is supported for a class without type parameters",
                 ));
-            } else if !matches!(parsed.superclass.segments.as_slice(), [segment] if segment.arguments.is_empty())
-                || parsed.interfaces.iter().any(|interface| {
-                    !matches!(interface.segments.as_slice(), [segment] if segment.arguments.is_empty())
-                })
-            {
+            } else if !matches!(parsed.superclass.segments.as_slice(), [segment] if segment.arguments.is_empty()) {
+                // A superclass path the header cannot spell from the `Signature` (a nested
+                // binary path with no arguments of its own). Every shape whose own type
+                // parameters or superclass entered the projection refuses here, exactly as
+                // before; the interface-only shape keeps the physical header, which is the
+                // whole projection its raw entries would spell anyway.
+                return own_header_gate(Error::unsupported(
+                    "class_generic_source_unproved",
+                    "parameterized or nested parent needs a separate inherited-member proof",
+                ));
+            } else if interface_only {
+                // Each interface entry is spelled with its type arguments only when the selected
+                // environment's definition proves the arity the class `Signature` states (and
+                // then exactly the entries whose header carries arguments are recorded for the
+                // bridge admission). Every other entry keeps the physical spelling the raw
+                // header states, so a class this path cannot prove is byte-identical to the
+                // header it had before the path existed.
+                let mut header_interfaces = Vec::with_capacity(parsed.interfaces.len());
+                for (interface, physical) in parsed.interfaces.iter().zip(&physical_interfaces) {
+                    match interface.segments.as_slice() {
+                        [segment] if !segment.arguments.is_empty() => {
+                            match prove_header_parent(
+                                ClassHeaderParentPosition::Interface,
+                                &segment.binary_name,
+                                segment.arguments.len(),
+                                budget,
+                            )? {
+                                ClassHeaderParentProof::Proved => {
+                                    header_interfaces.push(spell_class_header_signature_type(
+                                        &SignatureType::Class(interface.clone()),
+                                        &proof.type_parameters,
+                                        budget,
+                                        0,
+                                    )?);
+                                    header_interface_arguments.push(physical.clone());
+                                }
+                                ClassHeaderParentProof::Unresolved => {
+                                    header_interfaces.push(class_name(physical));
+                                }
+                                ClassHeaderParentProof::Contradicted => {
+                                    return Err(Error::unsupported(
+                                        "class_generic_source_unproved",
+                                        "an interface definition contradicts the class Signature's type arguments",
+                                    ));
+                                }
+                            }
+                        }
+                        _ => header_interfaces.push(class_name(physical)),
+                    }
+                }
+                if header_interface_arguments.is_empty() {
+                    // No entry carried its arguments, so this path publishes nothing: the class
+                    // keeps the physical declaration it had, with no projection claim and no
+                    // note. (An interface-only class whose definitions are all absent is the
+                    // whole pre-change state of every such class.)
+                    return Ok(None);
+                }
+                projected_interfaces = Some(header_interfaces);
+            } else if parsed.interfaces.iter().any(|interface| {
+                !matches!(interface.segments.as_slice(), [segment] if segment.arguments.is_empty())
+            }) {
                 return Err(Error::unsupported(
                     "class_generic_source_unproved",
                     "parameterized or nested parent needs a separate inherited-member proof",
@@ -6507,21 +6735,43 @@ impl ClassSourceDeclaration {
                     format!("{name} extends {}", bounds.join(" & "))
                 });
             }
-            let superclass = spell_ordinary_signature_type(
-                &SignatureType::Class(parsed.superclass),
-                &proof.type_parameters,
-                budget,
-                0,
-            )?;
-            let mut interfaces = Vec::with_capacity(parsed.interfaces.len());
-            for interface in parsed.interfaces {
-                interfaces.push(spell_ordinary_signature_type(
-                    &SignatureType::Class(interface),
-                    &proof.type_parameters,
-                    budget,
-                    0,
-                )?);
-            }
+            let (superclass, interfaces) = match projected_interfaces {
+                // The interface-only path spelled every entry itself: a projected entry keeps
+                // its type arguments, every other entry keeps the physical name — and the bare
+                // superclass keeps the physical name too, exactly the raw header's own spelling.
+                Some(interfaces) => (class_name(&physical_super.raw().0), interfaces),
+                None => {
+                    // The relaxed direct-parent path publishes a superclass whose binary name
+                    // may carry `$` (the raw header's own spelling); every other shape keeps
+                    // the member/annotation spelling, which a `$` name without a selected
+                    // source path has none of.
+                    let superclass = if direct_parent_candidate {
+                        spell_class_header_signature_type(
+                            &SignatureType::Class(parsed.superclass),
+                            &proof.type_parameters,
+                            budget,
+                            0,
+                        )?
+                    } else {
+                        spell_ordinary_signature_type(
+                            &SignatureType::Class(parsed.superclass),
+                            &proof.type_parameters,
+                            budget,
+                            0,
+                        )?
+                    };
+                    let mut interfaces = Vec::with_capacity(parsed.interfaces.len());
+                    for interface in parsed.interfaces {
+                        interfaces.push(spell_ordinary_signature_type(
+                            &SignatureType::Class(interface),
+                            &proof.type_parameters,
+                            budget,
+                            0,
+                        )?);
+                    }
+                    (superclass, interfaces)
+                }
+            };
             let type_parameters = (!parameters.is_empty()).then(|| parameters.join(", "));
             let declaration = class_declaration_with_types(
                 &self.name,
@@ -6537,21 +6787,33 @@ impl ClassSourceDeclaration {
             // Recorded only past the last fallible step of the closure, so a stop never
             // leaves a carried header beside a refusal.
             self.generic_type_parameters = type_parameters;
-            Ok(Some((declaration, proof)))
+            Ok(Some((declaration, proof, header_interface_arguments)))
         })();
         match result {
-            Ok(Some((declaration, proof))) => {
+            Ok(Some((declaration, proof, header_interface_arguments))) => {
                 self.declaration = declaration;
                 self.generic_scope = Some(proof.clone());
+                self.header_interface_arguments = header_interface_arguments;
                 Ok(Some(proof))
             }
-            Ok(None) => Ok(None),
+            Ok(None) => {
+                // Nothing was published, so no entry may claim a header that carries type
+                // arguments: the assignment above only carries the raw attribute for the paths
+                // below it, and a gate that answered `Ok(None)` (the total gate, or an
+                // interface-only class whose own header gates did not pass) leaves the physical
+                // declaration exactly as it was.
+                self.generic_signature = None;
+                self.header_interface_arguments = Vec::new();
+                Ok(None)
+            }
             Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
                 self.generic_refusal = Some(format!("projection stopped: {error}"));
+                self.header_interface_arguments = Vec::new();
                 Err(error)
             }
             Err(error) => {
                 self.generic_refusal = Some(error.to_string());
+                self.header_interface_arguments = Vec::new();
                 Ok(None)
             }
         }
@@ -10602,6 +10864,54 @@ mod tests {
         let nested = parse_method_signature(b"(Lp/Outer.Inner;)V", &mut budget).unwrap();
         assert!(matches!(
             spell_ordinary_signature_type(&nested.parameters[0], &[], &mut budget, 0),
+            Err(Error::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn class_header_spelling_keeps_pool_names_the_member_spelling_refuses() {
+        // The design premise this pin answers: the member/annotation spelling channel refuses
+        // every `$`-named single-segment class, so the class header needs its own leaf rule —
+        // the class file's own binary name (`class_name`), which is what the raw header already
+        // states for every parent no `Signature` projects. Without the header rule the whole
+        // parent MVP and the interface projection could not spell a single `$` name.
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let parsed = parse_method_signature(
+            b"(LBR$Box<Ljava/lang/String;>;Ljava/lang/Comparable<LBR$Impl;>;Lp/Outer$Mid$Leaf<Ljava/lang/Integer;>;Ljava/lang/String;)V",
+            &mut budget,
+        )
+        .unwrap();
+        let written = parsed
+            .parameters
+            .iter()
+            .map(|ty| spell_class_header_signature_type(ty, &[], &mut budget, 0).unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            written,
+            [
+                "BR$Box<java.lang.String>",
+                "java.lang.Comparable<BR$Impl>",
+                "p.Outer$Mid$Leaf<java.lang.Integer>",
+                "java.lang.String",
+            ]
+        );
+        // The same types through the member spelling: the `$` names refuse (the boundary
+        // `ordinary-parameterized-signatures` pinned), and the no-`$` name is byte-identical
+        // between the two rules — the header rule changes nothing but the `$` refusal.
+        assert_eq!(
+            spell_ordinary_signature_type(&parsed.parameters[3], &[], &mut budget, 0).unwrap(),
+            "java.lang.String"
+        );
+        for index in [0, 1, 2] {
+            assert!(matches!(
+                spell_ordinary_signature_type(&parsed.parameters[index], &[], &mut budget, 0),
+                Err(Error::Unsupported { .. })
+            ));
+        }
+        // A name that is not a Java identifier has no spelling under either rule.
+        let bad = parse_method_signature(b"(Lp/Bad-Name;)V", &mut budget).unwrap();
+        assert!(matches!(
+            spell_class_header_signature_type(&bad.parameters[0], &[], &mut budget, 0),
             Err(Error::Unsupported { .. })
         ));
     }

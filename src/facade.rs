@@ -6426,15 +6426,32 @@ impl Engine {
             &pool,
             &assembly_context,
             budget,
-            |parent_name, budget| {
-                prove_direct_generic_superclass_parent(
-                    content,
-                    environment,
-                    &definition,
-                    parent_name,
-                    &mut execution,
-                    budget,
-                )
+            |position, name, argument_count, budget| match position {
+                class_source::ClassHeaderParentPosition::DirectSuperclass => Ok(
+                    match prove_direct_generic_superclass_parent(
+                        content,
+                        environment,
+                        &definition,
+                        name,
+                        &mut execution,
+                        budget,
+                    )? {
+                        true => class_source::ClassHeaderParentProof::Proved,
+                        false => class_source::ClassHeaderParentProof::Contradicted,
+                    },
+                ),
+                class_source::ClassHeaderParentPosition::Interface => {
+                    prove_header_interface_definition(
+                        content,
+                        environment,
+                        &request.environment.policy,
+                        &definition,
+                        name,
+                        argument_count,
+                        &mut execution,
+                        budget,
+                    )
+                }
             },
         ) {
             Ok(proof) => class_scope = proof,
@@ -8431,6 +8448,7 @@ impl Engine {
             &methods,
             &_bridge_candidate_runs,
             class_scope.is_some(),
+            &declaration.header_interface_arguments,
             &mut execution,
             budget,
         );
@@ -13733,6 +13751,14 @@ fn ordinary_override_method(method: &MemberHeader, parent: bool) -> bool {
 /// Prove the one parent shape admitted by direct class-header projection. The read is selected
 /// through the class-source request's existing resolution environment and shared budget; the
 /// child's Signature alone never establishes that a generic declaration exists.
+///
+/// The name proved here is the class file's own binary name, `$` included: the raw header spells
+/// every parent that way ([`class_source::class_name`]), so a projected `extends BR$Box<String>`
+/// is the same reference the raw `extends BR$Box` was, with the type arguments added, and javac
+/// compiles the two spellings to the same bytes (the change's Q2 replay evidence). What the `$`
+/// spelling may not do is select a *different* declaration, and the criteria below answer that
+/// from the definition itself: the class the environment resolves under that exact name is the
+/// one proved, and nothing here guesses a nesting relation from the `$`.
 fn prove_direct_generic_superclass_parent(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
@@ -13758,7 +13784,6 @@ fn prove_direct_generic_superclass_parent(
         || facts.method_count != facts.methods.len() as u64
         || facts.field_count != facts.fields.len() as u64
         || facts.this_class.raw().0 != parent_name
-        || parent_name.contains(&b'$')
         || std::str::from_utf8(parent_name)
             .ok()
             .is_none_or(|name| !name.split('/').all(jarde_java::is_java_identifier))
@@ -13828,6 +13853,168 @@ fn prove_direct_generic_superclass_parent(
         return Ok(false);
     }
     Ok(true)
+}
+
+/// Prove the shape one class-header interface entry claims: the definition the selected
+/// environment resolves under the entry's own binary name is an interface whose own `Signature`
+/// declares exactly the number of type parameters the class `Signature` states as arguments.
+///
+/// This is the interface-side sibling of [`prove_direct_generic_superclass_parent`], and the
+/// boundaries differ deliberately. That proof is one narrow superclass shape whose every failure
+/// refuses the header; here an entry the environment does not provide is `Unresolved` — an
+/// absent definition is not a claim the class file contradicts — and only a definition that
+/// resolves and *contradicts* the claim (another kind, another arity, a `Signature` this read
+/// cannot state) is `Contradicted`. The class header projection then keeps the physical spelling
+/// for the former and refuses for the latter.
+///
+/// The name is the class file's own, `$` included: the raw header already spells every interface
+/// that way, so a projected `implements Comparable<BR$Impl>` is the same reference the raw
+/// `implements Comparable` was. As in the superclass proof, nothing here infers a nesting
+/// relation from the `$`; the definition resolved under that exact name is the one proved.
+fn prove_header_interface_definition(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    policy: &EnvironmentPolicy,
+    child: &PhysicalDefinitionId,
+    interface_name: &[u8],
+    argument_count: usize,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<class_source::ClassHeaderParentProof> {
+    // An environment that declares no root beyond the class itself provides no definition to
+    // read, and the bridge admission takes the same position for the erased contract
+    // (`EnvironmentPolicy::SingleClass` states no direct parent or interface). Nothing is
+    // resolved here, so nothing is charged either.
+    if matches!(policy, EnvironmentPolicy::SingleClass) {
+        return Ok(class_source::ClassHeaderParentProof::Unresolved);
+    }
+    let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+        content,
+        environment,
+        None,
+        interface_name,
+        execution,
+        budget,
+    )?
+    else {
+        return platform_header_interface_fact(
+            content,
+            environment,
+            interface_name,
+            argument_count,
+            execution,
+            budget,
+        );
+    };
+    let facts = &read.facts;
+    if definition == *child
+        || facts.stopped_at.is_some()
+        || facts.method_count != facts.methods.len() as u64
+        || facts.field_count != facts.fields.len() as u64
+        || facts.this_class.raw().0 != interface_name
+        || std::str::from_utf8(interface_name)
+            .ok()
+            .is_none_or(|name| !name.split('/').all(jarde_java::is_java_identifier))
+        || facts.access_flags & ACC_INTERFACE == 0
+        || facts.access_flags & (ACC_ANNOTATION | 0x4000) != 0
+        || facts.attributes.iter().any(|attribute| {
+            matches!(
+                attribute.name.raw().0.as_slice(),
+                b"RuntimeVisibleTypeAnnotations" | b"RuntimeInvisibleTypeAnnotations"
+            )
+        })
+    {
+        return Ok(class_source::ClassHeaderParentProof::Contradicted);
+    }
+    let signatures: Vec<_> = facts
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0 == b"Signature")
+        .cloned()
+        .collect();
+    if signatures.len() != 1 {
+        return Ok(class_source::ClassHeaderParentProof::Contradicted);
+    }
+    let pool = class_constant_pool(&read.bytes, budget)?;
+    let Some(raw) = attribute_facts(&read.bytes, &signatures, &pool, budget)?.signature else {
+        return Ok(class_source::ClassHeaderParentProof::Contradicted);
+    };
+    let parsed = match jarde_reader::signature::parse_class_signature(&raw.0, budget) {
+        Ok(parsed) => parsed,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => return Ok(class_source::ClassHeaderParentProof::Contradicted),
+    };
+    if parsed.type_parameters.len() != argument_count {
+        return Ok(class_source::ClassHeaderParentProof::Contradicted);
+    }
+    Ok(class_source::ClassHeaderParentProof::Proved)
+}
+
+/// Whether the selected environment states the Java 8 class-path runtime shape the platform
+/// facts of this crate are written for: release 8, `parent_first` delegation, `class_path`
+/// module mode, and no external override or runtime transformation. The bridge admission's own
+/// `java.lang.Comparable` contract fact is stated under exactly these conditions, and the
+/// platform interface fact below shares them.
+fn java8_class_path_runtime(environment: &ResolutionEnvironment) -> bool {
+    environment.runtime.profile.java_release == 8
+        && environment.runtime.load_domain.delegation == DelegationPolicy::ParentFirst
+        && environment.runtime.load_domain.module_mode == ModuleMode::ClassPath
+        && environment.runtime.load_domain.external_override == RuntimeUncertainty::None
+        && environment.runtime.load_domain.runtime_transformation == RuntimeUncertainty::None
+}
+
+/// The one platform interface fact this crate carries, stated where a class-header interface
+/// entry's definition is not provided. Java SE 8 declares `public interface
+/// java.lang.Comparable<T>` — exactly one type parameter —
+/// https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html — under the same runtime
+/// shape every other platform fact here assumes, and a class-path environment need not carry a
+/// JRE image. The fact is consulted only when the selected environment *cleanly* provides no
+/// definition under that name (the bridge admission's own `Missing` criteria, so an ambiguous,
+/// incomplete or problem-carrying resolution is never answered by a platform fact), and only
+/// while the class `Signature` claims that one argument. Every other absence is `Unresolved`,
+/// and a *provided* definition is decided by [`prove_header_interface_definition`] itself.
+fn platform_header_interface_fact(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    interface_name: &[u8],
+    argument_count: usize,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<class_source::ClassHeaderParentProof> {
+    if interface_name != b"java/lang/Comparable"
+        || argument_count != 1
+        || !java8_class_path_runtime(environment)
+    {
+        return Ok(class_source::ClassHeaderParentProof::Unresolved);
+    }
+    let resolution = jarde_jvm::resolve_symbol(
+        content,
+        &ResolutionRequest {
+            environment: environment.clone(),
+            target: jarde_reader::model::SymbolRef::Class {
+                owner: jarde_reader::model::JvmBytes(interface_name.to_vec()),
+            },
+            use_kind: ReferenceUse::ClassReference,
+            caller: jarde_jvm::environment::CallerContext {
+                loader: environment.runtime.load_domain.loader.clone(),
+                enclosing: None,
+            },
+            dispatch: None,
+        },
+        budget,
+    )?;
+    merge_execution(execution, resolution.execution.clone());
+    if !matches!(&resolution.execution, ExecutionReport::Complete { .. }) {
+        return Ok(class_source::ClassHeaderParentProof::Unresolved);
+    }
+    if resolution.state == Some(ResolutionState::Missing)
+        && resolution.environment_problems.is_empty()
+        && resolution.unresolved_dependencies.is_empty()
+        && resolution.candidates.is_empty()
+    {
+        return Ok(class_source::ClassHeaderParentProof::Proved);
+    }
+    Ok(class_source::ClassHeaderParentProof::Unresolved)
 }
 
 /// Certify every field leaf in the narrow enum int-expression grammar before source emission.
@@ -30662,6 +30849,7 @@ fn prove_class_source_bridges(
     methods: &[ClassSourceMethod],
     candidates: &[jarde_java::bridge::ClassSourceBridgeCandidate],
     class_header_projected: bool,
+    class_header_interface_arguments: &[Vec<u8>],
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Vec<class_source::ClassSourceBridgeProof> {
@@ -31032,19 +31220,15 @@ fn prove_class_source_bridges(
             // `Comparable.compareTo(Object)` contract every `Comparable<T>` implementation is
             // written against. Java SE 8 declares `int java.lang.Comparable.compareTo(Object)` —
             // https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html — under the
-            // same runtime shape every other platform fact here assumes, and this explicit
-            // environment need not carry a JRE image. A `Comparable` the environment *does*
-            // provide is never answered by this fact: the check below only proves absence, and
-            // the ordinary member resolution then decides through the provided definition.
+            // same runtime shape every other platform fact here assumes
+            // ([`java8_class_path_runtime`]), and this explicit environment need not carry a JRE
+            // image. A `Comparable` the environment *does* provide is never answered by this
+            // fact: the check below only proves absence, and the ordinary member resolution then
+            // decides through the provided definition.
             if use_kind == ReferenceUse::InvokeInterface
                 && owner.0.as_slice() == b"java/lang/Comparable"
                 && member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)I"
-                && environment.runtime.profile.java_release == 8
-                && environment.runtime.load_domain.delegation == DelegationPolicy::ParentFirst
-                && environment.runtime.load_domain.module_mode == ModuleMode::ClassPath
-                && environment.runtime.load_domain.external_override == RuntimeUncertainty::None
-                && environment.runtime.load_domain.runtime_transformation
-                    == RuntimeUncertainty::None
+                && java8_class_path_runtime(environment)
             {
                 let provided = match jarde_jvm::resolve_symbol(
                     content,
@@ -31183,10 +31367,11 @@ fn prove_class_source_bridges(
         // contract and comes back, which is why only the narrowing form is questioned here).
         // The class's own `Signature` is the criterion's source (`implements
         // Comparable<LImpl;>` is stated right there, so the parent needs no reading); a class
-        // without one states no generic parent. No projection spells a parameterized interface
-        // yet, so a generic interface contract keeps its bridge visible exactly as before this
-        // change; when the header projection learns that spelling, its success is this
-        // branch's admit path.
+        // without one states no generic parent. Whether the published header really carries the
+        // arguments is the header projection's own fact (`class_header_interface_arguments`):
+        // a projected entry is this branch's admit path, and an entry the projection left raw —
+        // its definition is not in the selected environment, or the header could not be
+        // published at all — keeps the bridge visible, exactly as before that projection existed.
         if let Some((owner, use_kind)) = &inherited_owner
             && *use_kind == ReferenceUse::InvokeInterface
             && parameter_cast_form
@@ -31207,7 +31392,11 @@ fn prove_class_source_bridges(
                     return proofs;
                 }
             };
-            if owner_generic {
+            if owner_generic
+                && !class_header_interface_arguments
+                    .iter()
+                    .any(|name| name.as_slice() == owner.0.as_slice())
+            {
                 proofs.push(refuse(
                     "the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge",
                 ));
@@ -36075,7 +36264,7 @@ mod direct_generic_superclass_tests {
                 &pool,
                 &class_source::ClassSourceAssemblyContext::default(),
                 &mut open_budget,
-                |_, _| {
+                |_, _, _, _| {
                     Err(Error::Cancelled {
                         reason: "controlled parent-proof stop".to_owned(),
                     })
