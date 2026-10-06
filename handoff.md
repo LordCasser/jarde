@@ -4,15 +4,18 @@
 
 ## 当前状态（2026-10-06，最新）
 
-- 长期 Java 语法恢复 `/goal` active。本节由 2026-10-06 会话 root 更新；下方 10-04 节保留作背景。
-- **主线**：`319a57e0`（twr-javac8 切片三提交）已推送 origin/main，CI run 37420206418 监控中。root `target`（37G）已清、stale worktree 已 prune（codex 固定 worktree 不动）。
-- **模型池**：`bigmodel/glm-5.3-flash` 配额至 2026-10-10；用户 2026-10-06 增授 `opencode/deepseek-flash`（按任务难度自选 effort）；qwen 家族仍可用。
-- **在飞**：`recover-temporal-argument-widening`（java.time+CompletableFuture 扩宽行集，deepseek-flash，isolated worktree，串行唯一构建者）。rt.jar（sha256 b27515a6…）在 `/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/jre/lib/rt.jar`。
-- **验收债（root 批量行为抽验待构建窗口，与 temporal 验收同批）**：EM-15 `recover-write-accessor-field-types` 与 DT-26 `recover-lambda-primitive-array-capture` 已 root 静态审计（diff 零放宽逐条、九型表 vs javap、方向 B 定夺核准）并补勾账本（`4ef3868f`），各剩本地构建行为抽验一项（EM-15 tasks 3.6 / DT-26 tasks 3.5 尾注）。
-- **本会话巡查产出**：(1) ~~canonical-block multi-owner 类级确定性缺陷~~ **归因已撤回（2026-10-06 终局）**：巡查自己的归档 CB 渲染就显示 `loopElseIfRet` 拒绝（README"四形全恢复"与档案矛盾），"BX 单独类恢复"在巡逻时代全部已提交二进制（`2a4dbc7d`/`4e73fd4e`/`a4b66bb2`/`319a57e0`）上不可复现（root 二分，双腿/有无 main/类名无关）——真实事实是 `while + else-if 阶梯（≥2 臂）+ 早退` 的**方法形状**拒绝，三对照形恢复；已按修正事实立项 `recover-loop-else-if-early-returns`（census 第 5 条已同步修正，`ec7ee9d5`）；(2) 第 5 主族唯一 critical 锚（`o.ifPresent(sb::append)` 语句吞掉）立项 `recover-proved-nonnull-bound-receivers`（两道门放行：SSA 分配定义非空 + 捕获后无重写，门控实验先行，`337891f7`）——**v1 门控实验证伪两门充分性**（捕获 SSA 定义是空检查尾的 `dup`；E 矩阵钉死充分机制=两门+尾识别读回+尾 BCI 站点所有/跨块窗口；E8c 证门承重），root 重设计裁定在 `redesign.md`（`5db0002d`），v1 证据已合（`75779b18`），v2 已 resume 实施中。
-- **教训（2026-10-06）**：旧提交二分脚本的恢复必须 `git checkout main`（checkout sha 会 detached HEAD，本会话因此在游离态提交过一次，幸而 `--ff-only` 无损收回）；巡查渲染若来自在飞 worktree 二进制，其"恢复"观察**不可作为判别证据**（BX 事件），冻结判别实验时必须记录二进制 sha 或用主线干净构建。
-- **派发队列（temporal 之后）**：`recover-proved-nonnull-bound-receivers`（critical #17 优先）→ `recover-parameterized-interface-headers`（合并范围=接口三道门+父类池形参数化 MVP，锚点 6444/13736/13761 已验零漂移）→ 低优先存量（spn / fixture-guard-coverage / boxed-number-widening / static-generic-field-init-text / capture-ctor-super-order）。已登记未立项：array-covariant-store（按设计排 critical 后）、第 6 族形态 4 lambda→JDK ctor（SAFE 拒形）、canonical 二分实验。
-- 第 6 族四形态收口状态：形态 1/2/3 已闭（四表 + 单边机制 + CharSequence 表），形态 4 SAFE 延后。
+- 长期 Java 语法恢复 `/goal` active。本节由 2026-10-06 会话 root 更新（**终态**：四切片验收合入 + 两验收债关闭 + 一归因撤回）；下方 10-04 节保留作背景。
+- **本会话合入四切片（全部 root 独立验收 + CI 绿；末片 `b6cbaa94` CI 监控中）**：
+  1. `recover-temporal-argument-widening`（合并 `659c9c84`）——java.time 七型十四行 + CompletableFuture 双行入 `platform_interface_argument_widens`，root 对 live rt.jar 复核 javap；TWX 表外型双腿保持拒绝。
+  2. `recover-parameterized-interface-headers`（合并 `bf4675ae`）——接口三道门放行 + 父类池形参数化 MVP；两处前提更正经 root 追认（`binary_pool_class_name` 叶子规则=裸头同名纪律；单条 Comparable 平台事实循桥准入先例）；桥接缝 `header_interface_arguments` 单一事实源。
+  3. `recover-proved-nonnull-bound-receivers` **v2**（合并见 `5a9f32bf` 前序）——第 5 主族 critical 17 锚（`o.ifPresent(sb::append)` 吞语句）关闭：站点自有空检查尾识别（`discarded_null_check_window` 与构造尾共享纪律）+ `Sites.owned` 先到先得 + move 链终于 Allocate + 无捕获后重写 + 站点描述符点名分配类（C1.chain 可编译错缺口由 corpus 差分先行堵住）；**v1 的门控实验证伪了 root spec 的两门充分性**（捕获 SSA 定义是尾的 `dup`），E 矩阵与 root 重设计裁定在 change 目录。
+  4. `recover-loop-else-if-early-returns`（合并 `b6cbaa94`）——`while + else-if 阶梯 + 早退` 形 canonical-overlap 拒绝关闭：`ladder_join` 读法（两臂严格前向路由交于循环 scope 内唯一首块），diff 纯增量 242+/0-，`overlapping_owner` 未动；bsearch 完整恢复。
+- **验收债关闭**：EM-15 `recover-write-accessor-field-types` 3.6 与 DT-26 `recover-lambda-primitive-array-capture` 3.5 root 复核完成（diff 零放宽逐条、九型表 vs javap、方向 B 定夺、行为抽验同批），账本全勾（`4ef3868f`）。
+- **归因撤回（重要）**：canonical-block 第 5 族原"类级上下文确定性缺陷"记载作废——巡查自家归档 CB 渲染就显示 `loopElseIfRet` 拒绝（README 与档案矛盾），"BX 单独类恢复"在巡逻时代全部已提交二进制（root 二分 `2a4dbc7d`/`4e73fd4e`/`a4b66bb2`/`319a57e0`）上不可复现；真实事实=方法形状属性，已按修正事实立项并当场合入（切片 4）。census 第 5 条已修正（`ec7ee9d5`）。
+- **教训（本会话新增）**：(1) 旧提交二分脚本的恢复必须 `git checkout main`（checkout sha 会 detached，本会话因此在游离态提交过一次，`--ff-only` 无损收回）；(2) 巡查判别实验若渲染自未合并 worktree 二进制，其"恢复"观察不可作判别证据——冻结判别实验必须记录二进制 sha 或用主线干净构建；(3) gh 的 `run list -c <sha>` 对已完成 run 可能返回 0（list 索引滞后），终态判定用 `gh run view <id>` 直查。
+- **派发队列（下一会话）**：低优先存量（`recover-statement-position-news` / `recover-fixture-behavior-guard-coverage` / `recover-boxed-number-widening` / `recover-static-generic-field-init-text` / `recover-capture-ctor-super-order`）+ 已登记候选（array-covariant-store、第 6 族形态 4 lambda→JDK ctor、nonnull 残余 bootstrap-owner 门、loop-else-if 残余 firstArmRet/try 内部/双层阶梯、interface 片擦除契约自调用债）。critical 面当前无未立项锚。
+- **模型池**：`opencode/deepseek-flash` 本会话四片全中（含两次正确停手/自堵缺口）；qwen 家族可用；glm-5.3-flash 配额至 2026-10-10。
+- 磁盘：root target 已清、全部 subagent worktree 已回收（70Gi 空闲）；codex 固定 worktree 不动。
 
 ## 当前状态（2026-10-04 更新，背景保留）
 
