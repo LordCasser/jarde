@@ -1,0 +1,25 @@
+$ cargo fmt --all -- --check
+(clean, exit 0)
+
+$ sed -n '46,76p' .github/workflows/ci.yml | sed 's/^ *//' | grep -E "^cargo|^-A" | tr '\n' ' ' > /tmp/ci-clippy.sh && sh /tmp/ci-clippy.sh
+cargo clippy --workspace --all-targets --all-features --locked -- -A clippy::too_many_arguments -A clippy::cloned_ref_to_slice_refs -A clippy::collapsible_if -A clippy::type_complexity -A clippy::len_zero -A clippy::needless_option_as_deref -A clippy::needless_borrow -A clippy::useless_conversion -A clippy::large_enum_variant -A clippy::question_mark -A clippy::comparison_to_empty -A clippy::op_ref -A clippy::manual_range_patterns -A clippy::if_same_then_else -A clippy::filter_map_bool_then -A clippy::filter_next -A clippy::unneeded_struct_pattern -A clippy::redundant_guards -A clippy::map_identity -A clippy::redundant_slicing -A clippy::unnecessary_get_then_check -A clippy::unnecessary_unwrap -A clippy::redundant_locals -A clippy::replace_box -A clippy::map_clone -A clippy::unnecessary_mut_passed -A clippy::single_element_loop -A clippy::unnecessary_to_owned -A clippy::needless_lifetimes 
+    Checking jarde-cli v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a10fff-5ca8-7423-97ff-8582a1fb7e61/crates/jarde-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 24.93s
+
+$ cargo test --workspace --all-targets --all-features --locked --no-fail-fast
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+319
+
+$ openspec validate --all --strict
+Totals: 302 passed, 0 failed (302 items)
+
+binaries:
+37027c690fe634149a7346749f3b0b0f7a89e21b06f1ff44acc5bf922d0bb247  /tmp/pih-bin/jarde-cli-base
+d67f013993757dade9235db80c6b8d7e234647992bfe18c4b17c1e71657c9662  /tmp/pih-bin/jarde-cli-patched
+
+totals: 319 targets / 3094 passed / 0 failed / 58 ignored (per-target lines: grep -c '^test result: ok')
+df at the last gate round: 51Gi available on /
+
+note: 7 further lines beginning 'test result...' are test *names* (e.g. result_budget_publishes...), not target summaries.
