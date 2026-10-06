@@ -258,12 +258,18 @@ const LOCAL_REWRITE: Sample = Sample {
             expect: Expect::Executed,
         },
         Member {
+            // `recover-postfix-old-value-snapshot` (Phase A, 2026-10-06) presents the iinc
+            // snapshot at its consumer: `int local1 = arg0++; return local1;`.
             name: "saved",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
+            // Same slice, same consumer generalization: the snapshot feeds a plain `if`
+            // comparison (`if (arg0++ > 0)`); the loop-condition shapes of Phase B stay
+            // refused elsewhere. `post` below keeps the P3-R1 refusal for the read it
+            // still cannot prove.
             name: "conditional",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "loopAcross",
@@ -278,10 +284,11 @@ const LOCAL_REWRITE: Sample = Sample {
             expect: Expect::Executed,
         },
     ],
-    point: "P3-R1 (`post`, `saved`, `conditional` refuse the read they cannot prove) with its \
-            negative controls (`bump`, `doubleIt`, `loopAcross` still write the slot name), and \
-            P3-R2 (`cast` recovers the cast and keeps one producer call: the count of `make` \
-            invocations is measured)",
+    point: "P3-R1 (`post` refuses the read it cannot prove; `saved` and `conditional` recovered \
+            with `recover-postfix-old-value-snapshot` Phase A — the iinc snapshot presents at its \
+            consumer) with its negative controls (`bump`, `doubleIt`, `loopAcross` still write the \
+            slot name), and P3-R2 (`cast` recovers the cast and keeps one producer call: the count \
+            of `make` invocations is measured)",
 };
 
 const SCOPE_MEMBERS: &[Member] = &[
