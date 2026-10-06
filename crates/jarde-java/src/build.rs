@@ -7397,6 +7397,8 @@ pub(crate) fn build(
         write_accessor_assignment,
         assignment_result_refused: false,
         postfix: PostfixUpdates::default(),
+        snapshot_quote: BTreeSet::new(),
+        snapshots_rendered: BTreeSet::new(),
         array_initializers: inputs.array_initializers,
         local_assignments,
         instructions,
@@ -7470,16 +7472,24 @@ pub(crate) fn build(
         let at = bcis.first().copied().unwrap_or(0);
         builder.fallback(bcis, &reason, at)?;
     } else {
-        if builder.return_type == Some(Type::Int) {
+        // The return-position postfix proof is the one that needs an `int` return; a consumer-position
+        // snapshot (`recover-postfix-old-value-snapshot`) is a value-level shape of any body — a
+        // `void add(Object t)` is where the flagship `elems[size++] = t` lives.
+        let returns = if builder.return_type == Some(Type::Int) {
             let legacy_returns = builder.increments().statements.keys().copied().collect();
-            builder.postfix = PostfixUpdates::prove(
+            PostfixUpdates::prove(
                 builder.ssa,
                 builder.operations,
                 builder.fields,
                 &legacy_returns,
                 builder.budget,
-            )?;
-        }
+            )?
+        } else {
+            PostfixUpdates::default()
+        };
+        let proved_returns = returns.owned.clone();
+        builder.postfix = builder.prove_snapshots(&proved_returns)?;
+        builder.postfix.absorb(returns);
         builder.prepare_conditional_regions(regions)?;
         builder.prepare_deferred_bindings()?;
         // A slot whose uses span more than one top-level region is declared wherever every one
@@ -7639,6 +7649,44 @@ pub(crate) fn build(
         builder.stmts = presented;
         builder.statements = 0;
     }
+    // The accounting check of the consumer-position snapshots (`recover-postfix-old-value-snapshot`).
+    //
+    // A snapshot's expression absorbs the instruction that writes the updated value: that
+    // instruction writes no statement of its own. The expression is written where its consumer reads
+    // the old value — and the statement that would have written it can be refused *before* it
+    // reaches that value (a write target no name states, an array element no opcode matches, a
+    // sibling operand the slot-name rule refuses). When that happens the absorbed update is neither
+    // presented nor quoted, which is an effect the text would silently drop. The check is the same
+    // shape as the guards above: where a claimed snapshot is unaccounted for, the body is presented
+    // as its quotes alone, and the quote names every instruction BCI of this method.
+    let mut quoted = BTreeSet::new();
+    collect_quoted_bcis(&builder.stmts, &mut quoted);
+    let unaccounted = builder
+        .postfix
+        .snapshots
+        .iter()
+        .filter(|(value, snapshot)| {
+            !builder.snapshots_rendered.contains(value)
+                && !snapshot.anchors.iter().all(|bci| quoted.contains(bci))
+        })
+        .map(|(_, snapshot)| snapshot.update)
+        .collect::<Vec<_>>();
+    if let Some(at) = unaccounted.first().copied() {
+        let covered = builder
+            .instructions
+            .keys()
+            .copied()
+            .chain(regions.iter().flat_map(unaccounted_region_bcis))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        let reason = format!(
+            "the old-value snapshot whose update runs at BCI {at} absorbed that instruction and the statement that would have written it was refused, so the increment the bytecode runs has no place in the text: the whole method is quoted"
+        );
+        builder.stmts.clear();
+        builder.statements = 0;
+        builder.fallback(covered, reason, at)?;
+    }
     let mut field_increments = BTreeMap::new();
     if let Some(plan) = builder.increments.get() {
         for increment in plan.statements.values() {
@@ -7794,6 +7842,60 @@ fn value_level_refusal(reason: &str) -> bool {
     VALUE_LEVEL_REFUSALS
         .iter()
         .any(|family| reason.contains(family))
+}
+
+/// Every bytecode index one statement tree's quotes name.
+///
+/// The accounting check of the consumer-position snapshots reads this: an instruction a snapshot
+/// absorbed is accounted for when some quote names it, wherever in the tree that quote landed.
+fn collect_quoted_bcis(statements: &[Stmt], quoted: &mut BTreeSet<u32>) {
+    for statement in statements {
+        match &statement.kind {
+            StmtKind::Fallback { bcis, .. } => quoted.extend(bcis.iter().copied()),
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_quoted_bcis(then_body, quoted);
+                collect_quoted_bcis(else_body, quoted);
+            }
+            StmtKind::While { body, .. }
+            | StmtKind::DoWhile { body, .. }
+            | StmtKind::ForEach { body, .. }
+            | StmtKind::Synchronized { body, .. } => collect_quoted_bcis(body, quoted),
+            StmtKind::For {
+                init,
+                update,
+                body,
+                ..
+            } => {
+                collect_quoted_bcis(std::slice::from_ref(init.as_ref()), quoted);
+                collect_quoted_bcis(std::slice::from_ref(update.as_ref()), quoted);
+                collect_quoted_bcis(body, quoted);
+            }
+            StmtKind::Switch { arms, .. } => {
+                for arm in arms {
+                    collect_quoted_bcis(&arm.body, quoted);
+                }
+            }
+            StmtKind::Try {
+                body,
+                catches,
+                finally_body,
+                ..
+            } => {
+                collect_quoted_bcis(body, quoted);
+                for clause in catches {
+                    collect_quoted_bcis(&clause.body, quoted);
+                }
+                if let Some(finally) = finally_body {
+                    collect_quoted_bcis(finally, quoted);
+                }
+            }
+            _ => {}
+        }
+    }
 }
 
 /// An explicit unlabelled break completes the nearest switch, including through either arm of
@@ -8325,6 +8427,12 @@ struct Builder<'a> {
     assignment_result_refused: bool,
     /// Complete postfix old-value returns, owned only after the SSA and evaluation-order proof.
     postfix: PostfixUpdates,
+    /// The instructions of a proved snapshot whose own rendering was refused: the statement that
+    /// quoted that refusal names them, so the absorbed update cannot leave the text unaccounted.
+    snapshot_quote: BTreeSet<u32>,
+    /// The snapshots whose `x++` this walk wrote into the text: the accounting check reads it
+    /// against the instructions those expressions absorbed.
+    snapshots_rendered: BTreeSet<ValueId>,
     /// Complete, same-block array initializer chains proved from their allocation through their
     /// final consumer. Their copy/index/store scaffolding is hidden only after this pass succeeds.
     array_initializers: ArrayInitializers,
@@ -8623,6 +8731,55 @@ struct PostfixUpdates {
     returns: BTreeMap<u32, PostfixUpdate>,
     refusals: BTreeMap<u32, Vec<u32>>,
     owned: BTreeSet<u32>,
+    /// The postfix values whose consumer is **not** a return (`recover-postfix-old-value-snapshot`):
+    /// the pre-update value an increment's own read took, read once after the update. Keyed by the
+    /// old value itself, because the consumer's position is a value position — a store's right
+    /// side, an array's index, an argument — and never a statement of its own.
+    snapshots: BTreeMap<ValueId, SnapshotValue>,
+}
+
+/// One proved old-value snapshot: the value an increment's own read took *before* the update,
+/// consumed exactly once after it. Its consumer writes the postfix expression `x++`, and the
+/// update instruction itself writes no statement of its own.
+#[derive(Clone)]
+struct SnapshotValue {
+    target: SnapshotTarget,
+    direction: PostfixDirection,
+    /// The instruction that writes the updated value: the `iinc`, or the field's own write. It is
+    /// the expression's primary anchor, the position whose update the consumer's text performs.
+    update: u32,
+    /// The instruction that reads the old value: the consumer whose position the `x++` is written
+    /// at. The slot-name rule reads it for the increment this expression absorbs.
+    consumer: u32,
+    /// Every instruction the expression absorbs, for provenance and for the quote of a refusal.
+    anchors: Vec<u32>,
+}
+
+/// What one snapshot's `x++` is written on: the same three targets the return-position postfix
+/// states, with the name or receiver already resolved at the proof's own position.
+#[derive(Clone)]
+enum SnapshotTarget {
+    /// A local: the name the load's own variable states, presented as its decided type, and the
+    /// slot and pre-update value the absorbed `iinc` writes.
+    Local {
+        name: String,
+        ty: Type,
+        load: u32,
+        slot: u16,
+        old: ValueId,
+    },
+    /// An instance field read through a receiver that is evaluated at the consumer's position.
+    Field {
+        receiver: ValueId,
+        name: String,
+        read: u32,
+    },
+    /// A static field: the receiver is the owner type's own path.
+    Static {
+        owner: String,
+        name: String,
+        read: u32,
+    },
 }
 
 #[derive(Clone)]
@@ -9213,6 +9370,41 @@ impl PostfixUpdates {
         self.refusals.get(&bci).map(Vec::as_slice)
     }
 
+    /// The snapshot one value is, when a proved increment's pre-update value is that value.
+    fn snapshot_at(&self, value: ValueId) -> Option<&SnapshotValue> {
+        self.snapshots.get(&value)
+    }
+
+    /// Whether the instruction at `bci` is an `iinc` this plan absorbed into the postfix expression
+    /// that reads `denotes` from local `slot`, evaluated where `at` is.
+    ///
+    /// The text performs that increment inside the consumer's own statement, so a read the text
+    /// evaluates *before* it — every read of the pre-update value whose own instruction precedes the
+    /// increment — still sees the value the bytecode's slot held there. Only such a read is
+    /// answered by this: the increment's own written value stays invisible, and a later statement's
+    /// read of it keeps its refusal.
+    fn absorbs_increment(&self, slot: u16, denotes: ValueId, bci: u32, at: u32) -> bool {
+        self.snapshots.values().any(|snapshot| {
+            snapshot.update == bci
+                && snapshot.consumer <= at
+                && matches!(
+                    &snapshot.target,
+                    SnapshotTarget::Local { slot: absorbed, old, .. }
+                        if *absorbed == slot && *old == denotes
+                )
+        })
+    }
+
+    /// The return-position plan and the consumer-position snapshots as one plan. The two owned sets
+    /// are disjoint by construction: a snapshot whose instructions the return proof owns is never
+    /// claimed, and the snapshot proof runs after it.
+    fn absorb(&mut self, other: PostfixUpdates) {
+        self.owned.extend(other.owned);
+        self.returns.extend(other.returns);
+        self.refusals.extend(other.refusals);
+        self.snapshots.extend(other.snapshots);
+    }
+
     fn prove(
         ssa: &SsaTable,
         operations: &Operations,
@@ -9312,6 +9504,652 @@ impl PostfixUpdates {
             }
         }
         Ok(plan)
+    }
+}
+
+/// The consumer of one proved snapshot: where the old value is read, in the block that holds it.
+struct SnapshotConsumer {
+    bci: u32,
+}
+
+impl Builder<'_> {
+    /// The postfix old-value snapshots this body proves (`recover-postfix-old-value-snapshot`).
+    ///
+    /// javac reads an incremented local or field **before** it updates it whenever the value is
+    /// consumed: `int j = i++;`, `arr[idx++] = 10`, `elems[size++] = t`, `src[pos++]` in a ternary
+    /// arm. The old value is an SSA value of its own — the load's own output, or the copy the field
+    /// dance leaves under its receiver — and its consumer reads that value *after* the update ran.
+    /// This proof recognizes exactly that shape and nothing else:
+    ///
+    /// * the pre-update value is read by the update instruction and by nothing else, in this block
+    ///   and at the very instruction that took it;
+    /// * the old value has exactly one consumer, in this block, after the update;
+    /// * every instruction between the update and that consumer is the expression's own transparent
+    ///   plumbing (or an instruction another proved plan already owns), so the update's move into
+    ///   the consumer's expression crosses no statement and no effect;
+    /// * the value the update writes is read by nothing in that interval, so no text between the two
+    ///   positions can observe the increment early;
+    /// * the consumer is not a write back into the very slot or field the snapshot reads — the
+    ///   self-assignment form (`i = i++`) this slice's Non-Goal keeps refused.
+    ///
+    /// Then `x++` written at the consumer's position is the same program: the increment still runs
+    /// exactly once and its value is still read where the bytecode read it. Nothing is claimed on a
+    /// weaker proof: a shape this walk does not recognize keeps the refusal it had.
+    fn prove_snapshots(
+        &mut self,
+        already_owned: &BTreeSet<u32>,
+    ) -> Result<PostfixUpdates, StopReason> {
+        let forbidden = self.snapshot_forbidden(already_owned);
+        let mut plan = PostfixUpdates::default();
+        self.prove_local_snapshots(&mut plan, &forbidden)?;
+        self.prove_field_snapshots(&mut plan, &forbidden)?;
+        Ok(plan)
+    }
+
+    /// Every instruction another proved plan already presents, plus the return-position postfix
+    /// plan's own set.
+    ///
+    /// A snapshot may not absorb one of them: the other plan's statement writes the same update, and
+    /// absorbing the instruction here would write it a second time (or drop it). The list is the
+    /// statement partition's own ownership predicates, read once before the walk.
+    fn snapshot_forbidden(&self, already_owned: &BTreeSet<u32>) -> BTreeSet<u32> {
+        let mut forbidden = already_owned.clone();
+        for bci in self.instructions.keys().copied() {
+            if self.compounds.owns_copy(bci)
+                || self.compounds.owns_read(bci)
+                || self.compounds.keeps_inline(bci)
+                || self.increments().owns(bci)
+                || self.unit_field_updates.owns(bci)
+                || self.array_initializers.owns(bci)
+                || self.chains.owns(bci)
+                || self.sites.owns(bci)
+                || self
+                    .long_assignment_result
+                    .as_ref()
+                    .is_some_and(|result| result.owns(bci))
+                || self
+                    .write_accessor_assignment
+                    .as_ref()
+                    .is_some_and(|shape| shape.assignment.owns(bci))
+            {
+                forbidden.insert(bci);
+            }
+        }
+        forbidden
+    }
+
+    /// The one consumer of one old value, when it is a single use in this block after `after`.
+    ///
+    /// Every limit the two proofs share is taken here: one use, one block, a position after the
+    /// update, an interval that holds nothing but the expression's own plumbing, and an updated
+    /// value nothing in that interval reads.
+    fn snapshot_consumer(
+        &self,
+        block: &jarde_jvm::method_ir::SsaBlock,
+        old: ValueId,
+        updated: ValueId,
+        after: u32,
+        plan: &PostfixUpdates,
+        forbidden: &BTreeSet<u32>,
+    ) -> Option<SnapshotConsumer> {
+        let uses = self.ssa.value(old).uses();
+        let [consumer] = uses else {
+            return None;
+        };
+        let consumer_bci = consumer.bci()?;
+        if consumer.block() != block.block() || consumer_bci <= after {
+            return None;
+        }
+        // The immediate `return` is the return-position proof's own position: `return x++;` keeps
+        // exactly the reading (and the refusal) that plan states, so this walk never claims it.
+        if matches!(self.operations.get(consumer_bci), Some(Operation::Return)) {
+            return None;
+        }
+        // A text between the update and the consumer that reads the updated value would see the
+        // increment where the bytecode had not run it yet.
+        if self.ssa.value(updated).uses().iter().any(|use_| {
+            use_.block() == block.block()
+                && use_.bci().is_some_and(|bci| bci > after && bci < consumer_bci)
+        }) {
+            return None;
+        }
+        let position = position_in_block(block, consumer_bci)?;
+        let update_position = position_in_block(block, after)?;
+        if position <= update_position {
+            return None;
+        }
+        // The interval is the consumer's own expression: pure arithmetic and stack/local plumbing,
+        // or an instruction another proved plan already presents. A copy no shape owns is not
+        // plumbing here — it would be quoted as a statement of its own between the two positions.
+        if block.instructions()[update_position + 1..position]
+            .iter()
+            .any(|instruction| {
+                if plan.owns(instruction.bci()) || forbidden.contains(&instruction.bci()) {
+                    return false;
+                }
+                !self.transparent_between(instruction)
+                    || matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Duplicate)
+                    )
+            })
+        {
+            return None;
+        }
+        Some(SnapshotConsumer { bci: consumer_bci })
+    }
+
+    /// The `iinc` snapshots: `iload slot; iinc slot, ±1; …consumer…` (`int j = i++;`,
+    /// `a[i] = i++`, `arr[idx++]`).
+    ///
+    /// The load's own read of the slot and the increment's read of it must be **one** value, which
+    /// is what says the increment is that load's own update and not a second one; that value must
+    /// have exactly two uses, the load and the increment, which is what refuses the multi-consumer
+    /// sharing this slice leaves refused; and the increment's written value must be read by nothing
+    /// before the consumer. The text is the slot's own name with the postfix operator, so a slot
+    /// whose variable has no name or whose decided type is `boolean` (which Java cannot spell as
+    /// `b++`) is not claimed.
+    fn prove_local_snapshots(
+        &mut self,
+        plan: &mut PostfixUpdates,
+        forbidden: &BTreeSet<u32>,
+    ) -> Result<(), StopReason> {
+        for block in self.ssa.blocks() {
+            let instructions = block.instructions();
+            for (position, update) in instructions.iter().enumerate() {
+                let at = update.bci();
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                let Some(Operation::Increment { slot, amount }) = self.operations.get(at) else {
+                    continue;
+                };
+                let (slot, amount) = (*slot, *amount);
+                let direction = match amount {
+                    1 => PostfixDirection::Increment,
+                    -1 => PostfixDirection::Decrement,
+                    _ => continue,
+                };
+                let Some(before) = position.checked_sub(1).map(|index| &instructions[index])
+                else {
+                    continue;
+                };
+                if !matches!(
+                    self.operations.get(before.bci()),
+                    Some(Operation::Load { slot: read }) if *read == slot
+                ) {
+                    continue;
+                }
+                let (Some(old), Some((_, loaded))) = (local_read(before, slot), one_stack_output(before))
+                else {
+                    continue;
+                };
+                let (Some(update_read), Some(updated)) = (local_read(update, slot), local_write(update, slot))
+                else {
+                    continue;
+                };
+                // One value, not two: the increment reads what the load read.
+                if update_read != old {
+                    continue;
+                }
+                let Some(consumer) =
+                    self.snapshot_consumer(block, loaded, updated, at, plan, forbidden)
+                else {
+                    continue;
+                };
+                // Every other read of the pre-update value must be one of two bounded forms: a read
+                // whose own statement runs **before** the increment (it reads the slot where the
+                // text still holds the pre-update value), or a read the very instruction that
+                // consumes the snapshot reads too — the `a[i] = i++` form, where one store reads the
+                // old value twice. Anything else (`i += i++ + 1`, `i + i++`) is the multi-consumer
+                // form this slice keeps refused.
+                let mut shared = false;
+                let snapshot_reads_a_statement =
+                    !self.expression_value_instruction(consumer.bci);
+                let uses: Vec<(CanonicalBlockId, u32)> = self
+                    .ssa
+                    .value(old)
+                    .uses()
+                    .iter()
+                    .filter_map(|use_| use_.bci().map(|bci| (use_.block().clone(), bci)))
+                    .collect();
+                for (use_block, bci) in &uses {
+                    if *bci == before.bci() || *bci == at {
+                        continue;
+                    }
+                    if *use_block != *block.block()
+                        || *bci > at
+                        || !matches!(
+                            self.operations.get(*bci),
+                            Some(Operation::Load { slot: read }) if *read == slot
+                        )
+                    {
+                        shared = true;
+                        break;
+                    }
+                    let Some(reader) = self.instructions.get(bci).copied() else {
+                        shared = true;
+                        break;
+                    };
+                    let Some((_, output)) = one_stack_output(reader) else {
+                        shared = true;
+                        break;
+                    };
+                    let Some(end) = self.terminal_consumer(output, 0)? else {
+                        shared = true;
+                        break;
+                    };
+                    let before_the_increment = end < at;
+                    let read_by_the_same_statement =
+                        snapshot_reads_a_statement && end == consumer.bci;
+                    if !before_the_increment && !read_by_the_same_statement {
+                        shared = true;
+                        break;
+                    }
+                }
+                if shared {
+                    continue;
+                }
+                // `i = i++`: the old value stored back into the slot it was read from is the
+                // self-assignment trap, which keeps its refusal.
+                if matches!(
+                    self.operations.get(consumer.bci),
+                    Some(Operation::Store { slot: written }) if *written == slot
+                ) {
+                    continue;
+                }
+                let Some(variable) = self.reuse.variable_at(slot, before.bci()) else {
+                    continue;
+                };
+                let Some(name) = self.names.text(variable).map(str::to_string) else {
+                    continue;
+                };
+                let Some(ty) = self.decided_type(variable) else {
+                    continue;
+                };
+                if ty == Type::Boolean {
+                    continue;
+                }
+                let anchors = vec![before.bci(), at];
+                if anchors
+                    .iter()
+                    .any(|bci| plan.owned.contains(bci) || forbidden.contains(bci))
+                {
+                    continue;
+                }
+                plan.owned.extend(anchors.iter().copied());
+                plan.snapshots.insert(
+                    loaded,
+                    SnapshotValue {
+                        target: SnapshotTarget::Local {
+                            name,
+                            ty,
+                            load: before.bci(),
+                            slot,
+                            old,
+                        },
+                        direction,
+                        update: at,
+                        consumer: consumer.bci,
+                        anchors,
+                    },
+                );
+            }
+        }
+        Ok(())
+    }
+
+    /// The field-dance snapshots: `getfield f; dup[_x1]; iconst_1; iadd; putfield f; …consumer…`
+    /// (`elems[size++] = t`, `src[pos++]` in a ternary arm, `CH.arr[CH.idx++] = 10`).
+    ///
+    /// The instance form is the receiver's `dup` and the value's `dup_x1` the return-position proof
+    /// already states, with the value the `dup_x1` left *below* its receiver copies read by the
+    /// consumer instead of by a `return`; the static form is `getstatic; dup; iconst_1; iadd;
+    /// putstatic` with the `dup`'s bottom copy read by the consumer. Both require the read and the
+    /// write to be the same member, the receiver's evaluation to be the uninterrupted prefix the
+    /// copy duplicates, and every value of that prefix to have a single use — so writing the
+    /// receiver inside the consumer's expression runs nothing twice and moves nothing across an
+    /// effect.
+    fn prove_field_snapshots(
+        &mut self,
+        plan: &mut PostfixUpdates,
+        forbidden: &BTreeSet<u32>,
+    ) -> Result<(), StopReason> {
+        for block in self.ssa.blocks() {
+            let instructions = block.instructions();
+            for (position, copy) in instructions.iter().enumerate() {
+                let at = copy.bci();
+                if !matches!(copy.opcode(), OPCODE_DUP | OPCODE_DUP_X1) {
+                    continue;
+                }
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                let (read_value, below) = if copy.opcode() == OPCODE_DUP_X1 {
+                    let Some((top, below)) = dup_x1_operands(copy) else {
+                        continue;
+                    };
+                    (top, Some(below))
+                } else {
+                    let Some((_, top)) = single_stack_read(copy) else {
+                        continue;
+                    };
+                    (top, None)
+                };
+                // The value the copy duplicates is a field read's own output, read by this copy
+                // and by nothing else.
+                let Definition::Instruction { bci: read_bci, .. } = self.ssa.value(read_value).def()
+                else {
+                    continue;
+                };
+                let read_bci = *read_bci;
+                if !single_use_at(self.ssa, read_value, block.block(), at) {
+                    continue;
+                }
+                let Some((read, read_shape)) = self.fields.claim(read_bci) else {
+                    continue;
+                };
+                if read.access != FieldAccess::Read
+                    || read_shape.writes()
+                    || read.descriptor != "I"
+                    || read_shape.receiver.is_some() != below.is_some()
+                {
+                    continue;
+                }
+                // The receiver's own `dup`, when the read is an instance access: the value below
+                // the copy is its bottom output and the read used its top output, so both name the
+                // same object.
+                let receiver = match below {
+                    Some(below) => {
+                        let Definition::Instruction { bci: receiver_bci, .. } =
+                            self.ssa.value(below).def()
+                        else {
+                            continue;
+                        };
+                        let receiver_bci = *receiver_bci;
+                        if !matches!(
+                            self.operations.get(receiver_bci),
+                            Some(Operation::Duplicate)
+                        ) {
+                            continue;
+                        }
+                        let Some(receiver_instruction) = self.instructions.get(&receiver_bci).copied()
+                        else {
+                            continue;
+                        };
+                        let outputs = stack_outputs(receiver_instruction);
+                        let [bottom, top] = outputs.as_slice() else {
+                            continue;
+                        };
+                        if bottom.1 != below || read_shape.receiver != Some(top.1) {
+                            continue;
+                        }
+                        let Some((_, source)) = single_stack_read(receiver_instruction) else {
+                            continue;
+                        };
+                        Some((receiver_bci, source))
+                    }
+                    None => None,
+                };
+                let outputs = stack_outputs(copy);
+                let (old, middle, top) = match (outputs.as_slice(), below) {
+                    ([old, top], None) => (old.1, None, top.1),
+                    ([old, middle, top], Some(_)) => (old.1, Some(middle.1), top.1),
+                    _ => {
+                        continue;
+                    }
+                };
+                // The top copy is the `iadd`/`isub` that adds the constant `1`, and its result is
+                // the same member's write.
+                let Some((_, add_bci)) = self.ssa.value(top).uses().first().map(|use_| (use_.block(), use_.bci()))
+                    .and_then(|(use_block, bci)| {
+                        (use_block == block.block()).then_some((use_block, bci?))
+                    })
+                else {
+                    continue;
+                };
+                let Some(add_instruction) = self.instructions.get(&add_bci).copied() else {
+                    continue;
+                };
+                let direction = match self.operations.get(add_bci) {
+                    Some(Operation::Arithmetic {
+                        op: ArithmeticOp::Add,
+                    }) => PostfixDirection::Increment,
+                    Some(Operation::Arithmetic {
+                        op: ArithmeticOp::Subtract,
+                    }) => PostfixDirection::Decrement,
+                    _ => {
+                        continue;
+                    }
+                };
+                let operands = stack_operands(add_instruction);
+                let [(_, first), (_, second)] = operands.as_slice() else {
+                    continue;
+                };
+                let one_value = if *first == top {
+                    *second
+                } else if *second == top {
+                    *first
+                } else {
+                    continue;
+                };
+                let Definition::Instruction { bci: one_bci, .. } = self.ssa.value(one_value).def()
+                else {
+                    continue;
+                };
+                let one_bci = *one_bci;
+                if !matches!(
+                    self.operations.get(one_bci),
+                    Some(Operation::Push(ConstantValue::Int(1)))
+                ) || !single_use_at(self.ssa, one_value, block.block(), add_bci)
+                {
+                    continue;
+                }
+                let Some((_, sum)) = one_stack_output(add_instruction) else {
+                    continue;
+                };
+                let Some((_, store_bci)) = self
+                    .ssa
+                    .value(sum)
+                    .uses()
+                    .first()
+                    .map(|use_| (use_.block(), use_.bci()))
+                    .and_then(|(use_block, bci)| {
+                        (use_block == block.block()).then_some((use_block, bci?))
+                    })
+                else {
+                    continue;
+                };
+                let Some(store_instruction) = self.instructions.get(&store_bci).copied() else {
+                    continue;
+                };
+                let Some((write, write_shape)) = self.fields.claim(store_bci) else {
+                    continue;
+                };
+                if write.access != FieldAccess::Write
+                    || write.owner != read.owner
+                    || write.name != read.name
+                    || write.descriptor != read.descriptor
+                    || write_shape.value != Some(sum)
+                {
+                    continue;
+                }
+                let stored = stack_operands(store_instruction);
+                let stored_matches = match (stored.as_slice(), middle) {
+                    ([(_, value)], None) => *value == sum,
+                    ([(_, receiver), (_, value)], Some(middle)) => {
+                        *value == sum && *receiver == middle && write_shape.receiver == Some(middle)
+                    }
+                    _ => false,
+                };
+                if !stored_matches {
+                    continue;
+                }
+                let Some(consumer) =
+                    self.snapshot_consumer(block, old, sum, store_bci, plan, forbidden)
+                else {
+                    continue;
+                };
+                // `f = f++`: the old value stored back into the member it was read from is the
+                // self-assignment trap, which keeps its refusal.
+                if self
+                    .fields
+                    .claim(consumer.bci)
+                    .is_some_and(|(evidence, shape)| {
+                        evidence.access == FieldAccess::Write
+                            && shape.writes()
+                            && evidence.owner == read.owner
+                            && evidence.name == read.name
+                            && evidence.descriptor == read.descriptor
+                    })
+                {
+                    continue;
+                }
+                let mut anchors = vec![read_bci, at, one_bci, add_bci, store_bci];
+                // The receiver's evaluation: exactly the uninterrupted prefix the copy duplicates,
+                // with every value used once — the same discipline the return-position proof reads.
+                if let Some((receiver_bci, source)) = receiver {
+                    anchors.push(receiver_bci);
+                    let Some(receiver_position) = position_in_block(block, receiver_bci) else {
+                        continue;
+                    };
+                    let context = ExpressionBciContext {
+                        ssa: self.ssa,
+                        operations: self.operations,
+                        fields: self.fields,
+                        block,
+                        start: 0,
+                        end: receiver_position,
+                    };
+                    let mut dependencies = BTreeSet::new();
+                    if !collect_expression_bcis(
+                        &context,
+                        source,
+                        &mut dependencies,
+                        &mut BTreeSet::new(),
+                        self.budget,
+                        0,
+                    )? || !expression_values_have_single_use(
+                        self.ssa,
+                        block,
+                        &dependencies,
+                        receiver_bci,
+                        self.budget,
+                    )? || !dependency_uses_stay_within(
+                        self.ssa,
+                        block,
+                        &dependencies,
+                        receiver_bci,
+                        self.budget,
+                    )? || !dependencies_fill_prefix(
+                        block,
+                        receiver_position,
+                        &dependencies,
+                        self.budget,
+                    )? {
+                        continue;
+                    }
+                    anchors.extend(dependencies);
+                }
+                if anchors
+                    .iter()
+                    .any(|bci| plan.owned.contains(bci) || forbidden.contains(bci))
+                {
+                    continue;
+                }
+                plan.owned.extend(anchors.iter().copied());
+                plan.snapshots.insert(
+                    old,
+                    SnapshotValue {
+                        target: match receiver {
+                            Some((_, source)) => SnapshotTarget::Field {
+                                receiver: source,
+                                name: read.name.clone(),
+                                read: read_bci,
+                            },
+                            None => SnapshotTarget::Static {
+                                owner: read.owner.clone(),
+                                name: read.name.clone(),
+                                read: read_bci,
+                            },
+                        },
+                        direction,
+                        update: store_bci,
+                        consumer: consumer.bci,
+                        anchors,
+                    },
+                );
+            }
+        }
+        Ok(())
+    }
+
+    /// One snapshot's `x++` written where its consumer reads the old value.
+    fn snapshot_expression(
+        &mut self,
+        snapshot: &SnapshotValue,
+        at: u32,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let target = match &snapshot.target {
+            SnapshotTarget::Local {
+                name, ty, load, ..
+            } => Expr::direct(ExprKind::Local(name.clone()), *load).presenting(ty.clone()),
+            SnapshotTarget::Field {
+                receiver,
+                name,
+                read,
+                ..
+            } => {
+                let receiver = self.render_value(*receiver, at, 1)?;
+                Expr::direct(
+                    ExprKind::Field {
+                        receiver: Box::new(receiver),
+                        name: name.clone(),
+                    },
+                    *read,
+                )
+                .presenting(Type::Int)
+            }
+            SnapshotTarget::Static { owner, name, read } => {
+                let Some(path) = spell_reference(owner) else {
+                    return Err(format!(
+                        "the static field at BCI {read} names the owner `{owner}`, which this layer cannot spell as a Java type"
+                    )
+                    .into());
+                };
+                Expr::direct(
+                    ExprKind::Field {
+                        receiver: Box::new(Expr::direct(ExprKind::Path(path), *read)),
+                        name: name.clone(),
+                    },
+                    *read,
+                )
+                .presenting(Type::Int)
+            }
+        };
+        let origin = snapshot.anchors.iter().fold(
+            OriginSet::new(Origin::direct(snapshot.update)),
+            |origin, bci| origin.plus_derived(Origin::derived(*bci)),
+        );
+        Ok(Expr::new(
+            ExprKind::PostfixUpdate {
+                target: Box::new(target),
+                direction: snapshot.direction,
+            },
+            origin,
+        )
+        .presenting(match &snapshot.target {
+            SnapshotTarget::Local { ty, .. } => ty.clone(),
+            SnapshotTarget::Field { .. } | SnapshotTarget::Static { .. } => Type::Int,
+        }))
     }
 }
 
@@ -13445,6 +14283,14 @@ impl Builder<'_> {
         poll(self.budget, Some(bci)).map_err(ConditionalValueBuildError::Stop)?;
         charge(self.budget, CountedBudgetDimension::IrItems, 1, Some(bci))
             .map_err(ConditionalValueBuildError::Stop)?;
+        // A value a proved postfix snapshot consumed is the expression's own: the arm's text writes
+        // it where the value is read, and every instruction that expression absorbs belongs to the
+        // arm exactly as the value does.
+        if let Some(snapshot) = self.postfix.snapshot_at(value) {
+            dependencies.extend(snapshot.anchors.iter().copied());
+            active.remove(&value);
+            return Ok(());
+        }
         let fresh = dependencies.insert(bci);
         if !fresh {
             active.remove(&value);
@@ -18351,6 +19197,7 @@ impl Builder<'_> {
             if dependency_bcis.contains(&bci)
                 || consumer_bcis.contains(&bci)
                 || owned_monitor_exit == Some(bci)
+                || self.postfix.owns(bci)
                 || self.transparent_between(instruction)
             {
                 continue;
@@ -18468,6 +19315,13 @@ impl Builder<'_> {
         }
         if let Some(expression) = self.conditional_values.get(&value) {
             bcis.extend(expression.origin.bcis());
+            return Ok(true);
+        }
+        // A value a proved postfix snapshot consumed is materialized by that expression, which this
+        // build already owns: the walk stops at it and names every instruction the expression
+        // absorbs, exactly as it names a conditional value's own tree.
+        if let Some(snapshot) = self.postfix.snapshot_at(value) {
+            bcis.extend(snapshot.anchors.iter().copied());
             return Ok(true);
         }
         let definition = self.ssa.value(value).def().clone();
@@ -20413,6 +21267,15 @@ impl Builder<'_> {
             if instruction.bci() >= at {
                 break;
             }
+            // An increment a proved snapshot absorbed has not run where the text evaluates a read
+            // that precedes it: the text performs it inside the consumer's own statement, after
+            // every read whose own instruction came before it.
+            if self
+                .postfix
+                .absorbs_increment(slot, denotes, instruction.bci(), at)
+            {
+                continue;
+            }
             for (written, value) in instruction.writes() {
                 if matches!(written, Slot::Local(written) if *written == slot) {
                     in_use = Some(*value);
@@ -20556,6 +21419,25 @@ impl Builder<'_> {
             return Ok(Expr::direct(ExprKind::Local(binding.name), at)
                 .presenting(binding.ty)
                 .derived_from(binding.anchor));
+        }
+        // The old value of a proved postfix snapshot is the value that increment's own read took
+        // (`recover-postfix-old-value-snapshot`): the consumer writes `x++` here, and the update
+        // instruction itself is absorbed by this expression, so it writes no statement of its own.
+        if let Some(snapshot) = self.postfix.snapshot_at(value).cloned() {
+            let anchors = snapshot.anchors.clone();
+            return match self.snapshot_expression(&snapshot, at) {
+                Ok(expression) => {
+                    self.snapshots_rendered.insert(value);
+                    Ok(expression)
+                }
+                Err(reason) => {
+                    // The update this expression would have written is suppressed as its own
+                    // instruction: a refusal here has to keep it inside the quote that replaces the
+                    // consumer, or the increment would leave the text unaccounted for.
+                    self.snapshot_quote.extend(anchors);
+                    Err(reason)
+                }
+            };
         }
         if self.binding_refused.contains(&value) {
             return Err(format!(
@@ -24333,6 +25215,15 @@ impl Builder<'_> {
             ValueRenderFailure::Stop(stop) => return Err(stop),
         };
         self.ragged = true;
+        // A snapshot whose own expression was refused absorbed its update instruction: the quote
+        // that replaces the consumer names that instruction too, so the effect the bytecode ran is
+        // never dropped from the text (the pending set is drained by the first quote).
+        let mut bcis = bcis;
+        for bci in std::mem::take(&mut self.snapshot_quote) {
+            if !bcis.contains(&bci) {
+                bcis.push(bci);
+            }
+        }
         // Every BCI the quote's text names is an anchor of the quoted node — the region's own
         // instruction first, the rest presented — so a Mixed artifact's fallback is mapped as
         // completely as one of its structured regions: for each bytecode the quote accounts for,
@@ -26933,6 +27824,17 @@ fn local_read(instruction: &SsaInstruction, slot: u16) -> Option<ValueId> {
         .iter()
         .find_map(|(read, value)| match read {
             Slot::Local(read) if *read == slot => Some(*value),
+            _ => None,
+        })
+}
+
+/// The value one instruction writes into one local slot, when it writes that slot.
+fn local_write(instruction: &SsaInstruction, slot: u16) -> Option<ValueId> {
+    instruction
+        .writes()
+        .iter()
+        .find_map(|(written, value)| match written {
+            Slot::Local(written) if *written == slot => Some(*value),
             _ => None,
         })
 }
