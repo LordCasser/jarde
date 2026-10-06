@@ -253,3 +253,20 @@ ownership 重叠 → 整方法 `jre_region_ownership_overlap` 拒绝）。实现
 | 抑制链断头（去掉 48→53 的 `any` 行，或改 53 的重抛槽） | 抑制/重抛链 | 块 48 的离开边 `exc[(4,53)]` 无行可归 → relay 证明失败 |
 
 三条在实现后仍须保持拒绝（task 3.3）。
+
+## 5. 残余边界（交 root 复核时一并核对）
+
+1. **catch 类型不可读**：`ExceptionTable` 的 `catch_type_index` 在本层是不透明的池下标（guard 不解析类型名，
+   与模块自述的 "`AutoCloseable` 是 resolution 事实、本层不读" 同一边界）。故 relay 行与层级行按**位置**
+   （表内相邻、同保护区、先匹配先胜）读取，而不是按类型名重推：对"首个覆盖保护区的行"会拦住 body 的
+   抛出这一点，是几何事实，不是类型事实。实际 javac 8 产物的该行恒为 `java/lang/Throwable`，
+   该读法对真实产物完备；对**手工构造**的、把首行类型收窄到比被抛异常更窄的 class，本读法仍会接受
+   （其语义与源码 TWR 在"body 抛出 <close 也抛出"时可能不同）。这是本片已知的最窄残余，登记在此供
+   root 判定是否需要后续加严（需要类型解析，属跨层事实）。
+2. **双资源仍拒（design Non-Goal）**：`TR.two()` 保持 `not recovered`。因此巡查 fixture `TR.class` **整类**
+   在"只剥注释"后不能编译（`two()` 无正文）；验收改以两种等价口径给出：① 剥注释 + 去掉被拒的 `two()`
+   及其调用 → `javac --release 8` exit 0 且 `one()` 路径输出与原 class 逐行一致；
+   ② 单资源锚 `TROne`（同一 `one()` 形）双腿整类往返（渲染 → `javac --release 8` → `java -Xverify:all`
+   逐行一致）。证据：`results/roundtrip-single-resource/`。
+3. **全语料差分的覆盖口径**：2678 条比对里 700 条因 `--class <文件干名>` 无法解析而与两侧同为错误输出，
+   有效渲染覆盖 1978 条（含全部 `p3-*`/`finally`/TWR 族）。见 `results/corpus-render-differential.md`。
