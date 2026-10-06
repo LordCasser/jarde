@@ -11958,7 +11958,11 @@ mod tests {
             // all-recovering anchor `LR2` and its `LB` negatives, five classes on both compiler
             // legs: ten classes, fifty-six bodies, two handler records — `LB.tryLadder`'s catch,
             // one per leg — and one hundred seventy-two branch targets) moved it again.
-            (749, 3139, 286, 2005, 8),
+            // The 2026-10-06 recover-static-generic-field-init-text fixtures (the patrol's `MN`
+            // and `RG` families plus this change's `SG` anchor and `P1` non-generic control, four
+            // classes on both compiler legs: sixteen classes, forty bodies, four branch targets —
+            // `RG.pick`'s `iflt`/`goto` pair per leg) moved it again.
+            (765, 3179, 286, 2009, 8),
             "fixture population changed: re-measure these counts"
         );
     }

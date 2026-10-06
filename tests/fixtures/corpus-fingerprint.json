@@ -7902,6 +7902,106 @@
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class"
     },
     {
+      "blake3": "d1931c0fb11995fb21ef735f3749b11c91b8edae9ee0d67b9817db540421de78",
+      "bytes": 396,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/MN.java"
+    },
+    {
+      "blake3": "a1c20205089d4d28e58e47587d289944eac3b7cd7461d7eb7e02346741303707",
+      "bytes": 177,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/P1.java"
+    },
+    {
+      "blake3": "ab880f0db0fc2d7b95bde5f0809d3d68bf789a35c1dddcc9003f96ba3bf5b732",
+      "bytes": 847,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/RG.java"
+    },
+    {
+      "blake3": "38fb7567e5427a43e2b7febc4f909e6c5880d8780fb09421500e0622a32aadbf",
+      "bytes": 338,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/SG.java"
+    },
+    {
+      "blake3": "e2c7428ce374c3797b3cc5ac69a3f9db15bbd73740005e597f5481cc4c6b6cb6",
+      "bytes": 395,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/MN$Hold.class"
+    },
+    {
+      "blake3": "432b6c860592de30667a1d15376d1c6af049fe9754f9d4d84cf3da4d5e0f9435",
+      "bytes": 1149,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/MN.class"
+    },
+    {
+      "blake3": "1ec4a7e4a425a41451638a3ec3ad79f4fcc5c9874b819218fff0bcab7cdf07ab",
+      "bytes": 265,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/P1$Box.class"
+    },
+    {
+      "blake3": "db171eb01b735cfe809c23372138448837ca816d4437c8ffbe89c77630b93dbd",
+      "bytes": 546,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/P1.class"
+    },
+    {
+      "blake3": "967f46469cf2933f917b39437084fbe7535d4827ee86a982bee730dea59bf24c",
+      "bytes": 483,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/RG$Hold.class"
+    },
+    {
+      "blake3": "ac93313237ec40f324fec5b63a2799d8bcef38addb793381fa7cb9bd09177131",
+      "bytes": 1969,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/RG.class"
+    },
+    {
+      "blake3": "72ec08d612737541d8f4688d9a686bfefa2f4f2919fb996c8690b38fbfb4c723",
+      "bytes": 364,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/SG$Hold.class"
+    },
+    {
+      "blake3": "72ef9f81822b9728912b7d389003ec973b114ae93b387de41f96c9811f17c705",
+      "bytes": 1132,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8-javac8/SG.class"
+    },
+    {
+      "blake3": "b0dbd79f871b44af409e6f41f74686f98f259a29639e30d936b5357b83458cbb",
+      "bytes": 395,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/MN$Hold.class"
+    },
+    {
+      "blake3": "1f4d304c4fbf0f08cc3d12859322dfd8d654d1366a8b1ef9777e8cc781279170",
+      "bytes": 1149,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/MN.class"
+    },
+    {
+      "blake3": "92d4811663de1c0f204ca0c6334bf631cdba35ce5fed3beb8d60c117bb6329ba",
+      "bytes": 265,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/P1$Box.class"
+    },
+    {
+      "blake3": "eea02b3c1d3e6925dd17723d45999840cf90edd0e4d47afe3e608b1a1bd92298",
+      "bytes": 546,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/P1.class"
+    },
+    {
+      "blake3": "b6cb12a40b35a3862b119f096447884e7e340ecfbf37f9e1ada6d7d761990030",
+      "bytes": 483,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/RG$Hold.class"
+    },
+    {
+      "blake3": "88b8de6db3acd03a270b42a0af5cf2d275177c19d2d8fdf8aa6ceb41b85d5609",
+      "bytes": 1966,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/RG.class"
+    },
+    {
+      "blake3": "dc0f99309fbe4ee80f1adc0a9f2f1a84e9572f8ef57ea47dfaf8656d250c3bc0",
+      "bytes": 364,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/SG$Hold.class"
+    },
+    {
+      "blake3": "3350ed33b037dab76beee7b1af85f23425ed0c8a72aed281ba03abc751a5c6c1",
+      "bytes": 1132,
+      "path": "tests/fixtures/recover-static-generic-field-init-text/v8/SG.class"
+    },
+    {
       "blake3": "52182e4f587dd4ebb5817a8cc0adbdb3e0a66767d25549fea70e044ff2364597",
       "bytes": 1126,
       "path": "tests/fixtures/recover-temporal-argument-widening/CF.java"
