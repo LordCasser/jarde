@@ -132,6 +132,8 @@ root 读码核实：证明函数 `fn twr`（`guard.rs:14128`）先由**异常表
 - **TWR（本巡查）**：**不立即立 spec**——须先独立取证真 javac 8 的 TWR region 能否在既有 region/guard 架构内恢复（`aconst_null` 资源副本 + `ifnull` 守卫关闭序列），判定是窄扩展还是机制工作。登记为 **CF-17 的已证差距**（真 javac 8 形），排入取证队列。
 - **横切（语料双腿补强）**：登记为独立大颗粒项，须评估成本（真 javac 8 重编全部 fixture 会改变 SHA、fingerprint、以及所有以字节 SHA 断言的测试），不在本巡查范围。
 
+> **后续（2026-10-06，[recover-twr-javac8-close-sequence](../../../changes/recover-twr-javac8-close-sequence/instrumentation.md)）**：本巡查的 TWR 缺口已按"方向 A"（扩展既有 `Shape::Resources` 的**新读法**，既有判据逐字不动）实现并验收：真 javac 8 腿 `TR.one()` 恢复为 `try (TR local1 = new TR(arg0)) { … }`（0 引注）、整类剥离后可编译且 `one()` 路径行为逐行一致，javac 23 腿呈现逐字节不变。插桩定夺（Q-i 第一道门在 guard 层 `fn resources` 的候选循环；方向 A vs B 的逐机制对照）与两腿转录见该 change 的 `instrumentation.md`，post-fix 转录/渲染与单资源锚的双腿往返证据在本目录 `results/`（`twr-trace-post-fix-*.txt`、`*-after-fix.txt`、`roundtrip-single-resource/`）。
+
 原 class 为行为基准（真 javac 8 与 javac 23 产物**行为相同**，root 以 `java -Xverify:all` 实测，逐行如下——注意 `closed:` 先于 `used:` 出现，因为资源在 `return` 求值后、`println` 收到返回值前就已关闭）：
 
 ```text
