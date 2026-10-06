@@ -1,0 +1,31 @@
+# single-resource anchor: dual-leg render -> javac --release 8 -> java -Xverify:all
+
+## original leg outputs
+$ java -Xverify:all -cp one8 TROne
+closed:p
+used:p
+$ java -Xverify:all -cp one23 TROne
+closed:p
+used:p
+
+## rendered sources compiled with javac --release 8 (exit 0 both legs)
+$ javac --release 8 -nowarn -d out8 TROne.java ; echo $?  -> 0
+$ javac --release 8 -nowarn -d out23 TROne.java ; echo $?  -> 0
+
+## rendered outputs
+$ java -Xverify:all -cp out8 TROne
+closed:p
+used:p
+$ java -Xverify:all -cp out23 TROne
+closed:p
+used:p
+
+## patrol TR.class, comments and the refused two() stripped (整类剥离)
+$ javac --release 8 -nowarn -d outtr8 TR.java ; echo $?  -> 0
+$ java -Xverify:all -cp outtr8 TR
+closed:p
+used:p
+
+## original TR.class (real javac 8), first two lines = the one() path
+closed:p
+used:p
