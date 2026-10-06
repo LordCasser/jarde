@@ -1,0 +1,62 @@
+# `RG` from generic-static-field-init-patrol, re-rendered after the platform implementer tables.
+# Entry: class-source over the patrol's own single class file (`--policy single-class`), evidence = source map. Found by the same corpus sweep.
+# What moved: `consume()` goes from explanation-only to a recovered body (2 `java.lang.Comparable` refusals removed, none added); the generic static-field initializer members are unchanged.
+reports.argument_widening.refusals = 0
+
+// jarde: presentation of `RG` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class RG extends java.lang.Object {
+    // jarde: field Signature projection refused for `fieldLRG$Hold;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static RG$Hold field = new RG$Hold((java.lang.Object) "sf");
+
+    // jarde: field Signature projection refused for `namesLjava/util/List;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static java.util.List names = java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"a", "b"});
+
+    // jarde: field Signature projection refused for `nestedLRG$Hold;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static RG$Hold nested = new RG$Hold((java.lang.Object) new RG$Hold((java.lang.Object) java.lang.Integer.valueOf(5)));
+
+    public RG() {
+        // @method <init>()V
+        // @declaration a constructor of `RG`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `pick(Ljava/lang/Comparable;Ljava/lang/Comparable;)Ljava/lang/Comparable;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    java.lang.Comparable pick(java.lang.Comparable arg1, java.lang.Comparable arg2) {
+        // @method pick(Ljava/lang/Comparable;Ljava/lang/Comparable;)Ljava/lang/Comparable;
+        // @declaration an instance method of `RG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1.compareTo((java.lang.Object) arg2) >= 0 ? arg1 : arg2;
+    }
+
+    static void consume() {
+        // @method consume()V
+        // @declaration a static method of `RG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        RG local0 = new RG();
+        java.lang.String local1 = (java.lang.String) local0.pick((java.lang.Comparable) "x", (java.lang.Comparable) "y");
+        java.lang.Integer local2 = (java.lang.Integer) local0.pick((java.lang.Comparable) java.lang.Integer.valueOf(3), (java.lang.Comparable) java.lang.Integer.valueOf(7));
+        RG$Hold local3 = new RG().newInner();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(local1).append((java.lang.Object) local2).append((java.lang.String) local3.get()).append((java.lang.String) RG.field.get()).append((java.lang.Object) ((RG$Hold) RG.nested.get()).get()).toString());
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `newInner()LRG$Hold;`: unsupported (generic_source_shape_unproved): class name has no unambiguous Java source spelling
+    RG$Hold newInner() {
+        // @method newInner()LRG$Hold;
+        // @declaration an instance method of `RG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return new RG$Hold((java.lang.Object) "in");
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `RG`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        consume();
+        java.lang.System.out.println(RG.names.size());
+        return;
+    }
+}

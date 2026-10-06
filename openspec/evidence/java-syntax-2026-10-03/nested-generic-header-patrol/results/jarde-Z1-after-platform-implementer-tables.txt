@@ -1,0 +1,83 @@
+# `Z1` from nested-generic-header-patrol, re-rendered after the platform implementer tables (changes `recover-comparable-argument-widening` / `recover-charsequence-argument-widening` / `recover-enum-argument-widening`).
+# Entry: class-source over the patrol's own single class file (`--policy single-class`), evidence = source map. Found by the corpus sweep (52 table-target candidate classes of 1987 archived classes): two `java.lang.Comparable` argument refusals in `main` were the table's rows, and the lambda companion inline followed.
+# What moved: `main` goes from explanation-only to a recovered body (2 refusal lines removed, none added); every other member and the class text's non-refusal planes are unchanged.
+reports.argument_widening.refusals = 0
+
+// jarde: presentation of `Z1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class Z1<T extends java.lang.Comparable<T>> extends java.lang.Object {
+    // jarde: omitted physical lambda helper "lambda$main$0" after proving its single class-wide use
+    // jarde: field Signature projection refused for `itemsLjava/util/List;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    private java.util.List items;
+
+    // jarde: field Signature `Ljava/util/Map<Ljava/lang/String;Ljava/util/List<TT;>;>;` projected after descriptor erasure and same-class uses at <init>()V@23
+    private java.util.Map<java.lang.String, java.util.List<T>> index;
+
+    public Z1() {
+        // @method <init>()V
+        // @declaration a constructor of `Z1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.items = new java.util.ArrayList();
+        this.index = new java.util.HashMap();
+        return;
+    }
+
+    public void add(T arg1) {
+        // jarde: generic Signature `(TT;)V` projected after descriptor erasure and same-run AST/Code/SSA straight-line void body proof; same-class call binding proved
+        // @method add(Ljava/lang/Comparable;)V
+        // @declaration an instance method of `Z1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.items.add((java.lang.Object) arg1);
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `first()Ljava/lang/Comparable;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public java.lang.Comparable first() {
+        // @method first()Ljava/lang/Comparable;
+        // @declaration an instance method of `Z1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.Comparable) this.items.get(0);
+    }
+
+    // jarde: generic Signature projection refused for `map(Ljava/util/function/Function;)Ljava/util/List;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    public java.util.List map(java.util.function.Function arg1) {
+        // @method map(Ljava/util/function/Function;)Ljava/util/List;
+        // @declaration an instance method of `Z1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local2;
+        java.util.Iterator local3;
+        local2 = new java.util.ArrayList();
+        local3 = this.items.iterator();
+        while (local3.hasNext()) {
+            java.lang.Comparable local4 = (java.lang.Comparable) local3.next();
+            local2.add((java.lang.Object) arg1.apply((java.lang.Object) local4));
+        }
+        return local2;
+    }
+
+    // jarde: generic Signature projection refused for `named()LZ1$Box;`: unsupported (generic_source_shape_unproved): class name has no unambiguous Java source spelling
+    Z1$Box named() {
+        // @method named()LZ1$Box;
+        // @declaration an instance method of `Z1`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        Z1$Box local1 = new Z1$Box();
+        local1.value = "x";
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: lambda companion body inlined at invokedynamic@37
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Z1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Z1 local1 = new Z1();
+        local1.add((java.lang.Comparable) "b");
+        local1.add((java.lang.Comparable) "a");
+        java.lang.System.out.println((java.lang.String) local1.first());
+        java.lang.System.out.println((java.lang.Object) local1.map((java.util.function.Function) ((java.lang.Object p0) -> java.lang.Integer.valueOf(((java.lang.String) p0).length()))));
+        java.lang.System.out.println((java.lang.String) local1.named().value);
+        return;
+    }
+}
