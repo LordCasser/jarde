@@ -14,4 +14,4 @@
       → `tests/recover_conditional_rhs_field_compound.rs`（4 常规 + 1 ignored 回放：冻结 jar 原类自带 main 输出比对 + 双腿编译运行）；`results/04-replay-frozen-bi.txt`；两先例套件绿（`results/06-gates.md`）。
 - [x] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。
       → `results/06-gates.md`；`results/05-corpus-delta.md`（moved=6，全为本片锚与 fixture；`BW` 已收回逐字节）；oracle ignored 腿 3/3；census `(805,3405,288,2095,8) → (811,3445,290,2145,8)`；fingerprint +10 文件、0 删除。
-- [ ] 3.2 root 独立复核：门控、子证明只读、BI 整类行为实测、账本（锚 15 关闭）。（留 root）
+- [x] 3.2 root 独立复核：门控、子证明只读、BI 整类行为实测、账本（锚 15 关闭）。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：门控矩阵复核 ✓、只读子证明 ✓、**root 亲测 BI 0 引注 + 整类输出逐字一致**（`false/false/false/false` 双侧）✓、门禁 327 targets ok/0 FAILED + oracle 3/3 ✓、宽规则收窄裁定（BW 面归还既有域）✓；**第 15 critical 锚关闭**——boolean-loop-earlyret 巡查登记行随本验收关闭）
