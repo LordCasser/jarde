@@ -1,0 +1,78 @@
+// jarde: presentation of `CM` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CM extends java.lang.Object {
+    static int a;
+
+    static int b;
+
+    public CM() {
+        // @method <init>()V
+        // @declaration a constructor of `CM`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int compound() {
+        // @method compound()I
+        // @declaration a static method of `CM`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = 10;
+        local0 = local0 + 5;
+        local0 = local0 - 3;
+        local0 = local0 * 2;
+        local0 = local0 / 4;
+        local0 = local0 % 4;
+        return local0;
+    }
+
+    static int compoundInExpr() {
+        // @method compoundInExpr()I
+        // @declaration a static method of `CM`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = 10;
+        local0 = local0 + 5;
+        int local1 = local0;
+        return local0 + local1;
+    }
+
+    static int compoundField() {
+        // @method compoundField()I
+        // @declaration a static method of `CM`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CM.a = CM.a + 3;
+        CM.b = CM.b - 1;
+        return CM.a + CM.b;
+    }
+
+    static int incDec() {
+        // @method incDec()I
+        // @declaration a static method of `CM`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = 5;
+        int local1 = local0++;
+        local0 = local0 + 1;
+        int local2 = local0;
+        int local3 = local0--;
+        local0 = local0 - 1;
+        int local4 = local0;
+        return local0 + local1 + local2 + local3 + local4;
+    }
+
+    static int incField() {
+        // @method incField()I
+        // @declaration a static method of `CM`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CM.a = CM.a + 1;
+        CM.a = CM.a + 1;
+        return CM.a;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `CM`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("" + compound() + "/" + compoundInExpr() + "/" + compoundField() + "/" + incDec() + "/" + incField());
+        return;
+    }
+}

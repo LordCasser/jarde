@@ -332,8 +332,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport
         .class_source_with_evidence(
             slice::from_ref(snapshot),
             &request,
-            &RecoveryEvidenceRequest::essential()
-                .with_kind(RecoveryEvidenceKind::SourceMap),
+            &RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
             &mut budget(),
         )
         .expect("a legal class-source request is answered")
@@ -560,7 +559,8 @@ fn scratch(label: &str) -> PathBuf {
         .expect("the clock is after the epoch")
         .as_nanos();
     let ordinal = NEXT.fetch_add(1, Ordering::Relaxed);
-    let path = std::env::temp_dir().join(format!("jarde-postfix-snapshot-{label}-{stamp}-{ordinal}"));
+    let path =
+        std::env::temp_dir().join(format!("jarde-postfix-snapshot-{label}-{stamp}-{ordinal}"));
     fs::create_dir_all(&path).expect("the scratch directory is created");
     path
 }
@@ -626,8 +626,10 @@ fn original_dir(label: &str, leg: &Leg, class: &str) -> PathBuf {
 #[test]
 #[ignore = "compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)"]
 fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
-    let javac8 = Path::new("/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac");
-    let java8 = Path::new("/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java");
+    let javac8 =
+        Path::new("/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac");
+    let java8 =
+        Path::new("/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java");
     for leg in LEGS {
         for &class in CLASSES {
             // `GA`'s `main` names its nested interface through the pool spelling (`GA$Cfg`), which
@@ -673,14 +675,9 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
             let want_dir = original_dir(leg.label, leg, class);
             let want = run_class("/usr/bin/java", &want_dir, class);
             let work = scratch(&format!("recovered-{class}"));
-            fs::write(work.join(format!("{class}.java")), &text).expect("the presentation is written");
-            let got = compile_and_run(
-                "/usr/bin/javac",
-                "/usr/bin/java",
-                true,
-                &work,
-                class,
-            );
+            fs::write(work.join(format!("{class}.java")), &text)
+                .expect("the presentation is written");
+            let got = compile_and_run("/usr/bin/javac", "/usr/bin/java", true, &work, class);
             assert_eq!(
                 got, want,
                 "`{class}` on {} answers differently after the round trip:\n{text}",

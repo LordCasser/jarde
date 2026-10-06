@@ -427,7 +427,9 @@ fn a_branch_on_a_superseded_load_tests_the_postfix_expression() {
     let report = recover(&engine, &fixture, b"conditional", b"(I)I");
     let text = &report.text;
     assert!(
-        text.contains("if (arg0++ > 0)") && text.contains("return 1;") && text.contains("return 0;"),
+        text.contains("if (arg0++ > 0)")
+            && text.contains("return 1;")
+            && text.contains("return 0;"),
         "the condition tests the postfix expression and both arms are presented:\n{text}"
     );
     assert!(
