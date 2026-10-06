@@ -633,13 +633,16 @@ impl Billing {
     /// replaced. The 2026-10-01 array-slot-retype split moved `analysis_steps` +4: the reuse
     /// planner's third narrow proof bills each write it examines before declining a slot whose
     /// writes state no array spelling.
+    /// +101 with `recover-chained-field-assignment`: the field-copy proof bills every instruction
+    /// of every body it scans for the copies whose consumers are field instructions, and no other
+    /// dimension moved — the reads, the headers and the text are unmoved.
     const FLAT_MIXED: Self = Self {
         archive_entries: 8,
         entry_bytes: 1813,
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
-        ir_items: 2372,
+        ir_items: 2473,
         analysis_steps: 1340,
         result_items: 37,
         output_bytes: 3657,
@@ -663,7 +666,7 @@ impl Billing {
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
-        ir_items: 4112,
+        ir_items: 4298,
         analysis_steps: 2071,
         result_items: 64,
         output_bytes: 5628,
@@ -685,7 +688,7 @@ impl Billing {
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
-        ir_items: 1975,
+        ir_items: 2058,
         analysis_steps: 1101,
         result_items: 43,
         output_bytes: 2638,
@@ -764,7 +767,7 @@ impl Billing {
         // byte for byte, no member's classification moved, and no read, decode or delivery
         // dimension moved. The two arms move by the same +104. The row was read with
         // `record_the_billing_table`.
-        ir_items: 20327,
+        ir_items: 21278,
         analysis_steps: 10539,
         result_items: 122,
         output_bytes: 23333,
@@ -782,7 +785,7 @@ impl Billing {
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
-        ir_items: 1975,
+        ir_items: 2058,
         analysis_steps: 1101,
         result_items: 35,
         output_bytes: 2638,
@@ -798,7 +801,7 @@ impl Billing {
         class_bytes: 753,
         class_headers: 0,
         method_bodies: 7,
-        ir_items: 3019,
+        ir_items: 3213,
         analysis_steps: 1172,
         result_items: 18,
         output_bytes: 1723,
@@ -845,7 +848,9 @@ impl Billing {
         // +104 with `preserve-postfix-fallback-soundness`, for the reason
         // [`Billing::MANY_METHOD_CLASS`] records: the four `jarde_refused_body();` statements a
         // refused `void` body now states, over this corpus's `Guarded`, and no other dimension.
-        ir_items: 33780,
+        // +1598 with `recover-chained-field-assignment`, the same work the two arms share: the
+        // field-copy proof's own scan of every body, charged to `IrItems`, and no other dimension.
+        ir_items: 35378,
         analysis_steps: 17324,
         result_items: 1378,
         output_bytes: 39617,
@@ -882,7 +887,8 @@ impl Billing {
         // +6 with the 2026-10-02 do-while return slice, the same work the direct arm records.
         // +104 with `preserve-postfix-fallback-soundness`, the same work the direct arm records,
         // and retention still touches only the read dimensions.
-        ir_items: 33780,
+        // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
+        ir_items: 35378,
         analysis_steps: 17324,
         result_items: 26,
         output_bytes: 39617,
