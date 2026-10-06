@@ -40,3 +40,9 @@ bsearch（**二分查找——闭区间收缩 + else-if 链 + 早退 return**，
 - **巡查的 BX 决定性实验不可复现**：当前主线（合并 `bf4675ae` 的 CLI）对隔离 bsearch 形**全部拒绝**（canonical-overlap=1）：无 main 的 BX（双腿）、带简化 main 的 BX（真 8 与 23 `--release 8` 双腿）、带完整成员矩阵的 v1–v4 全部拒绝。巡查当时记载的"BX 单独类恢复"未归档渲染（results/ 只有探针源 `isolated-bsearch-recovers.java`），无法区分：(a) 10-05 晚以来主线发生**可恢复性回归**（候选：postfix-soundness 升级 / array-element-receiver / monitor-exit / widening 系列）；(b) 巡查实验的未记录差异（编译旗标/本地补丁态）。
 - **已钉事实**：full-BS 拒绝与巡查一致（复现 ✓）；`nomain` 变体仍拒（main 非触发者）；类名 BS/BX 无判别作用；双腿一致。
 - **待办**：以旧提交二进制二分定位翻转点（候选锚提交：`a4b66bb2`/`a01878c7`/`6c36e9f5`/`1efb18ac` 前），或确认巡查证据瑕疵后修订第 5 族的"类级上下文"归因。**在第 5 族的归因被修正前，不得据"类级确定性缺陷"立项。**
+
+## root 归因修正（2026-10-06 终局，二分+归档复核）
+
+- **"类级上下文确定性缺陷"归因撤回**：巡查自己的归档渲染 [`results/jarde-CB.txt`](results/jarde-CB.txt) 就显示 `loopElseIfRet` 拒绝（canonical×10）——README"CB 四形全恢复"与自家档案矛盾；"BX 单独类恢复"无归档渲染、且在巡逻时代全部已提交二进制（`2a4dbc7d`/`4e73fd4e`/`a4b66bb2`/`319a57e0`）与当前主线上均不可复现（隔离形、有无 main、类名 BS/BX、双腿全部 canonical 拒绝）。最可能解释：判别实验渲染自未合并的中间态二进制（root 当时按纪律复用在飞 worktree 二进制）。
+- **修正后的第 5 族事实**：canonical-overlap 是**方法形状**属性——`while 循环 + else-if 阶梯（≥2 条件）+ 阶梯内早退`（`loopElseIfRet`/bsearch 形）在一切类上下文中拒绝；同文件对照三形恢复（`loopElseIfNoRet` 无早退、`loopIfElseRet` 单 if-else、`noLoopElseIfRet` 无循环）。当前主线与归档渲染行为一致（无回归）。
+- **census 第 5 条的"Region 树类级共享状态/顺序依赖"推断作废**；真实前沿 = 该形状的 join 选举（BCI 56 的 else-if 汇合块被双重主张）。已按修正事实立项 `recover-loop-else-if-early-returns`。
