@@ -34,3 +34,9 @@ bsearch（**二分查找——闭区间收缩 + else-if 链 + 早退 return**，
   2. **上游 IR 构建的类上下文敏感性**（同指令字节、不同池布局/类名下 canonical 或 view 的构建差异）；
   3. **池布局敏感性**（bsearch 引用的池索引在两腿不同；若有按裸索引键控/比较的通道）。
 - **判别实验矩阵**（MVP 二分，全部用 `--release 8`）：BS 去掉 main / 去掉 fib / 去掉 memo+clinit / 去掉 twoPtr 各一腿，观察 bsearch 翻转点；翻转后用 `--jarde` 诊断逐字比对定位产生点；必要时加 P3LOST 式插桩对比两腿的 regions 几何。**任何"已定位"结论须有最小门控实验支撑**（handoff 纪律）。
+
+## root 二分实验（2026-10-06，interface-headers 合并态二进制）
+
+- **巡查的 BX 决定性实验不可复现**：当前主线（合并 `bf4675ae` 的 CLI）对隔离 bsearch 形**全部拒绝**（canonical-overlap=1）：无 main 的 BX（双腿）、带简化 main 的 BX（真 8 与 23 `--release 8` 双腿）、带完整成员矩阵的 v1–v4 全部拒绝。巡查当时记载的"BX 单独类恢复"未归档渲染（results/ 只有探针源 `isolated-bsearch-recovers.java`），无法区分：(a) 10-05 晚以来主线发生**可恢复性回归**（候选：postfix-soundness 升级 / array-element-receiver / monitor-exit / widening 系列）；(b) 巡查实验的未记录差异（编译旗标/本地补丁态）。
+- **已钉事实**：full-BS 拒绝与巡查一致（复现 ✓）；`nomain` 变体仍拒（main 非触发者）；类名 BS/BX 无判别作用；双腿一致。
+- **待办**：以旧提交二进制二分定位翻转点（候选锚提交：`a4b66bb2`/`a01878c7`/`6c36e9f5`/`1efb18ac` 前），或确认巡查证据瑕疵后修订第 5 族的"类级上下文"归因。**在第 5 族的归因被修正前，不得据"类级确定性缺陷"立项。**
