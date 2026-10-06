@@ -435,21 +435,22 @@ fn same_class_method_call_proves_binding_and_reflects_like_the_original() {
         "{}",
         note.text
     );
-    // `main` sits on another slice's boundary: a `java.lang.String` argument for the erased
-    // `java.lang.Comparable` parameter, a platform conversion this layer holds no evidence for.
-    // `preserve-postfix-fallback-soundness` makes that refusal loud where the body is `void` —
-    // the whole body presents as its quotes alone, and the reserved, undeclared symbol stands
-    // where a statement would — instead of publishing the statements beside the refused call. The
-    // binding this test accepts is `note`'s, so the runtime leg compiles the members the run
-    // proved, and the runner spells the call `main` made.
+    // `main` used to sit on this slice's boundary: a `java.lang.String` value reaching the erased
+    // `java.lang.Comparable` parameter, a platform conversion this layer held no evidence for, so
+    // `preserve-postfix-fallback-soundness` refused the whole `void` body around it.
+    // `recover-comparable-argument-widening` states the `java.lang` nine-row table (String plus the
+    // eight boxed types), so the call presents with the cast that pins the pool's parameter type and
+    // the body recovers whole. The binding this test accepts is still `note`'s, and the runtime leg
+    // compiles the members the run proved beside the runner's own spelling of the call.
     let main = report
         .methods
         .iter()
         .find(|method| method.item.name.raw().0 == b"main")
         .expect("the physical main remains");
     assert!(
-        main.text.contains("jarde_refused_body();")
-            && main.text.contains("no safe reference conversion evidence"),
+        main.text
+            .contains("local1.note((java.lang.Comparable) local2);")
+            && !main.text.contains("jarde_refused_body();"),
         "{}",
         main.text
     );
@@ -682,17 +683,23 @@ fn receiver_consumed_field_read_keeps_the_field_refusal() {
         "{}",
         report.text
     );
-    // This fixture's `main` sits on the same platform-conversion boundary as the method-call
-    // family's, and `preserve-postfix-fallback-soundness` refuses a `void` body whole where such a
-    // refusal stands at its top level. The field refusal this test keeps is `kept`'s, so the
-    // runtime leg compiles the members the run proved, with the runner spelling the call `main`
-    // made.
+    // This fixture's `main` sat on the same platform-conversion boundary as the method-call
+    // family's, and `recover-comparable-argument-widening` answers it there too: the `String` value
+    // reaching the erased `java.lang.Comparable` parameter presents with the cast the table's row
+    // names, and no refusal remains. The field refusal this test keeps is `kept`'s, so the runtime
+    // leg still compiles the members the run proved with the runner spelling the call `main` made.
     let main = report
         .methods
         .iter()
         .find(|method| method.item.name.raw().0 == b"main")
         .expect("the physical main remains");
-    assert!(main.text.contains("jarde_refused_body();"), "{}", main.text);
+    assert!(
+        main.text
+            .contains("local1.add((java.lang.Comparable) local2);")
+            && !main.text.contains("jarde_refused_body();"),
+        "{}",
+        main.text
+    );
     reflect_and_run(
         "scg-receiver",
         &proved_unit(&report),

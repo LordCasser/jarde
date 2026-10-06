@@ -6912,6 +6912,36 @@
       "path": "tests/fixtures/recover-array-element-field-receiver/v8/RP.class"
     },
     {
+      "blake3": "808a8a8aca5832f446c62ae16c1eafb95e6f21ac8fd168ecae98550489b9fd08",
+      "bytes": 1021,
+      "path": "tests/fixtures/recover-charsequence-argument-widening/CS.java"
+    },
+    {
+      "blake3": "20bed839262c4a082b6a52ad68aedcf91d3a1343f0928340caf7167e6c26bc1e",
+      "bytes": 428,
+      "path": "tests/fixtures/recover-charsequence-argument-widening/CSX.java"
+    },
+    {
+      "blake3": "f129a995c7a4e236257038d43dc13d6ba7c3eaf6719b5722a2cb4f98cac749ae",
+      "bytes": 2180,
+      "path": "tests/fixtures/recover-charsequence-argument-widening/v8-javac8/CS.class"
+    },
+    {
+      "blake3": "4b09e89d6c9d821bce33fb3b169d499be2734c7b9b790415d5eb30e9546ba960",
+      "bytes": 720,
+      "path": "tests/fixtures/recover-charsequence-argument-widening/v8-javac8/CSX.class"
+    },
+    {
+      "blake3": "d492927bf4efd8d0cc37a859bd74ef446ed5d3c7e702504e26893420f64cc08a",
+      "bytes": 2180,
+      "path": "tests/fixtures/recover-charsequence-argument-widening/v8/CS.class"
+    },
+    {
+      "blake3": "f5f9b5a5b978303a2b28b71160162401607d476fea74c4bb260b826ff5748567",
+      "bytes": 720,
+      "path": "tests/fixtures/recover-charsequence-argument-widening/v8/CSX.class"
+    },
+    {
       "blake3": "9dc79d6d4c2dbefd0f65c8b7cc1604dfa067c1490f4322c28f9eca76d06cec00",
       "bytes": 123,
       "path": "tests/fixtures/recover-class-type-variable-signatures/negative/InterfaceMismatch.java"
@@ -6975,6 +7005,126 @@
       "blake3": "b7410fc9fa0716d4bb001f6caec55d7f7d5ca1478f22cd4c608c40dcbb514c8a",
       "bytes": 184,
       "path": "tests/fixtures/recover-class-type-variable-signatures/positive/StringContract.java"
+    },
+    {
+      "blake3": "90204d09242f0c82e0a416a331dd766f77752e36a92fec4e4370c4383b817464",
+      "bytes": 798,
+      "path": "tests/fixtures/recover-comparable-argument-widening/CO.java"
+    },
+    {
+      "blake3": "d6e7bfdfe906c217c04e6bd6e13407c1167dc97d5650b876bba9ceb73b4b4d3c",
+      "bytes": 255,
+      "path": "tests/fixtures/recover-comparable-argument-widening/COX.java"
+    },
+    {
+      "blake3": "9eed65faa5c603256faa58c2aa8c0eadbc9ceb695945a77495e289c469f0018b",
+      "bytes": 561,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8-javac8/CO$IntNode.class"
+    },
+    {
+      "blake3": "0afbd57025a4548f7ac1c446a960594e49ec6f5d1d4be5441308b8225167d335",
+      "bytes": 412,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8-javac8/CO$Node.class"
+    },
+    {
+      "blake3": "8c3d03efa9174853622d44fd1e6845512692f0c91676d4eaadddf598c7a2bf36",
+      "bytes": 1579,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8-javac8/CO.class"
+    },
+    {
+      "blake3": "9e80aace7db3975dd41aae16973473983af694e507a25874b17027f1cf1d0466",
+      "bytes": 613,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8-javac8/COX.class"
+    },
+    {
+      "blake3": "3dcce80ffcd3b92ffddd01fbb8371d3de380199cb6ea2bc89f24fba9324a8f2a",
+      "bytes": 561,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8/CO$IntNode.class"
+    },
+    {
+      "blake3": "49967f114930da351a9285647543e222aef93c37c68799692562d9a17c36e44e",
+      "bytes": 412,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8/CO$Node.class"
+    },
+    {
+      "blake3": "e675e51363fb74a963990cae4bc17f5b6aa4d6d6f842c025f590ad32d5b38d15",
+      "bytes": 1576,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8/CO.class"
+    },
+    {
+      "blake3": "6946c2600bc2231433d1558b34e99e87368282e23bcc149147bcaeb2a500447e",
+      "bytes": 610,
+      "path": "tests/fixtures/recover-comparable-argument-widening/v8/COX.class"
+    },
+    {
+      "blake3": "c74305a012b0b395ad03b91e2b79a6c8536b8722bddb04b8709c2ed0cacc3794",
+      "bytes": 1134,
+      "path": "tests/fixtures/recover-enum-argument-widening/EN.java"
+    },
+    {
+      "blake3": "2209343f61902aee09fdef2a67e7050dc3a5e1b73dc87007c1f5dbc3a882f0ec",
+      "bytes": 468,
+      "path": "tests/fixtures/recover-enum-argument-widening/ENN.java"
+    },
+    {
+      "blake3": "1490e345e90ca673ab1370a3637687d5d48752bcd3790a36c30778d30921305c",
+      "bytes": 28,
+      "path": "tests/fixtures/recover-enum-argument-widening/ENT.java"
+    },
+    {
+      "blake3": "fcf477c2aa99f1c498313b7b59865c9ccb85b1b1b2b81789b4418b1d7a0db138",
+      "bytes": 234,
+      "path": "tests/fixtures/recover-enum-argument-widening/ENX.java"
+    },
+    {
+      "blake3": "4461278487730c10063efdaae63242bcb9c7c7c95233dbfaf4c68ddefd18c222",
+      "bytes": 2139,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8-javac8/EN.class"
+    },
+    {
+      "blake3": "970205e78b74286d970db432ab85d345f8e52178d85757ec2eeda93333868f7a",
+      "bytes": 842,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8-javac8/ENN$Flag.class"
+    },
+    {
+      "blake3": "4836e7f47c85f5e330ceb4bb859644f5071b309b8e58bdc069cb6fb4e2273e3e",
+      "bytes": 979,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8-javac8/ENN.class"
+    },
+    {
+      "blake3": "ec1bbaa12e3a4d1707ac6cac56d35dd2f7ec6076f3a811b2df1f01f02990281a",
+      "bytes": 765,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8-javac8/ENT.class"
+    },
+    {
+      "blake3": "2fdb169d9f8eff5ebac5391fc207fa8f2c62770f93d1d5d2f08341cc4fb235d5",
+      "bytes": 580,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8-javac8/ENX.class"
+    },
+    {
+      "blake3": "dbba4e37879569ffe1caa5d1911cf22b67ca941c1ff4380bc6f36e6e9f4a3512",
+      "bytes": 2136,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8/EN.class"
+    },
+    {
+      "blake3": "20231460493e6763516b96937c8ee7a333603f9e0de97bc6fd32bbf4a86164f0",
+      "bytes": 946,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8/ENN$Flag.class"
+    },
+    {
+      "blake3": "daaa815b4a3a52d5a872c269fff5d32e6070120035172f2f13d240022991fa60",
+      "bytes": 976,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8/ENN.class"
+    },
+    {
+      "blake3": "440158a9408c48704e21187b41caa3326588a44b73d746aee6aa8d530833842d",
+      "bytes": 869,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8/ENT.class"
+    },
+    {
+      "blake3": "35df65b9aa1aca7316b169cef82ad456e3d7d03c59dd13e28568bb340f5cc4b5",
+      "bytes": 580,
+      "path": "tests/fixtures/recover-enum-argument-widening/v8/ENX.class"
     },
     {
       "blake3": "c9bfe2ed7bbc0afaa7e1f6d247cf293e939c3ec5a7e263543ea24ee43255ba98",

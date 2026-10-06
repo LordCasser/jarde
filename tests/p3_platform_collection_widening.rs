@@ -316,11 +316,16 @@ fn collection_family_recovers_every_row_with_the_required_spelling() {
 fn table_out_presentations_keep_the_refusal_and_the_original_runtime() {
     let report = recover(CWN, "CWN");
     let text = &report.text;
+    // Seven table-out calls were refused when this slice landed; `EnumSet`'s own rows moved out of
+    // the refusal set when `recover-enum-argument-widening` landed the enum family's javadoc rows
+    // (its `AbstractSet` superclass and the `Set`/`Collection`/`Iterable` columns), which is what
+    // its `OB.flags` anchor's `retainAll(EnumSet)` companion needed. The other six refusals below
+    // are the ones this slice's closed domain still exists for.
     assert_eq!(
         text.matches("no safe reference conversion evidence")
             .count(),
-        7,
-        "the seven table-out calls stay refused:\n{text}"
+        6,
+        "the six remaining table-out calls stay refused:\n{text}"
     );
 
     // A user class that reaches `List` only through `AbstractList`: no row states the user type.
@@ -341,11 +346,13 @@ fn table_out_presentations_keep_the_refusal_and_the_original_runtime() {
         ),
         "{my_list}"
     );
-    // The `java.util` types this slice leaves out of the enumerated domain.
+    // The `java.util` types this slice leaves out of the enumerated domain — except `EnumSet`,
+    // which `recover-enum-argument-widening` answers from the enum family's own javadoc rows (see
+    // the count above): the refusal sentence for that pair is gone from the text, and the pair's
+    // presented call is pinned where the enum change's own anchors live.
     assert!(
-        my_list
-            .contains("presents `java.util.EnumSet` but the invocation requires `java.util.Set`"),
-        "{my_list}"
+        !my_list.contains("presents `java.util.EnumSet`"),
+        "EnumSet is answered by the enum family's table now:\n{my_list}"
     );
     assert!(
         my_list.contains(
