@@ -7527,6 +7527,66 @@
       "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS.class"
     },
     {
+      "blake3": "52182e4f587dd4ebb5817a8cc0adbdb3e0a66767d25549fea70e044ff2364597",
+      "bytes": 1126,
+      "path": "tests/fixtures/recover-temporal-argument-widening/CF.java"
+    },
+    {
+      "blake3": "4ad6af28008c4f8b4977752343f4e160a00071c7ab1d59117e0c7c9cf7afc7fe",
+      "bytes": 651,
+      "path": "tests/fixtures/recover-temporal-argument-widening/DT.java"
+    },
+    {
+      "blake3": "a5d519e30440114df9b128d857f2f68d63d94cab770b5d1ea9c83172c5e02118",
+      "bytes": 1407,
+      "path": "tests/fixtures/recover-temporal-argument-widening/JT.java"
+    },
+    {
+      "blake3": "5d4b9b51c8ee63ccc89223b6cb4d70da11a03b2c862356326167de34077d9610",
+      "bytes": 465,
+      "path": "tests/fixtures/recover-temporal-argument-widening/TWX.java"
+    },
+    {
+      "blake3": "84613a2c29acf2bdcba17329588a1b49192d81bed9b4e84f866764b56da87c83",
+      "bytes": 3194,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8-javac8/CF.class"
+    },
+    {
+      "blake3": "96a1cb2f4cb14f8d84b7482330030c45b572e789af6e96fc639dc9d25aefbff4",
+      "bytes": 1150,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8-javac8/DT.class"
+    },
+    {
+      "blake3": "78dd188c545008703b64040b4adb94577ea2957d7b513a889675660758dd06ff",
+      "bytes": 2364,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8-javac8/JT.class"
+    },
+    {
+      "blake3": "ac17a2fc8c4643eeea965c75214a819bec0f359adde361296db851bbc59990c6",
+      "bytes": 832,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8-javac8/TWX.class"
+    },
+    {
+      "blake3": "9e20f58765a135a5ff5a529b0631cd5f1a5362cc0b3319cfd195a5f2d71a3004",
+      "bytes": 3194,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8/CF.class"
+    },
+    {
+      "blake3": "5f10e015cdc78d34a0078562f8915ed3613cf5c7202aeb1e627117281a3affe4",
+      "bytes": 1150,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8/DT.class"
+    },
+    {
+      "blake3": "9293a3c2d4b22ca4442e545447431eaada09b07d10be2eb0316195ef00762b99",
+      "bytes": 2364,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8/JT.class"
+    },
+    {
+      "blake3": "a7da3a841647bc810a633f467dfca833a5a4317a5d345b6275ce29c68e13e92a",
+      "bytes": 832,
+      "path": "tests/fixtures/recover-temporal-argument-widening/v8/TWX.class"
+    },
+    {
       "blake3": "e1733c26bbf0931fb90466e83a45a631a17efbda2b2057bee23b7f3c8fbcbb01",
       "bytes": 2321,
       "path": "tests/fixtures/recover-unicode-identifiers/ascii/F1.jarde.java"
