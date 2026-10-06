@@ -5307,7 +5307,21 @@ fn recover_inner(
         Ok(fields) => fields,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let chains = match concat::plan_conditional_cut_chains(ssa, canonical, &operations, budget) {
+    // The copies whose consumers are field instructions (`recover-chained-field-assignment`): the
+    // chained field assignment's copies and the receiver copies of the compound assignments the
+    // update rule does not present. Read before the concatenation rule, which admits the instance a
+    // receiver copy carries through a chain — the field's own `+=` shape.
+    let field_copies = match build::FieldCopies::prove(ssa, &operations, &fields, budget) {
+        Ok(field_copies) => field_copies,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
+    let chains = match concat::plan_conditional_cut_chains(
+        ssa,
+        canonical,
+        &operations,
+        &field_copies,
+        budget,
+    ) {
         Ok(chains) => chains,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
@@ -5569,6 +5583,7 @@ fn recover_inner(
             names: &names,
             reuse: &reuse,
             chains: &chains,
+            field_copies: &field_copies,
             members: request.members,
             member_inner_targets: request.member_inner_targets,
             typed_functional_target: request.typed_functional_target,

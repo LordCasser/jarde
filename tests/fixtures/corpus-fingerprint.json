@@ -7182,6 +7182,36 @@
       "path": "tests/fixtures/recover-array-element-field-receiver/v8/RP.class"
     },
     {
+      "blake3": "e7ac9292a93c6bf9b27f4fd9dde5ac89daaa8c297d39943cc339f79a3505f2d1",
+      "bytes": 1682,
+      "path": "tests/fixtures/recover-chained-field-assignment/CF.java"
+    },
+    {
+      "blake3": "553709e788cb96147c867f7a86d560cd623fdd3fe31924f4b9c5f4f8eb490ad9",
+      "bytes": 948,
+      "path": "tests/fixtures/recover-chained-field-assignment/NEG.java"
+    },
+    {
+      "blake3": "8256d3f7a01cbc0639345b8c02463783499b622db5c003e5efec4d3ab74c4ef6",
+      "bytes": 2147,
+      "path": "tests/fixtures/recover-chained-field-assignment/v8-javac8/CF.class"
+    },
+    {
+      "blake3": "807a1d2c970051bf879ff022722ceb53ce7c5cec9ea1f9bbe20582cf20dc6124",
+      "bytes": 1387,
+      "path": "tests/fixtures/recover-chained-field-assignment/v8-javac8/NEG.class"
+    },
+    {
+      "blake3": "179da33f4316c55a74fe9b07171d3fe5d1befc022ba955e341575d192cccac6b",
+      "bytes": 2151,
+      "path": "tests/fixtures/recover-chained-field-assignment/v8/CF.class"
+    },
+    {
+      "blake3": "580aa00001922f46dce2ef84873dcbde5692d12e157f9fa607aa6a75923044af",
+      "bytes": 1391,
+      "path": "tests/fixtures/recover-chained-field-assignment/v8/NEG.class"
+    },
+    {
       "blake3": "808a8a8aca5832f446c62ae16c1eafb95e6f21ac8fd168ecae98550489b9fd08",
       "bytes": 1021,
       "path": "tests/fixtures/recover-charsequence-argument-widening/CS.java"
