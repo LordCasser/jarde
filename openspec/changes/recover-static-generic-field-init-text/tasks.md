@@ -28,4 +28,4 @@
   - corpus 三档双腿差分（单类姿态全语料 / 折叠姿态每个 loose 根类 / 每个 jar 条目；自检先行 + pass A moved 必须为 0）：数字与逐类分类见 [results/02-corpus-sweep.out](results/02-corpus-sweep.out) 与 [results/02-corpus-delta.md](results/02-corpus-delta.md)。
 - [x] 3.3 门禁全量（基线以合并态为准；flake 家族单测复跑两轮判定）+ fmt + CI-exact clippy（ci.yml 46-76 逐字）+ openspec strict + `git diff --check` + 再生 fingerprint。
   - 命令与尾部逐字记录见 [results/04-gates.md](results/04-gates.md)。
-- [ ] 3.4 root 独立复核：拼接 bug 机制转录、修复形态合规（无损坏中间态）、主锚/零回退实测；关闭 summary.md 呈现缺陷登记行。（留 root）
+- [x] 3.4 root 独立复核：拼接 bug 机制转录、修复形态合规（无损坏中间态）、主锚/零回退实测；关闭 summary.md 呈现缺陷登记行。（root 2026-10-06 完成，见 [verification-root.md](verification-root.md)：落点更正追认（facade.rs 重拼循环偏移漂移，非拒绝回退）、diff 13+/3- 最小、四锚 Holdava=0 root 实测、MN/RG 编译不可达裁定为既有 Hold<T> 擦除对投影债（条款修订接受）、门禁 3104/0/61+fmt+clippy+openspec 303 全绿、flake 复跑两轮绿（all-features 口径））
