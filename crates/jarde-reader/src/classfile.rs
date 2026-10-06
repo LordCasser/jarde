@@ -11982,7 +11982,12 @@ mod tests {
             // thirty-four branch targets: the cut's `if_acmpne`/`goto` pair in `ICC`, `ICB`, `ICQ`
             // and `ICN.guarded`, `armCall`'s and `armStore`'s `ifeq`/`goto` pair, `nested`'s two
             // comparison pairs, and the catch's own `goto` per leg) moved it again.
-            (801, 3363, 288, 2095, 8),
+            // The 2026-10-07 recover-chained-field-assignment fixtures (the copy family's third
+            // shape: `CF` with the three-store chain, the two-store chain, the saved form, the
+            // single-store and local-chain controls, the receiver copy of `|=`/`&=`, the `String`
+            // `+=` receiver copy and the static control, and `NEG` with the four refusals, two
+            // classes on both compiler legs — four classes, forty-two bodies) moved it again.
+            (805, 3405, 288, 2095, 8),
             "fixture population changed: re-measure these counts"
         );
     }

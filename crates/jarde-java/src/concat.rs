@@ -61,6 +61,7 @@ use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use serde::Serialize;
 
 use crate::ast::Type;
+use crate::build::dup_x1_operands;
 use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
@@ -389,7 +390,11 @@ impl ConcatRefusal {
 /// does **not** do is build the owning records. The verified chains and the refused candidates stay
 /// in the [`Plan`], and [`Plan::materialize`] writes the records from them after the artifact is
 /// committed.
-pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
+pub(crate) fn plan(
+    ssa: &SsaTable,
+    operations: &Operations,
+    copies: &crate::build::FieldCopies,
+) -> Plan {
     let blocks: Vec<Vec<&SsaInstruction>> = ssa
         .blocks()
         .iter()
@@ -415,7 +420,7 @@ pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
             }
             let ty = ty.clone();
             match verify(
-                head, &ty, head_block, &block_of, &all, block, ssa, operations,
+                head, &ty, head_block, &block_of, &all, block, ssa, operations, copies,
             ) {
                 Ok(chain) => {
                     if let Some(shared) = chain.owned.iter().find(|bci| plan.owned.contains(bci)) {
@@ -456,9 +461,10 @@ pub(crate) fn plan_four_conditional_strings(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
     operations: &Operations,
+    copies: &crate::build::FieldCopies,
     budget: &mut Budget,
 ) -> Result<Plan, StopReason> {
-    let mut plan = plan(ssa, operations);
+    let mut plan = plan(ssa, operations, copies);
     let Some(index) = plan
         .refused
         .iter()
@@ -821,9 +827,10 @@ pub(crate) fn plan_conditional_cut_chains(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
     operations: &Operations,
+    copies: &crate::build::FieldCopies,
     budget: &mut Budget,
 ) -> Result<Plan, StopReason> {
-    let mut plan = plan_four_conditional_strings(ssa, canonical, operations, budget)?;
+    let mut plan = plan_four_conditional_strings(ssa, canonical, operations, copies, budget)?;
     let mut index = 0;
     while index < plan.refused.len() {
         if plan.refused[index].refusal.code() != "jre_concat_split" {
@@ -1362,6 +1369,7 @@ fn verify(
     block: &[&SsaInstruction],
     ssa: &SsaTable,
     operations: &Operations,
+    copies: &crate::build::FieldCopies,
 ) -> Result<Chain, Refusal> {
     let index = block
         .iter()
@@ -1580,6 +1588,46 @@ fn verify(
             Some(Operation::Invoke(_)) if produces_a_read_value(instruction, block, at) => {
                 owned.insert(at);
             }
+            // The receiver copy of a proved compound assignment whose pass-through is **this
+            // chain's instance**: `this.field += "[" + x + "]"` lowers the receiver under the
+            // builder the concatenation is built in (`aload_0; dup_x1`), so the copy carries the
+            // instance through its own chain and the first `append` is called on the value it
+            // passed through. The copy's consumers are pinned by the field-copy proof — one copy is
+            // the read's receiver and the other the write's — and what this walk adds is the
+            // instance's own identity: the value below the duplicate is the one this chain
+            // allocated, so the `append` that reads the pass-through is a reader of the instance and
+            // not of some other value. Its BCI joins the instance's identity set below, which is how
+            // the later `append`'s receiver is recognised as this chain's own instance.
+            Some(Operation::Other)
+                if copies
+                    .receiver_copy_at(at)
+                    .is_some_and(|copy| copy.pass_through.is_some())
+                    && dup_x1_operands(instruction)
+                        .is_some_and(|(_, below)| is_the_instance(ssa, below, &produced_by)) =>
+            {
+                owned.insert(at);
+                produced_by.push(at);
+            }
+            // The field **read** a proved receiver copy is the receiver of: the copy's other value
+            // is the read's receiver, and the read's own value is an operand of one of this chain's
+            // `append`s — which the checks above state, exactly as they do for a call's. Writing it
+            // as part of the concatenation evaluates it once, at its own position in the chain.
+            Some(Operation::Field {
+                access: FieldAccess::Read,
+                ..
+            }) if copies.copy_at(at).is_none()
+                && copies
+                    .values()
+                    .find(|copy| {
+                        matches!(
+                            copy.shape,
+                            crate::build::FieldCopyShape::Receiver { read, .. } if read == at
+                        )
+                    })
+                    .is_some_and(|copy| owned.contains(&copy.duplicate)) =>
+            {
+                owned.insert(at);
+            }
             Some(operation) => {
                 return Err(Refusal::unmet(
                     &CONCAT,
@@ -1622,9 +1670,21 @@ fn verify(
             "nothing in this method reads the `String` the `toString` at BCI {tail} returns, so the chain has no place in the body"
         )));
     }
-    // No alias: no instruction outside the chain reads the instance it builds.
+    // No alias: no instruction outside the chain reads the instance it builds — but the **write**
+    // of the receiver copy this chain carries is not an alias. The instance's own identity flows
+    // through that copy, so the compound assignment's `putfield` reads the instance by the copy's
+    // other value; the copy is the chain's own instruction, and the store is the one statement the
+    // `+=` this chain is the value of is written as.
     for instruction in all {
         if owned.contains(&instruction.bci()) {
+            continue;
+        }
+        if copies.values().any(|copy| {
+            matches!(
+                copy.shape,
+                crate::build::FieldCopyShape::Receiver { store, .. } if store == instruction.bci()
+            ) && owned.contains(&copy.duplicate)
+        }) {
             continue;
         }
         if instruction

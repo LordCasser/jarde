@@ -333,6 +333,12 @@ pub(crate) struct Inputs<'a> {
     /// The concatenation chains of this body, with the shape's own declaration of which
     /// instructions they own (P3 2.2).
     pub(crate) chains: &'a concat::Plan,
+    /// The copies of this body whose consumers are field instructions
+    /// (`recover-chained-field-assignment`): the chained field assignment's copies and the receiver
+    /// copies of the compound assignments whose operator the update rule does not present. Proved
+    /// before the concatenation rule because that rule admits the instance a receiver copy carries
+    /// through a chain.
+    pub(crate) field_copies: &'a FieldCopies,
     /// The class's other members, as the caller read them: the only evidence a synthetic accessor
     /// call site can be decided from (P3 2.2, A12).
     pub(crate) members: Option<&'a ClassMembers>,
@@ -7558,6 +7564,7 @@ pub(crate) fn build(
         names: inputs.names,
         reuse: inputs.reuse,
         chains: inputs.chains,
+        field_copies: inputs.field_copies,
         members: inputs.members,
         member_inner_targets: inputs.member_inner_targets,
         typed_functional_target: inputs.typed_functional_target,
@@ -7589,6 +7596,7 @@ pub(crate) fn build(
         array_initializers: inputs.array_initializers,
         local_assignments,
         assignment_presentations: BTreeMap::new(),
+        field_chain_refused: BTreeSet::new(),
         instructions,
         block_of,
         budget,
@@ -8573,6 +8581,8 @@ struct Builder<'a> {
     reuse: &'a reuse::Plan,
     /// The concatenation chains this body's verified shapes own (P3 2.2).
     chains: &'a concat::Plan,
+    /// The copies whose consumers are field instructions (`recover-chained-field-assignment`).
+    field_copies: &'a FieldCopies,
     /// The class's other members, when the caller handed them over (P3 2.2, A12).
     members: Option<&'a ClassMembers>,
     member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
@@ -8639,6 +8649,10 @@ struct Builder<'a> {
     /// expression, so the statement tree holds no node for them to be counted in
     /// (`recover-dup-store-conditional`).
     assignment_presentations: BTreeMap<u32, usize>,
+    /// The chained assignments whose saved value this run could not commit
+    /// (`recover-chained-field-assignment`): the copies of a chain whose lead refused to write the
+    /// local, so no store of the chain may write the source's own expression a second time.
+    field_chain_refused: BTreeSet<u32>,
     instructions: BTreeMap<u32, &'a SsaInstruction>,
     /// The block each instruction belongs to: which block's own entry state and writes state what a
     /// local slot holds where that instruction runs (P3 1.3d).
@@ -8923,6 +8937,651 @@ struct CompoundAssignments {
     copies: BTreeSet<u32>,
     reads: BTreeSet<u32>,
     inline_values: BTreeSet<u32>,
+}
+
+/// The copies of one body whose consumers are **field instructions**
+/// (`recover-chained-field-assignment`).
+///
+/// This is the copy family's third shape, and the one the local chain's own rule never reached: the
+/// `dup` a chained field assignment leaves across its stores. `a = b = c = 5` compiles to
+/// `iconst_5; dup; putstatic c; dup; putstatic b; putstatic a` — the value is evaluated **once**,
+/// and one copy per extra store hands each store its own copy — so the text is one assignment per
+/// store, in bytecode order (which is the source's own right-to-left order), every one of them
+/// writing the one expression the copy duplicated. `this.flags |= 1 << bit` is the same copy seen
+/// from the other side: `aload_0; dup; getfield; …; ior; putfield` — one copy of the receiver is the
+/// read's and the other is the write's, and the read's own value is what the write's value is
+/// computed from.
+///
+/// Both shapes are proved here, before any statement of the body exists, because two other rules
+/// read the verdict: the concatenation rule admits the instance a `dup_x1` carries through its chain
+/// (the field's own `+=` shape), and the construction rule skips an allocation a chain owns. The
+/// builder writes the copies' text where their consumers read them
+/// ([`Builder::duplicate_expression`]).
+#[derive(Default)]
+pub(crate) struct FieldCopies {
+    copies: BTreeMap<u32, FieldCopy>,
+    /// Every store a proved chain writes. A second candidate whose stores are already here is the
+    /// first chain's own tail, not a shape of its own.
+    stores: BTreeSet<u32>,
+}
+
+/// One proved copy whose consumers are field instructions.
+#[derive(Clone, Debug)]
+pub(crate) struct FieldCopy {
+    /// The BCI of the copy itself: a `dup` or a `dup_x1`.
+    pub(crate) duplicate: u32,
+    /// The value the copy **duplicated**: what each of its own copies is written as.
+    pub(crate) source: ValueId,
+    /// The value a `dup_x1` left **under** the duplicate — the copy it also writes, which is the
+    /// value that stood below the top of the stack and not the value it duplicated. `None` for a
+    /// `dup`, whose two writes are both the duplicated value.
+    pub(crate) pass_through: Option<ValueId>,
+    /// What the copy's consumers are.
+    pub(crate) shape: FieldCopyShape,
+}
+
+/// What the consumers of one proved field copy are.
+#[derive(Clone, Debug)]
+pub(crate) enum FieldCopyShape {
+    /// `dup; putfield; [dup; putfield]*; putfield`: one once-evaluated value the chain's stores
+    /// share, written as one assignment per store in bytecode order.
+    Chain {
+        /// Every store of the chain, in bytecode order: the copy's own consumers, one per copy.
+        stores: Vec<u32>,
+        /// Whether this copy is the chain's **lead** — the one the source's own evaluation stands
+        /// at, and the one that writes the saved local when the source may not be written once per
+        /// store.
+        lead: bool,
+        /// Whether the source may not be written once per store (`a = b = f()`), so the lead writes
+        /// it into a local first and every store reads that local.
+        saved: bool,
+    },
+    /// `dup`/`dup_x1; getfield; …; putfield`: the receiver of one member's read and its write, the
+    /// shape an instance compound assignment is made of. The read's value is what the write's value
+    /// is computed from; the proof is that the two receivers are the copy's own two copies.
+    Receiver {
+        /// The BCI of the field read one copy is the receiver of.
+        read: u32,
+        /// The BCI of the field write the other copy is the receiver of.
+        store: u32,
+    },
+}
+
+impl FieldCopies {
+    /// Whether one BCI is a copy this plan proved: it writes no statement of its own.
+    pub(crate) fn owns(&self, bci: u32) -> bool {
+        self.copies.contains_key(&bci)
+    }
+
+    /// The proved copy at one BCI, when this plan proved one there.
+    pub(crate) fn copy_at(&self, bci: u32) -> Option<&FieldCopy> {
+        self.copies.get(&bci)
+    }
+
+    /// Every copy this plan proved, in BCI order.
+    pub(crate) fn values(&self) -> impl Iterator<Item = &FieldCopy> + '_ {
+        self.copies.values()
+    }
+
+    /// The proved **receiver** copy at one BCI, when the copy is the receiver of one member's read
+    /// and write: the fact the concatenation rule admits a carried instance by.
+    pub(crate) fn receiver_copy_at(&self, bci: u32) -> Option<&FieldCopy> {
+        self.copies
+            .get(&bci)
+            .filter(|copy| matches!(copy.shape, FieldCopyShape::Receiver { .. }))
+    }
+
+    /// Reads every field copy of one body: the chained field assignment's copies and the receiver
+    /// copies of the compound assignments whose operator the update rule does not present.
+    ///
+    /// Every condition is an identity the bytecode states, and the two shapes are read from the
+    /// copies themselves: which instruction each copy's two values are consumed by, which value the
+    /// store takes, and where the source was produced. Nothing is inferred from an opcode sequence
+    /// alone — the run of instructions the chain is made of is checked against the values those
+    /// instructions really carry.
+    pub(crate) fn prove(
+        ssa: &SsaTable,
+        operations: &Operations,
+        fields: &field::Plan,
+        budget: &mut Budget,
+    ) -> Result<Self, StopReason> {
+        let mut plan = Self::default();
+        for block in ssa.blocks() {
+            for (index, instruction) in block.instructions().iter().enumerate() {
+                poll(budget, Some(instruction.bci()))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                let copies = match instruction.opcode() {
+                    OPCODE_DUP => {
+                        match field_chain_at(ssa, operations, fields, block, index, budget)? {
+                            Some(copies) => Some(copies),
+                            None => {
+                                receiver_copy_at(ssa, operations, fields, block, index, budget)?
+                                    .map(|copy| vec![copy])
+                            }
+                        }
+                    }
+                    OPCODE_DUP_X1 => {
+                        receiver_copy_at(ssa, operations, fields, block, index, budget)?
+                            .map(|copy| vec![copy])
+                    }
+                    _ => None,
+                };
+                let Some(copies) = copies else {
+                    continue;
+                };
+                // A chain whose stores another proved chain already owns is that chain's own tail:
+                // `a = b = c = 5` writes one `dup` per extra store, and the second `dup` reads the
+                // first one's copy. The lead's chain states the source once for all of them, so a
+                // chain read from a later copy of it is no second shape — its own copies are the
+                // lead's, and the text writes one assignment per store either way.
+                if copies.iter().any(|copy| match &copy.shape {
+                    FieldCopyShape::Chain { stores, .. } => {
+                        stores.iter().any(|store| plan.stores.contains(store))
+                    }
+                    FieldCopyShape::Receiver { .. } => false,
+                }) {
+                    continue;
+                }
+                for copy in copies {
+                    if let FieldCopyShape::Chain { stores, .. } = &copy.shape {
+                        plan.stores.extend(stores.iter().copied());
+                    }
+                    plan.copies.entry(copy.duplicate).or_insert(copy);
+                }
+            }
+        }
+        Ok(plan)
+    }
+}
+
+/// Whether the value one copy duplicated may be written once per position its text lands in.
+///
+/// A `dup`'s text is written at every consumer of every copy it produced, so a source whose
+/// evaluation is observable — a call, an allocation, a field or array read, a store — would run
+/// that many times. What may be written more than once is exactly what the bytecode's own frames
+/// make a **value of the frame**: a constant, a local read, and the pure operations on them. The
+/// operations that can throw are admitted with the rest: `a = b = 1 / 0` throws where the first
+/// store's text is evaluated, which is where the bytecode threw too, and nothing between the two
+/// ran either way.
+fn field_copy_source_is_reusable(
+    ssa: &SsaTable,
+    operations: &Operations,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    source: ValueId,
+    before: u32,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut pending = vec![source];
+    let mut seen = BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        if !seen.insert(value) {
+            continue;
+        }
+        poll(budget, Some(before))?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(before))?;
+        match ssa.value(value).def() {
+            // A parameter's own entry value is a name the signature declares: writing it twice is
+            // writing a name twice.
+            Definition::Entry { .. } => {}
+            Definition::Instruction {
+                block: definition_block,
+                bci,
+            } => {
+                if *definition_block != *block.block() || *bci >= before {
+                    return Ok(false);
+                }
+                if !matches!(
+                    operations.get(*bci),
+                    Some(
+                        Operation::Push(_)
+                            | Operation::Load { .. }
+                            | Operation::Arithmetic { .. }
+                            | Operation::Shift { .. }
+                            | Operation::Bitwise { .. }
+                            | Operation::Negate
+                            | Operation::PrimitiveConversion { .. },
+                    )
+                ) {
+                    return Ok(false);
+                }
+                let Some(instruction) = instruction_in_block(block, *bci) else {
+                    return Ok(false);
+                };
+                for (slot, operand) in instruction.reads() {
+                    if matches!(slot, Slot::Stack(_)) {
+                        pending.push(*operand);
+                    }
+                }
+            }
+            Definition::Phi { .. } | Definition::Caught { .. } => return Ok(false),
+        }
+    }
+    Ok(true)
+}
+
+/// The value one claimed field **write** takes off the stack, when the write is one.
+fn field_write_value(
+    operations: &Operations,
+    fields: &field::Plan,
+    instruction: &SsaInstruction,
+) -> Option<ValueId> {
+    if !matches!(
+        operations.get(instruction.bci()),
+        Some(Operation::Field { .. })
+    ) {
+        return None;
+    }
+    let (_, shape) = fields.claim(instruction.bci())?;
+    shape.writes().then_some(shape.value)?
+}
+
+/// The chain one `dup` leads, when the run of instructions after it is one.
+///
+/// The shape is the one javac writes for `a = b = c = value`: the value is evaluated once, and one
+/// `dup` per extra store hands each store its own copy. So the run is
+/// `dup; putfield; [dup; putfield]*; putfield`, every instruction of it consecutive in one block,
+/// and every value identity of it is checked here: each copy's top write is the value the store
+/// immediately after it takes, each copy's lower write is what the next copy reads or what the
+/// chain's last store takes, and the source is what the first copy read. A copy with any other
+/// consumer is no part of a chain — that is the whole difference between `a = b = 5` and
+/// `a = (b = 5) + 1`, whose `iadd` reads the second copy.
+fn field_chain_at(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    index: usize,
+    budget: &mut Budget,
+) -> Result<Option<Vec<FieldCopy>>, StopReason> {
+    let instructions = block.instructions();
+    let Some(lead) = instructions.get(index) else {
+        return Ok(None);
+    };
+    let Some((_, source)) = single_stack_read(lead) else {
+        return Ok(None);
+    };
+    let mut duplicates: Vec<u32> = Vec::new();
+    let mut stores: Vec<u32> = Vec::new();
+    let mut position = index;
+    loop {
+        let Some(duplicate) = instructions.get(position) else {
+            return Ok(None);
+        };
+        let copies = stack_outputs(duplicate);
+        let [(_, lower), (_, upper)] = copies.as_slice() else {
+            return Ok(None);
+        };
+        let (lower, upper) = (*lower, *upper);
+        if lower == upper {
+            return Ok(None);
+        }
+        let Some(store) = instructions.get(position + 1) else {
+            return Ok(None);
+        };
+        if field_write_value(operations, fields, store) != Some(upper)
+            || !single_use_at(ssa, upper, block.block(), store.bci())
+        {
+            return Ok(None);
+        }
+        duplicates.push(duplicate.bci());
+        stores.push(store.bci());
+        match instructions.get(position + 2) {
+            Some(next) if next.opcode() == OPCODE_DUP => {
+                if single_stack_read(next).map(|(_, read)| read) != Some(lower)
+                    || !single_use_at(ssa, lower, block.block(), next.bci())
+                {
+                    return Ok(None);
+                }
+                position += 2;
+            }
+            Some(next) => {
+                if field_write_value(operations, fields, next) != Some(lower)
+                    || !single_use_at(ssa, lower, block.block(), next.bci())
+                {
+                    return Ok(None);
+                }
+                stores.push(next.bci());
+                break;
+            }
+            None => return Ok(None),
+        }
+    }
+    // The source is produced in this block before the copy that reads it, and nothing else reads
+    // it: the chain is the one place the bytecode evaluates it.
+    let Some(source_bci) = definition_in_block(ssa, source, block.block()) else {
+        return Ok(None);
+    };
+    if position_in_block(block, source_bci).is_none_or(|source_pos| source_pos >= index)
+        || !single_use_at(ssa, source, block.block(), lead.bci())
+    {
+        return Ok(None);
+    }
+    let Some(last) = stores.last().copied() else {
+        return Ok(None);
+    };
+    // Nothing in the run may enter a handler: the stores are one statement group, and a protected
+    // range would make a store a different statement on the exception path.
+    if ssa.effects().instructions().iter().any(|effect| {
+        effect.block() == block.block()
+            && lead.bci() <= effect.bci()
+            && effect.bci() <= last
+            && !effect.handlers().is_empty()
+    }) {
+        return Ok(None);
+    }
+    let saved = !field_copy_source_is_reusable(ssa, operations, block, source, lead.bci(), budget)?;
+    // Every copy of the chain is one shape's copy: they all write the one value the source
+    // evaluated, and only the first of them stands where that evaluation is written.
+    Ok(Some(
+        duplicates
+            .into_iter()
+            .enumerate()
+            .map(|(ordinal, duplicate)| FieldCopy {
+                duplicate,
+                source,
+                pass_through: None,
+                shape: FieldCopyShape::Chain {
+                    stores: stores.clone(),
+                    lead: ordinal == 0,
+                    saved,
+                },
+            })
+            .collect(),
+    ))
+}
+
+/// The receiver copy of one member's read and write, when the copy at one position is one.
+///
+/// `this.flags |= 1 << bit` is `aload_0; dup; getfield; …; ior; putfield`: the copy leaves the
+/// receiver on the stack twice, one copy for the read and one for the write, so both field
+/// instructions are called on the instance the copy duplicated and on no other. `this.field +=
+/// "[" + x + "]"` is the same shape written with `dup_x1` (the receiver is copied *under* the
+/// string builder the concatenation is built in, which is why the copy is a `dup_x1`), and the
+/// value it also writes — the pass-through of the builder below it — is the value that stood under
+/// the top of the stack.
+///
+/// The proof pins the identity of the two copies, the member the two accesses name, and that the
+/// write's value is computed **after** the read in the same block: those three facts are what make
+/// the text `receiver.field = receiver.field <op> value` the bytecode's own program. A copy whose
+/// consumers are anything else, a read and a write of different members, and a read the write's
+/// value does not use all keep the refusal they have.
+fn receiver_copy_at(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    index: usize,
+    budget: &mut Budget,
+) -> Result<Option<FieldCopy>, StopReason> {
+    let instructions = block.instructions();
+    let Some(copy) = instructions.get(index) else {
+        return Ok(None);
+    };
+    let (source, pass_through) = match copy.opcode() {
+        OPCODE_DUP => match single_stack_read(copy) {
+            Some((_, source)) => (source, None),
+            None => return Ok(None),
+        },
+        OPCODE_DUP_X1 => match dup_x1_operands(copy) {
+            Some((top, _)) => (top, pass_through_value(copy, top)),
+            None => return Ok(None),
+        },
+        _ => return Ok(None),
+    };
+    let duplicate_bci = copy.bci();
+    // The copies' own consumers: the values this copy wrote that a later instruction of the block
+    // reads, in the order the block lists them.
+    let mut consumers: Vec<(u32, ValueId)> = Vec::new();
+    for other in instructions.iter().skip(index + 1) {
+        poll(budget, Some(other.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(other.bci()),
+        )?;
+        for (slot, read) in other.reads() {
+            if matches!(slot, Slot::Stack(_)) && comes_from(ssa, *read, duplicate_bci) {
+                consumers.push((other.bci(), *read));
+            }
+        }
+    }
+    let mut read: Option<(u32, ValueId)> = None;
+    let mut store: Option<(u32, ValueId)> = None;
+    for (consumer_bci, value) in consumers {
+        // A pass-through is not one of the copies the copy duplicated: it is the value that stood
+        // below the top of the stack, and its consumers say nothing about the receiver.
+        if pass_through == Some(value) {
+            continue;
+        }
+        let Some((evidence, shape)) = fields.claim(consumer_bci) else {
+            return Ok(None);
+        };
+        if shape.receiver != Some(value) || evidence.is_static {
+            return Ok(None);
+        }
+        if evidence.access == crate::facts::FieldAccess::Read && !shape.writes() {
+            if read.is_some() {
+                return Ok(None);
+            }
+            read = Some((consumer_bci, value));
+        } else if shape.writes() {
+            if store.is_some() {
+                return Ok(None);
+            }
+            store = Some((consumer_bci, value));
+        } else {
+            return Ok(None);
+        }
+    }
+    let (Some((read_bci, read_receiver)), Some((store_bci, store_receiver))) = (read, store) else {
+        return Ok(None);
+    };
+    if read_receiver == store_receiver {
+        return Ok(None);
+    }
+    let (Some((read_field, _)), Some((store_field, store_shape))) =
+        (fields.claim(read_bci), fields.claim(store_bci))
+    else {
+        return Ok(None);
+    };
+    if read_field.owner != store_field.owner
+        || read_field.name != store_field.name
+        || read_field.descriptor != store_field.descriptor
+    {
+        return Ok(None);
+    }
+    // The read is the copy's own next instruction, and the write's value is produced after the read
+    // and before the write: the value the text writes is computed from the value the read took, in
+    // that order.
+    let (Some(read_pos), Some(store_pos)) = (
+        position_in_block(block, read_bci),
+        position_in_block(block, store_bci),
+    ) else {
+        return Ok(None);
+    };
+    if read_pos != index + 1 || store_pos <= read_pos {
+        return Ok(None);
+    }
+    let Some(store_value) = store_shape.value else {
+        return Ok(None);
+    };
+    let Some(value_bci) = definition_in_block(ssa, store_value, block.block()) else {
+        return Ok(None);
+    };
+    let Some(value_pos) = position_in_block(block, value_bci) else {
+        return Ok(None);
+    };
+    if value_pos <= read_pos || value_pos >= store_pos {
+        return Ok(None);
+    }
+    // The read's value is what the write's value is computed from, and nothing between the two
+    // produces a statement of its own: every instruction of the interval is part of the expression
+    // the write's value is written as.
+    let mut span = BTreeSet::new();
+    if !field_copy_expression_span(
+        ssa,
+        operations,
+        block,
+        store_value,
+        store_pos,
+        &mut span,
+        &mut BTreeSet::new(),
+        budget,
+    )? {
+        return Ok(None);
+    }
+    if !span.contains(&read_bci) {
+        return Ok(None);
+    }
+    for position in read_pos..store_pos {
+        let Some(instruction) = instructions.get(position) else {
+            return Ok(None);
+        };
+        if !span.contains(&instruction.bci()) {
+            return Ok(None);
+        }
+    }
+    // The receiver itself is a value the text writes twice — once as the assignment's target and
+    // once inside the expression the read is written in — so it may only be a source whose
+    // re-evaluation is not observable.
+    if !field_copy_source_is_reusable(ssa, operations, block, source, copy.bci(), budget)? {
+        return Ok(None);
+    }
+    if ssa.effects().instructions().iter().any(|effect| {
+        effect.block() == block.block()
+            && copy.bci() <= effect.bci()
+            && effect.bci() <= store_bci
+            && !effect.handlers().is_empty()
+    }) {
+        return Ok(None);
+    }
+    Ok(Some(FieldCopy {
+        duplicate: duplicate_bci,
+        source,
+        pass_through,
+        shape: FieldCopyShape::Receiver {
+            read: read_bci,
+            store: store_bci,
+        },
+    }))
+}
+
+/// The value one `dup_x1` **passes through** rather than duplicates.
+///
+/// `dup_x1` copies the top of the stack and puts the copy *under* the value below it:
+/// `[…, B, T]` becomes `[…, T, B, T]`. The value that stood below the top therefore ends up in the
+/// slot the top itself was read from, and the frame states that write with the copy's own
+/// instruction. That slot is what identifies it here: the value the instruction wrote where the
+/// duplicated value used to be is the value it moved, and the two values it wrote above and below
+/// that slot are its copies. The `+=` shape is the case this exists for — the builder the
+/// concatenation is built in is the pass-through, and the first `append` reads it where it now
+/// stands.
+fn pass_through_value(copy: &SsaInstruction, top: ValueId) -> Option<ValueId> {
+    let slot = stack_operands(copy)
+        .into_iter()
+        .find(|(_, value)| *value == top)
+        .map(|(slot, _)| slot)?;
+    let mut written = stack_outputs(copy)
+        .into_iter()
+        .filter(|(depth, _)| Slot::Stack(*depth) == slot);
+    written.next().map(|(_, value)| value)
+}
+
+/// Every BCI the expression one value is written as spans, following a copy through to what it
+/// duplicated.
+///
+/// This is [`collect_expression_bcis`]'s walk over the same facts, with the two differences the
+/// receiver copy needs: a copy's own instruction is part of the expression (its text is the
+/// receiver the read is called on), and the values it reads are followed — so the read's value is
+/// reached through the copy that carried the receiver.
+#[allow(clippy::too_many_arguments)]
+fn field_copy_expression_span(
+    ssa: &SsaTable,
+    operations: &Operations,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    value: ValueId,
+    end: usize,
+    bcis: &mut BTreeSet<u32>,
+    seen: &mut BTreeSet<ValueId>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    if !seen.insert(value) {
+        return Ok(true);
+    }
+    poll(budget, Some(block.block().bci()))?;
+    charge(
+        budget,
+        CountedBudgetDimension::IrItems,
+        1,
+        Some(block.block().bci()),
+    )?;
+    match ssa.value(value).def() {
+        Definition::Entry { .. } => Ok(true),
+        Definition::Instruction {
+            block: definition_block,
+            bci,
+        } if *definition_block == *block.block() => {
+            let Some(position) = position_in_block(block, *bci) else {
+                return Ok(false);
+            };
+            if position >= end {
+                return Ok(false);
+            }
+            let Some(instruction) = instruction_in_block(block, *bci) else {
+                return Ok(false);
+            };
+            let expression = match operations.get(*bci) {
+                Some(
+                    Operation::Push(_)
+                    | Operation::Load { .. }
+                    | Operation::Arithmetic { .. }
+                    | Operation::Shift { .. }
+                    | Operation::Bitwise { .. }
+                    | Operation::Negate
+                    | Operation::PrimitiveConversion { .. }
+                    | Operation::Invoke(_)
+                    | Operation::InvokeDynamic(_)
+                    | Operation::ArrayLoad
+                    | Operation::ArrayElementLoad { .. }
+                    | Operation::ArrayLength
+                    | Operation::NewArray { .. }
+                    | Operation::CheckCast { .. }
+                    | Operation::InstanceOf { .. },
+                ) => true,
+                // The copy itself, and the allocation and constructor a pass-through carries: their
+                // text is the receiver expression the copy's consumers are written with, so the
+                // walk follows them to the values they read instead of stopping on the opcode.
+                Some(
+                    Operation::Duplicate
+                    | Operation::Other
+                    | Operation::Field { .. }
+                    | Operation::Allocate { .. },
+                ) => true,
+                _ => false,
+            };
+            if !expression {
+                return Ok(false);
+            }
+            bcis.insert(*bci);
+            for (slot, operand) in instruction.reads() {
+                if matches!(slot, Slot::Stack(_))
+                    && !field_copy_expression_span(
+                        ssa, operations, block, *operand, end, bcis, seen, budget,
+                    )?
+                {
+                    return Ok(false);
+                }
+            }
+            Ok(true)
+        }
+        _ => Ok(false),
+    }
 }
 
 /// A postfix expression is published only at its immediate `ireturn`. The owned instructions
@@ -20416,6 +21075,23 @@ impl Builder<'_> {
                 if self.chained_pair(at).is_some() {
                     return Ok(());
                 }
+                // A copy whose consumers are field instructions is a proved shape of its own
+                // (`recover-chained-field-assignment`): the chain's copies write no statement (each
+                // store writes the expression the copy duplicated), and the chain's lead writes the
+                // saved local a source that may not be written once per store needs.
+                if let Some(copy) = self.field_copies.copy_at(at).cloned() {
+                    if matches!(
+                        copy.shape,
+                        FieldCopyShape::Chain {
+                            lead: true,
+                            saved: true,
+                            ..
+                        }
+                    ) {
+                        return self.field_chain_lead(&copy, at);
+                    }
+                    return Ok(());
+                }
                 self.fallback(
                     self.quoted_bcis(at),
                     format!(
@@ -20456,6 +21132,10 @@ impl Builder<'_> {
             {
                 Ok(())
             }
+            // A `dup_x1` whose copies are the receiver of one member's read and its write is a
+            // proved copy of its own (`recover-chained-field-assignment`): its text is the receiver
+            // expression its consumers are written with, so the instruction writes no statement.
+            Some(Operation::Other) if self.field_copies.owns(at) => Ok(()),
             Some(Operation::Other) | None => self.fallback(
                 vec![at],
                 format!("the instruction at BCI {at} is not part of the provable subset"),
@@ -21653,6 +22333,145 @@ impl Builder<'_> {
     /// frame in the render itself is what a stack the body already fills would overflow on. The
     /// dance's own arm is reached only where a copy is rendered, so its frame is paid only there.
     #[inline(never)]
+    /// The expression one proved **field copy** is written as
+    /// (`recover-chained-field-assignment`).
+    ///
+    /// A `dup`'s copies are all the value it duplicated, so the text is that value's own
+    /// expression — written where the copy is read, which is what keeps a chained assignment's
+    /// right-hand side evaluated once per position its text lands in. A chain whose source may not
+    /// be written once per store reads the local its lead saved instead
+    /// ([`Self::field_chain_lead`]). A `dup_x1` writes two different things: the copies of the
+    /// value it duplicated, and the pass-through of the value that stood under it — the builder a
+    /// field's own `+=` is built in.
+    fn field_copy_expression(
+        &mut self,
+        copy: &FieldCopy,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        if self.field_chain_refused.contains(&copy.duplicate) {
+            return Err(format!(
+                "the copy at BCI {} belongs to a chain whose saved value this run could not commit",
+                copy.duplicate
+            )
+            .into());
+        }
+        if copy.pass_through == Some(value) {
+            let Some(pass_through) = copy.pass_through else {
+                return Err(
+                    format!("the copy at BCI {} has no pass-through", copy.duplicate).into(),
+                );
+            };
+            return Ok(self
+                .render_value(pass_through, at, depth + 1)?
+                .derived_from(copy.duplicate));
+        }
+        Ok(self
+            .render_value(copy.source, at, depth + 1)?
+            .derived_from(copy.duplicate))
+    }
+
+    /// Writes the saved local a chained assignment's **lead** copy evaluates its source into, when
+    /// the source may not be written once per store (`a = b = f()`).
+    ///
+    /// The lead is the copy the source's own evaluation stands at: the text `int saved0 = f();`
+    /// runs there, once, and every store of the chain reads the name — which is what keeps the
+    /// chain's single evaluation the bytecode's own. A source that may be written more than once
+    /// writes no statement here at all, and every store writes the source's own expression.
+    fn field_chain_lead(&mut self, copy: &FieldCopy, at: u32) -> Result<(), StopReason> {
+        // A value another rule already saved is written once, by that rule: this chain reads the
+        // name that statement declared rather than declaring a second one for the same value.
+        if self.bindings.contains_key(&copy.source) {
+            return Ok(());
+        }
+        let expression = match self.render_value(copy.source, at, 0) {
+            Ok(expression) => expression,
+            Err(reason) => {
+                self.refuse_field_chain(copy);
+                let bcis = self.quoted_bcis(at);
+                return self.fallback(bcis, &reason, at);
+            }
+        };
+        let Some(ty) = expression.presented.clone() else {
+            self.refuse_field_chain(copy);
+            let bcis = self.quoted_bcis(at);
+            return self.fallback(
+                bcis,
+                format!("the saved value at BCI {at} has no declared Java type"),
+                at,
+            );
+        };
+        let name = self.fresh_saved_name(at)?;
+        let source_type_name = local_declaration_source_type_name(&ty, self.member_inner_targets);
+        self.push(Stmt::new(
+            StmtKind::Declare {
+                ty: ty.clone(),
+                source_type_name,
+                name: name.clone(),
+                value: Some(expression),
+            },
+            OriginSet::new(Origin::direct(at)),
+        ))?;
+        self.bindings.insert(
+            copy.source,
+            Binding {
+                name,
+                ty,
+                anchor: at,
+            },
+        );
+        Ok(())
+    }
+
+    /// Marks **every** copy of one chain refused, after its lead could not commit the saved value.
+    ///
+    /// The chain's stores read the copies of *different* instructions, so a refusal recorded on the
+    /// lead alone would leave the later stores free to write the source's own expression a second
+    /// time — the one thing the saved value exists to prevent. The chain's own store list is the
+    /// identity every copy of it carries.
+    fn refuse_field_chain(&mut self, copy: &FieldCopy) {
+        let FieldCopyShape::Chain { stores, .. } = &copy.shape else {
+            self.field_chain_refused.insert(copy.duplicate);
+            return;
+        };
+        let refused: Vec<u32> = self
+            .field_copies
+            .values()
+            .filter(|other| match &other.shape {
+                FieldCopyShape::Chain {
+                    stores: other_stores,
+                    ..
+                } => other_stores == stores,
+                FieldCopyShape::Receiver { .. } => false,
+            })
+            .map(|other| other.duplicate)
+            .collect();
+        for duplicate in refused {
+            self.field_chain_refused.insert(duplicate);
+        }
+    }
+
+    /// The next spelling of a local this layer invents for a value it has to save
+    /// (`saved0`, `saved0_`, …), deterministically and clear of every name the body already uses.
+    fn fresh_saved_name(&mut self, at: u32) -> Result<String, StopReason> {
+        let mut base = format!("saved{}", self.synthetic_names.len());
+        let name = loop {
+            let candidate = self.names.free_name_with(&base, || {
+                poll(self.budget, Some(at))?;
+                charge(self.budget, CountedBudgetDimension::IrItems, 1, Some(at))
+            })?;
+            if !self.synthetic_names.contains(&candidate)
+                && !self.lambda_params.contains(&candidate)
+            {
+                break candidate;
+            }
+            base = format!("{candidate}_");
+        };
+        self.synthetic_names.insert(name.clone());
+        Ok(name)
+    }
+
     fn duplicate_expression(
         &mut self,
         bci: u32,
@@ -21660,6 +22479,12 @@ impl Builder<'_> {
         at: u32,
         depth: usize,
     ) -> Result<Expr, ValueRenderFailure> {
+        // The copy family's third shape (`recover-chained-field-assignment`): a copy whose
+        // consumers are field instructions. Its text is the value it duplicated — or the local the
+        // chain's own lead saved that value into, when the value may not be written once per store.
+        if let Some(copy) = self.field_copies.copy_at(bci).cloned() {
+            return self.field_copy_expression(&copy, value, at, depth);
+        }
         let assignment = self
             .local_assignments
             .get(&bci)
@@ -22644,10 +23469,16 @@ impl Builder<'_> {
                             origin,
                         ))
                     }
+                    // A `dup_x1` this plan proved is a copy whose text is the receiver expression
+                    // its consumers are written with (`recover-chained-field-assignment`), exactly
+                    // as a `dup`'s is: the value is the one the copy duplicated, or — for the
+                    // pass-through the copy also writes — the value that stood under it.
+                    Operation::Other if self.field_copies.owns(bci) => {
+                        self.duplicate_expression(bci, value, at, depth)
+                    }
                     other => Err(format!(
                         "the value at BCI {at} comes from an {other:?} at BCI {bci}, which produces no expression this subset writes"
-                    ).into()),
-                }
+                    ).into()),                }
             }
             Definition::Caught { bci, .. } => Err(format!(
                 "the value at BCI {at} is the exception reference of the throw site at BCI {bci}"
@@ -24408,9 +25239,19 @@ impl Builder<'_> {
             // stores that follow it (P3 2c.14). Not being one here would let the call that produced
             // the value write a statement of its own *and* be rendered inside the store — the same
             // effect written twice, which is exactly what the copy's shape exists to avoid.
+            //
+            // The copy family's field shapes are readers for the same reason
+            // (`recover-chained-field-assignment`): a chain's copy is written by every store of the
+            // chain, and a receiver copy by the read and the write it carries — so a call whose
+            // value a copy takes writes no statement of its own.
             Some(Operation::Duplicate) => {
-                self.chained_pair(bci).is_some() || self.local_assignments.contains_key(&bci)
+                self.chained_pair(bci).is_some()
+                    || self.local_assignments.contains_key(&bci)
+                    || self.field_copies.owns(bci)
             }
+            // A `dup_x1` a proved field shape owns is the same reader: it carries the receiver the
+            // read and the write are written with.
+            Some(Operation::Other) => self.field_copies.owns(bci),
             // A field access and an array read are readers exactly where their own rules claimed
             // them (P3 2.3): a claimed access renders the value it reads into its text, and one no
             // rule claimed is quoted and writes nothing.
@@ -27843,7 +28684,7 @@ fn single_stack_read(instruction: &SsaInstruction) -> Option<(Slot, ValueId)> {
 
 /// The two values one `dup_x1` reads: the one it **duplicates** — the top of the stack — and the one
 /// below it, which the copy it inserts keeps as the value under the duplicate.
-fn dup_x1_operands(instruction: &SsaInstruction) -> Option<(ValueId, ValueId)> {
+pub(crate) fn dup_x1_operands(instruction: &SsaInstruction) -> Option<(ValueId, ValueId)> {
     // `stack_operands` orders by depth, so the last read is the top of the stack.
     match stack_operands(instruction).as_slice() {
         [(_, below), (_, top)] => Some((*top, *below)),
@@ -30948,9 +31789,14 @@ mod tests {
         let ssa = ir.ssa().expect("the method publishes SSA");
         let code = ir.code().expect("the method publishes its decode");
         let operations = Operations::of(code, ir.constant_pool());
-        let chains =
-            crate::concat::plan_four_conditional_strings(ssa, canonical, &operations, &mut budget)
-                .expect("the fixture concat plan builds");
+        let chains = crate::concat::plan_four_conditional_strings(
+            ssa,
+            canonical,
+            &operations,
+            &FieldCopies::default(),
+            &mut budget,
+        )
+        .expect("the fixture concat plan builds");
         let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
             .expect("the bounded normal-flow view builds");
         let recovered = crate::region::recover(

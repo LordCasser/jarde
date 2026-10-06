@@ -2766,7 +2766,8 @@ mod tests {
             let ssa = ir.ssa().expect("ssa");
             let code = ir.code().expect("code");
             let operations = Operations::of(code, ir.constant_pool());
-            let chains = crate::concat::plan(ssa, &operations);
+            let chains =
+                crate::concat::plan(ssa, &operations, &crate::build::FieldCopies::default());
             let fields = field::Plan::empty();
             let arrays = crate::build::ArrayInitializers::default();
             let method_facts = crate::facts::MethodFacts::new(name, descriptor, 0);

@@ -246,9 +246,12 @@ fn a_method_without_array_allocations_keeps_its_tight_ir_budget() {
         b"(Ljava/lang/String;)Ljava/lang/String;",
     );
     let mut tight = Budget::new(Limits {
-        // This no-array body completes at exactly 84 IR items. The allowance intentionally leaves
+        // This no-array body completes at exactly 87 IR items. The allowance intentionally leaves
         // no room for charging an unrelated effect map while probing for initializer candidates.
-        ir_items: 84,
+        // The field-copy proof (`recover-chained-field-assignment`) is the third charge this count
+        // carries: it scans every instruction of the body for the copies whose consumers are field
+        // instructions, and this body has none.
+        ir_items: 87,
         ..task_limits(&[]).expect("the task defaults are bounded")
     });
     let recovered = Engine::new()
@@ -266,7 +269,7 @@ fn a_method_without_array_allocations_keeps_its_tight_ir_budget() {
     );
     assert_eq!(
         tight.usage().ir_items,
-        84,
+        87,
         "the fixture reaches the bound exactly"
     );
 }
@@ -278,8 +281,10 @@ fn a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path(
     let mut tight = Budget::new(Limits {
         // `multianewarray` allocates only part of the descriptor's dimensions and is not a
         // one-dimensional initializer candidate. Its static `DeferredEffects.mark()` owner
-        // now costs one naming-scan item; leave no room beyond that for candidate effects.
-        ir_items: 105,
+        // now costs one naming-scan item, and the field-copy proof
+        // (`recover-chained-field-assignment`) scans this body's instructions beside it; leave no
+        // room beyond those for candidate effects.
+        ir_items: 110,
         ..task_limits(&[]).expect("the task defaults are bounded")
     });
     let recovered = Engine::new()
@@ -297,7 +302,7 @@ fn a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path(
     );
     assert_eq!(
         tight.usage().ir_items,
-        105,
+        110,
         "the fixture reaches the bound exactly"
     );
 }

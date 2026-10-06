@@ -1,0 +1,81 @@
+// jarde: presentation of `BF` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BF extends java.lang.Object {
+    private int flags;
+
+    public BF() {
+        // @method <init>()V
+        // @declaration a constructor of `BF`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.flags = 0;
+        return;
+    }
+
+    void enable(int arg1) {
+        // jarde: not recovered: the recovery run for `enable(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method enable(I)V
+        // @declaration an instance method of `BF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 9 8 2 0 1 5 6 7 12
+        // the copy at BCI 1 has no proved local assignment
+        jarde_refused_body();
+    }
+
+    void disable(int arg1) {
+        // jarde: not recovered: the recovery run for `disable(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method disable(I)V
+        // @declaration an instance method of `BF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 11 10 2 9 0 1 5 6 7 8 14
+        // the copy at BCI 1 has no proved local assignment
+        jarde_refused_body();
+    }
+
+    boolean isSet(int arg1) {
+        // @method isSet(I)Z
+        // @declaration an instance method of `BF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return (this.flags & 1 << arg1) != 0;
+    }
+
+    boolean isEmpty() {
+        // @method isEmpty()Z
+        // @declaration an instance method of `BF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.flags == 0;
+    }
+
+    int count() {
+        // @method count()I
+        // @declaration an instance method of `BF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        int local2;
+        local1 = 0;
+        local2 = this.flags;
+        while (local2 != 0) {
+            local1 = local1 + (local2 & 1);
+            local2 = local2 >>> 1;
+        }
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `BF`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BF local1 = new BF();
+        local1.enable(0);
+        local1.enable(3);
+        local1.enable(5);
+        java.lang.System.out.println("" + local1.isSet(0) + "/" + local1.isSet(1) + "/" + local1.isSet(3) + "/" + local1.isEmpty() + "/" + local1.count());
+        local1.disable(3);
+        java.lang.System.out.println("" + local1.isSet(3) + "/" + local1.count());
+        return;
+    }
+}

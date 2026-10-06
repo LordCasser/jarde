@@ -578,8 +578,11 @@ fn the_type_decision_is_billed_and_a_stopped_run_commits_nothing() {
     // be removed without changing the result. The 2026-10-01 concatenation-consumed short-circuit
     // change seeds one-test conditional stores too, but its proof attempt is pre-filtered to joins
     // that hold a live stack Phi, and `relayed`'s join merges locals only: it bills nothing here.
-    const RELAYED_IR_ITEMS: u64 = 464;
-    const IR_ITEMS_BEFORE_THE_PLAN: u64 = 374;
+    // Both counts carry the field-copy proof's own scan of the body
+    // (`recover-chained-field-assignment`), which runs before the plan and charges the same
+    // `IrItems` dimension: it adds 15 items to each, so the cutoff still lands on BCI 1.
+    const RELAYED_IR_ITEMS: u64 = 479;
+    const IR_ITEMS_BEFORE_THE_PLAN: u64 = 389;
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     let ample = recover(&engine, &fixture, b"relayed", b"(Z)Z");

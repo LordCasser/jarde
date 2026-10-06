@@ -1,0 +1,48 @@
+# Gating transcript (baseline binary = parent commit HEAD, /tmp/jarde-base-target/debug/jarde-cli)
+
+## CH.chain (single-class) — the render's own diagnostics
+    static void chain() {
+        // jarde: not recovered: the recovery run for `chain()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method chain()V
+        // @declaration a static method of `CH`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 2 0 1 5 6 9 12
+        // the copy at BCI 1 has no proved local assignment
+        // @bytecode 5
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6
+        // the copy at BCI 5 has no proved local assignment
+        // @bytecode 9
+        // the copy at BCI 5 has no proved local assignment
+        jarde_refused_body();
+    }
+
+## SC.add (plain-jar) — the rule refusals (json, rule_details)
+jre_concat_interleaved_effect :: the concatenation at BCI 0 was not presented: the instruction at BCI 8 is an Other between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 8 would run in a different order or a different number of times
+jre_concat_chains :: 1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused
+jre_new_shape :: the construction at BCI 0 was not presented: the instance the allocation at BCI 0 builds is read only by instructions this build quotes (BCIs 8), so the construction has no place in the body
+jre_new_sites :: 1 construction candidate(s) read under new@1: 0 presented as `new`, 1 refused
+CONCAT presented= False refusal= jre_concat_interleaved_effect
+NEW presented= False refusal= jre_new_shape
+
+## BF.enable (plain-jar) — the render's own diagnostics
+    void enable(int arg1) {
+        // jarde: not recovered: the recovery run for `enable(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method enable(I)V
+        // @declaration an instance method of `BF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 9 8 2 0 1 5 6 7 12
+        // the copy at BCI 1 has no proved local assignment
+        jarde_refused_body();
+    }
+
+## BF.enable — the update rule's own answer (json, rule_details)
+jre_recovery_produced :: 1 region(s), 0 statement(s), 2 segment(s), 450 byte(s) written from 1 canonical block(s)
+jre_field_not_emitted :: the field access at BCI 2 passed field identity proof, but no matching Java field operation was emitted by the final body
+jre_field_not_emitted :: the field access at BCI 9 passed field identity proof, but no matching Java field operation was emitted by the final body
+jre_field_accesses :: 2 field instruction(s) read under field@1: 0 presented, 2 refused
+jre_declaration :: the artifact's envelope states the member's declaration under declaration@1: an instance method
