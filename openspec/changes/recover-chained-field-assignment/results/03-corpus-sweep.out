@@ -1,0 +1,82 @@
+SELF-TEST OK: CF chain 0 -> 1; this change's NEG byte-identical; dup-store DS byte-identical
+pass A loose candidate classes: 2792
+MOVED (single-class): openspec/evidence/java-syntax-2026-10-05/chained-assign-sideeffect-patrol/fixture/CH.class
+    23d22
+    <         // jarde: not recovered: the recovery run for `chain()V` produced no statement (explanation only); the artifact's own comment lines are below
+    27,37c26,29
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 12
+    <         // the copy at BCI 1 has no proved local assignment
+    <         // @bytecode 5
+MOVED (single-class): tests/fixtures/recover-chained-field-assignment/v8/CF.class
+    29d28
+    <         // jarde: not recovered: the recovery run for `chain()V` produced no statement (explanation only); the artifact's own comment lines are below
+    33,43c32,35
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 12
+    <         // the copy at BCI 1 has no proved local assignment
+    <         // @bytecode 5
+MOVED (single-class): tests/fixtures/recover-chained-field-assignment/v8-javac8/CF.class
+    29d28
+    <         // jarde: not recovered: the recovery run for `chain()V` produced no statement (explanation only); the artifact's own comment lines are below
+    33,43c32,35
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 12
+    <         // the copy at BCI 1 has no proved local assignment
+    <         // @bytecode 5
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+pass A: moved=3 unrendered=1
+archive candidate classes: 738
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/field-string-compound-patrol/fixture/sc.jar!SC.class
+    33d32
+    <         // jarde: not recovered: the recovery run for `add(Ljava/lang/String;)LSC;` produced no statement (explanation only); the artifact's own comment lines are below
+    37,58c36,37
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 0 3 7 8 9 12 15 17 20 21 24 26 29 32 35 36
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/boolean-loop-earlyret-patrol/fixture/bi.jar!BI.class
+    16d15
+    <         // jarde: not recovered: the recovery run for `andEq(Z)V` produced no statement (explanation only); the artifact's own comment lines are below
+    20,24c19,20
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 7 6 2 0 1 5 10
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/assign-chain-soundness-patrol/fixture/ca2.jar!CA2.class
+    21d20
+    <         // jarde: not recovered: the recovery run for `chained()I` produced no statement (explanation only); the artifact's own comment lines are below
+    25,34c24,27
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 12 15 18 19 22 23
+    <         // the copy at BCI 1 has no proved local assignment
+    <         // @bytecode 5
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/field-compound-soundness-patrol/fixture/bf.jar!BF.class
+    16d15
+    <         // jarde: not recovered: the recovery run for `enable(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+    20,24c19,20
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 9 8 2 0 1 5 6 7 12
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/field-compound-soundness-patrol/fixture/bg.jar!BG.class
+    33d32
+    <         // jarde: not recovered: the recovery run for `ienable2(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+    37,40c36,37
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 9 8 2 0 1 5 6 7 12 13 16
+    <         // the copy at BCI 1 has no proved local assignment
+    ---
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+pass C: moved=5 unrendered=1
+moved classes: single-class=3 jar=5 total=8
+unrendered candidates: A=1 C=1
+SWEEP3-EXIT=0

@@ -1,0 +1,82 @@
+// jarde: presentation of `CH` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CH extends java.lang.Object {
+    static int a;
+
+    static int b;
+
+    static int c;
+
+    static int[] arr;
+
+    static int idx;
+
+    public CH() {
+        // @method <init>()V
+        // @declaration a constructor of `CH`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static void chain() {
+        // jarde: not recovered: the recovery run for `chain()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method chain()V
+        // @declaration a static method of `CH`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 2 0 1 5 6 9 12
+        // the copy at BCI 1 has no proved local assignment
+        // @bytecode 5
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6
+        // the copy at BCI 5 has no proved local assignment
+        // @bytecode 9
+        // the copy at BCI 5 has no proved local assignment
+        jarde_refused_body();
+    }
+
+    static int chainLocal() {
+        // @method chainLocal()I
+        // @declaration a static method of `CH`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 7;
+        int local0 = local1;
+        return local0 + local1;
+    }
+
+    static void sideIdx() {
+        // @method sideIdx()V
+        // @declaration a static method of `CH`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CH.arr[CH.idx++] = 10;
+        CH.arr[CH.idx++] = 20;
+        return;
+    }
+
+    static int sideRead() {
+        // @method sideRead()I
+        // @declaration a static method of `CH`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return CH.arr[CH.idx--];
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `CH`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        chain();
+        sideIdx();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(CH.a).append("/").append(CH.b).append("/").append(CH.c).append("/").append(chainLocal()).append("/").append(CH.arr[0]).append("/").append(CH.arr[1]).append("/").append(CH.idx).append("/").append(sideRead()).append("/").append(CH.idx).toString());
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `CH`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CH.arr = new int[3];
+        CH.idx = 0;
+    }
+}

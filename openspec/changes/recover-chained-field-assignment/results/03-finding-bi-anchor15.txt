@@ -1,0 +1,114 @@
+# The BI delta: recovery of three members + the newly reachable critical anchor 15
+
+Corpus sweep, jar pass: `openspec/evidence/java-syntax-2026-10-05/boolean-loop-earlyret-patrol/fixture/bi.jar!BI.class`.
+This file is the frozen record the parent's ruling asked for: the class's own before/after texts, the
+`ok &= x > 0` reproduction probe, and the guard analysis that decides whether the surviving text is a
+hole in the soundness guard or outside its pinned scope.
+
+## 1. The class's stripped text, baseline vs patched
+
+```text
+baseline (parent commit HEAD):  does not compile — andEq/orEq/andUse carry `jarde_refused_body();`
+patched  (this change):         COMPILES
+```
+
+The three members this change recovers are exactly the ones the copy family refused
+(`the copy at BCI 1 has no proved local assignment` at each of them, the receiver copy of a boolean
+field's read and write):
+
+```text
+void andEq(boolean arg1)    -> this.ok = this.ok & arg1;
+void orEq(boolean arg1)     -> this.ok = this.ok | arg1;
+boolean andUse(boolean arg1)-> this.ok = this.ok & arg1;  return this.ok;
+```
+
+## 2. The answer the class gives, and where it differs
+
+```text
+original class file:  false/false/false/false
+patched render:       false/false/false/true
+```
+
+The fourth field is `BI.earlyRet(new int[]{1, -2, 3})`. **The method that differs is byte-identical
+before and after this change** (`diff` of the extracted `earlyRet` body: no differences), and its
+text is the patrol's own recorded critical anchor 15
+(`openspec/evidence/java-syntax-2026-10-05/boolean-loop-earlyret-patrol/README.md`: “循环体内复合与条件**全部被引注吞掉**…
+隔离编译 exit 0、渲染 `true` vs 原 `false`（布尔复合静默丢失）”, 双二进制一致（旧/新同拒）):
+
+```java
+boolean earlyRet(int[] arg1) {
+    int[] local2;
+    local2 = arg1;
+    for (int local5 : local2) {
+        // (the quoted region: the `ok &= x > 0` compound and its conditional materialization)
+        if (!this.ok) {
+            return false;
+        }
+    }
+    return true;
+}
+```
+
+Stripped of its comment lines the `ok &= x > 0` effect is gone and the survivors compile — which is
+what answers `true` where the class answers `false`.
+
+## 3. The reproduction probe (frozen)
+
+`results/probe/BE.java` is the minimal source of the same shape, compiled on both legs
+(`javac --release 8 -g` and real javac 8) with the same bytecode (`aload_0; dup@21; getfield@22;
+iload 5; ifle 34; iconst_1; goto 35; iconst_0@34; iand@35; putfield@36`), answering `false`:
+
+```text
+6a151e10b74f018641117b70e835a045ccfcd66709696d1e670a273109ef16d7  v8/BE.class
+1017fe2c11aea7d435a73850edb2d3de0fe1238ac14a884af3d1bf785304dbe7  v8-javac8/BE.class
+a4354eb209db224cf933f8ab6086ec2462961c2277ea2c850bad2f1cff4ba57a  BE.java
+```
+
+Its shape is the one this change's receiver-copy proof refuses, and for one stated reason: the
+`&=`'s right-hand value is the `iand` at BCI 35, which stands in the **join** of the branch at
+BCI 27/34 — so the value is materialized across a branch, its definition is not an instruction of
+the copy's own block, and `receiver_copy_at`'s `definition_in_block` requirement is not met. The
+receiver copy itself is the shape this change proves (`dup@21`'s copies are the read's and the
+write's receivers of one member); the *value* is what the conditional-value machinery
+(`recover-inline-conditional-concat-operands`' `prove_conditional_value`) would have to license.
+
+## 4. The guard analysis (parent's condition 3)
+
+The value-level soundness guard (`ff3cf21b`, `crates/jarde-java/src/build.rs`) fires when a
+**value-level refusal is one of the body's own top-level statements** and the surviving text would
+compile:
+
+```rust
+let refused_value = builder.stmts.iter().position(|stmt| {
+    matches!(&stmt.kind, StmtKind::Fallback { reason, .. } if value_level_refusal(reason))
+});
+if !class_initializer && !builder.stmts.is_empty() && refused_value.is_some()
+    && (builder.return_type.is_none() || !completes_normally(&builder.stmts))
+```
+
+Two facts decide this shape, and both were measured:
+
+* **the refusal is not one of the body's own statements**: it is quoted *inside* the surviving `for`
+  loop, and the guard's own documentation excludes that position — “a refusal quoted *inside* a
+  surviving loop, `if` or `try` is the enclosing structure's own partition, which still presents with
+  the gap marked where the refused statement was; neither is this guard's business, so the refusal is
+  read off the statements of this body itself”. `refused_value` is `None` for `earlyRet`;
+* **it is not a boolean-method coverage gap**: the guard's return clause is
+  `(return_type.is_none() || !completes_normally(stmts))`, and this body ends in `return true;`, so it
+  does **not** complete normally — the clause holds. The same fixture proves it: on the baseline,
+  `andUse` (a *top-level* value-level refusal in a `boolean` method) renders `jarde_refused_body();`,
+  i.e. the guard fired there. The clause is not what fails for `earlyRet`; its position is.
+
+**Answer: outside the guard's pinned scope by design** (the nested position), not a hole the guard
+should have caught. The guard is left untouched, as the ruling requires — a guard whose scope covers
+refusals nested inside surviving structures is the guard owner's decision, not this change's.
+
+## 5. Classification, per the ruling
+
+`BI` is **not** a clean recovery. It is recorded as *“recovery of three members + a newly reachable
+pre-existing critical anchor 15 face”*: this change makes the class's stripped text compile for the
+first time, which turns a compilable-wrong face that was previously hidden behind a class-level
+compile failure into a reachable one. The face itself, its method's text and its cause are unchanged
+by this change (byte-identical), and the follow-up (guard-scope extension or the conditional-RHS
+compound assignment) is the soundness slice's own work — `compilable-wrong` first, ahead of every
+recoverability item.

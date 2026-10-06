@@ -1,0 +1,62 @@
+// jarde: presentation of `BG` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BG extends java.lang.Object {
+    private static int sflags;
+
+    int flags;
+
+    public BG() {
+        // @method <init>()V
+        // @declaration a constructor of `BG`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.flags = 0;
+        return;
+    }
+
+    static void senable(int arg0) {
+        // @method senable(I)V
+        // @declaration a static method of `BG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        BG.sflags = BG.sflags | 1 << arg0;
+        return;
+    }
+
+    static boolean sIs(int arg0) {
+        // @method sIs(I)Z
+        // @declaration a static method of `BG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (BG.sflags & 1 << arg0) != 0;
+    }
+
+    int ienable2(int arg1) {
+        // jarde: not recovered: the recovery run for `ienable2(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method ienable2(I)I
+        // @declaration an instance method of `BG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 9 8 2 0 1 5 6 7 12 13 16
+        // the copy at BCI 1 has no proved local assignment
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `BG`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        senable(0);
+        senable(3);
+        java.lang.System.out.println("" + sIs(0) + "/" + sIs(1));
+        BG local1 = new BG();
+        local1.ienable2(2);
+        java.lang.System.out.println(local1.ienable2(4));
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `BG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        BG.sflags = 0;
+    }
+}

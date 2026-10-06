@@ -1,0 +1,23 @@
+# The instance chain's own probe (recorded boundary)
+
+Source: this.a = this.b = this.c = 5 (the probe class CP, /tmp/probe2/CP.class at the time of measurement; javac 8 leg)
+javac emits: aload_0; aload_0; aload_0; iconst_5; dup_x1; putfield c; dup_x1; putfield b; putfield a
+The chain proof reads `dup` runs only, and this shape's copies are the stores' receivers as well as
+their values: it keeps its refusal (the same copy pair as the baseline).
+
+    void inst() {
+        // @method inst()V
+        // @declaration an instance method of `CP`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+        return;
+    }

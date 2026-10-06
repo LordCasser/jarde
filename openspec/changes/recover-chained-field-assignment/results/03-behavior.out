@@ -1,0 +1,13 @@
+CH: 5/5/5/14/10/20/2/0/1|  (both legs, -Xverify:all, identical)
+SC: a-0-1-2/f[x][y]/pq/7|nested-run|  (both legs, -Xverify:all, identical)
+BF: true/false/true/false/3|false/2|  (both legs, -Xverify:all, identical)
+BG: true/false|20|  (both legs, -Xverify:all, identical)
+BI: javac --release 8 leg ANSWERS DIFFERENTLY
+1c1
+< false/false/false/false
+---
+> false/false/false/true
+CA2: quoted whole; the stripped text does not compile (the safe form)
+CF-v8: 9/9/9/14/9/f[x][y]|1/s[z]/0|  (both legs, -Xverify:all, identical)
+CF-javac8: 9/9/9/14/9/f[x][y]|1/s[z]/0|  (both legs, -Xverify:all, identical)
+BEHAVIOR-EXIT=0
