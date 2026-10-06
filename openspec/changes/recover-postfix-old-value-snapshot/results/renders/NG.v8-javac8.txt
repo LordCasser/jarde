@@ -1,0 +1,70 @@
+// jarde: presentation of `NG` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NG extends java.lang.Object {
+    static int[] xs = new int[]{1, 0, 3};
+
+    int f;
+
+    public NG() {
+        // @method <init>()V
+        // @declaration a constructor of `NG`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.f = 5;
+        return;
+    }
+
+    static int postSelf() {
+        // jarde: not recovered: the recovery run for `postSelf()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method postSelf()I
+        // @declaration a static method of `NG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6 2 0 1 3 7 8
+        // the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6: the slot's name would read the value the body wrote in between
+    }
+
+    static int postSelfDec() {
+        // jarde: not recovered: the recovery run for `postSelfDec()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method postSelfDec()I
+        // @declaration a static method of `NG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6 2 0 1 3 7 8
+        // the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6: the slot's name would read the value the body wrote in between
+    }
+
+    int fieldSelf() {
+        // jarde: not recovered: the recovery run for `fieldSelf()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method fieldSelf()I
+        // @declaration an instance method of `NG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1 2 3 6 7 8 9 12 15 16 19
+        // the old-value update ending at BCI 19 has no complete same-target, single-consumer, same-handler and evaluation-order proof
+    }
+
+    int compoundSelf() {
+        // jarde: not recovered: the recovery run for `compoundSelf()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method compoundSelf()I
+        // @declaration an instance method of `NG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 10 2 3 0 1 4 7 8 9 11 12
+        // the value at BCI 10 is the value local 1 held at BCI 2, and the slot does not hold it at BCI 10: the slot's name would read the value the body wrote in between
+    }
+
+    static int condShape() {
+        // jarde: not recovered: the recovery run for `condShape()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method condShape()I
+        // @declaration a static method of `NG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 4 15 23 29
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NG`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NG local1 = new NG();
+        java.lang.System.out.println("" + postSelf() + "/" + postSelfDec() + "/" + local1.fieldSelf() + "/" + local1.compoundSelf() + "/" + condShape());
+        return;
+    }
+}

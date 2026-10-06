@@ -7872,6 +7872,141 @@
       "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS.class"
     },
     {
+      "blake3": "07983f2e805232bbe013dd86c7ed8a7eaa9f12c4c3ccd513b2e17b47d1dd079b",
+      "bytes": 351,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/AD.java"
+    },
+    {
+      "blake3": "6f3e226455cb095532accf24f8f1e37364c00b70876f7a3fe25b44d2fe65e9bb",
+      "bytes": 793,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/CM.java"
+    },
+    {
+      "blake3": "7cf2b1e724c4716977f488bce54d57f77d002e2b9284e9d72de12a0a9ff597ec",
+      "bytes": 571,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/CM2.java"
+    },
+    {
+      "blake3": "10f9dc6508397bdc2e8653423b27cdd11289fdfb3aa141b67162d6a0ecc60fac",
+      "bytes": 1118,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/GA.java"
+    },
+    {
+      "blake3": "1b2656bff2d3c3b081103d9cc76baaea2f590ee3ac17f89caf8623060d32de8c",
+      "bytes": 825,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/IX.java"
+    },
+    {
+      "blake3": "619696baf4631c0e452478353e8eadde7ff78677e450c697208cfe90402a80f6",
+      "bytes": 867,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/NG.java"
+    },
+    {
+      "blake3": "ffeab8180d84a15483d3afc2329c0101c09573855f24491192cbc39f1bada6a7",
+      "bytes": 333,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/PT.java"
+    },
+    {
+      "blake3": "8cd30576ccefd46df7e307ed7ba64b74cfaf514c1260794598180e5a367092e6",
+      "bytes": 387,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/SR.java"
+    },
+    {
+      "blake3": "b603d00ad8b483c7f462bb0254bdb84c9e1fb6150b92672ec18bf7be974d55a9",
+      "bytes": 2044,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/sha256.txt"
+    },
+    {
+      "blake3": "1db0101d78ab9026c2f5c6c47bcaac698659b2f917240f76ad01e13f40ccab50",
+      "bytes": 952,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/AD.class"
+    },
+    {
+      "blake3": "dc0e03b35727cd61bae9a2f83b27de6f588a6f4e759d97feab09a453c4c425a6",
+      "bytes": 1121,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/CM.class"
+    },
+    {
+      "blake3": "4e320963bdbf364cf7982a4e1da541559b165504f22993333ebd67240416f1e3",
+      "bytes": 921,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/CM2.class"
+    },
+    {
+      "blake3": "84cf2b7d1055da4e9ba269df662be9ac63d0a80db0476fd1c76db9bc8ec7862d",
+      "bytes": 559,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/GA$Cfg.class"
+    },
+    {
+      "blake3": "e16dc9a691ea7dadc1eb591ddc3fab5e817755f4c4b4a2dfecdc929ddc3200d0",
+      "bytes": 1723,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/GA.class"
+    },
+    {
+      "blake3": "d9680acc3890c531dbc647c11541e89566a1e74857dd0721d33ba5047a2f7628",
+      "bytes": 1126,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/IX.class"
+    },
+    {
+      "blake3": "2975449993b9c0d85d4a56e4e2e308ff4f1c89c47c064b92bc1aa84914ba9d58",
+      "bytes": 1226,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/NG.class"
+    },
+    {
+      "blake3": "781efa0e3f6b085cc7758ad16a481fca47dbdeb8ba28ea2768563e531abb9454",
+      "bytes": 943,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/PT.class"
+    },
+    {
+      "blake3": "62cf239941283c6864918e69379cbe537599f9232ec8d51c5c0a90e57164eed5",
+      "bytes": 804,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/SR.class"
+    },
+    {
+      "blake3": "beeef14ada98731de6e8d36db02bba03583aedbdcfea637ac867d0d6ebc3d01b",
+      "bytes": 952,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/AD.class"
+    },
+    {
+      "blake3": "199c88e1a41423b2e87e57782dc44272bdf0f77fb9f8f013b8ebe742ae4224e7",
+      "bytes": 1121,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/CM.class"
+    },
+    {
+      "blake3": "f78a8e432b1b04e7ef647a92f3d2c558d3710fc1cb94b4984c3ab5f22ec2c88d",
+      "bytes": 921,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/CM2.class"
+    },
+    {
+      "blake3": "98e3ccd9f156276a30947214c01c9d31520b2853a0d3727e21c7a9cd564462d6",
+      "bytes": 559,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/GA$Cfg.class"
+    },
+    {
+      "blake3": "1d83fb987422a49c18e8d4638c7c70090b7ee2a2de525d0d8125937c00eb14e1",
+      "bytes": 1717,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/GA.class"
+    },
+    {
+      "blake3": "95ef5aa2101c4d91d2e336bf11cceaccd34968b2db54966151aeebd1c3360dfb",
+      "bytes": 1126,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/IX.class"
+    },
+    {
+      "blake3": "12df27a3b2dfc7fbddb7460df11abbfd7ea7853131e47d178e9d077b5c4117bf",
+      "bytes": 1230,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/NG.class"
+    },
+    {
+      "blake3": "6a27b439f43b09f8cf0e44449a283b40d62f5ed325f5d53923560ac553345da0",
+      "bytes": 940,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/PT.class"
+    },
+    {
+      "blake3": "5bef1eae209b663b0da8a2744bb7d040470216fe0cece49fe757a7c0ff11f30e",
+      "bytes": 804,
+      "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/SR.class"
+    },
+    {
       "blake3": "43f6aded70421d741fd808a46fea086217231120c616a754c74dc650a9f16fe0",
       "bytes": 898,
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/BRN.java"

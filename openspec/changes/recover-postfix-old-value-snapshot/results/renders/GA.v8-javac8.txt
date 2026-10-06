@@ -1,0 +1,66 @@
+// jarde: presentation of `GA` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T:Ljava/lang/Object;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class GA<T> extends java.lang.Object {
+    private java.lang.Object[] elems;
+
+    private int size;
+
+    GA(int arg1) {
+        // @method <init>(I)V
+        // @declaration a constructor of `GA`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.elems = new java.lang.Object[arg1];
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `typedArray(I)[Ljava/lang/Object;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    java.lang.Object[] typedArray(int arg1) {
+        // @method typedArray(I)[Ljava/lang/Object;
+        // @declaration an instance method of `GA`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.Object[]) new java.lang.Object[arg1];
+    }
+
+    void add(T arg1) {
+        // jarde: generic Signature `(TT;)V` projected after descriptor erasure and same-run AST/Code/SSA straight-line void body proof; same-class call binding proved
+        // @method add(Ljava/lang/Object;)V
+        // @declaration an instance method of `GA`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.elems[this.size++] = arg1;
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `get(I)Ljava/lang/Object;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    java.lang.Object get(int arg1) {
+        // @method get(I)Ljava/lang/Object;
+        // @declaration an instance method of `GA`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.elems[arg1];
+    }
+
+    // jarde: generic Signature projection refused for `fill(Ljava/lang/Object;I)[Ljava/lang/Object;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    static java.lang.Object[] fill(java.lang.Object arg0, int arg1) {
+        // @method fill(Ljava/lang/Object;I)[Ljava/lang/Object;
+        // @declaration a static method of `GA`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.Object[] local2;
+        int local3;
+        local2 = (java.lang.Object[]) new java.lang.Object[arg1];
+        for (local3 = 0; local3 < arg1; local3 = local3 + 1) {
+            local2[local3] = arg0;
+        }
+        return local2;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `GA`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        GA local1 = new GA(4);
+        local1.add((java.lang.Object) "x");
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append((java.lang.String) local1.get(0)).append("/").append(((java.lang.String[]) local1.typedArray(2)).length).append("/").append((java.lang.String) java.util.Arrays.toString((java.lang.Object[]) fill((java.lang.Object) java.lang.Integer.valueOf(7), 3))).append("/").append(GA$Cfg.LIMIT).append("/").append(GA$Cfg.NAMES.size()).toString());
+        return;
+    }
+}

@@ -11962,7 +11962,13 @@ mod tests {
             // and `RG` families plus this change's `SG` anchor and `P1` non-generic control, four
             // classes on both compiler legs: sixteen classes, forty bodies, four branch targets —
             // `RG.pick`'s `iflt`/`goto` pair per leg) moved it again.
-            (765, 3179, 286, 2009, 8),
+            // The 2026-10-06 recover-postfix-old-value-snapshot fixtures (the postfix old-value
+            // consumer positions: the patrols' own `CM`/`CM2`/`AD`/`GA` reused byte-identically,
+            // plus this change's `PT` static-ternary arm, `SR` store right side, `IX` index
+            // positions and `NG` negatives, eight classes on both compiler legs: eighteen classes,
+            // ninety-six bodies, fourteen branch targets — `NG.condShape`'s loop `ifne`/`goto`
+            // pair and `NG.compoundSelf`'s comparison pair per leg) moved it again.
+            (783, 3275, 286, 2023, 8),
             "fixture population changed: re-measure these counts"
         );
     }
