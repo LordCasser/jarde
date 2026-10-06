@@ -1,0 +1,27 @@
+// jarde: presentation of `CMP` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CMP extends java.lang.Object {
+    public CMP() {
+        // @method <init>()V
+        // @declaration a constructor of `CMP`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `CMP`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 16 0 3 4 7 8 11 12 15 19 22 23 26 28 31 32 33 36 37 40 41 44 46 49 50 53 56 59 62
+        // the saved producer at BCI 16 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 19 22 23
+        // the saved producer at BCI 23 has no bounded final expression consumer
+        // @bytecode 19 22 23 28
+        // the saved producer at BCI 28 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 59 16 56 53 46 41 28 23 19 22 50 49
+        // the value at BCI 59 was produced by a saved declaration this run could not commit
+        jarde_refused_body();
+    }
+}

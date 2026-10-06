@@ -1,0 +1,97 @@
+// jarde: presentation of `NI` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NI extends java.lang.Object {
+    int tag;
+
+    public NI() {
+        // @method <init>()V
+        // @declaration a constructor of `NI`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.tag = 5;
+        return;
+    }
+
+    Inner make(int arg1) {
+        // @method make(I)LNI$Inner;
+        // @declaration an instance method of `NI`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return new Inner(arg1);
+    }
+
+    static Inner externalMake(NI arg0, int arg1) {
+        // @method externalMake(LNI;I)LNI$Inner;
+        // @declaration a static method of `NI`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.new Inner(arg1);
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NI`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 25 28 31 34 36 39 40 41 44 47 50 52 55 56 57 60 63 66 69 71 74 75 76 79 82 83 86 87 90 91 94 97 100
+        // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 11 14 15
+        // the saved producer at BCI 15 has no bounded final expression consumer
+        // @bytecode 11 14 15 20
+        // the saved producer at BCI 20 has no bounded final expression consumer
+        // @bytecode 23 25
+        // the saved producer at BCI 25 has no bounded final expression consumer
+        // @bytecode 23 25 28
+        // the saved producer at BCI 28 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 31
+        // the saved producer at BCI 31 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 31 36
+        // the saved producer at BCI 36 has no bounded final expression consumer
+        // @bytecode 39 41
+        // the saved producer at BCI 41 has no bounded final expression consumer
+        // @bytecode 39 41 44
+        // the saved producer at BCI 44 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 31 36 39 41 44 47
+        // the saved producer at BCI 47 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 31 36 39 41 44 47 52
+        // the saved producer at BCI 52 has no bounded final expression consumer
+        // @bytecode 55 57
+        // the saved producer at BCI 57 has no bounded final expression consumer
+        // @bytecode 55 57 60
+        // the saved producer at BCI 60 has no bounded final expression consumer
+        // @bytecode 55 57 60 63
+        // the saved producer at BCI 63 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 31 36 39 41 44 47 52 55 57 60 63 66
+        // the saved producer at BCI 66 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 31 36 39 41 44 47 52 55 57 60 63 66 71
+        // the saved producer at BCI 71 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 97 8 94 91 71 66 52 47 36 31 20 15 11 14 28 25 44 41 63 60 57 23 39 55
+        // the value at BCI 97 was produced by a saved declaration this run could not commit
+        jarde_refused_body();
+    }
+
+    class Inner extends java.lang.Object {
+        int v;
+
+        Inner(int arg2) {
+            // @method <init>(LNI;I)V
+            // @declaration a constructor of `NI$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            this.v = arg2;
+            return;
+        }
+
+        int outerTag() {
+            // @method outerTag()I
+            // @declaration an instance method of `NI$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return NI.this.tag * 2;
+        }
+
+        NI outerRef() {
+            // @method outerRef()LNI;
+            // @declaration an instance method of `NI$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return NI.this;
+        }
+    }
+}

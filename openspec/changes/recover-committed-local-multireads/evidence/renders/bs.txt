@@ -1,0 +1,122 @@
+// jarde: presentation of `BS` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BS extends java.lang.Object {
+    // jarde: field Signature projection refused for `memoLjava/util/Map;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static java.util.Map memo;
+
+    public BS() {
+        // @method <init>()V
+        // @declaration a constructor of `BS`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int bsearch(int[] arg0, int arg1) {
+        // @method bsearch([II)I
+        // @declaration a static method of `BS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local2;
+        int local3;
+        local2 = 0;
+        local3 = arg0.length - 1;
+        while (local2 <= local3) {
+            int local4 = local2 + local3 >>> 1;
+            int local5 = arg0[local4];
+            if (local5 < arg1) {
+                local2 = local4 + 1;
+            } else if (local5 > arg1) {
+                local3 = local4 - 1;
+    } else {
+                return local4;
+    }
+        }
+        return -(local2 + 1);
+    }
+
+    static int[] twoPtr(int[] arg0) {
+        // @method twoPtr([I)[I
+        // @declaration a static method of `BS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        int local2;
+        local1 = 0;
+        local2 = 0;
+        while (local2 < arg0.length) {
+            if (arg0[local2] != 0) {
+                local1 = local1 + 1;
+                // @bytecode 24 17 23
+                // the value at BCI 24 is the value local 1 held at BCI 17, and the slot does not hold it at BCI 24: the slot's name would read the value the body wrote in between
+            }
+            local2 = local2 + 1;
+        }
+        return java.util.Arrays.copyOf(arg0, local1);
+    }
+
+    static int fib(int arg0) {
+        // @method fib(I)I
+        // @declaration a static method of `BS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < 2) {
+            return arg0;
+        } else {
+            java.lang.Integer local1 = (java.lang.Integer) BS.memo.get((java.lang.Object) java.lang.Integer.valueOf(arg0));
+            if (local1 != null) {
+                return local1.intValue();
+            } else {
+                int local2 = fib(arg0 - 1) + fib(arg0 - 2);
+                BS.memo.put((java.lang.Object) java.lang.Integer.valueOf(arg0), (java.lang.Object) java.lang.Integer.valueOf(local2));
+                return local2;
+            }
+        }
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `BS`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 16
+        // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 18 16
+        // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 32 34 35 36 39 42 44 47 48 50 51 52 53 54 55 56 57 58 59 62 65 67 70 72 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 101 104 107 109 112 114 117 120 123 126
+        // the copy at BCI 18 has no proved local assignment
+        // @bytecode 22 16
+        // the instruction at BCI 22 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 25 16
+        // the copy at BCI 22 has no proved local assignment
+        // @bytecode 26 16
+        // the instruction at BCI 26 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 29 16
+        // the copy at BCI 26 has no proved local assignment
+        // @bytecode 30 16
+        // the instruction at BCI 30 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 34 16
+        // the copy at BCI 30 has no proved local assignment
+        // @bytecode 16 36 39 44
+        // the copy at BCI 30 has no proved local assignment
+        // @bytecode 48
+        // the array instruction at BCI 48 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 50 48
+        // the instruction at BCI 50 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 53 48
+        // the copy at BCI 50 has no proved local assignment
+        // @bytecode 54 48
+        // the instruction at BCI 54 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 57 48
+        // the copy at BCI 54 has no proved local assignment
+        // @bytecode 16 36 39 44 48 59 62 67
+        // the value at BCI 67 was produced by a saved declaration this run could not commit
+        // @bytecode 123 0 120 117 109 104 67 62 44 39 36 16 59 48 101 98 72 70 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 114
+        // the value at BCI 123 was produced by a saved declaration this run could not commit
+        jarde_refused_body();
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `BS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        BS.memo = new java.util.HashMap();
+    }
+}

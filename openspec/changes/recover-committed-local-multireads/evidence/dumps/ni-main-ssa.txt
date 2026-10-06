@@ -1,0 +1,48 @@
+DEBUG-SSA value=ValueId(0) def=Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) } writes=[] uses=[(None, 91), (None, 91)] replaced_by=None
+DEBUG-SSA value=ValueId(1) def=Phi { block: CanonicalBlockId { bci: 91, path: [] }, slot: Local(0) } writes=[] uses=[] replaced_by=Some(ValueId(0))
+DEBUG-SSA value=ValueId(2) def=Phi { block: CanonicalBlockId { bci: 91, path: [] }, slot: Local(1) } writes=[] uses=[] replaced_by=Some(ValueId(10))
+DEBUG-SSA value=ValueId(3) def=Phi { block: CanonicalBlockId { bci: 91, path: [] }, slot: Stack(0) } writes=[] uses=[] replaced_by=Some(ValueId(11))
+DEBUG-SSA value=ValueId(4) def=Phi { block: CanonicalBlockId { bci: 91, path: [] }, slot: Stack(1) } writes=[] uses=[] replaced_by=Some(ValueId(39))
+DEBUG-SSA value=ValueId(5) def=Phi { block: CanonicalBlockId { bci: 91, path: [] }, slot: Stack(2) } writes=[] uses=[(Some(91), 91)] replaced_by=None
+DEBUG-SSA value=ValueId(6) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 } writes=["Stack(0)"] uses=[(Some(3), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(7) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 3 } writes=["Stack(0)"] uses=[] replaced_by=None
+DEBUG-SSA value=ValueId(8) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 3 } writes=["Stack(1)"] uses=[(Some(4), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(9) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 4 } writes=["Stack(0)"] uses=[(Some(7), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(10) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 7 } writes=["Local(1)"] uses=[(Some(23), 0), (Some(39), 0), (Some(55), 0), (Some(74), 0), (Some(82), 0), (None, 91), (None, 91)] replaced_by=None
+DEBUG-SSA value=ValueId(11) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 8 } writes=["Stack(0)"] uses=[(None, 91), (None, 91), (Some(97), 91)] replaced_by=None
+DEBUG-SSA value=ValueId(12) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 11 } writes=["Stack(1)"] uses=[(Some(14), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(13) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 14 } writes=["Stack(1)"] uses=[] replaced_by=None
+DEBUG-SSA value=ValueId(14) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 14 } writes=["Stack(2)"] uses=[(Some(15), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(15) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 15 } writes=["Stack(1)"] uses=[(Some(20), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(16) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 18 } writes=["Stack(2)"] uses=[(Some(20), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(17) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 20 } writes=["Stack(1)"] uses=[(Some(31), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(18) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 23 } writes=["Stack(2)"] uses=[(Some(25), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(19) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 24 } writes=["Stack(3)"] uses=[(Some(25), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(20) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 25 } writes=["Stack(2)"] uses=[(Some(28), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(21) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 28 } writes=["Stack(2)"] uses=[(Some(31), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(22) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 31 } writes=["Stack(1)"] uses=[(Some(36), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(23) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 34 } writes=["Stack(2)"] uses=[(Some(36), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(24) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 36 } writes=["Stack(1)"] uses=[(Some(47), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(25) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 39 } writes=["Stack(2)"] uses=[(Some(41), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(26) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 40 } writes=["Stack(3)"] uses=[(Some(41), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(27) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 41 } writes=["Stack(2)"] uses=[(Some(44), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(28) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 44 } writes=["Stack(2)"] uses=[(Some(47), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(29) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 47 } writes=["Stack(1)"] uses=[(Some(52), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(30) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 50 } writes=["Stack(2)"] uses=[(Some(52), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(31) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 52 } writes=["Stack(1)"] uses=[(Some(66), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(32) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 55 } writes=["Stack(2)"] uses=[(Some(57), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(33) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 56 } writes=["Stack(3)"] uses=[(Some(57), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(34) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 57 } writes=["Stack(2)"] uses=[(Some(60), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(35) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 60 } writes=["Stack(2)"] uses=[(Some(63), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(36) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 63 } writes=["Stack(2)"] uses=[(Some(66), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(37) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 66 } writes=["Stack(1)"] uses=[(Some(71), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(38) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 69 } writes=["Stack(2)"] uses=[(Some(71), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(39) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 71 } writes=["Stack(1)"] uses=[(None, 91), (None, 91), (Some(91), 91)] replaced_by=None
+DEBUG-SSA value=ValueId(40) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 74 } writes=["Stack(2)"] uses=[(Some(76), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(41) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 75 } writes=["Stack(3)"] uses=[(Some(76), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(42) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 76 } writes=["Stack(2)"] uses=[(Some(79), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(43) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 79 } writes=["Stack(2)"] uses=[(Some(83), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(44) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 82 } writes=["Stack(3)"] uses=[(Some(83), 0)] replaced_by=None
+DEBUG-SSA value=ValueId(45) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 91 } writes=["Stack(1)"] uses=[(Some(94), 91)] replaced_by=None
+DEBUG-SSA value=ValueId(46) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 94 } writes=["Stack(1)"] uses=[(Some(97), 91)] replaced_by=None
+DEBUG-SSA value=ValueId(47) def=Instruction { block: CanonicalBlockId { bci: 86, path: [] }, bci: 86 } writes=["Stack(2)"] uses=[(None, 91)] replaced_by=None

@@ -1,0 +1,64 @@
+// jarde: presentation of `NMB` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NMB extends java.lang.Object {
+    int tag;
+
+    public NMB() {
+        // @method <init>()V
+        // @declaration a constructor of `NMB`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.tag = 5;
+        return;
+    }
+
+    int add(int arg1) {
+        // @method add(I)I
+        // @declaration an instance method of `NMB`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1 * 2;
+    }
+
+    NMB self() {
+        // @method self()LNMB;
+        // @declaration an instance method of `NMB`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NMB`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 25 28 31 33 36 37 38 41 44 46 49 50 53 56 59 61 64 65 68 69 72 73 76 77 80 83 86
+        // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 11 14 15
+        // the saved producer at BCI 15 has no bounded final expression consumer
+        // @bytecode 11 14 15 20
+        // the saved producer at BCI 20 has no bounded final expression consumer
+        // @bytecode 23 25
+        // the saved producer at BCI 25 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28
+        // the saved producer at BCI 28 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 33
+        // the saved producer at BCI 33 has no bounded final expression consumer
+        // @bytecode 36 38
+        // the saved producer at BCI 38 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 33 36 38 41
+        // the saved producer at BCI 41 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 33 36 38 41 46
+        // the saved producer at BCI 46 has no bounded final expression consumer
+        // @bytecode 49 50
+        // the saved producer at BCI 50 has no bounded final expression consumer
+        // @bytecode 49 50 53
+        // the saved producer at BCI 53 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 33 36 38 41 46 49 50 53 56
+        // the saved producer at BCI 56 has no bounded final expression consumer
+        // @bytecode 11 14 15 20 23 25 28 33 36 38 41 46 49 50 53 56 61
+        // the saved producer at BCI 61 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 83 8 80 77 61 56 46 41 33 28 20 15 11 14 25 38 53 50 23 36 49
+        // the value at BCI 83 was produced by a saved declaration this run could not commit
+        jarde_refused_body();
+    }
+}
