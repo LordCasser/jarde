@@ -11948,7 +11948,12 @@ mod tests {
             // `TypeUse`/`Mark` and the parent leg's `NB` family, `NestedExtends`, `BareBox`,
             // `NB$Twin`, `ArityExtends`, `MO`/`MO$Mid`/`Multiseg`, eighteen classes on both
             // compiler legs: thirty-six classes, seventy-two bodies) moved it again.
-            (735, 3061, 282, 1827, 8),
+            // The 2026-10-06 recover-proved-nonnull-bound-receivers fixtures (the Optional patrol's
+            // `OP` and this change's `BRN` with its three negatives, two classes on both compiler
+            // legs: four classes, twenty-two bodies, two handler records and six branch targets —
+            // `OP`'s `len` `ifeq` and its inlined `lambda$name$0` `ifne`/`goto` per leg)
+            // moved it again.
+            (739, 3083, 284, 1833, 8),
             "fixture population changed: re-measure these counts"
         );
     }

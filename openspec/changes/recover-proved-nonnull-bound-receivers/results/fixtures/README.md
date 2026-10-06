@@ -30,3 +30,10 @@ javac --release 8 -Xlint:-options -d v8 OP.java BRN.java                        
 禁止新增"未被 CI 引用"的冻结行为 fixture。待 root 重新设计落点后，这两份源与双腿 class 可直接提升为
 `tests/fixtures/recover-proved-nonnull-bound-receivers/` 并配 `tests/recover_proved_nonnull_bound_receivers.rs`
 （模式见 `tests/recover_temporal_argument_widening.rs`：`include_bytes!` + `Engine` + `ClassSourceRequest`）。
+
+## 2026-10-06 更新：v2 重设计已落地，本目录转为实验记录
+
+两份源与双腿 class 已**逐字节提升**为 CI 引用的冻结 fixture：
+`tests/fixtures/recover-proved-nonnull-bound-receivers/`（`cmp` 实测逐字节相同；sha256 同下表，
+`tests/fixtures/corpus-fingerprint.json` 与 reader 普查已随该提升重测）。本目录的副本保留为
+门控实验（E 矩阵、落点实验）的原始记录，不再新增引用。
