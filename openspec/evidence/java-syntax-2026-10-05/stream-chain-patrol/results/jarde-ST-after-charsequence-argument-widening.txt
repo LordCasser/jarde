@@ -1,0 +1,74 @@
+# `ST` from stream-chain-patrol, re-rendered after the platform implementer tables (changes `recover-charsequence-argument-widening` / `recover-comparable-argument-widening` / `recover-enum-argument-widening`).
+# Entry: class-source over the patrol's own container (`--policy plain-jar`, snapshot scope), evidence = source map; the fixture bytes are the patrol's own.
+# What moved: the fifth widening site — a `java.util.stream` method — recovers: `joined` writes `java.util.stream.Collectors.joining((java.lang.CharSequence) ",")`; the patrol's other four sites were already healthy and are unchanged.
+reports.argument_widening.refusals = 0
+
+// jarde: presentation of `ST` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ST extends java.lang.Object {
+    // jarde: omitted physical lambda helper "lambda$filtered$0" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$total$1" after proving its single class-wide use
+    public ST() {
+        // @method <init>()V
+        // @declaration a constructor of `ST`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `names()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.List names() {
+        // @method names()Ljava/util/List;
+        // @declaration a static method of `ST`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"alice", "Bob", "carol", "dave"});
+    }
+
+    // jarde: generic Signature projection refused for `uppers()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.List uppers() {
+        // @method uppers()Ljava/util/List;
+        // @declaration a static method of `ST`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.util.List) names().stream().map((java.util.function.Function) ((java.lang.Object p0) -> ((java.lang.String) p0).toUpperCase())).collect((java.util.stream.Collector) java.util.stream.Collectors.toList());
+    }
+
+    static java.util.List filtered() {
+        // jarde: generic Signature projection refused for `filtered()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+        // jarde: lambda companion body inlined at invokedynamic@8
+        // @method filtered()Ljava/util/List;
+        // @declaration a static method of `ST`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.util.List) names().stream().filter((java.util.function.Predicate) ((java.lang.Object arg0) -> ((java.lang.String) arg0).length() > 3)).sorted().collect((java.util.stream.Collector) java.util.stream.Collectors.toList());
+    }
+
+    static int total() {
+        // jarde: lambda companion body inlined at invokedynamic@22
+        // @method total()I
+        // @declaration a static method of `ST`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Arrays.stream(new int[]{1, 2, 3, 4}).filter((java.util.function.IntPredicate) ((int arg0) -> arg0 % 2 == 0)).sum();
+    }
+
+    // jarde: generic Signature projection refused for `grouped()Ljava/util/Map;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.Map grouped() {
+        // @method grouped()Ljava/util/Map;
+        // @declaration a static method of `ST`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.util.Map) names().stream().collect((java.util.stream.Collector) java.util.stream.Collectors.groupingBy((java.util.function.Function) ((java.lang.Object p0) -> ((java.lang.String) p0).length())));
+    }
+
+    static java.lang.String joined() {
+        // @method joined()Ljava/lang/String;
+        // @declaration a static method of `ST`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) names().stream().collect((java.util.stream.Collector) java.util.stream.Collectors.joining((java.lang.CharSequence) ","));
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `ST`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("" + uppers() + "/" + filtered() + "/" + total() + "/" + grouped() + "/" + joined());
+        return;
+    }
+}

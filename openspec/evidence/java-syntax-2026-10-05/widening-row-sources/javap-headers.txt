@@ -1,0 +1,25 @@
+# javap (Corretto 1.8.0_432) declaration lines; rt.jar sha256 b27515a608ee447566b688e2bbb2257b1f0d8eceb96c307b87eb28d90a6630f4
+java.lang.CharSequence           public interface java.lang.CharSequence {
+java.lang.String                 public final class java.lang.String implements java.io.Serializable, java.lang.Comparable<java.lang.String>, java.lang.CharSequence {
+java.lang.StringBuffer           public final class java.lang.StringBuffer extends java.lang.AbstractStringBuilder implements java.io.Serializable,java.lang.CharSequence {
+java.lang.StringBuilder          public final class java.lang.StringBuilder extends java.lang.AbstractStringBuilder implements java.io.Serializable,java.lang.CharSequence {
+java.nio.CharBuffer              public abstract class java.nio.CharBuffer extends java.nio.Buffer implements java.lang.Comparable<java.nio.CharBuffer>, java.lang.Appendable, java.lang.CharSequence, java.lang.Readable {
+javax.swing.text.Segment         public class javax.swing.text.Segment implements java.lang.Cloneable,java.text.CharacterIterator,java.lang.CharSequence {
+java.lang.Comparable             public interface java.lang.Comparable<T> {
+java.lang.Byte                   public final class java.lang.Byte extends java.lang.Number implements java.lang.Comparable<java.lang.Byte> {
+java.lang.Short                  public final class java.lang.Short extends java.lang.Number implements java.lang.Comparable<java.lang.Short> {
+java.lang.Integer                public final class java.lang.Integer extends java.lang.Number implements java.lang.Comparable<java.lang.Integer> {
+java.lang.Long                   public final class java.lang.Long extends java.lang.Number implements java.lang.Comparable<java.lang.Long> {
+java.lang.Float                  public final class java.lang.Float extends java.lang.Number implements java.lang.Comparable<java.lang.Float> {
+java.lang.Double                 public final class java.lang.Double extends java.lang.Number implements java.lang.Comparable<java.lang.Double> {
+java.lang.Character              public final class java.lang.Character implements java.io.Serializable, java.lang.Comparable<java.lang.Character> {
+java.lang.Boolean                public final class java.lang.Boolean implements java.io.Serializable, java.lang.Comparable<java.lang.Boolean> {
+java.lang.Number                 public abstract class java.lang.Number implements java.io.Serializable {
+java.lang.Enum                   public abstract class java.lang.Enum<E extends java.lang.Enum<E>> implements java.lang.Comparable<E>, java.io.Serializable {
+java.io.Serializable             public interface java.io.Serializable {
+java.util.EnumSet                public abstract class java.util.EnumSet<E extends java.lang.Enum<E>> extends java.util.AbstractSet<E> implements java.lang.Cloneable, java.io.Serializable {
+java.util.AbstractSet            public abstract class java.util.AbstractSet<E> extends java.util.AbstractCollection<E> implements java.util.Set<E> {
+java.util.AbstractCollection     public abstract class java.util.AbstractCollection<E> implements java.util.Collection<E> {
+java.util.Set                    public interface java.util.Set<E> extends java.util.Collection<E> {
+java.util.Collection             public interface java.util.Collection<E> extends java.lang.Iterable<E> {
+java.lang.Iterable               public interface java.lang.Iterable<T> {

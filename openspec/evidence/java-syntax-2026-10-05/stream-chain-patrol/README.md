@@ -12,3 +12,10 @@
 ## 处置
 
 `joined` 锚补入 recover-charsequence-argument-widening；其余不立项（负结果）。
+
+## 处置（2026-10-06，change `recover-charsequence-argument-widening` 落地后重渲染）
+
+第 5 位点恢复（`refusals = 0`）：[`results/jarde-ST-after-charsequence-argument-widening.txt`](results/jarde-ST-after-charsequence-argument-widening.txt)
+的 `joined` 写出 `(java.lang.String) names().stream().collect((java.util.stream.Collector) java.util.stream.Collectors.joining((java.lang.CharSequence) ","))`
+——CharSequence 表按**目标类型**命中，与方法所属包无关，故 `java.util.stream` 的方法与 `java.lang` 位点同一判据；
+巡查记录的其余四形（unbound 方法引用、IntStream 特化、lambda 谓词、groupingBy）逐字不变。

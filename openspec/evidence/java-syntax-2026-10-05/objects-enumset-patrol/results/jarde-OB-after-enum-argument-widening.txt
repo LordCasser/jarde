@@ -1,0 +1,92 @@
+# `OB` from objects-enumset-patrol, re-rendered after the platform implementer tables (changes `recover-charsequence-argument-widening` / `recover-comparable-argument-widening` / `recover-enum-argument-widening`).
+# Entry: class-source over the patrol's own container (`--policy plain-jar`, snapshot scope), evidence = source map; the fixture bytes are the patrol's own.
+# What moved: `flags` recovers whole: `EnumSet.of` presents its constants under the `java.lang.Enum` parameter and the `retainAll` companion writes `(java.util.Collection) arg0` from the enum family's `EnumSet` rows. `main`'s refusal set is byte-identical to the patrol's recorded one (7 lines, all the nested-array/copy family at BCI 79/85/87 — no widening line); the `Objects.*` members are unchanged.
+reports.argument_widening.refusals = 0
+
+// jarde: presentation of `OB` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class OB extends java.lang.Object {
+    // jarde: omitted physical lambda helper "lambda$reqFmt$0" after proving its single class-wide use
+    public OB() {
+        // @method <init>()V
+        // @declaration a constructor of `OB`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static boolean eq(java.lang.String arg0, java.lang.String arg1) {
+        // @method eq(Ljava/lang/String;Ljava/lang/String;)Z
+        // @declaration a static method of `OB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Objects.equals((java.lang.Object) arg0, (java.lang.Object) arg1);
+    }
+
+    static int h(java.lang.String arg0) {
+        // @method h(Ljava/lang/String;)I
+        // @declaration a static method of `OB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Objects.hashCode((java.lang.Object) arg0);
+    }
+
+    static int hh(java.lang.String arg0) {
+        // @method hh(Ljava/lang/String;)I
+        // @declaration a static method of `OB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 == null ? 0 : arg0.hashCode();
+    }
+
+    static java.lang.String str(java.lang.Object arg0) {
+        // @method str(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `OB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Objects.toString(arg0, "dflt");
+    }
+
+    static boolean deepEq(int[][] arg0, int[][] arg1) {
+        // @method deepEq([[I[[I)Z
+        // @declaration a static method of `OB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Objects.deepEquals((java.lang.Object) arg0, (java.lang.Object) arg1);
+    }
+
+    static java.lang.String reqFmt(java.lang.String arg0) {
+        // jarde: lambda companion body inlined at invokedynamic@1
+        // @method reqFmt(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `OB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return ((java.lang.String) java.util.Objects.requireNonNull((java.lang.Object) arg0, (java.util.function.Supplier) (() -> "blank at " + java.lang.System.nanoTime()))).trim();
+    }
+
+    // jarde: generic Signature projection refused for `flags(Ljava/util/EnumSet;)Ljava/lang/String;`: unsupported (generic_source_shape_unproved): class name has no unambiguous Java source spelling
+    static java.lang.String flags(java.util.EnumSet arg0) {
+        // @method flags(Ljava/util/EnumSet;)Ljava/lang/String;
+        // @declaration a static method of `OB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.EnumSet local1 = java.util.EnumSet.of((java.lang.Enum) OB$Flag.A, (java.lang.Enum) OB$Flag.C);
+        local1.retainAll((java.util.Collection) arg0);
+        return local1.contains((java.lang.Object) OB$Flag.A) ? "hasA" : "no";
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `OB`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 79
+        // the array instruction at BCI 79 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 82 79
+        // the instruction at BCI 82 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 85
+        // the array instruction at BCI 85 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 87 85
+        // the instruction at BCI 87 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 90 85 0 3 6 7 10 12 15 16 17 20 23 25 28 30 31 34 37 39 42 43 46 49 51 54 55 58 61 63 66 67 70 73 75 78 79 82 83 84 87 88 89 91 92 93 96 97 98 99 101 102 103 104 105 106 109 112 114 117 120 123 126 129 132 134 137 139 142 145 148 151 154
+        // the copy at BCI 87 has no proved local assignment
+        // @bytecode 91 79 85
+        // the copy at BCI 82 has no proved local assignment
+        // @bytecode 151 0 148 145 134 129 114 109 70 63 58 51 46 39 34 25 20 12 17 31 43 55 67 106 79 93 92 96 97 98 99 101 102 103 104 105 126 123 117 120 142 139 137
+        // the copy at BCI 82 has no proved local assignment
+        jarde_refused_body();
+    }
+}

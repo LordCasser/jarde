@@ -1,0 +1,75 @@
+# `GE` from generics-edge-patrol, re-rendered after the platform implementer tables (changes `recover-charsequence-argument-widening` / `recover-comparable-argument-widening` / `recover-enum-argument-widening`).
+# Entry: class-source over the patrol's own container (`--policy plain-jar`, snapshot scope), evidence = source map; the fixture bytes are the patrol's own.
+# What moved: the multi-bound call site recovers: `useBoth` writes `both((java.io.Serializable) "a", (java.io.Serializable) "b")`; `up()`'s heterogeneous-array refusal (`recover-heterogeneous-array-init`'s ground) is untouched.
+reports.argument_widening.refusals = 0
+
+// jarde: presentation of `GE` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class GE extends java.lang.Object {
+    public GE() {
+        // @method <init>()V
+        // @declaration a constructor of `GE`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `both(Ljava/io/Serializable;Ljava/io/Serializable;)Ljava/io/Serializable;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    static java.io.Serializable both(java.io.Serializable arg0, java.io.Serializable arg1) {
+        // @method both(Ljava/io/Serializable;Ljava/io/Serializable;)Ljava/io/Serializable;
+        // @declaration a static method of `GE`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return ((java.lang.Comparable) arg0).compareTo((java.lang.Object) arg1) >= 0 ? arg0 : arg1;
+    }
+
+    static java.lang.String useBoth() {
+        // @method useBoth()Ljava/lang/String;
+        // @declaration a static method of `GE`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) both((java.io.Serializable) "a", (java.io.Serializable) "b");
+    }
+
+    // jarde: generic Signature projection refused for `up()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    static java.util.List up() {
+        // jarde: not recovered: the recovery run for `up()Ljava/util/List;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method up()Ljava/util/List;
+        // @declaration a static method of `GE`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 23 20 1 0 4 5 6 7 10 11 12 13 16 19
+        // the array initializer element at BCI 23 is presented as `java.lang.Integer`, while the array component is `java.lang.Number`; without a hierarchy fact this `aastore` cannot be rewritten as a Java initializer without changing its compatibility or exception behavior
+    }
+
+    // jarde: generic Signature projection refused for `readUp(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static int readUp(java.util.List arg0) {
+        // @method readUp(Ljava/util/List;)I
+        // @declaration a static method of `GE`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return ((java.lang.Number) arg0.get(0)).intValue();
+    }
+
+    // jarde: generic Signature projection refused for `writeDown(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): return source is not a proven parameter value or selected member creation
+    static void writeDown(java.util.List arg0) {
+        // @method writeDown(Ljava/util/List;)V
+        // @declaration a static method of `GE`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.add((java.lang.Object) java.lang.Integer.valueOf(1));
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `GE`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("" + useBoth() + "/" + readUp((java.util.List) up()) + "/" + downCheck());
+        return;
+    }
+
+    static int downCheck() {
+        // @method downCheck()I
+        // @declaration a static method of `GE`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local0 = new java.util.ArrayList();
+        writeDown((java.util.List) local0);
+        return ((java.lang.Integer) local0.get(0)).intValue();
+    }
+}

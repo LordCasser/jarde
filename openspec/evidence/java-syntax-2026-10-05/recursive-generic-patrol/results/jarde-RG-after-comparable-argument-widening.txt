@@ -1,0 +1,54 @@
+# `RG` from recursive-generic-patrol, re-rendered after the platform implementer tables (changes `recover-charsequence-argument-widening` / `recover-comparable-argument-widening` / `recover-enum-argument-widening`).
+# Entry: class-source over a container built from the patrol's own three class files (`RG.class`, `RG$Node.class`, `RG$IntNode.class`; `--policy plain-jar`), evidence = source map.
+# What moved: both inference call points recover (`max((java.lang.Comparable) "a", …)`, `max((java.lang.Comparable) java.lang.Integer.valueOf(1), …)`); `RG$IntNode.cmp` — the patrol's healthy face — and every other member are unchanged.
+reports.argument_widening.refusals = 0
+
+// jarde: presentation of `RG` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class RG extends java.lang.Object {
+    public RG() {
+        // @method <init>()V
+        // @declaration a constructor of `RG`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `max(Ljava/lang/Comparable;Ljava/lang/Comparable;)Ljava/lang/Comparable;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    static java.lang.Comparable max(java.lang.Comparable arg0, java.lang.Comparable arg1) {
+        // @method max(Ljava/lang/Comparable;Ljava/lang/Comparable;)Ljava/lang/Comparable;
+        // @declaration a static method of `RG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.compareTo((java.lang.Object) arg1) >= 0 ? arg0 : arg1;
+    }
+
+    static java.lang.String callGen() {
+        // @method callGen()Ljava/lang/String;
+        // @declaration a static method of `RG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) max((java.lang.Comparable) "a", (java.lang.Comparable) "b");
+    }
+
+    static java.lang.Integer callGen2() {
+        // @method callGen2()Ljava/lang/Integer;
+        // @declaration a static method of `RG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.Integer) max((java.lang.Comparable) java.lang.Integer.valueOf(1), (java.lang.Comparable) java.lang.Integer.valueOf(2));
+    }
+
+    // jarde: generic Signature projection refused for `callList()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.List callList() {
+        // @method callList()Ljava/util/List;
+        // @declaration a static method of `RG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.util.Collections.singletonList((java.lang.Object) "x");
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `RG`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(new RG$IntNode().cmp((RG$Node) new RG$IntNode())).append("/").append((java.lang.String) callGen()).append("/").append((java.lang.Object) callGen2()).append("/").append((java.lang.String) callList().get(0)).toString());
+        return;
+    }
+}

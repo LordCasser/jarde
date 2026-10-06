@@ -17,3 +17,12 @@
 ## 处置
 
 登记第 4 个新证窄缺口（呈现域：平台实参扩宽表的 java.lang CharSequence 族补充——与既有 java.util 表/Throwable 通道**同构的第三张小表**，零新机制）。窄片立项 `recover-charsequence-argument-widening`（root 随后提交）。
+
+## 处置（2026-10-06，change `recover-charsequence-argument-widening` 落地后重渲染）
+
+`SB` 的 `join` 现在整方法恢复（`refusals = 0`，整类 0 引注）：[`results/jarde-SB-after-charsequence-argument-widening.txt`](results/jarde-SB-after-charsequence-argument-widening.txt)。
+写出 `java.lang.String.join((java.lang.CharSequence) "-", (java.lang.CharSequence[]) arg0)`——**两个位点**：首参的
+类行（String→CharSequence）与第 2 参的**数组位**（String[]→CharSequence[]，同一事实在数组位置的投影；实测只放行类行时
+第 2 参仍在 BCI 3 被拒，故数组位是主锚恢复的必需伴随，见 change 的 verification）。同批落地的 Serializable
+表覆盖多重界锚（[generics-edge](../generics-edge-patrol/README.md)），`stream-chain` 的第 5 位点见
+[该巡查](../stream-chain-patrol/README.md)。负例（封闭表外的实现者）保持拒绝。
