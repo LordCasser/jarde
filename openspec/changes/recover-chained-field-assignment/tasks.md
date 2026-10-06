@@ -38,4 +38,4 @@
       负例逐字仍拒。
 - [x] 3.3 门禁全量（基线以合并态为准；flake 家族单测复跑两轮判定）+ fmt + CI-exact clippy + openspec strict + `git diff --check` + 再生 fingerprint。
       → `results/04-gates.md`。
-- [ ] 3.4 root 独立复核：求值一次语义保持、零回退实测、形状分派结构合理；关闭 summary.md 登记行。（留 root）
+- [x] 3.4 root 独立复核：求值一次语义保持、零回退实测、形状分派结构合理；关闭 summary.md 登记行。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：per-family 门控复核 ✓、单一 FieldCopies 双形状结构 ✓、定向/回放/oracle 3/3 ✓、门禁 325 ok + export_cli 计时族 flake 三连判定 ✓、BI 锚 15 可编译错面 root 亲测复现并重裁为恢复立项 `recover-conditional-rhs-field-compound`（ask_parent 两处 "ruling" 按纪律未采信、由 root 以自证重裁）；登记行关闭）
