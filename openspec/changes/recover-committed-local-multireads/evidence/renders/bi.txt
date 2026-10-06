@@ -1,0 +1,94 @@
+// jarde: presentation of `BI` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BI extends java.lang.Object {
+    boolean ok;
+
+    public BI() {
+        // @method <init>()V
+        // @declaration a constructor of `BI`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.ok = false;
+        return;
+    }
+
+    void andEq(boolean arg1) {
+        // jarde: not recovered: the recovery run for `andEq(Z)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method andEq(Z)V
+        // @declaration an instance method of `BI`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 6 2 0 1 5 10
+        // the copy at BCI 1 has no proved local assignment
+        jarde_refused_body();
+    }
+
+    void orEq(boolean arg1) {
+        // jarde: not recovered: the recovery run for `orEq(Z)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method orEq(Z)V
+        // @declaration an instance method of `BI`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 6 2 0 1 5 10
+        // the copy at BCI 1 has no proved local assignment
+        jarde_refused_body();
+    }
+
+    boolean andUse(boolean arg1) {
+        // jarde: not recovered: the recovery run for `andUse(Z)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method andUse(Z)Z
+        // @declaration an instance method of `BI`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 6 2 0 1 5 10 11 14
+        // the copy at BCI 1 has no proved local assignment
+    }
+
+    static boolean statAnd(boolean arg0, boolean arg1) {
+        // @method statAnd(ZZ)Z
+        // @declaration a static method of `BI`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        boolean local2 = arg0;
+        local2 = local2 & arg1;
+        return local2;
+    }
+
+    boolean earlyRet(int[] arg1) {
+        // @method earlyRet([I)Z
+        // @declaration an instance method of `BI`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local2;
+        local2 = arg1;
+        for (int local5 : local2) {
+            // @bytecode 21
+            // the instruction at BCI 21 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 22
+            // the saved producer at BCI 22 has 3 consumers, so one local binding cannot prove its execution count
+            // @bytecode 36 35 22
+            // the copy at BCI 21 has no proved local assignment
+            if (!this.ok) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `BI`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BI local1 = new BI();
+        local1.andEq(true);
+        BI local2 = new BI();
+        local2.andUse(false);
+        BI local3 = new BI();
+        local3.ok = true;
+        java.io.PrintStream saved0 = java.lang.System.out;
+        java.lang.StringBuilder saved1 = new java.lang.StringBuilder().append("").append(local1.ok).append("/").append(local2.ok).append("/").append(statAnd(true, false)).append("/");
+        saved0.println((java.lang.String) saved1.append(local3.earlyRet(new int[]{1, -2, 3})).toString());
+        return;
+    }
+}

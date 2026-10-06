@@ -1,0 +1,37 @@
+// jarde: presentation of `NMA` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NMA extends java.lang.Object {
+    int tag;
+
+    public NMA() {
+        // @method <init>()V
+        // @declaration a constructor of `NMA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.tag = 5;
+        return;
+    }
+
+    int add(int arg1) {
+        // @method add(I)I
+        // @declaration an instance method of `NMA`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1 * 2;
+    }
+
+    NMA self() {
+        // @method self()LNMA;
+        // @declaration an instance method of `NMA`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NMA`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NMA local1 = new NMA();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(local1.add(1)).append("/").append(local1.add(2)).append("/").append(local1.self().tag).append("/").append(local1.tag).toString());
+        return;
+    }
+}
