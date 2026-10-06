@@ -7482,6 +7482,91 @@
       "path": "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class"
     },
     {
+      "blake3": "e351b00bddcd2b162860338e72235ac21767dfb92ce5e329cbf5a37184592684",
+      "bytes": 270,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/ICB.java"
+    },
+    {
+      "blake3": "04d181a17a9915e0611544b8ffbb16cdf721c9ac530165329747ab6914362a23",
+      "bytes": 543,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/ICC.java"
+    },
+    {
+      "blake3": "e52a4b4514a5d23c37a43e8016211f3a7c519d2cd9d6c2fc01ea919e0e527010",
+      "bytes": 260,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/ICM.java"
+    },
+    {
+      "blake3": "f64050ad581526ac24c2e0004e097d74c53bb848fc6272a8fea2bd2291deab9d",
+      "bytes": 936,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/ICN.java"
+    },
+    {
+      "blake3": "418e868b0e9ff6c61c206feda1ff04a0a510ae73faf97278bf5c754a4364899f",
+      "bytes": 205,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/ICQ.java"
+    },
+    {
+      "blake3": "036335f2cceefe3e5ba2fedecf10a9f6f535246adf7a2654a0f177f82cddea6a",
+      "bytes": 1127,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICB.class"
+    },
+    {
+      "blake3": "7fdea7475a6bc613f4be7af7c7aea855f426c17fc41854d5e917f5dcceabcfbf",
+      "bytes": 578,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICC$Inner.class"
+    },
+    {
+      "blake3": "0425629e03e3ad246bbf9f5bb63702304b09e3c0f508b9936fc4d6cfe1911e0a",
+      "bytes": 1396,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICC.class"
+    },
+    {
+      "blake3": "db22a9b48bfc432733a2973fc8929a2e88d447d2e95ede17269e0b538fa3a245",
+      "bytes": 1002,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICM.class"
+    },
+    {
+      "blake3": "dd5aa7b9810bc5bee869653c6c8d57e4803ebfeaddd8787bf83c717550f84055",
+      "bytes": 2168,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICN.class"
+    },
+    {
+      "blake3": "aef5e9b309736d4b25f1eb7d7db886cc2c32ea41e41b6565634dbe12c1a5de91",
+      "bytes": 958,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICQ.class"
+    },
+    {
+      "blake3": "149fce5eafeed9ed6ed8cf21868dbf8f302286cf176e6da5c553f15cb61c8839",
+      "bytes": 1118,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICB.class"
+    },
+    {
+      "blake3": "2b58627da05864f8758547fc6e10201d48a5c61c6734dd4d98dba0e49aa1ebdf",
+      "bytes": 612,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICC$Inner.class"
+    },
+    {
+      "blake3": "e265189762f3f0e8b89a3cf1df84683ae6d72101955cd41e5078ab7e3b10a7f3",
+      "bytes": 1435,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICC.class"
+    },
+    {
+      "blake3": "3b397510aec76af339e180875dfa957dad68421865ee4b6c6c5906fa608fc12b",
+      "bytes": 1002,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICM.class"
+    },
+    {
+      "blake3": "f20e4026d2f279999f63aabee17426df195d0b2fedf70803651ec0d5b6b25507",
+      "bytes": 2156,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICN.class"
+    },
+    {
+      "blake3": "ba4fa2b071df792f493ab374bc7ff174cb688d8ff077f7677f93a4110ca299c6",
+      "bytes": 949,
+      "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICQ.class"
+    },
+    {
       "blake3": "f220de9df12a0af26f267845a1714e7bfa96b1151998a17b875f3a12714791db",
       "bytes": 365,
       "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d2/D2$In.class"
