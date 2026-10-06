@@ -11936,7 +11936,10 @@ mod tests {
             // `CS`/`CSX`, the comparable change's `CO`/`CO$Node`/`CO$IntNode`/`COX`, and the enum
             // change's `EN`/`ENN`/`ENN$Flag`/`ENT`/`ENX`, eleven classes on both compiler legs:
             // twenty-two classes, ninety-four bodies) moved it again.
-            (687, 2932, 282, 1827, 8),
+            // The 2026-10-06 recover-unicode-identifiers fixtures (the real javac 8 anchor `UT`
+            // with its `UT$内部类` companion, plus the `Loc` local-name pair: `Loc` and its
+            // byte-patched `Loc.punct`, four classes, eleven bodies) moved it again.
+            (691, 2943, 282, 1827, 8),
             "fixture population changed: re-measure these counts"
         );
     }
