@@ -11987,7 +11987,17 @@ mod tests {
             // single-store and local-chain controls, the receiver copy of `|=`/`&=`, the `String`
             // `+=` receiver copy and the static control, and `NEG` with the four refusals, two
             // classes on both compiler legs — four classes, forty-two bodies) moved it again.
-            (805, 3405, 288, 2095, 8),
+            // The 2026-10-07 recover-conditional-rhs-field-compound fixtures (the field compound
+            // whose right-hand side is one proved conditional materialisation: `BI`, the patrol's
+            // frozen anchor recompiled, `RC` with the loop anchor, the same statement with no loop
+            // around it, the `|=` operator and the integral field, and `RCN` with the three
+            // refusals — a calling arm, two materialisations in one right-hand side and one under
+            // an exception table — three classes on both compiler legs: six classes, forty bodies,
+            // two handler records — `RCN.inTry`'s `RuntimeException` catch, one per leg — and
+            // fifty branch targets: `BI.earlyRet`'s five, `RC`'s eleven (the loop's five, and
+            // `plain`'s, `orEq`'s and `mask`'s two each) and `RCN`'s nine (`armCall`'s two,
+            // `inTry`'s three and `nested`'s four), per leg) moved it again.
+            (811, 3445, 290, 2145, 8),
             "fixture population changed: re-measure these counts"
         );
     }
