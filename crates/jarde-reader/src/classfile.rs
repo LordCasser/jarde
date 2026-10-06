@@ -11968,7 +11968,13 @@ mod tests {
             // positions and `NG` negatives, eight classes on both compiler legs: eighteen classes,
             // ninety-six bodies, fourteen branch targets — `NG.condShape`'s loop `ifne`/`goto`
             // pair and `NG.compoundSelf`'s comparison pair per leg) moved it again.
-            (783, 3275, 286, 2023, 8),
+            // The 2026-10-06 recover-dup-store-conditional fixtures (the dup-store dance's own
+            // targets: `DS` int form, `REF` reference form and `NEG` the two refusals, three
+            // classes on both compiler legs — six classes, thirty-six bodies, thirty-eight branch
+            // targets: the dance's `ifle`/`goto` pair and `ifnull`/`goto` pair per leg, plus
+            // `deadChain`'s two tests, `split`'s comparison, `splitLocal`'s comparison and
+            // `NEG.shortChain`'s two tests) moved it again.
+            (789, 3311, 286, 2061, 8),
             "fixture population changed: re-measure these counts"
         );
     }

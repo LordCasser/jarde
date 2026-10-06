@@ -44,7 +44,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{
     CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, MethodIr, PhiInput, Slot,
-    SsaBlock, SsaTable, ValueId,
+    SsaBlock, SsaInstruction, SsaTable, ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{CpEntryFacts, ExceptionHandlerFact, MethodCodeFacts};
@@ -6996,7 +6996,14 @@ impl Walker<'_> {
                 )
             ) || (condition_value
                 && (!matches!(operation, Some(Operation::ArrayLength))
-                    || array_length_is_single_use));
+                    || array_length_is_single_use))
+                // A copy and the store it feeds, when the value that store writes is one no reader
+                // can observe: the assignment dance of `recover-dup-store-conditional`, whose
+                // eliminated form writes neither of them and whose store is the one write the
+                // bytecode's own program cannot tell was run. Both halves are required together —
+                // a copy that feeds an observable store, or a store anything reads, is the effect
+                // this precondition exists for and is refused below, at its own BCI.
+                || self.unobservable_store_dance_part(block, instruction);
             if !value_only {
                 // The loop pass declares this precondition (`pass::LOOP.requires(StatementFree)`)
                 // and the check is stated through the declaration: the reason carries the rule
@@ -7011,6 +7018,58 @@ impl Walker<'_> {
             }
         }
         Ok(())
+    }
+
+    /// Whether one instruction is a half of a `dup; store` pair whose store writes a value no
+    /// reader observes — the one store a loop's own test block may hold.
+    ///
+    /// The pair is the assignment dance `recover-dup-store-conditional` presents: the copy hands one
+    /// value to the store and the other to the test, and the store target has no reader, so the
+    /// eliminated form writes neither instruction and the value flows into the condition. Both
+    /// halves are checked together, so a copy that feeds an *observable* store, and a store anything
+    /// reads, keep the `StatementFree` refusal they have always had (and at the BCI they named).
+    fn unobservable_store_dance_part(
+        &self,
+        block: &CanonicalBlockId,
+        instruction: &SsaInstruction,
+    ) -> bool {
+        let Some(names) = self.ssa.block(block) else {
+            return false;
+        };
+        let Some(position) = names
+            .instructions()
+            .iter()
+            .position(|candidate| candidate.bci() == instruction.bci())
+        else {
+            return false;
+        };
+        let (duplicate, store) = match self.operations.get(instruction.bci()) {
+            Some(Operation::Duplicate) => {
+                let Some(store) = names.instructions().get(position + 1) else {
+                    return false;
+                };
+                (instruction, store)
+            }
+            Some(Operation::Store { .. }) => {
+                let Some(duplicate) = position
+                    .checked_sub(1)
+                    .and_then(|position| names.instructions().get(position))
+                else {
+                    return false;
+                };
+                (duplicate, instruction)
+            }
+            _ => return false,
+        };
+        duplicate.opcode() == 0x59
+            && matches!(
+                self.operations.get(store.bci()),
+                Some(Operation::Store { .. })
+            )
+            && store
+                .writes()
+                .iter()
+                .all(|(_, value)| self.ssa.value(*value).uses().is_empty())
     }
 
     /// The same-block producers whose values the terminal branch consumes, directly or through
