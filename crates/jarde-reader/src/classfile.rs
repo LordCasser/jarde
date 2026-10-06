@@ -12002,13 +12002,14 @@ mod tests {
             // refusing: the patrol's own `MD` — the sawtooth field, the regular and partial
             // creations, the element-store anchor and the sawtooth literal — `MD2` — the local,
             // field, argument and immediate-subscript positions — `MD3` — the bare length, the
-            // immediate-subscript anchor and the bare return — and this change's `AV`, the same
-            // positions one step further, four classes on both compiler legs — eight classes,
-            // eighty-eight bodies, sixteen branch targets: `MD.sumJag`'s two loops and `AV`'s
-            // `foreach` loop and `condIdx` comparison, per leg — plus the hand-built `AVN` (three
-            // members, no branch), nine classes and ninety-one bodies in all, and no handler record
-            // or subroutine) moved it again.
-            (820, 3536, 290, 2161, 8),
+            // immediate-subscript anchor and the bare return — this change's `AV`, the same
+            // positions one step further, and `AVT`, the same two positions with every other
+            // element type, five classes on both compiler legs — ten classes, one hundred sixteen
+            // bodies, sixteen branch targets: `MD.sumJag`'s two loops and `AV`'s `foreach` loop and
+            // `condIdx` comparison, per leg — plus the hand-built `AVN` (three members, no branch),
+            // eleven classes and one hundred nineteen bodies in all, and no handler record or
+            // subroutine) moved it again.
+            (822, 3564, 290, 2161, 8),
             "fixture population changed: re-measure these counts"
         );
     }

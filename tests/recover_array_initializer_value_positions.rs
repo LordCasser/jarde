@@ -106,6 +106,10 @@ const V8_FILES: &[(&str, &[u8])] = &[
         "AV.class",
         include_bytes!("fixtures/recover-array-initializer-value-positions/v8/AV.class"),
     ),
+    (
+        "AVT.class",
+        include_bytes!("fixtures/recover-array-initializer-value-positions/v8/AVT.class"),
+    ),
 ];
 
 /// The real javac 8 leg (Corretto 1.8.0_432,
@@ -126,6 +130,10 @@ const V8_JAVAC8_FILES: &[(&str, &[u8])] = &[
     (
         "AV.class",
         include_bytes!("fixtures/recover-array-initializer-value-positions/v8-javac8/AV.class"),
+    ),
+    (
+        "AVT.class",
+        include_bytes!("fixtures/recover-array-initializer-value-positions/v8-javac8/AVT.class"),
     ),
 ];
 
@@ -326,6 +334,7 @@ const FROZEN_ANSWERS: &[(&str, &str)] = &[
     ("MD2", "3/3/4/5"),
     ("MD3", "2/9/3"),
     ("AV", "7/9/3/3/1/8/2/3/6/3/9/8/10/17/8/9/3/true/2/1/2"),
+    ("AVT", "b/1/1.5/true/x/1/b/1/1.5/true/x"),
 ];
 
 // -------------------------------------------------------------------------------------------
@@ -453,6 +462,49 @@ fn method_body<'a>(text: &'a str, signature: &str) -> &'a str {
         .find("\n    }")
         .unwrap_or_else(|| panic!("the method `{signature}` closes:\n{text}"));
     &rest[..end + "\n    }".len()]
+}
+
+/// The same two positions with every other element type: the admission is the **dance's** shape,
+/// not an `int` special case — the reference element is an `aastore` value position in all of them,
+/// and the dance's own inner store is the opcode its element states (`bastore` for `boolean`,
+/// `lastore`, `dastore`, `castore`, `aastore`).
+const TYPE_ANCHORS: &[&str] = &[
+    "saved0[0] = new java.lang.String[]{\"a\", \"b\"};",
+    "saved0[0] = new long[]{1L};",
+    "saved0[0] = new double[]{0x1.8000000000000p0d};",
+    "saved0[0] = new boolean[]{true};",
+    "saved0[0] = new char[]{'x'};",
+    "return new java.lang.String[]{\"a\", \"b\"}[1];",
+    "return new long[]{1L}[0];",
+    "return new double[]{0x1.8000000000000p0d}[0];",
+    "return new boolean[]{true}[0];",
+    "return new char[]{'x'}[0];",
+    "return new double[]{0x1.8000000000000p0d}.length;",
+];
+
+/// The element type does not decide the admission: every one of `AVT`'s positions recovers, and the
+/// class quotes nothing.
+#[test]
+fn the_admission_is_the_dances_shape_and_not_an_int_special_case() {
+    for leg in LEGS {
+        let snapshot = open(&leg.fixture("AVT"));
+        let report = presented(&snapshot, "AVT");
+        let quoted = quoted_bcis(&report.text);
+        assert!(
+            quoted.is_empty(),
+            "`AVT` on {} still quotes {quoted:?}:\n{}",
+            leg.label,
+            report.text
+        );
+        for anchor in TYPE_ANCHORS {
+            assert!(
+                report.text.contains(anchor),
+                "`AVT` on {} lost the anchor {anchor:?}:\n{}",
+                leg.label,
+                report.text
+            );
+        }
+    }
 }
 
 // -------------------------------------------------------------------------------------------
