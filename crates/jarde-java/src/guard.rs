@@ -14150,6 +14150,22 @@ fn resources(
         {
             continue;
         }
+        // A catch-all row over a range a blank primary copy leads is the level of the **older**
+        // lowering of this same statement, which JDK 9 replaced ([`twr_lead`]). It is read before
+        // the null-resource reading below, because the two disagree about what the store before the
+        // range means: here the range follows the compiler's own `aconst_null; astore p` statement
+        // rather than the resource's, and the resource's own store is read behind it. A shape the
+        // older lowering does not have keeps the judgement it has today — this is a reading added
+        // beside the others, never a widening of one — and a stop still stops the run.
+        if row.catch_type_index.is_none() {
+            match twr_lead(facts, profile, current, row)? {
+                LeadReading::Claimed(plan) => return Ok(Verdict::Claimed(plan)),
+                LeadReading::Refused(cause) => {
+                    return Ok(Verdict::refused(Some(&TWR), cause.0, cause.1));
+                }
+                LeadReading::NotThisShape => {}
+            }
+        }
         // A direct null literal is not enough to call an ordinary `try` a resource header. Admit it
         // to the existing full proof only when both paths already have the close contour of a
         // nullable resource: the normal close group and the exceptional handler's guarded close.
@@ -14754,6 +14770,802 @@ fn twr<'a>(
         enclosing,
         facts: facts_read,
     })
+}
+
+/// The blank copy of the primary exception a JDK 8 closing sequence writes for itself.
+///
+/// JDK 8's lowering of `try (R r = init) { body }` keeps the exception the statement is propagating
+/// in a compiler local of its own, and fills that local with `null` **between** the resource's own
+/// initialisation and the protected range. That pair is what makes the shape this module's other
+/// readings cannot see: the instruction before a row's range is then no resource's store at all
+/// ([`lead_initialisation`] reads the resource's statement *before* the pair), every close is
+/// guarded twice (the resource, and this slot through [`lead_close_of_level`]), and the exception
+/// the statement propagates is the value the body's own relay stored here ([`lead_relay`]) — never
+/// a value a handler produced. The whole of it for `one()`:
+///
+/// ```text
+///   0: new R; 3: dup; 4: aload_0; 5: invokespecial <init>   ┐ the resource's own initialisation
+///   8: astore_1                                             ┘ (ends where the lead begins)
+///   9: aconst_null                                          ┐ the lead: a five-instruction
+///  10: astore_2                                             │ statement of its own
+///  11: aload_1; 12: use; 15: astore_3                       ┘ the protected body [11, 16)
+///  16: aload_1; 17: ifnull 46                               ┐ the normal path's close group: the
+///  20: aload_2; 21: ifnull 42                               │ resource's guard, the lead's own
+///  24: aload_1; 25: close; 28: goto 46                      │ guard, the suppressed close (row 0
+///  31: astore 4; 33: aload_2; 34: aload 4; 36: addSuppressed │ protects 24..28) and the plain one
+///  42: aload_1; 43: close; 46: aload_3; 47: areturn         ┘
+///  48: astore_3; 49: aload_3; 50: astore_2; 51: aload_3; 52: athrow   the rethrow relay (row 1)
+///  53: astore 5; 55: aload_1; 56: ifnull 85                 ┐ the close handler of the catch-all
+///  59: aload_2; 60: ifnull 81                               │ rows (2 and 4): the same double
+///  63: aload_1; 64: close; 67: goto 85                      │ guard, the suppression into the
+///  70: astore 6; 72: aload_2; 73: aload 6; 75: addSuppressed │ lead, the rethrow of what it caught
+///  81: aload_1; 82: close; 85: aload 5; 87: athrow          ┘
+/// ```
+///
+/// The slot is a compiler local: no source declaration names it, no text this build presents
+/// mentions it, and it is *not* one of the statement's resources. What the proof reads from it is
+/// the identity of the primary: the relay stores what it caught here before rethrowing, and the
+/// suppression the close handler performs folds the close's own exception into **this** local —
+/// which is what makes the exceptional path the source statement's own.
+struct PrimaryLead {
+    /// The local the `aconst_null; astore` pair fills.
+    slot: u16,
+    /// The pair's own instructions, `[aconst_null, store)`.
+    span: (u32, u32),
+    /// The BCI of the `astore` the pair ends in.
+    store: u32,
+}
+
+/// The blank primary copy JDK 8 writes immediately before a level's protected range, when it is
+/// there at all.
+///
+/// This is the one fact that tells the older lowering's level from every other catch-all row, and
+/// it is read **without** the `new@1` plan: a block that holds one is read as this lowering's own
+/// (`LeadReading::Refused` when the rest of the proof falls short), never as the user `catch` its
+/// table would otherwise spell ([`catches`]).
+fn lead_pair(facts: &Facts<'_>, end: u32, floor: u32) -> Option<PrimaryLead> {
+    let store = facts.previous_bci(end).filter(|store| *store >= floor)?;
+    let Some(Operation::Store { slot: lead }) = facts.op(store) else {
+        return None;
+    };
+    let push = facts.previous_bci(store).filter(|push| *push >= floor)?;
+    exact_null_initializer(facts, (push, end), *lead).then_some(PrimaryLead {
+        slot: *lead,
+        span: (push, end),
+        store,
+    })
+}
+
+/// One resource's own initialisation, when a blank primary copy leads its protected range.
+///
+/// [`initialisation`] reads the instruction **immediately** before a row's range as the resource's
+/// own store, which is what every javac 9+ lowering writes. JDK 8's puts exactly one statement
+/// between the two — the lead [`lead_pair`] proves — so the resource's own statement is the one
+/// that ends where that pair begins. The initialisation itself is read by [`initialisation`]'s own
+/// reading, unchanged: nothing here weakens what that reading accepts.
+fn lead_initialisation(
+    facts: &Facts<'_>,
+    floor: u32,
+    lead: &PrimaryLead,
+) -> Result<ResourceInitialisation, Cause> {
+    let (init, slot) = initialisation(facts, lead.span.0, floor)?;
+    if slot == lead.slot {
+        return Err((Unproven::ResourceInit, lead.store));
+    }
+    Ok((init, slot))
+}
+
+/// One proved rethrow relay: the rows that carry the body's own exception into the close handler,
+/// and the instructions between them.
+struct LeadRelay<'a> {
+    /// The typed row whose handler is the relay and whose range is the level's own.
+    row: &'a ExceptionHandlerFact,
+    /// The catch-all row that catches the relay's own `athrow` and so enters the close handler.
+    catcher: &'a ExceptionHandlerFact,
+    /// The relay's own instructions, from its binding store through its `athrow`.
+    span: (u32, u32),
+    /// The BCI of the relay's store into the lead — the primary the statement propagates.
+    primary_store: u32,
+    /// The BCI of the `athrow` the row above catches.
+    rethrow: u32,
+}
+
+/// Proves the relay JDK 8 puts between the body's protection and the close handler.
+///
+/// The body's protection is split in two: a row that names a class catches the body's throw into a
+/// handler that stores what it caught into the lead and **rethrows that very value** (`48: astore_3;
+/// 49: aload_3; 50: astore_2; 51: aload_3; 52: athrow` above), and a catch-all row over the relay's
+/// own rethrow enters the handler that closes the resource. Both are read here, and each is load
+/// bearing:
+///
+/// * the relay's binding store must be a **handler binding** ([`handler_binding`]): the value it
+///   keeps is the reference one exception edge handed the handler, not a value some instruction of
+///   the body produced. Together with the two loads and the `athrow` reading that same value, this
+///   is what makes the primary a caught exception.
+/// * the relay's row must be the row **immediately before** the level's in the table, covering
+///   exactly the level's range. The two rows are one protection split by catch type, and the table's
+///   own order — the first matching row wins — is what makes a body throw reach the relay rather
+///   than the close handler directly.
+/// * the catch-all row over the rethrow must reach the level's own handler block, which is what
+///   ties the close to that same exception rather than to a second one.
+///
+/// The rows naming the relay's block and the close handler are also read here, so that a second row
+/// entering either block — a `catch` the compiler wrapped around the statement, or a handler shared
+/// with another shape — is a refusal rather than a claim.
+fn lead_relay<'a>(
+    facts: &Facts<'a>,
+    level: &'a ExceptionHandlerFact,
+    close_handler: &CanonicalBlockId,
+    lead: &PrimaryLead,
+) -> Result<LeadRelay<'a>, Cause> {
+    let mut relay_rows: Vec<&ExceptionHandlerFact> = facts
+        .handlers
+        .iter()
+        .filter(|row| {
+            row.ordinal + 1 == level.ordinal
+                && row.start_bci == level.start_bci
+                && row.end_bci == level.end_bci
+                && row.catch_type_index.is_some()
+        })
+        .collect();
+    let Some(relay_row) = (relay_rows.len() == 1).then(|| relay_rows.remove(0)) else {
+        return Err((Unproven::Handler, level.start_bci));
+    };
+    let entry = facts
+        .row_handler(relay_row)
+        .ok_or((Unproven::Handler, relay_row.handler_bci))?;
+    let entering: Vec<u32> = facts
+        .handlers
+        .iter()
+        .filter(|row| facts.row_handler(row).as_ref() == Some(&entry))
+        .map(|row| row.ordinal)
+        .collect();
+    if entering != [relay_row.ordinal] {
+        return Err((Unproven::Handler, entry.bci()));
+    }
+    let instructions = facts.in_block(&entry);
+    let [binding, kept, primary, rethrown, thrown] = instructions else {
+        return Err((Unproven::Handler, entry.bci()));
+    };
+    if !handler_binding(facts, binding.bci()) {
+        return Err((Unproven::Handler, binding.bci()));
+    }
+    let Some(Operation::Store { slot: caught }) = facts.op(binding.bci()) else {
+        return Err((Unproven::Handler, binding.bci()));
+    };
+    if *caught == lead.slot
+        || facts.op(kept.bci()) != Some(&Operation::Load { slot: *caught })
+        || facts.op(primary.bci()) != Some(&Operation::Store { slot: lead.slot })
+        || facts.op(rethrown.bci()) != Some(&Operation::Load { slot: *caught })
+        || facts.op(thrown.bci()) != Some(&Operation::Throw)
+    {
+        return Err((Unproven::Handler, binding.bci()));
+    }
+    // Every value the relay reads and writes here is one and the same reference: what its binding
+    // store kept, what the two loads read back out of that local, what the store copied into the
+    // lead, and what the `athrow` threw.
+    let Some(kept_value) = written_local(binding, *caught) else {
+        return Err((Unproven::Handler, binding.bci()));
+    };
+    let Some(loaded) = read_local(kept, *caught) else {
+        return Err((Unproven::Handler, kept.bci()));
+    };
+    let (Some(on_stack), Some(copied)) = (written_stack(kept), read_stack(primary)) else {
+        return Err((Unproven::Handler, primary.bci()));
+    };
+    if !facts.same(kept_value, loaded) || !facts.same(on_stack, copied) {
+        return Err((Unproven::Handler, primary.bci()));
+    }
+    let (Some(again), Some(thrown_from_stack), Some(thrown_value)) = (
+        read_local(rethrown, *caught),
+        written_stack(rethrown),
+        read_stack(thrown),
+    ) else {
+        return Err((Unproven::Handler, rethrown.bci()));
+    };
+    if !facts.same(again, kept_value) || !facts.same(thrown_from_stack, thrown_value) {
+        return Err((Unproven::Handler, rethrown.bci()));
+    }
+    if !facts.view.successor_ids(&entry).is_empty() {
+        return Err((Unproven::Handler, entry.bci()));
+    }
+    let rethrow = thrown.bci();
+    let mut catchers: Vec<&ExceptionHandlerFact> = facts
+        .handlers
+        .iter()
+        .filter(|row| {
+            row.catch_type_index.is_none()
+                && row.start_bci <= rethrow
+                && rethrow < row.end_bci
+                && facts.row_handler(row).as_ref() == Some(close_handler)
+        })
+        .collect();
+    let Some(catcher) = (catchers.len() == 1).then(|| catchers.remove(0)) else {
+        return Err((Unproven::Handler, rethrow));
+    };
+    let closing: Vec<u32> = facts
+        .handlers
+        .iter()
+        .filter(|row| facts.row_handler(row).as_ref() == Some(close_handler))
+        .map(|row| row.ordinal)
+        .collect();
+    if closing != [level.ordinal, catcher.ordinal] {
+        return Err((Unproven::Handler, close_handler.bci()));
+    }
+    Ok(LeadRelay {
+        row: relay_row,
+        catcher,
+        span: (entry.bci(), facts.span_end(thrown.bci())),
+        primary_store: primary.bci(),
+        rethrow,
+    })
+}
+
+/// The one value an instruction reads from one local slot, when it reads exactly one.
+fn read_local(instruction: &SsaInstruction, slot: u16) -> Option<ValueId> {
+    let mut reads = instruction
+        .reads()
+        .iter()
+        .filter(|(read, _)| *read == Slot::Local(slot));
+    let (_, value) = reads.next()?;
+    reads.next().is_none().then_some(*value)
+}
+
+/// The one value an instruction writes into one local slot, when it writes exactly one.
+fn written_local(instruction: &SsaInstruction, slot: u16) -> Option<ValueId> {
+    let mut writes = instruction
+        .writes()
+        .iter()
+        .filter(|(written, _)| *written == Slot::Local(slot));
+    let (_, value) = writes.next()?;
+    writes.next().is_none().then_some(*value)
+}
+
+/// The one value an instruction takes from the operand stack.
+fn read_stack(instruction: &SsaInstruction) -> Option<ValueId> {
+    let mut reads = instruction
+        .reads()
+        .iter()
+        .filter(|(read, _)| matches!(read, Slot::Stack(_)));
+    let (_, value) = reads.next()?;
+    reads.next().is_none().then_some(*value)
+}
+
+/// The one value an instruction leaves on the operand stack.
+fn written_stack(instruction: &SsaInstruction) -> Option<ValueId> {
+    let mut writes = instruction
+        .writes()
+        .iter()
+        .filter(|(written, _)| matches!(written, Slot::Stack(_)));
+    let (_, value) = writes.next()?;
+    writes.next().is_none().then_some(*value)
+}
+
+/// Where one level's handler closes its resource, in the **double-guarded** close group JDK 8
+/// writes: the primary it kept, the suppressed close's call, and the block the run leaves through.
+///
+/// [`close_of_level`] reads the close group of a javac 9+ lowering, where the resource's own guard
+/// is followed directly by the close. JDK 8's group puts the lead's guard between the two — the
+/// close of a run whose run is *itself* exceptional must suppress its own failure, and the close of
+/// one that is not must not — so the group is:
+///
+/// ```text
+///   astore primary                              ┐ the handler's binding store
+///   aload r; ifnull EXIT                        ┘ the resource's own guard
+///   aload p; ifnull PLAIN       ┐ the lead's guard: no primary, nothing to suppress into
+///   aload r; close; goto EXIT   │ the close a suppressed failure is recorded beside
+///   PLAIN: aload r; close       ┘ the close of a run with no primary at all
+///   EXIT: …
+/// ```
+///
+/// Both arms must close the same slot and rejoin `EXIT`, and the lead's guard must test exactly the
+/// lead [`PrimaryLead`] proved. Nothing else is admitted: a group whose arms do not both rejoin the
+/// exit, or whose guard tests another local, keeps the refusal [`Unproven::CloseTarget`] states.
+fn lead_close_of_level(
+    facts: &Facts<'_>,
+    entry: &CanonicalBlockId,
+    slot: u16,
+    lead: &PrimaryLead,
+) -> Result<(u16, u32, CanonicalBlockId), Cause> {
+    let head = facts.sequence(entry);
+    let [
+        (_, Some(Operation::Store { slot: primary })),
+        (exception_bci, Some(Operation::Load { slot: loaded })),
+        (
+            _,
+            Some(Operation::Comparison {
+                op: CompareOp::JumpIfNull,
+                target,
+            }),
+        ),
+    ] = head.as_slice()
+    else {
+        return Err((Unproven::Handler, entry.bci()));
+    };
+    if *loaded != slot {
+        return Err((Unproven::CloseTarget, *exception_bci));
+    }
+    let successors = facts.view.successor_ids(entry);
+    if successors.len() != 2 {
+        return Err((Unproven::Handler, entry.bci()));
+    }
+    let exit = facts
+        .block_at(*target)
+        .ok_or((Unproven::Handler, entry.bci()))?;
+    let Some(guard_block) = successors.iter().find(|block| **block != exit).cloned() else {
+        return Err((Unproven::Handler, entry.bci()));
+    };
+    let guard = facts.sequence(&guard_block);
+    let [
+        (guard_bci, Some(Operation::Load { slot: tested })),
+        (
+            _,
+            Some(Operation::Comparison {
+                op: CompareOp::JumpIfNull,
+                target: plain,
+            }),
+        ),
+    ] = guard.as_slice()
+    else {
+        return Err((Unproven::Handler, guard_block.bci()));
+    };
+    if *tested != lead.slot {
+        return Err((Unproven::CloseTarget, *guard_bci));
+    }
+    let plain = facts
+        .block_at(*plain)
+        .ok_or((Unproven::Handler, guard_block.bci()))?;
+    let arms = facts.view.successor_ids(&guard_block);
+    if arms.len() != 2 {
+        return Err((Unproven::Handler, guard_block.bci()));
+    }
+    let Some(close_block) = arms.iter().find(|block| **block != plain).cloned() else {
+        return Err((Unproven::Handler, guard_block.bci()));
+    };
+    let close_bci = lead_close_arm(facts, &close_block, slot, &exit)?;
+    lead_close_arm(facts, &plain, slot, &exit)?;
+    Ok((*primary, close_bci, exit))
+}
+
+/// One arm of a double-guarded close group: the close call it makes, and the exit it rejoins.
+fn lead_close_arm(
+    facts: &Facts<'_>,
+    block: &CanonicalBlockId,
+    slot: u16,
+    exit: &CanonicalBlockId,
+) -> Result<u32, Cause> {
+    let sequence = facts.sequence(block);
+    let [
+        (load_bci, Some(Operation::Load { slot: close_slot })),
+        (call_bci, Some(Operation::Invoke(called))),
+        rest @ ..,
+    ] = sequence.as_slice()
+    else {
+        return Err((Unproven::Handler, block.bci()));
+    };
+    if rest.len() > 1
+        || rest
+            .iter()
+            .any(|(_, operation)| !matches!(operation, Some(Operation::Transfer)))
+    {
+        return Err((Unproven::Handler, block.bci()));
+    }
+    if *close_slot != slot || called.name() != "close" || called.descriptor() != "()V" {
+        return Err((Unproven::CloseTarget, *call_bci));
+    }
+    let (Some(load), Some(call)) = (facts.step(*load_bci), facts.step(*call_bci)) else {
+        return Err((Unproven::Handler, block.bci()));
+    };
+    if !receiver_is(facts, call.instruction, load.instruction) {
+        return Err((Unproven::CloseTarget, *call_bci));
+    }
+    if facts.view.successor_ids(block) != vec![exit.clone()] {
+        return Err((Unproven::Handler, block.bci()));
+    }
+    Ok(*call_bci)
+}
+
+/// One level's handler in the JDK 8 shape: [`close_of_level`]'s proof for the double-guarded group,
+/// with the suppression the group's protected close performs read into the **lead**.
+///
+/// The handler's own binding store keeps the exception it was entered with — [`handler_binding`] —
+/// and the handler rethrows exactly that value. The close it performs is protected by a row of its
+/// own, whose handler folds the close's failure into the lead: the primary the statement propagates
+/// is the same local this level's close suppresses into, which is why the suppression is read as an
+/// equality with the lead rather than with the handler's own binding slot. On the path where the
+/// lead is still `null` — the body threw straight into this handler, so there is no primary yet —
+/// no suppression happens at all, and the plain arm of the group closes the resource.
+fn lead_close_handler(
+    facts: &Facts<'_>,
+    level: &ExceptionHandlerFact,
+    slot: u16,
+    lead: &PrimaryLead,
+) -> Result<CloseHandler, Cause> {
+    let entry = facts
+        .row_handler(level)
+        .ok_or((Unproven::Handler, level.handler_bci))?;
+    if !handler_binding(facts, entry.bci()) {
+        return Err((Unproven::Handler, entry.bci()));
+    }
+    let (primary, close_bci, exit) = lead_close_of_level(facts, &entry, slot, lead)?;
+    let Some(guard) = facts.innermost(close_bci).cloned() else {
+        return Err((Unproven::CloseGuard, close_bci));
+    };
+    let guard_entry = facts
+        .row_handler(&guard)
+        .ok_or((Unproven::CloseGuard, guard.handler_bci))?;
+    let (suppression_bci, suppression_call_bci) =
+        lead_suppression(facts, &guard_entry, lead, &exit)?;
+    let tail = facts.sequence(&exit);
+    let [
+        (_, Some(Operation::Load { slot: rethrown })),
+        (_, Some(Operation::Throw)),
+    ] = tail.as_slice()
+    else {
+        return Err((Unproven::Primary, exit.bci()));
+    };
+    if *rethrown != primary || !facts.view.successor_ids(&exit).is_empty() {
+        return Err((Unproven::Primary, exit.bci()));
+    }
+    let last = facts
+        .in_block(&exit)
+        .last()
+        .ok_or((Unproven::Primary, exit.bci()))?;
+    Ok(CloseHandler {
+        span: (entry.bci(), facts.span_end(last.bci())),
+        guard,
+        primary_bci: entry.bci(),
+        close_bci,
+        suppression_bci,
+        suppression_call_bci,
+        rethrow_bci: last.bci(),
+    })
+}
+
+/// The suppression one close's own handler performs: `astore raised; aload lead; aload raised;
+/// addSuppressed`, and then exactly the exit it rejoins.
+///
+/// The receiver is the **lead** — the local that holds the exception the statement is propagating —
+/// and the argument is the close's own failure. A handler that suppresses into anything else, or
+/// one whose run continues anywhere but the exit, is a refusal.
+fn lead_suppression(
+    facts: &Facts<'_>,
+    entry: &CanonicalBlockId,
+    lead: &PrimaryLead,
+    exit: &CanonicalBlockId,
+) -> Result<(u32, u32), Cause> {
+    let sequence = facts.sequence(entry);
+    let [
+        (_, Some(Operation::Store { slot: raised })),
+        (primary_bci, Some(Operation::Load { slot: suppressed })),
+        (_, Some(Operation::Load { slot: argument })),
+        (call_bci, Some(Operation::Invoke(suppress))),
+        rest @ ..,
+    ] = sequence.as_slice()
+    else {
+        return Err((Unproven::Suppressed, entry.bci()));
+    };
+    if rest.len() > 1
+        || rest
+            .iter()
+            .any(|(_, operation)| !matches!(operation, Some(Operation::Transfer)))
+    {
+        return Err((Unproven::Suppressed, entry.bci()));
+    }
+    if *suppressed != lead.slot || *argument != *raised {
+        return Err((Unproven::Suppressed, *primary_bci));
+    }
+    if suppress.name() != "addSuppressed" || suppress.descriptor() != "(Ljava/lang/Throwable;)V" {
+        return Err((Unproven::Suppressed, *call_bci));
+    }
+    if facts.view.successor_ids(entry) != vec![exit.clone()] {
+        return Err((Unproven::Suppressed, entry.bci()));
+    }
+    Ok((*primary_bci, *call_bci))
+}
+
+/// The normal path's close group in the JDK 8 shape: `aload r; ifnull L; aload p; ifnull L2; aload r;
+/// close; goto L; L2: aload r; close`, with `L` the block the run continues at.
+///
+/// [`normal_close`] reads the same group one guard shorter, and refuses as soon as the instruction
+/// after the resource's own `ifnull` is a load of anything but the resource. JDK 8 always writes
+/// that second load — the lead's own guard — so the group's close is one branch deeper. Both arms
+/// close the resource and rejoin `L`, exactly as the single-guarded shape's two arms do, and the
+/// continuation is `L` just the same.
+fn lead_normal_close(
+    facts: &Facts<'_>,
+    at: u32,
+    slot: u16,
+    lead: &PrimaryLead,
+) -> Option<(u32, u32)> {
+    let first = facts.step(at)?;
+    if facts.op(first.instruction.bci()) != Some(&Operation::Load { slot }) {
+        return None;
+    }
+    let second = facts.step(facts.next_bci(at)?)?;
+    let Some(Operation::Comparison {
+        op: CompareOp::JumpIfNull,
+        target,
+    }) = facts.op(second.instruction.bci())
+    else {
+        return None;
+    };
+    let continuation = *target;
+    let successors = facts.view.successor_ids(first.block);
+    if successors.len() != 2 || !successors.iter().any(|block| block.bci() == continuation) {
+        return None;
+    }
+    let third = facts.step(facts.next_bci(second.instruction.bci())?)?;
+    if facts.op(third.instruction.bci()) != Some(&Operation::Load { slot: lead.slot }) {
+        return None;
+    }
+    let fourth = facts.step(facts.next_bci(third.instruction.bci())?)?;
+    let Some(Operation::Comparison {
+        op: CompareOp::JumpIfNull,
+        target: plain,
+    }) = facts.op(fourth.instruction.bci())
+    else {
+        return None;
+    };
+    let guard_block = third.block;
+    let arms = facts.view.successor_ids(guard_block);
+    if arms.len() != 2 {
+        return None;
+    }
+    let plain_block = facts.block_at(*plain)?;
+    let close_block = arms.iter().find(|block| **block != plain_block).cloned()?;
+    let exit = facts.block_at(continuation)?;
+    let close_bci = lead_close_arm(facts, &close_block, slot, &exit).ok()?;
+    lead_close_arm(facts, &plain_block, slot, &exit).ok()?;
+    Some((close_bci, continuation))
+}
+
+/// Proves one JDK 8 `try`-with-resources level and builds the same [`Shape::Resources`] plan the
+/// javac 9+ reading builds for the same statement.
+///
+/// JDK 9 rewrote the resource-close idiom: it dropped the blank primary copy, the guarded close and
+/// the catch-all rows, and the module's other readings are the shape that rewrite left. This
+/// function reads the older lowering instead — and only it: every fact it adds is **identically
+/// false** on a javac 9+ lowering (no `aconst_null` lead, no double guard, no relay row), so a shape
+/// it does not claim keeps exactly the judgement it had before. That is why it is a reading of its
+/// own rather than a widening of [`twr`]: nothing it proves is read by the predicate that proves the
+/// newer lowering, and vice versa.
+///
+/// What it requires of the level row is what the older lowering really writes, in the order the
+/// proof reads it:
+///
+/// 1. the resource's own initialisation is the statement before the lead ([`lead_initialisation`]);
+/// 2. the body's protection is a typed row whose handler is the rethrow relay, immediately before
+///    the level's own catch-all row in the table ([`lead_relay`]);
+/// 3. the level's handler closes the resource through the double-guarded group, suppress into the
+///    lead and rethrows what it caught ([`lead_close_handler`]);
+/// 4. the normal path closes the same resource through the same group ([`lead_normal_close`]), and
+///    that close is protected by a row whose handler suppresses into the lead as well;
+/// 5. the lead is written **exactly twice** — by the pair, and by the relay — and by nothing else in
+///    any block this statement owns. Without this the normal path's second guard could be entered
+///    with a live lead, and its suppression arm would swallow the close's own exception: the older
+///    lowering is correct only because the lead is `null` on the normal path, and this makes that a
+///    proved fact of *this* statement rather than an assumption about the compiler;
+/// 6. every row over the statement's span is one of the five this shape read, and every block outside
+///    its span is owned by [`Facts::cleanup_blocks`] through those rows.
+fn twr_lead(
+    facts: &mut Facts<'_>,
+    profile: &crate::pass::RecoveryProfile,
+    current: &CanonicalBlockId,
+    level: &ExceptionHandlerFact,
+) -> Result<LeadReading, StopReason> {
+    let start = current.bci();
+    if !TWR.admits(profile) {
+        // A profile that does not admit the statement's own output is not this lowering's reading
+        // either: the rows keep every answer the other readings give them.
+        return Ok(LeadReading::NotThisShape);
+    }
+    // The two Sites-free facts first: a blank primary copy, and the relay the body's own protection
+    // runs through. Together they say the row is this lowering's level — and from there on the row
+    // is read as one, whatever falls short below (`LeadReading::Refused`), never as the user `catch`
+    // its table would otherwise spell. This is the same answer [`catches`] already states for the
+    // newer lowering: a `try`-with-resources this build cannot prove is not spelled as a `catch`.
+    let Some(lead) = lead_pair(facts, level.start_bci, start) else {
+        return Ok(LeadReading::NotThisShape);
+    };
+    let Some(close_entry) = facts.row_handler(level) else {
+        return Ok(LeadReading::NotThisShape);
+    };
+    let relay = match lead_relay(facts, level, &close_entry, &lead) {
+        Ok(relay) => relay,
+        // A blank copy and no relay: the row is no level of this lowering after all, and the other
+        // readings of this rule keep the block exactly as they had it.
+        Err(_) => return Ok(LeadReading::NotThisShape),
+    };
+    facts.charge(lead.store)?;
+    facts.charge(relay.rethrow)?;
+    let (init, slot) = match lead_initialisation(facts, start, &lead) {
+        Ok(initialisation) => initialisation,
+        Err(cause) => return Ok(LeadReading::Refused(cause)),
+    };
+    for bci in facts.bcis(init) {
+        facts.charge(bci)?;
+    }
+    let handler = match lead_close_handler(facts, level, slot, &lead) {
+        Ok(handler) => handler,
+        Err(cause) => return Ok(LeadReading::Refused(cause)),
+    };
+    for bci in facts.bcis(handler.span) {
+        facts.charge(bci)?;
+    }
+    let body = (level.start_bci, level.end_bci);
+    for bci in facts.bcis(body) {
+        facts.charge(bci)?;
+    }
+    if body.0 >= body.1 || !facts.statement_free_with_discarded_calls(body) {
+        return Ok(LeadReading::Refused((Unproven::Body, body.0)));
+    }
+    let Some((close_at, at)) = lead_normal_close(facts, body.1, slot, &lead) else {
+        return Ok(LeadReading::Refused((Unproven::CloseOrder, body.1)));
+    };
+    let mut pieces: Vec<(u32, u32)> = vec![(body.1, at)];
+    // The close the normal path makes is protected by a row of its own too — the same suppression,
+    // read on the normal path: a close that fails there folds its failure into the lead and the run
+    // continues, exactly as the exceptional path's does.
+    let Some(normal_guard) = facts.innermost(close_at).cloned() else {
+        return Ok(LeadReading::Refused((Unproven::CloseGuard, close_at)));
+    };
+    let Some(normal_entry) = facts.row_handler(&normal_guard) else {
+        return Ok(LeadReading::Refused((
+            Unproven::CloseGuard,
+            normal_guard.handler_bci,
+        )));
+    };
+    let Some(continuation) = facts.block_at(at) else {
+        return Ok(LeadReading::Refused((Unproven::Continuation, at)));
+    };
+    if let Err(cause) = lead_suppression(facts, &normal_entry, &lead, &continuation) {
+        return Ok(LeadReading::Refused(cause));
+    }
+    // The run ends the method in a value the body kept, or continues at a block of its own. A close
+    // chain that runs on into the statement's own block with no block to continue at is refused by
+    // [`Unproven::Continuation`], like every other reading of this rule.
+    let return_tail = twr_return_tail(facts, body, at)?;
+    let join = if return_tail.is_some() {
+        None
+    } else {
+        Some(continuation)
+    };
+    let claimed_end = return_tail
+        .as_ref()
+        .map(|(_, return_bci, _)| facts.span_end(*return_bci))
+        .unwrap_or(at);
+    let rows: Vec<u32> = vec![
+        level.ordinal,
+        relay.row.ordinal,
+        relay.catcher.ordinal,
+        handler.guard.ordinal,
+        normal_guard.ordinal,
+    ];
+    for row in facts.handlers {
+        if rows.contains(&row.ordinal) {
+            continue;
+        }
+        if facts
+            .bcis((start, claimed_end))
+            .into_iter()
+            .any(|bci| row.start_bci <= bci && bci < row.end_bci)
+        {
+            return Ok(LeadReading::Refused((Unproven::Unexplained, row.start_bci)));
+        }
+    }
+    pieces.extend([
+        init,
+        lead.span,
+        body,
+        handler.span,
+        (handler.guard.start_bci, handler.guard.end_bci),
+        relay.span,
+    ]);
+    if let Some((load_bci, _, _)) = return_tail.as_ref() {
+        pieces.push((*load_bci, claimed_end));
+    }
+    if let Err(cause) = explained(facts, start, claimed_end, &pieces) {
+        return Ok(LeadReading::Refused(cause));
+    }
+    let mut cleanup_spans: Vec<(u32, u32)> = vec![
+        (body.1, at),
+        handler.span,
+        (handler.guard.start_bci, handler.guard.end_bci),
+        relay.span,
+    ];
+    cleanup_spans.dedup();
+    let mut cleanup_bcis: BTreeSet<u32> = BTreeSet::new();
+    for span in cleanup_spans {
+        for bci in facts.bcis(span) {
+            facts.charge(bci)?;
+            cleanup_bcis.insert(bci);
+        }
+    }
+    let mut owned =
+        match facts.cleanup_blocks(&facts.blocks_in((start, claimed_end)), &cleanup_bcis, &rows) {
+            Ok(owned) => owned,
+            Err(TwrFailure::Proof(cause)) => return Ok(LeadReading::Refused(cause)),
+            Err(TwrFailure::Stop(reason)) => return Err(reason),
+        };
+    // The lead is written exactly twice, and by the two instructions the proof read: the pair that
+    // blanks it and the relay's store of the primary. Any other write inside the statement would
+    // make the second guard of either close group mean something other than "there is no primary
+    // yet", which is the only reading that keeps the plain arm's close from swallowing a failure.
+    let mut written: Vec<u32> = Vec::new();
+    for block in &owned {
+        for instruction in facts.in_block(block) {
+            facts.charge(instruction.bci())?;
+            if matches!(
+                facts.op(instruction.bci()),
+                Some(Operation::Store { slot: written }) if *written == lead.slot
+            ) {
+                written.push(instruction.bci());
+            }
+        }
+    }
+    written.sort_unstable();
+    if written != [lead.store, relay.primary_store] {
+        return Ok(LeadReading::Refused((Unproven::ResourceSlot, lead.store)));
+    }
+    owned.sort_by_key(CanonicalBlockId::bci);
+    let mut facts_read: Vec<u32> = Vec::new();
+    if let Some((load_bci, return_bci, store_bci)) = return_tail.as_ref() {
+        facts_read.extend([*load_bci, *return_bci, *store_bci]);
+    }
+    facts_read.push(close_at);
+    facts_read.extend(facts.bcis(init));
+    facts_read.extend(facts.bcis(lead.span));
+    facts_read.push(handler.primary_bci);
+    facts_read.push(handler.close_bci);
+    facts_read.push(handler.suppression_bci);
+    facts_read.push(handler.suppression_call_bci);
+    facts_read.push(handler.rethrow_bci);
+    if let Some(last) = facts.in_block(&normal_entry).last() {
+        facts_read.extend(facts.bcis((normal_entry.bci(), facts.span_end(last.bci()))));
+    }
+    facts_read.extend(cleanup_bcis.iter().copied());
+    facts_read.sort_unstable();
+    facts_read.dedup();
+    Ok(LeadReading::Claimed(Plan {
+        shape: Shape::Resources {
+            resources: vec![Resource {
+                slot,
+                init,
+                close_bci: close_at,
+                exceptional_close_bci: handler.close_bci,
+            }],
+            returns: return_tail.as_ref().map(|(_, return_bci, _)| *return_bci),
+            cleanup: cleanup_bcis.into_iter().collect(),
+            inner_finally: None,
+            trailing_finally: None,
+            trail: None,
+        },
+        lead: (start, init.0),
+        body,
+        owned,
+        join,
+        enclosing: None,
+        facts: facts_read,
+    }))
+}
+
+/// What reading one catch-all row as the older lowering's level concludes.
+///
+/// The three answers are the three states the row can be in, and the difference between the last
+/// two is what keeps the older lowering out of the `catch` reading [`catches`] would otherwise
+/// spell: a row that carries a blank primary copy and a rethrow relay **is** this lowering's level,
+/// so a link that falls short is a refusal of *this* rule rather than an invitation to read the
+/// block's rows as clauses.
+enum LeadReading {
+    /// No blank copy, or none of the relay: the row is the `catch` its own table names, and the
+    /// other readings of this rule keep the block.
+    NotThisShape,
+    /// The row leads a resource lowering and one of the proof's links fell short. `Cause` states
+    /// the link, so the refusal names what is missing rather than "not a `try`".
+    Refused(Cause),
+    /// The shape is proved.
+    Claimed(Plan),
 }
 
 /// The clause rows of the `try` this statement sits inside, when the table states one.
