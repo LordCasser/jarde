@@ -21915,6 +21915,16 @@ impl Builder<'_> {
                     // the proved widening means that check cannot fail for this operand.
                     return Ok(cast_argument(argument, required, bci));
                 }
+                if platform_array_argument_widens(
+                    self.profile.java_release,
+                    &presented_name,
+                    required_name,
+                ) {
+                    // The same answer for the array position of the platform tables: the component
+                    // pair is one of their rows, so the array widening is proved and the cast
+                    // above pins the parameter type the pool selected.
+                    return Ok(cast_argument(argument, required, bci));
+                }
                 if self.reference_overload_calls.iter().any(|proof| {
                     proof.bci == bci
                         && proof.source == presented_name
@@ -21930,6 +21940,13 @@ impl Builder<'_> {
                     return Ok(cast_argument(argument, required, bci));
                 }
                 if java_lang_throwable_widens(&presented_name, required_name) {
+                    return Ok(cast_argument(argument, required, bci));
+                }
+                if platform_interface_argument_widens(
+                    self.profile.java_release,
+                    &presented_name,
+                    required_name,
+                ) {
                     return Ok(cast_argument(argument, required, bci));
                 }
                 // The last reference answer, and only after every earlier one: the argument's own
@@ -25258,6 +25275,51 @@ fn array_reference_widens(presented: &str, required: &str) -> bool {
     }
 }
 
+/// The array position of the platform tables above: whether one presented **array** type can be
+/// widened to a required array type whose deepest reference components are a pair one of those
+/// closed tables proves. `String[]` at a `CharSequence[]` position is the shape
+/// `String.join(CharSequence, CharSequence...)` writes for a `String[]` argument, and
+/// `String[][]` at a `CharSequence[][]` position is the same relation one rank deeper.
+///
+/// The array shapes must agree rank for rank — a primitive component never stands in for a
+/// reference one, and an array component never meets a class component — exactly as
+/// [`array_reference_widens`] states them; this predicate then states no fact of its own, it only
+/// asks these tables the scalar positions ask. The two channels that answered arrays before this
+/// change are deliberately **not** consulted here: [`platform_reference_argument_widens`] and
+/// [`java_lang_throwable_widens`] keep the array answer they always stated, so an
+/// `IllegalStateException[]` argument at a `Throwable[]` position stays refused exactly as before.
+fn platform_array_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
+    const MAX_ARRAY_DIMENSIONS: usize = 255;
+
+    let mut presented = presented;
+    let mut required = required;
+    for _ in 0..MAX_ARRAY_DIMENSIONS {
+        let (Some(presented_component), Some(required_component)) =
+            (presented.strip_suffix("[]"), required.strip_suffix("[]"))
+        else {
+            return false;
+        };
+        if presented_component.is_empty() || required_component.is_empty() {
+            return false;
+        }
+        let presented_is_array = presented_component.ends_with("[]");
+        let required_is_array = required_component.ends_with("[]");
+        if presented_is_array != required_is_array {
+            return false;
+        }
+        if !presented_is_array {
+            return platform_interface_argument_widens(
+                java_release,
+                presented_component,
+                required_component,
+            );
+        }
+        presented = presented_component;
+        required = required_component;
+    }
+    false
+}
+
 /// The Java 8 `java.util` collection hierarchy one invocation argument may cross, stated as the
 /// fixed direct edges of the release-8 tree. A class row is a javadoc `extends` (one superclass) or
 /// `implements` (one interface) relation of that class; an interface row is a javadoc `extends`
@@ -25512,6 +25574,85 @@ fn java_lang_throwable_widens(presented: &str, required: &str) -> bool {
         }
     }
     false
+}
+
+/// The release-8 implementer sets of the platform types the two tables above do not state: the
+/// `java.lang` interfaces `CharSequence` and `Comparable`, `java.io.Serializable`, and the enum
+/// family's own `java.util.EnumSet` collection type.
+///
+/// The JVM verifier already admitted the argument's value to the invoked descriptor's parameter,
+/// so a value one of these rows names cannot fail the widening: every row is the platform's own
+/// fixed relation between two names the JDK ships, stated exactly as the release-8 javadoc
+/// declares it — a class row is the implementer's own declaration of that interface, or the
+/// superclass whose declaration carries it — and a pair no row states does not widen. The answer is
+/// therefore the same closed knowledge [`platform_reference_argument_widens`] states for its
+/// `java.util` tree and [`java_lang_throwable_widens`] for its `java.lang` Throwable family, and a
+/// caller renders a hit exactly as it renders theirs.
+///
+/// An enum constant's value needs no row here: the enum class is a class of the analyzed snapshot,
+/// and its own class-file header names `java.lang.Enum`, which the snapshot hierarchy proof already
+/// states. Only the platform type a snapshot does not hold is tabled.
+fn platform_interface_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
+    // `java.lang.CharSequence`'s implementers: `String`, `StringBuffer` and `StringBuilder`
+    // declare the interface in their own headers, and so does `java.nio.CharBuffer`. The closed
+    // four rows are the release-8 javadoc's set this change pins; the same javadoc's implementer
+    // list also names `javax.swing.text.Segment`, which states no row here, so that pair keeps its
+    // refusal rather than widening from memory.
+    const CHAR_SEQUENCE: &[(&str, &str)] = &[
+        ("java.lang.String", "java.lang.CharSequence"),
+        ("java.lang.StringBuffer", "java.lang.CharSequence"),
+        ("java.lang.StringBuilder", "java.lang.CharSequence"),
+        ("java.nio.CharBuffer", "java.lang.CharSequence"),
+    ];
+    // `java.lang.Comparable`'s `java.lang` implementers: `String` and the eight boxed types, each
+    // of which declares `Comparable<itself>` in its own header. The `java.math` and other JDK
+    // implementers state no row (this table is the `java.lang` set).
+    const COMPARABLE: &[(&str, &str)] = &[
+        ("java.lang.String", "java.lang.Comparable"),
+        ("java.lang.Byte", "java.lang.Comparable"),
+        ("java.lang.Short", "java.lang.Comparable"),
+        ("java.lang.Integer", "java.lang.Comparable"),
+        ("java.lang.Long", "java.lang.Comparable"),
+        ("java.lang.Float", "java.lang.Comparable"),
+        ("java.lang.Double", "java.lang.Comparable"),
+        ("java.lang.Character", "java.lang.Comparable"),
+        ("java.lang.Boolean", "java.lang.Comparable"),
+    ];
+    // `java.io.Serializable`'s `java.lang` implementers of the same nine names: `String`,
+    // `Character` and `Boolean` declare the interface in their own headers, and the six `Number`
+    // subclasses reach it through the `java.lang.Number` header that declares it — the javadoc's
+    // own implemented-interface list, read the way this file's java.util table reads
+    // `Properties -> java.util.Map` off `Hashtable`.
+    const SERIALIZABLE: &[(&str, &str)] = &[
+        ("java.lang.String", "java.io.Serializable"),
+        ("java.lang.Byte", "java.io.Serializable"),
+        ("java.lang.Short", "java.io.Serializable"),
+        ("java.lang.Integer", "java.io.Serializable"),
+        ("java.lang.Long", "java.io.Serializable"),
+        ("java.lang.Float", "java.io.Serializable"),
+        ("java.lang.Double", "java.io.Serializable"),
+        ("java.lang.Character", "java.io.Serializable"),
+        ("java.lang.Boolean", "java.io.Serializable"),
+    ];
+    // The enum family's collection type: `java.util.EnumSet` extends `java.util.AbstractSet`, and
+    // the javadoc's implemented-interface list reaches `Set`, `Collection` and `Iterable` — the
+    // rows the `EnumSet.retainAll(Collection)` argument position of an `EnumSet` parameter needs.
+    // `EnumSet`'s `Cloneable`/`Serializable` relations state no row: the collection positions are
+    // the ones the enum change pins.
+    const ENUM_FAMILY: &[(&str, &str)] = &[
+        ("java.util.EnumSet", "java.util.AbstractSet"),
+        ("java.util.EnumSet", "java.util.Set"),
+        ("java.util.EnumSet", "java.util.Collection"),
+        ("java.util.EnumSet", "java.lang.Iterable"),
+    ];
+    // Every row is a release-8 javadoc relation, so the gate the java.util table states for its own
+    // rows applies here too: another release's platform facts are not this table's.
+    if java_release != 8 {
+        return false;
+    }
+    [CHAR_SEQUENCE, COMPARABLE, SERIALIZABLE, ENUM_FAMILY]
+        .iter()
+        .any(|rows| rows.contains(&(presented, required)))
 }
 
 /// The type one method descriptor's **result** states, when this layer can spell it (`V` is `None`).
@@ -28290,6 +28431,135 @@ mod tests {
             assert!(
                 !java_lang_throwable_widens(presented, required),
                 "{presented} must not widen to {required} from the java.lang table"
+            );
+        }
+    }
+
+    #[test]
+    fn platform_interface_argument_widening_reaches_exactly_the_table_rows() {
+        // One positive per row of the four tables, release 8 the only release they state.
+        for (presented, required) in [
+            ("java.lang.String", "java.lang.CharSequence"),
+            ("java.lang.StringBuffer", "java.lang.CharSequence"),
+            ("java.lang.StringBuilder", "java.lang.CharSequence"),
+            ("java.nio.CharBuffer", "java.lang.CharSequence"),
+            ("java.lang.String", "java.lang.Comparable"),
+            ("java.lang.Byte", "java.lang.Comparable"),
+            ("java.lang.Short", "java.lang.Comparable"),
+            ("java.lang.Integer", "java.lang.Comparable"),
+            ("java.lang.Long", "java.lang.Comparable"),
+            ("java.lang.Float", "java.lang.Comparable"),
+            ("java.lang.Double", "java.lang.Comparable"),
+            ("java.lang.Character", "java.lang.Comparable"),
+            ("java.lang.Boolean", "java.lang.Comparable"),
+            ("java.lang.String", "java.io.Serializable"),
+            ("java.lang.Byte", "java.io.Serializable"),
+            ("java.lang.Short", "java.io.Serializable"),
+            ("java.lang.Integer", "java.io.Serializable"),
+            ("java.lang.Long", "java.io.Serializable"),
+            ("java.lang.Float", "java.io.Serializable"),
+            ("java.lang.Double", "java.io.Serializable"),
+            ("java.lang.Character", "java.io.Serializable"),
+            ("java.lang.Boolean", "java.io.Serializable"),
+            ("java.util.EnumSet", "java.util.AbstractSet"),
+            ("java.util.EnumSet", "java.util.Set"),
+            ("java.util.EnumSet", "java.util.Collection"),
+            ("java.util.EnumSet", "java.lang.Iterable"),
+        ] {
+            assert!(
+                platform_interface_argument_widens(8, presented, required),
+                "{presented} must widen to {required} from the interface tables"
+            );
+        }
+
+        // The refusals the closed sets exist for: every release other than 8, the types outside
+        // each table (the spec's own negative anchors, the `java.math`/`java.util` JDK implementers
+        // no row names, the `javax.swing.text.Segment` the CharSequence javadoc lists but this
+        // change's four rows do not), the downward and sibling directions, and the primitive,
+        // array and generic shapes no row spells.
+        for (release, presented, required) in [
+            (7, "java.lang.String", "java.lang.CharSequence"),
+            (9, "java.lang.String", "java.lang.CharSequence"),
+            (7, "java.lang.Integer", "java.lang.Comparable"),
+            (9, "java.lang.String", "java.io.Serializable"),
+            (8, "java.lang.Integer", "java.lang.CharSequence"),
+            (8, "java.lang.String", "java.lang.Runnable"),
+            (8, "java.lang.Object", "java.lang.Comparable"),
+            (8, "java.lang.Object", "java.io.Serializable"),
+            (8, "java.lang.String", "java.lang.Enum"),
+            (8, "java.math.BigInteger", "java.lang.Comparable"),
+            (8, "java.util.Date", "java.lang.Comparable"),
+            (8, "javax.swing.text.Segment", "java.lang.CharSequence"),
+            (8, "example.Row", "java.lang.Comparable"),
+            (8, "java.lang.CharSequence", "java.lang.String"),
+            (8, "java.lang.Comparable", "java.lang.Integer"),
+            (8, "java.lang.CharSequence", "java.lang.StringBuilder"),
+            (8, "java.io.Serializable", "java.lang.String"),
+            (8, "java.lang.String[]", "java.lang.CharSequence[]"),
+            (8, "java.util.EnumSet", "java.util.Collection[]"),
+            (8, "int", "java.lang.Comparable"),
+            (8, "java.lang.String", "int"),
+            (8, "java.lang.Integer<String>", "java.lang.Comparable"),
+            (8, "java.util.EnumSet", "java.util.HashSet"),
+        ] {
+            assert!(
+                !platform_interface_argument_widens(release, presented, required),
+                "release {release}: {presented} must not widen to {required} from these tables"
+            );
+        }
+    }
+
+    #[test]
+    fn platform_array_argument_widening_needs_a_proved_table_component() {
+        // The array position of the same tables: the component pair is one of their rows, at any
+        // rank the two spellings agree on.
+        for (presented, required) in [
+            ("java.lang.String[]", "java.lang.CharSequence[]"),
+            ("java.lang.String[]", "java.io.Serializable[]"),
+            ("java.lang.Integer[]", "java.lang.Comparable[]"),
+            ("java.util.EnumSet[]", "java.util.Collection[]"),
+            ("java.lang.String[][]", "java.lang.CharSequence[][]"),
+            ("java.lang.Integer[][]", "java.lang.Comparable[][]"),
+            ("java.nio.CharBuffer[]", "java.lang.CharSequence[]"),
+        ] {
+            assert!(
+                platform_array_argument_widens(8, presented, required),
+                "{presented} must widen to {required} from the interface tables"
+            );
+        }
+
+        // Shapes the array closed set answers on its own (`int[]` to `Object[]`, identical
+        // components, arrays to the marker interfaces) state no table row, and the component pair
+        // must itself be a row: another release, another interface, a user hierarchy, a rank
+        // mismatch or a non-array name keeps the refusal.
+        for (release, presented, required) in [
+            (9, "java.lang.String[]", "java.lang.CharSequence[]"),
+            (7, "java.lang.Integer[]", "java.lang.Comparable[]"),
+            (8, "int[]", "java.lang.Object[]"),
+            (8, "java.lang.String[]", "java.lang.Object[]"),
+            (8, "java.lang.String[]", "java.lang.String[]"),
+            (8, "java.lang.String[]", "java.lang.Cloneable"),
+            (8, "java.lang.String[]", "java.lang.Runnable[]"),
+            (
+                8,
+                "java.lang.IllegalStateException[]",
+                "java.lang.Throwable[]",
+            ),
+            (8, "java.util.ArrayList[]", "java.util.List[]"),
+            (8, "java.io.IOException[]", "java.lang.Exception[]"),
+            (8, "example.Child[]", "example.Parent[]"),
+            (8, "example.Implementation[]", "example.Interface[]"),
+            (8, "java.lang.String[][]", "java.lang.CharSequence[]"),
+            (8, "java.lang.String[]", "java.lang.CharSequence[][]"),
+            (8, "java.lang.String", "java.lang.CharSequence[]"),
+            (8, "java.lang.String[]", "java.lang.CharSequence"),
+            (8, "java.lang.String[]", "int[]"),
+            (8, "javax.swing.text.Segment[]", "java.lang.CharSequence[]"),
+            (8, "java.util.EnumSet", "java.util.Collection"),
+        ] {
+            assert!(
+                !platform_array_argument_widens(release, presented, required),
+                "release {release}: {presented} must not widen to {required} from this table"
             );
         }
     }
