@@ -33,12 +33,14 @@ name a request can bind), the same on both binaries — they are printed, not si
 | `recover-postfix-old-value-snapshot/v8/{CM,CM2,AD,GA,PT,SR,IX}.class` and the seven `v8-javac8` twins (14) | this change's own fixtures |
 | `pc.jar!PC.class` | **the invoke-argument position** (outside the matrix): `PC.list.set(PC.idx++, …)` and `PC.sb.append("n").append(local0++)` |
 | `it.jar!IT.class`, `it.jar!IT$IntRange.class` | the same position: `return java.lang.Integer.valueOf(this.cur++);` |
-| `StringIterableForeachRunner$ProbeIterable$1.class` (four copies: `original`/`jadx` × `root-replay`/direct) | the same position inside an anonymous iterator's `next()` |
+| `StringIterableForeachRunner$ProbeIterable$1.class` (four copies: `original`/`jadx` × `root-replay`/direct) | the **instance field postfix as an array index**: `return …access$200(this.this$0)[this.index++];` — the same shape as the verified `IX.fieldRead`/`IX.fieldWrite` anchors, inside the enhanced-for patrol's anonymous iterator |
 
 Every moved class is one of the two families the mechanism states: a **local** snapshot or a
 **field** snapshot, at a consumer position. No moved class changed for any other reason — in
 particular the three healthy shapes (`CM.compound*`, `CM2.crossStmt`, `CM2.prefix`) and every
-refusal text of the untouched shapes are byte-identical.
+refusal text of the untouched shapes are byte-identical. No class in the corpus became *more*
+refused: the sweep's patched side adds no `not recovered` line the baseline did not already have,
+and my accounting check's whole-method quote never fires in the corpus.
 
 ## The three deltas outside the matrix
 
