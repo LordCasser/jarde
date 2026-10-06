@@ -1,0 +1,129 @@
+// jarde: presentation of `ICN` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ICN extends java.lang.Object {
+    static int calls;
+
+    public ICN() {
+        // @method <init>()V
+        // @declaration a constructor of `ICN`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.String f() {
+        // @method f()Ljava/lang/String;
+        // @declaration a static method of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ICN.calls = ICN.calls + 1;
+        return "f";
+    }
+
+    static java.lang.String g() {
+        // @method g()Ljava/lang/String;
+        // @declaration a static method of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ICN.calls = ICN.calls + 1;
+        return "g";
+    }
+
+    static int pick(int x) {
+        // @method pick(I)I
+        // @declaration a static method of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return x + 1;
+    }
+
+    static void armCall(boolean flag) {
+        // jarde: not recovered: the recovery run for `armCall(Z)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method armCall(Z)V
+        // @declaration a static method of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4
+        // the saved producer at BCI 4 has no bounded final expression consumer
+        // @bytecode 0 3 4 9
+        // the saved producer at BCI 9 has no bounded final expression consumer
+        // @bytecode 13
+        // the saved producer at BCI 13 has no bounded final expression consumer
+        // @bytecode 0 3 4 9 13 16 7 12 19 20 23 26 29 32 35 37 40 41 44 47 50 51 54 57 58 61 62 65 68 71 74 77
+        // the saved producer at BCI 16 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 50 47 44 37 32 16 9 4 0 3 13 41
+        // the value at BCI 50 was produced by a saved declaration this run could not commit
+        // @bytecode 51 54 57 58 61 62 65 68 71 74
+        // the statement at BCI 74 reads `s`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        jarde_refused_body();
+    }
+
+    static void armStore(boolean flag) {
+        // jarde: not recovered: the recovery run for `armStore(Z)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method armStore(Z)V
+        // @declaration a static method of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2 5 6
+        // the saved producer at BCI 6 has no bounded final expression consumer
+        // @bytecode 2 5 6 11
+        // the saved producer at BCI 11 has no bounded final expression consumer
+        // @bytecode 15
+        // the saved producer at BCI 15 has no bounded final expression consumer
+        // @bytecode 2 5 6 11 15 18 0 1 9 14 21 22 25 26 27 28 31 32 33 34 37 39 42 43 46 49 52 53 56 59 60 63 64 67 68 71 74 77
+        // the saved producer at BCI 18 has 3 consumers, so one local binding cannot prove its execution count
+        // @bytecode 0 25 31 22
+        // the conditional arm contains an independent instruction at BCI 27
+        // @bytecode 2 5 6 11 15 18 34
+        // the dependency chain from BCI 34 to final consumer 52 is not bounded
+        // @bytecode 2 5 6 11 15 18 34 39
+        // the dependency chain from BCI 39 to final consumer 52 is not bounded
+        // @bytecode 43
+        // the dependency chain from BCI 43 to final consumer 52 is not bounded
+        // @bytecode 2 5 6 11 15 18 34 39 43 46
+        // the dependency chain from BCI 46 to final consumer 52 is not bounded
+        // @bytecode 2 5 6 11 15 18 34 39 43 46 49
+        // the dependency chain from BCI 49 to final consumer 52 is not bounded
+        // @bytecode 52 49 46 39 34 18 11 6 2 5 15 43
+        // the value at BCI 52 was produced by a saved declaration this run could not commit
+        // @bytecode 53 56 59 60 63 64 67 68 71 74
+        // the statement at BCI 74 reads `s`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        jarde_refused_body();
+    }
+
+    static void nested(java.lang.Object p, java.lang.Object q, java.lang.Object r, java.lang.Object s) {
+        // jarde: not recovered: the recovery run for `nested(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nested(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+        // @declaration a static method of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 6 7 10 12 15 16 17 20 21 24
+        // the carried argument crosses an independent instruction at BCI 25
+        // @bytecode 25 28 29 30 33 34 37
+        // the carried argument crosses an independent instruction at BCI 25
+        // @bytecode 38 0 3 6 7 10 12 15 16 17 20 21 24 25 28 29 30 33 34 37 41 43 46 47 50 53 56 59
+        // the dependency chain from BCI 38 to final consumer 56 is not bounded
+        // @bytecode 38 43
+        // the dependency chain from BCI 43 to final consumer 56 is not bounded
+        // @bytecode 46 47
+        // the dependency chain from BCI 47 to final consumer 56 is not bounded
+        // @bytecode 38 43 46 47 50
+        // the dependency chain from BCI 50 to final consumer 56 is not bounded
+        // @bytecode 38 43 46 47 50 53
+        // the dependency chain from BCI 53 to final consumer 56 is not bounded
+        // @bytecode 56 0 53 50 43 38 47 46
+        // the value at BCI 56 was produced by a saved declaration this run could not commit
+        jarde_refused_body();
+    }
+
+    static void guarded(java.lang.Object p, java.lang.Object q) {
+        // jarde: not recovered: the recovery run for `guarded(Ljava/lang/Object;Ljava/lang/Object;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method guarded(Ljava/lang/Object;Ljava/lang/Object;)V
+        // @declaration a static method of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 24 28 29 51 55
+        // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+        jarde_refused_body();
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `ICN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ICN.calls = 0;
+    }
+}

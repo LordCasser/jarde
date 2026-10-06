@@ -5307,7 +5307,7 @@ fn recover_inner(
         Ok(fields) => fields,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let chains = match concat::plan_four_conditional_strings(ssa, canonical, &operations, budget) {
+    let chains = match concat::plan_conditional_cut_chains(ssa, canonical, &operations, budget) {
         Ok(chains) => chains,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };

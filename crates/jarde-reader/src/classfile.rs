@@ -11974,7 +11974,15 @@ mod tests {
             // targets: the dance's `ifle`/`goto` pair and `ifnull`/`goto` pair per leg, plus
             // `deadChain`'s two tests, `split`'s comparison, `splitLocal`'s comparison and
             // `NEG.shortChain`'s two tests) moved it again.
-            (789, 3311, 286, 2061, 8),
+            // The 2026-10-07 recover-inline-conditional-concat-operands fixtures (the inline
+            // conditional value as a `+` chain operand: the anchors `ICC` with its `ICC$Inner`
+            // companion, `ICB` and `ICQ`, the no-branch control `ICM` and the four negatives
+            // `ICN`, six classes on both compiler legs — twelve classes, fifty-two bodies, two
+            // handler records — `ICN.guarded`'s `RuntimeException` catch, one per leg — and
+            // thirty-four branch targets: the cut's `if_acmpne`/`goto` pair in `ICC`, `ICB`, `ICQ`
+            // and `ICN.guarded`, `armCall`'s and `armStore`'s `ifeq`/`goto` pair, `nested`'s two
+            // comparison pairs, and the catch's own `goto` per leg) moved it again.
+            (801, 3363, 288, 2095, 8),
             "fixture population changed: re-measure these counts"
         );
     }

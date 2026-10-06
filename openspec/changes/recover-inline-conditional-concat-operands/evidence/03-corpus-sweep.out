@@ -1,0 +1,99 @@
+SELF-TEST OK: ICC chain 0 -> 1; this change's ICN byte-identical; postfix NG byte-identical
+pass A loose candidate classes: 2788
+MOVED (single-class): tests/fixtures/proved-java-structure/anonymous-double-site/AnonymousDoubleSite.class
+    24d23
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    28,36c27,32
+    <         // @bytecode 66 0 1 4 5 6 9 10 13 16 17 20 22 25 26 29 32 35 38 41 44 45 48 50 53 54 57 60 63 69 72 73 76 78 81 82 85 86 89 92 93 96 97 100 103 106
+    <         // the saved producer at BCI 66 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 69 72 73
+    <         // the saved producer at BCI 73 has no bounded final expression consumer
+    <         // @bytecode 69 72 73 78
+MOVED (single-class): tests/fixtures/proved-java-structure/anonymous-cross-class-use/Main.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    17,25c16,19
+    <         // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 27 28 31 34 35 38 39 42 45 48
+    <         // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 11 14 15
+    <         // the saved producer at BCI 15 has no bounded final expression consumer
+    <         // @bytecode 11 14 15 20
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+MOVED (single-class): tests/fixtures/recover-inline-conditional-concat-operands/v8/ICQ.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    17,25c16,20
+    <         // @bytecode 16 0 3 4 7 8 11 12 15 19 22 23 26 28 31 32 33 36 37 40 41 44 46 49 50 53 56 59 62
+    <         // the saved producer at BCI 16 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 19 22 23
+    <         // the saved producer at BCI 23 has no bounded final expression consumer
+    <         // @bytecode 19 22 23 28
+MOVED (single-class): tests/fixtures/recover-inline-conditional-concat-operands/v8/ICB.class
+    30d29
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    34,62c33,35
+    <         // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 25 28 31 33 36 37 38 41 44 46 49 50 53 56 59 61 64 65 68 69 72 73 76 77 80 83 86
+    <         // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 11 14 15
+    <         // the saved producer at BCI 15 has no bounded final expression consumer
+    <         // @bytecode 11 14 15 20
+MOVED (single-class): tests/fixtures/recover-inline-conditional-concat-operands/v8/ICC.class
+    40d39
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    44,78c43,45
+    <         // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 25 28 31 34 36 39 40 41 44 47 50 52 55 56 57 60 63 66 69 71 74 75 76 79 82 83 86 87 90 91 94 97 100
+    <         // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 11 14 15
+    <         // the saved producer at BCI 15 has no bounded final expression consumer
+    <         // @bytecode 11 14 15 20
+MOVED (single-class): tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICQ.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    17,25c16,20
+    <         // @bytecode 16 0 3 4 7 8 11 12 15 19 22 23 26 28 31 32 33 36 37 40 41 44 46 49 50 53 56 59 62
+    <         // the saved producer at BCI 16 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 19 22 23
+    <         // the saved producer at BCI 23 has no bounded final expression consumer
+    <         // @bytecode 19 22 23 28
+MOVED (single-class): tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICB.class
+    30d29
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    34,62c33,35
+    <         // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 25 28 31 33 36 37 38 41 44 46 49 50 53 56 59 61 64 65 68 69 72 73 76 77 80 83 86
+    <         // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 11 14 15
+    <         // the saved producer at BCI 15 has no bounded final expression consumer
+    <         // @bytecode 11 14 15 20
+MOVED (single-class): tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICC.class
+    40d39
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    44,78c43,45
+    <         // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 25 28 31 34 36 39 40 41 44 47 50 52 55 56 57 60 63 66 69 71 74 75 76 79 82 83 86 87 90 91 94 97 100
+    <         // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 11 14 15
+    <         // the saved producer at BCI 15 has no bounded final expression consumer
+    <         // @bytecode 11 14 15 20
+pass A: moved=8 unrendered=1
+archive candidate classes: 738
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/multiconsumer-local-soundness-patrol/fixture/ni.jar!NI.class
+    30d29
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    34,68c33,35
+    <         // @bytecode 8 0 3 4 7 11 14 15 18 20 23 24 25 28 31 34 36 39 40 41 44 47 50 52 55 56 57 60 63 66 69 71 74 75 76 79 82 83 86 87 90 91 94 97 100
+    <         // the saved producer at BCI 8 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 11 14 15
+    <         // the saved producer at BCI 15 has no bounded final expression consumer
+    <         // @bytecode 11 14 15 20
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/serialization-callbacks-patrol/fixture/sz.jar!SZ.class
+    60,79d59
+    <         // @bytecode 66
+    <         // the saved producer at BCI 66 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 69 72 73
+    <         // the saved producer at BCI 73 has no bounded final expression consumer
+    <         // @bytecode 69 72 73 78
+    <         // the saved producer at BCI 78 has no bounded final expression consumer
+    <         // @bytecode 83
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+pass C: moved=2 unrendered=1
+moved classes: single-class=8 jar=2 total=10
+unrendered candidates: A=1 C=1
