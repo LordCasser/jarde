@@ -15,6 +15,23 @@ not a compiler's habit.
 
 Debug information is kept (`-g`) so every local the presentation names is the source's own name.
 
+## The bytes, pinned
+
+| file | sha256 |
+| --- | --- |
+| `AV.java` | `fa789607135618b11cfbd0fa785a8037009a58040c1260cc7101f5cfb8c7ec2d` |
+| `MD.java` (the patrol's own) | `3cf80864b405fda84d0a5c2969ef9096992dbb89646a635e898168920fb569c3` |
+| `MD2.java` (the patrol's own) | `0f2fbcd11056ade84d53f53d11aea269e8febadbb8d8856ede79260282f06e18` |
+| `MD3.java` (the patrol's own) | `4499276db130a9c0aeec0f82c41144e383b7b234fd8fe62f86ecce09d6d1932f` |
+| `AVN.class` (hand-built) | `e183cf5f745c207db8ad22bd0c4551c9214e96b2d082730ac0c3cd39cff039de` |
+| `v8/{AV,MD,MD2,MD3}.class` | `6f04a622…`, `9d553081…`, `f811f7fc…`, `6cd8dfdd…` |
+| `v8-javac8/{AV,MD,MD2,MD3}.class` | `772b876c…`, `9cad2228…`, `810126c2…`, `be5ed98a…` |
+
+(The leg digests are the first eight hex digits of the full sha256; the sources, `AVN.class` and the
+patrol's own three are stated whole because they are the inputs every claim here is about. The
+integration test embeds the class files with `include_bytes!`, so a leg file that moves fails the
+build's own corpus fingerprint before any of these assertions run.)
+
 ## The anchors — the patrol's own fixtures
 
 `MD.java`, `MD2.java`, `MD3.java` are the `array-initializer-value-patrol` fixtures
