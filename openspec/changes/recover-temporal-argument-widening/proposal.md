@@ -6,6 +6,8 @@
 
 按已落地的扩宽表机制（build.rs `platform_interface_argument_widens`，与四表同一函数）新增 **java.time 行集**：以 release-8 javadoc/header 为准的封闭行（MVP：LocalDateTime/LocalDate/LocalTime → `java.time.temporal.Temporal`、`java.time.temporal.TemporalAccessor`；ZonedDateTime/Instant/OffsetDateTime 等按 javap 核对后入表；数组位谓词自动覆盖）。零新机制、既有通道逐字不动。
 
+> **root 追加行（2026-10-06，[CompletableFuture 巡查](../../evidence/java-syntax-2026-10-05/completable-future-patrol/README.md)）**：`java.util.concurrent.CompletableFuture → java.util.concurrent.CompletionStage`（`Future<T>` 同）——thenCombine 首参位实测拒绝，同机制一行入本片行集（表批 2）。
+
 ## 硬不变量
 
 1. 既有表/通道/单边机制渲染逐字节不变；非 java.time 层级成员仍拒；
