@@ -7660,13 +7660,12 @@ fn br_family_bridges_admit_through_the_extended_gates() {
     assert!(base.text.contains("public BR$Base next()"));
     assert!(!base.text.contains("BR$Node next()"));
 
-    // `BR$Impl`: the bridge passes the whole shape-and-contract admission, and then the
-    // rebuildability precondition refuses its projection: the class header spells
-    // `implements Comparable` raw while the erased contract comes from a generic interface, so
-    // the projected source could not regenerate the bridge (and javac would refuse the class
-    // for not implementing the contract at all). The bridge stays visible, exactly as before
-    // this change; spelling the parameterized interface is the separate header-projection
-    // slice's debt.
+    // `BR$Impl`: the bridge passes the whole shape-and-contract admission, and the class header
+    // now carries the contract's own type arguments (`implements java.lang.Comparable<BR$Impl>`),
+    // so the rebuildability precondition admits the projection: a recompiled source regenerates
+    // the bridge from that header (the separate header-projection slice's delivery, and this
+    // test is where the two slices' seam is pinned). The bridge is hidden; the source override
+    // and the interface call both stay.
     let impl_report = bridge_class_source(
         &jar,
         "BR$Impl",
@@ -7675,33 +7674,35 @@ fn br_family_bridges_admit_through_the_extended_gates() {
     );
     assert_eq!(impl_report.bridge_proofs.len(), 1);
     let impl_proof = &impl_report.bridge_proofs[0];
-    assert!(!impl_proof.admitted);
-    assert!(!impl_proof.projected);
-    assert_eq!(
-        impl_proof.refusal.as_deref(),
-        Some(
-            "the erased contract comes from a generic interface the class header spells without its type arguments, so the source could not regenerate the bridge"
-        )
-    );
+    assert!(impl_proof.admitted, "{:?}", impl_proof.refusal);
+    assert!(impl_proof.projected);
+    assert_eq!(impl_proof.refusal, None);
     assert_eq!(
         impl_proof.member.descriptor.0.as_slice(),
         b"(Ljava/lang/Object;)I" as &[u8]
     );
-    assert!(impl_report.text.contains("public int compareTo(BR$Impl"));
     assert!(
         impl_report
             .text
+            .contains("implements java.lang.Comparable<BR$Impl>"),
+        "{}",
+        impl_report.text
+    );
+    assert!(impl_report.text.contains("public int compareTo(BR$Impl"));
+    assert!(
+        !impl_report
+            .text
             .contains("public int compareTo(java.lang.Object"),
-        "the bridge stays visible: the raw header cannot regenerate it"
+        "the bridge is hidden: the parameterized header regenerates it"
     );
 
     // `BR$StrBox`: two bridges, one per member — the covariant `get` and the void
     // parameter-cast `set` — both package-private, as javac writes them for a package-private
-    // parent. `BR$Box` is a generic superclass whose binary name carries a `$`, so the header
-    // projection falls back to the raw `extends BR$Box` — and under that raw header the
-    // parameter-cast `set` would degrade into an overload that a recompiled source never
-    // regenerates, so its bridge stays visible (the superclass precondition); the covariant
-    // `get` is a same-erasure-signature override under the raw header and stays hidden.
+    // parent. `BR$Box` is a generic superclass whose binary name carries a `$`, and the header
+    // projection now publishes the pool-spelled parameterized `extends BR$Box<java.lang.String>`
+    // (the parent MVP's delivery: no re-spelling, the raw header's own name plus the type
+    // arguments). Under that header both bridges are reconstructible, so both hide — including
+    // the parameter-cast `set` whose raw-header state `cc4b6f11` had to keep visible.
     let strbox = bridge_class_source(
         &jar,
         "BR$StrBox",
@@ -7721,20 +7722,22 @@ fn br_family_bridges_admit_through_the_extended_gates() {
         .expect("the set bridge is a candidate");
     assert!(get_proof.admitted);
     assert!(get_proof.projected);
-    assert!(!set_proof.admitted);
-    assert!(!set_proof.projected);
-    assert_eq!(
-        set_proof.refusal.as_deref(),
-        Some(
-            "the erased contract comes from a generic superclass the class header spells without its type arguments, so the source could not regenerate the bridge"
-        )
+    assert!(set_proof.admitted, "{:?}", set_proof.refusal);
+    assert!(set_proof.projected);
+    assert_eq!(set_proof.refusal, None);
+    assert!(
+        strbox
+            .text
+            .contains("class BR$StrBox extends BR$Box<java.lang.String>"),
+        "{}",
+        strbox.text
     );
     assert!(strbox.text.contains("java.lang.String get()"));
     assert!(!strbox.text.contains("java.lang.Object get()"));
     assert!(strbox.text.contains("void set(java.lang.String"));
     assert!(
-        strbox.text.contains("void set(java.lang.Object"),
-        "the set bridge stays visible: the raw superclass header cannot regenerate it"
+        !strbox.text.contains("void set(java.lang.Object"),
+        "the set bridge is hidden: the parameterized pool-spelled header regenerates it"
     );
 }
 
@@ -7817,14 +7820,14 @@ fn br_family_recovered_source_recompiles_and_runs_like_the_original() {
     let recovered_trace = String::from_utf8(run.stdout).expect("the trace is UTF-8");
     assert_eq!(recovered_trace, original_trace);
 
-    // `BR$Impl` keeps its bridge visible: the rebuildability precondition refuses the
-    // projection (a generic interface contract the raw class header cannot carry), so every
-    // member stays spelled — `compareTo(BR$Impl)` as the source override and the erased
-    // `compareTo(Object)` beside it as an ordinary overload. The family therefore recompiles
-    // and dispatches like the original: the overload call and the raw-`Comparable` call both
-    // reach the same member and print `0`. (The recovered `BR` itself is not part of this leg:
-    // its nested source names collide with the top-level sibling spellings, which is the
-    // documented cost of binary-name recovery and not a bridge question.)
+    // `BR$Impl` now hides its bridge: the header projection publishes
+    // `implements java.lang.Comparable<BR$Impl>` and the bridge admission admits the projection
+    // from that fact, so every member stays spelled once — `compareTo(BR$Impl)` as the source
+    // override, with the erased `compareTo(Object)` regenerated by javac on recompile. The
+    // family therefore recompiles and dispatches like the original: the interface call and the
+    // source call both reach the same member and print `0`. (The recovered `BR` itself is not
+    // part of this leg: its nested source names collide with the top-level sibling spellings,
+    // which is the documented cost of binary-name recovery and not a bridge question.)
     for name in ["BR$Impl"] {
         let report = class_source_of(&jar, name, EnvironmentPolicy::PlainJar);
         fs::write(recovered.join(format!("{name}.java")), report.text)
@@ -7886,15 +7889,19 @@ fn br_family_recovered_source_recompiles_and_runs_like_the_original() {
 }
 
 #[test]
-fn the_superclass_header_precondition_keeps_a_raw_header_parameter_bridge_visible() {
+fn the_parameterized_superclass_header_hides_the_parameter_bridge() {
+    // Renamed from `the_superclass_header_precondition_keeps_a_raw_header_parameter_bridge_visible`
+    // (`cc4b6f11`), whose assertion was the raw-header terminal state: this change publishes the
+    // parent's type arguments, so the precondition's own admit path is what this test now pins.
+    //
     // `Spec extends Outer.Box<String>`: the class's own `Signature` states the superclass
-    // generic (`LOuter$Box<Ljava/lang/String;>;`), the parent's binary name carries a `$`, so
-    // the header projection falls back to the raw `extends Outer$Box`. Under that raw header
-    // the narrowed `set(String)` override is an ordinary overload of the inherited erased
-    // `set(Object)`, and a recompiled source would regenerate no parameter bridge — so hiding
-    // the bridge would silently route erased calls to the superclass body. The superclass
-    // precondition refuses the projection and the bridge stays visible; the covariant `get`
-    // bridge is a same-erasure-signature override under the raw header and stays hidden.
+    // generic (`LOuter$Box<Ljava/lang/String;>;`), and the parent's binary name carries a `$`.
+    // The header projection publishes the pool-spelled parameterized header
+    // `extends Outer$Box<java.lang.String>` — the raw header's own name plus the type arguments,
+    // no re-spelling — and under that header a recompiled source regenerates the parameter
+    // bridge javac wrote for the narrowed `set(String)` override. The bridge therefore hides and
+    // the erased call still routes to the override; under the raw header it had to stay visible
+    // (`cc4b6f11`), which is the invariant this test re-checks from the new side.
     let jar = open(zip_of(&[
         (b"Outer.class", SPEC_SUPERCLASS_OUTER),
         (b"Outer$Box.class", SPEC_SUPERCLASS_OUTER_BOX),
@@ -7918,31 +7925,31 @@ fn the_superclass_header_precondition_keeps_a_raw_header_parameter_bridge_visibl
         .iter()
         .find(|proof| proof.member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)V")
         .expect("the set bridge is a candidate");
-    assert!(!set_proof.admitted);
-    assert!(!set_proof.projected);
-    assert_eq!(
-        set_proof.refusal.as_deref(),
-        Some(
-            "the erased contract comes from a generic superclass the class header spells without its type arguments, so the source could not regenerate the bridge"
-        )
-    );
+    assert!(set_proof.admitted, "{:?}", set_proof.refusal);
+    assert!(set_proof.projected);
+    assert_eq!(set_proof.refusal, None);
     assert!(
-        report.text.contains("class Spec extends Outer$Box"),
-        "the raw header itself is the sister slice's projection debt, not this change's"
+        report
+            .text
+            .contains("class Spec extends Outer$Box<java.lang.String>"),
+        "{}",
+        report.text
     );
     assert!(report.text.contains("void set(java.lang.String"));
     assert!(
-        report.text.contains("void set(java.lang.Object"),
-        "the bridge stays visible: the raw superclass header cannot regenerate it"
+        !report.text.contains("void set(java.lang.Object"),
+        "the bridge is hidden: the parameterized pool-spelled header regenerates it"
     );
-    assert!(report.text.contains("this.set((java.lang.String) arg1)"));
+    assert!(!report.text.contains("this.set((java.lang.String) arg1)"));
     assert!(!report.text.contains("java.lang.Object get()"));
 
     // The three-way run: the original class and the source recompiled from the rendered text
-    // dispatch the erased `Outer$Box.set:(Ljava/lang/Object;)V` call identically — the visible
-    // bridge forwards to the narrowed override. The pre-fix behavior hid this bridge, and the
-    // recompiled source then regenerated no parameter bridge, so the same call reached the
-    // superclass body (`BOX.set(Object) ran`).
+    // dispatch the erased `Outer$Box.set:(Ljava/lang/Object;)V` call identically — javac
+    // regenerates the parameter bridge from the parameterized header, so the erased call still
+    // reaches the narrowed override. The pre-fix behavior (`cc4b6f11`) hid this bridge under a
+    // raw header, the recompiled source then regenerated no parameter bridge, and the same call
+    // reached the superclass body (`BOX.set(Object) ran`) — the silent misdispatch this
+    // projection must not revive.
     let scratch = BridgeProjectionScratch::new();
     let original = scratch.child("original");
     fs::write(original.join("Outer.class"), SPEC_SUPERCLASS_OUTER)

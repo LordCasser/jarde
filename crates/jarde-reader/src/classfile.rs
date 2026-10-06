@@ -11943,7 +11943,12 @@ mod tests {
             // patrol's `JT`/`DT` and the completable-future patrol's `CF`, plus this change's
             // `TWX` negative, four classes on both compiler legs: eight classes, forty-six bodies)
             // moved it again.
-            (699, 2989, 282, 1827, 8),
+            // The 2026-10-06 recover-parameterized-interface-headers fixtures (the interface
+            // leg's `IfaceImpl`/`MultiIface`/`ErasedCall`/`Unresolved`/`Arity`/`ArityApi`/
+            // `TypeUse`/`Mark` and the parent leg's `NB` family, `NestedExtends`, `BareBox`,
+            // `NB$Twin`, `ArityExtends`, `MO`/`MO$Mid`/`Multiseg`, eighteen classes on both
+            // compiler legs: thirty-six classes, seventy-two bodies) moved it again.
+            (735, 3061, 282, 1827, 8),
             "fixture population changed: re-measure these counts"
         );
     }
