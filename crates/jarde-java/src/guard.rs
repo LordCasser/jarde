@@ -10113,9 +10113,14 @@ mod finally_copy_tests {
         let ssa = ir.ssa().unwrap();
         let code = ir.code().unwrap();
         let ops = Operations::of(code, ir.constant_pool());
-        let mut chains =
-            crate::concat::plan_four_conditional_strings(ssa, canonical, &ops, &mut budget)
-                .expect("concat plan");
+        let mut chains = crate::concat::plan_four_conditional_strings(
+            ssa,
+            canonical,
+            &ops,
+            &crate::build::FieldCopies::default(),
+            &mut budget,
+        )
+        .expect("concat plan");
         if stop == Some("no-chain") {
             chains = crate::concat::Plan::empty();
         }
@@ -11509,7 +11514,7 @@ mod finally_copy_tests {
         let ssa = ir.ssa().unwrap();
         let code = ir.code().unwrap();
         let ops = Operations::of(code, ir.constant_pool());
-        let chains = crate::concat::plan(ssa, &ops);
+        let chains = crate::concat::plan(ssa, &ops, &crate::build::FieldCopies::default());
         let view = NormalFlowView::build(canonical, &mut budget).unwrap();
         let rows = code.exception_handlers.clone();
 
