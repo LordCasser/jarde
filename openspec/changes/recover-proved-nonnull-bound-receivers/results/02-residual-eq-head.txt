@@ -1,0 +1,12 @@
+    static java.util.function.Function eq() {
+        // @method eq()Ljava/util/function/Function;
+        // @declaration a static method of `BRQ`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local0 = new java.util.ArrayList();
+        // @bytecode 9
+        // the instruction at BCI 9 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 10 13 8
+        // the copy at BCI 9 has no proved local assignment
+        // @bytecode 19
+        // captured operand 0 is `java.util.ArrayList` in the frame, `java.util.ArrayList` in the site descriptor and `java.util.AbstractList` in the implementation: the capture conversion and its creation-time effects are not proven
+    }

@@ -1,0 +1,8 @@
+    static java.lang.String sideEffect(java.util.Optional arg0) {
+        // @method sideEffect(Ljava/util/Optional;)Ljava/lang/String;
+        // @declaration a static method of `OP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local1 = new java.lang.StringBuilder();
+        arg0.ifPresent((java.util.function.Consumer) ((java.lang.Object p0) -> local1.append((java.lang.String) p0)));
+        return local1.toString();
+    }

@@ -1,0 +1,94 @@
+SELF-TEST OK: known positive OP 1 -> 0 refusals on both legs; known negative BRN 3 -> 3, byte-identical
+loose candidate classes: 2726
+archive candidate classes: 738
+UNRENDERED: openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/boundaries/generated/DamagedValueTag.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/boundaries/generated/DuplicateEntries.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/boundaries/generated/UnspellableType.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-10-04/recover-javac8-getclass-null-check-idiom/fixture/position-negatives/N1$Stat.pop-missing.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-10-04/recover-javac8-getclass-null-check-idiom/fixture/position-negatives/N1$Stat.check-noncontiguous.class renders under no name it states
+MOVED: openspec/evidence/java-syntax-2026-10-04/method-reference-patrol/fixture/M1.class (refusals 1 -> 0)
+--- /tmp/br-corpus4/class_openspec_evidence_java-syntax-2026-10-04_method-reference-patrol_fixture_M1.class.base.txt	2026-10-06 17:13:46
++++ /tmp/br-corpus4/class_openspec_evidence_java-syntax-2026-10-04_method-reference-patrol_fixture_M1.class.patched.txt	2026-10-06 17:13:46
+@@ -1,6 +1,9 @@
+ // jarde: presentation of `M1` from the class file's own declaration and one recovery run per member.
+ // jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+ public class M1 extends java.lang.Object {
++    // jarde: omitted physical lambda helper "lambda$main$0" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$main$1" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$main$2" after proving its single class-wide use
+     public M1() {
+         // @method <init>()V
+         // @declaration a constructor of `M1`, member flags 0x0001
+@@ -24,39 +27,26 @@
+     }
+UNRENDERED: openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/negatives/NG4neg$Box.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$A.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$C.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$B.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$D.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Parent.class renders under no name it states
+MOVED: tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class (refusals 1 -> 0)
+--- /tmp/br-corpus4/class_tests_fixtures_recover-proved-nonnull-bound-receivers_v8_OP.class.base.txt	2026-10-06 17:15:17
++++ /tmp/br-corpus4/class_tests_fixtures_recover-proved-nonnull-bound-receivers_v8_OP.class.patched.txt	2026-10-06 17:15:17
+@@ -43,18 +43,14 @@
+         }
+     }
+ 
+-    // jarde: generic Signature projection refused for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
++    // jarde: generic Signature projection refused for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+     static java.lang.String sideEffect(java.util.Optional arg0) {
+-        // jarde: not recovered: the recovery run for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+         // @method sideEffect(Ljava/util/Optional;)Ljava/lang/String;
+         // @declaration a static method of `OP`, member flags 0x0008
+         // recovered from bytecode; presentation is not claimed to compile
+-        // @bytecode 10
+MOVED: tests/fixtures/recover-proved-nonnull-bound-receivers/v8-javac8/OP.class (refusals 1 -> 0)
+--- /tmp/br-corpus4/class_tests_fixtures_recover-proved-nonnull-bound-receivers_v8-javac8_OP.class.base.txt	2026-10-06 17:15:17
++++ /tmp/br-corpus4/class_tests_fixtures_recover-proved-nonnull-bound-receivers_v8-javac8_OP.class.patched.txt	2026-10-06 17:15:17
+@@ -43,18 +43,14 @@
+         }
+     }
+ 
+-    // jarde: generic Signature projection refused for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
++    // jarde: generic Signature projection refused for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+     static java.lang.String sideEffect(java.util.Optional arg0) {
+-        // jarde: not recovered: the recovery run for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+         // @method sideEffect(Ljava/util/Optional;)Ljava/lang/String;
+         // @declaration a static method of `OP`, member flags 0x0008
+         // recovered from bytecode; presentation is not claimed to compile
+-        // @bytecode 10
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+MOVED: openspec/evidence/java-syntax-2026-10-05/optional-chain-patrol/fixture/op.jar!OP.class (refusals 1 -> 0)
+--- /tmp/br-corpus4/jar_openspec_evidence_java-syntax-2026-10-05_optional-chain-patrol_fixture_op.jar_OP.class.base.txt	2026-10-06 17:15:45
++++ /tmp/br-corpus4/jar_openspec_evidence_java-syntax-2026-10-05_optional-chain-patrol_fixture_op.jar_OP.class.patched.txt	2026-10-06 17:15:46
+@@ -43,18 +43,14 @@
+         }
+     }
+ 
+-    // jarde: generic Signature projection refused for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
++    // jarde: generic Signature projection refused for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+     static java.lang.String sideEffect(java.util.Optional arg0) {
+-        // jarde: not recovered: the recovery run for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+         // @method sideEffect(Ljava/util/Optional;)Ljava/lang/String;
+         // @declaration a static method of `OP`, member flags 0x0008
+         // recovered from bytecode; presentation is not claimed to compile
+-        // @bytecode 10
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+MOVED: openspec/evidence/java-syntax-2026-10-04/method-reference-patrol/fixture/fam.jar!M1.class (refusals 1 -> 0)
+--- /tmp/br-corpus4/jar_openspec_evidence_java-syntax-2026-10-04_method-reference-patrol_fixture_fam.jar_M1.class.base.txt	2026-10-06 17:15:58
++++ /tmp/br-corpus4/jar_openspec_evidence_java-syntax-2026-10-04_method-reference-patrol_fixture_fam.jar_M1.class.patched.txt	2026-10-06 17:15:58
+@@ -1,6 +1,9 @@
+ // jarde: presentation of `M1` from the class file's own declaration and one recovery run per member.
+ // jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+ public class M1 extends java.lang.Object {
++    // jarde: omitted physical lambda helper "lambda$main$0" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$main$1" after proving its single class-wide use
++    // jarde: omitted physical lambda helper "lambda$main$2" after proving its single class-wide use
+     public M1() {
+         // @method <init>()V
+         // @declaration a constructor of `M1`, member flags 0x0001
+@@ -24,59 +27,26 @@
+     }
+moved classes: 5
+unrendered candidates: 13
+bound-receiver refusal sentences across the candidates: 12 -> 7

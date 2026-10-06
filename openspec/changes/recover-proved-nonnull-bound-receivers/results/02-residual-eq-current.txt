@@ -1,0 +1,8 @@
+    static java.util.function.Function eq() {
+        // @method eq()Ljava/util/function/Function;
+        // @declaration a static method of `BRQ`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.ArrayList local0 = new java.util.ArrayList();
+        // @bytecode 19
+        // captured operand 0 is `java.util.ArrayList` in the frame, `java.util.ArrayList` in the site descriptor and `java.util.AbstractList` in the implementation: the capture conversion and its creation-time effects are not proven
+    }

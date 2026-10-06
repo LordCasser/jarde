@@ -1,0 +1,122 @@
+// jarde: presentation of `C1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class C1 extends java.lang.Object {
+    // jarde: field Signature projection refused for `INDEXLjava/util/Map;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static final java.util.Map INDEX;
+
+    public C1() {
+        // @method <init>()V
+        // @declaration a constructor of `C1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `maxOf(Ljava/util/List;)Ljava/lang/Comparable;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    static java.lang.Comparable maxOf(java.util.List arg0) {
+        // jarde: not recovered: the recovery run for `maxOf(Ljava/util/List;)Ljava/lang/Comparable;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method maxOf(Ljava/util/List;)Ljava/lang/Comparable;
+        // @declaration a static method of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 2 3 8 9 10 15 18 19 24 27 28 29 32 33 34 39 42 43 44 47 48
+        // the arms of the branch in block 18 do not meet at one join
+    }
+
+    static java.lang.Runnable mk(java.lang.String arg0) {
+        // @method mk(Ljava/lang/String;)Ljava/lang/Runnable;
+        // @declaration a static method of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0.length();
+        return new C1$1(arg0, local1);
+    }
+
+    static int count(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `count(Ljava/lang/String;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method count(Ljava/lang/String;)I
+        // @declaration a static method of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 25 29 33 40 48 54 56
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    // jarde: generic Signature projection refused for `chain(Ljava/util/List;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    static java.util.List chain(java.util.List arg0) {
+        // jarde: not recovered: the recovery run for `chain(Ljava/util/List;)Ljava/util/List;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method chain(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 40
+        // the instruction at BCI 40 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 41 44 39 0 3 4 7 8 9 14 19 24 29 34 40 45 50 55 56
+        // the copy at BCI 40 has no proved local assignment
+        // @bytecode 50 29 19 9 8 39
+        // captured operand 0 is `java.util.ArrayList` in the frame, `java.util.List` in the site descriptor and `java.util.List` in the implementation: the capture conversion and its creation-time effects are not proven
+    }
+
+    static java.lang.String show(int arg0) {
+        // @method show(I)Ljava/lang/String;
+        // @declaration a static method of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return "n" + arg0;
+    }
+
+    static java.lang.String pick(java.lang.String arg0) {
+        // @method pick(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        switch (arg0) {
+            case "a":
+            case "b":
+                return "AB";
+            case "c":
+                return "C";
+            default:
+                return "?";
+        }
+    }
+
+    static int arith(int arg0) {
+        // @method arith(I)I
+        // @declaration a static method of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0 > 0 ? arg0 : -arg0;
+        local1 = local1 | 3;
+        local1 = local1 << 1;
+        local1 = local1 + 7;
+        local1 = local1 + 1;
+        // @bytecode 26 22
+        // the value at BCI 26 is the value local 1 held at BCI 22, and the slot does not hold it at BCI 26: the slot's name would read the value the body wrote in between
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `C1`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.Map saved0 = C1.INDEX;
+        saved0.put((java.lang.Object) "k", (java.lang.Object) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(3), java.lang.Integer.valueOf(1), java.lang.Integer.valueOf(2)}));
+        java.lang.System.out.println((java.lang.Object) maxOf((java.util.List) C1.INDEX.get((java.lang.Object) "k")));
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append((java.lang.String) C1$Mode.SLOW.tag()).append("/").append((java.lang.String) C1$Mode.FAST.tag()).toString());
+        mk("xy").run();
+        java.lang.System.out.println(count("hello"));
+        java.io.PrintStream saved1 = java.lang.System.out;
+        saved1.println((java.lang.Object) chain((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Integer[]{java.lang.Integer.valueOf(1), java.lang.Integer.valueOf(2), java.lang.Integer.valueOf(3), java.lang.Integer.valueOf(4)})));
+        java.lang.System.out.println(pick("b") + pick("c") + pick("z"));
+        java.lang.System.out.println(arith(-5));
+        return;
+    }
+
+    private static boolean lambda$chain$0(java.lang.Integer arg0) {
+        // @method lambda$chain$0(Ljava/lang/Integer;)Z
+        // @declaration a static method of `C1`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0.intValue() * 2;
+        return local1 > 4;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `C1`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        INDEX = new java.util.HashMap();
+    }
+}

@@ -1,0 +1,29 @@
+--- a/crates/jarde-java/src/init.rs
++++ b/crates/jarde-java/src/init.rs
+@@ -369,14 +369,19 @@
+     plan.allocation_candidates
+         .sort_by_key(|candidate| candidate.head);
+     plan.refusals.sort_by_key(|refused| refused.head);
+-    for tail in receiver_tails(ssa, operations) {
+-        if plan.owned.contains(&tail.copy) {
+-            continue;
++    // TEMPORARY GATING EXPERIMENT (task 2.1): the claim at this locus, and nothing else, decides
++    // whether the anchor recovers. Unset keeps the production behavior.
++    if std::env::var_os("JARDE_EXPERIMENT_NO_TAIL_CLAIM").is_none() {
++        for tail in receiver_tails(ssa, operations) {
++            if plan.owned.contains(&tail.copy) {
++                continue;
++            }
++            plan.owned.insert(tail.copy);
++            plan.owned.insert(tail.check);
++            plan.owned.insert(tail.pop);
++            plan.receiver_tails.push(tail);
+         }
+-        plan.owned.insert(tail.copy);
+-        plan.owned.insert(tail.check);
+-        plan.owned.insert(tail.pop);
+-        plan.receiver_tails.push(tail);
+     }
+     plan.receiver_tails.sort_by_key(|tail| tail.site);
+     plan
+ }
