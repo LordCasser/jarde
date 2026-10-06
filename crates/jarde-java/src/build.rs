@@ -9583,27 +9583,31 @@ impl Builder<'_> {
     /// Every limit the two proofs share is taken here: one use, one block, a position after the
     /// update, an interval that holds nothing but the expression's own plumbing, and an updated
     /// value nothing in that interval reads.
+    #[allow(clippy::too_many_arguments)]
     fn snapshot_consumer(
-        &self,
+        &mut self,
         block: &jarde_jvm::method_ir::SsaBlock,
         old: ValueId,
         updated: ValueId,
         after: u32,
+        absorbed: &BTreeSet<u32>,
         plan: &PostfixUpdates,
         forbidden: &BTreeSet<u32>,
-    ) -> Option<SnapshotConsumer> {
+    ) -> Result<Option<SnapshotConsumer>, StopReason> {
         let uses = self.ssa.value(old).uses();
         let [consumer] = uses else {
-            return None;
+            return Ok(None);
         };
-        let consumer_bci = consumer.bci()?;
+        let Some(consumer_bci) = consumer.bci() else {
+            return Ok(None);
+        };
         if consumer.block() != block.block() || consumer_bci <= after {
-            return None;
+            return Ok(None);
         }
         // The immediate `return` is the return-position proof's own position: `return x++;` keeps
         // exactly the reading (and the refusal) that plan states, so this walk never claims it.
         if matches!(self.operations.get(consumer_bci), Some(Operation::Return)) {
-            return None;
+            return Ok(None);
         }
         // A text between the update and the consumer that reads the updated value would see the
         // increment where the bytecode had not run it yet.
@@ -9611,32 +9615,53 @@ impl Builder<'_> {
             use_.block() == block.block()
                 && use_.bci().is_some_and(|bci| bci > after && bci < consumer_bci)
         }) {
-            return None;
+            return Ok(None);
         }
-        let position = position_in_block(block, consumer_bci)?;
-        let update_position = position_in_block(block, after)?;
+        let Some(position) = position_in_block(block, consumer_bci) else {
+            return Ok(None);
+        };
+        let Some(update_position) = position_in_block(block, after) else {
+            return Ok(None);
+        };
         if position <= update_position {
-            return None;
+            return Ok(None);
         }
-        // The interval is the consumer's own expression: pure arithmetic and stack/local plumbing,
-        // or an instruction another proved plan already presents. A copy no shape owns is not
-        // plumbing here — it would be quoted as a statement of its own between the two positions.
+        // The consumer's own operand tree: every value it evaluates is pushed above the old value's
+        // slot and consumed by the same instruction, so the text evaluates it in the bytecode's
+        // order — after the `x++` the old value becomes.
+        let Some(reader) = self.instructions.get(&consumer_bci).copied() else {
+            return Ok(None);
+        };
+        let mut operands = BTreeSet::new();
+        for (_, operand) in stack_operands(reader) {
+            if !self.collect_dependency_bcis(
+                operand,
+                absorbed,
+                &mut BTreeSet::new(),
+                &mut operands,
+                0,
+            )? {
+                return Ok(None);
+            }
+        }
+        // The interval is the consumer's own expression: its operand tree, pure arithmetic and
+        // stack/local plumbing, or an instruction another proved plan already presents. A copy no
+        // shape owns is not plumbing here — it would be quoted as a statement of its own between
+        // the two positions.
         if block.instructions()[update_position + 1..position]
             .iter()
             .any(|instruction| {
-                if plan.owns(instruction.bci()) || forbidden.contains(&instruction.bci()) {
+                let bci = instruction.bci();
+                if plan.owns(bci) || forbidden.contains(&bci) || operands.contains(&bci) {
                     return false;
                 }
                 !self.transparent_between(instruction)
-                    || matches!(
-                        self.operations.get(instruction.bci()),
-                        Some(Operation::Duplicate)
-                    )
+                    || matches!(self.operations.get(bci), Some(Operation::Duplicate))
             })
         {
-            return None;
+            return Ok(None);
         }
-        Some(SnapshotConsumer { bci: consumer_bci })
+        Ok(Some(SnapshotConsumer { bci: consumer_bci }))
     }
 
     /// The `iinc` snapshots: `iload slot; iinc slot, ±1; …consumer…` (`int j = i++;`,
@@ -9658,13 +9683,9 @@ impl Builder<'_> {
             let instructions = block.instructions();
             for (position, update) in instructions.iter().enumerate() {
                 let at = update.bci();
-                poll(self.budget, Some(at))?;
-                charge(
-                    self.budget,
-                    CountedBudgetDimension::AnalysisSteps,
-                    1,
-                    Some(at),
-                )?;
+                // The cheap identity first, the bill after it — the same order the return-position
+                // proof takes: only an increment whose own predecessor is the load of its slot is a
+                // candidate, and nothing else is charged for.
                 let Some(Operation::Increment { slot, amount }) = self.operations.get(at) else {
                     continue;
                 };
@@ -9684,6 +9705,13 @@ impl Builder<'_> {
                 ) {
                     continue;
                 }
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
                 let (Some(old), Some((_, loaded))) = (local_read(before, slot), one_stack_output(before))
                 else {
                     continue;
@@ -9696,8 +9724,16 @@ impl Builder<'_> {
                 if update_read != old {
                     continue;
                 }
+                let anchors = vec![before.bci(), at];
+                if anchors
+                    .iter()
+                    .any(|bci| plan.owned.contains(bci) || forbidden.contains(bci))
+                {
+                    continue;
+                }
+                let absorbed = anchors.iter().copied().collect::<BTreeSet<_>>();
                 let Some(consumer) =
-                    self.snapshot_consumer(block, loaded, updated, at, plan, forbidden)
+                    self.snapshot_consumer(block, loaded, updated, at, &absorbed, plan, forbidden)?
                 else {
                     continue;
                 };
@@ -9774,13 +9810,6 @@ impl Builder<'_> {
                 if ty == Type::Boolean {
                     continue;
                 }
-                let anchors = vec![before.bci(), at];
-                if anchors
-                    .iter()
-                    .any(|bci| plan.owned.contains(bci) || forbidden.contains(bci))
-                {
-                    continue;
-                }
                 plan.owned.extend(anchors.iter().copied());
                 plan.snapshots.insert(
                     loaded,
@@ -9821,18 +9850,11 @@ impl Builder<'_> {
     ) -> Result<(), StopReason> {
         for block in self.ssa.blocks() {
             let instructions = block.instructions();
-            for (position, copy) in instructions.iter().enumerate() {
+            for copy in instructions.iter() {
                 let at = copy.bci();
                 if !matches!(copy.opcode(), OPCODE_DUP | OPCODE_DUP_X1) {
                     continue;
                 }
-                poll(self.budget, Some(at))?;
-                charge(
-                    self.budget,
-                    CountedBudgetDimension::AnalysisSteps,
-                    1,
-                    Some(at),
-                )?;
                 let (read_value, below) = if copy.opcode() == OPCODE_DUP_X1 {
                     let Some((top, below)) = dup_x1_operands(copy) else {
                         continue;
@@ -9864,6 +9886,13 @@ impl Builder<'_> {
                 {
                     continue;
                 }
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
                 // The receiver's own `dup`, when the read is an instance access: the value below
                 // the copy is its bottom output and the read used its top output, so both name the
                 // same object.
@@ -9993,8 +10022,19 @@ impl Builder<'_> {
                 if !stored_matches {
                     continue;
                 }
+                let mut anchors = vec![read_bci, at, one_bci, add_bci, store_bci];
+                if let Some((receiver_bci, _)) = receiver {
+                    anchors.push(receiver_bci);
+                }
+                if anchors
+                    .iter()
+                    .any(|bci| plan.owned.contains(bci) || forbidden.contains(bci))
+                {
+                    continue;
+                }
+                let absorbed = anchors.iter().copied().collect::<BTreeSet<_>>();
                 let Some(consumer) =
-                    self.snapshot_consumer(block, old, sum, store_bci, plan, forbidden)
+                    self.snapshot_consumer(block, old, sum, store_bci, &absorbed, plan, forbidden)?
                 else {
                     continue;
                 };
@@ -10013,11 +10053,9 @@ impl Builder<'_> {
                 {
                     continue;
                 }
-                let mut anchors = vec![read_bci, at, one_bci, add_bci, store_bci];
                 // The receiver's evaluation: exactly the uninterrupted prefix the copy duplicates,
                 // with every value used once — the same discipline the return-position proof reads.
                 if let Some((receiver_bci, source)) = receiver {
-                    anchors.push(receiver_bci);
                     let Some(receiver_position) = position_in_block(block, receiver_bci) else {
                         continue;
                     };
@@ -10058,12 +10096,6 @@ impl Builder<'_> {
                         continue;
                     }
                     anchors.extend(dependencies);
-                }
-                if anchors
-                    .iter()
-                    .any(|bci| plan.owned.contains(bci) || forbidden.contains(bci))
-                {
-                    continue;
                 }
                 plan.owned.extend(anchors.iter().copied());
                 plan.snapshots.insert(
@@ -14637,6 +14669,7 @@ impl Builder<'_> {
                 let mut dependencies = BTreeSet::new();
                 if !self.collect_dependency_bcis(
                     selector_id,
+                    &BTreeSet::new(),
                     &mut BTreeSet::new(),
                     &mut dependencies,
                     0,
@@ -19155,7 +19188,13 @@ impl Builder<'_> {
         owned_monitor_exit: Option<u32>,
     ) -> Result<Option<bool>, StopReason> {
         let mut dependency_bcis = BTreeSet::new();
-        if !self.collect_dependency_bcis(value, &mut BTreeSet::new(), &mut dependency_bcis, 0)? {
+        if !self.collect_dependency_bcis(
+            value,
+            &BTreeSet::new(),
+            &mut BTreeSet::new(),
+            &mut dependency_bcis,
+            0,
+        )? {
             return Ok(None);
         }
         let Some(block) = self.block_of.get(&reader).cloned() else {
@@ -19180,6 +19219,7 @@ impl Builder<'_> {
         for operand in operands {
             if !self.collect_dependency_bcis(
                 operand,
+                &BTreeSet::new(),
                 &mut BTreeSet::new(),
                 &mut consumer_bcis,
                 0,
@@ -19303,6 +19343,7 @@ impl Builder<'_> {
     fn collect_dependency_bcis(
         &mut self,
         value: ValueId,
+        absorbed: &BTreeSet<u32>,
         seen: &mut BTreeSet<ValueId>,
         bcis: &mut BTreeSet<u32>,
         depth: usize,
@@ -19311,6 +19352,14 @@ impl Builder<'_> {
             return Ok(false);
         }
         if !seen.insert(value) {
+            return Ok(true);
+        }
+        // An instruction the caller is proving as one expression is the expression's own: the walk
+        // stops at it and names it, exactly as it stops at a snapshot an earlier pass proved.
+        if let Definition::Instruction { bci, .. } = self.ssa.value(value).def()
+            && absorbed.contains(bci)
+        {
+            bcis.insert(*bci);
             return Ok(true);
         }
         if let Some(expression) = self.conditional_values.get(&value) {
@@ -19350,7 +19399,7 @@ impl Builder<'_> {
             .collect();
         let mut complete = true;
         for operand in operands {
-            complete &= self.collect_dependency_bcis(operand, seen, bcis, depth + 1)?;
+            complete &= self.collect_dependency_bcis(operand, absorbed, seen, bcis, depth + 1)?;
         }
         Ok(complete)
     }
