@@ -1,0 +1,6 @@
+MD moved: partSet
+MD2 moved: retPos
+MD3 moved: bareIdx2
+AV moved: elemStore immIdx immLen immIdxVar immIdxExpr immIdxSum twoIdx twoStores nestedIdx condIdx immIdxInCall order
+GATING OK: the two positions flip (MD.partSet, MD2.retPos, MD3.bareIdx2), the four positions and
+the bare consumption do not move, AVN moves only its builder self-test, and no patrol class quotes bytecode.
