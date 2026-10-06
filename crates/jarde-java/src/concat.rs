@@ -54,7 +54,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{
-    CanonicalCfg, CanonicalEdgeKind, Definition, PhiInput, Slot, SsaInstruction, SsaTable, ValueId,
+    CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, PhiInput, Slot, SsaInstruction,
+    SsaTable, ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use serde::Serialize;
@@ -63,10 +64,11 @@ use crate::ast::Type;
 use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
-use crate::facts::{ConstantValue, FieldAccess, InvokeKind, Operation};
+use crate::facts::{CompareOp, ConstantValue, FieldAccess, InvokeKind, Operation};
 use crate::lambda::parse_method;
 use crate::pass::{CONCAT, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
+use crate::region::Region;
 use crate::stop::{StopReason, charge, poll};
 
 /// The classes whose chain is a string concatenation, in the order the design lists them.
@@ -105,6 +107,32 @@ pub(crate) struct Chain {
     /// instruction, every `append` and the `toString`. An owned instruction produces no statement of
     /// its own — its text is written inside the concatenation and nowhere else.
     pub(crate) owned: BTreeSet<u32>,
+    /// The proved conditional materialization this chain crosses, when one does.
+    ///
+    /// A chain whose middle blocks are exactly one two-arm constant materialization ends in a
+    /// `toString` in another block, and [`verify`]'s ordinary walk refuses that shape with
+    /// `jre_concat_split`. [`verify_conditional_cut_chain`]'s certificate owns it instead, and the
+    /// cut it proved is kept here because one more question is answered from it: a value produced
+    /// **before** the branch may be rendered at a consumer **at or after** the join, since the
+    /// blocks between the two hold nothing but the two constants the branch chose between
+    /// (`crate::build::Builder::crosses_a_proved_cut`).
+    pub(crate) cut: Option<Cut>,
+}
+
+/// The proved conditional materialization one chain crosses.
+///
+/// The branch ends the chain's own block, its two arms push the two constants the join's stack Phi
+/// merges, and the chain continues in the join. Nothing else runs in those blocks, which is what
+/// makes the cut transparent for the order of everything around it.
+#[derive(Clone, Debug)]
+pub(crate) struct Cut {
+    /// The block the chain's head stands in, whose last instruction is the branch.
+    pub(crate) head_block: CanonicalBlockId,
+    /// The comparison whose two arms materialize the appended value.
+    pub(crate) branch_bci: u32,
+    /// The join both arms meet at, where the chain continues. A value crossing the cut is read in
+    /// this block, so the declaration its producer writes still stands where the reader is.
+    pub(crate) join_block: CanonicalBlockId,
 }
 
 /// Every chain of one body, and the refusals of the ones that were not chains.
@@ -214,6 +242,19 @@ impl Plan {
     /// The chain whose value the instruction at one BCI produces, when one does.
     pub(crate) fn value_at(&self, bci: u32) -> Option<&Chain> {
         self.chains.get(&bci)
+    }
+
+    /// The proved conditional cut a verified chain crosses in one block, when one does.
+    ///
+    /// A value produced in that block **before** the branch is read by consumers at or after the
+    /// join, and the blocks between the two hold nothing but the two constants the branch chose
+    /// between — so the value's own evaluation point and the consumer's expression position differ
+    /// by a materialization that performs no effect, and the deferred-binding plan may read its
+    /// readers across the cut (`crate::build::Builder::crosses_a_proved_cut`).
+    pub(crate) fn cut_of(&self, block: &CanonicalBlockId) -> Option<&Cut> {
+        self.chains
+            .values()
+            .find_map(|chain| chain.cut.as_ref().filter(|cut| &cut.head_block == block))
     }
 
     /// Every candidate chain the rule refused, in BCI order.
@@ -753,6 +794,497 @@ fn verify_four_conditional_strings(
             .iter()
             .map(|instruction| instruction.bci())
             .collect(),
+        cut: None,
+    }))
+}
+
+/// The bounded branched form of an **inline conditional value as a chain operand**: a `+` chain
+/// whose middle blocks are exactly one proved conditional-value materialization.
+///
+/// `"" + a + (x == y) + b` lowers the comparison to a branch whose two arms push the `0`/`1` the
+/// join's stack Phi merges, and the chain continues in the join — so its `toString` stands in
+/// another block and [`verify`]'s ordinary same-block walk states `jre_concat_split`. The
+/// certificate below replaces that refusal for exactly this shape, and for nothing else: the
+/// ordinary rule, its text and the walk that is this rule's admission authority stay untouched.
+///
+/// The two-arm proof is [`crate::build::prove_conditional_value`]'s — the one `recover-conditional-values`
+/// established — read here as a sub-proof: the certificate states the region the branch and its
+/// successors form and hands it to that proof, which re-validates every edge, arm entry, Phi input
+/// and consumer against the canonical CFG. Nothing about the arms is assumed from the shape that
+/// named them. What the certificate adds on top is what the chain needs and that proof does not
+/// state: each arm holds **nothing but** the constant it pushes and (for the arm that does not fall
+/// through) the transfer to the join, the constants are `0` and `1`, the Phi's one consumer is the
+/// chain's own `append(Z)`, and the whole span of the chain — the head block's run to the branch,
+/// both arms and the join's run to the `toString` — holds nothing but the chain's own instructions
+/// and the operand producers this layer writes inside the expression.
+pub(crate) fn plan_conditional_cut_chains(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Plan, StopReason> {
+    let mut plan = plan_four_conditional_strings(ssa, canonical, operations, budget)?;
+    let mut index = 0;
+    while index < plan.refused.len() {
+        if plan.refused[index].refusal.code() != "jre_concat_split" {
+            index += 1;
+            continue;
+        }
+        let head = plan.refused[index].head;
+        let class = plan.refused[index].class.clone();
+        match verify_conditional_cut_chain(head, &class, ssa, canonical, operations, budget)? {
+            Some(chain) if chain.owned.is_disjoint(&plan.owned) => {
+                plan.refused.remove(index);
+                plan.owned.extend(&chain.owned);
+                plan.chains.insert(chain.tail, chain);
+            }
+            _ => index += 1,
+        }
+    }
+    Ok(plan)
+}
+
+/// Verifies one candidate whose cross-block `toString` a conditional materialization cuts.
+///
+/// `None` is the answer for every shape this certificate does not own, and it is the ordinary
+/// refusal's answer too: the candidate keeps the `jre_concat_split` its own attribution stated.
+fn verify_conditional_cut_chain(
+    head: u32,
+    ty: &str,
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Option<Chain>, StopReason> {
+    let all: Vec<&SsaInstruction> = ssa
+        .blocks()
+        .iter()
+        .flat_map(|block| block.instructions().iter())
+        .collect();
+    poll(budget, Some(head))?;
+    charge(
+        budget,
+        CountedBudgetDimension::IrItems,
+        u64::try_from(
+            all.len()
+                .saturating_add(ssa.phis().len())
+                .saturating_add(canonical.edges().len()),
+        )
+        .unwrap_or(u64::MAX),
+        Some(head),
+    )?;
+    let Some(head_block) = ssa.blocks().iter().find(|block| {
+        block
+            .instructions()
+            .iter()
+            .any(|instruction| instruction.bci() == head)
+    }) else {
+        return Ok(None);
+    };
+    let block = head_block.instructions();
+    let block_refs: Vec<&SsaInstruction> = block.iter().collect();
+    let Some(index) = block
+        .iter()
+        .position(|instruction| instruction.bci() == head)
+    else {
+        return Ok(None);
+    };
+    // The allocation's own triple, read exactly as the walk reads it.
+    let Some(copy) = block.get(index + 1) else {
+        return Ok(None);
+    };
+    if operations.get(copy.bci()) != Some(&Operation::Duplicate) {
+        return Ok(None);
+    }
+    let Some(init) = block.get(index + 2) else {
+        return Ok(None);
+    };
+    if !matches!(
+        operations.get(init.bci()),
+        Some(Operation::Invoke(target)) if target.owner() == ty && target.name() == "<init>"
+    ) {
+        return Ok(None);
+    }
+    let mut produced_by = vec![head, copy.bci(), init.bci()];
+    let mut owned: BTreeSet<u32> = BTreeSet::from([head, copy.bci(), init.bci()]);
+    let mut appends: Vec<(u32, Type)> = Vec::new();
+    let mut previous = init.bci();
+    // The head block's run ends in the comparison that cuts the chain. Every instruction of that
+    // run is owned, and the branch is the block's last instruction because both arms leave it.
+    let mut branch_bci = None;
+    for instruction in &block[index + 3..] {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        let at = instruction.bci();
+        match operations.get(at) {
+            Some(Operation::Invoke(target))
+                if target.owner() == ty && target.name() == "append" =>
+            {
+                let Some((params, returns)) = parse_method(target.descriptor()) else {
+                    return Ok(None);
+                };
+                if params.len() != 1
+                    || !keeps_its_conversion(&params[0])
+                    || !matches!(returns, Some(Type::Reference(name)) if name == source_name(ty))
+                {
+                    return Ok(None);
+                }
+                let Some((_, receiver)) = stack_operands(instruction).first().copied() else {
+                    return Ok(None);
+                };
+                if !is_the_instance(ssa, receiver, &produced_by) {
+                    return Ok(None);
+                }
+                let Some((_, value)) = stack_operands(instruction).last().copied() else {
+                    return Ok(None);
+                };
+                let Some(produced) = produced_at(ssa, value) else {
+                    return Ok(None);
+                };
+                if produced <= previous || produced >= at {
+                    return Ok(None);
+                }
+                appends.push((at, params[0].clone()));
+                owned.insert(at);
+                produced_by.push(at);
+                previous = at;
+            }
+            // The chain does not end in its own block: this is not the shape this certificate
+            // owns, and the candidate keeps the refusal its own attribution stated.
+            Some(Operation::Invoke(target))
+                if target.owner() == ty && target.name() == "toString" =>
+            {
+                return Ok(None);
+            }
+            Some(Operation::Comparison { .. }) => {
+                if at != block[block.len() - 1].bci() {
+                    return Ok(None);
+                }
+                branch_bci = Some(at);
+                owned.insert(at);
+                break;
+            }
+            Some(
+                Operation::Push(_)
+                | Operation::Load { .. }
+                | Operation::Arithmetic { .. }
+                | Operation::Negate,
+            ) => {
+                owned.insert(at);
+            }
+            // A field read is a value whose text lands where it is consumed — the same reading the
+            // statement walk makes of a claimed read — so it is an operand producer of the chain.
+            // The rendering refuses a read the field plan did not claim, so an unproved access
+            // leaves the method quoted rather than dropping the instruction.
+            Some(Operation::Field {
+                access: FieldAccess::Read,
+                ..
+            }) => {
+                owned.insert(at);
+            }
+            Some(Operation::Invoke(_)) if produces_a_read_value(instruction, &block_refs, at) => {
+                owned.insert(at);
+            }
+            _ => return Ok(None),
+        }
+    }
+    let Some(branch_bci) = branch_bci else {
+        return Ok(None);
+    };
+    // The branch's own two successors, in the region layer's order: the fall-through arm is the
+    // `then` arm, the taken target the `else` arm. A branch with any other edge — an exceptional
+    // one, or a second target — is not this shape.
+    let Some(branch_block) = ssa.blocks().iter().find(|block| {
+        block
+            .instructions()
+            .iter()
+            .any(|instruction| instruction.bci() == branch_bci)
+    }) else {
+        return Ok(None);
+    };
+    let Some(Operation::Comparison { op, target }) = operations.get(branch_bci) else {
+        return Ok(None);
+    };
+    if !matches!(op, CompareOp::JumpIfSame | CompareOp::JumpIfDifferent) {
+        return Ok(None);
+    }
+    let mut successors = Vec::new();
+    for edge in canonical.edges() {
+        if edge.from() != branch_block.block() {
+            continue;
+        }
+        if edge.kind() != CanonicalEdgeKind::Normal {
+            return Ok(None);
+        }
+        successors.push(edge.to().clone());
+    }
+    let taken: Vec<&CanonicalBlockId> = successors
+        .iter()
+        .filter(|successor| successor.bci() == *target)
+        .collect();
+    if successors.len() != 2 || taken.len() != 1 {
+        return Ok(None);
+    }
+    let else_entry = taken[0].clone();
+    let then_entry = successors
+        .iter()
+        .find(|successor| **successor != else_entry)
+        .cloned()
+        .expect("one of the two successors is not the taken target");
+    let (Some(then_block), Some(else_block)) = (ssa.block(&then_entry), ssa.block(&else_entry))
+    else {
+        return Ok(None);
+    };
+    // Each arm holds the constant it pushes and, where it does not fall through into the join, the
+    // transfer that carries it there. Nothing else runs in an arm: that is the "no other side
+    // effects" the shape is admitted with, and it is what makes the cut transparent for the order
+    // of the values around it.
+    for arm in [then_block, else_block] {
+        let instructions = arm.instructions();
+        let Some((constant, rest)) = instructions.split_first() else {
+            return Ok(None);
+        };
+        if !matches!(
+            operations.get(constant.bci()),
+            Some(Operation::Push(ConstantValue::Int(0 | 1)))
+        ) {
+            return Ok(None);
+        }
+        match rest {
+            [] => {}
+            [transfer] if operations.get(transfer.bci()) == Some(&Operation::Transfer) => {}
+            _ => return Ok(None),
+        }
+        // The arm's instructions are the chain's own operand: the text writes the constant as the
+        // comparison's arm, so neither instruction may write a statement of its own.
+        for instruction in instructions {
+            owned.insert(instruction.bci());
+        }
+    }
+    // The join: the one block both arms hand their value to.
+    let mut arm_successors = Vec::new();
+    for arm in [then_block, else_block] {
+        let mut exits = Vec::new();
+        for edge in canonical.edges() {
+            if edge.from() != arm.block() {
+                continue;
+            }
+            if edge.kind() != CanonicalEdgeKind::Normal {
+                return Ok(None);
+            }
+            exits.push(edge.to().clone());
+        }
+        if exits.len() != 1 {
+            return Ok(None);
+        }
+        arm_successors.push(exits[0].clone());
+    }
+    if arm_successors[0] != arm_successors[1] {
+        return Ok(None);
+    }
+    let join = arm_successors[0].clone();
+    // The two-arm proof itself, read-only: the region this certificate states is re-validated
+    // against the canonical CFG by the proof that owns it.
+    let region = Region::If {
+        prefix: Vec::new(),
+        branch: branch_block.block().clone(),
+        branch_bci,
+        then_arm: Box::new(Region::Straight {
+            blocks: vec![then_entry.clone()],
+        }),
+        else_arm: Box::new(Region::Straight {
+            blocks: vec![else_entry.clone()],
+        }),
+        join: Some(join.clone()),
+    };
+    let crate::build::ConditionalValueAttempt::Proved(proof) =
+        crate::build::prove_conditional_value(&region, canonical, ssa, operations, budget)?
+    else {
+        return Ok(None);
+    };
+    if proof.branch_bci != branch_bci || proof.join != join {
+        return Ok(None);
+    }
+    // The Phi's one consumer is this chain's own `append(Z)`: the value enters the chain's argument
+    // position as the boolean it is, and the presentation of a `0`/`1` pair beside an equality
+    // branch is the comparison itself (`crate::build`'s `boolean_position_values`).
+    let Some(consumer) = all
+        .iter()
+        .find(|instruction| instruction.bci() == proof.consumer_bci)
+    else {
+        return Ok(None);
+    };
+    let Some(Operation::Invoke(target)) = operations.get(proof.consumer_bci) else {
+        return Ok(None);
+    };
+    let Some((params, returns)) = parse_method(target.descriptor()) else {
+        return Ok(None);
+    };
+    if target.owner() != ty
+        || target.name() != "append"
+        || params.as_slice() != [Type::Boolean]
+        || !matches!(returns, Some(Type::Reference(name)) if name == source_name(ty))
+    {
+        return Ok(None);
+    }
+    let Some((_, receiver)) = stack_operands(consumer).first().copied() else {
+        return Ok(None);
+    };
+    if !is_the_instance(ssa, receiver, &produced_by) {
+        return Ok(None);
+    }
+    let Some((_, value)) = stack_operands(consumer).last().copied() else {
+        return Ok(None);
+    };
+    if value != proof.phi {
+        return Ok(None);
+    }
+    let Some(join_block) = ssa.block(&proof.join) else {
+        return Ok(None);
+    };
+    let join_refs: Vec<&SsaInstruction> = join_block.instructions().iter().collect();
+    let Some(join_index) = join_block
+        .instructions()
+        .iter()
+        .position(|instruction| instruction.bci() == proof.consumer_bci)
+    else {
+        return Ok(None);
+    };
+    // The Phi is read where the join begins, so nothing runs between the arms and the `append`.
+    if join_index != 0 {
+        return Ok(None);
+    }
+    appends.push((proof.consumer_bci, Type::Boolean));
+    owned.insert(proof.consumer_bci);
+    produced_by.push(proof.consumer_bci);
+    previous = proof.consumer_bci;
+    // The join's own run: the rest of the chain, ending in the `toString` its `String` is read at.
+    let mut tail = None;
+    for instruction in &join_block.instructions()[join_index + 1..] {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        let at = instruction.bci();
+        match operations.get(at) {
+            Some(Operation::Invoke(target))
+                if target.owner() == ty && target.name() == "append" =>
+            {
+                let Some((params, returns)) = parse_method(target.descriptor()) else {
+                    return Ok(None);
+                };
+                if params.len() != 1
+                    || !keeps_its_conversion(&params[0])
+                    || !matches!(returns, Some(Type::Reference(name)) if name == source_name(ty))
+                {
+                    return Ok(None);
+                }
+                let Some((_, receiver)) = stack_operands(instruction).first().copied() else {
+                    return Ok(None);
+                };
+                if !is_the_instance(ssa, receiver, &produced_by) {
+                    return Ok(None);
+                }
+                let Some((_, value)) = stack_operands(instruction).last().copied() else {
+                    return Ok(None);
+                };
+                let Some(produced) = produced_at(ssa, value) else {
+                    return Ok(None);
+                };
+                if produced <= previous || produced >= at {
+                    return Ok(None);
+                }
+                appends.push((at, params[0].clone()));
+                owned.insert(at);
+                produced_by.push(at);
+                previous = at;
+            }
+            Some(Operation::Invoke(target))
+                if target.owner() == ty && target.name() == "toString" =>
+            {
+                if target.descriptor() != "()Ljava/lang/String;" {
+                    return Ok(None);
+                }
+                let Some((_, receiver)) = stack_operands(instruction).first().copied() else {
+                    return Ok(None);
+                };
+                if !is_the_instance(ssa, receiver, &produced_by) {
+                    return Ok(None);
+                }
+                owned.insert(at);
+                tail = Some(at);
+                break;
+            }
+            Some(
+                Operation::Push(_)
+                | Operation::Load { .. }
+                | Operation::Arithmetic { .. }
+                | Operation::Negate,
+            ) => {
+                owned.insert(at);
+            }
+            Some(Operation::Field {
+                access: FieldAccess::Read,
+                ..
+            }) => {
+                owned.insert(at);
+            }
+            Some(Operation::Invoke(_)) if produces_a_read_value(instruction, &join_refs, at) => {
+                owned.insert(at);
+            }
+            _ => return Ok(None),
+        }
+    }
+    let Some(tail) = tail else {
+        return Ok(None);
+    };
+    // The `String` is read where it is consumed, and no instruction outside the span reads the
+    // instance the chain builds.
+    let produced = written_value(ssa, tail);
+    let consumed = produced.is_some_and(|value| {
+        all.iter().any(|instruction| {
+            instruction.bci() != tail
+                && instruction.reads().iter().any(|(_, read)| *read == value)
+                && renders_its_reads(operations.get(instruction.bci()))
+        })
+    });
+    if !consumed {
+        return Ok(None);
+    }
+    for instruction in &all {
+        if owned.contains(&instruction.bci()) {
+            continue;
+        }
+        if instruction
+            .reads()
+            .iter()
+            .any(|(_, read)| is_the_instance(ssa, *read, &produced_by))
+        {
+            return Ok(None);
+        }
+    }
+    if appends.len() < 2 {
+        return Ok(None);
+    }
+    Ok(Some(Chain {
+        head,
+        tail,
+        class: ty.to_string(),
+        appends,
+        owned,
+        cut: Some(Cut {
+            head_block: head_block.block().clone(),
+            branch_bci,
+            join_block: proof.join.clone(),
+        }),
     }))
 }
 
@@ -1113,6 +1645,7 @@ fn verify(
         class,
         appends,
         owned,
+        cut: None,
     })
 }
 

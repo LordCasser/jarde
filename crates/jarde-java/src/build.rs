@@ -19077,14 +19077,15 @@ impl Builder<'_> {
             {
                 continue;
             };
-            if value_facts.uses().len() != 1 {
+            let crosses_cut = self.crosses_a_proved_cut(value);
+            let consumers = self.binding_consumers(value, crosses_cut);
+            if consumers != 1 {
                 rejections.push(BindingRejection {
                     value,
                     anchor,
                     producer,
                     reason: format!(
-                        "the saved producer at BCI {anchor} has {} consumers, so one local binding cannot prove its execution count",
-                        value_facts.uses().len()
+                        "the saved producer at BCI {anchor} has {consumers} consumers, so one local binding cannot prove its execution count"
                     ),
                 });
                 continue;
@@ -19103,12 +19104,7 @@ impl Builder<'_> {
             if reader <= last {
                 continue;
             }
-            let same_block = self
-                .block_of
-                .get(&anchor)
-                .zip(self.block_of.get(&reader))
-                .is_some_and(|(producer_block, reader_block)| producer_block == reader_block);
-            if !same_block {
+            if !self.shares_a_declaration_region(anchor, reader, crosses_cut) {
                 rejections.push(BindingRejection {
                     value,
                     anchor,
@@ -19250,6 +19246,85 @@ impl Builder<'_> {
                 .or_insert(rejection);
         }
         Ok(())
+    }
+
+    /// Whether one value crosses a verified chain's **proved conditional cut**.
+    ///
+    /// A `+` chain whose middle blocks are exactly one two-arm constant materialization crosses
+    /// those blocks: its head block ends in the comparison, the two arms push the `0`/`1` the join
+    /// merges, and the chain continues in the join ([`crate::concat::Cut`]). Everything between the
+    /// two is transparent for evaluation order — the blocks in between hold nothing but the two
+    /// constants the branch chose between — so a value produced in the chain's own block **before**
+    /// the branch and read **in the join** may be written at its readers instead of being saved
+    /// into a local at its producer: the same reading the plan already makes of a value whose
+    /// interval holds no independent instruction ([`Self::has_independent_boundary`]), with the
+    /// cut's own blocks standing in for the part of the interval that lies outside the reader's
+    /// block.
+    ///
+    /// Three facts are read, and all three must hold:
+    ///
+    /// * the value's producer stands in the cut's head block, and every instruction of that block
+    ///   between the producer and the branch is one the chain owns — the chain's text, not an
+    ///   independent effect;
+    /// * the value has at least one real instruction read (the Phi records a join leaves on it are
+    ///   not reads: the value is evaluated once either way);
+    /// * **every** use of the value — its readers and the Phi records — lies in the cut's join
+    ///   block, whose own interval the ordinary boundary walk judges as it judges any other. A value
+    ///   read elsewhere is read past the cut, and one carried into a later merge would have its
+    ///   expression written twice.
+    fn crosses_a_proved_cut(&self, value: ValueId) -> bool {
+        let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
+            return false;
+        };
+        let Some(block) = self.block_of.get(bci) else {
+            return false;
+        };
+        let Some(cut) = self.chains.cut_of(block) else {
+            return false;
+        };
+        let uses = self.ssa.value(value).uses();
+        if !uses.iter().any(|use_| use_.bci().is_some()) {
+            return false;
+        }
+        // Every use of the value — the readers and the Phi records the merge leaves on it — lies in
+        // the cut's join block: a value read anywhere else is read past the cut, and a value carried
+        // into a later merge would be written twice.
+        if !uses.iter().all(|use_| use_.block() == &cut.join_block) {
+            return false;
+        }
+        self.instructions
+            .range((*bci + 1)..cut.branch_bci)
+            .all(|(bci, _)| self.chains.owns(*bci))
+    }
+
+    /// Whether one instruction and its final consumer share a proven declaration region.
+    ///
+    /// Two BCIs of one block always do. A value that crosses a chain's proved conditional cut does
+    /// as well: the declaration written at its producer stands before the cut and the reader after
+    /// the join, and the only thing the two runs between them is the materialization of one
+    /// constant — no block, and no handler, can end the declaration's scope.
+    fn shares_a_declaration_region(&self, anchor: u32, reader: u32, crosses_cut: bool) -> bool {
+        if crosses_cut {
+            return true;
+        }
+        self.block_of
+            .get(&anchor)
+            .zip(self.block_of.get(&reader))
+            .is_some_and(|(producer_block, reader_block)| producer_block == reader_block)
+    }
+
+    /// The count one deferred-binding gate states for a value: every consumer the SSA records,
+    /// except that a value crossing a chain's proved conditional cut is counted by its **real
+    /// instruction reads**. The Phi records a join leaves on a value that travels through it are
+    /// not consumers — the merge hands the same value on, and the value is evaluated once — so
+    /// counting them would refuse a shape whose evaluation count is stated.
+    fn binding_consumers(&self, value: ValueId, crosses_cut: bool) -> usize {
+        let uses = self.ssa.value(value).uses();
+        if crosses_cut {
+            uses.iter().filter(|use_| use_.bci().is_some()).count()
+        } else {
+            uses.len()
+        }
     }
 
     /// The instruction and source anchor that produce one value, when this value is one of the
@@ -19472,6 +19547,10 @@ impl Builder<'_> {
     /// Follows a one-use expression chain to its final statement. For example, `value() + 1`
     /// reaches the return after the `iadd`, so an independent effect between those instructions is
     /// part of the producer-order proof rather than being missed at the arithmetic reader.
+    ///
+    /// "One use" is read as [`Self::binding_consumers`] reads it: a value crossing a chain's proved
+    /// conditional cut is counted by its real instruction reads, because the Phi records a join
+    /// leaves on it are not consumers of the value the expression writes.
     fn terminal_consumer(
         &mut self,
         value: ValueId,
@@ -19481,10 +19560,10 @@ impl Builder<'_> {
             return Ok(None);
         }
         let uses = self.ssa.value(value).uses();
-        if uses.len() != 1 {
+        if self.binding_consumers(value, self.crosses_a_proved_cut(value)) != 1 {
             return Ok(None);
         }
-        let Some(reader) = uses[0].bci() else {
+        let Some(reader) = uses.iter().find_map(|use_| use_.bci()) else {
             return Ok(None);
         };
         poll(self.budget, Some(reader))?;
@@ -24947,9 +25026,18 @@ impl Builder<'_> {
                 .derived_from(*append_bci);
             let mut part = ConcatPart::new(parameter.clone(), rendered);
             if part.parameter == Type::Boolean {
-                if !(self.boolean_literal(value) || self.boolean_proven(value, at)) {
+                // The value's own expression is the last item of the evidence: a part this layer
+                // already renders as a boolean **is** one, and the text it writes is what the
+                // overload converts. That is how an inline conditional value reaches the chain's
+                // argument position: the branch's `0`/`1` pair beside its equality test is spelled
+                // as the comparison itself (`boolean_position_values`), and the comparison is a
+                // boolean expression whatever the SSA definition of the Phi it came from.
+                if !(self.boolean_literal(value)
+                    || self.boolean_proven(value, at)
+                    || part.value.presented == Some(Type::Boolean))
+                {
                     return Err(format!(
-                        "the `append` at BCI {append_bci} takes `boolean`, and this layer has no evidence that the value it reads at BCI {at} is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the overload's own conversion rejects"
+                        "the `append` at BCI {append_bci} takes `boolean`, and this layer has no evidence that the value it reads at BCI {at} is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, a local this body declared `boolean`, or a value whose own expression is already presented as a boolean): the `int` spelling this layer would write is text the overload's own conversion rejects"
                     ).into());
                 }
                 part.value = boolean_spelling(part.value);
