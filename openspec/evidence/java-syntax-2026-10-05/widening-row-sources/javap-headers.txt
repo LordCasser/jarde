@@ -23,3 +23,20 @@ java.util.AbstractCollection     public abstract class java.util.AbstractCollect
 java.util.Set                    public interface java.util.Set<E> extends java.util.Collection<E> {
 java.util.Collection             public interface java.util.Collection<E> extends java.lang.Iterable<E> {
 java.lang.Iterable               public interface java.lang.Iterable<T> {
+
+# 2026-10-06, change `recover-temporal-argument-widening`: the java.time Temporal family's rows and
+# the batch-2 concurrent rows. Same rt.jar (sha256 above), same `javap -classpath <rt.jar> <type>`
+# command; the twelve lines below are its second output line each, verbatim. The index column pads
+# a shorter name to 33 columns and separates a longer one by a single space.
+java.time.LocalDateTime          public final class java.time.LocalDateTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.time.chrono.ChronoLocalDateTime<java.time.LocalDate>, java.io.Serializable {
+java.time.LocalDate              public final class java.time.LocalDate implements java.time.temporal.Temporal,java.time.temporal.TemporalAdjuster,java.time.chrono.ChronoLocalDate,java.io.Serializable {
+java.time.LocalTime              public final class java.time.LocalTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.LocalTime>, java.io.Serializable {
+java.time.Instant                public final class java.time.Instant implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.Instant>, java.io.Serializable {
+java.time.ZonedDateTime          public final class java.time.ZonedDateTime implements java.time.temporal.Temporal, java.time.chrono.ChronoZonedDateTime<java.time.LocalDate>, java.io.Serializable {
+java.time.OffsetDateTime         public final class java.time.OffsetDateTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.OffsetDateTime>, java.io.Serializable {
+java.time.OffsetTime             public final class java.time.OffsetTime implements java.time.temporal.Temporal, java.time.temporal.TemporalAdjuster, java.lang.Comparable<java.time.OffsetTime>, java.io.Serializable {
+java.time.temporal.Temporal      public interface java.time.temporal.Temporal extends java.time.temporal.TemporalAccessor {
+java.time.temporal.TemporalAccessor public interface java.time.temporal.TemporalAccessor {
+java.util.concurrent.CompletableFuture public class java.util.concurrent.CompletableFuture<T> implements java.util.concurrent.Future<T>, java.util.concurrent.CompletionStage<T> {
+java.util.concurrent.CompletionStage public interface java.util.concurrent.CompletionStage<T> {
+java.util.concurrent.Future      public interface java.util.concurrent.Future<V> {

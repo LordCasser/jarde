@@ -1,0 +1,6 @@
+# 命令与输出（在 worktree 根运行）
+#   sh openspec/changes/recover-temporal-argument-widening/results/selfcheck-javap-rows.sh
+the twelve types javap answered:
+      12
+SELF-CHECK OK: the committed lines are javap's own, byte for byte
+# exit=0

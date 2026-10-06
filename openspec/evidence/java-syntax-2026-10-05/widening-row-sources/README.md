@@ -25,3 +25,16 @@
    九行（String + 八装箱）落表，不含 `Enum`（同样保守）。
 
 两处都不影响本次锚（`String`/八装箱/`EnumSet` 均在表内），列在此供行集审计。
+
+## change `recover-temporal-argument-widening` 的表行（2026-10-06）
+
+同一 rt.jar、同一命令的续录，转录行在 [javap-headers.txt](javap-headers.txt) 末尾十二行。
+
+| 表 | 行（呈现类型 → 目标） | 依据（转录行） |
+| --- | --- | --- |
+| Temporal 族（**十四行**：七个 java.time 具名类型 × {`java.time.temporal.Temporal`, `java.time.temporal.TemporalAccessor`}） | `java.time.LocalDateTime` / `java.time.LocalDate` / `java.time.LocalTime`（MVP 三型）与 `java.time.Instant` / `java.time.ZonedDateTime` / `java.time.OffsetDateTime` / `java.time.OffsetTime`（提案扩展四型） → `java.time.temporal.Temporal`；同七名 → `java.time.temporal.TemporalAccessor` | 七个类的 header 各自**逐字**声明 `implements java.time.temporal.Temporal, …`（`Temporal` 行）；`TemporalAccessor` 行经 `java.time.temporal.Temporal` 自身 header 的 `extends java.time.temporal.TemporalAccessor` 到达。链（七型同形）：`java.time.LocalDateTime --implements--> java.time.temporal.Temporal --extends--> java.time.temporal.TemporalAccessor`。javadoc 式 implemented-interface 列表读法，与 java.util 表 `Properties → java.util.Map`（经 `Hashtable`）同规。**七个类型都直接声明 `Temporal`，故扩展四型的 `TemporalAccessor` 对同样有 header 依据，无一对需要靠记忆补**。 |
+| 并发（**两行**，批 2，[CompletableFuture 巡查](../../../evidence/java-syntax-2026-10-05/completable-future-patrol/README.md)） | `java.util.concurrent.CompletableFuture` → `java.util.concurrent.CompletionStage`、`java.util.concurrent.Future` | header 逐字 `public class java.util.concurrent.CompletableFuture<T> implements java.util.concurrent.Future<T>, java.util.concurrent.CompletionStage<T> {`——两个目标接口在同一行声明。 |
+
+自检：[`results/selfcheck-javap-rows.sh`](../../../changes/recover-temporal-argument-widening/results/selfcheck-javap-rows.sh)
+对十二个类型重跑 `javap`、按本文件索引列（短名补到 33 列、长名单空格）重排后与该文件**逐字节 diff 相同**。
+
