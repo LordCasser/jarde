@@ -7357,6 +7357,56 @@
       "path": "tests/fixtures/recover-comparable-argument-widening/v8/COX.class"
     },
     {
+      "blake3": "666233ad7718d52ff9b84fa2b889a50c51765a1bc08b1c5a33be06295e7b8fb8",
+      "bytes": 838,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/BI.java"
+    },
+    {
+      "blake3": "4a51ca530935939c43d99a5ec6cda81255406a78e9321d2c26629d466e89c2eb",
+      "bytes": 1268,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/RC.java"
+    },
+    {
+      "blake3": "8183254fe7d5c745c3f3c201217b3b972b37bbd0877a6726bdc00c1f5168ff9b",
+      "bytes": 813,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/RCN.java"
+    },
+    {
+      "blake3": "2b27f198d86f2cb76e0b9ed5c983693155eb45fcf1cced292720ca59da7f6d97",
+      "bytes": 1143,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/bi.jar"
+    },
+    {
+      "blake3": "29cfdec4d9bb34486e4ac0d1bb25140dfe4e41ca3435c22e92ab809f554c3060",
+      "bytes": 1570,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/v8-javac8/BI.class"
+    },
+    {
+      "blake3": "fcb813a7907931208d2a1be84bba77fb55379843027a3844800d69e5c2292f95",
+      "bytes": 1471,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/v8-javac8/RC.class"
+    },
+    {
+      "blake3": "8c491cd873eaf6d4d214e348b4cfc77197b523141dd2ee17b056974958fb98ac",
+      "bytes": 1672,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/v8-javac8/RCN.class"
+    },
+    {
+      "blake3": "9d0b3baf91c87e76d7bea959906629076e5bcf246b42ece7f223f882ae1d7e9b",
+      "bytes": 1567,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/v8/BI.class"
+    },
+    {
+      "blake3": "23287b41e88ff90a88ec0b1c68e3edbfd6e7e318e47b33f1699181df15f369bd",
+      "bytes": 1468,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/v8/RC.class"
+    },
+    {
+      "blake3": "f8d51cd50186ea4c7b97b6b717c3dc5d8ac4310c30dbc28ceb62ae0fe3c364a1",
+      "bytes": 1670,
+      "path": "tests/fixtures/recover-conditional-rhs-field-compound/v8/RCN.class"
+    },
+    {
       "blake3": "29cb957d6998c8560b6567aeab2dfdbbf48bb335886d003395f07fdebadb7797",
       "bytes": 694,
       "path": "tests/fixtures/recover-dup-store-conditional/DS.java"
