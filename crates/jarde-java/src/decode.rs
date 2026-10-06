@@ -1149,14 +1149,22 @@ mod tests {
     }
 
     #[test]
-    fn modified_utf8_class_names_are_decoded_before_the_ascii_spelling_gate() {
+    fn modified_utf8_class_names_are_decoded_before_the_spelling_gate() {
         let deseret = jarde_reader::model::JvmBytes(vec![0xed, 0xa0, 0x81, 0xed, 0xb0, 0x80]);
         assert_eq!(lossy(&deseret), "𐐀");
         assert_eq!(
             class_literal_type(&deseret),
-            None,
-            "the class name is valid Modified UTF-8 but outside the current ASCII source-name policy"
+            Some("𐐀".to_owned()),
+            "the class name is valid Modified UTF-8 and a JLS letter, so the spelling gate \
+             admits it (change `recover-unicode-identifiers`; until then the gate was the ASCII \
+             table and this refused)"
         );
+
+        // Decoded and still outside the gate: an emoji is valid Modified UTF-8, but neither a
+        // Java letter nor a Java digit, so no revision of the table spells it.
+        let emoji = jarde_reader::model::JvmBytes(vec![0xed, 0xa0, 0xbd, 0xed, 0xb8, 0x80]);
+        assert_eq!(lossy(&emoji), "😀");
+        assert_eq!(class_literal_type(&emoji), None);
 
         let malformed_pair = jarde_reader::model::JvmBytes(vec![0xed, 0xa0, 0x81]);
         assert_eq!(lossy(&malformed_pair), "\u{fffd}");

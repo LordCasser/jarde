@@ -122,17 +122,67 @@ pub const JAVA_KEYWORDS: &[&str] = &[
 pub const RECEIVER: &str = "this";
 
 /// Whether `text` is an identifier this layer is willing to write.
+///
+/// The grammar is Java's (JLS §3.8): a *Java letter* first, then Java letters and digits. What
+/// "letter" and "digit" mean is Unicode's and not ASCII's, and that is not decoration: the names
+/// this function judges are JVMS §4.7.7 UTF-8, and a class file that declares a field `变量` and
+/// reads it back names **one** string. An answer of `false` for it would spell the declaration `__`
+/// (through [`alias_for`]) while the same run's own body statements write the pool's `变量` — one
+/// name with two spellings, which is the collision this function exists to prevent and a text no
+/// compiler accepts. So the predicate is the JLS one, decided from the Unicode properties `std`
+/// states, with Java's two additions kept exactly as they were: `$` and `_` are letters, and the
+/// keywords (`true`/`false`/`null` and the reserved `const`/`goto` included) are not identifiers.
+///
+/// The relation to `Character.isJavaIdentifierStart`/`Character.isJavaIdentifierPart` is the JLS
+/// rule as far as `std`'s Unicode properties state it, and the difference runs both ways:
+///
+/// * accepted, where Java accepts them: the letters (`Alphabetic` is Unicode's letters plus the
+///   numeric letters `Ⅷ` its start rule admits too) and the digits `is_alphanumeric` adds
+///   (`变量`, `café`, `x١٢٣` — a leading digit starts no identifier for either of us);
+/// * accepted, where Java does not: the **other numeric** characters — `is_alphanumeric` is
+///   `Alphabetic || Numeric`, and `Numeric` covers `No` (`²`, `①`) on top of the decimal digits
+///   `Nd` and the numeric letters `Nl` Java admits — and a mark Unicode counts as `Alphabetic`
+///   (a Devanagari vowel sign) in the start position, where Java asks for a letter. Both are the
+///   superset side: the layer spells the pool's name instead of hiding it behind an alias;
+/// * refused, where Java accepts them: the characters Java admits under its *other* categories —
+///   a currency symbol other than `$` (`€`), connecting punctuation other than `_`, a combining
+///   mark, an identifier-ignorable format character (U+200B). `std` states no Unicode general
+///   category, and the alternative to refusing would be admitting whatever is neither space nor
+///   control, which would write `。` and `·` — names Java cannot spell either — into identifier
+///   positions. Such a name keeps [`alias_for`] and the marker that states its raw spelling, which
+///   is the presentation every revision before this one gave it;
+/// * the ASCII half is answered byte-wise before any of that ([`ascii_identifier`]), so every name
+///   of every corpus written before non-ASCII names were admitted is decided by the exact table it
+///   was decided by: an ASCII identifier's rendering cannot move by one byte, and ASCII punctuation
+///   (`-`, `.`, `/`, `;`) still never takes an identifier position.
 pub fn is_java_identifier(text: &str) -> bool {
+    if text.is_empty() || JAVA_KEYWORDS.contains(&text) {
+        return false;
+    }
+    if text.is_ascii() {
+        return ascii_identifier(text);
+    }
     let mut characters = text.chars();
-    let Some(first) = characters.next() else {
+    let first = characters
+        .next()
+        .expect("non-empty text was established above");
+    (first.is_alphabetic() || first == '_' || first == '$')
+        && characters
+            .all(|character| character.is_alphanumeric() || character == '_' || character == '$')
+}
+
+/// The ASCII half of [`is_java_identifier`], byte-wise: `[A-Za-z_$][A-Za-z0-9_$]*`.
+///
+/// This is the whole function the earlier revisions were, and it is kept as its own reading so that
+/// the ASCII answer is visibly the table it always was rather than the `char` properties standing
+/// in for it.
+fn ascii_identifier(text: &str) -> bool {
+    let mut bytes = text.bytes();
+    let Some(first) = bytes.next() else {
         return false;
     };
-    let start = first == '_' || first == '$' || first.is_ascii_alphabetic();
-    start
-        && characters.all(|character| {
-            character == '_' || character == '$' || character.is_ascii_alphanumeric()
-        })
-        && !JAVA_KEYWORDS.contains(&text)
+    let start = first == b'_' || first == b'$' || first.is_ascii_alphabetic();
+    start && bytes.all(|byte| byte == b'_' || byte == b'$' || byte.is_ascii_alphanumeric())
 }
 
 /// The Java source spelling of one class-file nested name, as the **reference** a body of
@@ -838,6 +888,53 @@ mod tests {
         assert!(!is_java_identifier("while"));
         assert!(!is_java_identifier("true"));
         assert!(is_java_identifier("$value_2"));
+    }
+
+    /// The identifier table of change `recover-unicode-identifiers`, as the two halves it is: the
+    /// ASCII table every corpus before that change was written with, and the JLS reading of the
+    /// Unicode properties beside it.
+    ///
+    /// The contrast is the point of the change being one predicate and not two sources: the same
+    /// function the declaration path asks (`written_name` in the presentation) and the reference
+    /// path asks (the naming table), so the spellings of one name cannot disagree any more.
+    #[test]
+    fn the_identifier_table_is_javas_beside_a_byte_identical_ascii_half() {
+        // The ASCII half, exactly as every revision before this one decided it.
+        for accepted in [
+            "a", "A", "$value_2", "_x", "变量", "a变量", "_变量", "变量1",
+        ] {
+            assert!(is_java_identifier(accepted), "{accepted} is an identifier");
+        }
+        for refused in [
+            "", "1x", "a-b", "a.b", "a/b", "a b", "int", "while", "true", "null", "_", "goto",
+        ] {
+            assert!(!is_java_identifier(refused), "{refused} is not one");
+        }
+        // The Unicode half: the letters, digits and `$`/`_` the JLS admits — and the marks,
+        // currency symbols and punctuation it does not, which keep their alias and marker.
+        assert!(is_java_identifier("café"));
+        assert!(is_java_identifier("变量"));
+        assert!(is_java_identifier("内部类"));
+        assert!(is_java_identifier("方法2"));
+        assert!(is_java_identifier("x١٢٣"), "a decimal digit is a part");
+        assert!(!is_java_identifier("变量。"), "U+3002 is punctuation");
+        assert!(!is_java_identifier("变量·量"), "U+00B7 is punctuation");
+        assert!(!is_java_identifier("3变量"), "a digit starts no identifier");
+        assert!(!is_java_identifier("١٢٣x"), "not even a decimal one");
+        assert!(!is_java_identifier("😀"));
+        // The alias generator itself is byte-wise unchanged: a name it is still handed (the
+        // punctuation one above) aliases exactly as ASCII-only revisions aliased it.
+        assert_eq!(alias_for("变量。"), "___");
+        assert_eq!(
+            alias_for("😀"),
+            "__",
+            "the `_` keyword eats the second underscore"
+        );
+        assert_eq!(
+            alias_for("变量。"),
+            alias_for("变量。"),
+            "pure in the spelling"
+        );
     }
 
     #[test]
