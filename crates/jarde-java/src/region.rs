@@ -1494,6 +1494,20 @@ pub(crate) fn recover(
     })
 }
 
+/// One arm's strictly forward routes, as [`Walker::arm_forward_routes`] read them.
+struct ArmRoutes {
+    /// Every block the arm holds before the stop block or the frame's boundary.
+    blocks: BTreeSet<usize>,
+    /// Whether a route reached the stop block the caller named.
+    reached_stop: bool,
+    /// Whether a route reached the frame's boundary — a route that would run past the join.
+    reached_boundary: bool,
+}
+
+/// How many branches a route from a ladder's arm to its join may pass: one, the `else if` step
+/// itself. The bound is what keeps the reading to the single-level ladder this change presents.
+const LADDER_MAX_BRANCHES: usize = 1;
+
 /// Find the first repeated physical owner in method order. `Region::blocks` already folds
 /// intentional aliases *within* one shape (a loop header that is its test, or a short-circuit
 /// producer named by several edges). The identity includes the `jsr` path, so clones at one BCI
@@ -3255,6 +3269,22 @@ impl Walker<'_> {
                         })
                         .flatten();
                     let join_node = join_node.or(continue_target_join);
+                    // An `if`/`else if` ladder whose one arm terminates the method has **no**
+                    // post-dominator: the returning arm never passes the block the other arms
+                    // regroup on, so none of the readings above states a join and both arm walks
+                    // would run on to the frame's own boundary. Inside a loop that boundary is the
+                    // header, and the block the arms really meet at — the loop's own latch — is
+                    // then claimed by whichever arm walks first while the second re-enters it
+                    // ([`FallbackReason::Loop`]); the completed tree owns that block twice and the
+                    // whole method is refused (`jre_region_ownership_overlap`). The join is a fact
+                    // of the graph all the same, and [`Self::ladder_join`] is the reading of it.
+                    let ladder_join = if join_node.is_none() {
+                        self.ladder_join(node, then_node, else_node, frame, branch_bci)?
+                    } else {
+                        None
+                    };
+                    let ladder_elected = ladder_join.is_some();
+                    let join_node = join_node.or(ladder_join);
                     // The last two-edge reading: the graph's join already left the loop (the
                     // breaking arm's route exits it), one successor is the proved exit transfer
                     // of a loop this frame knows, and the other successor stays in the loop and
@@ -3828,6 +3858,13 @@ impl Walker<'_> {
                             // the other arm's continuation never states. The re-election, not a
                             // reaches reading, is what the join stands on.
                             && !shared_latch_elected
+                            // The ladder's own election proved the same question from the arms'
+                            // routes: each arm reaches the join, and no route of either reaches
+                            // the frame's boundary without passing through it, so the reading the
+                            // refusal below states ("both arms must meet the join, or leave the
+                            // method") is already established — the arm that does not meet it
+                            // leaves the method, which is the early-return leaf the tree states.
+                            && !ladder_elected
                         {
                             let reason = FallbackReason::ArmsDoNotMeet {
                                 block_bci: branch.bci(),
@@ -8323,6 +8360,210 @@ impl Walker<'_> {
             return true;
         }
         self.forward_join_predecessors(branch, join)
+    }
+
+    /// The one block an `if`/`else if` ladder's arms regroup on when one of them terminates the
+    /// method.
+    ///
+    /// A branch whose arm returns has **no** post-dominator: the returning route never passes the
+    /// block the other arms meet at, so no block lies on every path out of the branch and every
+    /// join reading above states nothing. The walk then keeps the frame's own boundary for both
+    /// arms, and inside a loop that boundary is the header: the first arm runs through the loop's
+    /// latch block and claims it, the second arm reaches the same block and re-enters it, which the
+    /// walk quotes as a loop ([`FallbackReason::Loop`]) and the completed tree owns twice. The
+    /// ladder's join is a fact of the graph all the same, and this is the reading of it:
+    ///
+    /// * the branch is inside a loop and the frame's boundary is that loop's own continuation
+    ///   (its header, or the update block a proved for-header owns) — a ladder outside a loop is
+    ///   read by [`Self::shared_forward_join`] and the readings above, and this one stays out of
+    ///   their way;
+    /// * both arms reach one and the same block by strictly forward normal edges inside the
+    ///   loop's own scope, and that block is the first one both of them hold
+    ///   ([`unique_first_common`]) — the arms' own regrouping point, not an address;
+    /// * no route of either arm reaches the frame's boundary without passing through it: every
+    ///   path that continues the loop runs the statements after the `if`, which is what makes the
+    ///   join's own statements exactly the ones the bytecode runs;
+    /// * every way into the candidate comes through this branch ([`Self::forward_join_predecessors`]);
+    /// * at most one branch lies on any route from an arm to the candidate: this reading presents
+    ///   a **single-level** ladder (one `else if` step), which is the scope this change states. A
+    ///   deeper chain's routes regroup on a block its own levels have not each been proved to
+    ///   reach, so it keeps its refusal.
+    fn ladder_join(
+        &mut self,
+        branch: usize,
+        then_node: Option<usize>,
+        else_node: Option<usize>,
+        frame: &Frame,
+        at: u32,
+    ) -> Result<Option<usize>, StopReason> {
+        let Some(target) = frame.loop_targets.last() else {
+            return Ok(None);
+        };
+        let Some(boundary) = frame.boundary else {
+            return Ok(None);
+        };
+        let Some(loop_of) = self.view.loop_entered_at(target.header) else {
+            return Ok(None);
+        };
+        let (Some(then_node), Some(else_node)) = (then_node, else_node) else {
+            return Ok(None);
+        };
+        if then_node == else_node
+            || (boundary != target.header && boundary != target.continue_target)
+        {
+            // Two edges onto one block state no arm split at all, and a frame that ends anywhere
+            // but where this loop continues is not the loop body's own frame.
+            return Ok(None);
+        }
+        let blocks = loop_of.blocks();
+        let (Some(then_routes), Some(else_routes)) = (
+            self.arm_forward_routes(then_node, None, boundary, frame, at)?,
+            self.arm_forward_routes(else_node, None, boundary, frame, at)?,
+        ) else {
+            return Ok(None);
+        };
+        let common: BTreeSet<usize> = then_routes
+            .blocks
+            .intersection(&else_routes.blocks)
+            .copied()
+            .collect();
+        let Some(candidate) = unique_first_common(&common, |node| self.view.reachable(node)) else {
+            return Ok(None);
+        };
+        if candidate == boundary || !blocks.contains(&candidate) {
+            return Ok(None);
+        }
+        let (Some(then_stop), Some(else_stop)) = (
+            self.arm_forward_routes(then_node, Some(candidate), boundary, frame, at)?,
+            self.arm_forward_routes(else_node, Some(candidate), boundary, frame, at)?,
+        ) else {
+            return Ok(None);
+        };
+        if !then_stop.reached_stop
+            || !else_stop.reached_stop
+            || then_stop.reached_boundary
+            || else_stop.reached_boundary
+        {
+            return Ok(None);
+        }
+        if !self.forward_join_predecessors(branch, candidate) {
+            return Ok(None);
+        }
+        let Some(join) = self.view.id_of(candidate) else {
+            return Ok(None);
+        };
+        if self
+            .canonical
+            .edges()
+            .iter()
+            .any(|edge| edge.to() == join && edge.kind() != CanonicalEdgeKind::Normal)
+        {
+            return Ok(None);
+        }
+        Ok(Some(candidate))
+    }
+
+    /// One arm's strictly forward routes inside the enclosing loop, up to the block the ladder's
+    /// arms regroup on (`stop`), or to the frame's boundary when no candidate is named yet.
+    ///
+    /// The walk is the arm's own: it moves forward in one body's BCI order, and a route ends where
+    /// the arm's walk ends — at a terminal block (the early-return arm's `return`), at the frame's
+    /// boundary, or at the block the caller named. `reached_boundary` is the answer the election
+    /// needs: a route that arrives at the frame's boundary **without** the stop block would run
+    /// past the join the `if` presents.
+    ///
+    /// Anything this reading cannot state is a refusal, never a guess: a route that leaves the
+    /// frame's scope, enters a nested loop's header, or passes more than one branch keeps the
+    /// shape out of the single-level ladder this change presents. Every block and edge examined is
+    /// charged before use.
+    fn arm_forward_routes(
+        &mut self,
+        start: usize,
+        stop: Option<usize>,
+        boundary: usize,
+        frame: &Frame,
+        at: u32,
+    ) -> Result<Option<ArmRoutes>, StopReason> {
+        let mut routes = ArmRoutes {
+            blocks: BTreeSet::new(),
+            reached_stop: false,
+            reached_boundary: false,
+        };
+        let mut seen: BTreeMap<usize, usize> = BTreeMap::new();
+        let mut pending = vec![(start, 0usize)];
+        while let Some((node, branches)) = pending.pop() {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            if Some(node) == stop {
+                routes.reached_stop = true;
+                routes.blocks.insert(node);
+                continue;
+            }
+            if node == boundary {
+                routes.reached_boundary = true;
+                continue;
+            }
+            if self.view.is_loop_header(node)
+                || frame
+                    .scope
+                    .as_ref()
+                    .is_some_and(|scope| !scope.contains(&node))
+            {
+                // A nested loop is a structure of its own, and a block the loop's body does not
+                // hold is one the arm's own walk stops at: neither is a route of this ladder.
+                return Ok(None);
+            }
+            match seen.get(&node) {
+                Some(previous) if *previous <= branches => continue,
+                _ => {
+                    seen.insert(node, branches);
+                }
+            }
+            routes.blocks.insert(node);
+            let successors = self.view.successors(node);
+            if successors.is_empty() {
+                // The route leaves the method: the early-return arm's `return` is where the
+                // ladder's other arm terminates, and nothing after the `if` runs on it.
+                continue;
+            }
+            let step = usize::from(successors.len() > 1);
+            if branches + step > LADDER_MAX_BRANCHES {
+                return Ok(None);
+            }
+            let Some(block) = self.view.id_of(node) else {
+                return Ok(None);
+            };
+            for successor in successors {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                if Some(successor) == stop || successor == boundary {
+                    // The block a route ends at is where the walk stops, whichever way the
+                    // address runs: the loop's own back edge is one of those ends.
+                    pending.push((successor, branches + step));
+                    continue;
+                }
+                let Some(destination) = self.view.id_of(successor) else {
+                    return Ok(None);
+                };
+                if destination.path() != block.path() || destination.bci() <= block.bci() {
+                    // A route that does not move forward in this body is no route of a ladder: a
+                    // back edge is the loop's own, and a `jsr` clone is another body.
+                    return Ok(None);
+                }
+                pending.push((successor, branches + step));
+            }
+        }
+        Ok(Some(routes))
     }
 
     /// Whether every incoming edge to `join` comes from this branch's forward region, with at

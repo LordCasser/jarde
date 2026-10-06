@@ -7597,6 +7597,81 @@
       "path": "tests/fixtures/recover-lambda-primitive-array-capture/v8/P02_multianewarray.class"
     },
     {
+      "blake3": "fba968ceb09e076c2b153046c02a19719ff34f2dc78d786502f2bce62a0ecd2c",
+      "bytes": 1304,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/BS.java"
+    },
+    {
+      "blake3": "a53f67e2709b1191723e869b3ad6a37f638f1998520fe78ab1bf5d17b02528ba",
+      "bytes": 1275,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/CB.java"
+    },
+    {
+      "blake3": "5f56b743fb8050d5569f9f7e48d35549601bafd78e1eca2da703e73a1032af11",
+      "bytes": 797,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/CB2.java"
+    },
+    {
+      "blake3": "8b5ecfbab2ca95affd8d89f5d6cf2c24c130f951e3ac1735d6b29d329060078d",
+      "bytes": 2698,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/LB.java"
+    },
+    {
+      "blake3": "390f720d0a20f7b356923e5fc6d7afb532d1c3c74ffb586239d499e96fdbf94c",
+      "bytes": 642,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/LR2.java"
+    },
+    {
+      "blake3": "574adb30340c090571dd21dd7c501af73da86770325ab9df756b8ff627662137",
+      "bytes": 1740,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/BS.class"
+    },
+    {
+      "blake3": "04373779cbb8987d76cc50b4eb2f40a9be0de0215da7826d3af049a14fc9baf0",
+      "bytes": 1243,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/CB.class"
+    },
+    {
+      "blake3": "e764d7c7e0eda70e7708d9b4edae6f54a07c456478a5ffcefa9af760dbadf10d",
+      "bytes": 950,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/CB2.class"
+    },
+    {
+      "blake3": "e228fdf11b22c50e87f78c9e9840a4ff6e0111aa52c855bd1b07ce9e77b3c364",
+      "bytes": 1867,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/LB.class"
+    },
+    {
+      "blake3": "a8ce512161c9ca878ea37cb0d65ee95dc1e656ff3bd135cd3085de0a791381f1",
+      "bytes": 932,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/LR2.class"
+    },
+    {
+      "blake3": "0f8633c71c1a099bd5ede863e8104e8dffa693520d80f3291d8476b5cd362ac9",
+      "bytes": 1737,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8/BS.class"
+    },
+    {
+      "blake3": "961f64866ed2aea4f0716762e98a58075e945d982bae74eff2550730a9bbf9be",
+      "bytes": 1243,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8/CB.class"
+    },
+    {
+      "blake3": "301ddc8d288f206786dba564e23fc44097c09652e04c43346be8598f6965367c",
+      "bytes": 950,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8/CB2.class"
+    },
+    {
+      "blake3": "3fbccc1d79e00863a800615c6d316b6c7da9dadb1a70a3d042a1ea73c4cd1347",
+      "bytes": 1864,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8/LB.class"
+    },
+    {
+      "blake3": "24c7f4bf89e3268c75fadd28b7f5936857471d3d9902b87b37c55fabf6ebcc14",
+      "bytes": 932,
+      "path": "tests/fixtures/recover-loop-else-if-early-returns/v8/LR2.class"
+    },
+    {
       "blake3": "941c9847c40aab86f779566dafc7604a76fe6f7ce004b2c772f53cbf351c173c",
       "bytes": 197,
       "path": "tests/fixtures/recover-platform-interface-argument-widening/AC.java"

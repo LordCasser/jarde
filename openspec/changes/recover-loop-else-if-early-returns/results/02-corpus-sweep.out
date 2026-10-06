@@ -1,0 +1,31 @@
+SELF-TEST OK: known positive CB 1 -> 0 overlap refusals; known negative LB 2 -> 2 overlaps and 2 -> 2 cross-quotes; the three controls byte-identical
+loose candidate classes: 2736
+archive candidate classes: 738
+UNRENDERED: openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/boundaries/generated/DamagedValueTag.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/boundaries/generated/DuplicateEntries.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/boundaries/generated/UnspellableType.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-10-04/recover-javac8-getclass-null-check-idiom/fixture/position-negatives/N1$Stat.pop-missing.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-10-04/recover-javac8-getclass-null-check-idiom/fixture/position-negatives/N1$Stat.check-noncontiguous.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/ngh/fixture/negatives/NG4neg$Box.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$A.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$C.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$B.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/fixed-aux/TestTryCatchFinally5$TestCls$D.class renders under no name it states
+UNRENDERED: openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Parent.class renders under no name it states
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8/LR2.class (overlap refusals 1 -> 0)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8/BS.class (overlap refusals 1 -> 0)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8/CB.class (overlap refusals 1 -> 0)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8/LB.class (overlap refusals 4 -> 2)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8/CB2.class (overlap refusals 1 -> 0)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/LR2.class (overlap refusals 1 -> 0)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/BS.class (overlap refusals 1 -> 0)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/CB.class (overlap refusals 1 -> 0)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/LB.class (overlap refusals 4 -> 2)
+MOVED: tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/CB2.class (overlap refusals 1 -> 0)
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+MOVED: openspec/evidence/java-syntax-2026-10-05/binary-search-twopointer-patrol/fixture/bs.jar!BS.class (overlap refusals 1 -> 0)
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+moved classes: 11
+unrendered candidates: 13
+canonical-overlap refusal sentences across the candidates: 36 -> 23
+SWEEP_EXIT=0

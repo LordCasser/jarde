@@ -11953,7 +11953,12 @@ mod tests {
             // legs: four classes, twenty-two bodies, two handler records and six branch targets —
             // `OP`'s `len` `ifeq` and its inlined `lambda$name$0` `ifne`/`goto` per leg)
             // moved it again.
-            (739, 3083, 284, 1833, 8),
+            // The 2026-10-06 recover-loop-else-if-early-returns fixtures (the binary-search
+            // patrol's `BS`/`CB`/`CB2` anchors, controls and exit-consuming twin, this change's
+            // all-recovering anchor `LR2` and its `LB` negatives, five classes on both compiler
+            // legs: ten classes, fifty-six bodies, two handler records — `LB.tryLadder`'s catch,
+            // one per leg — and one hundred seventy-two branch targets) moved it again.
+            (749, 3139, 286, 2005, 8),
             "fixture population changed: re-measure these counts"
         );
     }
