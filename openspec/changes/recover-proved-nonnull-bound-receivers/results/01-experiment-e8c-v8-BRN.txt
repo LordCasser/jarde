@@ -1,0 +1,45 @@
+// jarde: presentation of `BRN` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BRN extends java.lang.Object {
+    java.lang.StringBuilder buf;
+
+    public BRN() {
+        // @method <init>()V
+        // @declaration a constructor of `BRN`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.buf = new java.lang.StringBuilder();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `nullableParameter(Ljava/util/Optional;Ljava/lang/StringBuilder;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.lang.String nullableParameter(java.util.Optional arg0, java.lang.StringBuilder arg1) {
+        // @method nullableParameter(Ljava/util/Optional;Ljava/lang/StringBuilder;)Ljava/lang/String;
+        // @declaration a static method of `BRN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.ifPresent((java.util.function.Consumer) ((java.lang.Object p0) -> arg1.append((java.lang.String) p0)));
+        return arg1.toString();
+    }
+
+    // jarde: generic Signature projection refused for `nullableField(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    java.lang.String nullableField(java.util.Optional arg1) {
+        // @method nullableField(Ljava/util/Optional;)Ljava/lang/String;
+        // @declaration an instance method of `BRN`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 15 2 0 1
+        // the value captured for the site's argument 0 (BCI 2) cannot be written where the shape reads it: it comes from an Field { access: Read, is_static: false, owner: "BRN", name: "buf", descriptor: "Ljava/lang/StringBuilder;" } at BCI 2, whose text would run again (or run later) inside the shape
+        return this.buf.toString();
+    }
+
+    // jarde: generic Signature projection refused for `rewrittenAfterCapture(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.lang.String rewrittenAfterCapture(java.util.Optional arg0) {
+        // @method rewrittenAfterCapture(Ljava/util/Optional;)Ljava/lang/String;
+        // @declaration a static method of `BRN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local1 = new java.lang.StringBuilder();
+        // @bytecode 20 8 9
+        // the value captured for the site's argument 0 (BCI 9) cannot be written where the shape reads it: the local 1 is written 2 times in this body, so reading it again inside the shape would not read the value the site captured
+        local1 = new java.lang.StringBuilder("z");
+        return local1.toString();
+    }
+}

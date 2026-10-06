@@ -1,0 +1,192 @@
+diff --git a/crates/jarde-java/src/build.rs b/crates/jarde-java/src/build.rs
+index adb9f805..2a4bc39c 100644
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -7601,6 +7601,7 @@ pub(crate) fn build(
+         && !builder.stmts.is_empty()
+         && refused_value.is_some()
+         && (builder.return_type.is_none() || !completes_normally(&builder.stmts))
++        && std::env::var_os("JARDE_EXPERIMENT_KEEP_STATEMENTS").is_none()
+     {
+         // Every instruction BCI of this method, which is the set the escalating quote of the
+         // unproved local assignment above already names ([`Builder::fallback`] maps each BCI a quote
+@@ -18737,6 +18738,7 @@ impl Builder<'_> {
+         if self.array_initializers.owns(at)
+             || self.chains.owns(at)
+             || self.sites.owns(at)
++            || self.experiment_owns_tail(at)
+             || self.clause_parameters.contains(&at)
+             || self.settled.contains(&at)
+             || self.finally_catch_pop == Some(at)
+@@ -23765,6 +23767,16 @@ impl Builder<'_> {
+         consumed: bool,
+     ) -> Result<Expr, ValueRenderFailure> {
+         let operands = stack_operands(instruction);
++        // TEMPORARY EXPERIMENT: read every capture through the discarded copy when asked to.
++        let operands: Vec<(Slot, ValueId)> =
++            if std::env::var_os("JARDE_EXPERIMENT_CAPTURE_THROUGH_DUP").is_some() {
++                operands
++                    .into_iter()
++                    .map(|(slot, value)| (slot, self.through_discarded_copy(value)))
++                    .collect()
++            } else {
++                operands
++            };
+         let captures: Vec<(Option<u32>, Option<Type>)> = operands
+             .iter()
+             .map(|(_, value)| {
+@@ -24189,11 +24201,120 @@ impl Builder<'_> {
+     /// have been written as a statement of its own — a call whose result the site captures is a call
+     /// statement *and* an argument. So the value is replayable only when re-reading its text is the
+     /// same thing as having read it once: a literal, or a local the body writes exactly once.
++    /// TEMPORARY EXPERIMENT: the value a discarded stack copy copied, when the capture's own
++    /// producer is a `Duplicate` (javac's bound-receiver null-check dance re-defines the receiver).
++    fn through_discarded_copy(&self, value: ValueId) -> ValueId {
++        let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
++            return value;
++        };
++        if self.operations.get(*bci) != Some(&Operation::Duplicate) {
++            return value;
++        }
++        match instruction_at(self.ssa, *bci).and_then(single_stack_read) {
++            Some((_, copied)) => copied,
++            None => value,
++        }
++    }
++
++    /// TEMPORARY EXPERIMENT: whether one instruction is part of the discarded null-check tail
++    /// `dup; <discarded null check>; pop` immediately in front of a dynamic site that reads the
++    /// copy - the null check javac writes for a bound receiver, which the site's own presentation
++    /// would own once the receiver is proved non-null.
++    fn experiment_owns_tail(&self, at: u32) -> bool {
++        if std::env::var_os("JARDE_EXPERIMENT_OWN_TAIL").is_none() {
++            return false;
++        }
++        let mut sequence: Vec<&SsaInstruction> = self
++            .ssa
++            .blocks()
++            .iter()
++            .flat_map(|block| block.instructions().iter())
++            .collect();
++        sequence.sort_by_key(|instruction| instruction.bci());
++        let Some(position) = sequence
++            .iter()
++            .position(|instruction| instruction.bci() == at)
++        else {
++            return false;
++        };
++        let matches = |window: &[&SsaInstruction]| -> bool {
++            let [copy, check, pop, site] = window else {
++                return false;
++            };
++            if self.operations.get(copy.bci()) != Some(&Operation::Duplicate) {
++                return false;
++            }
++            let Some(Operation::Invoke(call)) = self.operations.get(check.bci()) else {
++                return false;
++            };
++            if !crate::facts::is_discarded_null_check(
++                call.kind(),
++                call.owner().as_bytes(),
++                call.name().as_bytes(),
++                call.descriptor().as_bytes(),
++                call.is_interface_reference(),
++            ) {
++                return false;
++            }
++            if pop.opcode() != 0x57
++                || !matches!(
++                    self.operations.get(site.bci()),
++                    Some(Operation::InvokeDynamic(_))
++                )
++            {
++                return false;
++            }
++            let Some((_, into_check)) = single_stack_read(check) else {
++                return false;
++            };
++            if !copy
++                .writes()
++                .iter()
++                .any(|(_, written)| *written == into_check)
++            {
++                return false;
++            }
++            let Some((_, into_pop)) = single_stack_read(pop) else {
++                return false;
++            };
++            if !check
++                .writes()
++                .iter()
++                .any(|(_, written)| *written == into_pop)
++            {
++                return false;
++            }
++            stack_operands(site)
++                .iter()
++                .any(|(_, value)| copy.writes().iter().any(|(_, written)| written == value))
++        };
++        for offset in 0..3usize {
++            let Some(start) = position.checked_sub(offset) else {
++                continue;
++            };
++            let Some(window) = sequence.get(start..start.saturating_add(4)) else {
++                continue;
++            };
++            if matches(window) {
++                return true;
++            }
++        }
++        false
++    }
++
+     fn unreplayable(&self, value: ValueId) -> Option<String> {
+         match self.ssa.value(value).def() {
+             Definition::Instruction { bci, .. } => match self.operations.get(*bci) {
+                 Some(Operation::Push(_)) => None,
+                 Some(Operation::Load { slot }) => self.written_once(*slot),
++                // TEMPORARY EXPERIMENT: a stack copy's text is the text of the value it copied.
++                Some(Operation::Duplicate)
++                    if std::env::var_os("JARDE_EXPERIMENT_REPLAYABLE_DUP").is_some() =>
++                {
++                    instruction_at(self.ssa, *bci)
++                        .and_then(single_stack_read)
++                        .and_then(|(_, copied)| self.unreplayable(copied))
++                }
+                 Some(operation) => Some(format!(
+                     "it comes from an {operation:?} at BCI {bci}, whose text would run again (or run later) inside the shape"
+                 )),
+diff --git a/crates/jarde-java/src/lambda.rs b/crates/jarde-java/src/lambda.rs
+index 9192d4ea..a8893e72 100644
+--- a/crates/jarde-java/src/lambda.rs
++++ b/crates/jarde-java/src/lambda.rs
+@@ -863,11 +863,29 @@ pub(crate) fn plan(
+             || (!typed_reference && parameter.sam_to_dynamic != TypeConversion::Identity)
+     });
+     let reference_shape = receiver == captures.len() && !implementation.is_generated_body();
++    // TEMPORARY GATING EXPERIMENT (task 1.1): `report` states the branch's own conjuncts as a
++    // refusal, `relax` skips the refusal entirely; unset keeps the production behavior.
++    let experiment = std::env::var("JARDE_EXPERIMENT_BOUND_RECEIVER").ok();
++    let relax = experiment.as_deref() == Some("relax");
+     if reference_shape
+         && parameter_adaptation
+         && implementation.reach() == Reach::Receiver
+         && captures.len() == 1
++        && !relax
+     {
++        if experiment.as_deref() == Some("report") {
++            return Ok(Verdict {
++                evidence,
++                outcome: Err(Refusal::shape(
++                    "jarde_experiment_bound_receiver",
++                    format!(
++                        "BOUND-RECEIVER-EXPERIMENT reference_shape={reference_shape} parameter_adaptation={parameter_adaptation} reach={:?} captures={} typed_reference={typed_reference}",
++                        implementation.reach(),
++                        captures.len()
++                    ),
++                )),
++            });
++        }
+         return Ok(Verdict {
+             evidence,
+             outcome: Err(Refusal::shape(

@@ -1,0 +1,56 @@
+// jarde: presentation of `BRN` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BRN extends java.lang.Object {
+    java.lang.StringBuilder buf;
+
+    public BRN() {
+        // @method <init>()V
+        // @declaration a constructor of `BRN`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.buf = new java.lang.StringBuilder();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `nullableParameter(Ljava/util/Optional;Ljava/lang/StringBuilder;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    static java.lang.String nullableParameter(java.util.Optional arg0, java.lang.StringBuilder arg1) {
+        // jarde: not recovered: the recovery run for `nullableParameter(Ljava/util/Optional;Ljava/lang/StringBuilder;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nullableParameter(Ljava/util/Optional;Ljava/lang/StringBuilder;)Ljava/lang/String;
+        // @declaration a static method of `BRN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3 6 1 0 2 7 12 15 16 19
+        // the copy at BCI 2 has no proved local assignment
+        // @bytecode 12 0 1
+        // the value captured for the site's argument 0 (BCI 2) produces no expression this subset writes
+    }
+
+    // jarde: generic Signature projection refused for `nullableField(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    java.lang.String nullableField(java.util.Optional arg1) {
+        // jarde: not recovered: the recovery run for `nullableField(Ljava/util/Optional;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nullableField(Ljava/util/Optional;)Ljava/lang/String;
+        // @declaration an instance method of `BRN`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5 2
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6 9 2 1 0 5 10 15 18 19 22 25
+        // the copy at BCI 5 has no proved local assignment
+        // @bytecode 15 2 0 1
+        // the value captured for the site's argument 0 (BCI 5) cannot be written where the shape reads it: it comes from an Field { access: Read, is_static: false, owner: "BRN", name: "buf", descriptor: "Ljava/lang/StringBuilder;" } at BCI 2, whose text would run again (or run later) inside the shape
+    }
+
+    // jarde: generic Signature projection refused for `rewrittenAfterCapture(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    static java.lang.String rewrittenAfterCapture(java.util.Optional arg0) {
+        // jarde: not recovered: the recovery run for `rewrittenAfterCapture(Ljava/util/Optional;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method rewrittenAfterCapture(Ljava/util/Optional;)Ljava/lang/String;
+        // @declaration a static method of `BRN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 10
+        // the instruction at BCI 10 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 11 14 9 0 3 4 7 8 10 15 20 23 26 27 29 32 33 34 37
+        // the copy at BCI 10 has no proved local assignment
+        // @bytecode 20 8 9
+        // the value captured for the site's argument 0 (BCI 10) cannot be written where the shape reads it: the local 1 is written 2 times in this body, so reading it again inside the shape would not read the value the site captured
+    }
+}
