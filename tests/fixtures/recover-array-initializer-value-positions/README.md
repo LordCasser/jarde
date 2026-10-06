@@ -10,8 +10,8 @@ not a compiler's habit.
 
 | leg | directory | command |
 | --- | --- | --- |
-| javac 23.0.1 | `v8/` | `javac --release 8 -g -nowarn -d v8 MD.java MD2.java MD3.java AV.java` |
-| Corretto 1.8.0_432 | `v8-javac8/` | `/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac -g -nowarn -d v8-javac8 MD.java MD2.java MD3.java AV.java` |
+| javac 23.0.1 | `v8/` | `javac --release 8 -g -nowarn -d v8 MD.java MD2.java MD3.java AV.java AVT.java` |
+| Corretto 1.8.0_432 | `v8-javac8/` | `/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac -g -nowarn -d v8-javac8 MD.java MD2.java MD3.java AV.java AVT.java` |
 
 Debug information is kept (`-g`) so every local the presentation names is the source's own name.
 
@@ -20,12 +20,13 @@ Debug information is kept (`-g`) so every local the presentation names is the so
 | file | sha256 |
 | --- | --- |
 | `AV.java` | `fa789607135618b11cfbd0fa785a8037009a58040c1260cc7101f5cfb8c7ec2d` |
+| `AVT.java` | `948d61e0e26ce7a21cb0f3af6d470a62b2563f287112f778ec3defd65779e2fa` |
 | `MD.java` (the patrol's own) | `3cf80864b405fda84d0a5c2969ef9096992dbb89646a635e898168920fb569c3` |
 | `MD2.java` (the patrol's own) | `0f2fbcd11056ade84d53f53d11aea269e8febadbb8d8856ede79260282f06e18` |
 | `MD3.java` (the patrol's own) | `4499276db130a9c0aeec0f82c41144e383b7b234fd8fe62f86ecce09d6d1932f` |
 | `AVN.class` (hand-built) | `e183cf5f745c207db8ad22bd0c4551c9214e96b2d082730ac0c3cd39cff039de` |
-| `v8/{AV,MD,MD2,MD3}.class` | `6f04a622…`, `9d553081…`, `f811f7fc…`, `6cd8dfdd…` |
-| `v8-javac8/{AV,MD,MD2,MD3}.class` | `772b876c…`, `9cad2228…`, `810126c2…`, `be5ed98a…` |
+| `v8/{AV,AVT,MD,MD2,MD3}.class` | `6f04a622…`, `cf1d9b23…`, `9d553081…`, `f811f7fc…`, `6cd8dfdd…` |
+| `v8-javac8/{AV,AVT,MD,MD2,MD3}.class` | `772b876c…`, `70d94567…`, `9cad2228…`, `810126c2…`, `be5ed98a…` |
 
 (The leg digests are the first eight hex digits of the full sha256; the sources, `AVN.class` and the
 patrol's own three are stated whole because they are the inputs every claim here is about. The
@@ -88,6 +89,18 @@ order:         new int[]{mark(1)}[mark(0)]                an effectful element b
 `order` is the one that pins the *evaluation order*: the bytecode builds the array (running `mark(1)`)
 before it produces the index (`mark(0)`), and the text states the same order. Its answer, and the
 `calls` counter `main` prints last, are what the replay compares.
+
+## `AVT` — the same two positions with every other element type
+
+`AVT` states that the admission is the **dance's** shape and not an `int` special case: the element
+store into a pre-existing array (`s[0] = new String[]{"a", "b"}`, `l[0] = new long[]{1L}`,
+`d[0] = new double[]{1.5}`, `b[0] = new boolean[]{true}`, `c[0] = new char[]{'x'}`) and the fresh
+array's immediate subscript (`new String[]{…}[1]`, `new long[]{1L}[0]`,
+`new double[]{1.5}[0]`, `new boolean[]{true}[0]`, `new char[]{'x'}[0]`) beside the length receiver
+(`new double[]{1.5}.length`). The consumer is an `aastore` value position in all of them, and the
+dance's own inner store is the opcode its element states (`bastore`, `castore`, `lastore`,
+`dastore`); the class renders with no quote, and its own `main` prints
+`b/1/1.5/true/x/1/b/1/1.5/true/x`, which the stripped text must print too.
 
 ## `AVN` — the hand-built negatives
 
