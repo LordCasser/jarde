@@ -349,6 +349,10 @@ const CO_SAME: &str = "    static java.lang.String same(java.lang.String arg0, j
 /// `CO.main`: the patrol's `RG$IntNode.cmp` shape (the healthy face) beside both call points.
 const CO_MAIN: &str = "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `CO`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(\"\").append(new CO$IntNode((java.lang.Integer) java.lang.Integer.valueOf(2)).cmp((CO$Node) new CO$IntNode((java.lang.Integer) java.lang.Integer.valueOf(1)))).append(\"/\").append((java.lang.String) callGen()).append(\"/\").append((java.lang.Object) callGen2()).append(\"/\").append((java.lang.String) same(\"a\", \"b\")).toString());\n        return;\n    }\n";
 
+/// `CO$IntNode.cmp`: the patrol's healthy `cmp` shape (`RG$IntNode.cmp`'s form) — the erased field
+/// cast plus `compareTo`, unchanged by the table.
+const CO_INTNODE_CMP: &str = "    // jarde: generic Signature projection refused for `cmp(LCO$Node;)I`: unsupported (generic_source_shape_unproved): class name has no unambiguous Java source spelling\n    int cmp(CO$Node arg1) {\n        // @method cmp(LCO$Node;)I\n        // @declaration an instance method of `CO$IntNode`, member flags 0x0000\n        // recovered from bytecode; presentation is not claimed to compile\n        return ((java.lang.Integer) this.val).compareTo((java.lang.Integer) arg1.val);\n    }\n";
+
 /// `COX.big`: `java.math.BigInteger` implements `Comparable` in fact, and the change's table is the
 /// `java.lang` set — the spec's own non-goal, kept refused.
 const COX_BIG: &str = "    static java.lang.Comparable big(java.math.BigInteger arg0, java.math.BigInteger arg1) {\n        // jarde: not recovered: the recovery run for `big(Ljava/math/BigInteger;Ljava/math/BigInteger;)Ljava/lang/Comparable;` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method big(Ljava/math/BigInteger;Ljava/math/BigInteger;)Ljava/lang/Comparable;\n        // @declaration a static method of `COX`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 5 2 0 1\n        // the parameter 0 of the invocation at BCI 2 is declared `java.lang.Comparable` presents `java.math.BigInteger` but the invocation requires `java.lang.Comparable` and this layer has no safe reference conversion evidence\n    }\n";
@@ -464,6 +468,13 @@ fn the_comparable_positions_are_presented() {
             leg.label,
             report.text
         );
+    }
+    // The patrol's healthy `cmp` shape is the companion's own presentation, pinned beside the call
+    // points it belongs to: a table answers the call sites, never the body.
+    for leg in LEGS {
+        let snapshot = open(&leg.fixture("CO$IntNode", &[]));
+        let report = class_source_of(&snapshot, "CO$IntNode");
+        assert_eq!(text_of(&report, "cmp"), CO_INTNODE_CMP, "{}", leg.label);
     }
 }
 
