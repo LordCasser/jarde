@@ -37,4 +37,4 @@
       → `results/04-gates.md`：workspace 全量 exit 0 / 324 ok / 0 FAILED；fmt clean；CI-exact clippy exit 0 且零 warning；
       `openspec validate --all --strict` 305/305；fingerprint 再生 +45/-0；census 重测 (789, 3311, 286, 2061, 8)。
       pass 2 的栈溢出（`p3_immediate_functional_receivers` 深递归）为真实发现，已用 `#[inline(never)]` 提取呈现臂修复并复测。
-- [ ] 3.4 root 独立复核：两分支判据保守性、零回退实测、家族结构合理；关闭 summary.md 登记行。（留 root）
+- [x] 3.4 root 独立复核：两分支判据保守性、零回退实测、家族结构合理；关闭 summary.md 登记行。（root 2026-10-06 完成，见 [verification-root.md](verification-root.md)：双落点门控复核 ✓、纯度豁免成对性 ✓、condAssignOld 前提证伪追认为 short-circuit-local 边界 ✓、局部活目标保 CF-06 契约追认 ✓、oracle ignored 腿 3/3 ✓、门禁权威口径 324 targets ok/0 FAILED ✓；copy 族第 4 员关闭——登记行同步）
