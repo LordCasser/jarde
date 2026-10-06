@@ -1,0 +1,64 @@
+// jarde: presentation of `NI` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NI extends java.lang.Object {
+    int tag;
+
+    public NI() {
+        // @method <init>()V
+        // @declaration a constructor of `NI`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.tag = 5;
+        return;
+    }
+
+    Inner make(int arg1) {
+        // @method make(I)LNI$Inner;
+        // @declaration an instance method of `NI`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return new Inner(arg1);
+    }
+
+    static Inner externalMake(NI arg0, int arg1) {
+        // @method externalMake(LNI;I)LNI$Inner;
+        // @declaration a static method of `NI`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.new Inner(arg1);
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NI`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NI local1 = new NI();
+        java.lang.System.out.println("" + local1.make(3).v + "/" + local1.make(2).outerTag() + "/" + externalMake(local1, 1).outerRef().tag + "/" + (externalMake(local1, 1).outerRef() == local1));
+        return;
+    }
+
+    class Inner extends java.lang.Object {
+        int v;
+
+        Inner(int arg2) {
+            // @method <init>(LNI;I)V
+            // @declaration a constructor of `NI$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            this.v = arg2;
+            return;
+        }
+
+        int outerTag() {
+            // @method outerTag()I
+            // @declaration an instance method of `NI$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return NI.this.tag * 2;
+        }
+
+        NI outerRef() {
+            // @method outerRef()LNI;
+            // @declaration an instance method of `NI$Inner`, member flags 0x0000
+            // recovered from bytecode; presentation is not claimed to compile
+            return NI.this;
+        }
+    }
+}

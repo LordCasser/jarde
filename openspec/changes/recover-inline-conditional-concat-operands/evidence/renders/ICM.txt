@@ -1,0 +1,37 @@
+// jarde: presentation of `ICM` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ICM extends java.lang.Object {
+    int tag;
+
+    public ICM() {
+        // @method <init>()V
+        // @declaration a constructor of `ICM`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.tag = 5;
+        return;
+    }
+
+    int add(int x) {
+        // @method add(I)I
+        // @declaration an instance method of `ICM`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return x * 2;
+    }
+
+    ICM self() {
+        // @method self()LICM;
+        // @declaration an instance method of `ICM`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this;
+    }
+
+    public static void main(java.lang.String[] a) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `ICM`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ICM n = new ICM();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(n.add(1)).append("/").append(n.add(2)).append("/").append(n.self().tag).append("/").append(n.tag).toString());
+        return;
+    }
+}
