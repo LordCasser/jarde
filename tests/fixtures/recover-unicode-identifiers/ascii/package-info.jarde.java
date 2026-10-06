@@ -1,0 +1,9 @@
+// jarde: package-info projection refused: only one complete RuntimeVisibleAnnotations attribute is supported
+// jarde: presentation of `com/example/package-info` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package com.example;
+
+@java.lang.Deprecated
+
+interface package-info {
+}
