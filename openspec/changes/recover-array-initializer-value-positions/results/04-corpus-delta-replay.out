@@ -1,0 +1,25 @@
+OK: BS via release -> 2/-3/[1, 2, 3]/102334155
+OK: BS via javac8 -> 2/-3/[1, 2, 3]/102334155
+OK: CB via release -> 1/4/-1/50
+OK: CB via javac8 -> 1/4/-1/50
+OK: CB2 via release -> -3/1
+OK: CB2 via javac8 -> -3/1
+OK: LB via release -> 1/1/0/0/1/-1
+OK: LB via javac8 -> 1/1/0/0/1/-1
+OK: BS via release -> 2/-3/[1, 2, 3]/102334155
+OK: BS via javac8 -> 2/-3/[1, 2, 3]/102334155
+OK: CB via release -> 1/4/-1/50
+OK: CB via javac8 -> 1/4/-1/50
+OK: CB2 via release -> -3/1
+OK: CB2 via javac8 -> -3/1
+OK: LB via release -> 1/1/0/0/1/-1
+OK: LB via javac8 -> 1/1/0/0/1/-1
+OK: CA2 via release -> 15/14/dflt/q/3/9
+OK: CA2 via javac8 -> 15/14/dflt/q/3/9
+OK: CP7 via release -> 0/1/true
+OK: CP7 via javac8 -> 0/1/true
+OK: NL via release -> 1,2,|3,5,6,|7,/2
+OK: NL via javac8 -> 1,2,|3,5,6,|7,/2
+OK: BS via release -> 2/-3/[1, 2, 3]/102334155
+OK: BS via javac8 -> 2/-3/[1, 2, 3]/102334155
+DELTA REPLAY OK: every moved driver prints what its own class prints, on both compilers

@@ -1,0 +1,226 @@
+SELF-TEST OK: MD/MD2/MD3/AV/AVT anchors 0 -> recovered; AVN byte-identical; CF/NEG/RC/RCN/ICM/ICN byte-identical
+pass A loose candidate classes: 2809
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8/BS.class
+    75d74
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    79,113c78,83
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 32 34 35 36 39 42 44 47 48 50 51 52 53 54 55 56 57 58 59 62 65 67 70 72 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 101 104 107 109 112 114 117 120 123 126
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8/CB.class
+    86d85
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    90,124c89,94
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 34 37 39 42 43 45 46 47 48 49 50 51 52 53 54 55 56 57 60 63 65 68 69 71 72 73 74 75 76 77 78 79 80 81 83 84 85 88 91 93 96 98 101 104 107 110
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8/LB.class
+    99d98
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    103,199c102,110
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 34 37 39 42 43 45 46 47 48 49 50 51 52 53 54 55 56 57 58 61 64 66 69 70 72 73 74 75 76 77 78 79 80 81 82 83 84 85 88 91 93 96 97 99 100 101 102 103 104 105 106 107 108 109 110 111 112 115 118 120 123 124 126 127 128 129 130 131 132 133 134 135 136 137 138 139 142 145 147 150 151 153 154 155 156 157 158 159 160 161 162 163 164 165 166 169 172 175 178
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8/CB2.class
+    51d50
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    55,73c54,58
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 34 37 39 42 43 45 46 47 48 49 50 51 53 54 55 56 57 58 61 64 67 70
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/BS.class
+    75d74
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    79,113c78,83
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 32 34 35 36 39 42 44 47 48 50 51 52 53 54 55 56 57 58 59 62 65 67 70 72 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 101 104 107 109 112 114 117 120 123 126
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/CB.class
+    86d85
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    90,124c89,94
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 34 37 39 42 43 45 46 47 48 49 50 51 52 53 54 55 56 57 60 63 65 68 69 71 72 73 74 75 76 77 78 79 80 81 83 84 85 88 91 93 96 98 101 104 107 110
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/LB.class
+    99d98
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    103,199c102,110
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 34 37 39 42 43 45 46 47 48 49 50 51 52 53 54 55 56 57 58 61 64 66 69 70 72 73 74 75 76 77 78 79 80 81 82 83 84 85 88 91 93 96 97 99 100 101 102 103 104 105 106 107 108 109 110 111 112 115 118 120 123 124 126 127 128 129 130 131 132 133 134 135 136 137 138 139 142 145 147 150 151 153 154 155 156 157 158 159 160 161 162 163 164 165 166 169 172 175 178
+MOVED (single-class): tests/fixtures/recover-loop-else-if-early-returns/v8-javac8/CB2.class
+    51d50
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    55,73c54,58
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 34 37 39 42 43 45 46 47 48 49 50 51 53 54 55 56 57 58 61 64 67 70
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8/MD2.class
+    31d30
+    <         // jarde: not recovered: the recovery run for `retPos()I` produced no statement (explanation only); the artifact's own comment lines are below
+    35,42c34
+    <         // @bytecode 1
+    <         // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 3 1
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 6 1
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8/MD3.class
+    20d19
+    <         // jarde: not recovered: the recovery run for `bareIdx2()I` produced no statement (explanation only); the artifact's own comment lines are below
+    24,31c23
+    <         // @bytecode 1
+    <         // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 3 1
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 7 1
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8/MD.class
+    51d50
+    <         // jarde: not recovered: the recovery run for `partSet()I` produced no statement (explanation only); the artifact's own comment lines are below
+    55,62c54,57
+    <         // @bytecode 5
+    <         // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 7 5
+    <         // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 5 0 3 4 7 8 9 12 13 16 17 18 20 21 24 25 26 27 28 31 32 33 34 35
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8/AVT.class
+    23d22
+    <         // jarde: not recovered: the recovery run for `setS()V` produced no statement (explanation only); the artifact's own comment lines are below
+    27,39c26,28
+    <         // @bytecode 5
+    <         // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 8 5
+    <         // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 12 5 0 3 4 8 9 10 13 14 15 17 18 19
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8/AV.class
+    34d33
+    <         // jarde: not recovered: the recovery run for `elemStore()I` produced no statement (explanation only); the artifact's own comment lines are below
+    38,45c37,39
+    <         // @bytecode 5
+    <         // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 7 5
+    <         // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 5 0 3 4 7 8 9 12 13 16 17 18 19 20
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8-javac8/MD2.class
+    31d30
+    <         // jarde: not recovered: the recovery run for `retPos()I` produced no statement (explanation only); the artifact's own comment lines are below
+    35,42c34
+    <         // @bytecode 1
+    <         // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 3 1
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 6 1
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8-javac8/MD3.class
+    20d19
+    <         // jarde: not recovered: the recovery run for `bareIdx2()I` produced no statement (explanation only); the artifact's own comment lines are below
+    24,31c23
+    <         // @bytecode 1
+    <         // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 3 1
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 7 1
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8-javac8/MD.class
+    51d50
+    <         // jarde: not recovered: the recovery run for `partSet()I` produced no statement (explanation only); the artifact's own comment lines are below
+    55,62c54,57
+    <         // @bytecode 5
+    <         // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 7 5
+    <         // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 5 0 3 4 7 8 9 12 13 16 17 18 20 21 24 25 26 27 28 31 32 33 34 35
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8-javac8/AVT.class
+    23d22
+    <         // jarde: not recovered: the recovery run for `setS()V` produced no statement (explanation only); the artifact's own comment lines are below
+    27,39c26,28
+    <         // @bytecode 5
+    <         // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 8 5
+    <         // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 12 5 0 3 4 8 9 10 13 14 15 17 18 19
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/v8-javac8/AV.class
+    34d33
+    <         // jarde: not recovered: the recovery run for `elemStore()I` produced no statement (explanation only); the artifact's own comment lines are below
+    38,45c37,39
+    <         // @bytecode 5
+    <         // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 7 5
+    <         // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 5 0 3 4 7 8 9 12 13 16 17 18 19 20
+MOVED (single-class): tests/fixtures/recover-array-initializer-value-positions/AVN.class
+    5d4
+    <         // jarde: not recovered: the recovery run for `single()I` produced no statement (explanation only); the artifact's own comment lines are below
+    9,16c8
+    <         // @bytecode 1
+    <         // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 3 1
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 7 1
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+pass A: moved=19 unrendered=1
+archive candidate classes: 739
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/array-initializer-value-patrol/fixture/md.jar!MD.class
+    51d50
+    <         // jarde: not recovered: the recovery run for `partSet()I` produced no statement (explanation only); the artifact's own comment lines are below
+    55,62c54,57
+    <         // @bytecode 5
+    <         // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 7 5
+    <         // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 5 0 3 4 7 8 9 12 13 16 17 18 20 21 24 25 26 27 28 31 32 33 34 35
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/assign-chain-soundness-patrol/fixture/ca2.jar!CA2.class
+    74d73
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    78,90c77,80
+    <         // @bytecode 77
+    <         // the array instruction at BCI 77 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 79 77
+    <         // the instruction at BCI 79 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 83 77 0 3 6 7 10 12 15 18 21 23 26 29 32 34 37 38 41 44 46 49 51 54 57 59 62 64 65 68 71 73 76 79 80 81 84 85 86 87 88 89 92 95 98 101
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/postinc-condition-patrol/fixture/cp7.jar!CP7.class
+    40d39
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    44,62c43,48
+    <         // @bytecode 48
+    <         // the array instruction at BCI 48 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 50 48
+    <         // the instruction at BCI 50 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 53 48 0 3 6 7 10 12 15 16 18 19 20 21 22 23 24 26 27 28 29 30 31 32 33 35 36 39 42 44 47 50 51 52 54 55 56 58 59 60 61 63 64 66 69 72 74 77 78 80 81 82 83 84 85 86 87 88 91 94 97 100
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/triple-nested-labels-patrol/fixture/nl.jar!NL.class
+    31d30
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    35,85c34,38
+    <         // @bytecode 133
+    <         // the array instruction at BCI 133 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 136 133
+    <         // the instruction at BCI 136 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 139
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/binary-search-twopointer-patrol/fixture/bs.jar!BS.class
+    75d74
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    79,113c78,83
+    <         // @bytecode 16
+    <         // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+    <         // @bytecode 18 16
+    <         // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 21 16 0 3 6 7 10 12 15 18 19 20 22 23 24 25 26 27 28 29 30 31 32 34 35 36 39 42 44 47 48 50 51 52 53 54 55 56 57 58 59 62 65 67 70 72 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 101 104 107 109 112 114 117 120 123 126
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+pass C: moved=5 unrendered=1
+moved classes: single-class=19 jar=5 total=24
+unrendered candidates: A=1 C=1
+SWEEP EXIT=0

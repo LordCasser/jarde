@@ -12170,13 +12170,20 @@ impl ArrayInitializers {
                     candidates.insert(allocation.bci(), initializer);
                 }
             }
-            // A child whose sole consumer is an array store cannot stand alone: only a closed
-            // parent expression may commit it. Walk from ordinary consumers after all proofs.
+            // A child whose sole consumer is an array store **of an array this block builds**
+            // cannot stand alone: only a closed parent expression may commit it. A dance whose
+            // single reader is an element store into an array the body already had is no child of
+            // anything — the store is the reader `prove_array_initializer` admitted, and the
+            // candidate commits here like every other consumer position
+            // (`recover-array-initializer-value-positions`). Walk from ordinary consumers after
+            // all proofs.
             for (at, candidate) in &candidates {
                 if matches!(
                     operations.get(candidate.consumer),
                     Some(Operation::ArrayStore { .. })
-                ) {
+                ) && instruction_in_block(block, candidate.consumer).is_some_and(|store| {
+                    store_writes_into_a_constructed_array(ssa, operations, block.block(), store)
+                }) {
                     continue;
                 }
                 let mut chain = Vec::new();
@@ -12513,7 +12520,13 @@ fn prove_array_initializer(
         owned.extend([duplicate.bci(), index_instruction.bci(), store.bci()]);
 
         if expected_index + 1 == i64::try_from(length).unwrap_or(i64::MAX) {
-            let Some(consumer) = block.instructions().get(store_pos + 1) else {
+            let Some(reader) = array_initializer_reader(
+                ssa, operations, fields, block, store_pos, retained, budget,
+            )?
+            else {
+                return Ok(None);
+            };
+            let Some(consumer) = block.instructions().get(reader) else {
                 return Ok(None);
             };
             charge_array_initializer_instruction(consumer, budget)?;
@@ -12524,6 +12537,7 @@ fn prove_array_initializer(
             {
                 return Ok(None);
             }
+            cursor = reader;
         } else {
             let Some(next_duplicate) = block.instructions().get(store_pos + 1) else {
                 return Ok(None);
@@ -12540,9 +12554,9 @@ fn prove_array_initializer(
             )? {
                 return Ok(None);
             }
+            cursor = store_pos + 1;
         }
         array_value = retained;
-        cursor = store_pos + 1;
     }
 
     let consumer = block.instructions()[cursor].bci();
@@ -12725,6 +12739,132 @@ fn array_initializer_consumer(
         }) => fields
             .claim(instruction.bci())
             .is_some_and(|(_, shape)| shape.writes()),
+        // The dance's single reader may also be a **subscript or a length**: the array the value
+        // is, read one step further (`new int[]{9}[0]`, `new int[]{9}.length`). The reader is the
+        // value's only use — the caller's own single-use test states that — so the text written at
+        // that position is the array expression itself, exactly as the positions above write it.
+        // Only the **receiver** position is admitted: the value the read indexes. An element store
+        // whose *array* operand is this value is the child geometry of an outer initializer, which
+        // only the closed parent chain may commit, and a store into an array the same expression
+        // built is no Java assignment target at all.
+        Some(
+            Operation::ArrayLoad | Operation::ArrayElementLoad { .. } | Operation::ArrayLength,
+        ) => {
+            matches!(stack_operands(instruction).as_slice(), [(_, array), ..] if *array == value)
+        }
+        _ => false,
+    }
+}
+
+/// The position of the instruction one proved initializer's retained array value is **read** by.
+///
+/// The positions that read the array with no operand of their own — a local store, a field write,
+/// a call, a `return`, an element store — are read by the instruction immediately after the last
+/// element store, which is where the text of every one of them lands. A **subscript** reads its
+/// array only after producing its index (`…; iastore; iconst_0; iaload`, `…; iastore; iload i;
+/// iaload`), so its reader stands one step further: it is the value's own single use, and the
+/// instructions between the store and it are the reader's other operand — an expression run judged
+/// exactly the way this initializer's own element values are judged ([`collect_expression_bcis`]),
+/// so the two ends of one dance are read by one classification and not by two.
+///
+/// Anything else in between (an instruction no operand of the reader produces, an effect of its
+/// own, a value a later statement reads) is not this proof's business: the initializer stays
+/// unproved, exactly as it did when the instruction after the store was the only reader this walk
+/// looked at.
+fn array_initializer_reader(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    store_pos: usize,
+    retained: ValueId,
+    budget: &mut Budget,
+) -> Result<Option<usize>, StopReason> {
+    let Some(next) = block.instructions().get(store_pos + 1) else {
+        return Ok(None);
+    };
+    if single_use_at_with_budget(ssa, retained, block.block(), next.bci(), budget)? {
+        return Ok(Some(store_pos + 1));
+    }
+    let uses = ssa.value(retained).uses();
+    for usage in uses {
+        poll(budget, usage.bci())?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, usage.bci())?;
+    }
+    let [usage] = uses else {
+        return Ok(None);
+    };
+    if usage.block() != block.block() {
+        return Ok(None);
+    }
+    let Some(reader) = usage.bci() else {
+        return Ok(None);
+    };
+    let Some(reader_pos) = position_in_block(block, reader) else {
+        return Ok(None);
+    };
+    if reader_pos <= store_pos {
+        return Ok(None);
+    }
+    let Some(instruction) = block.instructions().get(reader_pos) else {
+        return Ok(None);
+    };
+    let context = ExpressionBciContext {
+        ssa,
+        operations,
+        fields,
+        block,
+        start: store_pos + 1,
+        end: reader_pos,
+    };
+    let mut dependencies = BTreeSet::new();
+    let mut seen = BTreeSet::new();
+    for (_, operand) in stack_operands(instruction) {
+        if operand == retained {
+            continue;
+        }
+        if !collect_expression_bcis(&context, operand, &mut dependencies, &mut seen, budget, 0)? {
+            return Ok(None);
+        }
+    }
+    // The run must be exactly that production: an instruction in between that no operand of the
+    // reader reads is an effect this initializer does not own, and the initializer stays unproved.
+    let interval: BTreeSet<u32> = block.instructions()[store_pos + 1..reader_pos]
+        .iter()
+        .map(SsaInstruction::bci)
+        .collect();
+    if interval != dependencies
+        || !dependency_uses_stay_within(ssa, block, &dependencies, reader, budget)?
+    {
+        return Ok(None);
+    }
+    Ok(Some(reader_pos))
+}
+
+/// Whether one candidate's consumer is an element store **into an array this run builds in this
+/// block**.
+///
+/// That store is the child geometry of an outer initializer: the parent's own `dup` produced the
+/// copy the store writes through, so the array the element is stored into is the very expression
+/// the candidate belongs to (a hand-built store may name the creation itself). Only the closed
+/// parent chain may commit such a candidate — whether or not the parent's own proof closed, which
+/// is the reading the commit walk always had. A store into an array the body already had (a field
+/// read, a local, a parameter) is no such geometry: the store is the dance's own single reader, and
+/// the candidate stands alone.
+fn store_writes_into_a_constructed_array(
+    ssa: &SsaTable,
+    operations: &Operations,
+    block: &CanonicalBlockId,
+    store: &SsaInstruction,
+) -> bool {
+    let Some((_, array)) = stack_operands(store).first().copied() else {
+        return false;
+    };
+    match ssa.value(array).def() {
+        Definition::Instruction { block: origin, bci } if origin == block => matches!(
+            operations.get(*bci),
+            Some(Operation::Duplicate | Operation::NewArray { .. })
+        ),
         _ => false,
     }
 }

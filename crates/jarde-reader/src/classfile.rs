@@ -11997,7 +11997,19 @@ mod tests {
             // fifty branch targets: `BI.earlyRet`'s five, `RC`'s eleven (the loop's five, and
             // `plain`'s, `orEq`'s and `mask`'s two each) and `RCN`'s nine (`armCall`'s two,
             // `inTry`'s three and `nested`'s four), per leg) moved it again.
-            (811, 3445, 290, 2145, 8),
+            // The 2026-10-07 recover-array-initializer-value-positions fixtures (the initialization
+            // dance's value at the consumption positions the six-position discriminator found
+            // refusing: the patrol's own `MD` — the sawtooth field, the regular and partial
+            // creations, the element-store anchor and the sawtooth literal — `MD2` — the local,
+            // field, argument and immediate-subscript positions — `MD3` — the bare length, the
+            // immediate-subscript anchor and the bare return — this change's `AV`, the same
+            // positions one step further, and `AVT`, the same two positions with every other
+            // element type, five classes on both compiler legs — ten classes, one hundred sixteen
+            // bodies, sixteen branch targets: `MD.sumJag`'s two loops and `AV`'s `foreach` loop and
+            // `condIdx` comparison, per leg — plus the hand-built `AVN` (three members, no branch),
+            // eleven classes and one hundred nineteen bodies in all, and no handler record or
+            // subroutine) moved it again.
+            (822, 3564, 290, 2161, 8),
             "fixture population changed: re-measure these counts"
         );
     }
