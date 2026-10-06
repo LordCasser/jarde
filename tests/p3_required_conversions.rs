@@ -435,8 +435,8 @@ fn the_conversion_costs_no_ir_item_and_no_normalization_clone() {
         recovered.recovery().text
     );
     assert_eq!(
-        usage.ir_items, 165,
-        "the conversion remains outside the current IR item budget"
+        usage.ir_items, 181,
+        "the conversion remains outside the current IR item budget (the count carries the field-copy proof's own scan of the body, `recover-chained-field-assignment`, and the conversion itself adds no item to it)"
     );
     assert_eq!(
         usage.normalization_clones, 0,

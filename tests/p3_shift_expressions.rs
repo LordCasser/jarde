@@ -269,7 +269,11 @@ fn shift_recovery_stops_cleanly_at_resource_limits_and_before_work() {
     );
 
     let mut ir_limits = complete.limits.clone();
-    ir_limits.ir_items = 1_000;
+    // The allowance is one this class's own shape pins: the last method's **analysis** completes
+    // (1150 cumulative IR items) and its **recovery** runs out before it produces (1218). The
+    // field-copy proof (`recover-chained-field-assignment`) charges the same `IrItems` dimension
+    // for every method, so both ends moved by its own scan and the allowance moves with them.
+    ir_limits.ir_items = 1_180;
     let mut ir_budget = Budget::new(ir_limits);
     let OperationOutcome::Performed(ir_stopped) = source_with_evidence(
         SLICE,
