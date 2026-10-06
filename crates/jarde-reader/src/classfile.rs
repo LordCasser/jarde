@@ -11932,7 +11932,11 @@ mod tests {
             // patrols' `CP`/`AH`/`AC`/`AN` shapes plus this change's `AW` boundary and `IS`
             // isolated anchor, seventeen classes on both compiler legs: thirty-four classes, one
             // hundred bodies) moved it again.
-            (665, 2838, 282, 1803, 8),
+            // The 2026-10-06 platform implementer table fixtures (the charsequence change's
+            // `CS`/`CSX`, the comparable change's `CO`/`CO$Node`/`CO$IntNode`/`COX`, and the enum
+            // change's `EN`/`ENN`/`ENN$Flag`/`ENT`/`ENX`, eleven classes on both compiler legs:
+            // twenty-two classes, ninety-four bodies) moved it again.
+            (687, 2932, 282, 1827, 8),
             "fixture population changed: re-measure these counts"
         );
     }
