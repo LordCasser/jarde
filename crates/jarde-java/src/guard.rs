@@ -14885,7 +14885,12 @@ struct LeadRelay<'a> {
 /// * the relay's row must be the row **immediately before** the level's in the table, covering
 ///   exactly the level's range. The two rows are one protection split by catch type, and the table's
 ///   own order — the first matching row wins — is what makes a body throw reach the relay rather
-///   than the close handler directly.
+///   than the close handler directly. The row is read by its **position**, not by the class it
+///   names: this layer does not read catch types (`catch_type_index` is an opaque pool index here,
+///   exactly as the resource's own `AutoCloseable` is a resolution fact it does not read), so what
+///   is stated is the geometric fact that makes the older lowering's own table correct — the body's
+///   throw meets the relay first, which is the pair javac writes — rather than a second reading of
+///   the names in the table.
 /// * the catch-all row over the rethrow must reach the level's own handler block, which is what
 ///   ties the close to that same exception rather than to a second one.
 ///
