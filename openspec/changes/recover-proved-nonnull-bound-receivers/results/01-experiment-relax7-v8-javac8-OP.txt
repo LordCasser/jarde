@@ -1,0 +1,66 @@
+// jarde: presentation of `OP` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class OP extends java.lang.Object {
+    // jarde: omitted physical lambda helper "lambda$name$0" after proving its single class-wide use
+    public OP() {
+        // @method <init>()V
+        // @declaration a constructor of `OP`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.String name(java.util.Map arg0, java.lang.String arg1) {
+        // jarde: generic Signature projection refused for `name(Ljava/util/Map;Ljava/lang/String;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+        // jarde: lambda companion body inlined at invokedynamic@18
+        // @method name(Ljava/util/Map;Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `OP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) java.util.Optional.ofNullable((java.lang.Object) arg0.get((java.lang.Object) arg1)).map((java.util.function.Function) ((java.lang.Object p0) -> ((java.lang.String) p0).trim())).filter((java.util.function.Predicate) ((java.lang.Object p0_) -> !((java.lang.String) p0_).isEmpty())).orElse((java.lang.Object) "none");
+    }
+
+    // jarde: generic Signature projection refused for `len(Ljava/util/Optional;)I`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static int len(java.util.Optional arg0) {
+        // @method len(Ljava/util/Optional;)I
+        // @declaration a static method of `OP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0.isPresent()) {
+            return ((java.lang.String) arg0.get()).length();
+        } else {
+            return 0;
+        }
+    }
+
+    // jarde: generic Signature projection refused for `parse(Ljava/lang/String;)Ljava/util/Optional;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.Optional parse(java.lang.String arg0) {
+        // @method parse(Ljava/lang/String;)Ljava/util/Optional;
+        // @declaration a static method of `OP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            return java.util.Optional.of((java.lang.Object) java.lang.Integer.valueOf(java.lang.Integer.parseInt(arg0)));
+        } catch (java.lang.NumberFormatException local1) {
+            return java.util.Optional.empty();
+        }
+    }
+
+    // jarde: generic Signature projection refused for `sideEffect(Ljava/util/Optional;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.lang.String sideEffect(java.util.Optional arg0) {
+        // @method sideEffect(Ljava/util/Optional;)Ljava/lang/String;
+        // @declaration a static method of `OP`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local1 = new java.lang.StringBuilder();
+        arg0.ifPresent((java.util.function.Consumer) ((java.lang.Object p0) -> local1.append((java.lang.String) p0)));
+        return local1.toString();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `OP`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.HashMap local1 = new java.util.HashMap();
+        local1.put((java.lang.Object) "x", (java.lang.Object) " hi ");
+        local1.put((java.lang.Object) "e", (java.lang.Object) "  ");
+        java.lang.System.out.println("" + name((java.util.Map) local1, "x") + "/" + name((java.util.Map) local1, "e") + "/" + name((java.util.Map) local1, "z") + "/" + len((java.util.Optional) java.util.Optional.of((java.lang.Object) "abc")) + "/" + len((java.util.Optional) java.util.Optional.empty()) + "/" + parse("42").get() + "/" + parse("no").isPresent() + "/" + sideEffect((java.util.Optional) java.util.Optional.of((java.lang.Object) "S")) + "/" + sideEffect((java.util.Optional) java.util.Optional.empty()));
+        return;
+    }
+}
