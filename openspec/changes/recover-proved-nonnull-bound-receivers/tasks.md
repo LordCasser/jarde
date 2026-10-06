@@ -7,7 +7,7 @@
 - [x] 2.1 实现两道门（非空门：捕获值 SSA 定义为 `Operation::Allocate`；互斥门：捕获点后该槽无 store）+ 同 verdict 点放行逃逸（`LambdaForm::Lambda`）；判据块其余部分与拒绝文本逐字不动。
 - [x] 2.2 对照测试：锚双腿 0 引注 + 剥离编译 exit 0 + `-Xverify:all` 输出与原一致（`[S]` 形）；负例三形拒绝逐字；`recover_typed_functional_method_references` 既有测试全绿零回退。
 - [x] 3.1 全门禁（cargo test --workspace --all-targets --all-features --locked、fmt、ci.yml 46-76 逐字 clippy、openspec validate --all --strict）+ corpus 指纹再生（差异仅本形）+ 分逻辑提交（不 push）。
-- [ ] 3.2 root 独立复核：门控实验记录、两道门与判据零放宽 diff 逐条、锚/负例/零回退实测、账本更新（第 5 族 critical 17 锚关闭）。（留 root）
+- [x] 3.2 root 独立复核：门控实验记录、两道门与判据零放宽 diff 逐条、锚/负例/零回退实测、账本更新（第 5 族 critical 17 锚关闭）。（root 2026-10-06 完成，见 [verification-root.md](verification-root.md)：落点单点翻转复核 ✓、diff 逐条 ✓（lambda.rs +1 参数 +1 合取，拒绝文本/守卫表零触碰；窗口纪律共享非复制；C1.chain 第三道门追认为必要）、锚/三负例/回放/102+10 定向/全量 3097-0-59/fmt/clippy/openspec 303 全绿；第 5 族 critical 17 锚关闭——账本随本验收提交更新）
 
 ## 任务 1.1/1.2 结果与阻塞（coder，2026-10-06）
 
