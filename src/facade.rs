@@ -21986,12 +21986,22 @@ fn project_static_fold_owner_texts(
         let mut derived = Vec::new();
         let mut prefix_delta = 0isize;
         for (start, end, spelling, root_definition, child_definition, identity, index) in &edits {
-            let final_start = start
+            // The declaration is rewritten in place below, so this edit's own span is the one the
+            // scan stated, moved by every earlier replacement's delta — the same move the derived
+            // record states its position in the staged text with. Replacing at the raw offsets
+            // would land `prefix_delta` bytes late from the second edit on and eat the text that
+            // followed the name it meant to re-spell.
+            let local_start = start
                 .checked_add_signed(prefix_delta)
-                .and_then(|offset| offset.checked_add(staged_prefix))
+                .ok_or_else(|| Error::invalid_input("static_fold_offset", "span overflow"))?;
+            let local_end = end
+                .checked_add_signed(prefix_delta)
+                .ok_or_else(|| Error::invalid_input("static_fold_offset", "span overflow"))?;
+            let final_start = local_start
+                .checked_add(staged_prefix)
                 .ok_or_else(|| Error::invalid_input("static_fold_offset", "span overflow"))?;
             let final_end = final_start + spelling.len();
-            declaration.replace_range(start..end, spelling);
+            declaration.replace_range(local_start..local_end, spelling);
             derived.push(class_source::MemberFamilyDerivedProjection {
                 kind: class_source::MemberFamilyDerivedKind::StaticMemberTypeReference,
                 start: final_start,
