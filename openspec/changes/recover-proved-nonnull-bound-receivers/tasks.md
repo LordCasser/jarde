@@ -6,7 +6,7 @@
 - [x] 1.2 负例冻结三形：可空参数接收者（`p.ifPresent…` 参数直传）、可空字段读接收者、捕获后重写形（`sb = new StringBuilder(); …; sb = other; o.ifPresent(sb::append)` 或等价重写）——各冻结类与现拒绝文本；`typed-functional-method-references` 既有绑定拒绝锚重放基线。
 - [x] 2.1 实现两道门（非空门：捕获值 SSA 定义为 `Operation::Allocate`；互斥门：捕获点后该槽无 store）+ 同 verdict 点放行逃逸（`LambdaForm::Lambda`）；判据块其余部分与拒绝文本逐字不动。
 - [x] 2.2 对照测试：锚双腿 0 引注 + 剥离编译 exit 0 + `-Xverify:all` 输出与原一致（`[S]` 形）；负例三形拒绝逐字；`recover_typed_functional_method_references` 既有测试全绿零回退。
-- [ ] 3.1 全门禁（cargo test --workspace --all-targets --all-features --locked、fmt、ci.yml 46-76 逐字 clippy、openspec validate --all --strict）+ corpus 指纹再生（差异仅本形）+ 分逻辑提交（不 push）。
+- [x] 3.1 全门禁（cargo test --workspace --all-targets --all-features --locked、fmt、ci.yml 46-76 逐字 clippy、openspec validate --all --strict）+ corpus 指纹再生（差异仅本形）+ 分逻辑提交（不 push）。
 - [ ] 3.2 root 独立复核：门控实验记录、两道门与判据零放宽 diff 逐条、锚/负例/零回退实测、账本更新（第 5 族 critical 17 锚关闭）。（留 root）
 
 ## 任务 1.1/1.2 结果与阻塞（coder，2026-10-06）
