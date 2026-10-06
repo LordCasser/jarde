@@ -7327,6 +7327,51 @@
       "path": "tests/fixtures/recover-comparable-argument-widening/v8/COX.class"
     },
     {
+      "blake3": "29cb957d6998c8560b6567aeab2dfdbbf48bb335886d003395f07fdebadb7797",
+      "bytes": 694,
+      "path": "tests/fixtures/recover-dup-store-conditional/DS.java"
+    },
+    {
+      "blake3": "c28445b25aa9bd86edeb21299e0ae3455943e913611896be46fe53aabf0c7ab4",
+      "bytes": 504,
+      "path": "tests/fixtures/recover-dup-store-conditional/NEG.java"
+    },
+    {
+      "blake3": "d34133ed72a3335fba1cb26cdff491325c040e40713edf2a724c5018395bf469",
+      "bytes": 380,
+      "path": "tests/fixtures/recover-dup-store-conditional/REF.java"
+    },
+    {
+      "blake3": "500c4175dad4dbd42a2485b97d8c0410d74d17ba73b1c6059e90967fd9ba6f78",
+      "bytes": 1421,
+      "path": "tests/fixtures/recover-dup-store-conditional/v8-javac8/DS.class"
+    },
+    {
+      "blake3": "0263227d54e960870bf656ac790d91e42ba65c7467107bdfbd274fbd32f8c76d",
+      "bytes": 1300,
+      "path": "tests/fixtures/recover-dup-store-conditional/v8-javac8/NEG.class"
+    },
+    {
+      "blake3": "637ddf1701bbe1c288311c8f0d7bf93892dfff909fd2f2b7966697264c7914ff",
+      "bytes": 1146,
+      "path": "tests/fixtures/recover-dup-store-conditional/v8-javac8/REF.class"
+    },
+    {
+      "blake3": "e1b60f3c8159181b6de2f3cf53622f806b62ced05d9229b446862d131851a834",
+      "bytes": 1421,
+      "path": "tests/fixtures/recover-dup-store-conditional/v8/DS.class"
+    },
+    {
+      "blake3": "fccde06b3e9491e5516f3bfe383a717d461dc966bb59eab57bb1513c1471c661",
+      "bytes": 1297,
+      "path": "tests/fixtures/recover-dup-store-conditional/v8/NEG.class"
+    },
+    {
+      "blake3": "2cb9f47936f3bedf8af34cf4b4244d518bd80ee6cdde767f2d2b50906e5dcaf7",
+      "bytes": 1143,
+      "path": "tests/fixtures/recover-dup-store-conditional/v8/REF.class"
+    },
+    {
       "blake3": "c74305a012b0b395ad03b91e2b79a6c8536b8722bddb04b8709c2ed0cacc3794",
       "bytes": 1134,
       "path": "tests/fixtures/recover-enum-argument-widening/EN.java"
