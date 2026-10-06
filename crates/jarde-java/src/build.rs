@@ -8963,6 +8963,32 @@ pub(crate) struct FieldCopies {
     /// Every store a proved chain writes. A second candidate whose stores are already here is the
     /// first chain's own tail, not a shape of its own.
     stores: BTreeSet<u32>,
+    /// The conditional cuts a proved receiver copy's value crosses, by the block the copy's own read
+    /// stands in (`recover-conditional-rhs-field-compound`).
+    cuts: BTreeMap<CanonicalBlockId, FieldCopyCut>,
+}
+
+/// The proved conditional materialisation one receiver copy's value crosses
+/// (`recover-conditional-rhs-field-compound`).
+///
+/// The branch ends the block the copy's own read stands in, its two arms push the two constants the
+/// join's stack Phi merges, and the compound assignment's write stands in the join. Nothing else
+/// runs in those blocks, which is what makes the cut transparent for the order of the value the
+/// read took — the same fact the concatenation rule's own cut states for its chain
+/// (`crate::concat::Cut`).
+#[derive(Clone, Debug)]
+pub(crate) struct FieldCopyCut {
+    /// The block the copy's read stands in, whose last instruction is the branch.
+    pub(crate) head_block: CanonicalBlockId,
+    /// The comparison whose two arms materialize the write's other operand.
+    pub(crate) branch_bci: u32,
+    /// The join both arms meet at, where the compound assignment's write stands. A value crossing
+    /// the cut is read in this block, so the declaration its producer writes still stands where the
+    /// reader is.
+    pub(crate) join_block: CanonicalBlockId,
+    /// Every instruction of the head block between the read and the branch: the expression the
+    /// branch's own test is written as, which is the whole run the cut makes transparent.
+    pub(crate) owned: BTreeSet<u32>,
 }
 
 /// One proved copy whose consumers are field instructions.
@@ -9031,6 +9057,13 @@ impl FieldCopies {
             .filter(|copy| matches!(copy.shape, FieldCopyShape::Receiver { .. }))
     }
 
+    /// The conditional cut one block's own read stands at, when a proved receiver copy crosses one
+    /// (`recover-conditional-rhs-field-compound`): the fact the deferred-binding plan reads a value
+    /// produced before the branch by.
+    pub(crate) fn conditional_cut_of(&self, block: &CanonicalBlockId) -> Option<&FieldCopyCut> {
+        self.cuts.get(block)
+    }
+
     /// Reads every field copy of one body: the chained field assignment's copies and the receiver
     /// copies of the compound assignments whose operator the update rule does not present.
     ///
@@ -9041,6 +9074,7 @@ impl FieldCopies {
     /// instructions really carry.
     pub(crate) fn prove(
         ssa: &SsaTable,
+        canonical: &CanonicalCfg,
         operations: &Operations,
         fields: &field::Plan,
         budget: &mut Budget,
@@ -9060,14 +9094,36 @@ impl FieldCopies {
                         match field_chain_at(ssa, operations, fields, block, index, budget)? {
                             Some(copies) => Some(copies),
                             None => {
-                                receiver_copy_at(ssa, operations, fields, block, index, budget)?
-                                    .map(|copy| vec![copy])
+                                match receiver_copy_at(
+                                    ssa, operations, fields, block, index, budget,
+                                )? {
+                                    Some(copy) => Some(vec![copy]),
+                                    // The same copy whose value crosses one proved conditional
+                                    // materialisation: the read stands here and the write in the
+                                    // block the branch's arms hand their value to
+                                    // (`recover-conditional-rhs-field-compound`).
+                                    None => conditional_receiver_copy_at(
+                                        ssa, canonical, operations, fields, block, index, budget,
+                                    )?
+                                    .map(|(copy, cut)| {
+                                        plan.cuts.insert(cut.head_block.clone(), cut);
+                                        vec![copy]
+                                    }),
+                                }
                             }
                         }
                     }
                     OPCODE_DUP_X1 => {
-                        receiver_copy_at(ssa, operations, fields, block, index, budget)?
-                            .map(|copy| vec![copy])
+                        match receiver_copy_at(ssa, operations, fields, block, index, budget)? {
+                            Some(copy) => Some(vec![copy]),
+                            None => conditional_receiver_copy_at(
+                                ssa, canonical, operations, fields, block, index, budget,
+                            )?
+                            .map(|(copy, cut)| {
+                                plan.cuts.insert(cut.head_block.clone(), cut);
+                                vec![copy]
+                            }),
+                        }
                     }
                     _ => None,
                 };
@@ -9430,6 +9486,7 @@ fn receiver_copy_at(
         block,
         store_value,
         store_pos,
+        &CrossBlockLeaves::default(),
         &mut span,
         &mut BTreeSet::new(),
         budget,
@@ -9472,6 +9529,389 @@ fn receiver_copy_at(
     }))
 }
 
+/// The receiver copy of one member's read and write whose value crosses one **proved conditional
+/// materialisation** (`recover-conditional-rhs-field-compound`).
+///
+/// `this.ok &= x > 0` lowers the comparison to a branch whose two arms push the `0`/`1` the join's
+/// stack Phi merges, so the read stands in the copy's own block and the write in the block the
+/// arms hand their value to:
+/// `aload_0; dup; getfield ok; iload x; ifle L; iconst_1; goto M; L: iconst_0; M: iand; putfield ok`.
+/// The copy is still the receiver of one member's read and its write, and the read is still the
+/// copy's own next instruction — but the ordinary proof above reads the copy's consumers in **one**
+/// block and therefore refuses the write that stands beyond the branch.
+///
+/// This certificate replaces that refusal for exactly this shape, and for nothing else. The
+/// materialisation is [`prove_conditional_value`]'s proof — the one `recover-conditional-values`
+/// established — read here as a sub-proof: the certificate states the region the branch and its
+/// successors form and hands it to that proof, which re-validates every edge, arm entry, Phi input
+/// and consumer against the canonical CFG. Nothing about the arms is assumed from the shape that
+/// named them. What the certificate adds on top is what the receiver copy needs and that proof does
+/// not state: each arm holds **nothing but** the constant it pushes and (for the arm that does not
+/// fall through) the transfer to the join, the constants are `0` and `1`, the join's Phi is an
+/// operand of the value the write takes and the read's own value is the other, and the whole
+/// interval between the read and the write is those very instructions — the read's own text lands
+/// at the store, so nothing may run between them that the text does not write at its own position.
+fn conditional_receiver_copy_at(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    fields: &field::Plan,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    index: usize,
+    budget: &mut Budget,
+) -> Result<Option<(FieldCopy, FieldCopyCut)>, StopReason> {
+    let instructions = block.instructions();
+    let Some(copy) = instructions.get(index) else {
+        return Ok(None);
+    };
+    let (source, pass_through) = match copy.opcode() {
+        OPCODE_DUP => match single_stack_read(copy) {
+            Some((_, source)) => (source, None),
+            None => return Ok(None),
+        },
+        OPCODE_DUP_X1 => match dup_x1_operands(copy) {
+            Some((top, _)) => (top, pass_through_value(copy, top)),
+            None => return Ok(None),
+        },
+        _ => return Ok(None),
+    };
+    let duplicate_bci = copy.bci();
+    // The read: the copy's own next instruction, a claimed field read called on one of the copy's
+    // two values.
+    let Some(read) = instructions.get(index + 1) else {
+        return Ok(None);
+    };
+    let read_bci = read.bci();
+    let Some((read_field, read_shape)) = fields.claim(read_bci) else {
+        return Ok(None);
+    };
+    if read_field.access != crate::facts::FieldAccess::Read
+        || read_field.is_static
+        || read_shape.writes()
+    {
+        return Ok(None);
+    }
+    let Some(read_receiver) = read_shape.receiver else {
+        return Ok(None);
+    };
+    if !comes_from(ssa, read_receiver, duplicate_bci) || pass_through == Some(read_receiver) {
+        return Ok(None);
+    }
+    // The write's receiver: the copy's **other** copy of the duplicated value — the value the
+    // read's receiver is not. A `dup` writes it twice; a `dup_x1` writes it at the two depths the
+    // pass-through stands between.
+    let mut others: Vec<ValueId> = stack_outputs(copy)
+        .into_iter()
+        .map(|(_, value)| value)
+        .filter(|value| *value != read_receiver && Some(*value) != pass_through)
+        .collect();
+    others.dedup();
+    let [store_receiver] = others.as_slice() else {
+        return Ok(None);
+    };
+    let store_receiver = *store_receiver;
+    // The block the read stands in ends in the branch that cuts it: the arms are the branch's own
+    // two normal successors and the write stands in the block they hand their value to.
+    let Some(branch) = instructions.last() else {
+        return Ok(None);
+    };
+    let branch_bci = branch.bci();
+    let Some(branch_pos) = position_in_block(block, branch_bci) else {
+        return Ok(None);
+    };
+    if branch_pos <= index + 1
+        || !matches!(
+            operations.get(branch_bci),
+            Some(Operation::Comparison { .. })
+        )
+    {
+        return Ok(None);
+    }
+    let mut successors = Vec::new();
+    for edge in canonical.edges() {
+        if edge.from() != block.block() {
+            continue;
+        }
+        if edge.kind() != CanonicalEdgeKind::Normal {
+            return Ok(None);
+        }
+        successors.push(edge.to().clone());
+    }
+    let Some(Operation::Comparison { target, .. }) = operations.get(branch_bci) else {
+        return Ok(None);
+    };
+    let taken: Vec<&CanonicalBlockId> = successors
+        .iter()
+        .filter(|successor| successor.bci() == *target)
+        .collect();
+    if successors.len() != 2 || taken.len() != 1 {
+        return Ok(None);
+    }
+    let else_entry = taken[0].clone();
+    let then_entry = successors
+        .iter()
+        .find(|successor| **successor != else_entry)
+        .cloned()
+        .expect("one of the two successors is not the taken target");
+    let (Some(then_block), Some(else_block)) = (ssa.block(&then_entry), ssa.block(&else_entry))
+    else {
+        return Ok(None);
+    };
+    // Each arm holds the constant it pushes and, where it does not fall through into the join, the
+    // transfer that carries it there. Nothing else runs in an arm: that is the "no other side
+    // effects" the shape is admitted with, and it is what makes the cut transparent for the read
+    // whose text lands at the store.
+    for arm in [then_block, else_block] {
+        let Some((constant, rest)) = arm.instructions().split_first() else {
+            return Ok(None);
+        };
+        if !matches!(
+            operations.get(constant.bci()),
+            Some(Operation::Push(ConstantValue::Int(0 | 1)))
+        ) {
+            return Ok(None);
+        }
+        match rest {
+            [] => {}
+            [transfer] if operations.get(transfer.bci()) == Some(&Operation::Transfer) => {}
+            _ => return Ok(None),
+        }
+    }
+    // The join: the one block both arms hand their value to.
+    let mut arm_successors = Vec::new();
+    for arm in [then_block, else_block] {
+        let mut exits = Vec::new();
+        for edge in canonical.edges() {
+            if edge.from() != arm.block() {
+                continue;
+            }
+            if edge.kind() != CanonicalEdgeKind::Normal {
+                return Ok(None);
+            }
+            exits.push(edge.to().clone());
+        }
+        if exits.len() != 1 {
+            return Ok(None);
+        }
+        arm_successors.push(exits[0].clone());
+    }
+    if arm_successors[0] != arm_successors[1] {
+        return Ok(None);
+    }
+    let join = arm_successors[0].clone();
+    // The two-arm proof itself, read-only: the region this certificate states is re-validated
+    // against the canonical CFG by the proof that owns it.
+    let region = Region::If {
+        prefix: Vec::new(),
+        branch: block.block().clone(),
+        branch_bci,
+        then_arm: Box::new(Region::Straight {
+            blocks: vec![then_entry.clone()],
+        }),
+        else_arm: Box::new(Region::Straight {
+            blocks: vec![else_entry.clone()],
+        }),
+        join: Some(join.clone()),
+    };
+    let ConditionalValueAttempt::Proved(proof) =
+        prove_conditional_value(&region, canonical, ssa, operations, budget)?
+    else {
+        return Ok(None);
+    };
+    if proof.branch_bci != branch_bci || proof.join != join {
+        return Ok(None);
+    }
+    // The read's block: everything between the read and the branch is the expression the branch's
+    // own test is written as, and nothing else. The read's text lands at the store, so an
+    // instruction between the two that the text does not write there would run before the read
+    // where the bytecode ran it after.
+    let mut test_dependencies = BTreeSet::new();
+    let test_context = ExpressionBciContext {
+        ssa,
+        operations,
+        fields,
+        block,
+        start: index + 2,
+        end: branch_pos,
+    };
+    for (_, operand) in stack_operands(branch) {
+        if !collect_expression_bcis(
+            &test_context,
+            operand,
+            &mut test_dependencies,
+            &mut BTreeSet::new(),
+            budget,
+            0,
+        )? {
+            return Ok(None);
+        }
+    }
+    if !interval_is_expression(block, index + 2, branch_pos, &test_dependencies, budget)? {
+        return Ok(None);
+    }
+    // The write: the one instruction of the join the copy's other value is read by, and the member
+    // it writes is the member the read read.
+    let Some(join_block) = ssa.block(&join) else {
+        return Ok(None);
+    };
+    let mut store: Option<u32> = None;
+    for other in join_block.instructions() {
+        poll(budget, Some(other.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(other.bci()),
+        )?;
+        for (slot, read_value) in other.reads() {
+            if matches!(slot, Slot::Stack(_)) && *read_value == store_receiver {
+                if store.is_some() {
+                    return Ok(None);
+                }
+                store = Some(other.bci());
+            }
+        }
+    }
+    let Some(store_bci) = store else {
+        return Ok(None);
+    };
+    let Some((store_field, store_shape)) = fields.claim(store_bci) else {
+        return Ok(None);
+    };
+    if !store_shape.writes()
+        || store_shape.receiver != Some(store_receiver)
+        || store_field.is_static
+    {
+        return Ok(None);
+    }
+    if read_field.owner != store_field.owner
+        || read_field.name != store_field.name
+        || read_field.descriptor != store_field.descriptor
+    {
+        return Ok(None);
+    }
+    // The receiver copy is the write's own receiver and nothing else: the value crossed the join's
+    // edge (the entry Phi's input) and is read by the store there.
+    if !used_only_at(ssa, store_receiver, &join, store_bci) {
+        return Ok(None);
+    }
+    // The value the write takes is computed in the join by the Phi's own consumer, and the read's
+    // value is the other operand it is computed from.
+    let Some(store_value) = store_shape.value else {
+        return Ok(None);
+    };
+    let Some(value_bci) = definition_in_block(ssa, store_value, &join) else {
+        return Ok(None);
+    };
+    if value_bci != proof.consumer_bci {
+        return Ok(None);
+    }
+    let (Some(store_pos), Some(value_pos)) = (
+        position_in_block(join_block, store_bci),
+        position_in_block(join_block, value_bci),
+    ) else {
+        return Ok(None);
+    };
+    if value_pos >= store_pos {
+        return Ok(None);
+    }
+    let Some((_, read_value)) = one_stack_output(read) else {
+        return Ok(None);
+    };
+    if !used_only_at(ssa, read_value, &join, value_bci) {
+        return Ok(None);
+    }
+    // The join's own run, from its first instruction to the store, is the expression the write's
+    // value is written as: the read and the proved Phi are the only leaves outside it.
+    let leaves = CrossBlockLeaves {
+        read_bci: Some(read_bci),
+        phi: Some(proof.phi),
+    };
+    let mut span = BTreeSet::new();
+    if !field_copy_expression_span(
+        ssa,
+        operations,
+        join_block,
+        store_value,
+        store_pos,
+        &leaves,
+        &mut span,
+        &mut BTreeSet::new(),
+        budget,
+    )? {
+        return Ok(None);
+    }
+    if !span.contains(&read_bci) {
+        return Ok(None);
+    }
+    for position in 0..store_pos {
+        let Some(instruction) = join_block.instructions().get(position) else {
+            return Ok(None);
+        };
+        if !span.contains(&instruction.bci()) {
+            return Ok(None);
+        }
+    }
+    // Nothing in the interval may enter a handler: the branch, the arms and the join's run are one
+    // statement's expression, and a protected range would make one of its instructions a different
+    // statement on the exception path.
+    let covered = [
+        block.block().clone(),
+        then_entry.clone(),
+        else_entry.clone(),
+        join.clone(),
+    ];
+    if ssa.effects().instructions().iter().any(|effect| {
+        covered.contains(effect.block())
+            && duplicate_bci <= effect.bci()
+            && effect.bci() <= store_bci
+            && !effect.handlers().is_empty()
+    }) {
+        return Ok(None);
+    }
+    // The receiver itself is a value the text writes twice — once as the assignment's target and
+    // once inside the expression the read is written in — so it may only be a source whose
+    // re-evaluation is not observable.
+    if !field_copy_source_is_reusable(ssa, operations, block, source, copy.bci(), budget)? {
+        return Ok(None);
+    }
+    Ok(Some((
+        FieldCopy {
+            duplicate: duplicate_bci,
+            source,
+            pass_through,
+            shape: FieldCopyShape::Receiver {
+                read: read_bci,
+                store: store_bci,
+            },
+        },
+        FieldCopyCut {
+            head_block: block.block().clone(),
+            branch_bci,
+            join_block: join.clone(),
+            owned: test_dependencies,
+        },
+    )))
+}
+
+/// Whether every use of one value is the read at one BCI of one block, beside the entry Phi inputs
+/// that carried it across that block's own edge.
+///
+/// A value that crosses an edge reaches the block as an input of the block's own entry Phi, and the
+/// use records name that Phi and not an instruction. So "read only there" is: exactly one
+/// instruction read, and every other use is a Phi input of that very block.
+fn used_only_at(ssa: &SsaTable, value: ValueId, block: &CanonicalBlockId, at: u32) -> bool {
+    let mut reads = 0;
+    for use_ in ssa.value(value).uses() {
+        match use_.bci() {
+            Some(bci) if bci == at => reads += 1,
+            None if use_.block() == block => {}
+            _ => return false,
+        }
+    }
+    reads == 1
+}
+
 /// The value one `dup_x1` **passes through** rather than duplicates.
 ///
 /// `dup_x1` copies the top of the stack and puts the copy *under* the value below it:
@@ -9493,13 +9933,29 @@ fn pass_through_value(copy: &SsaInstruction, top: ValueId) -> Option<ValueId> {
     written.next().map(|(_, value)| value)
 }
 
+/// The two leaves one receiver copy's expression walk admits **outside** the block it walks
+/// (`recover-conditional-rhs-field-compound`): the read the copy is the receiver of, whose text the
+/// field rule writes where the store stands, and the Phi of one proved conditional materialisation,
+/// whose text is the comparison the branch states. Both are `None` for the ordinary same-block
+/// proof's walk, which admits no cross-block leaf at all.
+#[derive(Default)]
+struct CrossBlockLeaves {
+    /// The BCI of the read the copy is the receiver of, when the read stands in another block.
+    read_bci: Option<u32>,
+    /// The Phi one proved conditional materialisation merges, when the value is one.
+    phi: Option<ValueId>,
+}
+
 /// Every BCI the expression one value is written as spans, following a copy through to what it
 /// duplicated.
 ///
 /// This is [`collect_expression_bcis`]'s walk over the same facts, with the two differences the
 /// receiver copy needs: a copy's own instruction is part of the expression (its text is the
 /// receiver the read is called on), and the values it reads are followed — so the read's value is
-/// reached through the copy that carried the receiver.
+/// reached through the copy that carried the receiver. The two leaves `leaves` names are the only
+/// values the walk may stop at **outside** its own block: the read a cross-block receiver copy is
+/// the receiver of, and the Phi a proved conditional materialisation merges — both values whose
+/// text is written by a rule of its own, at the position the store stands.
 #[allow(clippy::too_many_arguments)]
 fn field_copy_expression_span(
     ssa: &SsaTable,
@@ -9507,6 +9963,7 @@ fn field_copy_expression_span(
     block: &jarde_jvm::method_ir::SsaBlock,
     value: ValueId,
     end: usize,
+    leaves: &CrossBlockLeaves,
     bcis: &mut BTreeSet<u32>,
     seen: &mut BTreeSet<ValueId>,
     budget: &mut Budget,
@@ -9523,6 +9980,15 @@ fn field_copy_expression_span(
     )?;
     match ssa.value(value).def() {
         Definition::Entry { .. } => Ok(true),
+        // The read the copy is the receiver of: its text is the field read the assignment writes on
+        // both sides, so the walk stops at it and records its BCI as part of the expression.
+        Definition::Instruction { bci, .. } if leaves.read_bci == Some(*bci) => {
+            bcis.insert(*bci);
+            Ok(true)
+        }
+        // The Phi one proved conditional materialisation merges: its text is the comparison the
+        // branch states, which the conditional-value proof this certificate reads owns.
+        Definition::Phi { .. } if leaves.phi == Some(value) => Ok(true),
         Definition::Instruction {
             block: definition_block,
             bci,
@@ -9572,7 +10038,7 @@ fn field_copy_expression_span(
             for (slot, operand) in instruction.reads() {
                 if matches!(slot, Slot::Stack(_))
                     && !field_copy_expression_span(
-                        ssa, operations, block, *operand, end, bcis, seen, budget,
+                        ssa, operations, block, *operand, end, leaves, bcis, seen, budget,
                     )?
                 {
                     return Ok(false);
@@ -14878,7 +15344,7 @@ impl Builder<'_> {
         let boolean_position = if consumer.opcode() == 0xac {
             self.return_type == Some(Type::Boolean)
         } else {
-            self.equality_argument_parameter(proof)
+            self.equality_argument_parameter(proof) || self.bitwise_boolean_operand(proof)
         };
         if !boolean_position || test.presented != Some(Type::Boolean) {
             return None;
@@ -14892,6 +15358,60 @@ impl Builder<'_> {
             integer_constant(self.ssa, self.operations, proof.when_true)?,
             integer_constant(self.ssa, self.operations, proof.when_false)?,
         ))
+    }
+
+    /// Whether the one instruction that consumes a conditional value is the **field compound
+    /// assignment's own bitwise operation**, whose other operand a descriptor proves boolean
+    /// (`recover-conditional-rhs-field-compound`).
+    ///
+    /// `this.ok &= x > 0` lowers the comparison's `0`/`1` to the branch's arms and the join's Phi,
+    /// and the Phi's one consumer is the `iand` the field's own value is computed by — the value the
+    /// compound's `putfield` takes. Java accepts `&`, `|` and `^` only between two `boolean`s or two
+    /// integrals, so an operand a **descriptor** — a `Z` field, a boolean local, a boolean-returning
+    /// call, an `instanceof` — proves boolean states the position: the other operand is a boolean
+    /// too, and the two arm constants are that boolean's own value. That is the same reading the
+    /// method's `Z` return and a `Z` parameter already state, and the same 0/1 branch-value shape
+    /// both positions share.
+    ///
+    /// The operation must be the value a claimed **field write** takes: the compound assignment
+    /// whose receiver copy this change proves. A materialised `0`/`1` beside a boolean operand in
+    /// any other position — a plain `a & !b` returned, say — is the boolean–int operand
+    /// restoration `recover-boolean-int-bitwise-operands` owns, and this change's admission stays
+    /// inside the field compound it exists for.
+    fn bitwise_boolean_operand(&self, proof: &ConditionalValueProof) -> bool {
+        let Some(instruction) = self.instructions.get(&proof.consumer_bci).copied() else {
+            return false;
+        };
+        if !matches!(
+            self.operations.get(proof.consumer_bci),
+            Some(Operation::Bitwise { .. })
+        ) {
+            return false;
+        }
+        let operands = stack_operands(instruction);
+        let [(_, left), (_, right)] = operands.as_slice() else {
+            return false;
+        };
+        let other = if *left == proof.phi {
+            *right
+        } else if *right == proof.phi {
+            *left
+        } else {
+            return false;
+        };
+        if !self.boolean_evidence(other, proof.consumer_bci).has_seed() {
+            return false;
+        }
+        let Some((_, value)) = one_stack_output(instruction) else {
+            return false;
+        };
+        self.ssa.value(value).uses().iter().any(|use_| {
+            use_.bci().is_some_and(|bci| {
+                self.fields
+                    .claim(bci)
+                    .is_some_and(|(_, shape)| shape.writes() && shape.value == Some(value))
+            })
+        })
     }
 
     /// Whether the one call that consumes a conditional value reads it through a parameter the
@@ -19931,6 +20451,12 @@ impl Builder<'_> {
     ///   block, whose own interval the ordinary boundary walk judges as it judges any other. A value
     ///   read elsewhere is read past the cut, and one carried into a later merge would have its
     ///   expression written twice.
+    ///
+    /// A **receiver copy's** own cut (`recover-conditional-rhs-field-compound`) is the same shape
+    /// read from the field-copy proof: the head block is the block the copy's read stands in, the
+    /// run between the read and the branch is the expression the branch's own test is written as,
+    /// and the join is the block the compound assignment's write stands in. The three facts are the
+    /// same three, with the certificate's own run standing in for the chain's owned set.
     fn crosses_a_proved_cut(&self, value: ValueId) -> bool {
         let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
             return false;
@@ -19938,22 +20464,29 @@ impl Builder<'_> {
         let Some(block) = self.block_of.get(bci) else {
             return false;
         };
-        let Some(cut) = self.chains.cut_of(block) else {
-            return false;
-        };
         let uses = self.ssa.value(value).uses();
         if !uses.iter().any(|use_| use_.bci().is_some()) {
             return false;
         }
-        // Every use of the value — the readers and the Phi records the merge leaves on it — lies in
-        // the cut's join block: a value read anywhere else is read past the cut, and a value carried
-        // into a later merge would be written twice.
-        if !uses.iter().all(|use_| use_.block() == &cut.join_block) {
-            return false;
+        if let Some(cut) = self.chains.cut_of(block)
+            && uses.iter().all(|use_| use_.block() == &cut.join_block)
+            && self
+                .instructions
+                .range((*bci + 1)..cut.branch_bci)
+                .all(|(bci, _)| self.chains.owns(*bci))
+        {
+            return true;
         }
-        self.instructions
-            .range((*bci + 1)..cut.branch_bci)
-            .all(|(bci, _)| self.chains.owns(*bci))
+        if let Some(cut) = self.field_copies.conditional_cut_of(block)
+            && uses.iter().all(|use_| use_.block() == &cut.join_block)
+            && self
+                .instructions
+                .range((*bci + 1)..cut.branch_bci)
+                .all(|(bci, _)| cut.owned.contains(bci))
+        {
+            return true;
+        }
+        false
     }
 
     /// Whether one instruction and its final consumer share a proven declaration region.
