@@ -25,10 +25,15 @@
 //! real javac 8 is present, with that one too, runs both under `-Xverify:all` and compares every
 //! answer with the fixture's own class files. `LR2` — this change's own anchor, the same bsearch
 //! shape over an array — is replayed as a **whole class**, which compiles because every member of
-//! it recovers; the patrol's `BS`/`CB`/`CB2`/`LB` keep a refused `main` (the reserved
-//! `jarde_refused_body()` symbol a refused `void` body writes), so their replay compiles the
-//! recovered **method's** text in a unit with the fixture's own call sequence and compares the
-//! answer with the fixture class's own run.
+//! it recovers; the patrol's `BS`/`CB`/`CB2`/`LB` still keep a refused member (the reserved
+//! `jarde_refused_body()` symbol a refused body writes — `LB`'s four negatives, and one quote
+//! inside `BS`), so their replay compiles the recovered **method's** text in a unit with the
+//! fixture's own call sequence and compares the answer with the fixture class's own run. Their
+//! `main`s recovered with `recover-array-initializer-value-positions`, which admitted the
+//! initialization dance passed as a **non-final** argument (`bsearch(new int[]{1, 3, 5, 7}, 5)`:
+//! the value's reader is the invocation, one step past the run that produces the other argument),
+//! so those drivers are replayed there
+//! (`openspec/changes/recover-array-initializer-value-positions/results/04-corpus-delta-replay.sh`).
 
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
