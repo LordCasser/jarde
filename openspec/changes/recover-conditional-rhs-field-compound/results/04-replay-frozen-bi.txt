@@ -1,0 +1,21 @@
+--- quotes ---
+0
+--- earlyRet ---
+    boolean earlyRet(int[] arg1) {
+        // @method earlyRet([I)Z
+        // @declaration an instance method of `BI`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local2;
+        local2 = arg1;
+        for (int local5 : local2) {
+            this.ok = this.ok & local5 > 0;
+            if (!this.ok) {
+                return false;
+            }
+        }
+        return true;
+    }
+original: false/false/false/false
+javac 23 --release 8: false/false/false/false
+corretto 1.8.0_432: false/false/false/false
+replay: both legs identical to the original

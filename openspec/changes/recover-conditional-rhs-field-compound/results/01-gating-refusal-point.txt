@@ -1,0 +1,285 @@
+# 1.1 gating: the compound RHS criterion's refusal point (BI.earlyRet, frozen bi.jar)
+
+Frozen input: openspec/evidence/java-syntax-2026-10-05/boolean-loop-earlyret-patrol/fixture/bi.jar
+sha256: 99ada97475301a46261476f326486ab39c9e06033d033ec3bd244451ff1161f3
+
+## The anchor's own bytecode (javap -c BI.class, earlyRet)
+```
+  boolean earlyRet(int[]);
+    Code:
+       0: aload_1
+       1: astore_2
+       2: aload_2
+       3: arraylength
+       4: istore_3
+       5: iconst_0
+       6: istore        4
+       8: iload         4
+      10: iload_3
+      11: if_icmpge     54
+      14: aload_2
+      15: iload         4
+      17: iaload
+      18: istore        5
+      20: aload_0
+      21: dup
+      22: getfield      #7                  // Field ok:Z
+      25: iload         5
+      27: ifle          34
+      30: iconst_1
+      31: goto          35
+      34: iconst_0
+      35: iand
+      36: putfield      #7                  // Field ok:Z
+      39: aload_0
+      40: getfield      #7                  // Field ok:Z
+      43: ifne          48
+      46: iconst_0
+      47: ireturn
+      48: iinc          4, 1
+      51: goto          8
+      54: iconst_1
+      55: ireturn
+
+```
+
+## The SSA the field-copy proof reads (JARDE_TRACE_FIELD_COPY=1 dump, earlyRet's own section)
+```
+=== trace: blocks ===
+block CanonicalBlockId { bci: 0, path: [] } (bci 0)
+  [ 0]    0 op=0x2b Some(Load { slot: 1 })
+        reads=[(Local(1), ValueId(1))]
+        writes=[(Stack(0), ValueId(16))] claimed=None
+  [ 1]    1 op=0x4d Some(Store { slot: 2 })
+        reads=[(Stack(0), ValueId(16))]
+        writes=[(Local(2), ValueId(17))] claimed=None
+  [ 2]    2 op=0x2c Some(Load { slot: 2 })
+        reads=[(Local(2), ValueId(17))]
+        writes=[(Stack(0), ValueId(18))] claimed=None
+  [ 3]    3 op=0xbe Some(ArrayLength)
+        reads=[(Stack(0), ValueId(18))]
+        writes=[(Stack(0), ValueId(19))] claimed=None
+  [ 4]    4 op=0x3e Some(Store { slot: 3 })
+        reads=[(Stack(0), ValueId(19))]
+        writes=[(Local(3), ValueId(20))] claimed=None
+  [ 5]    5 op=0x03 Some(Push(Int(0)))
+        reads=[]
+        writes=[(Stack(0), ValueId(21))] claimed=None
+  [ 6]    6 op=0x36 Some(Store { slot: 4 })
+        reads=[(Stack(0), ValueId(21))]
+        writes=[(Local(4), ValueId(22))] claimed=None
+block CanonicalBlockId { bci: 8, path: [] } (bci 8)
+  [ 0]    8 op=0x15 Some(Load { slot: 4 })
+        reads=[(Local(4), ValueId(6))]
+        writes=[(Stack(0), ValueId(23))] claimed=None
+  [ 1]   10 op=0x1d Some(Load { slot: 3 })
+        reads=[(Local(3), ValueId(20))]
+        writes=[(Stack(1), ValueId(24))] claimed=None
+  [ 2]   11 op=0xa2 Some(Comparison { op: JumpIfGreaterOrEqual, target: 54 })
+        reads=[(Stack(1), ValueId(24)), (Stack(0), ValueId(23))]
+        writes=[] claimed=None
+block CanonicalBlockId { bci: 14, path: [] } (bci 14)
+  [ 0]   14 op=0x2c Some(Load { slot: 2 })
+        reads=[(Local(2), ValueId(17))]
+        writes=[(Stack(0), ValueId(28))] claimed=None
+  [ 1]   15 op=0x15 Some(Load { slot: 4 })
+        reads=[(Local(4), ValueId(6))]
+        writes=[(Stack(1), ValueId(29))] claimed=None
+  [ 2]   17 op=0x2e Some(ArrayLoad)
+        reads=[(Stack(1), ValueId(29)), (Stack(0), ValueId(28))]
+        writes=[(Stack(0), ValueId(30))] claimed=None
+  [ 3]   18 op=0x36 Some(Store { slot: 5 })
+        reads=[(Stack(0), ValueId(30))]
+        writes=[(Local(5), ValueId(31))] claimed=None
+  [ 4]   20 op=0x2a Some(Load { slot: 0 })
+        reads=[(Local(0), ValueId(0))]
+        writes=[(Stack(0), ValueId(32))] claimed=None
+  [ 5]   21 op=0x59 Some(Duplicate)
+        reads=[(Stack(0), ValueId(32))]
+        writes=[(Stack(0), ValueId(33)), (Stack(1), ValueId(34))] claimed=None
+  [ 6]   22 op=0xb4 Some(Field { access: Read, is_static: false, owner: "BI", name: "ok", descriptor: "Z" })
+        reads=[(Stack(1), ValueId(34))]
+        writes=[(Stack(1), ValueId(35))] claimed=Some(Evidence { bci: 22, access: Read, is_static: false, owner: "BI", name: "ok", descriptor: "Z" })
+  [ 7]   25 op=0x15 Some(Load { slot: 5 })
+        reads=[(Local(5), ValueId(31))]
+        writes=[(Stack(2), ValueId(36))] claimed=None
+  [ 8]   27 op=0x9e Some(Comparison { op: JumpIfNotPositive, target: 34 })
+        reads=[(Stack(2), ValueId(36))]
+        writes=[] claimed=None
+block CanonicalBlockId { bci: 54, path: [] } (bci 54)
+  [ 0]   54 op=0x04 Some(Push(Int(1)))
+        reads=[]
+        writes=[(Stack(0), ValueId(37))] claimed=None
+  [ 1]   55 op=0xac Some(Return)
+        reads=[(Stack(0), ValueId(37))]
+        writes=[] claimed=None
+block CanonicalBlockId { bci: 30, path: [] } (bci 30)
+  [ 0]   30 op=0x04 Some(Push(Int(1)))
+        reads=[]
+        writes=[(Stack(2), ValueId(40))] claimed=None
+  [ 1]   31 op=0xa7 Some(Transfer)
+        reads=[]
+        writes=[] claimed=None
+block CanonicalBlockId { bci: 34, path: [] } (bci 34)
+  [ 0]   34 op=0x03 Some(Push(Int(0)))
+        reads=[]
+        writes=[(Stack(2), ValueId(41))] claimed=None
+block CanonicalBlockId { bci: 35, path: [] } (bci 35)
+  [ 0]   35 op=0x7e Some(Bitwise { op: And })
+        reads=[(Stack(2), ValueId(15)), (Stack(1), ValueId(35))]
+        writes=[(Stack(1), ValueId(25))] claimed=None
+  [ 1]   36 op=0xb5 Some(Field { access: Write, is_static: false, owner: "BI", name: "ok", descriptor: "Z" })
+        reads=[(Stack(1), ValueId(25)), (Stack(0), ValueId(33))]
+        writes=[] claimed=Some(Evidence { bci: 36, access: Write, is_static: false, owner: "BI", name: "ok", descriptor: "Z" })
+  [ 2]   39 op=0x2a Some(Load { slot: 0 })
+        reads=[(Local(0), ValueId(0))]
+        writes=[(Stack(0), ValueId(26))] claimed=None
+  [ 3]   40 op=0xb4 Some(Field { access: Read, is_static: false, owner: "BI", name: "ok", descriptor: "Z" })
+        reads=[(Stack(0), ValueId(26))]
+        writes=[(Stack(0), ValueId(27))] claimed=Some(Evidence { bci: 40, access: Read, is_static: false, owner: "BI", name: "ok", descriptor: "Z" })
+  [ 4]   43 op=0x9a Some(Comparison { op: JumpIfNotZero, target: 48 })
+        reads=[(Stack(0), ValueId(27))]
+        writes=[] claimed=None
+block CanonicalBlockId { bci: 46, path: [] } (bci 46)
+  [ 0]   46 op=0x03 Some(Push(Int(0)))
+        reads=[]
+        writes=[(Stack(0), ValueId(38))] claimed=None
+  [ 1]   47 op=0xac Some(Return)
+        reads=[(Stack(0), ValueId(38))]
+        writes=[] claimed=None
+block CanonicalBlockId { bci: 48, path: [] } (bci 48)
+  [ 0]   48 op=0x84 Some(Increment { slot: 4, amount: 1 })
+        reads=[(Local(4), ValueId(6))]
+        writes=[(Local(4), ValueId(39))] claimed=None
+  [ 1]   51 op=0xa7 Some(Transfer)
+        reads=[]
+        writes=[] claimed=None
+=== trace: values ===
+value ValueId(0) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(20) }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(39) }]
+value ValueId(1) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(1) } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(0) }, SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }]
+value ValueId(2) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 8, path: [] }, slot: Local(0) } replaced_by=Some(ValueId(0))
+        uses=[]
+value ValueId(3) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 8, path: [] }, slot: Local(1) } replaced_by=Some(ValueId(1))
+        uses=[]
+value ValueId(4) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 8, path: [] }, slot: Local(2) } replaced_by=Some(ValueId(17))
+        uses=[]
+value ValueId(5) ty=Int def=Phi { block: CanonicalBlockId { bci: 8, path: [] }, slot: Local(3) } replaced_by=Some(ValueId(20))
+        uses=[]
+value ValueId(6) ty=Int def=Phi { block: CanonicalBlockId { bci: 8, path: [] }, slot: Local(4) } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: Some(8) }, SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(15) }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 48, path: [] }, bci: Some(48) }]
+value ValueId(7) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Local(0) } replaced_by=Some(ValueId(2))
+        uses=[]
+value ValueId(8) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Local(1) } replaced_by=Some(ValueId(3))
+        uses=[]
+value ValueId(9) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Local(2) } replaced_by=Some(ValueId(4))
+        uses=[]
+value ValueId(10) ty=Int def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Local(3) } replaced_by=Some(ValueId(5))
+        uses=[]
+value ValueId(11) ty=Int def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Local(4) } replaced_by=Some(ValueId(6))
+        uses=[]
+value ValueId(12) ty=Int def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Local(5) } replaced_by=Some(ValueId(31))
+        uses=[]
+value ValueId(13) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Stack(0) } replaced_by=Some(ValueId(33))
+        uses=[]
+value ValueId(14) ty=Int def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Stack(1) } replaced_by=Some(ValueId(35))
+        uses=[]
+value ValueId(15) ty=Int def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Stack(2) } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(35) }]
+value ValueId(16) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(1) }]
+value ValueId(17) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 1 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(2) }, SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(14) }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }]
+value ValueId(18) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(3) }]
+value ValueId(19) ty=Int def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 3 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(4) }]
+value ValueId(20) ty=Int def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 4 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: Some(10) }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }]
+value ValueId(21) ty=Int def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 5 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(6) }]
+value ValueId(22) ty=Int def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 6 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: None }]
+value ValueId(23) ty=Int def=Instruction { block: CanonicalBlockId { bci: 8, path: [] }, bci: 8 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: Some(11) }]
+value ValueId(24) ty=Int def=Instruction { block: CanonicalBlockId { bci: 8, path: [] }, bci: 10 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: Some(11) }]
+value ValueId(25) ty=Int def=Instruction { block: CanonicalBlockId { bci: 35, path: [] }, bci: 35 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(36) }]
+value ValueId(26) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 35, path: [] }, bci: 39 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(40) }]
+value ValueId(27) ty=Int def=Instruction { block: CanonicalBlockId { bci: 35, path: [] }, bci: 40 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(43) }]
+value ValueId(28) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 14 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(17) }]
+value ValueId(29) ty=Int def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 15 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(17) }]
+value ValueId(30) ty=Int def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 17 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(18) }]
+value ValueId(31) ty=Int def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 18 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(25) }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }]
+value ValueId(32) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 20 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(21) }]
+value ValueId(33) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 21 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(36) }]
+value ValueId(34) ty=Ref(Named { name: [66, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 21 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(22) }]
+value ValueId(35) ty=Int def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 22 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(35) }]
+value ValueId(36) ty=Int def=Instruction { block: CanonicalBlockId { bci: 14, path: [] }, bci: 25 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 14, path: [] }, bci: Some(27) }]
+value ValueId(37) ty=Int def=Instruction { block: CanonicalBlockId { bci: 54, path: [] }, bci: 54 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 54, path: [] }, bci: Some(55) }]
+value ValueId(38) ty=Int def=Instruction { block: CanonicalBlockId { bci: 46, path: [] }, bci: 46 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 46, path: [] }, bci: Some(47) }]
+value ValueId(39) ty=Int def=Instruction { block: CanonicalBlockId { bci: 48, path: [] }, bci: 48 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 8, path: [] }, bci: None }]
+value ValueId(40) ty=Int def=Instruction { block: CanonicalBlockId { bci: 30, path: [] }, bci: 30 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }]
+value ValueId(41) ty=Int def=Instruction { block: CanonicalBlockId { bci: 34, path: [] }, bci: 34 } replaced_by=None
+        uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }]
+=== trace: phis ===
+phi value=ValueId(2) block=8 slot=Local(0) inputs=[Value(ValueId(0)), Itself]
+phi value=ValueId(3) block=8 slot=Local(1) inputs=[Value(ValueId(1)), Itself]
+phi value=ValueId(4) block=8 slot=Local(2) inputs=[Value(ValueId(17)), Itself]
+phi value=ValueId(5) block=8 slot=Local(3) inputs=[Value(ValueId(20)), Itself]
+phi value=ValueId(6) block=8 slot=Local(4) inputs=[Value(ValueId(22)), Value(ValueId(39))]
+phi value=ValueId(7) block=35 slot=Local(0) inputs=[Value(ValueId(0)), Value(ValueId(0))]
+phi value=ValueId(8) block=35 slot=Local(1) inputs=[Value(ValueId(1)), Value(ValueId(1))]
+phi value=ValueId(9) block=35 slot=Local(2) inputs=[Value(ValueId(17)), Value(ValueId(17))]
+phi value=ValueId(10) block=35 slot=Local(3) inputs=[Value(ValueId(20)), Value(ValueId(20))]
+phi value=ValueId(11) block=35 slot=Local(4) inputs=[Value(ValueId(6)), Value(ValueId(6))]
+phi value=ValueId(12) block=35 slot=Local(5) inputs=[Value(ValueId(31)), Value(ValueId(31))]
+phi value=ValueId(13) block=35 slot=Stack(0) inputs=[Value(ValueId(33)), Value(ValueId(33))]
+phi value=ValueId(14) block=35 slot=Stack(1) inputs=[Value(ValueId(35)), Value(ValueId(35))]
+phi value=ValueId(15) block=35 slot=Stack(2) inputs=[Value(ValueId(40)), Value(ValueId(41))]
+conditional region: branch=27 attempt=Proved(ConditionalValueProof { branch: CanonicalBlockId { bci: 14, path: [] }, branch_bci: 27, join: CanonicalBlockId { bci: 35, path: [] }, phi: ValueId(15), stack_depth: 2, when_true: ValueId(40), when_false: ValueId(41), consumer_bci: 35 })
+```
+
+## Reading the trace: where the RHS criterion stops short
+
+* The copy is the `dup` at **BCI 21**, and its two copies are `ValueId(33)` (the value that stays
+  under the read) and `ValueId(34)` (the value the read is called on). The read at **BCI 22** is the
+  copy's own next instruction and its receiver is `ValueId(34)` — the ordinary proof's first two
+  facts hold.
+* `ValueId(33)` — the receiver the **write** is called on — is consumed by the `putfield` at
+  **BCI 36**, and that instruction stands in the **join block** (`bci 35`): its use records are the
+  join's own entry Phi (two Phi inputs at block 35) plus the store at BCI 36. The store is *not* in
+  the copy's block (`bci 14`).
+* `receiver_copy_at` reads the copy's consumers with `instructions.iter().skip(index + 1)` — the
+  copy's **own block** only. The write's receiver is therefore never seen, `store` stays `None`, and
+  the proof refuses at `let (Some((read_bci, read_receiver)), Some((store_bci, store_receiver))) =
+  (read, store) else { return Ok(None) }`. That is the refusal point; the text the presentation
+  carries for it is `duplicate_expression`'s fallback, `the copy at BCI 21 has no proved local
+  assignment`.
+* The right-hand side `x > 0` is the branch at **BCI 27** (`ifle 34`): its arms push `iconst_1`
+  (BCI 30) and `iconst_0` (BCI 34) and the join's stack Phi is `ValueId(15)`, consumed once by the
+  `iand` at BCI 35. The region pass **already proves exactly this region** — the trace's last line,
+  `conditional region: branch=27 attempt=Proved(ConditionalValueProof { branch: bci 14, branch_bci:
+  27, join: bci 35, phi: ValueId(15), when_true: ValueId(40), when_false: ValueId(41),
+  consumer_bci: 35 })` — which is the sub-proof channel the certificate reuses read-only.
+* The cascade diagnostic `the saved producer at BCI 22 has 3 consumers` is the deferred-binding
+  plan counting the read's value (`ValueId(35)`): two uses are the join's entry Phi records and one
+  is the real read at BCI 35. The Phi records are not evaluations, which is exactly what the
+  concatenation rule's own cut already states for its chain (`crosses_a_proved_cut`).
