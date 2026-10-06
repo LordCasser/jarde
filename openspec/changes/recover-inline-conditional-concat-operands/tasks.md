@@ -19,4 +19,4 @@
 
 - [x] 3.1 全门禁 + corpus 指纹 + 分逻辑提交（不 push）。
       → [evidence/03-corpus-delta.md](evidence/03-corpus-delta.md)（sweep 10 MOVED 全分类 + 指纹 +85/-0 + census 重测 `(801,3363,288,2095,8)` + oracle ignored 腿 3/3）、[evidence/04-gates.md](evidence/04-gates.md)（权威口径）。三个逻辑提交（机制 / fixture+测试 / 证据+登记），未 push。
-- [ ] 3.2 root 独立复核：门控实验、子证明只读复用、锚/负例实测、账本（multiconsumer 族重定位后的新缺口关闭）。（留 root）
+- [x] 3.2 root 独立复核：门控实验、子证明只读复用、锚/负例实测、账本（multiconsumer 族重定位后的新缺口关闭）。（root 2026-10-06 完成，见 [verification-root.md](verification-root.md)：门控矩阵复核（终端接受必要非充分的偏差追认为实现）✓、子证明只读复用 ✓、NI 旗舰 root 实测原源码形态 ✓、oracle ignored 3/3（新纪律）✓、门禁权威口径 325 targets ok/0 FAILED ✓；multiconsumer 族重定位缺口关闭——账本同步）
