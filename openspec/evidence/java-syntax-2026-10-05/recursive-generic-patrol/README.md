@@ -19,3 +19,12 @@
 ## 处置
 
 Comparable 缺口登记第 7 个 + 立姊妹窄片（与 CharSequence 片同机制同落点，可合并派发）；RG$IntNode 锚补入合并头片 proposal。
+
+## 处置（2026-10-06，change `recover-comparable-argument-widening` 落地后重渲染）
+
+两个推断调用点恢复（`refusals = 0`）：[`results/jarde-RG-after-comparable-argument-widening.txt`](results/jarde-RG-after-comparable-argument-widening.txt)
+的 `callGen` 写出 `max((java.lang.Comparable) "a", (java.lang.Comparable) "b")`、`callGen2` 写出
+`max((java.lang.Comparable) java.lang.Integer.valueOf(1), (java.lang.Comparable) java.lang.Integer.valueOf(2))`
+——装箱是既有域，装箱后的 `Integer` 实参入表判定（九行含八装箱）。`RG$IntNode.cmp` 的
+`((java.lang.Integer) this.val).compareTo((java.lang.Integer) arg1.val)`（本巡查判定的健康面）逐字不变；
+`RG$IntNode` 的裸父类头（合并头片）与 `Collections.singletonList` 消费面同样不变。
