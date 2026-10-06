@@ -5311,7 +5311,8 @@ fn recover_inner(
     // chained field assignment's copies and the receiver copies of the compound assignments the
     // update rule does not present. Read before the concatenation rule, which admits the instance a
     // receiver copy carries through a chain — the field's own `+=` shape.
-    let field_copies = match build::FieldCopies::prove(ssa, &operations, &fields, budget) {
+    let field_copies = match build::FieldCopies::prove(ssa, canonical, &operations, &fields, budget)
+    {
         Ok(field_copies) => field_copies,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };

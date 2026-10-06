@@ -1,0 +1,150 @@
+# 1.1/1.2 gating experiment: baseline vs the change, per fixture input
+
+baseline: /tmp/jarde-baseline-wt/target/debug/jarde-cli (HEAD 85cbd67e, a separate worktree)
+change:   this worktree's target/debug/jarde-cli
+
+```
+CHANGED    frozen-BI.txt
+    55,60c55
+    <             // @bytecode 21
+    <             // the instruction at BCI 21 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <             // @bytecode 22
+    <             // the saved producer at BCI 22 has 3 consumers, so one local binding cannot prove its execution count
+    <             // @bytecode 36 35 22
+    <             // the copy at BCI 21 has no proved local assignment
+    ---
+    >             this.ok = this.ok & local5 > 0;
+CHANGED    v8-BI.txt
+    55,60c55
+    <             // @bytecode 21
+    <             // the instruction at BCI 21 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <             // @bytecode 22
+    <             // the saved producer at BCI 22 has 3 consumers, so one local binding cannot prove its execution count
+    <             // @bytecode 36 35 22
+    <             // the copy at BCI 21 has no proved local assignment
+    ---
+    >             this.ok = this.ok & x > 0;
+CHANGED    v8-javac8-BI.txt
+    55,60c55
+    <             // @bytecode 21
+    <             // the instruction at BCI 21 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <             // @bytecode 22
+    <             // the saved producer at BCI 22 has 3 consumers, so one local binding cannot prove its execution count
+    <             // @bytecode 36 35 22
+    <             // the copy at BCI 21 has no proved local assignment
+    ---
+    >             this.ok = this.ok & x > 0;
+CHANGED    v8-javac8-RC.txt
+    25,30c25
+    <             // @bytecode 21
+    <             // the instruction at BCI 21 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <             // @bytecode 22
+    <             // the saved producer at BCI 22 has 3 consumers, so one local binding cannot prove its execution count
+    <             // @bytecode 36 35 22
+    <             // the copy at BCI 21 has no proved local assignment
+    ---
+    >             this.ok = this.ok & x > 0;
+    39d33
+    <         // jarde: not recovered: the recovery run for `plain(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+    43,49c37,38
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 10 13 14 15 18
+    <         // the saved producer at BCI 2 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 15 14 2
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+    ---
+    >         this.ok = this.ok & x > 0;
+    >         return;
+    53d41
+    <         // jarde: not recovered: the recovery run for `orEq(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+    57,63c45,46
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 10 13 14 15 18
+    <         // the saved producer at BCI 2 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 15 14 2
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+    ---
+    >         this.ok = this.ok | x > 0;
+    >         return;
+    67d49
+    <         // jarde: not recovered: the recovery run for `mask(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+    71,77c53,54
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 10 13 14 15 18
+    <         // the saved producer at BCI 2 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 15 14 2
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+    ---
+    >         this.n = this.n & (x > 0 ? 1 : 0);
+    >         return;
+IDENTICAL  v8-javac8-RCN.txt
+CHANGED    v8-RC.txt
+    25,30c25
+    <             // @bytecode 21
+    <             // the instruction at BCI 21 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <             // @bytecode 22
+    <             // the saved producer at BCI 22 has 3 consumers, so one local binding cannot prove its execution count
+    <             // @bytecode 36 35 22
+    <             // the copy at BCI 21 has no proved local assignment
+    ---
+    >             this.ok = this.ok & x > 0;
+    39d33
+    <         // jarde: not recovered: the recovery run for `plain(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+    43,49c37,38
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 10 13 14 15 18
+    <         // the saved producer at BCI 2 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 15 14 2
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+    ---
+    >         this.ok = this.ok & x > 0;
+    >         return;
+    53d41
+    <         // jarde: not recovered: the recovery run for `orEq(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+    57,63c45,46
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 10 13 14 15 18
+    <         // the saved producer at BCI 2 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 15 14 2
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+    ---
+    >         this.ok = this.ok | x > 0;
+    >         return;
+    67d49
+    <         // jarde: not recovered: the recovery run for `mask(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+    71,77c53,54
+    <         // @bytecode 1
+    <         // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 2 0 1 5 6 9 10 13 14 15 18
+    <         // the saved producer at BCI 2 has 3 consumers, so one local binding cannot prove its execution count
+    <         // @bytecode 15 14 2
+    <         // the copy at BCI 1 has no proved local assignment
+    <         jarde_refused_body();
+    ---
+    >         this.n = this.n & (x > 0 ? 1 : 0);
+    >         return;
+IDENTICAL  v8-RCN.txt
+```
+
+## Reading
+
+| input | verdict |
+| --- | --- |
+| `frozen-BI` (the frozen `bi.jar`) | **CHANGED**: `earlyRet`'s six quoted lines become `this.ok = this.ok & local5 > 0;` |
+| `v8-BI` / `v8-javac8-BI` (BI.java recompiled on both legs) | **CHANGED**: the same statement, with the debug name `x` |
+| `v8-RC` / `v8-javac8-RC` (the change's own anchor class, both legs) | **CHANGED**: `earlyRet`, `plain`, `orEq` and `mask` all flip to source form |
+| `v8-RCN` / `v8-javac8-RCN` (the negatives, both legs) | **IDENTICAL**: every refusal text is byte-identical |
+
+The gate therefore opens exactly the proved-materialisation admission: the anchors flip, and a
+genuine side-effect materialisation (`RCN.armCall`, whose true arm calls) keeps the refusal it had —
+together with the nested double comparison and the cross-exception-table shape.
