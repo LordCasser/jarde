@@ -382,70 +382,64 @@ fn a_slot_written_and_read_again_is_still_written_with_the_slot_name() {
 }
 
 #[test]
-fn a_store_of_a_superseded_load_is_refused_with_the_read_named() {
+fn a_store_of_a_superseded_load_writes_the_postfix_expression() {
     let engine = Engine::new();
     let fixture = fixture(&engine);
 
     // A **store** consumes the loaded value after the increment wrote the slot: `int y = x++` keeps
     // the value the load produced, so `local1 = arg0;` would carry the incremented value instead.
+    // `recover-postfix-old-value-snapshot` presents the old value where it is read — the load's own
+    // value has one consumer, the increment is its own read's update, and nothing but the
+    // expression's plumbing runs between them — so the store writes `arg0++` and the increment
+    // instruction is absorbed by that expression instead of being written a second time. This
+    // assertion replaces the refusal this test pinned before the snapshot slice: naming the slot
+    // would still be the wrong value, and the postfix expression is what says so.
     let report = recover(&engine, &fixture, b"saved", b"(I)I");
     let text = &report.text;
-    // The write the body does have is still presented. The return that read slot 1 is not: P3 2b.2
-    // refuses a statement whose local no statement declared, and the store that would have declared
-    // `local1` is the very one quoted here — so the return is quoted too, naming the load it read
-    // and the `return` it is, instead of spelling a name nothing declares.
     assert!(
-        text.contains("arg0 = arg0 + 1;"),
-        "the write this body does have is still presented:\n{text}"
+        text.contains("int local1 = arg0++;") && text.contains("return local1;"),
+        "the store writes the postfix expression and the return reads the local it declared:\n{text}"
     );
     assert!(
-        !text.contains("return local1;")
-            && text.contains("no statement of this body declared that local"),
-        "the return of a local nothing declared is quoted, not spelled:\n{text}"
+        !text.contains("arg0 = arg0 + 1;") && !text.contains("local1 = arg0;"),
+        "the increment is absorbed by the expression, so neither its own statement nor a store of \
+         the slot's name survives:\n{text}"
     );
     assert!(
-        !text.contains("local1 = arg0;"),
-        "the store at BCI 4 writes the value the load at BCI 0 produced, and slot 0 holds the \
-         incremented value by then: naming the slot would store the wrong value:\n{text}"
+        quoted_bcis(text).is_empty(),
+        "this body presents every instruction it has:\n{text}"
     );
-    let quoted = quoted_bcis(text);
-    assert!(
-        quoted.contains(&4) && quoted.contains(&0),
-        "the quote states the store at BCI 4 and the load it could not name, BCI 0: {quoted:?}\n{text}"
-    );
-    assert!(
-        text.contains("BCI 0") && text.contains("BCI 4"),
-        "and the reason says so in words:\n{text}"
-    );
-    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured, "{report:?}");
 }
 
 #[test]
-fn a_branch_on_a_superseded_load_is_refused_with_the_read_named() {
+fn a_branch_on_a_superseded_load_tests_the_postfix_expression() {
     let engine = Engine::new();
     let fixture = fixture(&engine);
 
     // A **branch** consumes it: the test at BCI 4 runs after the slot was incremented, so a
-    // condition written from the slot's name would test the wrong value. The whole region is
-    // quoted, and the quote names the load as well as the region's own bytecode.
+    // condition written from the slot's name would test the wrong value. The old value's one
+    // consumer is that test, and the increment is absorbed by the expression the condition writes —
+    // `arg0++ > 0` reads the value the load read and performs the increment the bytecode performed,
+    // in the bytecode's own order. This assertion replaces the refusal this test pinned before the
+    // snapshot slice.
     let report = recover(&engine, &fixture, b"conditional", b"(I)I");
     let text = &report.text;
     assert!(
-        !text.contains("if (arg0") && !text.contains("return arg0"),
-        "the condition at BCI 4 tests the value the load produced, and slot 0 is written at BCI 1 \
-         before it: neither the condition nor a value read later may be written from the slot:\n{text}"
-    );
-    let quoted = quoted_bcis(text);
-    assert!(
-        quoted.contains(&4) && quoted.contains(&0),
-        "the quote states the branch at BCI 4 and the load at BCI 0 it could not name: \
-         {quoted:?}\n{text}"
+        text.contains("if (arg0++ > 0)") && text.contains("return 1;") && text.contains("return 0;"),
+        "the condition tests the postfix expression and both arms are presented:\n{text}"
     );
     assert!(
-        text.contains("BCI 0") && text.contains("BCI 4"),
-        "and the reason says so in words:\n{text}"
+        !text.contains("arg0 = arg0 + 1;"),
+        "the increment is absorbed by the condition's own expression:\n{text}"
     );
-    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert!(
+        quoted_bcis(text).is_empty(),
+        "this body presents every instruction it has:\n{text}"
+    );
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured, "{report:?}");
 }
 
 #[test]

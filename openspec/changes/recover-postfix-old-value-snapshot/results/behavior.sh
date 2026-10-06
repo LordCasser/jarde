@@ -5,9 +5,10 @@
 #
 # Renders the class with the worktree's CLI, strips the presentation's comment lines the way the
 # patrol's own stripped sources were made, compiles the result with javac 23.0.1 `--release 8` and
-# with real javac 8 when it is installed, and runs both under `-Xverify:all`, comparing every
-# answer with the fixture's own class file.  The self-header is asserted before anything is
-# counted, so a render that is not this tool's own presentation can never pass as one.
+# with real javac 8 (Corretto 1.8.0_432) when it is installed, and runs both under `-Xverify:all`,
+# comparing standard output and the exit status with the fixture's own class file.  The self-header
+# is asserted before anything is counted, so a render that is not this tool's own presentation can
+# never pass as one.
 set -eu
 class="$1"
 jar="$2"
@@ -29,8 +30,17 @@ if grep -q 'jarde_refused_body' "$work/$class.java"; then
     echo "$class: STRIPPED TEXT STILL HOLDS A REFUSED BODY MARKER"
 fi
 
-original_out=$("java" -Xverify:all -cp "$original" "$class" 2>&1 || true)
+run() {
+    runner="$1"
+    dir="$2"
+    set +e
+    out=$("$runner" -Xverify:all -cp "$dir" "$class" 2>/dev/null)
+    status=$?
+    set -e
+    printf '%s\nstatus=%s\n' "$out" "$status"
+}
 
+want=$(run java "$original")
 for leg in 23 8; do
     if [ "$leg" = 23 ]; then
         compiler=javac
@@ -53,13 +63,10 @@ for leg in 23 8; do
         sed -n '1,6p' "$work/javac-$leg.log"
         continue
     fi
-    if ! recovered_out=$("$runner" -Xverify:all -cp "$work/out-$leg" "$class" 2>&1); then
-        echo "$class: run($leg) FAILED"
-        continue
-    fi
-    if [ "$recovered_out" = "$original_out" ]; then
-        echo "$class: leg $leg OK  output=$recovered_out"
+    got=$(run "$runner" "$work/out-$leg")
+    if [ "$got" = "$want" ]; then
+        echo "$class: leg $leg OK  $(printf '%s' "$got" | tr '\n' ' ')"
     else
-        echo "$class: leg $leg MISMATCH  original=$original_out  recovered=$recovered_out"
+        echo "$class: leg $leg MISMATCH  want=[$(printf '%s' "$want" | tr '\n' ' ')] got=[$(printf '%s' "$got" | tr '\n' ' ')]"
     fi
 done
