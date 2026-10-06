@@ -7797,6 +7797,36 @@
       "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS.class"
     },
     {
+      "blake3": "43f6aded70421d741fd808a46fea086217231120c616a754c74dc650a9f16fe0",
+      "bytes": 898,
+      "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/BRN.java"
+    },
+    {
+      "blake3": "ba9379c88110164157e5fabf0e712f4a937323e6d056d507d9186927152f595a",
+      "bytes": 1263,
+      "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/OP.java"
+    },
+    {
+      "blake3": "60e1ff1c6e702307803776a1d5f9b4893d4e067c41b8e1040098a54436030f05",
+      "bytes": 1676,
+      "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8-javac8/BRN.class"
+    },
+    {
+      "blake3": "18df4d272e0d0222b4fbac78e7601cfc474ad0966b554d76095825e4d60e11ac",
+      "bytes": 3560,
+      "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8-javac8/OP.class"
+    },
+    {
+      "blake3": "213cd05a6566bf8afe992004ec95c974ad4c08fd97b17885012c8e5a96c52d53",
+      "bytes": 1724,
+      "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8/BRN.class"
+    },
+    {
+      "blake3": "526aca2c9ed411fd4c1dead5e86ac23f766729905ebeffd131b3c7a6ae6295fb",
+      "bytes": 3567,
+      "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class"
+    },
+    {
       "blake3": "52182e4f587dd4ebb5817a8cc0adbdb3e0a66767d25549fea70e044ff2364597",
       "bytes": 1126,
       "path": "tests/fixtures/recover-temporal-argument-widening/CF.java"
