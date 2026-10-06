@@ -7,4 +7,4 @@
 - [x] 2.1 实现 join 选举修正（阶梯=单一 if-else 树，早退臂为终止叶）；单臂形判据零改动。
 - [x] 2.2 对照测试：锚恢复（0 引注、重编 exit 0、`-Xverify:all` 行为一致）；三对照逐字节零回退；负例（异常表交叉、双层阶梯）保持拒绝。
 - [x] 3.1 全门禁 + corpus 指纹 + 分逻辑提交（不 push）。
-- [ ] 3.2 root 独立复核：插桩定夺、判据零放宽 diff 逐条、锚/对照/负例实测、账本更新（第 5 族 canonical-overlap 可恢复性锚关闭）。（留 root）
+- [x] 3.2 root 独立复核：插桩定夺、判据零放宽 diff 逐条、锚/对照/负例实测、账本更新（第 5 族 canonical-overlap 可恢复性锚关闭）。（root 2026-10-06 完成，见 [verification-root.md](verification-root.md)：插桩定夺复核 ✓（同 Loop 两臂共享 latch 双主张）、diff 纯增量 242+/0- ✓、`BS.bsearch` root 实测完整恢复 + 回放双腿一致 ✓、全量 3101-0-60/fmt/clippy/openspec 303 ✓、四项残余裁定（同级 switch/for 追认为机制内外沿；firstArmRet/LR2/tryLadder 如上）；第 5 族锚形状关闭，census 已指向本片）
