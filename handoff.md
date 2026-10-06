@@ -2,7 +2,18 @@
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态（2026-10-04，最新）
+## 当前状态（2026-10-06，最新）
+
+- 长期 Java 语法恢复 `/goal` active。本节由 2026-10-06 会话 root 更新；下方 10-04 节保留作背景。
+- **主线**：`319a57e0`（twr-javac8 切片三提交）已推送 origin/main，CI run 37420206418 监控中。root `target`（37G）已清、stale worktree 已 prune（codex 固定 worktree 不动）。
+- **模型池**：`bigmodel/glm-5.3-flash` 配额至 2026-10-10；用户 2026-10-06 增授 `opencode/deepseek-flash`（按任务难度自选 effort）；qwen 家族仍可用。
+- **在飞**：`recover-temporal-argument-widening`（java.time+CompletableFuture 扩宽行集，deepseek-flash，isolated worktree，串行唯一构建者）。rt.jar（sha256 b27515a6…）在 `/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/jre/lib/rt.jar`。
+- **验收债（root 批量行为抽验待构建窗口，与 temporal 验收同批）**：EM-15 `recover-write-accessor-field-types` 与 DT-26 `recover-lambda-primitive-array-capture` 已 root 静态审计（diff 零放宽逐条、九型表 vs javap、方向 B 定夺核准）并补勾账本（`4ef3868f`），各剩本地构建行为抽验一项（EM-15 tasks 3.6 / DT-26 tasks 3.5 尾注）。
+- **本会话巡查产出**：(1) canonical-block multi-owner（第 5 可恢复性族）静态调查——budget 通道对该锚排除（region.rs budget 全 stop 语义、bsearch 是第二分析成员），通道收窄至类准备状态/上游 IR/池布局，二分矩阵已归档（binary-search-twopointer-patrol README 附段，`21ca025b`）；(2) 第 5 主族唯一 critical 锚（`o.ifPresent(sb::append)` 语句吞掉）立项 `recover-proved-nonnull-bound-receivers`（两道门放行：SSA 分配定义非空 + 捕获后无重写，门控实验先行，`337891f7`）。
+- **派发队列（temporal 之后）**：`recover-proved-nonnull-bound-receivers`（critical #17 优先）→ `recover-parameterized-interface-headers`（合并范围=接口三道门+父类池形参数化 MVP，锚点 6444/13736/13761 已验零漂移）→ 低优先存量（spn / fixture-guard-coverage / boxed-number-widening / static-generic-field-init-text / capture-ctor-super-order）。已登记未立项：array-covariant-store（按设计排 critical 后）、第 6 族形态 4 lambda→JDK ctor（SAFE 拒形）、canonical 二分实验。
+- 第 6 族四形态收口状态：形态 1/2/3 已闭（四表 + 单边机制 + CharSequence 表），形态 4 SAFE 延后。
+
+## 当前状态（2026-10-04 更新，背景保留）
 
 - 长期 Java 语法恢复 `/goal` 状态为 **active**（用户已恢复并持续给指令）。工作模式是 patrol → spec → 派发 coder subagent（`bigmodel/glm-5.3-flash`）→ root 独立验收 → 写回账本；**一次只允许一个 subagent 构建**（磁盘串行约束，见下"磁盘纪律"）。
 - 本会话（10-03→10-04）已验收合入 **五个切片**（4 jobs：stable / fuzz smoke / supply chain / MSRV）。前四片在各自验收时 CI ALL GREEN；第五片合入后主线出现 `bulk_*` 家族 CI flake（判定见下"已知 CI flake 家族"，root 本地两轮全量 2937/0）：
