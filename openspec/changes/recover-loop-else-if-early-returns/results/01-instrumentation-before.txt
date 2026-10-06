@@ -1,0 +1,43 @@
+# 任务 1.2 插桩：BCI 56 的两个主张者（实现前，HEAD 5a9f32bf + 临时 JRE_LADDER_PROBE）
+# 命令：JRE_LADDER_PROBE=1 target/debug/jarde-cli class-source --policy single-class --input <class> --class <name> --format text
+# 输出为 region 树本身（overlapping_owner 之前）；渲染的自述头另行见 02。
+
+## CB.loopElseIfRet（拒：canonical block at BCI 56）
+P3LADDER regions=1
+[0] Straight owns=[0]
+P3LADDER visited=[0]
+P3LADDER regions=3
+[0] Straight owns=[0]
+[1] Loop header=7 tests=[(7, 9)] exit=Some(59) owns=[7,12,31,56,39,45,56,53]
+  [1] If prefix=[] branch=12 join=None owns=[12,31,56,39,45,56,53]
+    [1] Straight owns=[31,56]
+    [1] If prefix=[] branch=39 join=None owns=[39,45,56,53]
+      [1] Sequence
+        [1] Straight owns=[45]
+        [1] Fallback owns=[56]
+
+## OR.doubleLadder（负例，同族拒绝：canonical block at BCI 53）
+P3LADDER regions=3
+[0] Straight owns=[0]
+[1] Loop header=4 tests=[(4, 7)] exit=Some(56) owns=[4,10,21,53,28,34,53,41,47,49,53]
+  [1] If prefix=[] branch=10 join=None owns=[10,21,53,28,34,53,41,47,49,53]
+    [1] Straight owns=[21,53]
+    [1] If prefix=[] branch=28 join=None owns=[28,34,53,41,47,49,53]
+      [1] Sequence
+        [1] Straight owns=[34]
+        [1] Fallback owns=[53]
+      [1] If prefix=[] branch=41 join=None owns=[41,47,49,53]
+        [1] Straight owns=[47]
+        [1] Sequence
+          [1] Straight owns=[49]
+
+## OR.thenRet / CB.loopIfElseRet（对照：无 overlap 行）
+P3LADDER regions=1
+[0] Straight owns=[0]
+P3LADDER visited=[0]
+P3LADDER regions=4
+[0] Straight owns=[0]
+[1] Fallback owns=[12,31,34,40,48,53]
+[2] Fallback owns=[7]
+[3] Fallback owns=[56]
+P3LADDER visited=[0, 7, 12]

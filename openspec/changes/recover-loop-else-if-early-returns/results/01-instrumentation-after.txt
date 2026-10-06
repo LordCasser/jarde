@@ -1,0 +1,77 @@
+# 任务 1.2 插桩：同一插桩在实现后的 region 树（本片读法生效）
+
+## CB.loopElseIfRet（恢复：56 只被主张一次，If branch=12 join=Some(56)）
+P3LADDER regions=1
+[0] Straight owns=[0]
+P3LADDER visited=[0]
+P3LADDER regions=3
+[0] Straight owns=[0]
+[1] Loop header=7 tests=[(7, 9)] exit=Some(59) owns=[7,12,31,39,45,53,56]
+  [1] If prefix=[] branch=12 join=Some(56) owns=[12,31,39,45,53]
+    [1] Straight owns=[31]
+    [1] If prefix=[] branch=39 join=None owns=[39,45,53]
+      [1] Straight owns=[45]
+      [1] Straight owns=[53]
+  [1] Straight owns=[56]
+
+## LB 各形（同一插桩）
+P3LADDER regions=1
+[0] Straight owns=[0]
+P3LADDER visited=[0]
+P3LADDER regions=3
+[0] Straight owns=[0]
+[1] Loop header=2 tests=[(2, 5)] exit=Some(50) owns=[2,8,17,47,24,29,47,36,41,43,47]
+  [1] If prefix=[] branch=8 join=None owns=[8,17,47,24,29,47,36,41,43,47]
+    [1] Straight owns=[17,47]
+    [1] If prefix=[] branch=24 join=None owns=[24,29,47,36,41,43,47]
+      [1] Sequence
+        [1] Straight owns=[29]
+        [1] Fallback owns=[47]
+      [1] If prefix=[] branch=36 join=None owns=[36,41,43,47]
+        [1] Straight owns=[41]
+        [1] Sequence
+          [1] Straight owns=[43]
+          [1] Fallback owns=[47]
+[2] Straight owns=[50]
+P3LADDER overlap bci=47 claimants=[1, 1, 1]
+P3LADDER visited=[0, 2, 8, 50, 17, 24, 47, 29, 36, 41, 43]
+P3LADDER regions=4
+[0] Straight owns=[0]
+[1] Loop header=7 tests=[(7, 9)] exit=Some(67) owns=[7,12,31,56,39,45,56,53]
+  [1] Try owns=[12,31,56,39,45,56,53]
+[2] Straight owns=[67]
+[3] Fallback owns=[59]
+P3LADDER overlap bci=56 claimants=[1, 1]
+P3LADDER visited=[0, 7, 12, 67, 31, 39, 56, 45, 53]
+P3LADDER regions=3
+[0] Straight owns=[0]
+[1] Loop header=4 tests=[(4, 7)] exit=Some(78) owns=[4,10,36,43,47,53,60,66,73,75]
+  [1] Switch owns=[10,36,43]
+  [1] If prefix=[] branch=47 join=Some(75) owns=[47,53,60,66,73]
+    [1] Straight owns=[53]
+    [1] If prefix=[] branch=60 join=None owns=[60,66,73]
+      [1] Straight owns=[66]
+      [1] Straight owns=[73]
+  [1] Straight owns=[75]
+[2] Straight owns=[78]
+P3LADDER visited=[0, 4, 10, 78, 36, 43, 47, 53, 60, 75, 66, 73]
+P3LADDER regions=3
+[0] Straight owns=[0]
+[1] Fallback owns=[4,10,21,76,28,34,56,63,74]
+[2] Fallback owns=[79,67]
+P3LADDER visited=[0, 4, 10, 21, 28, 76, 34, 74, 56, 63]
+P3LADDER regions=4
+[0] Straight owns=[0]
+[1] Fallback owns=[12,31,34,40,48,53]
+[2] Fallback owns=[7]
+[3] Fallback owns=[56]
+P3LADDER visited=[0, 7, 12]
+P3LADDER regions=3
+[0] Straight owns=[0]
+[1] Loop header=2 tests=[(2, 5)] exit=Some(44) owns=[2,8,17,24,29,36,38]
+  [1] If prefix=[] branch=8 join=Some(38) owns=[8,17,24,29,36]
+    [1] Straight owns=[17]
+    [1] If prefix=[] branch=24 join=None owns=[24,29,36]
+      [1] Straight owns=[29]
+      [1] Straight owns=[36]
+  [1] Straight owns=[38]
