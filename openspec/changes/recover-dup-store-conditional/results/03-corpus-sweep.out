@@ -1,0 +1,63 @@
+SELF-TEST OK: DS eliminated 0 -> 1; this change's NEG byte-identical; postfix NG byte-identical
+pass A loose candidate classes: 2776
+MOVED (single-class): tests/fixtures/recover-dup-store-conditional/v8/REF.class
+    24d23
+    <         // jarde: not recovered: the recovery run for `deadLine()I` produced no statement (explanation only); the artifact's own comment lines are below
+    28,29c27,32
+    <         // @bytecode 0 2 10 16
+    <         // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int n;
+    >         n = 0;
+MOVED (single-class): tests/fixtures/recover-dup-store-conditional/v8/DS.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `condAssign(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+    17,24c16
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4
+    <         // the copy at BCI 3 has no proved local assignment
+    <         // @bytecode 0 8 12 5
+MOVED (single-class): tests/fixtures/recover-dup-store-conditional/v8-javac8/REF.class
+    24d23
+    <         // jarde: not recovered: the recovery run for `deadLine()I` produced no statement (explanation only); the artifact's own comment lines are below
+    28,29c27,32
+    <         // @bytecode 0 2 10 16
+    <         // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int n;
+    >         n = 0;
+MOVED (single-class): tests/fixtures/recover-dup-store-conditional/v8-javac8/DS.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `condAssign(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+    17,24c16
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4
+    <         // the copy at BCI 3 has no proved local assignment
+    <         // @bytecode 0 8 12 5
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+pass A: moved=4 unrendered=1
+archive candidate classes: 738
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/cond-assign-soundness-patrol/fixture/ac.jar!AC.class
+    24d23
+    <         // jarde: not recovered: the recovery run for `ioLoop()I` produced no statement (explanation only); the artifact's own comment lines are below
+    28,29c27,32
+    <         // @bytecode 0 2 10 16
+    <         // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local0;
+    >         local0 = 0;
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/operator-remainder-patrol/fixture/op2.jar!OP2.class
+    73d72
+    <         // jarde: not recovered: the recovery run for `condAssign(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+    77,84c76
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4
+    <         // the copy at BCI 3 has no proved local assignment
+    <         // @bytecode 0 8 12 5
+pass C: moved=2 unrendered=1
+moved classes: single-class=4 jar=2 total=6
+unrendered candidates: A=1 C=1
