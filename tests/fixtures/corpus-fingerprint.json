@@ -7527,6 +7527,56 @@
       "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS.class"
     },
     {
+      "blake3": "e1733c26bbf0931fb90466e83a45a631a17efbda2b2057bee23b7f3c8fbcbb01",
+      "bytes": 2321,
+      "path": "tests/fixtures/recover-unicode-identifiers/ascii/F1.jarde.java"
+    },
+    {
+      "blake3": "4f85b674d0d369730c3b165a100045781521fb38fdb2bed5744e9a47427546a2",
+      "bytes": 3247,
+      "path": "tests/fixtures/recover-unicode-identifiers/ascii/RG.jarde.java"
+    },
+    {
+      "blake3": "39ffa451fe06a5875e7d82ba1c72df9351988416b28bd07d82a0cf8d483fc528",
+      "bytes": 5234,
+      "path": "tests/fixtures/recover-unicode-identifiers/ascii/SB.jarde.java"
+    },
+    {
+      "blake3": "21b2bb999f6fa731d4bb1857a38cde65e77b65e7d57c33a0611556d9d9392210",
+      "bytes": 542,
+      "path": "tests/fixtures/recover-unicode-identifiers/ascii/package-info.jarde.java"
+    },
+    {
+      "blake3": "bddd3ce75d204bd9391c6a6979548f6a4e4fe3d3498580ec784f2d7ba9cab384",
+      "bytes": 600,
+      "path": "tests/fixtures/recover-unicode-identifiers/loc/Loc.class"
+    },
+    {
+      "blake3": "951364612be38a50ffdfc0c91e15dbf925b811154a74cd9dd45e32f8e6d0870d",
+      "bytes": 204,
+      "path": "tests/fixtures/recover-unicode-identifiers/loc/Loc.java"
+    },
+    {
+      "blake3": "50ba0f16f2607cb958a4c23ed26f304263694f54f58af1348442ea43d2a91bc4",
+      "bytes": 600,
+      "path": "tests/fixtures/recover-unicode-identifiers/loc/Loc.punct.class"
+    },
+    {
+      "blake3": "79c03850380318ac3da6aba385e0fe42c07f955f18f815a847c3ab8d3703776e",
+      "bytes": 305,
+      "path": "tests/fixtures/recover-unicode-identifiers/ut/UT$内部类.class"
+    },
+    {
+      "blake3": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+      "bytes": 955,
+      "path": "tests/fixtures/recover-unicode-identifiers/ut/UT.class"
+    },
+    {
+      "blake3": "21a347fc52ec09e623855df7f0db5d8ff811387dee2f9ebe78978cddb6aa1730",
+      "bytes": 435,
+      "path": "tests/fixtures/recover-unicode-identifiers/ut/UT.java"
+    },
+    {
       "blake3": "718f1cdc5a307c1f64822eb7c6eff9002f1bc799d71eb1d265611c4f7512faf4",
       "bytes": 2197,
       "path": "tests/fixtures/recover-write-accessor-field-types/probes/WA-bcishift.class"
