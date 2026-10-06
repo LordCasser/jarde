@@ -11939,7 +11939,11 @@ mod tests {
             // The 2026-10-06 recover-unicode-identifiers fixtures (the real javac 8 anchor `UT`
             // with its `UT$内部类` companion, plus the `Loc` local-name pair: `Loc` and its
             // byte-patched `Loc.punct`, four classes, eleven bodies) moved it again.
-            (691, 2943, 282, 1827, 8),
+            // The 2026-10-06 recover-temporal-argument-widening fixtures (the java-time-temporal
+            // patrol's `JT`/`DT` and the completable-future patrol's `CF`, plus this change's
+            // `TWX` negative, four classes on both compiler legs: eight classes, forty-six bodies)
+            // moved it again.
+            (699, 2989, 282, 1827, 8),
             "fixture population changed: re-measure these counts"
         );
     }

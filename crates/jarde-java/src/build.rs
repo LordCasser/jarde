@@ -25592,6 +25592,15 @@ fn java_lang_throwable_widens(presented: &str, required: &str) -> bool {
 /// An enum constant's value needs no row here: the enum class is a class of the analyzed snapshot,
 /// and its own class-file header names `java.lang.Enum`, which the snapshot hierarchy proof already
 /// states. Only the platform type a snapshot does not hold is tabled.
+///
+/// Two further families are stated the same way, both transcribed from the same release-8 `rt.jar`
+/// (`openspec/evidence/java-syntax-2026-10-05/widening-row-sources/`, the 2026-10-06 rows): the
+/// `java.time` Temporal family (its seven named types, each under `java.time.temporal.Temporal` and
+/// `java.time.temporal.TemporalAccessor` — the second read through the first's own header, the
+/// chain the `TEMPORAL_FAMILY` row note spells out) and `java.util.concurrent.CompletableFuture`'s
+/// two interfaces. Their rows, their gate and the render are this function's, so a `LocalDateTime`
+/// at a `TemporalAccessor` slot and a `CompletableFuture` at a `CompletionStage` slot are answered
+/// exactly as a `String` at a `CharSequence` slot is.
 fn platform_interface_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
     // `java.lang.CharSequence`'s implementers: `String`, `StringBuffer` and `StringBuilder`
     // declare the interface in their own headers, and so does `java.nio.CharBuffer`. The closed
@@ -25645,14 +25654,76 @@ fn platform_interface_argument_widens(java_release: u16, presented: &str, requir
         ("java.util.EnumSet", "java.util.Collection"),
         ("java.util.EnumSet", "java.lang.Iterable"),
     ];
+    // The `java.time` Temporal family: every one of the seven names declares
+    // `java.time.temporal.Temporal` in its own header, and the `TemporalAccessor` row of each name
+    // is that interface's own declaration (`java.time.temporal.Temporal extends
+    // java.time.temporal.TemporalAccessor`) — the javadoc-style read of an implemented-interface
+    // list through the header that carries it, the way this file's java.util table reads
+    // `Properties -> java.util.Map` off `Hashtable`. The chain is the same for all seven:
+    //
+    //   java.time.<name> --implements--> java.time.temporal.Temporal
+    //                    --extends-->    java.time.temporal.TemporalAccessor
+    //
+    // The closed fourteen rows are the ones the change pins after the header check: the MVP's
+    // `LocalDateTime`/`LocalDate`/`LocalTime` and the four the proposal admits (`Instant`,
+    // `ZonedDateTime`, `OffsetDateTime`, `OffsetTime`). The interface family's other platform
+    // implementers (`java.time.chrono.*`, the adjuster types) state no row here.
+    const TEMPORAL_FAMILY: &[(&str, &str)] = &[
+        ("java.time.LocalDateTime", "java.time.temporal.Temporal"),
+        (
+            "java.time.LocalDateTime",
+            "java.time.temporal.TemporalAccessor",
+        ),
+        ("java.time.LocalDate", "java.time.temporal.Temporal"),
+        ("java.time.LocalDate", "java.time.temporal.TemporalAccessor"),
+        ("java.time.LocalTime", "java.time.temporal.Temporal"),
+        ("java.time.LocalTime", "java.time.temporal.TemporalAccessor"),
+        ("java.time.Instant", "java.time.temporal.Temporal"),
+        ("java.time.Instant", "java.time.temporal.TemporalAccessor"),
+        ("java.time.ZonedDateTime", "java.time.temporal.Temporal"),
+        (
+            "java.time.ZonedDateTime",
+            "java.time.temporal.TemporalAccessor",
+        ),
+        ("java.time.OffsetDateTime", "java.time.temporal.Temporal"),
+        (
+            "java.time.OffsetDateTime",
+            "java.time.temporal.TemporalAccessor",
+        ),
+        ("java.time.OffsetTime", "java.time.temporal.Temporal"),
+        (
+            "java.time.OffsetTime",
+            "java.time.temporal.TemporalAccessor",
+        ),
+    ];
+    // The batch-2 rows the CompletableFuture patrol registered: one header line declares both
+    // interfaces (`CompletableFuture<T> implements Future<T>, CompletionStage<T>`), so both are
+    // stated and the rest of the `java.util.concurrent` tree is not.
+    const COMPLETABLE_FUTURE: &[(&str, &str)] = &[
+        (
+            "java.util.concurrent.CompletableFuture",
+            "java.util.concurrent.CompletionStage",
+        ),
+        (
+            "java.util.concurrent.CompletableFuture",
+            "java.util.concurrent.Future",
+        ),
+    ];
     // Every row is a release-8 javadoc relation, so the gate the java.util table states for its own
     // rows applies here too: another release's platform facts are not this table's.
     if java_release != 8 {
         return false;
     }
-    [CHAR_SEQUENCE, COMPARABLE, SERIALIZABLE, ENUM_FAMILY]
-        .iter()
-        .any(|rows| rows.contains(&(presented, required)))
+    [
+        CHAR_SEQUENCE,
+        COMPARABLE,
+        SERIALIZABLE,
+        ENUM_FAMILY,
+        TEMPORAL_FAMILY,
+        COMPLETABLE_FUTURE,
+    ]
+    .iter()
+    .any(|rows| rows.contains(&(presented, required)))
 }
 
 /// The type one method descriptor's **result** states, when this layer can spell it (`V` is `None`).
@@ -28501,6 +28572,154 @@ mod tests {
             (8, "java.lang.String", "int"),
             (8, "java.lang.Integer<String>", "java.lang.Comparable"),
             (8, "java.util.EnumSet", "java.util.HashSet"),
+        ] {
+            assert!(
+                !platform_interface_argument_widens(release, presented, required),
+                "release {release}: {presented} must not widen to {required} from these tables"
+            );
+        }
+    }
+
+    #[test]
+    fn the_temporal_family_and_completable_future_rows_reach_exactly_their_pairs() {
+        // One positive per row the 2026-10-06 slice states: the `java.time` Temporal family's
+        // fourteen rows and the `CompletableFuture` batch's two, release 8 the only release any
+        // table in this function states. The rows are the release-8 `rt.jar` headers the
+        // widening-row-sources protocol transcribes, `TemporalAccessor` included (each name's
+        // header declares `Temporal`, whose own header declares `TemporalAccessor`).
+        for (presented, required) in [
+            ("java.time.LocalDateTime", "java.time.temporal.Temporal"),
+            (
+                "java.time.LocalDateTime",
+                "java.time.temporal.TemporalAccessor",
+            ),
+            ("java.time.LocalDate", "java.time.temporal.Temporal"),
+            ("java.time.LocalDate", "java.time.temporal.TemporalAccessor"),
+            ("java.time.LocalTime", "java.time.temporal.Temporal"),
+            ("java.time.LocalTime", "java.time.temporal.TemporalAccessor"),
+            ("java.time.Instant", "java.time.temporal.Temporal"),
+            ("java.time.Instant", "java.time.temporal.TemporalAccessor"),
+            ("java.time.ZonedDateTime", "java.time.temporal.Temporal"),
+            (
+                "java.time.ZonedDateTime",
+                "java.time.temporal.TemporalAccessor",
+            ),
+            ("java.time.OffsetDateTime", "java.time.temporal.Temporal"),
+            (
+                "java.time.OffsetDateTime",
+                "java.time.temporal.TemporalAccessor",
+            ),
+            ("java.time.OffsetTime", "java.time.temporal.Temporal"),
+            (
+                "java.time.OffsetTime",
+                "java.time.temporal.TemporalAccessor",
+            ),
+            (
+                "java.util.concurrent.CompletableFuture",
+                "java.util.concurrent.CompletionStage",
+            ),
+            (
+                "java.util.concurrent.CompletableFuture",
+                "java.util.concurrent.Future",
+            ),
+        ] {
+            assert!(
+                platform_interface_argument_widens(8, presented, required),
+                "{presented} must widen to {required} from the 2026-10-06 rows"
+            );
+        }
+
+        // The refusals the closed rows exist for: every release other than 8 (the gate the
+        // java.util table states, which these rows share — the pair is a release-8 platform fact),
+        // the interface family's other platform implementers the fourteen rows do not name
+        // (`java.time.chrono.*`, the adjuster interfaces, the sibling concurrent futures), the
+        // interfaces these types implement in fact but the change's rows do not carry
+        // (`TemporalAdjuster`), the downward and interface-to-interface directions, and the
+        // primitive, array and generic shapes no row spells (the array position is the separate
+        // predicate's, and it asks these same rows).
+        for (release, presented, required) in [
+            (7, "java.time.LocalDateTime", "java.time.temporal.Temporal"),
+            (
+                9,
+                "java.time.LocalDateTime",
+                "java.time.temporal.TemporalAccessor",
+            ),
+            (7, "java.time.LocalDate", "java.time.temporal.Temporal"),
+            (9, "java.time.OffsetTime", "java.time.temporal.Temporal"),
+            (
+                8,
+                "java.time.LocalDateTime",
+                "java.time.temporal.TemporalAdjuster",
+            ),
+            (
+                8,
+                "java.time.chrono.JapaneseDate",
+                "java.time.temporal.Temporal",
+            ),
+            (
+                8,
+                "java.time.chrono.ChronoLocalDate",
+                "java.time.temporal.TemporalAccessor",
+            ),
+            (8, "java.time.LocalDate", "java.time.chrono.ChronoLocalDate"),
+            (
+                8,
+                "java.time.temporal.Temporal",
+                "java.time.temporal.TemporalAccessor",
+            ),
+            (
+                8,
+                "java.time.temporal.TemporalAccessor",
+                "java.time.temporal.Temporal",
+            ),
+            (8, "java.time.temporal.Temporal", "java.time.LocalDateTime"),
+            (
+                9,
+                "java.util.concurrent.CompletableFuture",
+                "java.util.concurrent.Future",
+            ),
+            (
+                8,
+                "java.util.concurrent.ScheduledFuture",
+                "java.util.concurrent.CompletionStage",
+            ),
+            (
+                8,
+                "java.util.concurrent.CompletableFuture",
+                "java.util.concurrent.RunnableFuture",
+            ),
+            (
+                8,
+                "java.util.concurrent.CompletableFuture",
+                "java.util.concurrent.FutureTask",
+            ),
+            (
+                8,
+                "java.util.concurrent.Future",
+                "java.util.concurrent.CompletionStage",
+            ),
+            (
+                8,
+                "java.util.concurrent.CompletionStage",
+                "java.util.concurrent.Future",
+            ),
+            (
+                8,
+                "java.lang.Object",
+                "java.util.concurrent.CompletionStage",
+            ),
+            (
+                8,
+                "java.time.LocalDateTime[]",
+                "java.time.temporal.Temporal[]",
+            ),
+            (8, "int", "java.time.temporal.Temporal"),
+            (
+                8,
+                "java.time.LocalDateTime",
+                "java.time.LocalDateTime<String>",
+            ),
+            (8, "example.Stamp", "java.time.temporal.Temporal"),
         ] {
             assert!(
                 !platform_interface_argument_widens(release, presented, required),
