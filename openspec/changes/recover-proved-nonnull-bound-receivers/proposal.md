@@ -6,6 +6,8 @@
 
 ## What Changes
 
+> **root 重设计（2026-10-06，门控实验证伪原两门逃逸的充分性后）**：见 [redesign.md](redesign.md)。原两门保留为必要条件；追加"站点识别自有丢弃空检查尾 + 经尾读回接收者 + 尾三 BCI 入站点所有集合（BCI 序跨块窗口）"；尾识别复用 `facts.rs::is_discarded_null_check` 与 `init.rs::discarded_null_check_tail` 的既有谓词与单用纪律；所有权走 `init::Sites` 既有通道；窄口径（仅两门通过的形）。
+
 在既有拒绝分支内增加**两道门**的放行逃逸（`lambda.rs` 同一 verdict 点，无平行处理器）：
 
 1. **非空门**：捕获接收者的 SSA 定义是 `Operation::Allocate`（SSA 单定义 ⇒ 该值非空）；
