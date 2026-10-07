@@ -1,5 +1,7 @@
 //! P3 2c.6: a loop may keep a call or field read in its condition when the branch consumes its
-//! value. Test-block stores and increments still refuse the loop.
+//! value. Test-block stores still refuse the loop; a test-block increment whose old value the
+//! branch itself consumes presents in place (`recover-postfix-condition-positions`), never moved
+//! into or out of the loop.
 //!
 //! The condition requirement itself outlived the shape that first carried it: the accepted
 //! enhanced-`for` projection (`project-proved-enhanced-for-loops` 4.2/4.3) folds a proved direct
@@ -92,7 +94,7 @@ fn an_iterator_call_consumed_by_the_loop_branch_stays_in_the_condition() {
 }
 
 #[test]
-fn a_field_condition_survives_beside_an_increment_test_refusal_in_the_same_method() {
+fn a_field_condition_survives_beside_an_increment_test_in_the_same_method() {
     let source = report(LOOP_VALUES, "LoopTestValues");
     let method = method_text(&source, "fieldThenIncrementTest");
     assert!(
@@ -104,9 +106,17 @@ fn a_field_condition_survives_beside_an_increment_test_refusal_in_the_same_metho
         1,
         "the field is read once in the condition and is absent from the body:\n{method}"
     );
+    // The second loop's test increment is the old value the branch itself reads
+    // (`recover-postfix-condition-positions`): it is written where the bytecode ran it — in the
+    // condition, once — and the first loop's own presentation is untouched beside it.
     assert!(
-        method.contains("instruction at BCI 14"),
-        "the positive field loop and later increment test are in one method, and the loop with the increment is refused:\n{method}"
+        method.contains("while (arg1-- > 0)") && !method.contains("@bytecode"),
+        "the positive field loop and the later increment test present whole:\n{method}"
+    );
+    assert_eq!(
+        method.matches("arg1--").count(),
+        1,
+        "the test increment is not moved into or out of the loop:\n{method}"
     );
 }
 
@@ -121,11 +131,16 @@ fn a_store_in_a_loop_test_remains_refused() {
 }
 
 #[test]
-fn an_iinc_in_a_loop_test_remains_refused() {
+fn an_iinc_in_a_loop_test_is_presented_in_place() {
     let source = report(LOOP_VALUES, "LoopTestValues");
     let method = method_text(&source, "incrementTest");
     assert!(
-        method.contains("@bytecode") && method.contains("instruction at BCI 1"),
+        method.contains("while (arg1-- > 0)") && !method.contains("@bytecode"),
+        "the test increment presents where the bytecode ran it:\n{method}"
+    );
+    assert_eq!(
+        method.matches("arg1--").count(),
+        1,
         "the test increment is not moved into or out of a loop:\n{method}"
     );
 }
