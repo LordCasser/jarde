@@ -30,6 +30,17 @@ WORK=${1:-/tmp/boolean-int-bitwise/corpus}
 rm -rf "$WORK"
 mkdir -p "$WORK"
 
+# Both binaries must exist before a single render is counted: the patched one is rebuilt with
+# `cargo build -p jarde-cli --locked` (this worktree's target is cleaned before the report), and the
+# baseline one with `git worktree add /tmp/jarde-bwslice-baseline HEAD` +
+# `CARGO_TARGET_DIR=/tmp/jarde-baseline-target cargo build -p jarde-cli --locked`.
+for binary in "$BASE" "$PATCHED"; do
+    if [ ! -x "$binary" ]; then
+        echo "MISSING BINARY: $binary — build it first (see the comment above)"
+        exit 1
+    fi
+done
+
 # One render that answers whether it was one: the output carries jarde's own self-header.
 try_render() {
     local binary=$1
