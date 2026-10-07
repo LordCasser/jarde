@@ -15,4 +15,4 @@
 - [x] 3.1 主锚：`andNot`/`mix` 恢复、整类 `javac --release 8` exit 0、行为一致（双腿）。（`results/04-class-level.txt`）
 - [x] 3.2 零回退：同型位运算逐字节不变；负例仍拒；corpus 差异类仅为混合布尔位运算形。（`results/05-corpus-delta.md`）
 - [x] 3.3 门禁全量（基线以合并态为准；flake 家族单测复跑两轮判定）+ fmt + CI-exact clippy + openspec strict + `git diff --check` + 再生 fingerprint。（`results/06-gates.md`）
-- [ ] 3.4 root 独立复核：回投判据保守性（数据流充分而非语法猜测）、零回退实测；关闭 summary.md 登记行。（留 root）
+- [x] 3.4 root 独立复核：回投判据保守性（数据流充分而非语法猜测）、零回退实测；关闭 summary.md 登记行。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：单发出点门控复核 ✓、**mix 与 andNot 同域恢复裁定追认**（类级双向运行逐字一致——conditional-rhs 片的硬门以此满足）、BooleanConsumption 走查泛化且 conditional-rhs 锚不动 ✓、门禁修正后 330 targets ok/0 FAILED + oracle 3/3 ✓（合并初跑 fmt 一处换行为 root 修正入验收；export_cli 计时族本日第三见、复跑两轮绿）；登记行关闭）
