@@ -10,7 +10,7 @@
 | --- | --- | --- | --- |
 | **nestedLocks** | 整方法拒——`prove_finally_copy` 四件套（"exceptional path repeats code… lacks the complete straight-body, copy, range, and ownership proof"，BCI 41）+ uncovered [58,41] | **完整解**（双锁+try/finally+双解锁原序） | **真缺口 A**：finally 体含**多语句**（两 unlock）——行集证书的 finally 体只证单调用 |
 | **interruptibly** | 整方法拒——同四件套（BCI 27） | **完整解** | **真缺口 B**：行前调用 `lockInterruptibly()` **可抛**（`lock()` 不可抛故 LK 过）——但异常行的自有范围 `[7,24)` 已把该调用**排除在保护区外**（抛出时 unlock 不该跑=字节码自身已证），四件套的"行前可抛调用即拒"在此形上过保守 |
-| **multiAwait** | **完整恢复（0 引注）** | 同构 | **登记边界关闭（实测）**——多等待点不是缺口 |
+| **multiAwait** | **整方法拒**——"local 1 crosses a quoted fallback region"（Condition 局部的 def-use 跨循环读+await 区） | 同构 | **root 巡查误记更正（2026-10-08 实现片复核）**：初版 README 记"完整恢复"源于 root 探针的 awk 模式只匹配 `void <name>()`——该方法是 `int multiAwait()`，**空段计数=0 的假零**（本仓反复警告的陷阱在本巡查上自踩）。以归档渲染 `results/jarde-ML.txt` 为准（3 处 not recovered 含本方法）。多等待点仍是缺口，归 local-scope 域（Condition 局部跨区） |
 
 原类行为：main 输出 `2`（[results/original-main.out](results/original-main.out)）。
 
