@@ -8427,6 +8427,91 @@
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class"
     },
     {
+      "blake3": "7971da439e57a41e4c3253fe44bab72d8751065590219c844b36c15029052d91",
+      "bytes": 872,
+      "path": "tests/fixtures/recover-statement-position-news/SB.java"
+    },
+    {
+      "blake3": "816611e545416673fca24d9cd41cbf337ec3fee73e7ccb3d91e0bc58986275b5",
+      "bytes": 1088,
+      "path": "tests/fixtures/recover-statement-position-news/SP.java"
+    },
+    {
+      "blake3": "e27200ff534d5fe5135a50145d7721603fd49eb14035a8c35ad674cd22fb28bf",
+      "bytes": 180,
+      "path": "tests/fixtures/recover-statement-position-news/SPC.class"
+    },
+    {
+      "blake3": "1e4555b7494f2fab92cba4a20e82bb972842ef2003edbd7dde445888ebad66e9",
+      "bytes": 1530,
+      "path": "tests/fixtures/recover-statement-position-news/SPN.java"
+    },
+    {
+      "blake3": "38529d8d7f311ceb76309ce7772350bfe17189d083c5e2b916f4dde1476ee5ed",
+      "bytes": 2358,
+      "path": "tests/fixtures/recover-statement-position-news/spc/Generate.java"
+    },
+    {
+      "blake3": "dd7d3791bc41dd09d1592f13b8dbb27d602455dcb21b8169c4109ece17b82e3f",
+      "bytes": 431,
+      "path": "tests/fixtures/recover-statement-position-news/spc/SPCRunner.java"
+    },
+    {
+      "blake3": "63e7cb028613d567d7d308f6e83785157b63b93077ad7ee3ca8b332d2690a3b2",
+      "bytes": 469,
+      "path": "tests/fixtures/recover-statement-position-news/spc/Side.java"
+    },
+    {
+      "blake3": "4dc1498f28c89c78d746cb6a104e78be0fd2f3df974e3f2ddb47c9e84aafeff9",
+      "bytes": 306,
+      "path": "tests/fixtures/recover-statement-position-news/spc/Target.java"
+    },
+    {
+      "blake3": "4ac5994865989b17a7f965b623108bd24ea2b2c2d0aabc6f2617e65f8659b980",
+      "bytes": 164,
+      "path": "tests/fixtures/recover-statement-position-news/spc/Trace.java"
+    },
+    {
+      "blake3": "ca21e9d8785737cd2eb9454f63caedfc5e01d9fe15f8b32e95a8f7d18d7d6723",
+      "bytes": 863,
+      "path": "tests/fixtures/recover-statement-position-news/v8-javac8/SB.class"
+    },
+    {
+      "blake3": "9e7a1f6f9f0a2bd81d9b7f0674c1c4e862f21a8631360ce3880f5dfc2f8c9441",
+      "bytes": 440,
+      "path": "tests/fixtures/recover-statement-position-news/v8-javac8/SP$Inner.class"
+    },
+    {
+      "blake3": "bb3406e9c2467b3a8f5a0c0a721e8315205231373218c046cc8a99a3b4cf53e3",
+      "bytes": 1653,
+      "path": "tests/fixtures/recover-statement-position-news/v8-javac8/SP.class"
+    },
+    {
+      "blake3": "041c66197e8ef20cc013d1b44254df36819e470af5f6923166feb82cba588978",
+      "bytes": 1177,
+      "path": "tests/fixtures/recover-statement-position-news/v8-javac8/SPN.class"
+    },
+    {
+      "blake3": "b9bc7b323f840528c9e7ba15ffb972b00d57ba0174c738b352b0b91248412eb9",
+      "bytes": 863,
+      "path": "tests/fixtures/recover-statement-position-news/v8/SB.class"
+    },
+    {
+      "blake3": "4e79c054890cd2d1fe5005ace7a212de1cd5b643a939a661380f3bdbec1eeb64",
+      "bytes": 440,
+      "path": "tests/fixtures/recover-statement-position-news/v8/SP$Inner.class"
+    },
+    {
+      "blake3": "d838b98d6359116f34b9262d3a0ed72ea953e0696655b6629cf54307587bbccb",
+      "bytes": 1653,
+      "path": "tests/fixtures/recover-statement-position-news/v8/SP.class"
+    },
+    {
+      "blake3": "300271fb969bc3fd1e625796aaffc8132fad588e770021451fef5b1a3913351e",
+      "bytes": 1177,
+      "path": "tests/fixtures/recover-statement-position-news/v8/SPN.class"
+    },
+    {
       "blake3": "d1931c0fb11995fb21ef735f3749b11c91b8edae9ee0d67b9817db540421de78",
       "bytes": 396,
       "path": "tests/fixtures/recover-static-generic-field-init-text/MN.java"
