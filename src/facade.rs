@@ -2076,6 +2076,45 @@ impl Engine {
                 )?;
             }
         }
+        // The double-brace allocation point runs before the companion-body dispatch: a shape its
+        // four criteria prove is presented at the allocation point (change
+        // `recover-double-brace-allocation-site`), and claiming the text is what keeps every later
+        // projection — the interface/superclass dispatch below and the folds after it — from
+        // re-presenting a text that already carries the source form.
+        if matches!(
+            report.member_family,
+            class_source::ClassSourceMemberFamily::Absent
+        ) && matches!(
+            report.nested_enum_family,
+            class_source::ClassSourceNestedEnumFamily::Absent
+        ) && matches!(
+            report.nested_annotation_family,
+            class_source::ClassSourceNestedAnnotationFamily::Absent
+        ) && matches!(
+            report.anonymous_interface_projection,
+            class_source::ClassSourceAnonymousInterfaceProjection::Absent
+        ) {
+            match self.project_class_source_double_brace(
+                content,
+                request,
+                evidence,
+                &environment,
+                snapshot,
+                &mut report,
+                &_root_method_asts,
+                &root_nesting,
+                budget,
+            ) {
+                Ok(()) => {}
+                Err(error) => {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
+                }
+            }
+        }
         if matches!(
             report.member_family,
             class_source::ClassSourceMemberFamily::Absent
@@ -3458,6 +3497,7 @@ impl Engine {
                 &child_definition,
                 &root_name,
                 &child_facts,
+                crate::member_inner::CaptureReadReceiver::EntryThis,
                 &mut child_execution,
                 budget,
             )?
@@ -4226,6 +4266,7 @@ impl Engine {
             &grandchild_definition,
             parent_name_bytes,
             &grandchild_facts,
+            crate::member_inner::CaptureReadReceiver::EntryThis,
             &mut nested_execution,
             budget,
         )?
@@ -4622,6 +4663,564 @@ impl Engine {
         Ok(())
     }
 
+    /// Presents the source-level **double-brace form** at one single-use allocation point (change
+    /// `recover-double-brace-allocation-site`).
+    ///
+    /// # The four criteria
+    ///
+    /// A companion whose body is a pure instance initializer block is the source shape
+    /// `new Super(args…) {{ body }}`: javac compiles that one expression into exactly this class
+    /// file, and the presentation may write it back at the allocation point when the companion is
+    /// used exactly once — hiding the companion from the text. Four criteria, each read from this
+    /// run's own facts:
+    ///
+    /// * **anonymous subclass**: the allocation names a class whose `InnerClasses` row in the root
+    ///   is anonymous (no outer class, no inner name) — the row the companion's own table repeats,
+    ///   and its `EnclosingMethod` names the root class and the very method the allocation sits in;
+    /// * **pure instance block**: the companion's method table declares its constructor alone, and
+    ///   its field table declares nothing the compiler did not mint — the proved `val$` capture, or
+    ///   nothing at all. A declared method or user field belongs to the companion-body projections
+    ///   (`project_class_source_anonymous_super`), and the proved static-int initializer block is
+    ///   that projection's own acceptance (`anonymous_child_initializer_field_unproved`): this
+    ///   reading owns neither;
+    /// * **single use**: the owner census ([`Self::prove_anonymous_owner_xrefs`]) closes the whole
+    ///   selected input over the companion — exactly one `new`, exactly one constructor call, the
+    ///   two typed self rows, and no other use anywhere. Hiding a companion the input names
+    ///   somewhere else would drop that use;
+    /// * **spellable superclass**: the direct superclass's name is writable source text
+    ///   ([`spellable_source_name`]) — no `$`, every segment a Java identifier. What the form's
+    ///   legality rests on beside the name is stated by the companion's own bytes: the class file
+    ///   declares this exact superclass (JVMS 4.1 requires a `super_class` to be a class, and
+    ///   loading requires it accessible and non-final), and its constructor's own `invokespecial`
+    ///   names the superclass constructor the form re-states, from the companion's own package —
+    ///   which is the root's. The superclass is deliberately **not read**: `java.util.ArrayList` is
+    ///   not a member of the input, so no physical read of it exists, and the platform classes are
+    ///   exactly what the form is for.
+    ///
+    /// # What is presented, and what is not
+    ///
+    /// The allocation's own expression is re-emitted as `new Super(args…) { { body } }`: the
+    /// site's arguments with the trailing capture argument hidden, the superclass's source name,
+    /// and the companion constructor's statements after its call — minus the certified capture
+    /// store and the closing `return` — as the block. Every proved read of the capture field is
+    /// re-spelled as the allocation argument's own local, the value javac's own recapture hands the
+    /// recompiled anonymous class.
+    ///
+    /// Every shape the criteria do not prove keeps the presentation it had: the companion class and
+    /// its call site are untouched, and this pass writes nothing — no diagnostic, no execution
+    /// stop. The reading is a presentation the shape either owns or does not; a stop that ends the
+    /// shared request (a cancellation, an exhausted dimension) is the request's own and travels to
+    /// the caller.
+    #[allow(clippy::too_many_arguments)]
+    fn project_class_source_double_brace(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root: &mut ClassSourceReport,
+        root_asts: &[(
+            PhysicalMethodId,
+            jarde_java::report::ClassSourceMethodAst,
+            Option<jarde_java::report::GenericConstructorCandidate>,
+            Option<jarde_java::report::AnonymousAllocationScan>,
+        )],
+        root_nesting: &class_source::ClassSourceAssemblyContext,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        let Some(root_name) = root
+            .declaration
+            .as_ref()
+            .map(|declaration| declaration.item.declaration.this_class.raw().0.clone())
+        else {
+            return Ok(());
+        };
+        if root_nesting
+            .major_version
+            .is_none_or(|version| version > 52)
+        {
+            return Ok(());
+        }
+        let mut derived = Vec::new();
+        for (member, ast, _, scan) in root_asts {
+            let Some(scan) = scan.as_ref() else {
+                continue;
+            };
+            let candidates: Vec<_> = scan
+                .allocations
+                .iter()
+                .filter(|site| site.verified && anonymous_child_name(&root_name, &site.class))
+                .collect();
+            // One qualifying allocation per method: the anonymous emission rewrites exactly one
+            // allocation node per pass, which is the one-site discipline every companion projection
+            // in this file keeps. A method that holds two keeps the presentation it had.
+            let [site] = candidates.as_slice() else {
+                continue;
+            };
+            let projection = match self.prove_double_brace_allocation(
+                content,
+                request,
+                evidence,
+                environment,
+                snapshot,
+                root,
+                member,
+                ast,
+                site,
+                root_nesting,
+                budget,
+            ) {
+                Ok(projection) => projection,
+                Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+                Err(_) => continue,
+            };
+            let Some((index, projected)) = projection else {
+                continue;
+            };
+            let class_source::MemberFamilyMethodText {
+                index: _,
+                text,
+                derived: ranges,
+            } = projected;
+            let Some(record) = root.methods.get(index) else {
+                continue;
+            };
+            let original = record.text.clone();
+            if root.text.match_indices(&original).count() != 1 {
+                continue;
+            }
+            root.text = root.text.replacen(&original, &text, 1);
+            root.methods[index].text = text;
+            derived.extend(ranges);
+        }
+        if derived.is_empty() {
+            return Ok(());
+        }
+        // The text is claimed exactly as a companion-body projection claims it: every later fold
+        // reads this state, so a class whose allocation point this pass presented is not offered
+        // to them, nor to the interface/superclass dispatch, again.
+        root.anonymous_interface_projection =
+            class_source::ClassSourceAnonymousInterfaceProjection::Projected { derived };
+        root.usage = budget.usage();
+        Ok(())
+    }
+
+    /// Proves the double-brace admission of one allocation point and stages its projection.
+    ///
+    /// `None` is every shape the four criteria do not prove; `Err` only a stop that ends the
+    /// shared request.
+    #[allow(clippy::too_many_arguments)]
+    fn prove_double_brace_allocation(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root: &ClassSourceReport,
+        root_method: &PhysicalMethodId,
+        root_ast: &jarde_java::report::ClassSourceMethodAst,
+        site: &jarde_java::report::AnonymousAllocationCandidate,
+        root_nesting: &class_source::ClassSourceAssemblyContext,
+        budget: &mut Budget,
+    ) -> Result<Option<(usize, class_source::MemberFamilyMethodText)>> {
+        let Some(root_name) = root
+            .declaration
+            .as_ref()
+            .map(|declaration| declaration.item.declaration.this_class.raw().0.clone())
+        else {
+            return Ok(None);
+        };
+        let Some(constructor_bci) = site.constructor_bci else {
+            return Ok(None);
+        };
+        let child_name = site.class.replace('.', "/");
+        let root_rows: Vec<_> = root_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == child_name.as_bytes())
+            .collect();
+        if root_rows.len() != 1
+            || root_rows[0].outer_class.is_some()
+            || root_rows[0].inner_name.is_some()
+        {
+            return Ok(None);
+        }
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            Some(root_method),
+            child_name.as_bytes(),
+            &mut execution,
+            budget,
+        )?
+        else {
+            return Ok(None);
+        };
+        let child_facts = child_read.facts.clone();
+        let constructors: Vec<_> = child_facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 == b"<init>")
+            .collect();
+        if child_facts.stopped_at.is_some()
+            || child_read
+                .bytes
+                .get(6..8)
+                .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
+            || child_facts.methods.len() as u64 != child_facts.method_count
+            || child_facts.methods.len() != 1
+            || constructors.len() != 1
+            || !child_facts.interfaces.is_empty()
+            || child_facts.access_flags & (0x0200 | 0x0400) != 0
+            || child_facts.fields.len() as u64 != child_facts.field_count
+        {
+            return Ok(None);
+        }
+        let Some(parent_name) = child_facts
+            .super_class
+            .as_ref()
+            .map(|name| name.raw().0.to_vec())
+        else {
+            return Ok(None);
+        };
+        if parent_name.as_slice() == b"java/lang/Object" || !spellable_source_name(&parent_name) {
+            return Ok(None);
+        }
+        let capture = match anonymous_val_capture_field(&child_facts) {
+            Some(field) => Some(field),
+            None if child_facts.fields.is_empty() => None,
+            None => return Ok(None),
+        };
+        let constructor_descriptor = constructors[0].descriptor.raw().0.clone();
+        // The superclass is **not read**: the allocation point only needs its name to be writable
+        // where it stands, and everything else the form's legality rests on is stated by the
+        // companion's own bytes — the class file declares this exact superclass (JVMS 4.1: a
+        // `super_class` is a class, and loading requires it accessible and non-final) and its
+        // constructor's one `invokespecial` names the superclass constructor with the very
+        // arguments the form re-states, from the companion's own package, which is the root's.
+        // Reading the class would also *refuse* the platform superclasses the form exists for:
+        // `java.util.ArrayList` is not a member of the input, so no physical read of it exists.
+        // The proved capture, when the companion declares one: the `val$` proof closes the field's
+        // identity, its single constructor write and every read, and the role partition splits the
+        // constructor's physical parameters into the superclass arguments and the trailing capture
+        // stores. The companion-body projection reads the same two proofs for its mixed form.
+        let mixed = match &capture {
+            Some((field_name, field_descriptor)) => {
+                match self.prove_anonymous_super_val_capture(
+                    content,
+                    environment,
+                    &child_definition,
+                    &child_facts,
+                    &root_name,
+                    field_name,
+                    field_descriptor,
+                    &constructor_descriptor,
+                    crate::member_inner::CaptureReadReceiver::ConstructorThis,
+                    &mut execution,
+                    budget,
+                ) {
+                    Ok(mixed) => Some(mixed),
+                    Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+                    Err(_) => return Ok(None),
+                }
+            }
+            None => None,
+        };
+        // The single use: the owner census closes the whole selected input over this companion.
+        let census_capture_descriptor = mixed.as_ref().map_or(
+            [b"L".as_slice(), root_name.as_slice(), b";"].concat(),
+            |mixed| mixed.field_descriptor.clone(),
+        );
+        if let Err(error) = self.prove_anonymous_owner_xrefs(
+            content,
+            environment,
+            &root.class,
+            &child_definition,
+            root_method,
+            site.head_bci,
+            constructor_bci,
+            child_name.as_bytes(),
+            &census_capture_descriptor,
+            &constructor_descriptor,
+            mixed.as_ref().map(|mixed| &mixed.proof),
+            None,
+            AnonymousOwnerCensusPath::DirectSuperclassDoubleBrace,
+            &mut execution,
+            budget,
+        ) {
+            if error_ends_the_request(&error, budget) {
+                return Err(error);
+            }
+            return Ok(None);
+        }
+        let child_class_item = charge_item(budget).map(|()| child_read.class.clone())?;
+        let child_request = ClassSourceRequest {
+            class: ClassRef::Definition {
+                definition: child_definition.clone(),
+            },
+            environment: request.environment.clone(),
+        };
+        let prepared = self.prepare_physical_class_source(
+            content,
+            &child_request,
+            evidence,
+            environment,
+            snapshot,
+            root.view.clone(),
+            root.stages.clone(),
+            BoundClass {
+                read: child_read,
+                search_coverage: None,
+                class_item: Some(child_class_item),
+            },
+            execution,
+            Vec::new(),
+            true,
+            budget,
+        );
+        let (child, _, child_asts, _, _, _) = match prepared {
+            Ok(prepared) => prepared,
+            Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+            Err(_) => return Ok(None),
+        };
+        if !matches!(child.execution, ExecutionReport::Complete { .. })
+            || child.methods.len() != child_facts.methods.len()
+            || child_asts.len() != child_facts.methods.len()
+            || child_asts
+                .iter()
+                .any(|(_, _, _, scan)| scan.as_ref().is_none_or(|scan| !scan.complete))
+            || child.methods.iter().any(|method| {
+                !matches!(
+                    method.outcome,
+                    class_source::ClassSourceOutcome::Recovered { .. }
+                ) || !complete_anonymous_method(method)
+                    || method.declaration.is_none()
+            })
+        {
+            return Ok(None);
+        }
+        let constructor_identity = PhysicalMethodId {
+            owner: child_definition.clone(),
+            name: JvmBytes(b"<init>".to_vec()),
+            descriptor: JvmBytes(constructor_descriptor.clone()),
+        };
+        let Some((_, constructor_ast, _, _)) = child_asts
+            .iter()
+            .find(|(member, _, _, _)| member == &constructor_identity)
+        else {
+            return Ok(None);
+        };
+        // The capture site: the site's trailing argument is the value the companion's constructor
+        // stores into the proved capture field, and it has to be one root local denoting exactly one
+        // value — the slot's single assignment, or its never-written entry value. That is the
+        // effectively-final fact javac's own recapture needs, and it is read from the same SSA the
+        // companion-body projection reads its mixed form's site from.
+        let capture_site = match &mixed {
+            Some(mixed) => {
+                let [capture_slot] = mixed.partition.capture_parameter_slots.as_slice() else {
+                    return Ok(None);
+                };
+                if site.argument_bcis.len() != mixed.partition.super_parameter_slots.len() + 1 {
+                    return Ok(None);
+                }
+                let capture_index = site.argument_bcis.len() - 1;
+                let Some((local_name, presented)) =
+                    jarde_java::report::class_source_allocation_argument_local(
+                        root_ast,
+                        site.head_bci,
+                        capture_index,
+                    )
+                else {
+                    return Ok(None);
+                };
+                let analyzed = jarde_jvm::analyze_method_ir(
+                    content,
+                    &crate::ir::MethodAnalysisRequest {
+                        environment: environment.clone(),
+                        method: root_method.clone(),
+                        stages: MethodOperation::Analysis.stages().to_vec(),
+                    },
+                    budget,
+                )?;
+                if analyzed.report().method != *root_method
+                    || !matches!(
+                        analyzed.report().execution,
+                        ExecutionReport::Complete { .. }
+                    )
+                {
+                    return Ok(None);
+                }
+                let (Some(root_code), Some(root_ssa)) = (analyzed.ir().code(), analyzed.ir().ssa())
+                else {
+                    return Ok(None);
+                };
+                if root_code.stopped_at.is_some() {
+                    return Ok(None);
+                }
+                let argument_bci = site.argument_bcis[capture_index];
+                let Some(argument_instruction) = root_ssa
+                    .blocks()
+                    .iter()
+                    .flat_map(|block| block.instructions())
+                    .find(|instruction| instruction.bci() == argument_bci)
+                else {
+                    return Ok(None);
+                };
+                let [read] = argument_instruction.reads() else {
+                    return Ok(None);
+                };
+                let (jarde_jvm::method_ir::Slot::Local(slot), local_value) = read else {
+                    return Ok(None);
+                };
+                match (
+                    root_ssa.value(*local_value).def(),
+                    crate::member_inner::local_slot_single_write(root_ssa, *slot),
+                ) {
+                    (
+                        jarde_jvm::method_ir::Definition::Instruction { bci: write_bci, .. },
+                        Ok(Some(assigned_bci)),
+                    ) if *write_bci == assigned_bci => {}
+                    (jarde_jvm::method_ir::Definition::Entry { .. }, Ok(None)) => {}
+                    _ => return Ok(None),
+                }
+                Some(AnonymousSuperCaptureSite {
+                    argument_bci,
+                    slot: *capture_slot,
+                    local_name,
+                    presented,
+                })
+            }
+            None => None,
+        };
+        let reads: Vec<_> = match &mixed {
+            Some(mixed) => {
+                let site = capture_site
+                    .as_ref()
+                    .expect("a proved capture carries its allocation-site proof");
+                mixed
+                    .proof
+                    .reads
+                    .iter()
+                    .filter(|read| read.method == constructor_identity)
+                    .map(|read| jarde_java::report::ProvedCapturedParameterRead {
+                        method: constructor_identity.clone(),
+                        read_bci: read.bci,
+                        field_owner: child_name.clone(),
+                        field_name: mixed.field_name.clone(),
+                        field_descriptor: String::from_utf8_lossy(&mixed.field_descriptor)
+                            .into_owned(),
+                        parameter_slot: site.slot,
+                        parameter_name: site.local_name.clone(),
+                        parameter_presented: site.presented.clone(),
+                        constructor: constructor_identity.clone(),
+                        constructor_write_bci: mixed.proof.write_bci,
+                    })
+                    .collect()
+            }
+            None => Vec::new(),
+        };
+        let Some(instance) = jarde_java::report::emit_class_source_anonymous_instance_block(
+            constructor_ast,
+            mixed.as_ref().map(|mixed| mixed.proof.write_bci),
+            &reads,
+            &capture_site
+                .as_ref()
+                .map(|site| site.local_name.clone())
+                .into_iter()
+                .collect::<Vec<_>>(),
+            4,
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "double-brace allocation projection",
+                "anonymous_super_ir_missing",
+            )
+        })?
+        else {
+            return Ok(None);
+        };
+        // The call forwards the companion constructor's leading parameters: the partition states
+        // which physical slots they are when the companion declares a capture, and a companion with
+        // no capture forwards its own parameters — the descriptor's own parameter count. The block
+        // reading states the same count from the call's argument list, and the two must agree.
+        let forwarded = match &mixed {
+            Some(mixed) => mixed.partition.super_parameter_slots.len(),
+            None => match jarde_reader::classfile::descriptor_facts(
+                &constructor_descriptor,
+                jarde_reader::classfile::DescriptorKind::Method,
+            ) {
+                Ok(facts) => facts.parameters().len(),
+                Err(_) => return Ok(None),
+            },
+        };
+        if instance.forwarded_parameters != forwarded {
+            return Ok(None);
+        }
+        let source_type = std::str::from_utf8(&parent_name)
+            .expect("validated source type")
+            .replace('/', ".");
+        let Some(body) = jarde_java::report::emit_class_source_anonymous_return(
+            root_ast,
+            site.head_bci,
+            &site.class,
+            &source_type,
+            &format!("            {{\n{}            }}\n", instance.text),
+            capture_site.as_ref().map(|site| site.argument_bci),
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "double-brace allocation projection",
+                "anonymous_super_ir_missing",
+            )
+        })?
+        else {
+            return Ok(None);
+        };
+        // A pool-form name that survives into the block is a name the enclosing scope cannot
+        // resolve: the emission's own guards refuse it, and the same check is stated here over the
+        // whole emitted expression.
+        if body.text.contains(&site.class) {
+            return Ok(None);
+        }
+        let Some(index) = root
+            .methods
+            .iter()
+            .position(|method| method.item.identity == *root_method)
+        else {
+            return Ok(None);
+        };
+        let anchors = vec![
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: root.class.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: child_definition.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: root_method.clone(),
+                bci: site.head_bci,
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: constructor_identity,
+                bci: constructor_bci,
+            },
+        ];
+        let Some(projected) = root.methods[index].projected_statements_method_text(&body, anchors)
+        else {
+            return Ok(None);
+        };
+        Ok(Some((index, projected)))
+    }
+
     #[allow(clippy::too_many_arguments)]
     fn project_class_source_anonymous_super(
         &self,
@@ -4875,6 +5474,7 @@ impl Engine {
                 &field_name,
                 &field_descriptor,
                 &constructor_descriptor,
+                crate::member_inner::CaptureReadReceiver::EntryThis,
                 &mut child_execution,
                 budget,
             )?),
@@ -5542,6 +6142,7 @@ impl Engine {
         field_name: &[u8],
         field_descriptor: &[u8],
         constructor_descriptor: &[u8],
+        receiver: crate::member_inner::CaptureReadReceiver,
         execution: &mut ExecutionReport,
         budget: &mut Budget,
     ) -> Result<AnonymousSuperValCapture> {
@@ -5551,6 +6152,7 @@ impl Engine {
             child_definition,
             outer_name,
             child_facts,
+            receiver,
             execution,
             budget,
         )?
@@ -5931,18 +6533,20 @@ impl Engine {
                 // local-declaration initializer shape freezes the same refusal
                 // (`unresolvable-child-read`) — neither opens as a side effect (the ring 1
                 // containment pattern).
-                let allowed_child_self_invocation = census_path
-                    == AnonymousOwnerCensusPath::DirectSuperclassDirectReturn
-                    && matches!(
-                        (&item.source.location, &item.target, item.operation),
-                        (
-                            Location::Code { method, .. },
-                            XrefTarget::Symbol {
-                                value: SymbolRef::Method { owner, .. },
-                            },
-                            XrefOperation::InvokeVirtual,
-                        ) if method.owner == *child && owner.0 == child_name
-                    );
+                let allowed_child_self_invocation = matches!(
+                    census_path,
+                    AnonymousOwnerCensusPath::DirectSuperclassDirectReturn
+                        | AnonymousOwnerCensusPath::DirectSuperclassDoubleBrace
+                ) && matches!(
+                    (&item.source.location, &item.target, item.operation),
+                    (
+                        Location::Code { method, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Method { owner, .. },
+                        },
+                        XrefOperation::InvokeVirtual,
+                    ) if method.owner == *child && owner.0 == child_name
+                );
                 if allowed_nesting {
                     nesting_uses += 1;
                 }
@@ -11373,6 +11977,14 @@ fn complete_anonymous_method(method: &ClassSourceMethod) -> bool {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum AnonymousOwnerCensusPath {
     DirectSuperclassDirectReturn,
+    /// The direct-superclass path at the **double-brace allocation point** (change
+    /// `recover-double-brace-allocation-site`): the companion's whole body is its instance
+    /// initializer block, presented inside the anonymous class the allocation itself creates, so
+    /// the same child-body self-invocation ring 2 proved for the direct-return shape is stated
+    /// here for a shape whose companion declares no method of its own at all — every symbolic
+    /// owner the child's body names is an inherited member, and the recompiled anonymous class
+    /// inherits it from the same superclass.
+    DirectSuperclassDoubleBrace,
     Unwidened,
 }
 
@@ -11388,11 +12000,37 @@ fn internal_package(name: &[u8]) -> &[u8] {
 /// share this one predicate for the direct superclass and — since ring 2
 /// (`recover-anonymous-supertype-return`) — for the root method's declared return type.
 fn spellable_source_type(name: &[u8], root: &[u8]) -> bool {
-    internal_package(name) == internal_package(root)
-        && std::str::from_utf8(name).is_ok_and(|name| {
-            name.split('/')
-                .all(|part| !part.contains('$') && jarde_java::names::is_java_identifier(part))
-        })
+    internal_package(name) == internal_package(root) && spellable_source_name(name)
+}
+
+/// Whether a class's internal name is spellable source text **anywhere**: no `$`, every `/`
+/// segment a legal Java identifier.
+///
+/// [`spellable_source_type`] additionally requires the same package, which is the *companion-body*
+/// projections' own rule — their text replaces a declaration's own name, and a type of another
+/// package would have to be imported. An **allocation point** only needs the name to be writable
+/// where it stands (the presentation spells the fully qualified name), and whether the named class
+/// is reachable from there is stated by its own access flags, which the double-brace admission
+/// reads beside this predicate.
+fn spellable_source_name(name: &[u8]) -> bool {
+    std::str::from_utf8(name).is_ok_and(|name| {
+        name.split('/')
+            .all(|part| !part.contains('$') && jarde_java::names::is_java_identifier(part))
+    })
+}
+
+/// Whether one allocation's class name is the pool form of an anonymous child of `root`: the
+/// root's own name, `$`, and an anonymous ordinal. The shape is the cheap pre-filter; the
+/// admission proves the same fact again from the class's own `InnerClasses` row (an anonymous row
+/// is one whose outer class and inner name are both absent).
+fn anonymous_child_name(root: &[u8], child: &str) -> bool {
+    jarde_java::report::class_source_anonymous_child_name(&String::from_utf8_lossy(root), child)
+}
+
+/// Whether one probe's error ends the shared request: the same reading [`ends_the_request`] makes
+/// of a stop, taken from the error the probe returned.
+fn error_ends_the_request(error: &Error, budget: &Budget) -> bool {
+    ends_the_request(&stop_execution(error, budget))
 }
 
 #[cfg(test)]
@@ -18556,6 +19194,7 @@ fn prove_anonymous_capture(
     child_definition: &PhysicalDefinitionId,
     outer_name: &[u8],
     child: &jarde_reader::classfile::ClassMemberFacts,
+    receiver: crate::member_inner::CaptureReadReceiver,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Result<Option<class_source::MemberCaptureProof>> {
@@ -18607,7 +19246,7 @@ fn prove_anonymous_capture(
     let result = if child.fields[0].descriptor.raw().0 == b"D" {
         crate::member_inner::prove_anonymous_double_capture(child, &irs, budget)?
     } else if child.fields[0].name.raw().0.starts_with(b"val$") {
-        crate::member_inner::prove_anonymous_val_capture(child, &irs, budget)?
+        crate::member_inner::prove_anonymous_val_capture(child, &irs, receiver, budget)?
     } else {
         crate::member_inner::prove_family_capture(outer_name, child, &irs, budget)?
     };
