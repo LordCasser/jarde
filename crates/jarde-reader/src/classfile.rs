@@ -12104,7 +12104,16 @@ mod tests {
             // `loopCondition`'s six (the chain's three and the loop's `ifeq`/`if_icmple`/`goto`)
             // and `crossCatch`'s five (the chain's three and the ternary's `ifeq`/`goto`)), no
             // subroutine) moved it again.
-            (879, 3829, 334, 2445, 8),
+            // The 2026-10-07 recover-double-brace-allocation-site fixtures (the double-brace
+            // allocation point's control and three negatives: the single-use control `DBS` with
+            // its `DBS$1` companion, `DBM` with a companion that declares a method, `DBN` with its
+            // `Carrier$Nested` unspellable superclass and `Carrier`, and `DBS2` — whose host is
+            // **hand-made bytecode**, two methods each allocating the compiled `DBS2$1` once — five
+            // classes on both compiler legs: ten classes, thirty-eight bodies — nineteen per leg,
+            // three in `DBS`/`DBM`/`DBN`/`DBS2`, two in `DBM$1` (its constructor and `mark`), and
+            // one in each of `DBS$1`, `DBN$1`, `Carrier`, `Carrier$Nested` and `DBS2$1` — no
+            // handler record, no branch target and no subroutine) moved it again.
+            (899, 3867, 334, 2445, 8),
             "fixture population changed: re-measure these counts"
         );
     }

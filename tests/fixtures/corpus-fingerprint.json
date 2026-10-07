@@ -6712,6 +6712,111 @@
       "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/read-arg/ReadArg.class"
     },
     {
+      "blake3": "e9bf1341d71fa151d01e48e725956a2277245ad629711ed6e769feec6307f6b6",
+      "bytes": 2104,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/SHA256SUMS"
+    },
+    {
+      "blake3": "d4d83054cf9dd4150b3b17333972ab4af48b593b0498ab5e888216fb8d49c736",
+      "bytes": 549,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/controls/single-site/DBS$1.class"
+    },
+    {
+      "blake3": "e1b859f6ea25ef8504f1c2354f7c9680bcd7a3440c3567c0e01076ca16ba417c",
+      "bytes": 866,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/controls/single-site/DBS.class"
+    },
+    {
+      "blake3": "c3550c995915902a49c4870a0dcc1615b24ec9f644eb7d74882e161a7a795ac6",
+      "bytes": 613,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/methods/DBM$1.class"
+    },
+    {
+      "blake3": "a5a675254a926e2b9393991de6a1823400791d66c9f78411078dcdb1f516a6a4",
+      "bytes": 866,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/methods/DBM.class"
+    },
+    {
+      "blake3": "db73246dde2fcaa861a96af5d3441e3445181c84bf5f1ce5ad3342290eeae6b7",
+      "bytes": 553,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/multi-site/DBS2$1.class"
+    },
+    {
+      "blake3": "5165b68fbbf34a061a9f92edcb78a51308f004ca347f700d440e5c3361ebbe50",
+      "bytes": 365,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/multi-site/DBS2.class"
+    },
+    {
+      "blake3": "0f48c5ecb53fb50f1f97d8e1a536da0069688f79f97837cbf56f8a4907ff2960",
+      "bytes": 376,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/unspellable-super/Carrier$Nested.class"
+    },
+    {
+      "blake3": "dc9f832f7ad73a268cdce0320c6304fdbb1759eb6a19bf1623d016af8969ac4f",
+      "bytes": 302,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/unspellable-super/Carrier.class"
+    },
+    {
+      "blake3": "0da1b4a2419b442563ae9418c6d3ffa482f19ed0cded50b6d3265ea17dea9f66",
+      "bytes": 510,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/unspellable-super/DBN$1.class"
+    },
+    {
+      "blake3": "23344f2578087999a0950b892e8a435f16a8a47c0ec972968cbb9447b2c53a54",
+      "bytes": 866,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v23/negatives/unspellable-super/DBN.class"
+    },
+    {
+      "blake3": "5604e83288f3fc35786e3b548a9fdb8c77afee3477703fddb28f77b2f1170d7c",
+      "bytes": 549,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/controls/single-site/DBS$1.class"
+    },
+    {
+      "blake3": "78b035037f5730010defe22458c1fbf24bdb572d42f5504cc7117a786dca0096",
+      "bytes": 866,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/controls/single-site/DBS.class"
+    },
+    {
+      "blake3": "fc859c02d7414b10d2d52033fe0602a81ee3710f2eab94b12bce8277acff4b6d",
+      "bytes": 613,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/methods/DBM$1.class"
+    },
+    {
+      "blake3": "f91cc8a0bbb7dfab5f5f20bf1910e73ef9689c67cdb125a47608bbf0c4b579c0",
+      "bytes": 866,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/methods/DBM.class"
+    },
+    {
+      "blake3": "443e855a1200b66fae6bd4b428d9cdd6c6ca842bcb8d2f915d380bbe056f345a",
+      "bytes": 553,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/multi-site/DBS2$1.class"
+    },
+    {
+      "blake3": "997f104874d0d62c10751bd5be7d76a4f9d8c26afd6cab69ad1953f59f20c495",
+      "bytes": 365,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/multi-site/DBS2.class"
+    },
+    {
+      "blake3": "280e02471684f868940d31d507c8d380c9ba9a5d8a100dac5cb766d85b491ffd",
+      "bytes": 376,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/unspellable-super/Carrier$Nested.class"
+    },
+    {
+      "blake3": "9700cacdf9e10fb12726733ffe858a649daf96caa3af0b58f7bbef8fa412ef63",
+      "bytes": 302,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/unspellable-super/Carrier.class"
+    },
+    {
+      "blake3": "48896a77e489789310934fe67bfb93235ee5ac04df53cbd616337e5aa4b0ea1e",
+      "bytes": 510,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/unspellable-super/DBN$1.class"
+    },
+    {
+      "blake3": "21bb6031289180e219263f08fd61794abae76430f3c46bc74a184d354bef24e6",
+      "bytes": 866,
+      "path": "tests/fixtures/proved-java-structure/double-brace-allocation-site/v8/negatives/unspellable-super/DBN.class"
+    },
+    {
       "blake3": "def3a1d0ed88c2cf26c3c03832965ab878ea0bfb83eec3d32343722539e4eb56",
       "bytes": 462,
       "path": "tests/fixtures/proved-java-structure/double-brace-capture/DB.java"

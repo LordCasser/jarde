@@ -1,0 +1,48 @@
+// jarde: presentation of `DB` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class DB extends java.lang.Object {
+    // jarde: field Signature projection refused for `dblLjava/util/List;`: unsupported (field_generic_body_unproved): a same-class Fieldref names this field and descriptor
+    static java.util.List dbl;
+
+    public DB() {
+        // @method <init>()V
+        // @declaration a constructor of `DB`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int size() {
+        // @method size()I
+        // @declaration a static method of `DB`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return DB.dbl.size();
+    }
+
+    // jarde: generic Signature projection refused for `withCapture(Ljava/lang/String;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.List withCapture(java.lang.String arg0) {
+        return new java.util.ArrayList() {
+            {
+                this.add((java.lang.Object) arg0);
+            }
+        };
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `DB`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(size()).append("/").append((java.lang.String) withCapture("z").get(0)).toString());
+        return;
+    }
+
+    static {
+        DB.dbl = new java.util.ArrayList() {
+            {
+                this.add((java.lang.Object) "a");
+                this.add((java.lang.Object) "b");
+            }
+        };
+    }
+}
+[exit=0]
