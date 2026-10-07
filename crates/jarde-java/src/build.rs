@@ -1136,6 +1136,18 @@ fn declarations(
                         completion: guard::FinallyCompletion::SavedReturn { .. }, ..
                     }) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
             });
+        // The resource guard's lead is the same shape once more, with the statement's own
+        // construction in it: the resource local's one store and the locals the chain fills stand
+        // there, their reads run inside the protected body and after the statement, and the
+        // certificate proves the resource local's reads reach that one store — so the declarations
+        // hoist to the statement's lexical parent exactly as the void loop's does. A placement that
+        // does not cover every use is still reverted by the validation below.
+        let resource_guard_lead = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                    if matches!(plan.shape(), guard::Shape::ResourceGuardFinally { .. })
+                        && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
+            });
         let has_increment = variable_uses.iter().any(|use_| {
             use_.written.is_some()
                 && matches!(operations.get(use_.bci), Some(Operation::Increment { .. }))
@@ -1185,6 +1197,7 @@ fn declarations(
             && !local_null_saved_return
             && !void_loop_lead
             && !null_lead_straight
+            && !resource_guard_lead
             && (!store_type_is_proven
                 || !(joined_value_certified
                     || all_reads_reach_presented_writes(
@@ -7044,12 +7057,19 @@ struct LocalAssignmentShape {
     /// dance is presented (`recover-dup-store-conditional`).
     written: ValueId,
     slot: u16,
+    /// Whether an instruction of this slice can enter an exception handler. A presentation that
+    /// *writes* the assignment refuses such a slice — the moved assignment would run on paths the
+    /// bytecode did not run it on — while the eliminated presentation drops the store and writes
+    /// nothing else, so it does not read this fact as a refusal. The caller decides, because only
+    /// the store target's own readers decide which presentation the dance takes.
+    enters_handler: bool,
 }
 
 /// The two physical copies have different, unique consumers. The source is immediately before
 /// `dup`, the local store immediately after it, and only literal operands may follow before the
-/// terminal test. No instruction in this slice can enter a handler. A later lexical/type check
-/// decides whether this physical shape may be written as Java.
+/// terminal test. A later lexical/type check decides whether this physical shape may be written as
+/// Java, and the caller reads [`LocalAssignmentShape::enters_handler`] before it writes the
+/// assignment anywhere.
 fn local_assignment_at(
     ssa: &SsaTable,
     operations: &Operations,
@@ -7127,15 +7147,15 @@ fn local_assignment_at(
         || !single_use_at(ssa, source_value, block, duplicate_bci)
         || !single_use_at(ssa, store_copy, block, store.bci())
         || !single_use_at(ssa, tested_copy, block, test_bci)
-        || ssa.effects().instructions().iter().any(|effect| {
-            effect.block() == block
-                && source.bci() <= effect.bci()
-                && effect.bci() <= test_bci
-                && !effect.handlers().is_empty()
-        })
     {
         return None;
     }
+    let enters_handler = ssa.effects().instructions().iter().any(|effect| {
+        effect.block() == block
+            && source.bci() <= effect.bci()
+            && effect.bci() <= test_bci
+            && !effect.handlers().is_empty()
+    });
     Some(LocalAssignmentShape {
         duplicate: duplicate_bci,
         store: store.bci(),
@@ -7145,6 +7165,7 @@ fn local_assignment_at(
         stored: store_copy,
         written: *written,
         slot: *slot,
+        enters_handler,
     })
 }
 
@@ -7292,6 +7313,16 @@ fn prove_local_assignments(
             // the reference form's whole shape (`while ((line = read()) != null)`). A live target
             // there is not proved at all — the split form cannot be written in front of a
             // re-evaluated condition.
+            // A proved guard's protected **body** is a region tree this layer walks and presents —
+            // the finally certificates' bodies hold ordinary code, loops included — so its loops'
+            // tests are visited exactly as a top-level loop's are: an IO read loop's
+            // `while ((line = r.readLine()) != null)` dance is the reference form this proof's own
+            // comment names. The rest of a guard — its cleanup copies, its handler, and the
+            // statement the guard presents — stays unvisited, and a protected range the walk reads
+            // as a `try` is still entered by no proof of this one.
+            Region::Guard {
+                body: Some(body), ..
+            } => pending.push(body),
             Region::Try { .. } | Region::Guard { .. } => {}
             Region::Loop { tests, .. } => {
                 charge(
@@ -7379,7 +7410,9 @@ fn prove_local_assignments(
                         test.bci(),
                     )
                 });
-            let Some(shape) = shape else { continue };
+            let Some(shape) = shape else {
+                continue;
+            };
             let Some(variable) = reuse.variable_at(shape.slot, shape.store) else {
                 continue;
             };
@@ -7424,6 +7457,16 @@ fn prove_local_assignments(
                 shape.written,
                 merges.as_ref().expect("the merge index was built above"),
             );
+            // A slice an instruction of which can enter a handler is admitted only where the
+            // assignment is not written at all: the eliminated presentation drops the store, and a
+            // value no instruction reads is unobservable on the handler's path too. Every
+            // presentation that *writes* the assignment keeps the rule — the moved assignment would
+            // run on paths the bytecode did not run it on — which is what a protected body's own
+            // read loop states (`while ((line = r.readLine()) != null)` inside a `finally` guard's
+            // body: the read is protected, and the store's target is read nowhere).
+            if observed && shape.enters_handler {
+                continue;
+            }
             let presentation = if !observed {
                 LocalAssignmentPresentation::Eliminated
             } else if shape.slot >= parameters {
@@ -17666,13 +17709,20 @@ impl Builder<'_> {
                         normal_cleanup,
                         completion,
                         ..
+                    }
+                    | guard::Shape::ResourceGuardFinally {
+                        normal_cleanup,
+                        completion,
+                        ..
                     } => {
                         // The statement is the one `try { … } finally { … }` the certificate
                         // proved: the protected body is the walk's own region tree (a loop
                         // included), the saved value's return is the body's last statement where
                         // the shape saves one, and the normal release copy is the `finally` body.
                         // The exceptional copy and the handler are folded away, exactly as the
-                        // resource shapes' copies are.
+                        // resource shapes' copies are. Both guard certificates write this arm; the
+                        // lock guard's completion states a value-less return where the resource
+                        // guard's `Joined` form continues at the plan's own join.
                         let Some(inner) = structured_body.as_deref() else {
                             let bcis = self.region_quote(region, plan.body().0);
                             self.restore_finally(

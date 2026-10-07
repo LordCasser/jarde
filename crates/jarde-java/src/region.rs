@@ -1965,9 +1965,9 @@ struct Frame {
     /// The proved two-row void finally whose protected body holds ordinary loops: a loop body
     /// frame keeps the certificate's own row so its covered exception edges stay accounted.
     void_loop_finally: bool,
-    /// The proved lock guard whose protected body holds ordinary loops: a loop body frame keeps
-    /// the certificate's own row so its covered exception edges stay accounted, exactly as the
-    /// two-row void finally's does.
+    /// The proved lock guard's or resource guard's protected body holds ordinary loops: a loop body
+    /// frame keeps the certificate's own row (the resource guard's row set) so its covered exception
+    /// edges stay accounted, exactly as the two-row void finally's does.
     lock_guard_finally: bool,
     /// The sole inner named row admitted by a proved two-copy outer finally body.
     nested_finally_row: Option<u32>,
@@ -2580,10 +2580,14 @@ impl Walker<'_> {
             // A shared catch-all has to be selected before the ordinary named-catch reader:
             // that reader owns only its named row and cannot account for the second protected
             // range or either return copy. The private guard proof is complete before any child
-            // walk may mark a block visited.
+            // walk may mark a block visited. The resource guard's row set is asked here for the
+            // same reason and one more: its protected range begins where its own block does (the
+            // object's construction leads it), and the *loop* its body holds is a block of its
+            // own — the loop reader below would otherwise present the protected body as a loop of
+            // its own before the statement was claimed.
             if frame.own_try != Some(node)
                 && frame.own_finally.is_none()
-                && self.starts_catch(&current)
+                && (self.starts_catch(&current) || self.starts_resource_guard(&current))
                 && let Some(plan) = crate::guard::shared_finally_candidate(
                     self.canonical,
                     self.view,
@@ -2636,6 +2640,9 @@ impl Walker<'_> {
                         .map(|body| (body, None)),
                     crate::guard::Shape::MultiReturnLoopFinally { .. } => self
                         .multi_return_loop_finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
+                    crate::guard::Shape::ResourceGuardFinally { .. } => self
+                        .resource_guard_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
                     _ => None,
                 };
@@ -4607,6 +4614,35 @@ impl Walker<'_> {
         })
     }
 
+    /// Whether one block holds the start of the row set the resource guard's certificate reads: two
+    /// catch-all rows reaching one handler, the first row's range beginning inside this block, and
+    /// the second over the handler's own binding store.
+    ///
+    /// This is the cheap half of that certificate's own shape, read before any fact is charged, and
+    /// it is what lets the walk ask the certificate *before* the loop reader below: an IO method's
+    /// row begins in the block that leads the protected range (the object's construction), so the
+    /// block's own instructions cannot raise and no exception edge would ask the guarded rules
+    /// there, while the body's loop — the next block — would be entered as a loop of its own.
+    fn starts_resource_guard(&self, block: &CanonicalBlockId) -> bool {
+        let [body_row, binding_rows @ ..] = self.handlers else {
+            return false;
+        };
+        if body_row.catch_type_index.is_some() || binding_rows.len() != 1 {
+            return false;
+        }
+        let binding_row = &binding_rows[0];
+        if binding_row.catch_type_index.is_some()
+            || binding_row.start_bci != body_row.handler_bci
+            || body_row.ordinal + 1 != binding_row.ordinal
+        {
+            return false;
+        }
+        body_row.start_bci >= block.bci()
+            && self
+                .terminal_bci(block)
+                .is_some_and(|last| body_row.start_bci <= last)
+    }
+
     /// The protected range and the clauses of the `try` that begins in one block, when this block
     /// states one.
     ///
@@ -6407,6 +6443,46 @@ impl Walker<'_> {
         )
     }
 
+    /// The resource-guard statement's protected body: the same bounded walker the void and
+    /// multi-return finally shapes use, with the certificate's own body row as the one row that
+    /// accounts for a loop's exception edges.
+    ///
+    /// This is the lock guard's reader over the resource lowering's row set: the protected body is
+    /// ordinary code the walk recovers — a loop included, and this shape's body always holds one —
+    /// and the cleanup copies are not this walk's, because the certificate proved them equal and the
+    /// builder writes the normal one as the statement's `finally` body.
+    fn resource_guard_finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::ResourceGuardFinally {
+            rows, completion, ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let save = match completion {
+            crate::guard::LockGuardCompletion::SavedReturn { save, .. } => Some(*save),
+            crate::guard::LockGuardCompletion::Void { .. } => None,
+        };
+        // The body row is the first of the set: it is the one whose range is the protected body, and
+        // the rows beside it cover the handler's binding store alone.
+        let Some(row_ordinal) = rows.first() else {
+            return Ok(None);
+        };
+        self.bounded_shared_finally_body(
+            start,
+            plan.body(),
+            save,
+            ((*row_ordinal, plan.body()), None),
+            plan,
+            outer,
+            None,
+        )
+    }
+
     fn bounded_shared_finally_body(
         &mut self,
         start: &CanonicalBlockId,
@@ -6475,8 +6551,8 @@ impl Walker<'_> {
             }
         );
         // The shapes whose protected body is presented with its own control flow: the fixed body
-        // loops, and the lock guard, whose body is ordinary code the walk recovers — a loop
-        // included. The flag is set by the claim alone, so no other shape widens.
+        // loops, and the two guard certificates, whose bodies are ordinary code the walk recovers —
+        // a loop included. The flag is set by the claim alone, so no other shape widens.
         let looping_body = span == plan.body()
             && matches!(
                 plan.shape(),
@@ -6485,13 +6561,20 @@ impl Walker<'_> {
                     ..
                 } | crate::guard::Shape::MultiReturnLoopFinally { .. }
                     | crate::guard::Shape::LockGuardFinally { .. }
+                    | crate::guard::Shape::ResourceGuardFinally { .. }
                     | crate::guard::Shape::Finally {
                         completion: crate::guard::FinallyCompletion::Void { .. },
                         ..
                     }
             );
-        frame.lock_guard_finally =
-            matches!(plan.shape(), crate::guard::Shape::LockGuardFinally { .. });
+        // Both guard certificates keep their own row in a loop body frame below: the lock guard's
+        // one row and the resource guard's row set cover the exception edges of the loop their
+        // protected body holds.
+        frame.lock_guard_finally = matches!(
+            plan.shape(),
+            crate::guard::Shape::LockGuardFinally { .. }
+                | crate::guard::Shape::ResourceGuardFinally { .. }
+        );
         let walked = self.region_at(start, &frame);
         let (mut regions, mut next) = match walked {
             Ok(result) => result,
@@ -10067,9 +10150,10 @@ impl Walker<'_> {
             body_frame.own_finally = frame.own_finally;
             body_frame.own_try = frame.own_try;
         }
-        // The proved lock guard's body is ordinary code, so its loop is walked the same way and
-        // leaves through the same certificate handler: the one row the claim proved is what
-        // accounts for that edge. Like the flag above, this one is set by the claim alone.
+        // The proved lock guard's and resource guard's protected bodies are ordinary code, so their
+        // loops are walked the same way and leave through the same certificate handler: the rows
+        // the claim proved are what account for those edges. Like the flag above, this one is set by
+        // the claim alone.
         if frame.lock_guard_finally && frame.own_finally.is_some() && frame.own_try.is_some() {
             body_frame.own_finally = frame.own_finally;
             body_frame.own_try = frame.own_try;

@@ -510,9 +510,46 @@ pub enum Shape {
         /// How the normal path completes after its release.
         completion: LockGuardCompletion,
     },
+    /// The row-set resource guard: one resource **local** the protected body's loop reads and both
+    /// cleanup copies close, with the row set covering the one `finally` the source wrote.
+    ///
+    /// This is a shape of its own beside the lock guard, not a widening of it: the lock guard's
+    /// safety source is an *acquisition call* before the protected range whose receiver is an
+    /// instance field read, and its table states one row. Here the safety source is the resource
+    /// local: it has **one** definition, that store stands before the protected range, and every
+    /// load of that slot in the method — the loop's own reads inside the protected body and the
+    /// receiver of both cleanup copies — reads that one definition's value. Folding the two copies
+    /// into one `finally` therefore closes the object the body read, on both paths, exactly once.
+    ///
+    /// `javac` lowers this shape with the resource lowering's row set: one catch-all row over the
+    /// protected body, plus a catch-all row (at most one) that protects only the handler's own
+    /// binding store. Every row reaches the same handler; the copies lie outside all of them; and
+    /// the handler is exactly `astore; <copy>; aload; astore; athrow`.
+    ///
+    /// The body's own shape is the region walk's: a body that holds a loop — this certificate's
+    /// own body requirement, alongside one invocation the loop can throw from — is presented by the
+    /// loop's own reader, never by a copy of its instructions.
+    ResourceGuardFinally {
+        /// The rows that cover the one `finally`, in table order: the protected body's row first,
+        /// then the resource lowering's row over the handler's binding store, when the table
+        /// states one.
+        rows: Vec<u32>,
+        /// The resource local every load of which reads the one definition before the range.
+        slot: u16,
+        /// The close copy the normal path runs, as an instruction range.
+        normal_cleanup: (u32, u32),
+        /// The close copy the handler runs, as an instruction range.
+        handler_cleanup: (u32, u32),
+        /// How the normal path completes after its close.
+        completion: LockGuardCompletion,
+    },
 }
 
-/// How a lock-guard statement completes on the normal path.
+/// How a guarded `finally` statement completes on the normal path.
+///
+/// The lock guard and the resource guard state their completions with this one enum — the forms are
+/// javac's own normal-path lowerings of `finally` — and each certificate admits its own subset with
+/// its own proof, so a form one shape never produces stays unreachable rather than unchecked.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LockGuardCompletion {
     /// The method returns a value: the protected body stores it in one local, the release runs, and
@@ -520,7 +557,8 @@ pub enum LockGuardCompletion {
     /// return is the statement's own completion, written after the body.
     SavedReturn { save: u32, returns: u32 },
     /// The method completes void: the release is followed by a transfer to the method's own
-    /// value-less `return`, which the run continues at ([`Plan::join`]).
+    /// value-less `return`, which the run continues at ([`Plan::join`]). The lock guard's own
+    /// form.
     Void { transfer: u32, returns: u32 },
 }
 
@@ -693,7 +731,8 @@ impl Plan {
             | Shape::SegmentedNullLeadFinally { .. }
             | Shape::TwoCatchReturnFinally { .. }
             | Shape::NestedCleanupFinally { .. }
-            | Shape::LockGuardFinally { .. } => &FINALLY,
+            | Shape::LockGuardFinally { .. }
+            | Shape::ResourceGuardFinally { .. } => &FINALLY,
         }
     }
 }
@@ -3983,6 +4022,498 @@ fn prove_lock_guard_finally(
         facts: origins,
     }))
 }
+
+/// One close copy of the resource guard, read as the two instructions that shape writes: a load of
+/// the resource local and the `close` call on it.
+///
+/// The answer is the called target and the SSA value the load read — the value the protected body's
+/// own reads and both copies must share, so the one `finally` closes the object the body read. The
+/// call states a value-less descriptor and is an instance call: the copies a `finally` folds are
+/// statements, not value producers, and a call that returned a value would leave it for a statement
+/// the source never wrote.
+fn resource_guard_copy(
+    facts: &Facts<'_>,
+    copy: &[u32],
+) -> Option<(crate::facts::CallTarget, ValueId)> {
+    let [load, call] = copy else {
+        return None;
+    };
+    let Some(Operation::Load { slot }) = facts.op(*load) else {
+        return None;
+    };
+    let Some(Operation::Invoke(target)) = facts.op(*call) else {
+        return None;
+    };
+    if !matches!(target.kind(), InvokeKind::Virtual | InvokeKind::Interface)
+        || target.name() != "close"
+        || target.descriptor() != "()V"
+    {
+        return None;
+    }
+    let load_step = facts.step(*load)?;
+    let call_step = facts.step(*call)?;
+    let [(read_slot, receiver)] = load_step.instruction.reads() else {
+        return None;
+    };
+    if read_slot != &Slot::Local(*slot) {
+        return None;
+    }
+    // The call consumes exactly the value the load produced.
+    let [(Slot::Stack(0), called)] = call_step.instruction.reads() else {
+        return None;
+    };
+    if !load_step
+        .instruction
+        .writes()
+        .iter()
+        .any(|(written, value)| matches!(written, Slot::Stack(_)) && facts.same(*value, *called))
+    {
+        return None;
+    }
+    Some((target.clone(), facts.resolve(*receiver)))
+}
+
+/// The row-set resource guard: `try { … } finally { r.close(); }` over one resource **local**.
+///
+/// This is a shape of its own beside the lock guard, not a relaxation of it. What it proves,
+/// instruction by instruction, is:
+///
+/// * the row set is one catch-all body row plus, at most, one more catch-all row over the handler's
+///   own binding store alone; every row reaches the same handler, whose only successor is none;
+/// * the protected range begins at or after the walk's own block — the instructions before it are
+///   the statement's lead and no row covers them — and the body row ends exactly where the normal
+///   close copy begins;
+/// * the handler is exactly `astore p; <load r>; invoke close; aload p; athrow`: the rethrow of the
+///   value it bound, with the close between the binding and the reload;
+/// * both close copies are the same two-instruction grammar — a load of one local slot and a
+///   value-less `close` instance call consuming it — and both loads read the same SSA value, which
+///   is the value the method's **one** store to that slot wrote, that store standing before the
+///   protected range;
+/// * every load of that slot in the method reads that same value, the protected body's own loop
+///   reads included: the body read the object and both copies close that object;
+/// * the copies lie outside every row of the set (a close that could re-enter the handler would run
+///   twice), no instruction of the range returns (a return inside the range would skip the close),
+///   and every normal exit of the range reaches the normal copy;
+/// * every exception edge out of the protected range is the body row's own, and the only other edge
+///   into the handler is the binding row's own over the binding store — so the copies cover exactly
+///   the exits the one `finally` covers;
+/// * the protected body holds a loop (a normal back edge inside the range) and an invocation the
+///   loop can throw from, and the completion is the saved-value form javac writes for a method that
+///   returns the body's own value — the value's store stands in the body, the close runs, and the
+///   return reads the slot back. The other normal-path forms (`readAll`'s transfer past the close
+///   into the statement's continuation, and the value-less completion the fixed CF-16 certificate
+///   proves) are **not** this certificate's: a run that completes by transferring keeps its
+///   refusal, which is what keeps the fixed certificates' own shapes where they are.
+///
+/// The protected body itself is not this proof's: the walk recovers it as a region of its own, loops
+/// included, and the statement is presented only when that walk covered the exact blocks the body's
+/// instructions occupy.
+fn prove_resource_guard_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    // The cheap half, read before anything is charged: one catch-all body row, the resource
+    // lowering's binding row beside it, and both reaching one handler.
+    let rows = facts.handlers;
+    let Some((body_row, binding_rows)) = rows.split_first() else {
+        return Ok(None);
+    };
+    if rows.len() > 2
+        || body_row.catch_type_index.is_some()
+        || body_row.start_bci < current.bci()
+        || body_row.start_bci >= body_row.end_bci
+    {
+        return Ok(None);
+    }
+    let Some(handler) = facts.row_handler(body_row) else {
+        return Ok(None);
+    };
+    if handler.bci() != body_row.handler_bci
+        || !facts.view.successor_ids(&handler).is_empty()
+        || !rows.iter().all(|row| {
+            row.catch_type_index.is_none()
+                && row.handler_bci == body_row.handler_bci
+                && facts.row_handler(row).as_ref() == Some(&handler)
+        })
+    {
+        return Ok(None);
+    }
+    // A second row protects the handler's own binding store and nothing else: the store's own
+    // half-open range, so the row cannot cover a copy.
+    for row in binding_rows {
+        if (row.start_bci, row.end_bci) != (handler.bci(), facts.span_end(handler.bci())) {
+            return Ok(None);
+        }
+    }
+    // The statement's lead: the instructions of this block before the protected range begin. No row
+    // covers one of them, and none returns — the range follows the object's construction.
+    let lead: Vec<u32> = facts.bcis((current.bci(), body_row.start_bci));
+    for bci in &lead {
+        facts.charge(*bci)?;
+        if !facts.covering(*bci).is_empty() {
+            return Ok(None);
+        }
+    }
+    if lead.iter().any(|bci| {
+        matches!(
+            facts.op(*bci),
+            Some(Operation::Return) | Some(Operation::Throw)
+        )
+    }) {
+        return Ok(None);
+    }
+    // The handler's own instructions: bind, copy, reload, rethrow.
+    let exceptional: Vec<u32> = facts
+        .in_block(&handler)
+        .iter()
+        .map(SsaInstruction::bci)
+        .collect();
+    let Some((&primary_store, handler_tail)) = exceptional.split_first() else {
+        return Ok(None);
+    };
+    let Some((&rethrow, handler_middle)) = handler_tail.split_last() else {
+        return Ok(None);
+    };
+    let Some((&primary_load, handler_cleanup)) = handler_middle.split_last() else {
+        return Ok(None);
+    };
+    let (Some(Operation::Store { slot: primary }), Some(Operation::Load { slot: reloaded })) =
+        (facts.op(primary_store), facts.op(primary_load))
+    else {
+        return Ok(None);
+    };
+    if handler_cleanup.is_empty()
+        || primary != reloaded
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || !handler_binding(facts, primary_store)
+    {
+        return Ok(None);
+    }
+    let (Some(store), Some(load), Some(throw)) = (
+        facts.step(primary_store),
+        facts.step(primary_load),
+        facts.step(rethrow),
+    ) else {
+        return Ok(None);
+    };
+    let throw_input = stack_operands(throw.instruction);
+    if throw_input.len() != 1
+        || !store.instruction.writes().iter().any(|(slot, written)| {
+            *slot == Slot::Local(*primary)
+                && load
+                    .instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*written, *read))
+        })
+        || !load.instruction.writes().iter().any(|(slot, written)| {
+            matches!(slot, Slot::Stack(_)) && facts.same(*written, throw_input[0].1)
+        })
+    {
+        return Ok(None);
+    }
+    let Some(handler_copy) = resource_guard_copy(facts, handler_cleanup) else {
+        return Ok(None);
+    };
+    // The normal path: the close copy, then this shape's completion.
+    let before_handler = facts.bcis((body_row.start_bci, handler.bci()));
+    let Some((&normal_last, normal_middle)) = before_handler.split_last() else {
+        return Ok(None);
+    };
+    let (normal_cleanup, completion) = match facts.op(normal_last) {
+        Some(&Operation::Return) => {
+            let Some((&return_load, before_return_load)) = normal_middle.split_last() else {
+                return Ok(None);
+            };
+            let Some(Operation::Load { slot: returned }) = facts.op(return_load) else {
+                return Ok(None);
+            };
+            let Some(cleanup_start) = before_return_load.len().checked_sub(handler_cleanup.len())
+            else {
+                return Ok(None);
+            };
+            let normal_cleanup = &before_return_load[cleanup_start..];
+            let Some(&save) = cleanup_start
+                .checked_sub(1)
+                .and_then(|index| before_return_load.get(index))
+            else {
+                return Ok(None);
+            };
+            let (Some(Operation::Store { slot: saved }), Some(save_step), Some(load_step)) =
+                (facts.op(save), facts.step(save), facts.step(return_load))
+            else {
+                return Ok(None);
+            };
+            // The one link the saved return makes: the load the return reads is the store's value.
+            if saved != returned
+                || !save_step
+                    .instruction
+                    .writes()
+                    .iter()
+                    .any(|(slot, written)| {
+                        *slot == Slot::Local(*saved)
+                            && load_step
+                                .instruction
+                                .reads()
+                                .iter()
+                                .any(|(_, read)| facts.same(*written, *read))
+                    })
+            {
+                return Ok(None);
+            }
+            (
+                normal_cleanup,
+                LockGuardCompletion::SavedReturn {
+                    save,
+                    returns: normal_last,
+                },
+            )
+        }
+        Some(&Operation::Transfer) => {
+            // The transfer form — the body's completion carried past the close into the statement's
+            // own continuation — is not this certificate's. `readAll`'s interrupted read and the
+            // fixed CF-16 void loop both end here, and both keep the answers they had: the copy
+            // family's registered boundary and the fixed certificate's own presentation.
+            return Ok(None);
+        }
+        _ => return Ok(None),
+    };
+    if normal_cleanup.is_empty() {
+        return Ok(None);
+    }
+    let Some(normal_copy) = resource_guard_copy(facts, normal_cleanup) else {
+        return Ok(None);
+    };
+    // The two copies close the same target on the same value.
+    if normal_copy != handler_copy {
+        return Ok(None);
+    }
+    let slot = match facts.op(handler_cleanup[0]) {
+        Some(Operation::Load { slot }) => *slot,
+        _ => return Ok(None),
+    };
+    // The local's whole definition: one store, before the protected range, and that store's value is
+    // the value every load of the slot reads — the loop's own reads and both copies'.
+    let mut definition = None;
+    let mut body_reads = 0;
+    let mut calls = 0;
+    for bci in facts.order.clone() {
+        facts.charge(bci)?;
+        match facts.op(bci) {
+            Some(Operation::Store { slot: stored }) if *stored == slot => {
+                if definition.is_some() || bci >= body_row.start_bci {
+                    return Ok(None);
+                }
+                let Some(value) = facts.step(bci).and_then(|step| {
+                    step.instruction
+                        .writes()
+                        .iter()
+                        .find(|(written, _)| *written == Slot::Local(slot))
+                        .map(|(_, value)| *value)
+                }) else {
+                    return Ok(None);
+                };
+                definition = Some(value);
+                continue;
+            }
+            Some(Operation::Load { slot: loaded }) if *loaded == slot => {
+                let Some(step) = facts.step(bci) else {
+                    return Ok(None);
+                };
+                let Some(written) = definition else {
+                    return Ok(None);
+                };
+                if !step
+                    .instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*read, written))
+                {
+                    return Ok(None);
+                }
+                if body_row.start_bci <= bci && bci < body_row.end_bci {
+                    body_reads += 1;
+                }
+            }
+            Some(Operation::Invoke(_)) if body_row.start_bci <= bci && bci < body_row.end_bci => {
+                calls += 1;
+            }
+            _ => {}
+        }
+    }
+    let Some(definition) = definition else {
+        return Ok(None);
+    };
+    // The resource is a value the method's own construction wrote, never a merged or caught one:
+    // the lead's store is a statement, and the value it wrote is a definition of this body.
+    if !matches!(
+        facts.ssa.value(facts.resolve(definition)).def(),
+        Definition::Instruction { .. }
+    ) {
+        return Ok(None);
+    }
+    // The handle crosses the body's loop and the close: the body read the slot at least once and
+    // holds a loop and a throwing call, so the `finally` is what makes the read's failure safe.
+    if body_reads == 0 || calls == 0 {
+        return Ok(None);
+    }
+    // The range the normal copy follows, and the copies' own coverage.
+    if body_row.end_bci != normal_cleanup[0] {
+        return Ok(None);
+    }
+    if normal_cleanup
+        .iter()
+        .chain(handler_cleanup.iter())
+        .any(|bci| body_row.start_bci <= *bci && *bci < body_row.end_bci)
+    {
+        return Ok(None);
+    }
+    let normal_block = facts.block_of(normal_cleanup[0]);
+    if normal_block.is_none()
+        || normal_cleanup
+            .iter()
+            .chain([&normal_last])
+            .any(|bci| facts.block_of(*bci) != normal_block)
+    {
+        return Ok(None);
+    }
+    let mut protected_blocks = facts.blocks_in((body_row.start_bci, body_row.end_bci));
+    protected_blocks.sort_by_key(CanonicalBlockId::bci);
+    let mut looped = false;
+    for block in &protected_blocks {
+        facts.charge(block.bci())?;
+        let mut last_protected = None;
+        for instruction in facts.in_block(block) {
+            if instruction.bci() < body_row.start_bci || instruction.bci() >= body_row.end_bci {
+                continue;
+            }
+            last_protected = Some(instruction.bci());
+            if facts.op(instruction.bci()) == Some(&Operation::Return) {
+                return Ok(None);
+            }
+        }
+        let successors = facts.view.successor_ids(block);
+        if successors.is_empty()
+            && facts.end_of(block) <= body_row.end_bci
+            && last_protected.is_some_and(|last| facts.op(last) != Some(&Operation::Throw))
+        {
+            return Ok(None);
+        }
+        // A block that holds the range's own end leaves the range *through* the close copy the
+        // block continues into: its successors are the completion's, and the checks below read
+        // them. A block that ends inside the range may not leave it anywhere else — such an exit
+        // would skip the close the one `finally` runs.
+        if facts.end_of(block) <= body_row.end_bci {
+            for successor in successors {
+                if !protected_blocks.contains(&successor)
+                    && successor.bci() != body_row.end_bci
+                    && successor.bci() != normal_cleanup[0]
+                {
+                    return Ok(None);
+                }
+                // A normal back edge inside the range is the loop this shape is: the read the close
+                // protects happens more than once.
+                if protected_blocks.contains(&successor) && successor.bci() <= block.bci() {
+                    looped = true;
+                }
+            }
+        }
+    }
+    if !looped {
+        return Ok(None);
+    }
+    // No row outside the set covers a protected instruction, either copy, or the handler's own
+    // instructions; the binding row covers the binding store alone.
+    for bci in facts
+        .bcis((body_row.start_bci, body_row.end_bci))
+        .into_iter()
+        .chain(normal_cleanup.iter().copied())
+        .chain(handler_cleanup.iter().copied())
+        .chain([primary_store, primary_load, rethrow])
+    {
+        facts.charge(bci)?;
+        if facts
+            .covering(bci)
+            .iter()
+            .any(|other| !rows.iter().any(|row| row.ordinal == other.ordinal))
+        {
+            return Ok(None);
+        }
+    }
+    if facts
+        .covering(handler.bci())
+        .iter()
+        .map(|row| row.ordinal)
+        .collect::<Vec<_>>()
+        != binding_rows
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+    {
+        return Ok(None);
+    }
+    // Every exception edge out of the protected range is the body row's own to this handler, and
+    // the handler's own edge — the binding row's — enters it from itself.
+    for block in facts.canonical.blocks() {
+        facts.charge(block.id().bci())?;
+        for edge in facts
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block.id())
+        {
+            facts.charge(block.id().bci())?;
+            match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    let body_edge = handler_ordinal == body_row.ordinal
+                        && edge.to() == &handler
+                        && protected_blocks.contains(block.id());
+                    let binding_edge = binding_rows.iter().any(|row| {
+                        row.ordinal == handler_ordinal
+                            && edge.to() == &handler
+                            && block.id() == &handler
+                    });
+                    if !body_edge && !binding_edge {
+                        return Ok(None);
+                    }
+                }
+                CanonicalEdgeKind::Call { .. } => return Ok(None),
+                CanonicalEdgeKind::Normal | CanonicalEdgeKind::Return { .. } => {}
+            }
+        }
+    }
+    let mut owned = facts.blocks_in((current.bci(), handler.bci()));
+    if !owned.contains(&handler) {
+        owned.push(handler);
+    }
+    owned.sort_by_key(CanonicalBlockId::bci);
+    let end = facts.span_end(rethrow);
+    let origins: Vec<u32> = facts.bcis((body_row.start_bci, end));
+    // The run continues nowhere of its own: the saved value's return is written inside the body.
+    let join = None;
+    Ok(Some(Plan {
+        shape: Shape::ResourceGuardFinally {
+            rows: rows.iter().map(|row| row.ordinal).collect(),
+            slot,
+            normal_cleanup: (
+                normal_cleanup[0],
+                facts.span_end(*normal_cleanup.last().unwrap()),
+            ),
+            handler_cleanup: (
+                handler_cleanup[0],
+                facts.span_end(*handler_cleanup.last().unwrap()),
+            ),
+            completion,
+        },
+        lead: (current.bci(), body_row.start_bci),
+        body: (body_row.start_bci, body_row.end_bci),
+        owned,
+        join,
+        enclosing: None,
+        facts: origins,
+    }))
+}
+
 fn nullable_close_copy(
     facts: &Facts<'_>,
     copy: &[u32; 4],
@@ -10382,7 +10913,14 @@ pub(crate) fn shared_finally_candidate(
         if let Some(plan) = prove_empty_catch_call_finally(&mut facts, current)? {
             return Ok(Some(plan));
         }
-        return prove_nested_join_finally(&mut facts, current);
+        if let Some(plan) = prove_nested_join_finally(&mut facts, current)? {
+            return Ok(Some(plan));
+        }
+        // The row-set resource guard is asked **after** every fixed certificate of this family: it
+        // is the sibling admission the IO skeleton needs, so a shape one of the certificates above
+        // claims keeps that claim and only a shape none of them claims can reach this proof. Its own
+        // cheap half reads the row set before a single fact is charged.
+        return prove_resource_guard_finally(&mut facts, current);
     }
     if let Some(plan) = prove_multi_return_loop_finally(&mut facts, current)? {
         return Ok(Some(plan));
