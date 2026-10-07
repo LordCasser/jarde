@@ -311,6 +311,7 @@ pub(crate) fn prove_family_capture(
             &field.name.raw().0,
             &outer_descriptor,
             2,
+            CaptureReadReceiver::EntryThis,
             budget,
         )? {
             Ok(method_reads) => reads.extend(method_reads),
@@ -520,6 +521,7 @@ pub(crate) fn prove_family_instance_capture(
             &field.name.raw().0,
             &outer_descriptor,
             write_bci,
+            CaptureReadReceiver::EntryThis,
             budget,
         )? {
             Ok(method_reads) => reads.extend(method_reads),
@@ -661,6 +663,7 @@ pub(crate) fn prove_anonymous_double_capture(
             name,
             b"D",
             2,
+            CaptureReadReceiver::EntryThis,
             budget,
         )? {
             Ok(method_reads) => reads.extend(method_reads),
@@ -973,6 +976,7 @@ pub(crate) fn partition_anonymous_val_constructor(
 pub(crate) fn prove_anonymous_val_capture(
     child: &ClassMemberFacts,
     methods: &[(PhysicalMethodId, &MethodIr)],
+    receiver: CaptureReadReceiver,
     budget: &mut Budget,
 ) -> Result<std::result::Result<MemberCaptureProof, String>> {
     let refuse = |reason: &str| Ok(Err(reason.to_owned()));
@@ -1077,6 +1081,7 @@ pub(crate) fn prove_anonymous_val_capture(
             name,
             field_descriptor,
             partition.capture_write_bci,
+            receiver,
             budget,
         )? {
             Ok(method_reads) => reads.extend(method_reads),
@@ -1142,6 +1147,7 @@ fn scan_capture_method_uses(
     name: &[u8],
     descriptor: &[u8],
     write_bci: u32,
+    receiver: CaptureReadReceiver,
     budget: &mut Budget,
 ) -> Result<std::result::Result<Vec<MemberCaptureRead>, String>> {
     let refuse = |reason: &str| Ok(Err(reason.to_owned()));
@@ -1172,7 +1178,7 @@ fn scan_capture_method_uses(
         let Some(access) = ssa_instruction(ssa, instruction.bci) else {
             return refuse("capture read has no SSA instruction");
         };
-        if access.reads().len() != 1 || !value_from_this_load(ssa, access.reads()[0].1) {
+        if access.reads().len() != 1 || !receiver.admits(ssa, access.reads()[0].1) {
             return refuse("capture read receiver is not the member this");
         }
         let [(_, result)] = access.writes() else {
@@ -1290,6 +1296,77 @@ fn value_from_this_load(ssa: &SsaTable, value: ValueId) -> bool {
     };
     value_from_entry_load(ssa, value, Slot::Local(0), *bci)
         && ssa_instruction(ssa, *bci).is_some_and(|load| load.opcode() == 0x2a)
+}
+
+/// Which `this` a capture-field read's receiver may be, as the two readings the certificates
+/// state.
+///
+/// This is the containment pattern the anonymous family keeps for every widening: a certificate
+/// admits one new shape only for the path whose slice proved it, so a widening on one slice can
+/// never open another slice's acceptance set as a side effect.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CaptureReadReceiver {
+    /// The entry `this` of an ordinary method body ([`value_from_this_load`]): the reading every
+    /// companion-body projection's certificate states, because the bodies they present are the
+    /// companion's *methods*.
+    EntryThis,
+    /// The same, or the **constructor's own `this` after its constructor call** — the value the
+    /// call wrote into slot 0 (JVMS 4.9.2's conversion, which this layer states as that write).
+    /// The double-brace allocation point (change `recover-double-brace-allocation-site`) reads a
+    /// companion's whole body as its constructor, so every capture read it presents sits after
+    /// that call, and the instance the read runs on is the same one the source's anonymous class
+    /// would have.
+    ConstructorThis,
+}
+
+impl CaptureReadReceiver {
+    /// Whether one value is the `this` this reading admits as a field read's receiver.
+    fn admits(self, ssa: &SsaTable, value: ValueId) -> bool {
+        value_from_this_load(ssa, value)
+            || (self == Self::ConstructorThis && value_from_constructor_this(ssa, value))
+    }
+}
+
+/// Whether one value is the initialized `this` a constructor's own constructor call produced,
+/// read either directly or through the `aload_0` that loads it.
+///
+/// The receiver of such a read is the same instance an entry `this` names — the constructor's own
+/// — and the value that carries it is the JVMS 4.9.2 conversion and nothing else: an
+/// `invokespecial` is the only instruction the frame pass lets convert the token, and this layer
+/// records the conversion as that call's write of slot 0.
+fn value_from_constructor_this(ssa: &SsaTable, value: ValueId) -> bool {
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    constructor_this_write(ssa, value, *bci)
+        || ssa_instruction(ssa, *bci).is_some_and(|load| {
+            load.opcode() == 0x2a
+                && load.reads().iter().any(|(slot, source)| {
+                    *slot == Slot::Local(0)
+                        && matches!(
+                            ssa.value(*source).def(),
+                            Definition::Instruction { bci, .. }
+                                if constructor_this_write(ssa, *source, *bci)
+                        )
+                })
+        })
+}
+
+/// Whether the instruction at `bci` is the constructor call that produced `value`: an
+/// `invokespecial` writing slot 0 with it, whose own receiver is the entry `this` it converted.
+fn constructor_this_write(ssa: &SsaTable, value: ValueId, bci: u32) -> bool {
+    let Some(call) = ssa_instruction(ssa, bci) else {
+        return false;
+    };
+    call.opcode() == 0xb7
+        && call
+            .writes()
+            .iter()
+            .any(|(slot, written)| *slot == Slot::Local(0) && *written == value)
+        && call
+            .reads()
+            .iter()
+            .any(|(_, source)| value_from_this_load(ssa, *source))
 }
 
 /// Prove a single, exact physical bridge. Requiring a straight-line body also rules out extra
@@ -3433,6 +3510,7 @@ mod tests {
             b"this$0",
             b"LNamedMemberFamilyStage1;",
             2,
+            CaptureReadReceiver::EntryThis,
             &mut budget,
         )
         .unwrap()
@@ -3450,6 +3528,7 @@ mod tests {
             b"this$0",
             b"LNamedMemberFamilyStage1;",
             2,
+            CaptureReadReceiver::EntryThis,
             &mut budget,
         )
         .unwrap()

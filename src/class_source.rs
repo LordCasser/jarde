@@ -7849,6 +7849,56 @@ impl ClassSourceMethod {
         })
     }
 
+    /// [`Self::anonymous_return_projection`] for a member whose text must keep what it already
+    /// carries: the projected statements are placed under the member's own **physical prefix** —
+    /// every marker line exactly as the pass that wrote it wrote it, and the declaration's own
+    /// opening line — instead of being composed from the declaration alone.
+    ///
+    /// [`Self::anonymous_return_projection_parts`] composes the member text itself and therefore
+    /// has to refuse a member that carries a marker (it cannot reproduce one byte for byte: the
+    /// generic Signature refusal writes its line one level in, while the recovery-time composer
+    /// writes its own two). Keeping the physical prefix instead makes the placement exact for both
+    /// writers, and the envelope the recovery layer wrote inside the block is dropped exactly as
+    /// the composed placement drops it. `body` is the **statements** form
+    /// [`jarde_java::report::emit_class_source_anonymous_return`] writes, and its expression range
+    /// is translated through this placement.
+    pub(crate) fn projected_statements_method_text(
+        &self,
+        body: &jarde_java::report::ClassSourceAnonymousReturn,
+        anchors: Vec<MemberFamilyPhysicalAnchor>,
+    ) -> Option<MemberFamilyMethodText> {
+        let declaration = self.declaration.as_ref()?;
+        if !matches!(self.outcome, ClassSourceOutcome::Recovered { .. }) {
+            return None;
+        }
+        let declaration_line = format!("    {declaration} {{\n");
+        if self.text.match_indices(&declaration_line).count() != 1 {
+            return None;
+        }
+        let at = self.text.find(&declaration_line)?;
+        let prefix = self.text.get(..at + declaration_line.len())?;
+        let mut text = String::with_capacity(prefix.len() + body.text.len() + "    }\n".len());
+        text.push_str(prefix);
+        let body_start = text.len();
+        text.push_str(&body.text);
+        text.push_str("    }\n");
+        let start = body_start.checked_add(body.expression_range.start)?;
+        let end = body_start.checked_add(body.expression_range.end)?;
+        if start >= end || text.get(start..end)? != body.text.get(body.expression_range.clone())? {
+            return None;
+        }
+        Some(MemberFamilyMethodText {
+            index: self.item.index,
+            text,
+            derived: vec![MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::NestedAnonymousExpression,
+                start,
+                end,
+                anchors,
+            }],
+        })
+    }
+
     fn anonymous_return_projection_parts(
         &self,
         body: &str,

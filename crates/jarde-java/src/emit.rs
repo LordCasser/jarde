@@ -231,6 +231,11 @@ pub(crate) fn emit_class_source_anonymous_return(
     budget: &mut Budget,
 ) -> Result<(String, bool, Option<(usize, usize)>), StopReason> {
     let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
+    // A `<clinit>`'s statements are re-emitted under the same return suppression the committed
+    // artifact applied ([`emit_class_source_statements`] sets the same flag from the same fact):
+    // Java has no spelling for a `return` inside an initializer block (JLS §8.7), and the
+    // double-brace allocation point's static-initializer anchor re-emits exactly such a body.
+    emitter.initializer = member.name.0 == b"<clinit>";
     emitter.anonymous_override = Some(AnonymousOverride {
         allocation_bci,
         allocation_type,
