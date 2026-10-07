@@ -105,6 +105,15 @@ pub enum FallbackReason {
         last_branch_bci: u32,
         consumer_bci: u32,
     },
+    /// A condition chain would present a postfix position outside the bound this slice states
+    /// (`recover-postfix-condition-positions`): one position, at one end of the chain.
+    ///
+    /// The middle of a short-circuit chain and a second variable's position are recorded and left
+    /// to a later slice, so a chain that would present them keeps the refusal it had instead of
+    /// being presented as a shape this slice never stated. The position named is the one the bound
+    /// refuses: the second position of a chain, or the one that is neither its first nor its last
+    /// test.
+    ChainPositionBound { block_bci: u32, at: u32 },
     /// A pass stated a precondition ([`crate::pass::Precondition`], P3 decision 1) and this run's
     /// evidence does not meet it: the shape was **not** claimed.
     ///
@@ -203,6 +212,7 @@ impl FallbackReason {
             Self::UnrenderableOperand { .. } => "jre_region_unrenderable_operand",
             Self::ArmsDoNotMeet { .. } => "jre_region_arms_do_not_meet",
             Self::ShortCircuitValueUnproved { .. } => "jre_region_short_circuit_value_unproved",
+            Self::ChainPositionBound { .. } => "jre_region_chain_position_bound",
             Self::UnmetPrecondition { .. } => "jre_region_unmet_precondition",
             Self::SwitchArmsOverlap { .. } => "jre_region_switch_arms_overlap",
             Self::SwitchShape { .. } => "jre_region_switch_shape",
@@ -329,6 +339,9 @@ impl FallbackReason {
                 consumer_bci,
             } => format!(
                 "the short-circuit chain from BCI {first_branch_bci} through {last_branch_bci} reaches a shared value consumer at BCI {consumer_bci}, but this slice has no SSA proof for that value; the complete region is quoted"
+            ),
+            Self::ChainPositionBound { block_bci, at } => format!(
+                "the chain at block BCI {block_bci} would present the postfix condition position at BCI {at} outside the bound this slice states: one position, at one end of a condition chain"
             ),
             Self::UnmetPrecondition {
                 pass,
@@ -6940,10 +6953,13 @@ impl Walker<'_> {
     /// increment, an unused call, a return or an operation this subset does not model is an
     /// **effect** of the test block. A call or field read used by the branch can stay in the
     /// condition expression; an unused call has nowhere to go that keeps its execution count and
-    /// order. For header-tested loops, an array-length read can stay there only when its SSA value
-    /// has exactly one consumer, so the expression tree cannot evaluate the throwing read twice.
-    /// Hoisting it out would run it once, and putting it in the body would run it after the test,
-    /// so the structure is quoted instead.
+    /// order. For header-tested loops, a *throwing* read — an array length, or an array element
+    /// (`recover-postfix-condition-positions`) — can stay there only when its SSA value has exactly
+    /// one consumer, so the expression tree cannot evaluate the throwing read twice. Hoisting it
+    /// out would run it once, and putting it in the body would run it after the test, so the
+    /// structure is quoted instead. The two effects that are their expression's own machinery — the
+    /// copy-and-store dance, and the `iload; iinc` pair of a postfix condition position — are
+    /// stated in `test_expression_instruction`.
     fn test_is_pure(
         &self,
         block: &CanonicalBlockId,
@@ -6954,57 +6970,19 @@ impl Walker<'_> {
             return Ok(());
         };
         let condition_bcis = self.condition_value_bcis(block, test_bci, names);
-        let mut reads_per_value = BTreeMap::new();
-        for (_, value) in names
-            .instructions()
-            .iter()
-            .flat_map(|instruction| instruction.reads())
-        {
-            let uses = reads_per_value.entry(*value).or_insert(0_usize);
-            *uses = uses.saturating_add(1);
-        }
+        let reads_per_value = block_reads_per_value(names);
         for instruction in names.instructions() {
             if instruction.bci() == test_bci {
                 continue;
             }
-            let operation = self.operations.get(instruction.bci());
-            let array_length_is_single_use = matches!(operation, Some(Operation::ArrayLength))
-                && instruction.writes().len() == 1
-                && instruction
-                    .writes()
-                    .iter()
-                    .all(|(_, value)| reads_per_value.get(value) == Some(&1));
-            let condition_value = condition_bcis.contains(&instruction.bci())
-                && (matches!(
-                    operation,
-                    Some(
-                        Operation::Invoke(_)
-                            | Operation::Field {
-                                access: crate::facts::FieldAccess::Read,
-                                ..
-                            }
-                    )
-                ) || (allow_array_length && matches!(operation, Some(Operation::ArrayLength))));
-            let value_only = matches!(
-                operation,
-                Some(
-                    Operation::Push(_)
-                        | Operation::Load { .. }
-                        | Operation::Arithmetic { .. }
-                        | Operation::Negate
-                        | Operation::NumericComparison { .. },
-                )
-            ) || (condition_value
-                && (!matches!(operation, Some(Operation::ArrayLength))
-                    || array_length_is_single_use))
-                // A copy and the store it feeds, when the value that store writes is one no reader
-                // can observe: the assignment dance of `recover-dup-store-conditional`, whose
-                // eliminated form writes neither of them and whose store is the one write the
-                // bytecode's own program cannot tell was run. Both halves are required together —
-                // a copy that feeds an observable store, or a store anything reads, is the effect
-                // this precondition exists for and is refused below, at its own BCI.
-                || self.unobservable_store_dance_part(block, instruction);
-            if !value_only {
+            if !self.test_expression_instruction(
+                block,
+                test_bci,
+                instruction,
+                &condition_bcis,
+                &reads_per_value,
+                allow_array_length,
+            ) {
                 // The loop pass declares this precondition (`pass::LOOP.requires(StatementFree)`)
                 // and the check is stated through the declaration: the reason carries the rule
                 // version, so the text and the report say *which rule* refused, not just that
@@ -7018,6 +6996,209 @@ impl Walker<'_> {
             }
         }
         Ok(())
+    }
+
+    /// Whether one instruction of a test block belongs to the value expression the block's test
+    /// writes.
+    ///
+    /// A `Push`, a `Load`, an `Arithmetic`, a `Negate` or a numeric comparison is an operand's own
+    /// text. A value the test reads through the block's own producers may stay there when it is a
+    /// call or a field read the branch consumes; a *throwing* read — an array length, or an array
+    /// element (`recover-postfix-condition-positions`) — may stay only when its value has exactly
+    /// one reader in the block, so the expression tree cannot evaluate the read twice and the read
+    /// still runs once per evaluation, where the bytecode ran it. The copy-and-store dance a loop
+    /// test may hold, and the `iload slot; iinc slot, ±1` pair a proved snapshot absorbs, are the
+    /// two effects that are their expression's own machinery.
+    fn test_expression_instruction(
+        &self,
+        block: &CanonicalBlockId,
+        test_bci: u32,
+        instruction: &SsaInstruction,
+        condition_bcis: &BTreeSet<u32>,
+        reads_per_value: &BTreeMap<ValueId, usize>,
+        allow_array_length: bool,
+    ) -> bool {
+        let operation = self.operations.get(instruction.bci());
+        if matches!(
+            operation,
+            Some(
+                Operation::Push(_)
+                    | Operation::Load { .. }
+                    | Operation::Arithmetic { .. }
+                    | Operation::Negate
+                    | Operation::NumericComparison { .. },
+            )
+        ) {
+            return true;
+        }
+        // A copy and the store it feeds, when the value that store writes is one no reader can
+        // observe: the assignment dance of `recover-dup-store-conditional`, whose eliminated form
+        // writes neither of them and whose store is the one write the bytecode's own program cannot
+        // tell was run. Both halves are required together — a copy that feeds an observable store,
+        // or a store anything reads, is the effect this precondition exists for and is refused, at
+        // its own BCI.
+        if self.unobservable_store_dance_part(block, instruction) {
+            return true;
+        }
+        // The increment and the load of the slot it updates, when the old value the load took is
+        // read once after the update by the condition itself (`recover-postfix-condition-
+        // positions`): the test writes the postfix expression where the bytecode read the value,
+        // and the increment is absorbed into it instead of writing a statement of its own.
+        if self.snapshot_condition_part(block, test_bci, instruction, condition_bcis) {
+            return true;
+        }
+        if !condition_bcis.contains(&instruction.bci()) {
+            return false;
+        }
+        let single_reader = instruction.writes().len() == 1
+            && instruction
+                .writes()
+                .iter()
+                .all(|(_, value)| reads_per_value.get(value) == Some(&1));
+        match operation {
+            Some(
+                Operation::Invoke(_)
+                | Operation::Field {
+                    access: crate::facts::FieldAccess::Read,
+                    ..
+                },
+            ) => true,
+            Some(Operation::ArrayLength) => allow_array_length && single_reader,
+            Some(Operation::ArrayLoad | Operation::ArrayElementLoad { .. }) => single_reader,
+            _ => false,
+        }
+    }
+
+    /// Whether one instruction is a half of the `iload slot; iinc slot, ±1` pair whose old value
+    /// the condition reads after the update — the postfix condition position
+    /// `recover-postfix-condition-positions` presents.
+    ///
+    /// The pair is the increment and the load of the very slot it updates, and the increment must
+    /// read the value that load read: that is what says the increment is that load's own update and
+    /// not a second one. The value the load pushed must have exactly one consumer, in this block,
+    /// after the update, and that consumer must be part of the condition (or the branch itself);
+    /// nothing may read the value the update wrote in between; and the consumer must not be a store
+    /// back into the same slot — `i = i++` keeps the refusal the Non-Goal states. Both halves are
+    /// checked together, so a load that feeds anything else, and an increment whose old value has a
+    /// second reader, keep the `StatementFree` refusal they have always had, at their own BCI.
+    fn snapshot_condition_part(
+        &self,
+        block: &CanonicalBlockId,
+        test_bci: u32,
+        instruction: &SsaInstruction,
+        condition_bcis: &BTreeSet<u32>,
+    ) -> bool {
+        let Some(names) = self.ssa.block(block) else {
+            return false;
+        };
+        let Some(position) = names
+            .instructions()
+            .iter()
+            .position(|candidate| candidate.bci() == instruction.bci())
+        else {
+            return false;
+        };
+        let (load, increment) = match self.operations.get(instruction.bci()) {
+            Some(Operation::Increment { .. }) => {
+                let Some(load) = position
+                    .checked_sub(1)
+                    .and_then(|position| names.instructions().get(position))
+                else {
+                    return false;
+                };
+                (load, instruction)
+            }
+            Some(Operation::Load { .. }) => {
+                let Some(increment) = names.instructions().get(position + 1) else {
+                    return false;
+                };
+                (instruction, increment)
+            }
+            _ => return false,
+        };
+        let (
+            Some(Operation::Load { slot: read }),
+            Some(Operation::Increment {
+                slot: written,
+                amount,
+            }),
+        ) = (
+            self.operations.get(load.bci()),
+            self.operations.get(increment.bci()),
+        )
+        else {
+            return false;
+        };
+        if read != written || !matches!(amount, 1 | -1) {
+            return false;
+        }
+        let (Some(old), Some(loaded)) = (local_read(load, *read), stack_output(load)) else {
+            return false;
+        };
+        if local_read(increment, *written) != Some(old) {
+            return false;
+        }
+        let Some(updated) = local_write(increment, *written) else {
+            return false;
+        };
+        let uses = self.ssa.value(loaded).uses();
+        let [consumer] = uses else {
+            return false;
+        };
+        let Some(consumer_bci) = consumer.bci() else {
+            return false;
+        };
+        if consumer.block() != block || consumer_bci <= increment.bci() {
+            return false;
+        }
+        if consumer_bci != test_bci && !condition_bcis.contains(&consumer_bci) {
+            return false;
+        }
+        // A text between the update and the consumer that reads the updated value would see the
+        // increment where the bytecode had not run it yet.
+        if self.ssa.value(updated).uses().iter().any(|use_| {
+            use_.block() == block
+                && use_
+                    .bci()
+                    .is_some_and(|bci| bci > increment.bci() && bci < consumer_bci)
+        }) {
+            return false;
+        }
+        !matches!(
+            self.operations.get(consumer_bci),
+            Some(Operation::Store { slot: written }) if *written == *read
+        )
+    }
+
+    /// The test blocks of one condition chain that present a postfix condition position — a half of
+    /// an `iload slot; iinc slot, ±1` pair whose old value the test reads
+    /// (`recover-postfix-condition-positions`) — with the pair's own instruction. The chain rules
+    /// read this to state the slice's own bound: one position, at one end of the chain.
+    fn chain_snapshot_positions(
+        &mut self,
+        tests: &[(CanonicalBlockId, u32, Continuation)],
+    ) -> Result<Vec<(usize, u32)>, StopReason> {
+        let mut positions = Vec::new();
+        for (index, (block, test_bci, _)) in tests.iter().enumerate() {
+            let Some(names) = self.ssa.block(block) else {
+                continue;
+            };
+            poll(self.budget, Some(*test_bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::IrItems,
+                u64::try_from(names.instructions().len()).unwrap_or(u64::MAX),
+                Some(*test_bci),
+            )?;
+            let condition_bcis = self.condition_value_bcis(block, *test_bci, names);
+            if let Some(instruction) = names.instructions().iter().find(|instruction| {
+                instruction.bci() != *test_bci
+                    && self.snapshot_condition_part(block, *test_bci, instruction, &condition_bcis)
+            }) {
+                positions.push((index, instruction.bci()));
+            }
+        }
+        Ok(positions)
     }
 
     /// Whether one instruction is a half of a `dup; store` pair whose store writes a value no
@@ -10154,6 +10335,17 @@ impl Walker<'_> {
         if tests.len() < 2 {
             return Ok(Ok(None));
         }
+        // The MVP admits **one** postfix condition position per chain, at one of its ends
+        // (`recover-postfix-condition-positions`): the middle of a short-circuit chain and a second
+        // variable's position are recorded and left to a later slice, so a chain that would present
+        // them keeps the refusal it had.
+        let positions = self.chain_snapshot_positions(&tests)?;
+        if let Some(at) = chain_position_outside_bound(&positions, tests.len()) {
+            return Ok(Err(FallbackReason::ChainPositionBound {
+                block_bci: header.bci(),
+                at,
+            }));
+        }
         Ok(Ok(Some(HeaderTestChain {
             tests,
             operator,
@@ -10768,6 +10960,18 @@ impl Walker<'_> {
         if tests.len() < 2 {
             return Ok(None);
         }
+        // The MVP admits **one** postfix condition position per chain, at one of its ends
+        // (`recover-postfix-condition-positions`): the middle of a short-circuit chain and a second
+        // variable's position are recorded and left to a later slice, so a chain that would present
+        // them keeps the refusal it had.
+        let positions = self.chain_snapshot_positions(&tests)?;
+        if let Some(at) = chain_position_outside_bound(&positions, tests.len()) {
+            let reason = FallbackReason::ChainPositionBound {
+                block_bci: header.bci(),
+                at,
+            };
+            return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
+        }
         let Some(exit) = exit else {
             return Ok(None);
         };
@@ -10869,49 +11073,50 @@ impl Walker<'_> {
         Some((test_bci, first_condition, condition_bcis))
     }
 
+    /// Whether the first test's suffix of one bottom-tested chain holds nothing but the values
+    /// that test reads.
+    ///
+    /// The block is written once as the loop's body, and the build writes the instructions before
+    /// the condition's first value as the body's own statements (`recover-postfix-condition-
+    /// positions`: `last = xs[i];` shares the block with the `xs[i++] != 0` the do-while's
+    /// condition starts at). Everything from that first value on belongs to the condition, and the
+    /// per-instruction rule is the one `test_is_pure` states — a value the test writes has exactly
+    /// one place where it is admitted — so an effect the test would have to run has no place there
+    /// and the chain is declined.
     fn latch_test_suffix_is_effect_free(&self, block: &CanonicalBlockId, test_bci: u32) -> bool {
-        let Some((_, first_condition, condition_bcis)) = self.first_latch_test_suffix(block) else {
+        let Some((_, first_condition, _)) = self.first_latch_test_suffix(block) else {
             return false;
         };
         let Some(names) = self.ssa.block(block) else {
             return false;
         };
+        // The condition's own values are the *unfiltered* set the branch reads through the block's
+        // producers; the per-instruction rule is the same one `test_is_pure` states, so a value the
+        // test writes has one place where it is admitted (`recover-postfix-condition-positions`
+        // admits the array read and the `iload; iinc` pair here too).
+        let condition_bcis = self.condition_value_bcis(block, test_bci, names);
+        let reads_per_value = block_reads_per_value(names);
         if names.instructions()[first_condition..]
             .iter()
             .any(|instruction| {
-                instruction.bci() != test_bci && !condition_bcis.contains(&instruction.bci())
+                instruction.bci() != test_bci
+                    && !self.test_expression_instruction(
+                        block,
+                        test_bci,
+                        instruction,
+                        &condition_bcis,
+                        &reads_per_value,
+                        true,
+                    )
             })
         {
             return false;
         }
-        names.instructions()[first_condition..]
-            .iter()
-            .filter(|instruction| instruction.bci() != test_bci)
-            .all(|instruction| {
-                matches!(
-                    self.operations.get(instruction.bci()),
-                    Some(
-                        Operation::Push(_)
-                            | Operation::Load { .. }
-                            | Operation::Arithmetic { .. }
-                            | Operation::Negate
-                            | Operation::NumericComparison { .. }
-                            | Operation::Invoke(_)
-                            | Operation::Field {
-                                access: crate::facts::FieldAccess::Read,
-                                ..
-                            }
-                    )
-                )
-            })
-            && names.instructions()[..first_condition]
-                .iter()
-                .all(|instruction| {
-                    matches!(
-                        self.operations.get(instruction.bci()),
-                        Some(Operation::Increment { .. })
-                    )
-                })
+        // Everything before the condition's first value is the body's own lead: the block is the
+        // loop's body written once, and the build writes those instructions as the statements they
+        // are (`recover-postfix-condition-positions`: `last = xs[i];` shares the block with the
+        // `xs[i++] != 0` the do-while's condition starts at).
+        true
     }
 
     /// The `do … while` shape: one latch, whose own branch tests and jumps back to the header.
@@ -12425,6 +12630,67 @@ impl Walker<'_> {
         }
         Ok(Some(fallthroughs))
     }
+}
+
+/// The postfix position of one condition chain that this slice's bound refuses, when the chain
+/// holds one: the second position of a chain, or the single position that is neither the chain's
+/// first nor its last test (`recover-postfix-condition-positions`). The value answered is the
+/// pair's own instruction — the place the refusal names.
+fn chain_position_outside_bound(positions: &[(usize, u32)], tests: usize) -> Option<u32> {
+    if let Some((_, at)) = positions.get(1) {
+        return Some(*at);
+    }
+    let [(index, at)] = positions else {
+        return None;
+    };
+    (*index != 0 && *index + 1 != tests).then_some(*at)
+}
+
+/// The value one instruction reads from one local slot, when it reads that slot.
+fn local_read(instruction: &SsaInstruction, slot: u16) -> Option<ValueId> {
+    instruction
+        .reads()
+        .iter()
+        .find_map(|(read, value)| match read {
+            Slot::Local(read) if *read == slot => Some(*value),
+            _ => None,
+        })
+}
+
+/// The value one instruction writes into one local slot, when it writes that slot.
+fn local_write(instruction: &SsaInstruction, slot: u16) -> Option<ValueId> {
+    instruction
+        .writes()
+        .iter()
+        .find_map(|(written, value)| match written {
+            Slot::Local(written) if *written == slot => Some(*value),
+            _ => None,
+        })
+}
+
+/// The one value one instruction pushes onto the operand stack, when it pushes exactly one.
+fn stack_output(instruction: &SsaInstruction) -> Option<ValueId> {
+    let mut outputs = instruction
+        .writes()
+        .iter()
+        .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value));
+    let output = outputs.next()?;
+    outputs.next().is_none().then_some(output)
+}
+
+/// How many times each value is read by the instructions of one block: the single-reader proof of
+/// a throwing condition read (`test_expression_instruction`) is taken over this count.
+fn block_reads_per_value(names: &SsaBlock) -> BTreeMap<ValueId, usize> {
+    let mut reads_per_value = BTreeMap::new();
+    for (_, value) in names
+        .instructions()
+        .iter()
+        .flat_map(|instruction| instruction.reads())
+    {
+        let uses = reads_per_value.entry(*value).or_insert(0_usize);
+        *uses = uses.saturating_add(1);
+    }
+    reads_per_value
 }
 
 /// Both inner arms must actually enter the continuation. Cardinality plus membership alone
