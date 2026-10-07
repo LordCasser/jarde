@@ -1,0 +1,41 @@
+// jarde: presentation of `ScopePlanCrossing` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class ScopePlanCrossing extends java.lang.Object {
+    private ScopePlanCrossing() {
+        // @method <init>()V
+        // @declaration a constructor of `ScopePlanCrossing`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int flatFinally(int arg0) {
+        // @method flatFinally(I)I
+        // @declaration a static method of `ScopePlanCrossing`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        // @bytecode 0 2 3 4 5 8 10 13 14
+        // BCI 28: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 15 16 17 18 21 23 26 27 28 29 32 34 37 38
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [15, 28]
+    }
+
+    static int resourceAcrossFinally(java.lang.String arg0) throws java.io.IOException {
+        // @method resourceAcrossFinally(Ljava/lang/String;)I
+        // @declaration a static method of `ScopePlanCrossing`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.BufferedReader local1;
+        int local2;
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 24 21 12
+        // the copy at BCI 3 has no proved local assignment
+        local2 = 0;
+        // @bytecode 27 28 31 32 33
+        // block at BCI 27 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+        // @bytecode 36 39 42 43 45 46 49 51 52 54 55 58 60
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 42, 52]
+    }
+}

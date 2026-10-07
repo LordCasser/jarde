@@ -1,0 +1,61 @@
+// jarde: presentation of `ExceptionScope` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class ExceptionScope extends java.lang.Object {
+    private ExceptionScope() {
+        // @method <init>()V
+        // @declaration a constructor of `ExceptionScope`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int catchOnly(boolean arg0) {
+        // @method catchOnly(Z)I
+        // @declaration a static method of `ExceptionScope`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0) {
+                throw null;
+            } else {
+                return 1;
+            }
+        } catch (java.lang.NullPointerException local1) {
+            int local2 = 2;
+            return local2;
+        }
+    }
+
+    public static int assignedAcrossTry(boolean arg0) {
+        // @method assignedAcrossTry(Z)I
+        // @declaration a static method of `ExceptionScope`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        try {
+            if (arg0) {
+                throw null;
+            } else {
+                local1 = 3;
+            }
+        } catch (java.lang.NullPointerException local2) {
+            local1 = 4;
+        }
+        return local1;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `ExceptionScope`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (catchOnly(false) == 1) {
+            if (catchOnly(true) == 2) {
+                if (assignedAcrossTry(false) == 3) {
+                    if (assignedAcrossTry(true) != 4) {
+                    } else {
+                        return;
+                    }
+                }
+            }
+        }
+        throw new java.lang.AssertionError((java.lang.Object) "exception-scope fixture behavior changed");
+    }
+}
