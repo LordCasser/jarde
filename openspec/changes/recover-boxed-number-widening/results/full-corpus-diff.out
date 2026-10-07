@@ -1,0 +1,10 @@
+corpus classes: 1987
+baseline renders done
+patched renders done
+self-test: openspec/evidence/java-syntax-2026-10-03/boxed-number-widening-patrol/fixture/C8.class moved=yes (want yes)
+self-test: openspec/evidence/java-syntax-2026-10-03/boxed-number-widening-patrol/fixture/C7.class moved=no (want no)
+MOVED: openspec/evidence/java-syntax-2026-10-03/boxed-number-widening-patrol/fixture/C8.class (refusals 1 -> 0)
+classes compared: 1987
+non-render classes (identical on both binaries, not counted): 0
+moved classes: 1
+FULLDIFF-EXIT=0

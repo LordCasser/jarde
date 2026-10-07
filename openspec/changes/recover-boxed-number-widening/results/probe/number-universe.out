@@ -1,0 +1,15 @@
+rt.jar sha256: b27515a608ee447566b688e2bbb2257b1f0d8eceb96c307b87eb28d90a6630f4
+java -version: openjdk version "1.8.0_432"
+class entries handed to the probe: 20400
+java.lang direct subclasses of Number (6):
+  java.lang.Byte extends java.lang.Number
+  java.lang.Double extends java.lang.Number
+  java.lang.Float extends java.lang.Number
+  java.lang.Integer extends java.lang.Number
+  java.lang.Long extends java.lang.Number
+  java.lang.Short extends java.lang.Number
+java.lang indirect Number subclasses (0): []
+non-java.lang direct Number subclasses (5): [java.math.BigDecimal, java.math.BigInteger, java.util.concurrent.atomic.AtomicInteger, java.util.concurrent.atomic.AtomicLong, java.util.concurrent.atomic.Striped64]
+non-java.lang indirect Number subclasses (4): [java.util.concurrent.atomic.DoubleAccumulator, java.util.concurrent.atomic.DoubleAdder, java.util.concurrent.atomic.LongAccumulator, java.util.concurrent.atomic.LongAdder]
+Number's own superclass: java.lang.Object
+Number's own interfaces: [interface java.io.Serializable]
