@@ -4,6 +4,13 @@
 
 ## 当前状态（2026-10-07 续，最新）
 
+- **`recover-boolean-int-bitwise-operands` 验收合入（`9e553f00`，CI 监控中）**：`BooleanConsumption` 消费走查（boolean 变量存/`Z` return/已认领字段写/布尔兄弟位运算，递归）把 int 化布尔回投泛化出 conditional-rhs 的字段写位；**`mix` 与 `andNot` 同域一并恢复**（类级双向运行逐字一致——conditional-rhs 片设置的硬门以此满足）；物化入局部形/真混合算术负例保持拒绝。合并初跑有一处 fmt 换行（root 修正入验收提交——**合并后必重跑 fmt**，实现片 worktree 的 fmt 不完全等价于合并态）。
+- **本日累计 13 片合入**（temporal / interface / nonnull-v2 / loop-else-if / static-generic / postfix-A / dup-store / inline-concat / chained-field / conditional-rhs / array-dance / postfix-B / boolean-bitwise）+ 1 错立项关闭（multireads→inline-concat 重定位）+ 1 CI oracle 回归修复 + census 两族归因修正（canonical 类级撤回、family-4 phi 膨胀）+ critical 15/16/17/18 锚与 canonical/依赖链/多消费者/copy/旧值各族旗舰关闭。
+- **队列（下一会话）**：BI 循环携带多读（增强 for 协议消费者建模，`project-proved-enhanced-for-loops` 邻接）→ 低优先存量（`recover-statement-position-news` / `recover-fixture-behavior-guard-coverage` / `recover-boxed-number-widening` / `recover-capture-ctor-super-order` / local-scope 12/13 锚 / double-brace B 路径 / array-covariant-store）。全部 spec 就绪或已登记。
+- 磁盘 48Gi；全部 worktree/target 已回收。
+
+## 当前状态（2026-10-07 续，背景保留一）
+
 - **本续段（10-06 深夜→10-07）再合入四片（全部 root 独立验收 + CI 绿）**：`recover-chained-field-assignment`（FieldCopies 单证明双形状；两处 ask_parent "ruling" 按纪律未采信、root 以自证重裁）、`recover-conditional-rhs-field-compound`（**第 15 critical 锚关闭**——BI 整类可编译错面 root 亲测复现后以恢复关闭，`false/false/false/false` 逐字一致；布尔位通道收窄到字段写位避免暴露 BW 面）、`recover-array-initializer-value-positions`（copy 族第 3 员 array dance；12 个非末实参位外沿逐个行为回放后追认）、`recover-postfix-condition-positions`（**postfix 域 Phase B 关闭**——两问门控揭示真拒绝点在 region 测试纯度层；单处 `test_expression_instruction` 收拢判据 + `ChainPositionBound` 围栏；迭代计数精确回放）。
 - **copy 族四员全部落地**（postfix 快照消费位 / dup-store / chained-field / array-dance）；旧值族 A+B 相齐；依赖链族旗舰落地；多消费者族重定位缺口（inline-concat）落地。value 级四族的 critical 面全部关闭或已立项在飞。
 - **在飞**：`recover-boolean-int-bitwise-operands`（BW 面——conditional-rhs 片已留测量：宽规则会暴露 `mix` 可编译错面，任务书已含类级不变量硬门）。
