@@ -476,6 +476,16 @@ fn the_lifted_declaration_carries_the_origin_of_every_region_it_covers() {
 
 #[test]
 fn a_crossing_local_keeps_the_dependent_slice_refused() {
+    // Re-measured when the re-sliced region-layer work landed
+    // (`recover-lock-guard-loop-finally`, the lock-guard certificate): both members below are
+    // **unchanged**, on both legs, byte for byte. The re-slice is the lock-guard certificate, whose
+    // shape is one catch-all row (no self-protection row), one invocation before the protected
+    // range whose receiver is an instance field read, and two release copies on that same field —
+    // so `flatFinally` (three rows, a named catch, the range at BCI 0) and `resourceAcrossFinally`
+    // (a local handle, a construction chain before the range, the resource lowering's
+    // self-protection row) keep the answer this test pins. These two expectations are the control,
+    // not a stale pin: the certificate that would flip them is the io-wrapping family's, which the
+    // change registers as its boundary.
     for (leg, bytes) in [("v8", CROSSING_V8), ("v8-javac8", CROSSING_V8_JAVAC8)] {
         let snapshot = open(bytes);
         let report = class_source_of(&snapshot, "ScopePlanCrossing");
