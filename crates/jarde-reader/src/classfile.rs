@@ -12144,7 +12144,16 @@ mod tests {
             // rows' own argument positions, one class on both legs: two classes, six bodies — the
             // constructor and the two members per leg — no handler record, no branch target and no
             // subroutine).
-            (927, 3957, 368, 2475, 8),
+            // The 2026-10-08 recover-instance-field-assignment-chains fixtures (the copy family's
+            // chain shape as javac writes it for **instance** fields: `CP` with the three-store
+            // chain, the two-store chain and the `main` that exercises both, `MX` with the three
+            // mixed static/instance dances (a recorded boundary: those keep their refusals) and
+            // `NEG` with the four refusals — a cross-object chain, a copy consumed by the
+            // expression the stored value is part of, a source that would have to be saved and a
+            // receiver a call produced, three classes on both compiler legs: six classes,
+            // thirty-six bodies, eighteen per leg (`CP`'s four, `MX`'s five and `NEG`'s nine), no
+            // handler record, no branch target and no subroutine) moved it again.
+            (933, 3993, 368, 2475, 8),
             "fixture population changed: re-measure these counts"
         );
     }
