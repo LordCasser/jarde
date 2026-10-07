@@ -1,0 +1,69 @@
+=== openspec/evidence/java-syntax-2026-10-05/ctor-throw-init-patrol/fixture/CE.class
+    baseline text compiles: yes
+    patched  text compiles: yes
+    behaviour: identical to the original class (5 output line(s))
+=== openspec/evidence/java-syntax-2026-10-05/discarded-allocation-patrol/fixture/DN.class
+    baseline text compiles: no
+    patched  text compiles: no
+    baseline javac says: DN.java:8: 错误: 找不到符号         jarde_refused_body(); 
+    patched javac says: DN.java:8: 错误: 找不到符号         new DN$N(); 
+    (the baseline text does not compile either: this class's text never was a compilable unit)
+=== openspec/evidence/java-syntax-2026-10-05/discarded-allocation-patrol/fixture/CD.class
+    baseline text compiles: no
+    patched  text compiles: yes
+    baseline javac says: CD.java:8: 错误: 找不到符号         jarde_refused_body(); 
+    behaviour: identical to the original class (8 output line(s))
+=== openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B5.class
+    baseline text compiles: no
+    patched  text compiles: yes
+    baseline javac says: B5.java:23: 错误: 找不到符号         jarde_refused_body(); 
+    behaviour: identical to the original class (9 output line(s))
+=== openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B6.class
+    baseline text compiles: no
+    patched  text compiles: no
+    baseline javac says: B6.java:17: 错误: 找不到符号         jarde_refused_body(); 
+    patched javac says: B6.java:32: 错误: 找不到符号         jarde_refused_body(); 
+    (the baseline text does not compile either: this class's text never was a compilable unit)
+=== tests/fixtures/recover-javac8-allocation-qualifier-null-check/d3/D3.class
+    baseline text compiles: no
+    patched  text compiles: no
+    baseline javac says: D3.java:8: 错误: 找不到符号         jarde_refused_body(); 
+    patched javac says: D3.java:8: 错误: 无法从静态上下文中引用非静态 变量 this         new D3$In(new D3()); 
+    (the baseline text does not compile either: this class's text never was a compilable unit)
+=== tests/fixtures/recover-statement-position-news/v8/SB.class
+    baseline text compiles: no
+    patched  text compiles: yes
+    baseline javac says: SB.java:17: 错误: 找不到符号         jarde_refused_body(); 
+    behaviour: identical to the original class (1 output line(s))
+=== tests/fixtures/recover-statement-position-news/v8/SP.class
+    baseline text compiles: no
+    patched  text compiles: yes
+    baseline javac says: SP.java:25: 错误: 找不到符号         jarde_refused_body(); 
+    behaviour: identical to the original class (12 output line(s))
+=== tests/fixtures/recover-statement-position-news/v8-javac8/SB.class
+    baseline text compiles: no
+    patched  text compiles: yes
+    baseline javac says: SB.java:17: 错误: 找不到符号         jarde_refused_body(); 
+    behaviour: identical to the original class (1 output line(s))
+=== tests/fixtures/recover-statement-position-news/v8-javac8/SP.class
+    baseline text compiles: no
+    patched  text compiles: yes
+    baseline javac says: SP.java:25: 错误: 找不到符号         jarde_refused_body(); 
+    behaviour: identical to the original class (12 output line(s))
+=== tests/fixtures/p3-nested-parent-projection/v8/Multiseg.class
+    baseline text compiles: no
+    patched  text compiles: no
+    baseline javac says: Multiseg.java:2: 错误: 需要包含MO.Mid的封闭实例     public Multiseg(MO arg1) { 
+    patched javac says: Multiseg.java:2: 错误: 需要包含MO.Mid的封闭实例     public Multiseg(MO arg1) { 
+    (the baseline text does not compile either: this class's text never was a compilable unit)
+=== tests/fixtures/p3-nested-parent-projection/v8-javac8/Multiseg.class
+    baseline text compiles: no
+    patched  text compiles: no
+    baseline javac says: Multiseg.java:2: 错误: 需要包含MO.Mid的封闭实例     public Multiseg(MO arg1) { 
+    patched javac says: Multiseg.java:2: 错误: 需要包含MO.Mid的封闭实例     public Multiseg(MO arg1) { 
+    (the baseline text does not compile either: this class's text never was a compilable unit)
+=== tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc$1.class
+    baseline text compiles: no
+    patched  text compiles: yes
+    baseline javac says: UnspellableOwnerAlloc$1.java:8: 错误: 缺少返回语句     } 
+    behaviour: identical to the original class (3 output line(s))
