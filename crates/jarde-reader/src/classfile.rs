@@ -12076,7 +12076,20 @@ mod tests {
             // `assignedAcrossTry`'s, `assignedAcrossIf`'s and `nestedHandlerOnly`'s `if` pairs,
             // `nestedAcross`'s two nested pairs, `main`'s four `print` statements' pairs and
             // `flatFinally`'s pair), no subroutine) moved it again.
-            (867, 3777, 312, 2333, 8),
+            // The 2026-10-07 recover-lock-guard-loop-finally fixtures (the explicit-lock patrol's
+            // `LK` recompiled on both compiler legs, the four negative shapes beside it and the
+            // io-wrapping resource-across-finally probe: three classes on both legs — six classes,
+            // twenty-four bodies — `LK`'s five per leg, `LockGuardNegatives`'s five and
+            // `LockGuardProbe`'s two — twenty handler records (`LK`'s three: the two guards and the
+            // `tryLock` guard; `LockGuardNegatives`'s five: one each for `lockMismatch`,
+            // `localLockRewritten` and `throwingRelease` and two for `guardedRelease`, the release
+            // javac protects; the probe's two: the protected range and its self-protection row;
+            // ten per leg) and twenty-six branch targets (thirteen per leg: `LK`'s six — `put`'s
+            // `if_icmplt` and its two `goto`s, `take`'s `ifgt` and `goto`, and `tryLockQuick`'s
+            // `ifeq` — `LockGuardNegatives`'s five — `lockMismatch`'s, `localLockRewritten`'s and
+            // `throwingRelease`'s `goto`s and `guardedRelease`'s `ifnull`/`goto` pair — and the
+            // probe's `ifnull`/`goto` pair), no subroutine) moved it again.
+            (873, 3801, 332, 2359, 8),
             "fixture population changed: re-measure these counts"
         );
     }
