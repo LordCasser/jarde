@@ -26,3 +26,14 @@
 ## 实施结果（`recover-nested-ctor-argument-sites`）
 
 走查已扩展：外层实参扫描按同一站点判据递归证明内嵌构造（深度上限 2），成功则跳过其闭区间续扫并由既有构造拼写呈现于实参位；内嵌非完整站点（双用途、跨块、三层）保持拒绝并登记。X1.main/X2.nested 及变体前后、三方对照与门禁记录见 [results-nested/nested-replay.md](results-nested/nested-replay.md)（变体源与 SHA 在 [variants-nested/](variants-nested/)）。
+
+## 深度上限 2→3（2026-10-07，`recover-io-resource-finally` 的连带更新）
+
+`recover-io-resource-finally`（io-wrapping 锚的整类呈现）需要三层包装链
+（`new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))`）的最外层有
+"单个可写位置"，而本巡查登记的"三层保持拒绝"正是它的阻塞点。该片把
+`MAX_NESTED_CONSTRUCTION_LAYERS` 由 2 提到 **3**，并按越界核查钉住新边界：**三层呈现、四层仍拒**
+（四层核查件 `tests/fixtures/recover-io-resource-finally/NestedDepth.java` 的 `fourLayer`，
+双腿；单元测试 `init::tests::three_layers_present_and_a_deeper_run_keeps_its_outermost_refusal`）。
+本巡查的其余登记（双用途、跨块）逐字不变；`X3` 的既有正面逐字节不变。门控与证据见
+[changes/recover-io-resource-finally/results/](../../changes/recover-io-resource-finally/results/)。
