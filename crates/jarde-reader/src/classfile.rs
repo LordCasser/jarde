@@ -12124,7 +12124,27 @@ mod tests {
             // each in `catchWrong`, `catchNumber` and `catchElement`, per leg) and eight branch
             // targets (`AS.main`'s two `goto`s and `UB.merged`'s `ifeq`/`goto` pair, four per
             // leg), no subroutine).
-            (907, 3911, 344, 2453, 8),
+            // The 2026-10-07 recover-io-resource-finally fixtures (the io-wrapping patrol's `IO`
+            // recompiled verbatim on both compiler legs — `countLines` the row-set resource
+            // guard's anchor, `readAll` the registered copy-family boundary and `main` — beside
+            // this change's `IOMidRead` (the same certificate over a caller-owned stream, the
+            // mid-read driver's method), `IONegatives` (`twoNested`'s two handlers and
+            // `closeReturns`' value-carrying copy, the two refusals) and `NestedDepth` (the
+            // `new@1` depth boundary: `threeLayer` presents, `fourLayer` refuses) with its four
+            // nested companions and `Returner`: nine classes on both compiler legs — eighteen
+            // classes, forty bodies, twenty per leg (`IO`'s four, `IOMidRead`'s two,
+            // `IONegatives`' three, `NestedDepth`'s four, `Returner`'s three and the four
+            // companions' one each) — twenty-four handler records (`IO`'s four: `countLines`' and
+            // `readAll`'s two rows each; `IOMidRead`'s two; `IONegatives`' six: `twoNested`'s four
+            // — the two nested `finally`s' protected ranges and self-protection rows — and
+            // `closeReturns`' two; twelve per leg) and twenty-two branch targets (eleven per leg:
+            // `IO`'s five — `countLines`' `ifnull`/`goto`, `readAll`'s `if_icmpeq`/`goto` and
+            // `main`'s one — `IOMidRead`'s two and `IONegatives`' four — the two loops'
+            // `if_icmpne`/`goto` pairs) — plus this change's `WideningProbe` (the two `java.io`
+            // rows' own argument positions, one class on both legs: two classes, six bodies — the
+            // constructor and the two members per leg — no handler record, no branch target and no
+            // subroutine).
+            (927, 3957, 368, 2475, 8),
             "fixture population changed: re-measure these counts"
         );
     }

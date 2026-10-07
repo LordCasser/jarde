@@ -8102,6 +8102,141 @@
       "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICQ.class"
     },
     {
+      "blake3": "f183643287f61240e206b28bad72b5e55def3501339c951a7ba4152805ce74df",
+      "bytes": 1012,
+      "path": "tests/fixtures/recover-io-resource-finally/IO.java"
+    },
+    {
+      "blake3": "17f57ebfd790215a7dddd79ff8e17b67075f5377c1dfe37188d4d296a2934987",
+      "bytes": 1045,
+      "path": "tests/fixtures/recover-io-resource-finally/IOMidRead.java"
+    },
+    {
+      "blake3": "a2d453fa1ce3d46e1f308bd938d2432e3983e64e58889e8b3b8776e109c33e7d",
+      "bytes": 2065,
+      "path": "tests/fixtures/recover-io-resource-finally/IOMidReadDriver.java"
+    },
+    {
+      "blake3": "53c7dac98a286195bfe00cd93e798665aa83c84f37d56e0cf836221855efc730",
+      "bytes": 1872,
+      "path": "tests/fixtures/recover-io-resource-finally/IONegatives.java"
+    },
+    {
+      "blake3": "3bf4384a8aa7ea2c6d1227af2806a5331c675e991a47e01aa184e4cec56e8dfe",
+      "bytes": 1402,
+      "path": "tests/fixtures/recover-io-resource-finally/NestedDepth.java"
+    },
+    {
+      "blake3": "e58acc6aac743d94720d0869988393ff381ca4068a44a6be7eef088ea12c4f27",
+      "bytes": 915,
+      "path": "tests/fixtures/recover-io-resource-finally/WideningProbe.java"
+    },
+    {
+      "blake3": "e55980c788fb1801601cc1aca0af926bf091d52cf906c60ef5b341d108e881a9",
+      "bytes": 12,
+      "path": "tests/fixtures/recover-io-resource-finally/data.txt"
+    },
+    {
+      "blake3": "5d62bd71b51804996801b0fddb134d6f83ccfd9bc29f9723d78e3f43be16d5da",
+      "bytes": 1546,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/IO.class"
+    },
+    {
+      "blake3": "78d83f1aafd4baa86e346d24c8e6eff7ff59b4798dbc9ec82141a5840a83991a",
+      "bytes": 492,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/IOMidRead.class"
+    },
+    {
+      "blake3": "6a8d5e2444d2a35f22ae96fe6db36bbd67d0482073bdec22f256c690a56948f2",
+      "bytes": 768,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/IONegatives.class"
+    },
+    {
+      "blake3": "93c9a2d9669d702440e3a949acf4aa1cf22e3de51ee1a3d8fbbb936c0c7b019a",
+      "bytes": 309,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/NestedDepth$First.class"
+    },
+    {
+      "blake3": "27f5079015d0464a1614b77f5d2f5332a403f6ef291f9b8b969cf8d4ea164a1c",
+      "bytes": 307,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/NestedDepth$Fourth.class"
+    },
+    {
+      "blake3": "e8c275c6ae307a9118da783f25920bff0acf80564d3617af582c8ad711369bf6",
+      "bytes": 307,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/NestedDepth$Second.class"
+    },
+    {
+      "blake3": "915fb2124ed2dfb8a11c0f85549cf77e113c0ed1c907cb4bbadefe27f2ab695c",
+      "bytes": 260,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/NestedDepth$Third.class"
+    },
+    {
+      "blake3": "0d315044c35ca7a601aba656ea0f6a5a3c8be354d8d1a04effceafe1551a386b",
+      "bytes": 983,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/NestedDepth.class"
+    },
+    {
+      "blake3": "92d87cefe5bf65385951116f950315b06675d8c260d6de88e38e210eb9dbff5d",
+      "bytes": 224,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/Returner.class"
+    },
+    {
+      "blake3": "231524db5ddb5e84f7a072b17dd70f926878d6eb2e4ad0e566d558e136eead8c",
+      "bytes": 597,
+      "path": "tests/fixtures/recover-io-resource-finally/v8-javac8/WideningProbe.class"
+    },
+    {
+      "blake3": "f6e60b15135de3b8b78a154acb9cfc89ba524b0865ba419273285b3e1f62639f",
+      "bytes": 1534,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/IO.class"
+    },
+    {
+      "blake3": "2f3d78cab20da5d0b5a5cb6a113782e83345c4cc731053961c2c972057dfd43c",
+      "bytes": 489,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/IOMidRead.class"
+    },
+    {
+      "blake3": "e26135228326e76726bf8060ba0850c98a29fac6b6e4476bd0dee9f9b662eb68",
+      "bytes": 762,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/IONegatives.class"
+    },
+    {
+      "blake3": "a01682fe6b71685171a5d6e4bbb9f6022a1b787d194be8885af5385f02818076",
+      "bytes": 309,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/NestedDepth$First.class"
+    },
+    {
+      "blake3": "aa94b26986fd6fa60290ad5299f63a9ed9c4a76c7c6b2150dcfd4acf833c0852",
+      "bytes": 307,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/NestedDepth$Fourth.class"
+    },
+    {
+      "blake3": "9f789c3d7918e440f9b9a22fb86187263c685a8a773f6622584b27ac957d7402",
+      "bytes": 307,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/NestedDepth$Second.class"
+    },
+    {
+      "blake3": "0aa6f2033baf3a461a08f59fc1f2660b931792db9201bf912edccc5232ca3414",
+      "bytes": 260,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/NestedDepth$Third.class"
+    },
+    {
+      "blake3": "e637d138b466dabb552778a3b475c8efc248e22f3a5c95961509e5ae2946655c",
+      "bytes": 983,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/NestedDepth.class"
+    },
+    {
+      "blake3": "005e9cd36d100b6fa1f3875e992d50d389535d6ff58c9c6202af7b22b8039258",
+      "bytes": 224,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/Returner.class"
+    },
+    {
+      "blake3": "f2ad42996d8daeca8f0daa2debf5cda09c5f49c3f849a96c5f4be3c610be31a9",
+      "bytes": 597,
+      "path": "tests/fixtures/recover-io-resource-finally/v8/WideningProbe.class"
+    },
+    {
       "blake3": "f220de9df12a0af26f267845a1714e7bfa96b1151998a17b875f3a12714791db",
       "bytes": 365,
       "path": "tests/fixtures/recover-javac8-allocation-qualifier-null-check/d2/D2$In.class"
