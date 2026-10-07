@@ -195,3 +195,5 @@ sed -n '46,76p' .github/workflows/ci.yml | sed 's/^ *//' | grep -E "^cargo|^-A" 
 - **flake 家族增员（2026-10-06）**：`d3_artifact_binding::the_evidence_is_rebuilt_after_every_temporary_of_the_first_request_is_dropped` 在纯 docs 提交 `dccd21c3` 上 CI 红（run 37451511282），同代码的 `b6cbaa94` CI 绿——同族判定（该测试 10-05 已有 `7b291971` 先例，家族通式 docs-only 红 + 同代码绿）；本地单测两轮复跑并入 static-generic 验收批执行。
 
 - **验收盲区教训（2026-10-06，postfix 合并 CI 红实证）**：CI 的 stable job 会跑 **ignored 的 JDK oracle/P3 对照腿**（`p3_execution_comparison` 的 3 个 `-- --ignored` 测试），root 本地门禁若只跑默认套件，**语料件翻态的切片会漏掉 oracle 期望同步**（`saved`/`conditional` 从 Quoted 翻 Executed 而 oracle 仍钉旧态 → CI 红）。规则：**凡 corpus 差分非零的切片，验收必本地补跑 `cargo test --test p3_execution_comparison --all-features -- --ignored`**（oracle 自身编译执行恢复体=行为验证，一并覆盖）。
+
+- **flake 频率观察（2026-10-07）**：`export_cli::a_counted_dimension_override…` 本日第 4 次 CI 红（918d463b 纯 docs；1bfd29bb/9e553f00 初跑/本地全量各 1）。每次三连判定均 flake，但**触发频率与 CI 排队负载正相关**（docs push 积压期高发）。若后续继续高频，值得单独立片给该测试加时间容忍或改确定性等待（属测试卫生债，非生产代码）。
