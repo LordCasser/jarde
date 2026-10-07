@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented, self-tested and gated in this worktree. **Not pushed**; the five commits below are the
+Implemented, self-tested and gated in this worktree. **Not pushed**; the seven commits below are the
 complete change. Root reviews, merges and accepts on `main`.
 
 ## 1.1 — the gating, in one paragraph
@@ -145,6 +145,8 @@ exactly this change's seventeen fixture files.
 | `33a651e2` | `test(corpus): update the two expectations the statement position moves, and re-measure the census` — `tests/class_source.rs`, `tests/recover_javac8_allocation_qualifier_null_check.rs`, the reader's census ledger |
 | `6cf1207d` | `test(census): re-render the corpus fingerprint for this change's fixtures` |
 | `1c384ace` | `docs(change): the gating transcript, the implementation, the corpus differential and the gates` |
+| `225e315d` | `docs(change): the implementer's report, the acceptance transcript and the final workspace run` |
+| `237bdb41` | `docs(change): the three-way comparison and the task ledger` — `results/04-three-way.{sh,out}` and the ticked `tasks.md` (3.3 open for root) |
 
 ## Remaining boundaries (registered, not recovered by this slice)
 
