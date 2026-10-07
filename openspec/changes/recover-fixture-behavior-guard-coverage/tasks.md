@@ -33,4 +33,4 @@
   证据：`git diff --stat HEAD -- crates src` 为空；`tests/fixtures/corpus-fingerprint.json` 未改动（`git status` 无该文件）——
   本片新增的 fixture 侧文件全是 `.md`（README），指纹把 `md` 作为"关于语料的记录"排除在输入外，故零 corpus 位移，
   也没有触发任何 census/fingerprint 再生成（`results/06-gates.md` 的 fingerprint 段）。
-- [ ] 3.3 root 独立复核锚的可判伪性（含 2.3 自检证据）、分类准确性与零生产改动，把登记纪律写入 handoff.md：新增冻结行为 fixture MUST 同时加引用它的 CI 测试，`run.sh` 定位为复现工具而非守卫。
+- [x] 3.3 root 独立复核锚的可判伪性（含 2.3 自检证据）、分类准确性与零生产改动，把登记纪律写入 handoff.md：新增冻结行为 fixture MUST 同时加引用它的 CI 测试，`run.sh` 定位为复现工具而非守卫。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：零生产改动 root 复核 ✓、负向自检=事故同款洞被新测试捕获 ✓、golden 双源交叉核对 ✓、前提更正（投影形）追认 ✓、7+6 套件 + 332 targets ok/0 FAILED 全绿 ✓；handoff 登记句已刷新为"补覆盖已完成"）
