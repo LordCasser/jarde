@@ -2,7 +2,15 @@
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态（2026-10-07 续，最新）
+## 当前状态（2026-10-07 终态，最新）
+
+- **本段再合入三片 + census 重跑**（全部 root 独立验收）：`recover-statement-position-news`（B5 ctor 副作用恢复，CST 顺序双测试钉死）、`recover-fixture-behavior-guard-coverage`（**16 个冻结 fixture 全部有 CI 引用**；负向自检打在 10-04 事故同款洞上并被新测试捕获；零生产码）、`recover-capture-ctor-super-order`（双括号捕获形呈现缺陷关闭——第三条件"调用不可观察组字段"=守卫同源声明视图+SSA 闭包 walk，四顺序敏感 fixture 保字节序，DB 家族 root 亲测 `2/z` 一致）。census 重跑（`a7aba5cf`）：45-jar 采样 96 行残余全部归属已登记边界，**前沿从新族发现转入边界收口**。
+- **本日累计 17 片**（10-06→10-07：temporal/interface/nonnull-v2/loop-else-if/static-generic/postfix-A/dup-store/inline-concat/chained-field/conditional-rhs/array-dance/postfix-B/boolean-bitwise/spn/guard-coverage/capture-ctor + multireads 关闭重定位）+ oracle 回归修复 + 两族 census 归因修正。
+- **队列（下一会话）**：`recover-boxed-number-widening`（drift-immune 已核）→ local-scope 12/13 锚（explicit-lock/io-wrapping，j.u.c/IO 骨架）→ double-brace B 路径（分配点双括号形）→ array-covariant-store。均已立项 spec 就绪。
+- **纪律新增**：/tmp 探针目录按 mtime 批量清理（90 分钟阈值，当前活动 subagent 产物保留）；root 探针脚本的池名伴生需三单元联编验证（`DB`+`DB1`+`DB2` 改写模式）。
+- 磁盘 41Gi；全部 worktree/target 已回收；末片 CI 0412e6cd 监控中。
+
+## 当前状态（2026-10-07 续，背景保留一）
 
 - **`recover-boolean-int-bitwise-operands` 验收合入（`9e553f00`，CI 监控中）**：`BooleanConsumption` 消费走查（boolean 变量存/`Z` return/已认领字段写/布尔兄弟位运算，递归）把 int 化布尔回投泛化出 conditional-rhs 的字段写位；**`mix` 与 `andNot` 同域一并恢复**（类级双向运行逐字一致——conditional-rhs 片设置的硬门以此满足）；物化入局部形/真混合算术负例保持拒绝。合并初跑有一处 fmt 换行（root 修正入验收提交——**合并后必重跑 fmt**，实现片 worktree 的 fmt 不完全等价于合并态）。
 - **本日累计 13 片合入**（temporal / interface / nonnull-v2 / loop-else-if / static-generic / postfix-A / dup-store / inline-concat / chained-field / conditional-rhs / array-dance / postfix-B / boolean-bitwise）+ 1 错立项关闭（multireads→inline-concat 重定位）+ 1 CI oracle 回归修复 + census 两族归因修正（canonical 类级撤回、family-4 phi 膨胀）+ critical 15/16/17/18 锚与 canonical/依赖链/多消费者/copy/旧值各族旗舰关闭。
