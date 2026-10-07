@@ -1,0 +1,27 @@
+// jarde: presentation of `DBS2` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class DBS2 extends java.lang.Object {
+    public DBS2() {
+        // @method <init>()V
+        // @declaration a constructor of `DBS2`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.util.List make(java.lang.String arg0) {
+        // @method make(Ljava/lang/String;)Ljava/util/List;
+        // @declaration a static method of `DBS2`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        DBS2$1 local1 = new DBS2$1(arg0);
+        return local1;
+    }
+
+    static java.lang.Object again(java.lang.String arg0) {
+        // @method again(Ljava/lang/String;)Ljava/lang/Object;
+        // @declaration a static method of `DBS2`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        DBS2$1 local1 = new DBS2$1(arg0);
+        return local1;
+    }
+}

@@ -1,0 +1,27 @@
+24,27c24,28
+<         // @method withCapture(Ljava/lang/String;)Ljava/util/List;
+<         // @declaration a static method of `DB`, member flags 0x0008
+<         // recovered from bytecode; presentation is not claimed to compile
+<         return new DB$2(arg0);
+---
+>         return new java.util.ArrayList() {
+>             {
+>                 this.add((java.lang.Object) arg0);
+>             }
+>         };
+39,42c40,45
+<         // @method <clinit>()V
+<         // @declaration a static initializer of `DB`, member flags 0x0008
+<         // recovered from bytecode; presentation is not claimed to compile
+<         DB.dbl = new DB$1();
+---
+>         DB.dbl = new java.util.ArrayList() {
+>             {
+>                 this.add((java.lang.Object) "a");
+>                 this.add((java.lang.Object) "b");
+>             }
+>         };
+46c49
+< [exit 4]
+---
+> [exit 0]

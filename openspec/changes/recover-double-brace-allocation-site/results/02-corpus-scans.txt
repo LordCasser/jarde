@@ -1,0 +1,19 @@
+# task 3.1 corpus scans (two legs: baseline 9c9fdd13 vs this worktree)
+
+## scan-corpus.sh (single-class fixtures)
+captures: 899 per leg
+differing classes: 381
+render (.txt) deltas: 0
+
+## scan-corpus-jars.sh (fixture families as jars)
+captures: 899 per leg
+differing captures: 373
+diff -r /tmp/jarde-scan-family/a/proved-java-structure_double-brace-allocation-site_v23_controls_single-site::DBS.class__c778b604.txt /tmp/jarde-scan-family/b/proved-java-structure_double-brace-allocation-site_v23_controls_single-site::DBS.class__c778b604.txt
+diff -r /tmp/jarde-scan-family/a/proved-java-structure_double-brace-allocation-site_v8_controls_single-site::DBS.class__59e6249a.txt /tmp/jarde-scan-family/b/proved-java-structure_double-brace-allocation-site_v8_controls_single-site::DBS.class__59e6249a.txt
+diff -r /tmp/jarde-scan-family/a/proved-java-structure_double-brace-capture_v23::DB.class__822b007b.txt /tmp/jarde-scan-family/b/proved-java-structure_double-brace-capture_v23::DB.class__822b007b.txt
+diff -r /tmp/jarde-scan-family/a/proved-java-structure_double-brace-capture_v8::DB.class__a023596d.txt /tmp/jarde-scan-family/b/proved-java-structure_double-brace-capture_v8::DB.class__a023596d.txt
+
+## scan-evidence.sh (evidence jars and loose classes)
+captures: 2725 per leg
+differing captures: 1393
+diff -r /tmp/jarde-scan-evidence-db/a/java-syntax-2026-10-05_double-brace-patrol_fixture_db.jar::DB.class__0ce715c0.txt /tmp/jarde-scan-evidence-db/b/java-syntax-2026-10-05_double-brace-patrol_fixture_db.jar::DB.class__0ce715c0.txt

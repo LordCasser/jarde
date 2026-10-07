@@ -1,0 +1,28 @@
+// jarde: presentation of `DBS` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class DBS extends java.lang.Object {
+    public DBS() {
+        // @method <init>()V
+        // @declaration a constructor of `DBS`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `make(Ljava/lang/String;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    static java.util.List make(java.lang.String s) {
+        return new java.util.ArrayList() {
+            {
+                this.add((java.lang.Object) s);
+            }
+        };
+    }
+
+    public static void main(java.lang.String[] a) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `DBS`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) make("z").get(0));
+        return;
+    }
+}
