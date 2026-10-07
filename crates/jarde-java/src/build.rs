@@ -2255,6 +2255,18 @@ fn proves_boolean_local_store(
             {
                 true
             }
+            // A branch that tests the loaded value reads it at its condition position: javac lowers
+            // `b ? x : y`, the statement `if (b)` and the loop `while (b)` to an `ifeq`/`ifne` on
+            // the local's own load. The load keeps the position it already has — the branch is its
+            // consumer, so nothing is reordered — and the arms it selects between are the existing
+            // conditional-value and statement presentations'. The two zero-tests are named by
+            // identity, so a numeric branch (`iflt`, `ifgt`) on the same load states no boolean
+            // position and keeps its refusal.
+            (0x99 | 0x9a, Some(Operation::Comparison { op, .. }))
+                if matches!(op, CompareOp::JumpIfZero | CompareOp::JumpIfNotZero) =>
+            {
+                true
+            }
             _ => false,
         };
         if !boolean_position {
