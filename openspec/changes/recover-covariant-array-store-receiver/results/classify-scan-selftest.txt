@@ -1,0 +1,24 @@
+# classify-scan.py self-test (synthetic three-pair diff)
+
+diff -r classify-selftest/a/x.err classify-selftest/b/x.err
+1c1
+< usage.elapsed_millis = 1
+---
+> usage.elapsed_millis = 2
+diff -r classify-selftest/a/x.txt classify-selftest/b/x.txt
+1c1
+< text one
+---
+> text two
+diff -r classify-selftest/a/y.err classify-selftest/b/y.err
+1c1
+< usage.ir_items = 3
+---
+> usage.ir_items = 4
+
+=== classifier verdict ===
+diff.txt: render 1, plane 1, timing 1
+render deltas (1):
+  classified   classify-selftest/a/x.txt
+plane deltas (1):
+  WITHOUT a render delta classify-selftest/a/y.err

@@ -1,0 +1,7 @@
+comp-head/AS.java:9: error: incompatible types: Integer cannot be converted to String
+        local0[0] = java.lang.Integer.valueOf(1);
+                                             ^
+comp-head/AS.java:21: error: incompatible types: Double cannot be converted to Integer
+        local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+                                            ^
+2 errors

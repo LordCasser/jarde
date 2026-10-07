@@ -1,0 +1,65 @@
+### scan-single-diff.txt: /tmp/jarde-scan-single/a/recover-covariant-array-store-receiver_v8-javac8_AS.class.txt
+    <         local0[0] = java.lang.Integer.valueOf(1);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <         local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+### scan-single-diff.txt: /tmp/jarde-scan-single/a/recover-covariant-array-store-receiver_v8-javac8_SC.class.txt
+    <         local0[0] = "s";
+    >         ((java.lang.Object[]) local0)[0] = "s";
+### scan-single-diff.txt: /tmp/jarde-scan-single/a/recover-covariant-array-store-receiver_v8-javac8_SD.class.txt
+    <             local0[0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <             local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    <             local0[0][0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0[0])[0] = java.lang.Integer.valueOf(1);
+### scan-single-diff.txt: /tmp/jarde-scan-single/a/recover-covariant-array-store-receiver_v8_AS.class.txt
+    <         local0[0] = java.lang.Integer.valueOf(1);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <         local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+### scan-single-diff.txt: /tmp/jarde-scan-single/a/recover-covariant-array-store-receiver_v8_SC.class.txt
+    <         local0[0] = "s";
+    >         ((java.lang.Object[]) local0)[0] = "s";
+### scan-single-diff.txt: /tmp/jarde-scan-single/a/recover-covariant-array-store-receiver_v8_SD.class.txt
+    <             local0[0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <             local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    <             local0[0][0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0[0])[0] = java.lang.Integer.valueOf(1);
+### scan-family-diff.txt: /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::AS.class__32eaf647.txt
+    <         local0[0] = java.lang.Integer.valueOf(1);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <         local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+### scan-family-diff.txt: /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SC.class__0ae89a5d.txt
+    <         local0[0] = "s";
+    >         ((java.lang.Object[]) local0)[0] = "s";
+### scan-family-diff.txt: /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SD.class__4aae5028.txt
+    <             local0[0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <             local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    <             local0[0][0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0[0])[0] = java.lang.Integer.valueOf(1);
+### scan-family-diff.txt: /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::AS.class__f82a260d.txt
+    <         local0[0] = java.lang.Integer.valueOf(1);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <         local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+### scan-family-diff.txt: /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SC.class__5d7a4911.txt
+    <         local0[0] = "s";
+    >         ((java.lang.Object[]) local0)[0] = "s";
+### scan-family-diff.txt: /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SD.class__8411996b.txt
+    <             local0[0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <             local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >             ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    <             local0[0][0] = java.lang.Integer.valueOf(1);
+    >             ((java.lang.Object[]) local0[0])[0] = java.lang.Integer.valueOf(1);
+### scan-evidence-diff.txt: /tmp/jarde-scan-evidence/a/java-syntax-2026-10-05_array-covariant-store-patrol_fixture_as.jar::AS.class__976266ed.txt
+    <         local0[0] = java.lang.Integer.valueOf(1);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Integer.valueOf(1);
+    <         local0[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);
+    >         ((java.lang.Object[]) local0)[0] = java.lang.Double.valueOf(0x1.4000000000000p1d);

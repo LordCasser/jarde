@@ -1,0 +1,8 @@
+captures: 907 per leg
+differing captures: 334
+diff -r /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::AS.class__32eaf647.txt /tmp/jarde-scan-family/b/recover-covariant-array-store-receiver_v8-javac8::AS.class__32eaf647.txt
+diff -r /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SC.class__0ae89a5d.txt /tmp/jarde-scan-family/b/recover-covariant-array-store-receiver_v8-javac8::SC.class__0ae89a5d.txt
+diff -r /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SD.class__4aae5028.txt /tmp/jarde-scan-family/b/recover-covariant-array-store-receiver_v8-javac8::SD.class__4aae5028.txt
+diff -r /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::AS.class__f82a260d.txt /tmp/jarde-scan-family/b/recover-covariant-array-store-receiver_v8::AS.class__f82a260d.txt
+diff -r /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SC.class__5d7a4911.txt /tmp/jarde-scan-family/b/recover-covariant-array-store-receiver_v8::SC.class__5d7a4911.txt
+diff -r /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SD.class__8411996b.txt /tmp/jarde-scan-family/b/recover-covariant-array-store-receiver_v8::SD.class__8411996b.txt

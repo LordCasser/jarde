@@ -1,0 +1,86 @@
+diff --git a/crates/jarde-java/src/build.rs b/crates/jarde-java/src/build.rs
+index 076f3be1..072d44eb 100644
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -25700,7 +25700,7 @@ impl Builder<'_> {
+                 at,
+             );
+         }
+-        let array = match self.render_value(array_value, at, 0) {
++        let mut array = match self.render_value(array_value, at, 0) {
+             Ok(array) => array,
+             Err(reason) => {
+                 let bcis = self.quoted_bcis(at);
+@@ -25749,7 +25749,14 @@ impl Builder<'_> {
+                     ty.spell()
+                 );
+                 match meeting_position(value.clone(), &ty, &position, Widening::Position) {
+-                    Ok(value) => value,
++                    Ok(value) => {
++                        // The statement is `array[index] = value`, so a reference component the
++                        // value is not proven to meet is the covariant shape the access's own
++                        // receiver widens for ([`widen_covariant_store_receiver`]) — the one
++                        // presentation that keeps both the text and the `aastore`'s own check.
++                        array = widen_covariant_store_receiver(array, &ty, &value);
++                        value
++                    }
+                     Err(_reason)
+                         if matches!(
+                             value.presented.as_ref(),
+@@ -29326,6 +29333,56 @@ fn array_element(
+     }
+ }
+ 
++/// The receiver one array store's access reads, widened to `Object[]` when the store is the
++/// **covariant** shape: a reference component the stored value's own type is not proven to meet.
++///
++/// A store is the one position where the closed reference-compatibility rule this layer already
++/// states ([`array_initializer_element`]) can leave text `javac` refuses. Arrays are covariant
++/// (JLS 4.10.3), so the source's own receiver may have stated a **wider** component than the array
++/// the value holds, while the presentation declares the receiver with the array its own descriptor
++/// or its creation states — `Object[] a = new String[2]; a[0] = Integer.valueOf(1);` presents
++/// `java.lang.String[] local0`, and `local0[0] = java.lang.Integer.valueOf(1);` is not a program,
++/// even though the bytecode's `aastore` is one. Which class is assignable to which is a subtype
++/// judgment this layer deliberately does not make (`make-required-conversions-explicit`'s
++/// non-goal), so the proven compatible cases are the initializer rule's own three — the exact
++/// component type, an `Object` component and a `null` value — and every other reference value
++/// widens the receiver.
++///
++/// `((Object[]) receiver)[index] = value` changes neither evaluation nor the runtime check: the
++/// cast applies to the receiver expression, which is evaluated exactly once; every reference array
++/// is a subtype of `Object[]`, so the cast cannot fail and performs no check of its own; and the
++/// `aastore` the bytecode runs still checks the value against the array's **runtime** component, so
++/// the `ArrayStoreException` a covariant store throws stays exactly where the class file throws it.
++/// The receiver is not re-declared: this is the access's own presentation, and the local keeps the
++/// array its own facts state.
++///
++/// A primitive component never widens: primitives have no covariant arrays, and the store's own
++/// conversion rules ([`meeting_position`], [`cast_argument`]) already own that side.
++fn widen_covariant_store_receiver(array: Expr, component: &Type, value: &Expr) -> Expr {
++    let Type::Reference(component) = component else {
++        return array;
++    };
++    if matches!(component.as_str(), "Object" | "java.lang.Object") {
++        return array;
++    }
++    // A `null`, a lambda and a method reference state no type at all: no mismatch is provable, so
++    // the value is written as it is — the rule every other position of this layer keeps.
++    let Some(Type::Reference(presented)) = value.presented.as_ref() else {
++        return array;
++    };
++    if presented == component {
++        return array;
++    }
++    let origin = array.origin.clone();
++    Expr::new(
++        ExprKind::Cast {
++            ty: Type::Reference("java.lang.Object[]".to_owned()),
++            value: Box::new(array),
++        },
++        origin,
++    )
++}
++
+ /// The type one write publishes for the variable it fills.
+ ///
+ /// The frames answer for every value they type, and one case is answered by a fact of the body
