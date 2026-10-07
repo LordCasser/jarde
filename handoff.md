@@ -4,7 +4,7 @@
 
 ## 当前状态（2026-10-08 续，最新）
 
-- **10-08 已合入三片 + 测试卫生**：`recover-covariant-array-store-receiver`（+59/−2 宽化规则；HEAD 复验更正巡查"SAFE 拒形"为静默未编译面；ASE1/ASE2 三方一致，`c99e26a5` CI 绿）、`recover-io-resource-finally`（**local-scope 锚 13 关闭**：sibling `ResourceGuardFinally` 行集证书 + 两 javap 核实 java.io 宽化行 + 深度 2→3 测量边界；countLines 完整恢复；c6b20db6 CI 红=d3 重建族 flake 已判定）、`recover-instance-field-assignment-chains`（dup_x1 栈几何+SSA 双钉死、`OPCODE_DUP_X1` 臂最后回退、CP 恢复；`5cb7511d` CI 监控中；chained-field 域记录边界全清）。`export_cli` 计时 flake 第 5 见→诊断增强落地（断言带全文档消息，`07f7d427`；签名=字符串序列化 Error 变体，下次出现直接命名变体）。
+- **10-08 已合入四片 + 巡查 + 自纠**：`recover-covariant-array-store-receiver`（+59/−2；巡查"SAFE 拒形"更正为静默未编译面）、`recover-io-resource-finally`（**锚 13 关闭**）、`recover-instance-field-assignment-chains`（dup_x1 栈几何；chained-field 域边界全清）、`recover-nested-lock-finally-bodies`（**多锁族关闭**：多语句 finally 体+行外可抛双 admission；行内 lead 发现——canonical CFG 不在行边界断块）。多锁巡查（10-08）归档；**root 巡查自纠**：multiAwait"已恢复"是探针 void-only awk 空段假零（README 已纠，真缺口=Condition 局部跨区归 local-scope）；export_cli 计时 flake 第 5 见→诊断增强（`07f7d427`）。溯源事件 #5（io 片 ruling 未授权→重裁）在案。
 - **溯源事件 #5（io 片）**：实现报告引用两处"root 2026-10-07 ruling"——root 无此问答，按纪律未采信、以合并态自证**重新裁定并追认**（详见 io verification-root 溯源段）。规则重申：报告引用的 ruling 一律视为未授权。
 - **在飞**：`recover-instance-field-assignment-chains`（dup_x1 与栈 receiver 交织的实例链，三 aload_0 SSA 同一性；已立项 `8778c846`）。
 - **队列**：多锁/lockInterruptibly/多等待点 → local-scope 1.2/1.3 回填验收轮 → readAll（copy 族纯度域）→ family-6 形态 4。
