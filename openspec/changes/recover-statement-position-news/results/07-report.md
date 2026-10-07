@@ -45,7 +45,7 @@ is the mechanism and the zero-regression notes.
 | 2.1 the criterion; B5/B6 recover; CST unchanged; `chained` refused | the acceptance transcript below; `results/01-gating.md`; the CST ordering pinned in two tests (`SPC` statement-position twin + the frozen `VoidBetween`) |
 | 2.2 zero regression, budget/cancel | `results/02-implementation.md`, the sweep, the workspace run |
 | 3.1 gates | `results/06-gates.md` (verbatim) |
-| 3.2 three-way comparison and behaviour | `results/04-class-level.sh/.out`, the ignored replay test |
+| 3.2 three-way comparison and behaviour | `results/04-three-way.sh/.out` (原 class / 固定 Java 输入 / Jarde 重编, output SHAs), `results/04-class-level.sh/.out`, the ignored replay test |
 | 3.3 root's independent review | **not mine** — the change is handed over for it |
 
 ### The acceptance anchors, on the final binary
@@ -71,6 +71,26 @@ not move. The stripped `B5` text compiles with `javac --release 8` **and** real 
 `-Xverify:all` and prints the committed `orig.out` byte for byte — the three constructor `println`s
 included. `B6`'s text stays incomplete by design (the registered `chained` boundary) and is asserted
 **not** to compile, so nothing compiles silently wrong.
+
+### The three-way comparison (task 3.2)
+
+`results/04-three-way.sh/.out` reads every anchor three ways — the frozen class files, the fixture's
+own frozen `.java` input, and Jarde's recovered text — compiles the last two with `javac --release 8`
+and runs all three under `-Xverify:all`:
+
+```
+=== B5   original / input / recovered: run-exit=0, output-sha256=667c0fe773ac1afedfa0a9720f55cb5268db74adc085d08df8979a009f626885
+=== SP   original / input / recovered: run-exit=0, output-sha256=724195f8732315fc0b78995bd3d7ff497ec1cb8202a4c3d80650c4f9b503b78d
+=== SB   original / input / recovered: run-exit=0, output-sha256=2e6d31a5983a91251bfae5aefa1c0a19d8ba3cf601d0e8a706b4cfa9661a6b8a
+=== B6   original run-exit=0 output-sha256=2e6d31a5983a91251bfae5aefa1c0a19d8ba3cf601d0e8a706b4cfa9661a6b8a
+         recovered javac-exit=1 — a refusal keeps this text incomplete (the safe form)
+=== SPC  original run-exit=0 output=CST output-sha256=a27e286a14ba7f002bbfe9b7b025c5d9214175dbd1f432c11bed91749ab495aa
+         recovered javac-exit=1 (the text keeps its refusal)
+```
+
+`SB`'s three legs answer what the patrol's own `B6` class answers (`9`); `B6`'s recovered text keeps
+the registered boundary and is not run (a JVM run on that classpath would report the original's
+answer as if the recovered text had produced it — the script refuses that false positive by name).
 
 ## Verbatim gate tails (authoritative, final tree)
 
