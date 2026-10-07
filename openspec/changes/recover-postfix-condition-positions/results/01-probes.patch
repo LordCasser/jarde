@@ -1,0 +1,245 @@
+diff --git a/crates/jarde-java/src/build.rs b/crates/jarde-java/src/build.rs
+index ac1bf7bc..8562c0ed 100644
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -10921,17 +10921,21 @@ impl Builder<'_> {
+     ) -> Result<Option<SnapshotConsumer>, StopReason> {
+         let uses = self.ssa.value(old).uses();
+         let [consumer] = uses else {
++            eprintln!("PROBE-MISS multi-use block={} after={after} uses={}", block.block().bci(), uses.len());
+             return Ok(None);
+         };
+         let Some(consumer_bci) = consumer.bci() else {
++            eprintln!("PROBE-MISS no-consumer-bci block={} after={after}", block.block().bci());
+             return Ok(None);
+         };
+         if consumer.block() != block.block() || consumer_bci <= after {
++            eprintln!("PROBE-MISS wrong-block-or-order block={} after={after} consumer={consumer_bci} consumer_block={}", block.block().bci(), consumer.block().bci());
+             return Ok(None);
+         }
+         // The immediate `return` is the return-position proof's own position: `return x++;` keeps
+         // exactly the reading (and the refusal) that plan states, so this walk never claims it.
+         if matches!(self.operations.get(consumer_bci), Some(Operation::Return)) {
++            eprintln!("PROBE-MISS return-consumer block={} after={after} consumer={consumer_bci}", block.block().bci());
+             return Ok(None);
+         }
+         // A text between the update and the consumer that reads the updated value would see the
+@@ -10942,15 +10946,19 @@ impl Builder<'_> {
+                     .bci()
+                     .is_some_and(|bci| bci > after && bci < consumer_bci)
+         }) {
++            eprintln!("PROBE-MISS updated-read-in-interval block={} after={after} consumer={consumer_bci}", block.block().bci());
+             return Ok(None);
+         }
+         let Some(position) = position_in_block(block, consumer_bci) else {
++            eprintln!("PROBE-MISS no-consumer-position block={} consumer={consumer_bci}", block.block().bci());
+             return Ok(None);
+         };
+         let Some(update_position) = position_in_block(block, after) else {
++            eprintln!("PROBE-MISS no-update-position block={} after={after}", block.block().bci());
+             return Ok(None);
+         };
+         if position <= update_position {
++            eprintln!("PROBE-MISS position-order block={} after={after} consumer={consumer_bci}", block.block().bci());
+             return Ok(None);
+         }
+         // The consumer's own operand tree: every value it evaluates is pushed above the old value's
+@@ -10968,6 +10976,7 @@ impl Builder<'_> {
+                 &mut operands,
+                 0,
+             )? {
++                eprintln!("PROBE-MISS dependency-walk block={} after={after} consumer={consumer_bci}", block.block().bci());
+                 return Ok(None);
+             }
+         }
+@@ -10986,6 +10995,7 @@ impl Builder<'_> {
+                     || matches!(self.operations.get(bci), Some(Operation::Duplicate))
+             })
+         {
++            eprintln!("PROBE-MISS interval-impure block={} after={after} consumer={consumer_bci}", block.block().bci());
+             return Ok(None);
+         }
+         Ok(Some(SnapshotConsumer { bci: consumer_bci }))
+@@ -11023,12 +11033,14 @@ impl Builder<'_> {
+                     _ => continue,
+                 };
+                 let Some(before) = position.checked_sub(1).map(|index| &instructions[index]) else {
++                    eprintln!("PROBE-SKIP no-before at={at}");
+                     continue;
+                 };
+                 if !matches!(
+                     self.operations.get(before.bci()),
+                     Some(Operation::Load { slot: read }) if *read == slot
+                 ) {
++                    eprintln!("PROBE-SKIP before-not-load at={at} before={}", before.bci());
+                     continue;
+                 }
+                 poll(self.budget, Some(at))?;
+@@ -11041,15 +11053,18 @@ impl Builder<'_> {
+                 let (Some(old), Some((_, loaded))) =
+                     (local_read(before, slot), one_stack_output(before))
+                 else {
++                    eprintln!("PROBE-SKIP no-old-or-loaded at={at}");
+                     continue;
+                 };
+                 let (Some(update_read), Some(updated)) =
+                     (local_read(update, slot), local_write(update, slot))
+                 else {
++                    eprintln!("PROBE-SKIP no-update-read-or-written at={at}");
+                     continue;
+                 };
+                 // One value, not two: the increment reads what the load read.
+                 if update_read != old {
++                    eprintln!("PROBE-SKIP update-reads-other at={at}");
+                     continue;
+                 }
+                 let anchors = vec![before.bci(), at];
+@@ -11057,6 +11072,7 @@ impl Builder<'_> {
+                     .iter()
+                     .any(|bci| plan.owned.contains(bci) || forbidden.contains(bci))
+                 {
++                    eprintln!("PROBE-SKIP forbidden-anchor at={at} anchors={anchors:?}");
+                     continue;
+                 }
+                 let absorbed = anchors.iter().copied().collect::<BTreeSet<_>>();
+@@ -11115,6 +11131,7 @@ impl Builder<'_> {
+                     }
+                 }
+                 if shared {
++                    eprintln!("PROBE-SKIP shared-old-value at={at} uses={uses:?}");
+                     continue;
+                 }
+                 // `i = i++`: the old value stored back into the slot it was read from is the
+@@ -11123,21 +11140,32 @@ impl Builder<'_> {
+                     self.operations.get(consumer.bci),
+                     Some(Operation::Store { slot: written }) if *written == slot
+                 ) {
++                    eprintln!("PROBE-SKIP self-assign at={at}");
+                     continue;
+                 }
+                 let Some(variable) = self.reuse.variable_at(slot, before.bci()) else {
++                    eprintln!("PROBE-SKIP no-variable at={at}");
+                     continue;
+                 };
+                 let Some(name) = self.names.text(variable).map(str::to_string) else {
++                    eprintln!("PROBE-SKIP no-name at={at}");
+                     continue;
+                 };
+                 let Some(ty) = self.decided_type(variable) else {
++                    eprintln!("PROBE-SKIP no-type at={at}");
+                     continue;
+                 };
+                 if ty == Type::Boolean {
++                    eprintln!("PROBE-SKIP boolean at={at}");
+                     continue;
+                 }
+                 plan.owned.extend(anchors.iter().copied());
++                eprintln!(
++                    "PROBE-CLAIM slot={slot} load={} update={at} consumer={} block={}",
++                    before.bci(),
++                    consumer.bci,
++                    block.block().bci()
++                );
+                 plan.snapshots.insert(
+                     loaded,
+                     SnapshotValue {
+@@ -14716,7 +14744,9 @@ impl Builder<'_> {
+                 Ok(statement) => {
+                     self.two_exit_returns.insert(tests[0].0.clone(), statement);
+                 }
+-                Err(ConditionalValueBuildError::Refused(_)) => {}
++                Err(ConditionalValueBuildError::Refused(reason)) => {
++                    eprintln!("PROBE-TWO-EXIT-REFUSED method-region={} reason={reason}", tests[0].0.bci());
++                }
+                 Err(ConditionalValueBuildError::Stop(stop)) => return Err(stop),
+             },
+             Region::SharedTailEarlyReturn { tests, .. } => {
+diff --git a/crates/jarde-java/src/region.rs b/crates/jarde-java/src/region.rs
+index de70017d..6a2b46ad 100644
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -7005,6 +7005,12 @@ impl Walker<'_> {
+                 // this precondition exists for and is refused below, at its own BCI.
+                 || self.unobservable_store_dance_part(block, instruction);
+             if !value_only {
++                eprintln!(
++                    "PROBE-TEST-IMPURE block={} test={test_bci} at={} op={:?}",
++                    block.bci(),
++                    instruction.bci(),
++                    self.operations.get(instruction.bci())
++                );
+                 // The loop pass declares this precondition (`pass::LOOP.requires(StatementFree)`)
+                 // and the check is stated through the declaration: the reason carries the rule
+                 // version, so the text and the report say *which rule* refused, not just that
+@@ -10871,9 +10877,11 @@ impl Walker<'_> {
+ 
+     fn latch_test_suffix_is_effect_free(&self, block: &CanonicalBlockId, test_bci: u32) -> bool {
+         let Some((_, first_condition, condition_bcis)) = self.first_latch_test_suffix(block) else {
++            eprintln!("PROBE-SUFFIX no-suffix block={}", block.bci());
+             return false;
+         };
+         let Some(names) = self.ssa.block(block) else {
++            eprintln!("PROBE-SUFFIX no-block block={}", block.bci());
+             return false;
+         };
+         if names.instructions()[first_condition..]
+@@ -10882,13 +10890,23 @@ impl Walker<'_> {
+                 instruction.bci() != test_bci && !condition_bcis.contains(&instruction.bci())
+             })
+         {
++            let at = names.instructions()[first_condition..]
++                .iter()
++                .find(|instruction| {
++                    instruction.bci() != test_bci && !condition_bcis.contains(&instruction.bci())
++                })
++                .map(|instruction| instruction.bci());
++            eprintln!(
++                "PROBE-SUFFIX non-condition-suffix block={} first_condition={first_condition} at={at:?}",
++                block.bci()
++            );
+             return false;
+         }
+-        names.instructions()[first_condition..]
++        let impure = names.instructions()[first_condition..]
+             .iter()
+             .filter(|instruction| instruction.bci() != test_bci)
+-            .all(|instruction| {
+-                matches!(
++            .find(|instruction| {
++                !matches!(
+                     self.operations.get(instruction.bci()),
+                     Some(
+                         Operation::Push(_)
+@@ -10904,14 +10922,24 @@ impl Walker<'_> {
+                     )
+                 )
+             })
+-            && names.instructions()[..first_condition]
+-                .iter()
+-                .all(|instruction| {
+-                    matches!(
+-                        self.operations.get(instruction.bci()),
+-                        Some(Operation::Increment { .. })
+-                    )
+-                })
++            .map(|instruction| instruction.bci());
++        let prefix = names.instructions()[..first_condition]
++            .iter()
++            .find(|instruction| {
++                !matches!(
++                    self.operations.get(instruction.bci()),
++                    Some(Operation::Increment { .. })
++                )
++            })
++            .map(|instruction| instruction.bci());
++        if impure.is_some() || prefix.is_some() {
++            eprintln!(
++                "PROBE-SUFFIX impure-suffix block={} impure={impure:?} prefix={prefix:?}",
++                block.bci()
++            );
++            return false;
++        }
++        true
+     }
+ 
+     /// The `do … while` shape: one latch, whose own branch tests and jumps back to the header.

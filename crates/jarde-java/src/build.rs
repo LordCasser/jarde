@@ -10904,6 +10904,34 @@ impl Builder<'_> {
         forbidden
     }
 
+    /// Whether the instruction at `consumer` is evaluated before the instruction at `at` by the
+    /// structure the two sit in: the consumer's own block transfers directly to the block the
+    /// increment runs in, so the region walk writes the consumer's condition or statement in front
+    /// of it. The two blocks are never the same one here — the same-block reads are the interval
+    /// proof's own — and the edge must be a normal transfer, because that is the order the
+    /// presented structure follows.
+    fn consumer_block_precedes(&mut self, consumer: u32, at: u32) -> Result<bool, StopReason> {
+        let (Some(consumer_block), Some(increment_block)) =
+            (self.block_of.get(&consumer), self.block_of.get(&at))
+        else {
+            return Ok(false);
+        };
+        if consumer_block == increment_block {
+            return Ok(false);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrEdges,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        Ok(self.canonical.edges().iter().any(|edge| {
+            edge.from() == consumer_block
+                && edge.to() == increment_block
+                && edge.kind() == CanonicalEdgeKind::Normal
+        }))
+    }
+
     /// The one consumer of one old value, when it is a single use in this block after `after`.
     ///
     /// Every limit the two proofs share is taken here: one use, one block, a position after the
@@ -11084,16 +11112,16 @@ impl Builder<'_> {
                     if *bci == before.bci() || *bci == at {
                         continue;
                     }
-                    if *use_block != *block.block()
-                        || *bci > at
-                        || !matches!(
+                    // A read of the pre-update value in this block at or before the increment is
+                    // the form the interval proof has always admitted: it runs before the
+                    // increment in the bytecode, and the text evaluates it before the consumer's
+                    // expression or in that expression's own statement.
+                    let same_block_read = *use_block == *block.block()
+                        && *bci <= at
+                        && matches!(
                             self.operations.get(*bci),
                             Some(Operation::Load { slot: read }) if *read == slot
-                        )
-                    {
-                        shared = true;
-                        break;
-                    }
+                        );
                     let Some(reader) = self.instructions.get(bci).copied() else {
                         shared = true;
                         break;
@@ -11106,10 +11134,24 @@ impl Builder<'_> {
                         shared = true;
                         break;
                     };
-                    let before_the_increment = end < at;
-                    let read_by_the_same_statement =
-                        snapshot_reads_a_statement && end == consumer.bci;
-                    if !before_the_increment && !read_by_the_same_statement {
+                    if same_block_read {
+                        let before_the_increment = end < at;
+                        let read_by_the_same_statement =
+                            snapshot_reads_a_statement && end == consumer.bci;
+                        if !before_the_increment && !read_by_the_same_statement {
+                            shared = true;
+                            break;
+                        }
+                        continue;
+                    }
+                    // A read the text evaluates **before** the increment's own expression still
+                    // sees the slot where it holds the pre-update value: the read whose terminal
+                    // consumer is the branch that ends the block the increment's block directly
+                    // follows — the earlier test of a loop's condition chain
+                    // (`while (i < len && xs[i++] != t)`, `recover-postfix-condition-positions`),
+                    // whose condition the region walk writes in front of the test the increment is
+                    // materialized in. Every other read outside the block keeps the refusal.
+                    if !self.consumer_block_precedes(end, at)? {
                         shared = true;
                         break;
                     }
@@ -14250,11 +14292,28 @@ impl Builder<'_> {
             for (_, operand) in stack_operands(branch) {
                 self.conditional_dependencies(operand, &mut dependencies, &mut BTreeSet::new(), 0)?;
             }
+            // The outer test block's **lead** — the instructions before the first one its condition
+            // reads — is the region's own prologue: `int i = 0;` shares the block with the `if` it
+            // precedes, and the region arm writes it as the statement it is (`test_effects`). Only
+            // the outer block's lead has that position; an inner test's lead runs on one path only
+            // and keeps the refusal it had.
+            let lead = if index == 0 {
+                names
+                    .instructions()
+                    .iter()
+                    .take_while(|instruction| !dependencies.contains(&instruction.bci()))
+                    .map(|instruction| instruction.bci())
+                    .collect::<BTreeSet<_>>()
+            } else {
+                BTreeSet::new()
+            };
             if dependencies
                 .iter()
                 .any(|source| self.block_of.get(source) != Some(block))
                 || names.instructions().iter().any(|instruction| {
-                    instruction.bci() != *bci && !dependencies.contains(&instruction.bci())
+                    instruction.bci() != *bci
+                        && !dependencies.contains(&instruction.bci())
+                        && !lead.contains(&instruction.bci())
                 })
             {
                 return Err(ConditionalValueBuildError::Refused(format!(
@@ -16008,6 +16067,11 @@ impl Builder<'_> {
             for block in prefix {
                 self.block(block)?;
             }
+            // The outer test block's own lead runs before the branch it decides, and the return's
+            // expression evaluates that test first: writing the lead's statements here is the same
+            // order the bytecode has (`recover-postfix-condition-positions`; the same treatment the
+            // short-circuit value's outer branch already takes).
+            self.test_effects(outer, *at)?;
             return self.push(statement);
         }
         if let Region::ShortCircuitValue {

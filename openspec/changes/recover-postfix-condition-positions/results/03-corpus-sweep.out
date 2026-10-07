@@ -1,0 +1,99 @@
+SELF-TEST OK: CP7 condition positions 0 -> 3; dup-store NEG byte-identical; 3 A-phase trap refusals present; bs.jar!BS.class byte-identical
+pass A loose candidate classes: 2815
+MOVED (single-class): tests/fixtures/p3-loop-test-values/v8/LoopTestValues.class
+    21,24c21,23
+    <         // @bytecode 13 14 17
+    <         // the loop@1 rule did not claim the block at BCI 13: it requires a test block whose every instruction is part of a value expression, and the instruction at BCI 14 is not part of one, so presenting the structure would have moved that effect out of the shape it decides
+    <         // @bytecode 20 23 24
+    <         // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [20, 23]
+    ---
+    >         while (arg1-- > 0) {
+    >         }
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+MOVED (single-class): tests/fixtures/recover-postfix-condition-positions/v8/CC.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `scan([I)I` produced no statement (explanation only); the artifact's own comment lines are below
+    17,18c16,23
+    <         // @bytecode 0 4 17 23
+    <         // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local1;
+    >         int local2;
+MOVED (single-class): tests/fixtures/recover-postfix-condition-positions/v8/CP7.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `scan([I)I` produced no statement (explanation only); the artifact's own comment lines are below
+    17,18c16,23
+    <         // @bytecode 0 4 17 23
+    <         // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local1;
+    >         int local2;
+MOVED (single-class): tests/fixtures/recover-postfix-condition-positions/v8-javac8/CC.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `scan([I)I` produced no statement (explanation only); the artifact's own comment lines are below
+    17,18c16,23
+    <         // @bytecode 0 4 17 23
+    <         // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local1;
+    >         int local2;
+MOVED (single-class): tests/fixtures/recover-postfix-condition-positions/v8-javac8/CP7.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `scan([I)I` produced no statement (explanation only); the artifact's own comment lines are below
+    17,18c16,23
+    <         // @bytecode 0 4 17 23
+    <         // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local1;
+    >         int local2;
+MOVED (single-class): tests/fixtures/recover-postfix-old-value-snapshot/v8/NG.class
+    54d53
+    <         // jarde: not recovered: the recovery run for `condShape()I` produced no statement (explanation only); the artifact's own comment lines are below
+    58,59c57,64
+    <         // @bytecode 0 4 15 23 29
+    <         // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local0;
+    >         int local1;
+MOVED (single-class): tests/fixtures/recover-postfix-old-value-snapshot/v8-javac8/NG.class
+    54d53
+    <         // jarde: not recovered: the recovery run for `condShape()I` produced no statement (explanation only); the artifact's own comment lines are below
+    58,59c57,64
+    <         // @bytecode 0 4 15 23 29
+    <         // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local0;
+    >         int local1;
+pass A: moved=7 unrendered=1
+archive candidate classes: 739
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/postinc-condition-patrol/fixture/cp7.jar!CP7.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `scan([I)I` produced no statement (explanation only); the artifact's own comment lines are below
+    17,18c16,23
+    <         // @bytecode 0 4 17 23
+    <         // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local1;
+    >         int local2;
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/triple-nested-labels-patrol/fixture/nl.jar!NL.class
+    22d21
+    <         // jarde: not recovered: the recovery run for `findMid([[II)I` produced no statement (explanation only); the artifact's own comment lines are below
+    26,27c25,39
+    <         // @bytecode 0 4 10 13 22 32 38 47 50 56 62
+    <         // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local2;
+    >         int local3;
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+MOVED (jar): openspec/evidence/java-syntax-2026-10-05/nested-loop-accumulation-patrol/fixture/sw.jar!SW.class
+    52d51
+    <         // jarde: not recovered: the recovery run for `sum2d([[I)I` produced no statement (explanation only); the artifact's own comment lines are below
+    56,57c55,68
+    <         // @bytecode 0 4 10 12 20 34 40
+    <         // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    ---
+    >         int local1;
+    >         int local2;
+pass C: moved=3 unrendered=1
+moved classes: single-class=7 jar=3 total=10
+unrendered candidates: A=1 C=1

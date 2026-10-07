@@ -8162,6 +8162,56 @@
       "path": "tests/fixtures/recover-platform-interface-argument-widening/v8/IS.class"
     },
     {
+      "blake3": "2068856a5a2125f6b5cfb7124eea3b37142bb6dcc87c9ae8fa048ec3d813605c",
+      "bytes": 1106,
+      "path": "tests/fixtures/recover-postfix-condition-positions/CC.java"
+    },
+    {
+      "blake3": "1fccbdf09451a0473a94ff09eac81bf0744aa863748d5d01ede716579fa3cc0a",
+      "bytes": 950,
+      "path": "tests/fixtures/recover-postfix-condition-positions/CN.java"
+    },
+    {
+      "blake3": "b85c121370b14c77c5e6820e196e0ef7eb30d2d6effe7616880c7d78504c84ff",
+      "bytes": 787,
+      "path": "tests/fixtures/recover-postfix-condition-positions/CP7.java"
+    },
+    {
+      "blake3": "8d1f35dfd5c2a88f4706a0984bebcd2102e6cfeba64c22eda040faddf9b78f91",
+      "bytes": 714,
+      "path": "tests/fixtures/recover-postfix-condition-positions/sha256.txt"
+    },
+    {
+      "blake3": "134a1726a4a33c65e147bb11ea591d0aa9817adea95554bc7249cc614b44a60f",
+      "bytes": 1108,
+      "path": "tests/fixtures/recover-postfix-condition-positions/v8-javac8/CC.class"
+    },
+    {
+      "blake3": "75b3b4622526133bf78a61e706a0d8b1bad87bd3f0c2b0d869284e1c21011407",
+      "bytes": 997,
+      "path": "tests/fixtures/recover-postfix-condition-positions/v8-javac8/CN.class"
+    },
+    {
+      "blake3": "86205203eab1cbe6acc18b483f75e1ce43b321fe4b1c6c67ee503ec52a1b503b",
+      "bytes": 1062,
+      "path": "tests/fixtures/recover-postfix-condition-positions/v8-javac8/CP7.class"
+    },
+    {
+      "blake3": "94a3e4859a90693128cd3465c8a0244d1c51bafa8d5558429e1a2fc1c2042698",
+      "bytes": 1108,
+      "path": "tests/fixtures/recover-postfix-condition-positions/v8/CC.class"
+    },
+    {
+      "blake3": "11d4b861c990c2e2ba1dfa026eec54e646e32ae18ae50e2a6c8a31adae701801",
+      "bytes": 997,
+      "path": "tests/fixtures/recover-postfix-condition-positions/v8/CN.class"
+    },
+    {
+      "blake3": "19d6bdcba4ca54e9e038cb45e7bef191633524f4c0c8fd89120acbbc27ae178a",
+      "bytes": 1062,
+      "path": "tests/fixtures/recover-postfix-condition-positions/v8/CP7.class"
+    },
+    {
       "blake3": "07983f2e805232bbe013dd86c7ed8a7eaa9f12c4c3ccd513b2e17b47d1dd079b",
       "bytes": 351,
       "path": "tests/fixtures/recover-postfix-old-value-snapshot/AD.java"

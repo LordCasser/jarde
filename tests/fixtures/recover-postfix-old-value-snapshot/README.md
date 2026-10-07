@@ -22,7 +22,7 @@ javac --release 8 -Xlint:-options -nowarn -d v8 *.java
 | `PT` | `pos < src.length ? src[pos++] : null` — a static field's postfix as an array index inside a ternary arm | the conditional-arm position |
 | `SR` | `a[i] = i++` (the store's right side is the old value) and `a[i--] = a[0] + 100` (the local postfix as the store's index) | the array-store right side and the local index write |
 | `IX` | the local postfix as an array index (`a[i++] = 10`, `a[i--]`) and the static field's postfix as an array index (`IX.arr[IX.idx++] = 20`, `IX.arr[IX.idx--]`) | the index positions, local and static |
-| `NG` | the negatives: `i = i++`, `i = i--`, `f = f++`, `i += i++ + 1` (the multi-consumer form) and `while (xs[i++] != 0 && …)` (a Phase-B condition position) | the Non-Goal and the out-of-scope gate |
+| `NG` | the negatives: `i = i++`, `i = i--`, `f = f++`, `i += i++ + 1` (the multi-consumer form) and `while (xs[i++] != 0 && …)` (a Phase-B condition position; `recover-postfix-condition-positions` presents that `condShape` whole, and the four traps keep their refusals) | the Non-Goal and the out-of-scope gate |
 
 `CM`, `CM2`, `AD` and `GA` are the patrols' own sources, copied byte for byte
 (`openspec/evidence/java-syntax-2026-10-05/postfix-old-value-patrol/fixture/{CM,CM2}.java`,

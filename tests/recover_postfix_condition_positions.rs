@@ -1,28 +1,34 @@
-//! `recover-postfix-old-value-snapshot` in one frozen target: the postfix old-value **consumer
+//! `recover-postfix-condition-positions` in one frozen target: the postfix old-value **condition
 //! positions** on **both** compiler legs (javac 23.0.1 `--release 8` and real javac 8, Corretto
 //! 1.8.0_432, from the same sources).
 //!
-//! javac reads an incremented local or field *before* it updates it whenever the value is consumed,
-//! and the old value is an SSA value of its own whose consumer reads it after the update ran. The
-//! change presents that value where it is read — `x++` — and absorbs the update instruction into
-//! that expression, instead of refusing the read (`int j = i++;` was "the value at BCI N is the
-//! value local 0 held at BCI M") or quoting the dance (`elems[size++] = t` was "the dependency
-//! chain from BCI 1 to final consumer 16 is not bounded").
+//! javac reads an incremented local *before* it updates it whenever the value is consumed, and a
+//! loop's or a branch's test is one of those consumers: `while (xs[i++] != 0 && …)` is
+//! `iload; iinc; iaload; if…`, and the old value the load took is read once, after the update, by
+//! the test's own value expression. The change presents that value where the bytecode read it — the
+//! test writes the postfix expression (`arg0[local1++]`) and the increment is absorbed into it
+//! instead of quoting the whole method (`local 1 crosses a quoted fallback region`), exactly the way
+//! `recover-postfix-old-value-snapshot` presents the value positions.
 //!
-//! The fixtures are the patrols' own frozen anchors — `CM`/`CM2` from the postfix-old-value patrol,
-//! `AD`/`GA` from the array-store soundness patrol (the `AD`/`CM`/`GA` class files are byte-identical
-//! to the patrols' jars, checked by SHA in the fixture README) — plus this change's `PT` (the static
-//! field as an array index inside a ternary arm), `SR` (the array store's own right side and its
-//! local index write), `IX` (the local and static-field index positions) and `NG` (the negatives:
-//! the two self-assignment traps, the field self-assignment and the multi-consumer form; its
-//! `condShape` was this fixture's Phase-B out-of-scope gate and is presented whole by
-//! `recover-postfix-condition-positions`).
+//! The slice's own bound is stated: **one** postfix position per condition, at one end of a
+//! short-circuit chain. A second variable's position and the middle of a chain are recorded and
+//! left to a later slice, so a chain that would present them keeps the refusal it had
+//! (`jre_region_chain_position_bound`).
 //!
-//! The tests pin the presented texts whole, keep every negative's refusal verbatim, keep the three
-//! healthy shapes byte-identical, and the ignored replay strips the presentations the way the
-//! patrols' own stripped sources were made (comment lines dropped), compiles each anchor with the
-//! installed `javac --release 8` and, when a real javac 8 is present, with that one too, runs both
-//! under `-Xverify:all` and compares every answer with the fixture's own class files.
+//! The fixtures are the postfix-condition patrol's own frozen trio (`CP7`: the do-while scan, the
+//! while compound and the if short-circuit; its source is copied byte for byte and its `v8` class
+//! file is byte-identical to the patrol's jar entry, checked by SHA in the fixture README), this
+//! slice's `CN` (the two negatives and the compound-chain control) and `CC` (the three positions
+//! again, each answering the count its increment reached, plus the control, so the do-while scan's
+//! exact iteration count is compared and not only its printed answer). The A-phase traps are read
+//! from the A-phase fixture's own `NG.class`, the way `recover-dup-store-conditional` reads CF-06's
+//! control from the fixture that owns it.
+//!
+//! The tests pin the presented texts, keep every negative's refusal verbatim, keep the control
+//! byte-identical, and the ignored replay strips the presentations the way the patrols' own stripped
+//! sources were made (comment lines dropped), compiles each anchor with the installed
+//! `javac --release 8` and, when a real javac 8 is present, with that one too, runs both under
+//! `-Xverify:all` and compares every answer with the fixture's own class files.
 
 use jarde::class_source::ClassSourceReport;
 use jarde::*;
@@ -80,83 +86,35 @@ impl Leg {
     }
 }
 
-/// javac 23.0.1, `javac --release 8 -Xlint:-options -d v8 *.java`.
+/// javac 23.0.1, `javac --release 8 -Xlint:-options -nowarn -d v8 *.java`.
 const V8_FILES: &[(&str, &[u8])] = &[
     (
-        "CM.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/CM.class"),
+        "CP7.class",
+        include_bytes!("fixtures/recover-postfix-condition-positions/v8/CP7.class"),
     ),
     (
-        "CM2.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/CM2.class"),
+        "CN.class",
+        include_bytes!("fixtures/recover-postfix-condition-positions/v8/CN.class"),
     ),
     (
-        "AD.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/AD.class"),
-    ),
-    (
-        "GA.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/GA.class"),
-    ),
-    (
-        "GA$Cfg.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/GA$Cfg.class"),
-    ),
-    (
-        "PT.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/PT.class"),
-    ),
-    (
-        "SR.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/SR.class"),
-    ),
-    (
-        "IX.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/IX.class"),
-    ),
-    (
-        "NG.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/NG.class"),
+        "CC.class",
+        include_bytes!("fixtures/recover-postfix-condition-positions/v8/CC.class"),
     ),
 ];
 
-/// The real javac 8 leg (Corretto 1.8.0_432, `javac -d v8-javac8 *.java`: no `--release`).
+/// The real javac 8 leg (Corretto 1.8.0_432, `javac -nowarn -d v8-javac8 *.java`: no `--release`).
 const V8_JAVAC8_FILES: &[(&str, &[u8])] = &[
     (
-        "CM.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/CM.class"),
+        "CP7.class",
+        include_bytes!("fixtures/recover-postfix-condition-positions/v8-javac8/CP7.class"),
     ),
     (
-        "CM2.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/CM2.class"),
+        "CN.class",
+        include_bytes!("fixtures/recover-postfix-condition-positions/v8-javac8/CN.class"),
     ),
     (
-        "AD.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/AD.class"),
-    ),
-    (
-        "GA.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/GA.class"),
-    ),
-    (
-        "GA$Cfg.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/GA$Cfg.class"),
-    ),
-    (
-        "PT.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/PT.class"),
-    ),
-    (
-        "SR.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/SR.class"),
-    ),
-    (
-        "IX.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/IX.class"),
-    ),
-    (
-        "NG.class",
-        include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/NG.class"),
+        "CC.class",
+        include_bytes!("fixtures/recover-postfix-condition-positions/v8-javac8/CC.class"),
     ),
 ];
 
@@ -172,96 +130,110 @@ const LEGS: &[Leg] = &[
 ];
 
 /// Every class this change pins, in the order the tests read them.
-const CLASSES: &[&str] = &["CM", "CM2", "AD", "GA", "PT", "SR", "IX", "NG"];
+const CLASSES: &[&str] = &["CP7", "CN", "CC"];
+
+/// The A-phase traps: the fixture that owns them (`recover-postfix-old-value-snapshot`'s `NG`),
+/// SHA-pinned in that fixture's README, is read from there rather than copied here.
+const A_PHASE_TRAP_FILES: &[(&str, &[u8])] = &[(
+    "NG.class",
+    include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8/NG.class"),
+)];
+const A_PHASE_TRAP_FILES_JAVAC8: &[(&str, &[u8])] = &[(
+    "NG.class",
+    include_bytes!("fixtures/recover-postfix-old-value-snapshot/v8-javac8/NG.class"),
+)];
 
 // -------------------------------------------------------------------------------------------
 // The presented texts, pinned whole (the p3 surface tests' own convention).
 // -------------------------------------------------------------------------------------------
 
-/// `CM.incDec` — the four-shape discriminator the postfix patrol froze: the two *value-consuming*
-/// forms recover as the postfix expression, the prefix forms stay their own statements.
-const CM_INCDEC: &[&str] = &[
-    "        int local1 = local0++;",
-    "        int local3 = local0--;",
-    "        return local0 + local1 + local2 + local3 + local4;",
+/// `CP7.scan` — the do-while scan: the postfix expression is written in the loop's own condition
+/// and the absorbed increment writes no statement of its own.
+const CP7_SCAN: &[&str] = &[
+    "        do {",
+    "            local2 = arg0[local1];",
+    "        } while (arg0[local1++] != 0 && local1 < arg0.length);",
 ];
 
-/// `CM.compound`/`compoundInExpr`/`compoundField`/`incField` — the healthy shapes the patrol
-/// recorded as already recovered: compound chains and in-expression compounds, static field
-/// compounds and the field prefix/postfix pair. They must stay byte-identical.
-const CM_HEALTHY: &[&str] = &[
-    "        local0 = local0 + 5;",
-    "        local0 = local0 - 3;",
-    "        local0 = local0 * 2;",
-    "        local0 = local0 / 4;",
-    "        local0 = local0 % 4;",
-    "        int local1 = local0;",
-    "        CM.a = CM.a + 3;",
-    "        CM.b = CM.b - 1;",
-    "        CM.a = CM.a + 1;",
+/// `CP7.find` — the while compound: the postfix expression is written in the second test, and the
+/// first test still reads the slot where it holds the pre-update value.
+const CP7_FIND: &[&str] = &[
+    "        while (local2 < arg0.length && arg0[local2++] != arg1) {",
+    "        }",
+    "        return local2 - 1;",
 ];
 
-/// `CM2.immUse`/`postfixExpr` — the patrol's two refused local shapes, now the postfix expression.
-const CM2_POSTFIX: &[&str] = &[
-    "        int local1 = local0++;",
-    "        return local0++ + 10;",
+/// `CP7.cond` — the if short-circuit: the two-exit return writes the condition as one expression,
+/// and the local's own initialisation is written in front of it.
+const CP7_COND: &[&str] = &[
+    "        int local1 = 0;",
+    "        return arg0[local1++] > 0 ? local1 < arg0.length ? true : false : false;",
 ];
 
-/// `CM2.crossStmt`/`prefix` — the split-statement and prefix controls, byte-identical.
-const CM2_HEALTHY: &[&str] = &[
-    "        local0 = local0 + 1;",
-    "        int local1 = local0;",
+/// `CC.scan`/`CC.find`/`CC.cond` — the same three positions answering their increment's count.
+const CC_SCAN: &[&str] = &[
+    "        } while (arg0[local1++] != 0 && local1 < arg0.length);",
     "        return local1;",
-    "        return local0 + 10;",
+];
+const CC_FIND: &[&str] = &[
+    "        while (local2 < arg0.length && arg0[local2++] != arg1) {",
+    "        }",
+    "        return local2;",
+];
+const CC_COND: &[&str] = &[
+    "        if (arg0[local1++] > 0) {",
+    "            if (local1 < arg0.length) {",
+    "                return local1;",
+    "        return -local1;",
 ];
 
-/// `AD.add` — the flagship: the array reference survives the field `putfield` dance and the whole
-/// store is one statement. The `null/null vs x/y` compilable-wrong face closes here.
-const AD_ADD: &str = "        this.elems[this.size++] = arg1;";
-
-/// `GA.add` — the same shape over the generic collection's own `Object[]` field.
-const GA_ADD: &str = "        this.elems[this.size++] = arg1;";
-
-/// `PT.read` — the static field's postfix as an array index inside a ternary arm (the shape the
-/// conditional-arm patrol recorded as "the conditional arm contains an independent instruction").
-const PT_READ: &str = "        return PT.pos < PT.src.length ? PT.src[PT.pos++] : null;";
-
-/// `SR.arrSelf`/`backWrite` — the array store's own right side is the old value, and the local
-/// postfix as the store's index (`a[i] = i++`, the postfix-self-assign patrol's behavior trap).
-const SR_SHAPES: &[&str] = &[
-    "        local1[local0] = local0++;",
-    "        return local1[1] * 100 + local0;",
-    "        local1[local0--] = local1[0] + 100;",
-    "        return local1[2] * 1000 + local0;",
+/// `CN.chain` — the compound do-while chain the region layer already presented, with no postfix
+/// position in it: its text must stay byte-identical.
+const CN_CHAIN: &[&str] = &[
+    "        do {",
+    "            local2 = local2 + 1;",
+    "            arg0 = arg0 - 1;",
+    "            arg1 = arg1 - 1;",
+    "        } while (arg0 > 0 && arg1 > 0);",
+    "        return local2;",
 ];
 
-/// `IX` — the four index positions: the local postfix as an array index (write and read) and the
-/// static field's postfix as an array index (write and read).
-const IX_SHAPES: &[&str] = &[
-    "        local1[local0++] = 10;",
-    "        return local1[local0--];",
-    "        IX.arr[IX.idx++] = 20;",
-    "        return IX.arr[IX.idx--];",
+/// The refusals the recovering members must not keep: a member that still quotes its own
+/// instructions would be a partial recovery counted as one.
+const NO_QUOTE_METHODS: &[(&str, &str)] = &[
+    ("CP7", "scan([I)I"),
+    ("CP7", "find([II)I"),
+    ("CP7", "cond([I)Z"),
+    ("CN", "chain(II)I"),
+    ("CN", "main([Ljava/lang/String;)V"),
+    ("CC", "scan([I)I"),
+    ("CC", "find([II)I"),
+    ("CC", "cond([I)I"),
+    ("CC", "chain(II)I"),
+    ("CC", "main([Ljava/lang/String;)V"),
 ];
 
-/// Every recovering anchor of the Phase-A matrix, class by class.
-const PHASE_A: &[(&str, &[&str])] = &[
-    ("CM", CM_INCDEC),
-    ("CM2", CM2_POSTFIX),
-    ("AD", &[AD_ADD]),
-    ("GA", &[GA_ADD]),
-    ("PT", &[PT_READ]),
-    ("SR", SR_SHAPES),
-    ("IX", IX_SHAPES),
+/// The two negatives this slice states, verbatim: a second variable's position in one condition
+/// and a position in the middle of a short-circuit chain. Each keeps its own refusal.
+const CN_NEGATIVES: &[(&str, &str)] = &[
+    (
+        "twoVariables",
+        "// local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice",
+    ),
+    (
+        "midChain",
+        "// local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice",
+    ),
 ];
 
-/// The negatives, verbatim: the two local self-assignment traps, the field self-assignment and the
-/// multi-consumer form. Each keeps its own refusal.
-///
-/// `NG.condShape` was the A-phase fixture's **out-of-scope gate** — a Phase-B condition position.
-/// `recover-postfix-condition-positions` presents it (see [`NG_COND_SHAPE`] below), so it left this
-/// list when that slice landed; the four traps are untouched.
-const NG_NEGATIVES: &[(&str, &str)] = &[
+/// The region the fence refuses the negatives under: the slice's own bound, stated by the rule that
+/// declined the chain.
+const CHAIN_POSITION_BOUND: &str = "jre_region_chain_position_bound";
+
+/// The A-phase traps, verbatim (the texts `recover_postfix_old_value_snapshot` pins for its own
+/// fixture): the two local self-assignment traps, the field self-assignment and the multi-consumer
+/// form. None of them may move for a condition position to be presented.
+const A_PHASE_TRAPS: &[(&str, &str)] = &[
     (
         "postSelf",
         "// the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6",
@@ -278,35 +250,6 @@ const NG_NEGATIVES: &[(&str, &str)] = &[
         "compoundSelf",
         "// the value at BCI 10 is the value local 1 held at BCI 2, and the slot does not hold it at BCI 10",
     ),
-];
-
-/// `NG.condShape` — the A-phase fixture's Phase-B condition position
-/// (`while (xs[i++] != 0 && i < xs.length) { n++; }`), presented whole by
-/// `recover-postfix-condition-positions`: the compound condition writes the postfix expression and
-/// the increment it absorbs writes no statement of its own.
-const NG_COND_SHAPE: &[&str] = &[
-    "        while (NG.xs[local0++] != 0 && local0 < NG.xs.length) {",
-    "            local1 = local1 + 1;",
-    "        }",
-    "        return local1;",
-];
-
-/// The refusals the recovering classes must not keep: a phase-A method that still quotes its own
-/// instructions would be a partial recovery counted as one.
-const NO_QUOTE_METHODS: &[(&str, &str)] = &[
-    ("CM", "incDec()I"),
-    ("CM2", "immUse()I"),
-    ("CM2", "postfixExpr()I"),
-    ("AD", "add(Ljava/lang/Object;)V"),
-    ("GA", "add(Ljava/lang/Object;)V"),
-    ("PT", "read()Ljava/lang/String;"),
-    ("SR", "arrSelf()I"),
-    ("SR", "backWrite()I"),
-    ("IX", "localWrite()V"),
-    ("IX", "localRead()I"),
-    ("IX", "fieldWrite()V"),
-    ("IX", "fieldRead()I"),
-    ("NG", "condShape()I"),
 ];
 
 // -------------------------------------------------------------------------------------------
@@ -345,7 +288,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport
         .class_source_with_evidence(
             slice::from_ref(snapshot),
             &request,
-            &RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+            &RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::RegionDetails),
             &mut budget(),
         )
         .expect("a legal class-source request is answered")
@@ -422,31 +365,56 @@ fn method_body<'a>(text: &'a str, signature: &str) -> &'a str {
     &rest[..end]
 }
 
+/// The region codes one member's own run reported.
+fn region_codes(report: &ClassSourceReport, method: &str) -> Vec<String> {
+    for member in &report.methods {
+        let ClassSourceOutcome::Recovered { report: run, .. } = &member.outcome else {
+            continue;
+        };
+        if run.method == method {
+            return run
+                .regions
+                .iter()
+                .filter_map(|region| region.code.map(str::to_owned))
+                .collect();
+        }
+    }
+    panic!("the presentation holds the member `{method}`");
+}
+
 // -------------------------------------------------------------------------------------------
-// The Phase-A matrix: every anchor recovers, and no recovering method keeps a quote.
+// The anchors: every condition position writes the postfix expression.
 // -------------------------------------------------------------------------------------------
 
-/// Every Phase-A position writes the postfix expression, on both legs.
+/// Every condition position writes the postfix expression, on both legs, and no recovering member
+/// keeps a quote: a position that still quoted one would be a partial recovery counted as one.
 #[test]
-fn the_phase_a_positions_write_the_postfix_expression_on_both_legs() {
+fn the_condition_positions_write_the_postfix_expression_on_both_legs() {
     for leg in LEGS {
-        for &(class, anchors) in PHASE_A {
-            let snapshot = open(&leg.fixture(class));
-            let report = presented(&snapshot, class);
-            for anchor in anchors {
-                assert!(
-                    report.text.contains(anchor),
-                    "`{class}` on {} lost the postfix anchor {anchor:?}:\n{}",
-                    leg.label,
-                    report.text
-                );
-            }
+        let snapshot = open(&leg.fixture("CP7"));
+        let report = presented(&snapshot, "CP7");
+        for anchor in CP7_SCAN.iter().chain(CP7_FIND).chain(CP7_COND) {
+            assert!(
+                report.text.contains(anchor),
+                "`CP7` on {} lost the condition anchor {anchor:?}:\n{}",
+                leg.label,
+                report.text
+            );
+        }
+        let snapshot = open(&leg.fixture("CC"));
+        let report = presented(&snapshot, "CC");
+        for anchor in CC_SCAN.iter().chain(CC_FIND).chain(CC_COND) {
+            assert!(
+                report.text.contains(anchor),
+                "`CC` on {} lost the condition anchor {anchor:?}:\n{}",
+                leg.label,
+                report.text
+            );
         }
     }
 }
 
-/// The recovering methods present every instruction they have: a Phase-A anchor that still quotes
-/// one would be a partial recovery counted as one.
+/// The recovering members present every instruction they have.
 #[test]
 fn no_recovering_method_keeps_a_quote() {
     for leg in LEGS {
@@ -469,42 +437,24 @@ fn no_recovering_method_keeps_a_quote() {
     }
 }
 
-/// The three healthy shapes the patrol recorded — prefix, split-statement and compound — stay
-/// byte-identical, and so do the two controls the recovering classes carry.
+/// The compound do-while chain the region layer already presented — no postfix position in it —
+/// stays byte-identical: the chain rules the condition position lands in must not move it.
 #[test]
-fn the_healthy_shapes_stay_byte_identical_on_both_legs() {
+fn the_control_chain_stays_byte_identical_on_both_legs() {
     for leg in LEGS {
-        let snapshot = open(&leg.fixture("CM"));
-        let report = presented(&snapshot, "CM");
-        for line in CM_HEALTHY {
+        let snapshot = open(&leg.fixture("CN"));
+        let report = presented(&snapshot, "CN");
+        let body = method_body(&report.text, "chain(II)I");
+        for line in CN_CHAIN {
             assert!(
-                report.text.contains(line),
-                "`CM` on {} lost the healthy shape {line:?}:\n{}",
-                leg.label,
-                report.text
+                body.contains(line),
+                "`CN.chain` on {} lost the control line {line:?}:\n{body}",
+                leg.label
             );
         }
         assert!(
-            !report.text.contains("local0++ +") && !report.text.contains("local0-- +"),
-            "`CM` on {} turned a compound into a postfix expression:\n{}",
-            leg.label,
-            report.text
-        );
-
-        let snapshot = open(&leg.fixture("CM2"));
-        let report = presented(&snapshot, "CM2");
-        for line in CM2_HEALTHY {
-            assert!(
-                report.text.contains(line),
-                "`CM2` on {} lost the healthy shape {line:?}:\n{}",
-                leg.label,
-                report.text
-            );
-        }
-        assert!(
-            quoted_bcis(&method_body(&report.text, "crossStmt()I")).is_empty()
-                && quoted_bcis(&method_body(&report.text, "prefix()I")).is_empty(),
-            "`CM2`'s split-statement and prefix controls present every instruction on {}:\n{}",
+            !report.text.contains("local2++") && !report.text.contains("++local2"),
+            "`CN.chain` on {} turned the compound into a postfix expression:\n{}",
             leg.label,
             report.text
         );
@@ -515,61 +465,69 @@ fn the_healthy_shapes_stay_byte_identical_on_both_legs() {
 // The negatives keep their refusals.
 // -------------------------------------------------------------------------------------------
 
-/// The self-assignment traps and the multi-consumer form keep exactly the refusals they had: this
-/// slice's Non-Goal. `NG.condShape` — the Phase-B condition position the A-phase fixture froze as
-/// its out-of-scope gate — is presented whole by `recover-postfix-condition-positions`.
+/// The two negatives this slice states keep their refusals, and the region they are refused under
+/// is the slice's own bound. The A-phase traps keep theirs verbatim: none of them moved for a
+/// condition position to be presented.
 #[test]
 fn the_negatives_keep_their_refusals_on_both_legs() {
     for leg in LEGS {
-        let snapshot = open(&leg.fixture("NG"));
-        let report = presented(&snapshot, "NG");
-        for (method, refusal) in NG_NEGATIVES {
+        let snapshot = open(&leg.fixture("CN"));
+        let report = presented(&snapshot, "CN");
+        for (method, refusal) in CN_NEGATIVES {
             assert!(
                 report.text.contains(refusal),
-                "`NG.{method}` on {} lost the refusal {refusal:?}:\n{}",
+                "`CN.{method}` on {} lost the refusal {refusal:?}:\n{}",
                 leg.label,
                 report.text
             );
             let body = method_body(&report.text, method);
             assert!(
                 body.contains("not recovered"),
-                "`NG.{method}` on {} is not quoted whole:\n{body}",
+                "`CN.{method}` on {} is not quoted whole:\n{body}",
                 leg.label
             );
-        }
-        // The Phase-B condition position the fixture carried as an out-of-scope gate renders whole:
-        // the postfix expression is written in the loop's own condition.
-        let cond_shape = method_body(&report.text, "condShape");
-        for anchor in NG_COND_SHAPE {
             assert!(
-                cond_shape.contains(anchor),
-                "`NG.condShape` on {} lost the presented anchor {anchor:?}:\n{cond_shape}",
+                !body.contains("++") && !body.contains("--"),
+                "`CN.{method}` on {} presented a postfix expression the bound refuses:\n{body}",
                 leg.label
             );
         }
-        // No negative writes a postfix expression, and none of the increments they refuse is
-        // presented as its own statement either — the whole method is quoted.
-        for (method, _) in NG_NEGATIVES {
-            for line in method_body(&report.text, method).lines() {
-                assert!(
-                    !line.contains("++") && !line.contains("--"),
-                    "`NG.{method}` on {} presented a postfix expression the Non-Goal refuses: {line:?}",
-                    leg.label
-                );
-            }
-        }
-        // `i = i++`/`i = i--` still carry the store-back form's own refusal: the value read back
-        // into the slot it was read from is not claimed.
+        // The fence states *why* the chain was refused, and it is the slice's own bound.
         assert!(
-            report
-                .text
-                .matches("the value at BCI 6 is the value local 0 held at BCI 2")
-                .count()
-                >= 2,
-            "`NG` on {} lost one of the two local self-assignment refusals:\n{}",
+            region_codes(&report, "twoVariables([I[I)I").contains(&CHAIN_POSITION_BOUND.to_owned())
+                && region_codes(&report, "midChain([I)I")
+                    .contains(&CHAIN_POSITION_BOUND.to_owned()),
+            "`CN` on {} does not state the chain position bound:\n{}",
             leg.label,
             report.text
         );
+
+        // The A-phase traps, read from the fixture that owns them.
+        let files: &[(&str, &[u8])] = if leg.label.starts_with("javac 23") {
+            A_PHASE_TRAP_FILES
+        } else {
+            A_PHASE_TRAP_FILES_JAVAC8
+        };
+        let entries: Vec<(&[u8], &[u8])> = files
+            .iter()
+            .map(|(name, bytes)| (name.as_bytes(), *bytes))
+            .collect();
+        let traps = open(&zip_of(&entries));
+        let report = presented(&traps, "NG");
+        for (method, refusal) in A_PHASE_TRAPS {
+            assert!(
+                report.text.contains(refusal),
+                "the A-phase trap `NG.{method}` on {} lost the refusal {refusal:?}:\n{}",
+                leg.label,
+                report.text
+            );
+            let body = method_body(&report.text, method);
+            assert!(
+                body.contains("not recovered"),
+                "the A-phase trap `NG.{method}` on {} is not quoted whole:\n{body}",
+                leg.label
+            );
+        }
     }
 }
 
@@ -586,7 +544,7 @@ fn scratch(label: &str) -> PathBuf {
         .as_nanos();
     let ordinal = NEXT.fetch_add(1, Ordering::Relaxed);
     let path =
-        std::env::temp_dir().join(format!("jarde-postfix-snapshot-{label}-{stamp}-{ordinal}"));
+        std::env::temp_dir().join(format!("jarde-postfix-condition-{label}-{stamp}-{ordinal}"));
     fs::create_dir_all(&path).expect("the scratch directory is created");
     path
 }
@@ -658,22 +616,15 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
         Path::new("/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java");
     for leg in LEGS {
         for &class in CLASSES {
-            // `GA`'s `main` names its nested interface through the pool spelling (`GA$Cfg`), which
-            // is a pre-existing presentation of that member and not this slice's business: its
-            // anchor is verified through the isolated `add` probe in the change's results, and the
-            // whole-class replay covers the other seven.
-            if class == "GA" {
-                continue;
-            }
             let snapshot = open(&leg.fixture(class));
             let report = presented(&snapshot, class);
             let text = stripped(&report);
-            // `NG` is the negatives' own class: every body it holds is quoted, so its stripped text
-            // is the *safe* form the soundness invariant asks for — a method whose body a reader
-            // cannot compile, never one that compiles and behaves differently. The refusal texts
-            // are pinned by the tests above; the replay's job for it is exactly that it does not
+            // `CN` is the negatives' class: its two refused bodies are quoted whole, so its
+            // stripped text is the *safe* form the soundness invariant asks for — a class a reader
+            // cannot compile, never one that compiles and behaves differently. The refusals are
+            // pinned by the tests above; the replay's job for it is exactly that it does not
             // compile.
-            if class == "NG" {
+            if class == "CN" {
                 let work = scratch(&format!("negative-{class}"));
                 fs::write(work.join(format!("{class}.java")), &text)
                     .expect("the presentation is written");
