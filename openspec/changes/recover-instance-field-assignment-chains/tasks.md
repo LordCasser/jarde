@@ -23,4 +23,4 @@
 - [x] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。
       → `results/03-corpus-delta.md`：全语料 before/after 差分 moved=2（本片 CP 两条腿）全归类、oracle 腿 3/3 无陈旧期望；
       `results/04-gates.md`：fmt/clippy/workspace 测试/openspec strict/fingerprint 逐条。
-- [ ] 3.2 root 独立复核：门控、判据最小性、锚/负例实测、账本（探针边界关闭）。（留 root）
+- [x] 3.2 root 独立复核：门控、判据最小性、锚/负例实测、账本（探针边界关闭）。（root 2026-10-08 完成，见 [verification-root.md](verification-root.md)：栈几何+SSA 双重复核 ✓、`OPCODE_DUP_X1` 臂最后回退落点（既有三证明零触碰）✓、CP 恢复 root 实测（字节码序三赋值，0 引注，双腿回放一致）✓、341 targets ok/0 FAILED + oracle 3/3 ✓、四边界裁定采纳；探针边界关闭——chained-field 域的记录边界全清）
