@@ -767,8 +767,13 @@ impl Billing {
         // byte for byte, no member's classification moved, and no read, decode or delivery
         // dimension moved. The two arms move by the same +104. The row was read with
         // `record_the_billing_table`.
+        // +3 `AnalysisSteps` with `recover-io-resource-finally`: the row-set resource guard's
+        // cheap half asks the finally family at the blocks whose row set it reads, and this case's
+        // `Guarded` holds the two shapes that are asked (the two-copy `fin`/`catchFinally`
+        // tables), so the ask itself is billed. No text, classification, read or delivery
+        // dimension moved — this test's own text comparison is unchanged.
         ir_items: 21278,
-        analysis_steps: 10539,
+        analysis_steps: 10542,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -850,8 +855,10 @@ impl Billing {
         // refused `void` body now states, over this corpus's `Guarded`, and no other dimension.
         // +1598 with `recover-chained-field-assignment`, the same work the two arms share: the
         // field-copy proof's own scan of every body, charged to `IrItems`, and no other dimension.
+        // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
+        // records: the row-set predicate's own ask at the blocks whose row set it reads.
         ir_items: 35378,
-        analysis_steps: 17324,
+        analysis_steps: 17327,
         result_items: 1378,
         output_bytes: 39617,
     };
@@ -888,8 +895,9 @@ impl Billing {
         // +104 with `preserve-postfix-fallback-soundness`, the same work the direct arm records,
         // and retention still touches only the read dimensions.
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
+        // +3 with `recover-io-resource-finally`, the same work the direct arm records.
         ir_items: 35378,
-        analysis_steps: 17324,
+        analysis_steps: 17327,
         result_items: 26,
         output_bytes: 39617,
     };

@@ -40,3 +40,16 @@ java.time.temporal.TemporalAccessor public interface java.time.temporal.Temporal
 java.util.concurrent.CompletableFuture public class java.util.concurrent.CompletableFuture<T> implements java.util.concurrent.Future<T>, java.util.concurrent.CompletionStage<T> {
 java.util.concurrent.CompletionStage public interface java.util.concurrent.CompletionStage<T> {
 java.util.concurrent.Future      public interface java.util.concurrent.Future<V> {
+
+# 2026-10-07, change `recover-io-resource-finally`: the wrapped-stream chain's two `java.io` rows
+# and the neighbours that stay out of the table. Same rt.jar (sha256 above), same
+# `javap -classpath <rt.jar> <type>` command; each line below is that command's second output line,
+# verbatim, and the two constructor positions the rows serve are the same command's own signatures.
+java.io.FileInputStream          public class java.io.FileInputStream extends java.io.InputStream {
+java.io.InputStreamReader        public class java.io.InputStreamReader extends java.io.Reader {
+java.io.BufferedReader           public class java.io.BufferedReader extends java.io.Reader {
+java.io.InputStream              public abstract class java.io.InputStream implements java.io.Closeable {
+java.io.Reader                   public abstract class java.io.Reader implements java.lang.Readable,java.io.Closeable {
+# The two constructor positions (javap, same jar):
+#   public java.io.InputStreamReader(java.io.InputStream, java.lang.String) throws java.io.UnsupportedEncodingException;
+#   public java.io.BufferedReader(java.io.Reader);

@@ -53,3 +53,24 @@
 对七型（六装箱 + `Number`）重跑 `javap`、按本文件索引列重排后与该文件逐字节 diff 相同
 （`SELF-CHECK OK: the committed lines are javap's own, byte for byte`）。
 
+
+## change `recover-io-resource-finally` 的表行（2026-10-07）
+
+同一 rt.jar（sha256 同上）、同一 `javap -classpath <rt.jar> <type>` 命令。转录行在
+[javap-headers.txt](javap-headers.txt) 末尾五行（含两行对照），构造函数位是该命令自身的签名行。
+
+| 表 | 行（呈现类型 → 目标） | 依据（转录行） |
+| --- | --- | --- |
+| `java.io` 链（**两行**，三层包装链的实参位） | `java.io.FileInputStream` → `java.io.InputStream`（`InputStreamReader` ctor 第 0 实参位，javap `InputStreamReader(java.io.InputStream, java.lang.String)`）；`java.io.InputStreamReader` → `java.io.Reader`（`BufferedReader` ctor 第 0 实参位，javap `BufferedReader(java.io.Reader)`） | 两类的 header 各自逐字声明 `extends java.io.InputStream` / `extends java.io.Reader`；两条边都是该类的**直接**父类，与 java.util 行的读法同规（一行一条 declared direct edge） |
+
+**保守省略（如实记录，未外推）**：
+
+1. `java.io.BufferedReader` 的 header 逐字 `extends java.io.Reader`——它是一条真实的直接边，但
+   **不在本表内**：本片的两行只服务三层包装链的两个实参位（`InputStreamReader`/`BufferedReader`
+   的 ctor 位），`BufferedReader → Reader` 没有本片的实参位依据，故保持拒绝（少放行、不误放行）。
+2. `java.io.FileReader` 是 `InputStreamReader` 的子类，因此也实现 `Reader`；同样不在表内，本片的
+   `readAll` 形也不需要它（其 `FileReader` 局部只被读与 close）。两处如需扩行，是另一个行集决定。
+
+自检：[`results/selfcheck-javap-rows.sh`](../../../changes/recover-io-resource-finally/results/selfcheck-javap-rows.sh)
+对五个类型重跑 `javap`、按本文件索引列（短名补到 33 列、长名单空格）重排后与
+`javap-headers.txt` 末尾该段**逐字节 diff 相同**。
