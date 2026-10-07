@@ -137,11 +137,16 @@ struct ConstructionFacts<'a> {
 }
 
 /// How many levels of construction one `new` expression of this rule presents: the outer
-/// construction plus **one** complete nested construction in an argument position —
-/// `new X(msg, new Y("inner"))`. A deeper run (`new A(new B(new C()))`) keeps its refusal and its
-/// registration: the middle and inner sites are still proved on their own by the body walk, and
-/// the outermost is refused rather than half-spelled.
-const MAX_NESTED_CONSTRUCTION_LAYERS: u32 = 2;
+/// construction plus **two** complete nested constructions in argument positions —
+/// `new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))`, the
+/// wrapped-stream chain the IO patrol's `countLines` writes, whose every inner run is a complete
+/// construction and whose every value is the next constructor's own argument. A deeper run
+/// (`new A(new B(new C(new D())))`) keeps its refusal and its registration: the sites inside it are
+/// still proved on their own by the body walk, and the outermost is refused rather than
+/// half-spelled. The limit is the **measured** boundary of that family, not a convenience: the
+/// negative test below proves that a four-layer run's outermost still refuses, so raising this
+/// number by one is what the chain needs and nothing wider.
+const MAX_NESTED_CONSTRUCTION_LAYERS: u32 = 3;
 
 /// Every construction site of one body, the candidates that were not sites, and the gaps stated in
 /// every selection.
