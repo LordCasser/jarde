@@ -8562,6 +8562,96 @@
       "path": "tests/fixtures/recover-loop-else-if-early-returns/v8/LR2.class"
     },
     {
+      "blake3": "c99436e1b06de27241ea65f95637a9a9f26d3da3e0374cb78320b41d78209cfe",
+      "bytes": 1230,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/ML.java"
+    },
+    {
+      "blake3": "c5de78cc9ed38b7c7a5d854402c65a695741d553292a85443cd81d2c24145d8c",
+      "bytes": 2119,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/MLNegatives.java"
+    },
+    {
+      "blake3": "7b833b4612e7cda7dda8790e97755e692ab5ff0f9d54e92709b1756446846378",
+      "bytes": 1713,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/MLOrder.java"
+    },
+    {
+      "blake3": "838eaa37a4adeadb5ea8b8739f5d7e28d1307892c6c67f27c052c135e0292398",
+      "bytes": 3195,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/MLOrderDriver.java"
+    },
+    {
+      "blake3": "ec3c57381302b72ce54bc47f8e91f435b9ee96563d2874359ad94238de0cd331",
+      "bytes": 2455,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/MLProbe.java"
+    },
+    {
+      "blake3": "2a4fa550b61dc450b3a37d2ad9a9aec3ca9a5f3e7b86fb560507483df536f30d",
+      "bytes": 2173,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/Order.java"
+    },
+    {
+      "blake3": "b52e7a122f265513e2662bd4445f8e748b674f7666ac729c8c7979aa75408641",
+      "bytes": 1481,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/ML.class"
+    },
+    {
+      "blake3": "73c135be775a1403c9ea4d560d559f312baba0ee4b465c839de1c8862ba00a39",
+      "bytes": 891,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/MLNegatives.class"
+    },
+    {
+      "blake3": "ad4ddec367fcecae1687c9e6b826fcd4c5033e028855f6552f336916714de700",
+      "bytes": 1053,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/MLOrder.class"
+    },
+    {
+      "blake3": "96fed8a24d740f6a34fa009075b519e12f7770f1d9c4378fa0c824f0c978c043",
+      "bytes": 1869,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/MLOrderDriver.class"
+    },
+    {
+      "blake3": "e05e9fce38273516f19fdd96e8314e1da87b64dbfaebeeb73fe222d757b008da",
+      "bytes": 945,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/MLProbe.class"
+    },
+    {
+      "blake3": "d4637ba650ee53e0e5a7061c1914ad357832a399d9cdfd84105ada92fd0e9f83",
+      "bytes": 1473,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/Order.class"
+    },
+    {
+      "blake3": "018e2be3b6678c2babf7bd71941208422600968b448c196fdc449a837ef1813f",
+      "bytes": 1478,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/ML.class"
+    },
+    {
+      "blake3": "504eeb6d3dd7444ab04530126017d792355d896fe5a95ebbaa9740ea2598380e",
+      "bytes": 891,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/MLNegatives.class"
+    },
+    {
+      "blake3": "ba56c33981ca5e060f04ea97367f312d8c21598a77a50c160b307bba827dfd46",
+      "bytes": 1053,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/MLOrder.class"
+    },
+    {
+      "blake3": "96fed8a24d740f6a34fa009075b519e12f7770f1d9c4378fa0c824f0c978c043",
+      "bytes": 1869,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/MLOrderDriver.class"
+    },
+    {
+      "blake3": "2585873f249d67a54aa9b7fd0e0a5f16f2163ff6b2c45f7e9d22c0a1be27cde7",
+      "bytes": 945,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/MLProbe.class"
+    },
+    {
+      "blake3": "2a2d70b83f3e4dd5e80c6ecaad125516c111b4a31bf7d82627b4cd6d49519ce7",
+      "bytes": 1473,
+      "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/Order.class"
+    },
+    {
       "blake3": "941c9847c40aab86f779566dafc7604a76fe6f7ce004b2c772f53cbf351c173c",
       "bytes": 197,
       "path": "tests/fixtures/recover-platform-interface-argument-widening/AC.java"
