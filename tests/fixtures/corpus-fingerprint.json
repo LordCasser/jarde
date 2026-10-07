@@ -8632,6 +8632,46 @@
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class"
     },
     {
+      "blake3": "1ce5d4731e3516a7af2504512545a21c589fece0aef9a970232691999e61f7b8",
+      "bytes": 725,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/BranchReadNegatives.java"
+    },
+    {
+      "blake3": "357df8d04bb91ad4b32f91d9e63fa21cbc18bb6f12cb2966dc51db03d88b856c",
+      "bytes": 773,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/BranchReads.java"
+    },
+    {
+      "blake3": "374f3a030801be0ae2589ab58536010ed7466456c0eb260b834c91ac8a0b6314",
+      "bytes": 1065,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/controls/NotZeroBranch.class"
+    },
+    {
+      "blake3": "85a8cd82e55761331f8f558dfba2a7e9dba67a990167ffd455b23f836fbfc370",
+      "bytes": 1065,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/controls/NumericBranch.class"
+    },
+    {
+      "blake3": "068ca35b80ee1ef47510720f4644027500e6e70382aa31bec044c90609efac7b",
+      "bytes": 1043,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/v8-javac8/BranchReadNegatives.class"
+    },
+    {
+      "blake3": "e5aab30ba1cdaffd3444a77897ac2ba9a542907c0dafbf72be19f184f44b8c0e",
+      "bytes": 1065,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/v8-javac8/BranchReads.class"
+    },
+    {
+      "blake3": "db4cca8fe3b7d812c7fc712b2167feef9361535efb1b06441fc3af818a88d3ed",
+      "bytes": 1040,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/v8/BranchReadNegatives.class"
+    },
+    {
+      "blake3": "6563ca62da67222983bb8448ea68f396c286dd9fe3b0d3aca31ca527ca997e94",
+      "bytes": 1065,
+      "path": "tests/fixtures/recover-short-circuit-local-branch-reads/v8/BranchReads.class"
+    },
+    {
       "blake3": "7971da439e57a41e4c3253fe44bab72d8751065590219c844b36c15029052d91",
       "bytes": 872,
       "path": "tests/fixtures/recover-statement-position-news/SB.java"
