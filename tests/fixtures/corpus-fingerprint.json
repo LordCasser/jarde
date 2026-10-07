@@ -8102,6 +8102,51 @@
       "path": "tests/fixtures/recover-inline-conditional-concat-operands/v8/ICQ.class"
     },
     {
+      "blake3": "e8d0884a8b1b56536428267c6318855c9dc84e529b297226aecb43a5214867fe",
+      "bytes": 364,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/CP.java"
+    },
+    {
+      "blake3": "1c50fd1a9a4112b6e97592cedd1358f16dfbae6360e48eb91f73e11ab9068f07",
+      "bytes": 533,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/MX.java"
+    },
+    {
+      "blake3": "988e1e6614f5229ceb462cc8427d98e30075358f4911ed6a2dabc23baca107f6",
+      "bytes": 708,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/NEG.java"
+    },
+    {
+      "blake3": "805ef712f0a2ff3baccb1b1f77ea82a3041ea677c728643556fc565275260a28",
+      "bytes": 1082,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/v8-javac8/CP.class"
+    },
+    {
+      "blake3": "5791b922de2cef76bbd19141251bcf15a33910b9cb82c0d3dc0c821b53b1a35b",
+      "bytes": 1229,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/v8-javac8/MX.class"
+    },
+    {
+      "blake3": "b8581fb86d767582c4e4dd18586d2a2e160686faf98ea4a9e7eb5e9a9f2d8c79",
+      "bytes": 1618,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/v8-javac8/NEG.class"
+    },
+    {
+      "blake3": "0a39f1e7f65a1107bdbf8cff8ef46d5d66c41818f62f178518f06679616eaaad",
+      "bytes": 1082,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/v8/CP.class"
+    },
+    {
+      "blake3": "7555617f20efd90136044ad32c0b01a08d7600043d2ed88082c07935f95d7674",
+      "bytes": 1229,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/v8/MX.class"
+    },
+    {
+      "blake3": "6683f5ab4cc01b6a3b35dee101057f2fb0bc404cdc0b6149b686536918b6be21",
+      "bytes": 1618,
+      "path": "tests/fixtures/recover-instance-field-assignment-chains/v8/NEG.class"
+    },
+    {
       "blake3": "f183643287f61240e206b28bad72b5e55def3501339c951a7ba4152805ce74df",
       "bytes": 1012,
       "path": "tests/fixtures/recover-io-resource-finally/IO.java"
