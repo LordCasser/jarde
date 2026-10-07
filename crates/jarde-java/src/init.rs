@@ -2321,6 +2321,11 @@ mod tests {
     const NESTED_NEGATIVES: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
     );
+    /// This change's own depth fixture (`tests/fixtures/recover-io-resource-finally/NestedDepth.java`,
+    /// javac 23.0.1 `--release 8 -g:none`): `threeLayer` is the wrapped-stream chain's own depth and
+    /// `fourLayer` is the boundary one layer deeper.
+    const NESTED_DEPTH: &[u8] =
+        include_bytes!("../../../tests/fixtures/recover-io-resource-finally/v8/NestedDepth.class");
 
     fn inline_char_sites(
         name: &str,
@@ -3240,26 +3245,38 @@ mod tests {
         );
     }
 
-    /// The negatives the patrol froze: a three-layer run keeps its outermost refusal (the middle
-    /// and inner sites still prove on their own), and a nested value with a second purpose keeps
-    /// both refusals (P3 2c.27 — one `new` expression in one place).
+    /// The depth boundary, updated by `recover-io-resource-finally`: a **three**-layer run presents
+    /// as one expression — the IO patrol's wrapped-stream chain
+    /// (`new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))`) is
+    /// exactly three layers and its outermost has no place to write its `new` unless the whole
+    /// chain does — while a **four**-layer run keeps its outermost refusal, so the limit is the
+    /// measured boundary and not a convenience. The negatives the patrol froze stay refused: a
+    /// nested value with a second purpose keeps both refusals (P3 2c.27 — one `new` expression in
+    /// one place), and a nested run split across a handler boundary keeps its own.
     #[test]
-    fn deeper_and_double_purpose_nested_constructions_stay_refused() {
+    fn three_layers_present_and_a_deeper_run_keeps_its_outermost_refusal() {
         let three = nested_sites(NESTED_NEGATIVES, "threeLayer", "()Ljava/lang/String;", None);
         assert!(
-            three.site_at_head(0).is_none(),
-            "the outermost of three layers"
+            three.site_at_head(0).is_some(),
+            "the outermost of three layers presents"
         );
         assert!(three.site_at_head(4).is_some(), "the middle layer proves");
         assert!(three.site_at_head(8).is_some(), "the inner layer proves");
-        let refusal = three
-            .refusals()
-            .next()
-            .expect("the outer refusal registers");
+
+        // The boundary one layer deeper, measured on this change's own fixture: the fourth layer's
+        // own scan cannot step over a fifth, so the outermost keeps the depth refusal this family
+        // states for a run too deep to spell.
+        let four = nested_sites(NESTED_DEPTH, "fourLayer", "()Ljava/lang/String;", None);
+        assert!(
+            four.site_at_head(0).is_none(),
+            "the outermost of four layers"
+        );
+        let refusal = four.refusals().next().expect("the outer refusal registers");
         assert!(
             refusal
                 .message()
-                .contains("completes inside the construction at BCI 0")
+                .contains("completes inside the construction at BCI 0"),
+            "the four-layer refusal is the depth boundary's own: {refusal:?}"
         );
 
         let double = nested_sites(NESTED_NEGATIVES, "doubleUse", "()Ljava/lang/String;", None);
