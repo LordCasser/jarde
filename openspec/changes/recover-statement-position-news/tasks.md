@@ -12,4 +12,4 @@
 
 - [x] 3.1 全仓测试全绿（含 refuse-unconsumed-construction-invokes 全部既有测试）、fmt、CI 完整 `-A` clippy、`openspec validate --all --strict`、diff check；磁盘纪律同前。（`results/06-gates.md` 逐字记录：`331` ok / `0` FAILED / EXIT=0、`p3_ordinary_new_invokes` 2/2、clippy 零警告（含 `-D warnings`）、`307 passed, 0 failed`、`DIFF-CHECK-OK`、FMT-OK；首轮四处陈旧预期各自更新或再生，见同文件表）
 - [x] 3.2 B5/B6 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。（`results/04-three-way.sh/.out`：B5 三腿同为 `667c0fe7…`、SP 三腿同为 `724195f8…`、SB 三腿同为 `2e6d31a5…`（与 B6 原类同答 `9`）；B6 与 `SPC` 的重编文本保持拒绝（安全形），`SPC` 原类输出 `CST`）
-- [ ] 3.3 root 独立复核判据边界、CST 保护与三方行为，更新账本与巡查记录。
+- [x] 3.3 root 独立复核判据边界、CST 保护与三方行为，更新账本与巡查记录。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：门控复核 ✓（含实现者自查抓回 owns 重写回退的证据）、CST 顺序双测试钉死 ✓、B5 剥离运行与 orig.out 逐字一致 root 亲测 ✓、门禁 331 targets ok/0 FAILED + fmt 合并态 + oracle 3/3 ✓、D3 池形与两处他片期望更新裁定追认 ✓；账本与巡查记录随本验收关闭）
