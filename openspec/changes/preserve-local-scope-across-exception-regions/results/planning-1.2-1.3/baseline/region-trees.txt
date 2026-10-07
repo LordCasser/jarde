@@ -1,0 +1,98 @@
+# 基线 region 树与逐局部诊断（clean HEAD 二进制，2026-10-07）
+
+== LK (plain-jar)
+  member <init>()V | contains_statements java structured
+    region bci 0 blocks [0] structured=True code=None rule=straight
+  member put()V | explanation_only mixed fallback
+    region bci 0 blocks [0] structured=True code=None rule=straight
+    region bci 7 blocks [7] structured=False code=jre_region_exception_edge rule=None
+       block at BCI 7 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+    region bci 15 blocks [15, 27, 56, 66] structured=False code=jre_region_uncovered_blocks rule=None
+       4 live block(s) are reachable only through edges the normal-flow view leaves out: [15, 27, 56, 66]
+     dg jre_region_exception_edge : block at BCI 7 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+     dg jre_region_uncovered_blocks : 4 live block(s) are reachable only through edges the normal-flow view leaves out: [15, 27, 56, 66]
+     dg jre_field_not_emitted : the field access at BCI 1 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 8 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 16 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 29 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 34 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 38 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 47 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 58 passed field identity proof, but no matching Java field operation was emitted by the final body
+  member take()I | contains_statements mixed fallback
+    region bci 0 blocks [0] structured=True code=None rule=straight
+    region bci 7 blocks [7] structured=False code=jre_region_exception_edge rule=None
+       block at BCI 7 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+    region bci 14 blocks [14, 26, 59] structured=False code=jre_region_uncovered_blocks rule=None
+       3 live block(s) are reachable only through edges the normal-flow view leaves out: [14, 26, 59]
+     dg jre_region_exception_edge : block at BCI 7 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+     dg jre_region_uncovered_blocks : 3 live block(s) are reachable only through edges the normal-flow view leaves out: [14, 26, 59]
+     dg jre_field_not_emitted : the field access at BCI 8 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 15 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 28 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 33 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 37 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 46 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 51 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 61 passed field identity proof, but no matching Java field operation was emitted by the final body
+  member tryLockQuick()Z | contains_statements mixed fallback
+    region bci 0 blocks [0, 10, 42] structured=False code=jre_guard_finally_copy rule=if
+       BCI 32: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+    region bci 32 blocks [32] structured=False code=jre_region_uncovered_blocks rule=None
+       1 live block(s) are reachable only through edges the normal-flow view leaves out: [32]
+     dg jre_guard_finally_copy : BCI 32: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+     dg jre_region_uncovered_blocks : 1 live block(s) are reachable only through edges the normal-flow view leaves out: [32]
+     dg jre_field_not_emitted : the field access at BCI 12 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 18 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 24 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 34 passed field identity proof, but no matching Java field operation was emitted by the final body
+  member main([Ljava/lang/String;)V | contains_statements java structured
+    region bci 0 blocks [0] structured=True code=None rule=straight
+
+== IO (plain-jar)
+  member <init>()V | contains_statements java structured
+    region bci 0 blocks [0] structured=True code=None rule=straight
+  member countLines(Ljava/lang/String;)I | explanation_only mixed fallback
+    region bci 0 blocks [0] structured=True code=None rule=straight
+    region bci 27 blocks [27] structured=False code=jre_region_exception_edge rule=None
+       block at BCI 27 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+    region bci 36 blocks [36, 42, 52] structured=False code=jre_region_uncovered_blocks rule=None
+       3 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 42, 52]
+     dg jre_region_exception_edge : block at BCI 27 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+     dg jre_region_uncovered_blocks : 3 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 42, 52]
+     dg jre_new_shape : the construction at BCI 0 was not presented: the construction at BCI 8 completes inside the construction at BCI 0, and its value is not one of the arguments of the constructor call at BCI 21: the `new` expression has no single place to write it
+  member readAll(Ljava/lang/String;)Ljava/lang/String; | explanation_only mixed fallback
+    region bci 0 blocks [0] structured=True code=None rule=straight
+    region bci 17 blocks [17] structured=False code=jre_region_exception_edge rule=None
+       block at BCI 17 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+    region bci 27 blocks [27, 37, 44] structured=False code=jre_region_uncovered_blocks rule=None
+       3 live block(s) are reachable only through edges the normal-flow view leaves out: [27, 37, 44]
+     dg jre_region_exception_edge : block at BCI 17 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+     dg jre_region_uncovered_blocks : 3 live block(s) are reachable only through edges the normal-flow view leaves out: [27, 37, 44]
+     dg jre_concat_split : the concatenation at BCI 9 was not presented: the concatenation that starts at BCI 9 ends in the `toString` at BCI 54, which is in another block: a branch cuts the chain in two, and the value it builds is not the value of one expression
+  member main([Ljava/lang/String;)V | contains_statements java structured
+    region bci 0 blocks [0] structured=True code=None rule=straight
+
+== ScopePlanCrossing (single-class)
+  member <init>()V | contains_statements java structured
+    region bci 0 blocks [0] structured=True code=None rule=straight
+  member flatFinally(I)I | explanation_only mixed fallback
+    region bci 0 blocks [0] structured=False code=jre_guard_finally_copy rule=None
+       BCI 28: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+    region bci 15 blocks [15, 28] structured=False code=jre_region_uncovered_blocks rule=None
+       2 live block(s) are reachable only through edges the normal-flow view leaves out: [15, 28]
+     dg jre_guard_finally_copy : BCI 28: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+     dg jre_region_uncovered_blocks : 2 live block(s) are reachable only through edges the normal-flow view leaves out: [15, 28]
+     dg jre_field_not_emitted : the field access at BCI 5 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 18 passed field identity proof, but no matching Java field operation was emitted by the final body
+     dg jre_field_not_emitted : the field access at BCI 29 passed field identity proof, but no matching Java field operation was emitted by the final body
+  member resourceAcrossFinally(Ljava/lang/String;)I | explanation_only mixed fallback
+    region bci 0 blocks [0] structured=True code=None rule=straight
+    region bci 27 blocks [27] structured=False code=jre_region_exception_edge rule=None
+       block at BCI 27 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+    region bci 36 blocks [36, 42, 52] structured=False code=jre_region_uncovered_blocks rule=None
+       3 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 42, 52]
+     dg jre_region_exception_edge : block at BCI 27 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+     dg jre_region_uncovered_blocks : 3 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 42, 52]
+     dg jre_new_shape : the construction at BCI 0 was not presented: the construction at BCI 8 completes inside the construction at BCI 0, and its value is not one of the arguments of the constructor call at BCI 21: the `new` expression has no single place to write it
+

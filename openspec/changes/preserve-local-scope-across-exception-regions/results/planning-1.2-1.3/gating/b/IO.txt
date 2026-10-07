@@ -1,0 +1,53 @@
+// jarde: presentation of `IO` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class IO extends java.lang.Object {
+    public IO() {
+        // @method <init>()V
+        // @declaration a constructor of `IO`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int countLines(java.lang.String arg0) throws java.io.IOException {
+        // @method countLines(Ljava/lang/String;)I
+        // @declaration a static method of `IO`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.BufferedReader local1;
+        int local2;
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 24 21 12
+        // the copy at BCI 3 has no proved local assignment
+        local2 = 0;
+        // @bytecode 27 28 31 32 33
+        // block at BCI 27 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+        // @bytecode 36 39 42 43 45 46 49 51 52 54 55 58 60
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 42, 52]
+    }
+
+    static java.lang.String readAll(java.lang.String arg0) throws java.io.IOException {
+        // @method readAll(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `IO`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.FileReader local1;
+        java.lang.StringBuilder local2;
+        int local3;
+        local1 = new java.io.FileReader(arg0);
+        local2 = new java.lang.StringBuilder();
+        // @bytecode 17 18 21 22 23 24
+        // block at BCI 17 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+        // @bytecode 27 28 29 30 33 34 37 38 41 44 46 47 50 52 53 54 57
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [27, 37, 44]
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `IO`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("" + countLines("data.txt") + "/" + readAll("data.txt").replace((java.lang.CharSequence) "\n", (java.lang.CharSequence) "|"));
+        return;
+    }
+}

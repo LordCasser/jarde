@@ -1,0 +1,13 @@
+diff --git a/crates/jarde-java/src/build.rs b/crates/jarde-java/src/build.rs
+index 0d515089..dab3dee5 100644
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -879,7 +879,7 @@ fn declarations(
+                 .as_ref()
+                 .is_some_and(|path| paths.fallbacks.contains(path))
+         });
+-        if has_unpresented_access {
++        if false && has_unpresented_access {
+             plan.placements.insert(
+                 *variable,
+                 DeclarationPlacement::Incomplete {

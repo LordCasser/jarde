@@ -1,0 +1,7 @@
+installed javac --release 8: exit 0
+real javac 8 (/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac): exit 0
+original v8: 1,2,3,4,6,5,9,10,11
+original v8-javac8: 1,2,3,4,6,5,9,10,11
+recovered (installed): 1,2,3,4,6,5,9,10,11
+recovered (real8): 1,2,3,4,6,5,9,10,11
+ROUNDTRIP OK: the recovered class answers exactly what the fixture's own bytes answer
