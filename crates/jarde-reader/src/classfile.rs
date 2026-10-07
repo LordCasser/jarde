@@ -11789,6 +11789,12 @@ mod tests {
     /// straight-line or `invokedynamic` bodies with no branch and no handler, so the four classes
     /// add twenty Code bodies and nothing else. The measured census is 585 classes, 2,589 bodies,
     /// 252 handler records, 1,763 branch/switch targets and the same eight subroutines.
+    ///
+    /// The ledger below records every family added since, with the bodies and targets it moved.
+    /// The census the assertion pins is **828 classes, 3,596 bodies, 290 handler records, 2,211
+    /// branch/switch targets and the same eight subroutines**; the last entry —
+    /// `recover-postfix-condition-positions`, three classes on both compiler legs — is the one that
+    /// reached it.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -12009,7 +12015,19 @@ mod tests {
             // `condIdx` comparison, per leg — plus the hand-built `AVN` (three members, no branch),
             // eleven classes and one hundred nineteen bodies in all, and no handler record or
             // subroutine) moved it again.
-            (822, 3564, 290, 2161, 8),
+            // The 2026-10-07 recover-postfix-condition-positions fixtures (the postfix old-value
+            // condition positions: the patrol's own `CP7` trio reused byte-identically — the
+            // do-while scan, the while compound and the if short-circuit — plus this change's `CN`
+            // (the two negatives: a second variable's position in one condition and the middle of
+            // a short-circuit chain, with the compound-chain control) and `CC` (the three
+            // positions again, each answering the count its increment reached), three classes on
+            // both compiler legs: six classes, thirty-two bodies, no handler record, and fifty
+            // branch targets — seven in `CP7` (the scan's `ifeq`/`if_icmplt`, the find's
+            // `if_icmpge`/`if_icmpeq`/`goto` and the cond's `ifle`/`if_icmpge`), nine in `CN` (the
+            // two negatives' four `ifeq`s and two `goto`s, the chain's `ifle`/`ifgt`) and nine in
+            // `CC` (the three positions' six and the find's `goto`, the chain's `ifle`/`ifgt`),
+            // per leg) moved it again.
+            (828, 3596, 290, 2211, 8),
             "fixture population changed: re-measure these counts"
         );
     }
