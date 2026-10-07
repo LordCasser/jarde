@@ -1,0 +1,12 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/fixture_behavior_guards.rs (target/debug/deps/fixture_behavior_guards-2fda392b0452436c)
+
+running 6 tests
+test lambda_body_inline_runs_and_its_text_stays_uncompilable ... ok
+test anonymous_member_base_runs_and_its_text_stays_uncompilable ... ok
+test short_circuit_left_false_runs_and_recompiles_to_the_recorded_output ... ok
+test anonymous_top_level_runs_and_recompiles_to_the_recorded_output ... ok
+test enum_arity_runs_and_recompiles_to_the_recorded_output ... ok
+test package_info_basic_runs_and_recompiles_to_the_recorded_output ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.62s

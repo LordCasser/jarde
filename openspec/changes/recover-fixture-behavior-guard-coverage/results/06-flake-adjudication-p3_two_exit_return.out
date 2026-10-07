@@ -1,0 +1,14 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114b3-51b1-7e73-a02d-ef993197db80)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.24s
+     Running tests/p3_two_exit_return.rs (target/debug/deps/p3_two_exit_return-144e89f596305d02)
+
+running 7 tests
+test an_inner_two_return_graph_with_two_outside_predecessors_is_not_claimed ... ok
+test shared_return_has_one_statement_and_every_physical_source ... ok
+test third_exit_backedge_and_exception_boundary_keep_their_own_structure ... ok
+test low_budget_and_pre_cancel_publish_no_partial_return ... ok
+test unproved_leaves_descriptor_and_independent_effect_do_not_fold ... ok
+test observable_equals_calls_keep_their_lazy_order_and_count ... ok
+test complete_class_compiles_and_matches_eight_verified_paths ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.98s

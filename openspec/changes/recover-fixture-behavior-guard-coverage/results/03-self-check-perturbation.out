@@ -1,0 +1,59 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/fixture_behavior_guards.rs (target/debug/deps/fixture_behavior_guards-2fda392b0452436c)
+
+running 13 tests
+test anonymous_member_base_runs_and_its_text_stays_uncompilable ... ignored, needs a JDK on PATH: it runs the frozen classes and asks `javac` whether the recovered text compiles (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test anonymous_top_level_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test enum_arity_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test lambda_body_inline_runs_and_its_text_stays_uncompilable ... ignored, needs a JDK on PATH: it runs the frozen classes and asks `javac` whether the recovered text compiles (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test package_info_basic_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test short_circuit_left_false_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test package_info_basic_pins_the_package_annotation_before_the_package_line ... ok
+test anonymous_member_base_presents_the_member_base_constructor_order ... ok
+test anonymous_top_level_pins_the_childs_capture_write_before_the_super_call ... FAILED
+test short_circuit_left_false_pins_the_single_short_circuit_write ... ok
+test enum_arity_pins_the_zero_one_and_four_constant_headers ... ok
+test anonymous_member_base_keeps_the_qualified_receiver_refusal ... ok
+test lambda_body_inline_pins_the_forwarding_arrow_and_the_refused_main ... ok
+
+failures:
+
+---- anonymous_top_level_pins_the_childs_capture_write_before_the_super_call stdout ----
+
+thread 'anonymous_top_level_pins_the_childs_capture_write_before_the_super_call' (64712604) panicked at tests/fixture_behavior_guards.rs:318:5:
+assertion `left == right` failed: the capture write must stay where the bytes have it:
+// jarde: presentation of `AnonymousTopLevel$1` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+class AnonymousTopLevel$1 extends Base {
+    final java.lang.String val$captured;
+
+    AnonymousTopLevel$1(long seed, java.lang.String arg3) {
+        // @method <init>(JLjava/lang/String;)V
+        // @declaration a constructor of `AnonymousTopLevel$1`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super(seed);
+        this.val$captured = arg3;
+        return;
+    }
+
+    public java.lang.String render() {
+        // @method render()Ljava/lang/String;
+        // @declaration an instance method of `AnonymousTopLevel$1`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        AnonymousTopLevel.renderCalls = AnonymousTopLevel.renderCalls + 1;
+        AnonymousTopLevel.event("render");
+        return new java.lang.StringBuilder().append(this.seed()).append(":").append(this.val$captured).toString();
+    }
+}
+
+  left: ["super(seed);", "this.val$captured = arg3;", "return;"]
+ right: ["this.val$captured = arg3;", "super(seed);", "return;"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    anonymous_top_level_pins_the_childs_capture_write_before_the_super_call
+
+test result: FAILED. 6 passed; 1 failed; 6 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `--test fixture_behavior_guards`
