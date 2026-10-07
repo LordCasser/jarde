@@ -38,28 +38,50 @@
 //! initializer's field writes after the constructor call, which is exactly the order the
 //! normalized text has.
 //!
-//! # The move happens only past a constructor call that cannot run user code
+//! # The move happens only past a constructor call that cannot observe the group's fields
 //!
 //! Placing the group after the constructor call is the source's order because a source
 //! constructor call cannot read what it has not been handed. A class file's call is not bound by
 //! that: a superclass constructor that virtually dispatches on `this` — the shape an anonymous
 //! subclass overriding a hook the superclass constructor calls makes possible — runs the
 //! subclass's own code *during* the call, and that code reads the captures from the very fields
-//! this group writes, so where the bytes store them decides what it sees. `java/lang/Object`'s
-//! constructor is final and empty, so the one target that provably runs no user code is
-//! `java/lang/Object.<init>()V`, as the prologue's own invoke states it — owner and descriptor
-//! exactly. That is the only target the group moves past. Any other target keeps the byte order,
-//! whose source shape javac refuses (a flexible constructor body): an uncompilable text is a
-//! loud failure, where a recompiled program that reads `null` where the original read a value is
-//! a silent one.
+//! this group writes, so where the bytes store them decides what it sees. The move is therefore
+//! taken only past a call the group's fields cannot be observed through, and there are two
+//! proofs of that, each one stated by this run's own facts:
+//!
+//! * **the target runs no user code**: `java/lang/Object`'s constructor is final and empty, so
+//!   `java/lang/Object.<init>()V` — owner, name and descriptor exactly, as the prologue's own
+//!   invoke states them — is the one target that provably dispatches nowhere;
+//! * **the class declares no code the call could dispatch into**: a field can only be read by an
+//!   instruction that names it, and the synthetic captures are minted into this class alone — no
+//!   superclass was compiled against them — so the code that can read them during the call is
+//!   this class's own code, reached through whatever virtual dispatch the superclass constructor
+//!   makes. The class's method table (`build`'s `Inputs::class_methods`, the declaration view of
+//!   the same class header [`is_synthetic_field`] reads the fields from) states every member this
+//!   class declares: one that declares nothing but its constructors and its class initializer has
+//!   no code that can run during the call — the other constructors are not the one running, and
+//!   the class initializer ran before the instance existed (JLS 12.4.2). The call's arguments are
+//!   read *before* it runs while the group moves after it, so this arm additionally walks the
+//!   arguments' own SSA dependencies and refuses an argument built from a moved field, or one
+//!   that invokes anything at all: a callee's body is not in this run's facts, so what it does is
+//!   not a proof — and the one fact that would make such a call harmless (the verifier's own
+//!   `uninitializedThis` rule, JVMS 4.10.1.9, which no callee can be handed the instance under)
+//!   belongs to the frame pass, not to this rule's reading.
+//!
+//! Any other shape keeps the byte order, whose source shape javac refuses (a flexible constructor
+//! body): an uncompilable text is a loud failure, where a recompiled program that reads `null`
+//! where the original read a value is a silent one.
 //!
 //! [`facts::ACC_SYNTHETIC`]: crate::facts::ACC_SYNTHETIC
+
+use std::collections::BTreeSet;
 
 use jarde_jvm::method_ir::{Definition, SsaInstruction, SsaTable, Value, ValueId};
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::MemberHeader;
 
 use crate::ast::{AssignOp, ConstructorTarget, Stmt, StmtKind};
+use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::facts::{ACC_SYNTHETIC, Operation};
 use crate::field;
@@ -70,16 +92,18 @@ use crate::stop::{self, StopReason};
 /// compiler's certified synthetic-store group, and leaves it byte-verbatim when it is not.
 ///
 /// `stmts` are the body's top-level statements in BCI order. Everything the criteria do not
-/// prove — a body with no prologue, a `this(…)` prologue, a super prologue whose target is not
-/// `java/lang/Object`'s own `<init>()V`, an empty prefix, a prefix holding anything but
-/// certified synthetic direct-parameter stores, or a prologue statement the order does not place
-/// at top level — is a no-op that keeps the text byte-verbatim.
+/// prove — a body with no prologue, a `this(…)` prologue, a super prologue whose target is one
+/// the group's fields can be observed through (see the module's own section on the move), an
+/// empty prefix, a prefix holding anything but certified synthetic direct-parameter stores, or a
+/// prologue statement the order does not place at top level — is a no-op that keeps the text
+/// byte-verbatim.
 pub(crate) fn present_prologue_first(
     stmts: &mut [Stmt],
     ssa: &SsaTable,
     operations: &Operations,
     fields: &field::Plan,
     class_fields: Option<&[MemberHeader]>,
+    class_methods: Option<&[MemberHeader]>,
     declaring: Option<&str>,
     prologues: &init::Prologues,
     parameters: u16,
@@ -124,6 +148,10 @@ pub(crate) fn present_prologue_first(
     if prologue_index == 0 {
         return Ok(());
     }
+    // The members the group writes, as the same `field@1` verdicts the pattern check reads them:
+    // what a constructor-call argument must not be built from, and what the second proof below
+    // moves past a call it cannot be observed through.
+    let mut moved: Vec<(&str, &str)> = Vec::with_capacity(prologue_index);
     for stmt in stmts[..prologue_index].iter() {
         stop::poll(budget, Some(stmt.origin.primary().bci()))?;
         stop::charge(
@@ -144,21 +172,50 @@ pub(crate) fn present_prologue_first(
         ) {
             return Ok(());
         }
+        if let Some((evidence, _)) = fields.claim(stmt.origin.primary().bci()) {
+            moved.push((evidence.name.as_str(), evidence.descriptor.as_str()));
+        }
     }
     // Prologue first, then the group in its original order, then the rest in its original order:
     // the certified group runs up to the prologue, so this is one rotation of the prologue
     // statement to the front of that range. The rotation is gated on the constructor call being
-    // one no user code can run in: the group is re-derived where JLS 12.5 runs field writes —
-    // *after* the call — and a superclass constructor that virtually dispatches on `this` runs
-    // the subclass's own code during the call, reading these very captures where the bytes store
-    // them. `java/lang/Object.<init>()V` is final and empty — the one target that cannot — and
-    // any other target keeps the byte order, whose uncompilable source shape fails loudly where
+    // one the group's fields cannot be observed through: the group is re-derived where JLS 12.5
+    // runs field writes — *after* the call — and a superclass constructor that virtually
+    // dispatches on `this` runs the subclass's own code during the call, reading these very
+    // captures where the bytes store them. Two proofs of that, each from this run's own facts:
+    //
+    // * `java/lang/Object.<init>()V` is final and empty — the one target that provably runs no
+    //   user code at all (owner, name and descriptor exactly as the prologue's invoke states
+    //   them);
+    // * the class declares no code the call could run: a field is only read by an instruction
+    //   that names it, and the synthetic captures are minted into this class alone, so the code
+    //   that can read them during the call is this class's own — reached through whatever
+    //   virtual dispatch the superclass constructor makes. A method table that declares nothing
+    //   but the constructors and the class initializer has no such code: the other constructors
+    //   are not the one running, and the class initializer ran before the instance existed
+    //   (JLS 12.4.2). The arguments are read *before* the call while the group moves after it,
+    //   so that arm also requires every argument to be built without reading a moved field and
+    //   without invoking anything (a callee's body is not in this run's facts, so the run cannot
+    //   prove what it does).
+    //
+    // Any other target keeps the byte order, whose uncompilable source shape fails loudly where
     // the moved shape would silently change the program.
     let call_cannot_run_user_code = match operations.get(prologue.bci) {
         Some(Operation::Invoke(target)) => {
-            target.owner() == "java/lang/Object"
+            (target.owner() == "java/lang/Object"
                 && target.name() == "<init>"
-                && target.descriptor() == "()V"
+                && target.descriptor() == "()V")
+                || (target.name() == "<init>"
+                    && declares_only_initializers(class_methods)
+                    && call_arguments_avoid(
+                        &moved,
+                        ssa,
+                        operations,
+                        fields,
+                        prologue.bci,
+                        declaring,
+                        budget,
+                    )?)
         }
         _ => false,
     };
@@ -216,6 +273,146 @@ fn is_synthetic_parameter_store(
     }
     is_synthetic_field(class_fields, &evidence.name, &evidence.descriptor)
         && is_direct_parameter_load(ssa, operations, stored, parameters, has_receiver)
+}
+
+/// Whether the class's own method table declares nothing the constructor call could run: no
+/// member but its constructors and its class initializer.
+///
+/// A class file can only read a field through an instruction that names it, and the synthetic
+/// captures are minted into the class being constructed alone — no superclass was compiled
+/// against them — so the code that can read them during the constructor call is this class's own,
+/// reached through whatever virtual dispatch the superclass constructor makes. A member other
+/// than the constructor that is running is code this class declares, and the superclass's
+/// constructor can reach it exactly that way; a method table that declares none is a class with
+/// no code the call can run. The class initializer is not such a member: it runs before any
+/// instance of the class exists (JLS 12.4.2), and an initializer's own run cannot be a
+/// constructor call's.
+///
+/// The declaration view is the one the run's class header states (`build`'s
+/// `Inputs::class_methods`), and a run that read no method table proves nothing here: it is a
+/// negative, like a table that names a member this reading does not recognize.
+fn declares_only_initializers(class_methods: Option<&[MemberHeader]>) -> bool {
+    let Some(headers) = class_methods else {
+        return false;
+    };
+    let mut names_a_constructor = false;
+    for header in headers {
+        let name = header.name.raw().0.as_slice();
+        if name == b"<init>" {
+            names_a_constructor = true;
+        } else if name != b"<clinit>" {
+            return false;
+        }
+    }
+    names_a_constructor
+}
+
+/// Whether every argument of the constructor call at `bci` is a value built without reading one of
+/// the `moved` fields and without running any code this run cannot see.
+///
+/// The call's arguments are evaluated *before* the call, and the group moves after it: an argument
+/// built from a moved field would read the field where the bytes left it before the store, which
+/// the moved text no longer writes — so the argument is refused wherever its value depends on one,
+/// as a *dataflow* reading rather than the expression's spelling. The walk is over the SSA's own
+/// definitions, so a value that reaches the field through locals, arithmetic or a cast is refused
+/// the same way a direct read is; an invocation anywhere in that closure is refused too, because
+/// the callee's body is not in this run's facts, so what it does is not a proof this run holds. An
+/// unknown definition (a merge, a handler, an instruction this layer did not model) is a negative
+/// as well: the walk proves only what it can read.
+///
+/// The receiver is not an argument: it is the constructor's own `this` — the value the group's
+/// writes were proved on — and a call whose receiver is anything else is not the shape this
+/// presentation owns.
+fn call_arguments_avoid(
+    moved: &[(&str, &str)],
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    bci: u32,
+    declaring: Option<&str>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let Some(instruction) = instruction_at(ssa, bci) else {
+        return Ok(false);
+    };
+    let operands = stack_operands(instruction);
+    let Some((_, receiver)) = operands.first() else {
+        return Ok(false);
+    };
+    if !matches!(ssa.value(*receiver).ty(), Value::UninitializedThis) {
+        return Ok(false);
+    }
+    for (_, argument) in operands.iter().skip(1) {
+        if value_observes_moved(*argument, moved, ssa, operations, fields, declaring, budget)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+/// Whether one argument value is built, through any chain of the SSA's own definitions, from a
+/// read of one of the `moved` fields, or from anything that runs code or states no value this
+/// walk can read.
+fn value_observes_moved(
+    start: ValueId,
+    moved: &[(&str, &str)],
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    declaring: Option<&str>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut pending = vec![start];
+    let mut seen = BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        if !seen.insert(value) {
+            continue;
+        }
+        match ssa.value(value).def() {
+            // The method's entry state: a parameter or `this`, the values the signature itself
+            // hands the constructor. Nothing an entry value is can read a field.
+            Definition::Entry { .. } => {}
+            Definition::Instruction { bci, .. } => {
+                // One step of this walk, charged like every other worklist step in the layer: the
+                // seen set makes each value of the closure one visit.
+                stop::charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(*bci))?;
+                let Some(operation) = operations.get(*bci) else {
+                    return Ok(true);
+                };
+                if let Some((evidence, _)) = fields.claim(*bci) {
+                    let names_a_moved = declaring == Some(evidence.owner.as_str())
+                        && moved.iter().any(|(name, descriptor)| {
+                            evidence.name == *name && evidence.descriptor == *descriptor
+                        });
+                    if names_a_moved {
+                        return Ok(true);
+                    }
+                }
+                // A call runs a body this run does not hold; the unmodelled remainder states no
+                // value this walk can read; a monitor, a throw and a return are effects no
+                // argument value is built from.
+                if matches!(
+                    operation,
+                    Operation::Invoke(_)
+                        | Operation::InvokeDynamic(_)
+                        | Operation::Monitor { .. }
+                        | Operation::Throw
+                        | Operation::Return
+                        | Operation::Other
+                ) {
+                    return Ok(true);
+                }
+                let Some(instruction) = instruction_at(ssa, *bci) else {
+                    return Ok(true);
+                };
+                pending.extend(instruction.reads().iter().map(|(_, read)| *read));
+            }
+            // A merge or a handler is a definition this walk cannot follow to its operands: what
+            // the value is there is not one chain of the body's own instructions.
+            Definition::Phi { .. } | Definition::Caught { .. } => return Ok(true),
+        }
+    }
+    Ok(false)
 }
 
 /// Whether the field one write names is the compiler's synthetic capture.
