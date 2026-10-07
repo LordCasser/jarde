@@ -1907,7 +1907,16 @@ fn a_counted_dimension_override_is_accepted_and_stops_the_run_at_that_dimension(
         stderr_text(&stopped)
     );
     let document = error_document(&stopped);
-    assert_eq!(document["error"]["code"], json!("cli_export_unfinished"));
+    // The failure document's `error` carries the stop: a CI-load-correlated flake (five sightings,
+    // 2026-10-07/08, docs-only commits red while the same code is green) once parsed as a valid
+    // single JSON document whose `error` indexed to null — the shape of an `Error` variant that
+    // serializes as a plain string rather than `{code, message}`. This message prints the whole
+    // document so the next occurrence names the variant instead of a bare `Null`.
+    assert_eq!(
+        document["error"]["code"],
+        json!("cli_export_unfinished"),
+        "the stopped export's failure document: {document}"
+    );
     let message = document["error"]["message"]
         .as_str()
         .unwrap_or_else(|| panic!("the failure document states a message: {document}"));
