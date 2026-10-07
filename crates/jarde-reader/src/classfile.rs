@@ -12050,7 +12050,13 @@ mod tests {
             // bodies — plus the hand-built `SPC`, the statement-position twin of the frozen
             // counterexample, nine classes and fifty-three bodies in all, no handler record, no
             // branch target and no subroutine) moved it again.
-            (844, 3702, 290, 2273, 8),
+            // The 2026-10-07 recover-capture-ctor-super-order fixtures (the double-brace capture
+            // pair on both compiler legs — `DB`, its `DB$1` no-capture companion and its `DB$2`
+            // capture companion, six classes, fourteen bodies — plus the two hand-made
+            // super-argument probes, `ReadArg`'s family and `CallArg`'s family with its helper,
+            // seven classes, seven bodies: thirteen classes, twenty-one bodies, no handler record,
+            // no branch target and no subroutine) moved it again.
+            (857, 3723, 290, 2273, 8),
             "fixture population changed: re-measure these counts"
         );
     }
