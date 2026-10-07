@@ -9206,6 +9206,13 @@ pub(crate) struct FieldCopy {
     /// value that stood below the top of the stack and not the value it duplicated. `None` for a
     /// `dup`, whose two writes are both the duplicated value.
     pub(crate) pass_through: Option<ValueId>,
+    /// The receiver one instance chain's copy **moved**, and the value it moved it from
+    /// (`recover-instance-field-assignment-chains`): the `dup_x1` inserts its copy *under* the
+    /// receiver that stood below the duplicated value, so that receiver ends up in the slot the
+    /// value was read from and is what the store this copy feeds is called on. The pair is the
+    /// value the copy wrote there and the value it read below the top — which is the text that
+    /// receiver is written as. `None` for every other copy.
+    pub(crate) moved: Option<(ValueId, ValueId)>,
     /// What the copy's consumers are.
     pub(crate) shape: FieldCopyShape,
 }
@@ -9281,6 +9288,7 @@ impl FieldCopies {
         canonical: &CanonicalCfg,
         operations: &Operations,
         fields: &field::Plan,
+        has_receiver: bool,
         budget: &mut Budget,
     ) -> Result<Self, StopReason> {
         let mut plan = Self::default();
@@ -9320,13 +9328,30 @@ impl FieldCopies {
                     OPCODE_DUP_X1 => {
                         match receiver_copy_at(ssa, operations, fields, block, index, budget)? {
                             Some(copy) => Some(vec![copy]),
-                            None => conditional_receiver_copy_at(
-                                ssa, canonical, operations, fields, block, index, budget,
-                            )?
-                            .map(|(copy, cut)| {
-                                plan.cuts.insert(cut.head_block.clone(), cut);
-                                vec![copy]
-                            }),
+                            None => {
+                                match conditional_receiver_copy_at(
+                                    ssa, canonical, operations, fields, block, index, budget,
+                                )? {
+                                    Some((copy, cut)) => {
+                                        plan.cuts.insert(cut.head_block.clone(), cut);
+                                        Some(vec![copy])
+                                    }
+                                    // The copy whose value survives across the receivers of an
+                                    // instance chain's stores: `this.a = this.b = this.c = 5`
+                                    // writes one `dup_x1` per extra store, each inserting its copy
+                                    // *under* the receiver it also moves
+                                    // (`recover-instance-field-assignment-chains`).
+                                    None => instance_chain_at(
+                                        ssa,
+                                        operations,
+                                        fields,
+                                        has_receiver,
+                                        block,
+                                        index,
+                                        budget,
+                                    )?,
+                                }
+                            }
                         }
                     }
                     _ => None,
@@ -9545,10 +9570,206 @@ fn field_chain_at(
                 duplicate,
                 source,
                 pass_through: None,
+                moved: None,
                 shape: FieldCopyShape::Chain {
                     stores: stores.clone(),
                     lead: ordinal == 0,
                     saved,
+                },
+            })
+            .collect(),
+    ))
+}
+
+/// The **instance** chain one `dup_x1` leads, when the run of instructions after it is one
+/// (`recover-instance-field-assignment-chains`).
+///
+/// `this.a = this.b = this.c = value` evaluates the value once and writes it to every field, and
+/// javac compiles it to the same run of copies the static chain is made of — with the receivers
+/// **already on the stack** under the value:
+/// `aload_0; aload_0; aload_0; value; dup_x1; putfield c; dup_x1; putfield b; putfield a`. Each
+/// `dup_x1` reads the value copy it duplicates and the receiver that stands below it, and inserts
+/// its copy *under* that receiver — so the copy left below is the value the next copy reads, the
+/// receiver it moved is what the store right after it is called on, and the copy it leaves on top
+/// is that store's value. The last store has no copy in front of it: it takes the surviving value
+/// copy and the receiver that never left the bottom of the stack.
+///
+/// Every condition is an identity the bytecode states, read from the values the instructions
+/// really carry ([`dup_x1_writes`]): which value each copy read and where each of the three values
+/// it wrote lands, that the store right after a copy is an instance write taking the copy's moved
+/// receiver and its top value, and that the value copy the copy left below is read by the next
+/// copy of the run or by the chain's last store — and by nothing else. The chain is proved once,
+/// from its first copy: a run whose later copy is reached first is refused because its source is
+/// itself a copy ([`field_copy_source_is_reusable`]), so the one proof that can be admitted is the
+/// one that states the whole run.
+///
+/// The receivers are the identity this form adds to the static one: every store is called on the
+/// **same `this`**, read from slot 0 as the entry state's own value ([`reads_this`]). That is what
+/// keeps a cross-object chain (`o1.a = o2.b = 5`, whose two receivers are two different values)
+/// and a receiver a call produced (`h().a = h().b = 5`) refused — the text writes one assignment
+/// per store, and writing any other receiver once per store would evaluate it more often than the
+/// bytecode did.
+///
+/// The source is written once per store, so it is admitted only when its re-evaluation is not
+/// observable ([`field_copy_source_is_reusable`]): the instance form writes no saved local of its
+/// own, and a source that would have to be saved (`this.a = this.b = this.c = f()`) keeps the
+/// refusal it had.
+fn instance_chain_at(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    has_receiver: bool,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    index: usize,
+    budget: &mut Budget,
+) -> Result<Option<Vec<FieldCopy>>, StopReason> {
+    // Slot 0 holds `this` exactly when the member takes a receiver: a body without one has no
+    // instance for the stores to be called on, and the shape is not this one.
+    if !has_receiver {
+        return Ok(None);
+    }
+    let instructions = block.instructions();
+    let Some(lead) = instructions.get(index) else {
+        return Ok(None);
+    };
+    let Some((source, _)) = dup_x1_operands(lead) else {
+        return Ok(None);
+    };
+    // The source is produced in this block before the copy that reads it, and nothing else reads
+    // it: the chain is the one place the bytecode evaluates it.
+    let Some(source_bci) = definition_in_block(ssa, source, block.block()) else {
+        return Ok(None);
+    };
+    if position_in_block(block, source_bci).is_none_or(|source_pos| source_pos >= index)
+        || !single_use_at(ssa, source, block.block(), lead.bci())
+    {
+        return Ok(None);
+    }
+    if !field_copy_source_is_reusable(ssa, operations, block, source, lead.bci(), budget)? {
+        return Ok(None);
+    }
+    let mut duplicates: Vec<u32> = Vec::new();
+    let mut stores: Vec<u32> = Vec::new();
+    let mut moved: Vec<(ValueId, ValueId)> = Vec::new();
+    let mut position = index;
+    let mut surviving = source;
+    loop {
+        let Some(copy) = instructions.get(position) else {
+            return Ok(None);
+        };
+        poll(budget, Some(copy.bci()))?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(copy.bci()))?;
+        if copy.opcode() != OPCODE_DUP_X1 {
+            return Ok(None);
+        }
+        let Some((top, below)) = dup_x1_operands(copy) else {
+            return Ok(None);
+        };
+        // The value the copy duplicates is the chain's own once-evaluated value: the source the
+        // lead read, or the value copy the copy before this one left below its receiver.
+        if top != surviving {
+            return Ok(None);
+        }
+        let Some((below_copy, moved_value, store_value)) = dup_x1_writes(copy, below, top) else {
+            return Ok(None);
+        };
+        // The store this copy feeds: the instruction right after it, an instance write called on
+        // the receiver the copy moved and taking the copy it left on top.
+        let Some(store) = instructions.get(position + 1) else {
+            return Ok(None);
+        };
+        let Some((store_field, store_shape)) = fields.claim(store.bci()) else {
+            return Ok(None);
+        };
+        if store_field.is_static
+            || !store_shape.writes()
+            || store_shape.receiver != Some(moved_value)
+            || store_shape.value != Some(store_value)
+        {
+            return Ok(None);
+        }
+        // Both of the copy's consumers are that one store: the receiver by its objectref and the
+        // copy on top by its value, and nothing else reads either of them.
+        if !single_use_at(ssa, moved_value, block.block(), store.bci())
+            || !single_use_at(ssa, store_value, block.block(), store.bci())
+        {
+            return Ok(None);
+        }
+        duplicates.push(copy.bci());
+        stores.push(store.bci());
+        moved.push((moved_value, below));
+        match instructions.get(position + 2) {
+            // The run goes on: the value copy this one left below the receiver is what the next
+            // copy reads, and it reads nothing else.
+            Some(next) if next.opcode() == OPCODE_DUP_X1 => {
+                if !single_use_at(ssa, below_copy, block.block(), next.bci()) {
+                    return Ok(None);
+                }
+                surviving = below_copy;
+                position += 2;
+            }
+            // The chain's last store: it takes the surviving value copy and the receiver that
+            // never left the bottom of the stack.
+            Some(last) => {
+                let Some((last_field, last_shape)) = fields.claim(last.bci()) else {
+                    return Ok(None);
+                };
+                let (Some(receiver), Some(value)) = (last_shape.receiver, last_shape.value) else {
+                    return Ok(None);
+                };
+                if last_field.is_static || !last_shape.writes() || value != below_copy {
+                    return Ok(None);
+                }
+                if !single_use_at(ssa, below_copy, block.block(), last.bci())
+                    || !single_use_at(ssa, receiver, block.block(), last.bci())
+                {
+                    return Ok(None);
+                }
+                if !reads_this(ssa, operations, block, receiver) {
+                    return Ok(None);
+                }
+                stores.push(last.bci());
+                break;
+            }
+            None => return Ok(None),
+        }
+    }
+    // Every store is called on the same `this`: the receiver each copy moved — the value that
+    // stood below the one it duplicated — is the method's own receiver read from slot 0.
+    for (_, below) in &moved {
+        if !reads_this(ssa, operations, block, *below) {
+            return Ok(None);
+        }
+    }
+    let Some(last) = stores.last().copied() else {
+        return Ok(None);
+    };
+    // Nothing in the run may enter a handler: the stores are one statement group, and a protected
+    // range would make a store a different statement on the exception path.
+    if ssa.effects().instructions().iter().any(|effect| {
+        effect.block() == block.block()
+            && lead.bci() <= effect.bci()
+            && effect.bci() <= last
+            && !effect.handlers().is_empty()
+    }) {
+        return Ok(None);
+    }
+    // Every copy of the chain is one shape's copy: they all write the one value the source
+    // evaluated, and only the first of them stands where that evaluation is written. Each one also
+    // carries the receiver it moved, which is what its store's target is written as.
+    Ok(Some(
+        duplicates
+            .into_iter()
+            .enumerate()
+            .map(|(ordinal, duplicate)| FieldCopy {
+                duplicate,
+                source,
+                pass_through: None,
+                moved: moved.get(ordinal).copied(),
+                shape: FieldCopyShape::Chain {
+                    stores: stores.clone(),
+                    lead: ordinal == 0,
+                    saved: false,
                 },
             })
             .collect(),
@@ -9726,6 +9947,7 @@ fn receiver_copy_at(
         duplicate: duplicate_bci,
         source,
         pass_through,
+        moved: None,
         shape: FieldCopyShape::Receiver {
             read: read_bci,
             store: store_bci,
@@ -10084,6 +10306,7 @@ fn conditional_receiver_copy_at(
             duplicate: duplicate_bci,
             source,
             pass_through,
+            moved: None,
             shape: FieldCopyShape::Receiver {
                 read: read_bci,
                 store: store_bci,
@@ -10135,6 +10358,86 @@ fn pass_through_value(copy: &SsaInstruction, top: ValueId) -> Option<ValueId> {
         .into_iter()
         .filter(|(depth, _)| Slot::Stack(*depth) == slot);
     written.next().map(|(_, value)| value)
+}
+
+/// The three values one `dup_x1` writes, in the slots the instruction's own reads identify
+/// (`recover-instance-field-assignment-chains`).
+///
+/// `dup_x1` reads the top of the stack `T` and the value below it `B` — `[…, B, T]` — and writes
+/// three values: a copy of `T` **in the slot `B` was read from**, `B` itself moved into the slot
+/// `T` was read from, and a second copy of `T` above both — `[…, T, B, T]`. So the write that
+/// lands where `B` stood is the copy that **stays under** the receiver this instruction hands the
+/// store after it, the write that lands where `T` stood is the receiver it **moved** (what a
+/// `dup_x1` passes through, [`pass_through_value`]), and the write above both is the store's own
+/// value.
+///
+/// The three are identified by those slots and not by their order in the write list: the two reads
+/// must be the stack's top two slots of one block, and the writes must land exactly where the reads
+/// were. The instance chain is the shape this exists for — its stores' receivers stand below the
+/// value the copies carry, so every copy of the run interleaves with them.
+fn dup_x1_writes(
+    copy: &SsaInstruction,
+    below: ValueId,
+    top: ValueId,
+) -> Option<(ValueId, ValueId, ValueId)> {
+    let operands = stack_operands(copy);
+    let [
+        (Slot::Stack(below_depth), read_below),
+        (Slot::Stack(top_depth), read_top),
+    ] = operands.as_slice()
+    else {
+        return None;
+    };
+    if *read_below != below || *read_top != top || *top_depth != *below_depth + 1 {
+        return None;
+    }
+    let outputs = stack_outputs(copy);
+    let [
+        (copy_depth, below_copy),
+        (moved_depth, moved),
+        (value_depth, value),
+    ] = outputs.as_slice()
+    else {
+        return None;
+    };
+    if *copy_depth != *below_depth || *moved_depth != *top_depth || *value_depth != top_depth + 1 {
+        return None;
+    }
+    Some((*below_copy, *moved, *value))
+}
+
+/// Whether one value is the method's own receiver, read from the slot `this` stands in.
+///
+/// An instance method's `this` is the entry state's value of local 0, and every `aload_0` of a
+/// body reads that one value — which is what makes the identity of several `aload_0`s one value
+/// even though each load writes a stack value of its own. A value that is anything else — another
+/// slot's read, a field or call result, a value the body wrote — is not this receiver, and the
+/// instance chain's identity check refuses it.
+fn reads_this(
+    ssa: &SsaTable,
+    operations: &Operations,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    value: ValueId,
+) -> bool {
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    if !matches!(operations.get(*bci), Some(Operation::Load { slot: 0 })) {
+        return false;
+    }
+    let Some(instruction) = instruction_in_block(block, *bci) else {
+        return false;
+    };
+    let Some(read) = local_read(instruction, 0) else {
+        return false;
+    };
+    matches!(
+        ssa.value(read).def(),
+        Definition::Entry {
+            slot: Slot::Local(0),
+            ..
+        }
+    )
 }
 
 /// The two leaves one receiver copy's expression walk admits **outside** the block it walks
@@ -23455,6 +23758,18 @@ impl Builder<'_> {
             };
             return Ok(self
                 .render_value(pass_through, at, depth + 1)?
+                .derived_from(copy.duplicate));
+        }
+        // The receiver one instance chain's copy **moved**
+        // (`recover-instance-field-assignment-chains`): the value that stood below the duplicated
+        // one, which the store this copy feeds is called on. Its text is the value it moved — the
+        // receiver read from below — so the assignment's target is the name that receiver was
+        // read as, and not the value the copy duplicated.
+        if let Some((moved, below)) = copy.moved
+            && moved == value
+        {
+            return Ok(self
+                .render_value(below, at, depth + 1)?
                 .derived_from(copy.duplicate));
         }
         Ok(self
