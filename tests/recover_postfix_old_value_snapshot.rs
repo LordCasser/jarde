@@ -14,8 +14,9 @@
 //! to the patrols' jars, checked by SHA in the fixture README) — plus this change's `PT` (the static
 //! field as an array index inside a ternary arm), `SR` (the array store's own right side and its
 //! local index write), `IX` (the local and static-field index positions) and `NG` (the negatives:
-//! the two self-assignment traps, the field self-assignment, the multi-consumer form and a Phase-B
-//! condition position).
+//! the two self-assignment traps, the field self-assignment and the multi-consumer form; its
+//! `condShape` was this fixture's Phase-B out-of-scope gate and is presented whole by
+//! `recover-postfix-condition-positions`).
 //!
 //! The tests pin the presented texts whole, keep every negative's refusal verbatim, keep the three
 //! healthy shapes byte-identical, and the ignored replay strips the presentations the way the
@@ -254,8 +255,12 @@ const PHASE_A: &[(&str, &[&str])] = &[
     ("IX", IX_SHAPES),
 ];
 
-/// The negatives, verbatim: the two local self-assignment traps, the field self-assignment, the
-/// multi-consumer form and a Phase-B condition position. Each keeps its own refusal.
+/// The negatives, verbatim: the two local self-assignment traps, the field self-assignment and the
+/// multi-consumer form. Each keeps its own refusal.
+///
+/// `NG.condShape` was the A-phase fixture's **out-of-scope gate** — a Phase-B condition position.
+/// `recover-postfix-condition-positions` presents it (see [`NG_COND_SHAPE`] below), so it left this
+/// list when that slice landed; the four traps are untouched.
 const NG_NEGATIVES: &[(&str, &str)] = &[
     (
         "postSelf",
@@ -273,10 +278,17 @@ const NG_NEGATIVES: &[(&str, &str)] = &[
         "compoundSelf",
         "// the value at BCI 10 is the value local 1 held at BCI 2, and the slot does not hold it at BCI 10",
     ),
-    (
-        "condShape",
-        "// local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice",
-    ),
+];
+
+/// `NG.condShape` — the A-phase fixture's Phase-B condition position
+/// (`while (xs[i++] != 0 && i < xs.length) { n++; }`), presented whole by
+/// `recover-postfix-condition-positions`: the compound condition writes the postfix expression and
+/// the increment it absorbs writes no statement of its own.
+const NG_COND_SHAPE: &[&str] = &[
+    "        while (NG.xs[local0++] != 0 && local0 < NG.xs.length) {",
+    "            local1 = local1 + 1;",
+    "        }",
+    "        return local1;",
 ];
 
 /// The refusals the recovering classes must not keep: a phase-A method that still quotes its own
@@ -294,6 +306,7 @@ const NO_QUOTE_METHODS: &[(&str, &str)] = &[
     ("IX", "localRead()I"),
     ("IX", "fieldWrite()V"),
     ("IX", "fieldRead()I"),
+    ("NG", "condShape()I"),
 ];
 
 // -------------------------------------------------------------------------------------------
@@ -502,8 +515,9 @@ fn the_healthy_shapes_stay_byte_identical_on_both_legs() {
 // The negatives keep their refusals.
 // -------------------------------------------------------------------------------------------
 
-/// The self-assignment traps, the multi-consumer form and the Phase-B condition position keep
-/// exactly the refusals they had: this slice's Non-Goal.
+/// The self-assignment traps and the multi-consumer form keep exactly the refusals they had: this
+/// slice's Non-Goal. `NG.condShape` — the Phase-B condition position the A-phase fixture froze as
+/// its out-of-scope gate — is presented whole by `recover-postfix-condition-positions`.
 #[test]
 fn the_negatives_keep_their_refusals_on_both_legs() {
     for leg in LEGS {
@@ -523,14 +537,26 @@ fn the_negatives_keep_their_refusals_on_both_legs() {
                 leg.label
             );
         }
-        // No negative writes a postfix expression, and none of the increments they refuse is
-        // presented as its own statement either — the whole method is quoted.
-        for line in report.text.lines().filter(|line| !line.contains("//")) {
+        // The Phase-B condition position the fixture carried as an out-of-scope gate renders whole:
+        // the postfix expression is written in the loop's own condition.
+        let cond_shape = method_body(&report.text, "condShape");
+        for anchor in NG_COND_SHAPE {
             assert!(
-                !line.contains("++") && !line.contains("--"),
-                "`NG` on {} presented a postfix expression the Non-Goal refuses: {line:?}",
+                cond_shape.contains(anchor),
+                "`NG.condShape` on {} lost the presented anchor {anchor:?}:\n{cond_shape}",
                 leg.label
             );
+        }
+        // No negative writes a postfix expression, and none of the increments they refuse is
+        // presented as its own statement either — the whole method is quoted.
+        for (method, _) in NG_NEGATIVES {
+            for line in method_body(&report.text, method).lines() {
+                assert!(
+                    !line.contains("++") && !line.contains("--"),
+                    "`NG.{method}` on {} presented a postfix expression the Non-Goal refuses: {line:?}",
+                    leg.label
+                );
+            }
         }
         // `i = i++`/`i = i--` still carry the store-back form's own refusal: the value read back
         // into the slot it was read from is not claimed.
