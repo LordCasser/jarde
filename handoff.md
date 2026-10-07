@@ -2,7 +2,16 @@
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态（2026-10-06 深夜续，最新）
+## 当前状态（2026-10-07 续，最新）
+
+- **本续段（10-06 深夜→10-07）再合入四片（全部 root 独立验收 + CI 绿）**：`recover-chained-field-assignment`（FieldCopies 单证明双形状；两处 ask_parent "ruling" 按纪律未采信、root 以自证重裁）、`recover-conditional-rhs-field-compound`（**第 15 critical 锚关闭**——BI 整类可编译错面 root 亲测复现后以恢复关闭，`false/false/false/false` 逐字一致；布尔位通道收窄到字段写位避免暴露 BW 面）、`recover-array-initializer-value-positions`（copy 族第 3 员 array dance；12 个非末实参位外沿逐个行为回放后追认）、`recover-postfix-condition-positions`（**postfix 域 Phase B 关闭**——两问门控揭示真拒绝点在 region 测试纯度层；单处 `test_expression_instruction` 收拢判据 + `ChainPositionBound` 围栏；迭代计数精确回放）。
+- **copy 族四员全部落地**（postfix 快照消费位 / dup-store / chained-field / array-dance）；旧值族 A+B 相齐；依赖链族旗舰落地；多消费者族重定位缺口（inline-concat）落地。value 级四族的 critical 面全部关闭或已立项在飞。
+- **在飞**：`recover-boolean-int-bitwise-operands`（BW 面——conditional-rhs 片已留测量：宽规则会暴露 `mix` 可编译错面，任务书已含类级不变量硬门）。
+- **队列**：BI 循环携带多读（增强 for 协议域）→ 低优先存量（spn / fixture-guard-coverage / boxed-widening / capture-ctor-super-order / local-scope 12/13 锚）。
+- 新教训（10-07）：array-dance 的 12 个 corpus 外沿再次实证"消费位泛化=同判据外推"模式——**外沿追认的门槛=逐个行为回放**，不做静默吸收；Phase B 的数组读取准入外沿（`SW.sum2d`/`NL.findMid`）已行为验证但未钉测试，后续巡查覆盖。
+- 磁盘 50Gi；所有已验收 worktree 已回收。
+
+## 当前状态（2026-10-06 深夜续，背景保留）
 
 - **本续段新增合入（全部 root 独立验收）**：
   5. `recover-static-generic-field-init-text`（真根因=facade.rs 静态折叠重拼循环的原地改写偏移漂移，13+/3- 修复；MN/RG 整类编译不可达裁定为既有 Hold<T> 擦除对投影债）；
