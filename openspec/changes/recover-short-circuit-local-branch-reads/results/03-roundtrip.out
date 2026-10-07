@@ -1,0 +1,20 @@
+# The behavior leg (change recover-short-circuit-local-branch-reads), 2026-10-07T12:34:06Z
+# cli: /tmp/brslice/bin/jarde-cli.current
+
+== OP2 ==
+original  (frozen jar):  12/-4/2147483644/16/NaN/Infinity/-Infinity/true/true/1
+recovered (javac 23/8):  12/-4/2147483644/16/NaN/Infinity/-Infinity/true/true/1
+verdict: identical (both legs compiled; condAssignOld(0) included)
+
+== BranchReads (v8, javac 23.0.1 --release 8) ==
+original:  1 -1 1 -1 true false
+recovered: 1 -1 1 -1 true false
+verdict: identical
+
+== BranchReads (v8-javac8, Corretto 1.8.0_432) ==
+original:  1 -1 1 -1 true false
+recovered: 1 -1 1 -1 true false
+verdict: identical
+
+== BranchReadNegatives (the boundaries) ==
+verdict: does not compile, as the safe direction requires

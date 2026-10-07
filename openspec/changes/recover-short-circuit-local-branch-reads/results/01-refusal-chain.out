@@ -1,0 +1,63 @@
+# Task 1.1: the refusal each probe meets at HEAD (instrumented build), verbatim
+# columns of a BRINSTR line: the criterion reached, the local, the store BCI, and — for
+# the consumer whitelist — the consumer's own BCI, opcode and decoded operation.
+# The lines are class-wide: one render states every member's gate call, and the member a
+# line belongs to is named by its at=/consumer_bci= pair (mapped in 01-refusal-chain.md).
+
+=== OP2 (the patrol anchor: condAssignOld) ===
+BRINSTR boolean-position slot=1 at=16 consumer_bci=18 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 25 })
+BRINSTR reached-consumers slot=1 at=16 accesses=[(16, false, Some([0])), (17, true, Some([0]))]
+--- the class's own refusal lines ---
+        // jarde: not recovered: the recovery run for `condAssignOld(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+
+=== BranchReads (ternaryRead / ifStatement / midChain / main) ===
+BRINSTR boolean-position slot=1 at=16 consumer_bci=18 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 23 })
+BRINSTR boolean-position slot=1 at=16 consumer_bci=18 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 25 })
+BRINSTR boolean-position slot=1 at=16 consumer_bci=22 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 35 })
+BRINSTR reached-consumers slot=1 at=16 accesses=[(16, false, Some([0])), (17, true, Some([0]))]
+BRINSTR reached-consumers slot=1 at=16 accesses=[(16, false, Some([0])), (21, true, Some([0]))]
+--- the class's own refusal lines ---
+        // jarde: not recovered: the recovery run for `ternaryRead(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `ifStatement(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `midChain(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+
+=== BranchReadNegatives (loopCondition / crossCatch / main) ===
+BRINSTR shape-criterion slot=1 at=16 declaration=false write_bci=16 written=true stored=true crossed=true accesses=[(16, false, Some([0])), (19, true, Some([1]))]
+--- the class's own refusal lines ---
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `crossCatch(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // canonical block at BCI 18 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted
+
+=== controls/NumericBranch (BranchReads with the ifeq at BCI 18 patched to iflt) ===
+BRINSTR boolean-position slot=1 at=16 consumer_bci=18 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 25 })
+BRINSTR boolean-position slot=1 at=16 consumer_bci=18 opcode=0x9b operation=Some(Comparison { op: JumpIfNegative, target: 23 })
+BRINSTR boolean-position slot=1 at=16 consumer_bci=22 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 35 })
+BRINSTR reached-consumers slot=1 at=16 accesses=[(16, false, Some([0])), (17, true, Some([0]))]
+BRINSTR reached-consumers slot=1 at=16 accesses=[(16, false, Some([0])), (21, true, Some([0]))]
+--- the class's own refusal lines ---
+        // jarde: not recovered: the recovery run for `ternaryRead(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `ifStatement(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `midChain(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+
+=== controls/NotZeroBranch (BranchReads with the ifeq at BCI 18 patched to ifne) ===
+BRINSTR boolean-position slot=1 at=16 consumer_bci=18 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 25 })
+BRINSTR boolean-position slot=1 at=16 consumer_bci=18 opcode=0x9a operation=Some(Comparison { op: JumpIfNotZero, target: 23 })
+BRINSTR boolean-position slot=1 at=16 consumer_bci=22 opcode=0x99 operation=Some(Comparison { op: JumpIfZero, target: 35 })
+BRINSTR reached-consumers slot=1 at=16 accesses=[(16, false, Some([0])), (17, true, Some([0]))]
+BRINSTR reached-consumers slot=1 at=16 accesses=[(16, false, Some([0])), (21, true, Some([0]))]
+--- the class's own refusal lines ---
+        // jarde: not recovered: the recovery run for `ternaryRead(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `ifStatement(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+        // jarde: not recovered: the recovery run for `midChain(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+

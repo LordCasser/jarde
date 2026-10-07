@@ -1,0 +1,51 @@
+// jarde: presentation of `BranchReads` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class BranchReads extends java.lang.Object {
+    private BranchReads() {
+        // @method <init>()V
+        // @declaration a constructor of `BranchReads`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int ternaryRead(int x) {
+        // jarde: not recovered: the recovery run for `ternaryRead(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method ternaryRead(I)I
+        // @declaration a static method of `BranchReads`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 7 8 11 12 15 16 17 18
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+    }
+
+    static int ifStatement(int x) {
+        // jarde: not recovered: the recovery run for `ifStatement(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method ifStatement(I)I
+        // @declaration a static method of `BranchReads`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 7 8 11 12 15 16 17 18
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+    }
+
+    static boolean midChain(int x) {
+        // jarde: not recovered: the recovery run for `midChain(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method midChain(I)Z
+        // @declaration a static method of `BranchReads`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 7 8 11 12 15 16 17 18
+        // the short-circuit chain from BCI 4 through 8 reaches a shared value consumer at BCI 16, but this slice has no SSA proof for that value; the complete region is quoted
+    }
+
+    public static void main(java.lang.String[] args) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `BranchReads`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(ternaryRead(0));
+        java.lang.System.out.println(ternaryRead(-2));
+        java.lang.System.out.println(ifStatement(0));
+        java.lang.System.out.println(ifStatement(-2));
+        java.lang.System.out.println(midChain(0));
+        java.lang.System.out.println(midChain(-2));
+        return;
+    }
+}
