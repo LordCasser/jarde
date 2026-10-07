@@ -1,0 +1,8 @@
+corpus classes: 1987
+baseline renders done
+patched renders done
+self-test: the anchor moved (want moved)
+self-test: the healthy control did not move (want no)
+classes compared: 1987
+non-render classes (identical on both binaries, not counted): 0
+moved classes: 0

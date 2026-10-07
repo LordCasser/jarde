@@ -8097,6 +8097,51 @@
       "path": "tests/fixtures/recover-lambda-primitive-array-capture/v8/P02_multianewarray.class"
     },
     {
+      "blake3": "445ae666022d43f5b33f40a98fb739862fc3acb5c971d266bbb2d13b64ed470f",
+      "bytes": 1237,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/LK.java"
+    },
+    {
+      "blake3": "ab58cb5e2d537fbf260e20b3b4782e8743010e128eee5cc36a778d24df0f3d3f",
+      "bytes": 2778,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/LockGuardNegatives.java"
+    },
+    {
+      "blake3": "1434b22fe70d293b09b82ca21eeb9639858a16c2171668a17c913bfbf244bfc4",
+      "bytes": 1254,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/LockGuardProbe.java"
+    },
+    {
+      "blake3": "fe75c65d5ffc115675f6791fd8d22b3936003eef94415d4a9cae1d1cb9c62ab2",
+      "bytes": 1605,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/v8-javac8/LK.class"
+    },
+    {
+      "blake3": "010da4d89464026ba2fc9c10b657701d3db1d0cae5505969d7b7cbed078a1902",
+      "bytes": 1260,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/v8-javac8/LockGuardNegatives.class"
+    },
+    {
+      "blake3": "c2c42ef0fb7c524cf690a3a68f59ef154dd2ff7ff744d11b4300436d73628b83",
+      "bytes": 702,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/v8-javac8/LockGuardProbe.class"
+    },
+    {
+      "blake3": "c1b7ca8c0490640b80af5417726d2fc003a9803b2eba7a74ba652efdcc50bcc6",
+      "bytes": 1605,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/v8/LK.class"
+    },
+    {
+      "blake3": "2d116acfab2bf3f7859aa203f121aaf001fcd992d0e28832ebdb4b75e5f1ecbc",
+      "bytes": 1254,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/v8/LockGuardNegatives.class"
+    },
+    {
+      "blake3": "536daf966a80c6c2d67f7af6e53ad822ec268c9ab20db61a3d882e46c2428cc5",
+      "bytes": 699,
+      "path": "tests/fixtures/recover-lock-guard-loop-finally/v8/LockGuardProbe.class"
+    },
+    {
       "blake3": "fba968ceb09e076c2b153046c02a19719ff34f2dc78d786502f2bce62a0ecd2c",
       "bytes": 1304,
       "path": "tests/fixtures/recover-loop-else-if-early-returns/BS.java"

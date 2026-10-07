@@ -1,0 +1,14 @@
+# render
+header ok, no refusals
+# original
+1/0/true
+# stripped text compiles and runs
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+3 个警告
+1/0/true
+1/0/true
+# comparison
+javac 23 leg: identical to the original
+javac 8 leg: identical to the original
