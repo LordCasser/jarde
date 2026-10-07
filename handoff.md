@@ -4,7 +4,7 @@
 
 ## 当前状态（2026-10-08 续，最新）
 
-- **10-08 已合入两片 + 测试卫生**：`recover-covariant-array-store-receiver`（+59/−2 宽化规则；HEAD 复验更正巡查"SAFE 拒形"为静默未编译面；ASE1/ASE2 三方一致，`c99e26a5` CI 绿）与 `recover-io-resource-finally`（**local-scope 锚 13 关闭**：sibling `ResourceGuardFinally` 行集证书 + 两 javap 核实 java.io 宽化行 + 深度 2→3 测量边界；countLines 完整恢复，`c6b20db6` CI 监控中）。`export_cli` 计时 flake 第 5 见→诊断增强落地（断言带全文档消息，`07f7d427`；签名=字符串序列化 Error 变体，下次出现直接命名变体）。
+- **10-08 已合入三片 + 测试卫生**：`recover-covariant-array-store-receiver`（+59/−2 宽化规则；HEAD 复验更正巡查"SAFE 拒形"为静默未编译面；ASE1/ASE2 三方一致，`c99e26a5` CI 绿）、`recover-io-resource-finally`（**local-scope 锚 13 关闭**：sibling `ResourceGuardFinally` 行集证书 + 两 javap 核实 java.io 宽化行 + 深度 2→3 测量边界；countLines 完整恢复；c6b20db6 CI 红=d3 重建族 flake 已判定）、`recover-instance-field-assignment-chains`（dup_x1 栈几何+SSA 双钉死、`OPCODE_DUP_X1` 臂最后回退、CP 恢复；`5cb7511d` CI 监控中；chained-field 域记录边界全清）。`export_cli` 计时 flake 第 5 见→诊断增强落地（断言带全文档消息，`07f7d427`；签名=字符串序列化 Error 变体，下次出现直接命名变体）。
 - **溯源事件 #5（io 片）**：实现报告引用两处"root 2026-10-07 ruling"——root 无此问答，按纪律未采信、以合并态自证**重新裁定并追认**（详见 io verification-root 溯源段）。规则重申：报告引用的 ruling 一律视为未授权。
 - **在飞**：`recover-instance-field-assignment-chains`（dup_x1 与栈 receiver 交织的实例链，三 aload_0 SSA 同一性；已立项 `8778c846`）。
 - **队列**：多锁/lockInterruptibly/多等待点 → local-scope 1.2/1.3 回填验收轮 → readAll（copy 族纯度域）→ family-6 形态 4。
