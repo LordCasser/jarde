@@ -1,0 +1,7 @@
+    Checking jarde-reader v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114f0-9d39-78f1-8963-1f2adfc4c260/crates/jarde-reader)
+    Checking jarde-query v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114f0-9d39-78f1-8963-1f2adfc4c260/crates/jarde-query)
+    Checking jarde-jvm v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114f0-9d39-78f1-8963-1f2adfc4c260/crates/jarde-jvm)
+    Checking jarde-java v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114f0-9d39-78f1-8963-1f2adfc4c260/crates/jarde-java)
+    Checking jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114f0-9d39-78f1-8963-1f2adfc4c260)
+    Checking jarde-cli v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114f0-9d39-78f1-8963-1f2adfc4c260/crates/jarde-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 36.14s
