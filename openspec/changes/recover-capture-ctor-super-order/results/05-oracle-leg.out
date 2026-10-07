@@ -1,0 +1,11 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114f0-9d39-78f1-8963-1f2adfc4c260)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.06s
+     Running tests/p3_execution_comparison.rs (target/debug/deps/p3_execution_comparison-cc05fe87e6b10c96)
+
+running 3 tests
+test the_corpus_is_read_the_same_way_by_every_legal_flag_set ... ok
+test the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour ... ok
+test the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 44.72s
+
