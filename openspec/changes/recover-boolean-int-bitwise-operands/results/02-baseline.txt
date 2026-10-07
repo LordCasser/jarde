@@ -1,0 +1,73 @@
+# 1.2 — the baseline re-verified
+
+Baseline binary: the parent commit's own build, in a separate worktree
+(`/tmp/jarde-bwslice-baseline` at `a11573c6`, `CARGO_TARGET_DIR=/tmp/jarde-baseline-target`,
+`cargo build -p jarde-cli --locked`), i.e. the tree this change starts from. Patched binary: this
+worktree's `target/debug/jarde-cli`.
+
+## The anchor: the patrol's frozen `BW.class` on the baseline
+
+```text
+$ $BASE class-source --policy single-class \
+    --input openspec/evidence/java-syntax-2026-10-05/boolean-int-bitwise-patrol/fixture/BW.class \
+    --class BW --format text > base-BW.txt
+$ grep -n 'bitwise operator' base-BW.txt
+36:            // the bitwise operator `^` at BCI 25 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+61:        // the bitwise operator `&` at BCI 10 has operands presented as `boolean` and `int`, which no Java integral or boolean bitwise expression accepts
+```
+
+Two refusals, one per shape, and the rest of the class recovered — `xor`, `ixor`, `shConst`
+(`arg0 << 33`), `shFold` (`-2147483648`), `bits` (Kernighan), `main`. The render is byte-identical to
+the patrol's own recorded render: the first section of
+`openspec/evidence/java-syntax-2026-10-05/boolean-int-bitwise-patrol/results/jarde-BW.txt` (its
+86-line class text) diffs empty against `base-BW.txt`.
+
+`BW.mix` on the baseline presents the counter as an `int` local, quotes its loop body and writes the
+exit through the existing boolean-from-int outlet:
+
+```text
+        int local1;
+        boolean[] local2;
+        local1 = 0;
+        local2 = arg0;
+        for (boolean local5 : local2) {
+            // @bytecode 26 25
+            // the bitwise operator `^` at BCI 25 has operands presented as `int` and `boolean`, …
+        }
+        return local1 % 2 != 0;
+```
+
+`BW.andNot` on the baseline produces no statement at all (the class's text therefore does not
+compile), which is why the compilable-wrong face the previous slice measured (`true/5/false/…` from
+a `mix` whose accumulation was dropped) was unreachable before this change.
+
+## The negative probe: the genuinely mixed shapes, on the baseline
+
+`tests/fixtures/recover-boolean-int-bitwise-operands/BWN.java`, compiled with
+`javac --release 8 -g -nowarn -d v8 BWN.java`:
+
+```text
+$ $BASE class-source --policy single-class --input v8/BWN.class --class BWN --format text > base-BWN.txt
+16:        return (b ? 1 : 0) + x;                       // plusOne: the 0/1 consumed by arithmetic
+25:        // the bitwise operator `&` at BCI 10 has operands presented as `boolean` and `int`, …   // andNotInt: the bitwise value consumed by a branch test
+40:            // the bitwise operator `^` at BCI 27 has operands presented as `int` and `boolean`, … // compareRead: the counter read by a comparison
+43:        // the branch at BCI 37 compares a value this layer proves boolean with one it does not (`==`), …
+52:        return r ^ (b ? 1 : 0);                       // intSibling: an int sibling, no boolean evidence
+65:            // the bitwise operator `^` at BCI 25 has operands presented as `int` and `boolean`, … // passed: the counter read as a call argument
+68:        // the parameter 0 of the invocation at BCI 37 is declared `boolean` presents `int` and this layer has no proven conversion to `boolean`
+```
+
+Every one of these is byte-identical on the patched binary:
+
+```text
+$ $PATCHED class-source --policy single-class --input v8/BWN.class --class BWN --format text > pat-BWN.txt
+$ diff base-BWN.txt pat-BWN.txt
+(empty)
+```
+
+## The change's own positives on the baseline
+
+`tests/fixtures/recover-boolean-int-bitwise-operands/BWR.java` (the read-back's four admitted shapes)
+is refused on the baseline in every method — the counter (`int r`), the two `iand`/`ior`
+materialisations and the nested `(a & !b) & c` — and recovers whole on the patched binary. The two
+renders are `results/02-gating-experiment.txt`'s own diff.

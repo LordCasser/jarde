@@ -1,0 +1,20 @@
+SELF-TEST OK: the frozen BW answers true/5/true/2/-2147483648/false/3
+--- frozen
+original      : true/5/true/2/-2147483648/false/3
+javac 23 --release 8: true/5/true/2/-2147483648/false/3
+corretto 1.8.0_432   : true/5/true/2/-2147483648/false/3
+--- v8
+original      : true/5/true/2/-2147483648/false/3
+javac 23 --release 8: true/5/true/2/-2147483648/false/3
+corretto 1.8.0_432   : true/5/true/2/-2147483648/false/3
+--- v8-javac8
+original      : true/5/true/2/-2147483648/false/3
+javac 23 --release 8: true/5/true/2/-2147483648/false/3
+corretto 1.8.0_432   : true/5/true/2/-2147483648/false/3
+--- bwr
+original      : false/false/false/false
+javac 23 --release 8: false/false/false/false
+corretto 1.8.0_432   : false/false/false/false
+negative BWN (v8): does not compile, as the refusals require (2 missing-return errors)
+negative BWN (v8-javac8): does not compile, as the refusals require (2 missing-return errors)
+CLASS-LEVEL PROBE OK: every recovering class answers what its own class file answers, on both legs

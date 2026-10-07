@@ -1,0 +1,121 @@
+=== the change's own gating: the anchors and the negatives, baseline -> patched
+
+--- the patrol's frozen BW.class: refusals
+baseline: 2
+patched:  0
+
+--- BW diff
+30c30
+<         int local1;
+---
+>         boolean local1;
+32c32
+<         local1 = 0;
+---
+>         local1 = false;
+35,36c35
+<             // @bytecode 26 25
+<             // the bitwise operator `^` at BCI 25 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+---
+>             local1 = local1 ^ local5;
+38c37
+<         return local1 % 2 != 0;
+---
+>         return local1;
+56d54
+<         // jarde: not recovered: the recovery run for `andNot(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+60,61c58
+<         // @bytecode 11 10
+<         // the bitwise operator `&` at BCI 10 has operands presented as `boolean` and `int`, which no Java integral or boolean bitwise expression accepts
+---
+>         return arg0 & !arg1;
+
+--- BWR (v8) diff
+16c16
+<         int r;
+---
+>         boolean r;
+18c18
+<         r = 0;
+---
+>         r = false;
+21,22c21
+<             // @bytecode 28 27
+<             // the bitwise operator `^` at BCI 27 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+---
+>             r = r ^ x;
+24,25c23
+<         // @bytecode 38 37
+<         // the bitwise operator `^` at BCI 37 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+---
+>         return r ^ c;
+29d26
+<         // jarde: not recovered: the recovery run for `andNotAnd(ZZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+33,34c30
+<         // @bytecode 13 12 10
+<         // the bitwise operator `&` at BCI 10 has operands presented as `boolean` and `int`, which no Java integral or boolean bitwise expression accepts
+---
+>         return a & !b & c;
+38d33
+<         // jarde: not recovered: the recovery run for `orNot(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+42,43c37
+<         // @bytecode 11 10
+<         // the bitwise operator `|` at BCI 10 has operands presented as `boolean` and `int`, which no Java integral or boolean bitwise expression accepts
+---
+>         return a | !b;
+47d40
+<         // jarde: not recovered: the recovery run for `notOr(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+51,52c44
+<         // @bytecode 11 10
+<         // the bitwise operator `|` at BCI 10 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+---
+>         return !a | b;
+(end of BWR v8 diff)
+
+--- BWR (v8-javac8) diff
+16c16
+<         int r;
+---
+>         boolean r;
+18c18
+<         r = 0;
+---
+>         r = false;
+21,22c21
+<             // @bytecode 28 27
+<             // the bitwise operator `^` at BCI 27 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+---
+>             r = r ^ x;
+24,25c23
+<         // @bytecode 38 37
+<         // the bitwise operator `^` at BCI 37 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+---
+>         return r ^ c;
+29d26
+<         // jarde: not recovered: the recovery run for `andNotAnd(ZZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+33,34c30
+<         // @bytecode 13 12 10
+<         // the bitwise operator `&` at BCI 10 has operands presented as `boolean` and `int`, which no Java integral or boolean bitwise expression accepts
+---
+>         return a & !b & c;
+38d33
+<         // jarde: not recovered: the recovery run for `orNot(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+42,43c37
+<         // @bytecode 11 10
+<         // the bitwise operator `|` at BCI 10 has operands presented as `boolean` and `int`, which no Java integral or boolean bitwise expression accepts
+---
+>         return a | !b;
+47d40
+<         // jarde: not recovered: the recovery run for `notOr(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+51,52c44
+<         // @bytecode 11 10
+<         // the bitwise operator `|` at BCI 10 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+---
+>         return !a | b;
+(end of BWR v8-javac8 diff)
+
+--- BWN (v8) diff
+(end of BWN v8 diff)
+
+--- BWN (v8-javac8) diff
+(end of BWN v8-javac8 diff)
