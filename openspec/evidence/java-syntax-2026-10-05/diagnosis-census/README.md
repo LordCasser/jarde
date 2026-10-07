@@ -2,6 +2,13 @@
 
 对 java-syntax-2026-10-05 全部 60+ 巡查渲染的 `// the …` 诊断行做模板聚类（BCI/数字归一化）：**29 个模板**。
 
+> **收口状态（root 2026-10-07 追加，以本段为准）**：四主族的可恢复性面本周全部落地——
+> - **copy（55，最高频）**：四形状全闭（postfix 快照消费位 / dup-store-conditional / chained-field-assignment FieldCopies / array-dance）；
+> - **旧值 store（10）**：A 相（消费位）+ B 相（条件位）全闭；
+> - **依赖链（9+34 级联）**：旗舰 `elems[size++]=t` 闭（postfix A 相）；级联上游的拼接跨块闭（inline-conditional-concat）；
+> - **多消费者（6+40）**：**第 4 族主行修正为 phi 膨胀级联面**（全部 114 处=1 真读+2 平凡 phi 记录；见 [multireads 关闭档案](../../../changes/recover-committed-local-multireads/CLOSED-premise-falsified.md)）；已提交局部多读本就存在；重定位缺口（内联条件值进 `+` 链）闭（inline-conditional-concat）。
+> 余下未闭位点均为已登记边界（物化入局部的 boolean 位形、多变量复合条件、循环携带协议形等），见各 change 的 verification-root 残余段。
+
 ## 四主族频次（critical 守卫对象）
 
 | 族 | 主诊断 | 级联伴随行 |
