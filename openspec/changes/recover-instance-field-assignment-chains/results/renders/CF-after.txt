@@ -1,0 +1,139 @@
+// jarde: presentation of `CF` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CF extends java.lang.Object {
+    int flags;
+
+    java.lang.String field;
+
+    static int sa;
+
+    static int sb;
+
+    static int sc;
+
+    static java.lang.String sfield;
+
+    static int[] arr;
+
+    public CF() {
+        // @method <init>()V
+        // @declaration a constructor of `CF`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.flags = 0;
+        this.field = "f";
+        return;
+    }
+
+    static void chain() {
+        // @method chain()V
+        // @declaration a static method of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CF.sc = 5;
+        CF.sb = 5;
+        CF.sa = 5;
+        return;
+    }
+
+    static void pair() {
+        // @method pair()V
+        // @declaration a static method of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CF.sb = 7;
+        CF.sa = 7;
+        return;
+    }
+
+    static void call() {
+        // @method call()V
+        // @declaration a static method of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int saved0 = f();
+        CF.sc = saved0;
+        CF.sb = saved0;
+        CF.sa = saved0;
+        return;
+    }
+
+    static void single() {
+        // @method single()V
+        // @declaration a static method of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CF.sa = 9;
+        return;
+    }
+
+    static int chainLocal() {
+        // @method chainLocal()I
+        // @declaration a static method of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int y = 7;
+        int x = y;
+        return x + y;
+    }
+
+    static int f() {
+        // @method f()I
+        // @declaration a static method of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return 9;
+    }
+
+    void enable(int bit) {
+        // @method enable(I)V
+        // @declaration an instance method of `CF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.flags = this.flags | 1 << bit;
+        return;
+    }
+
+    void disable(int bit) {
+        // @method disable(I)V
+        // @declaration an instance method of `CF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.flags = this.flags & (1 << bit ^ -1);
+        return;
+    }
+
+    CF add(java.lang.String x) {
+        // @method add(Ljava/lang/String;)LCF;
+        // @declaration an instance method of `CF`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.field = this.field + "[" + x + "]";
+        return this;
+    }
+
+    static void sAdd(java.lang.String x) {
+        // @method sAdd(Ljava/lang/String;)V
+        // @declaration a static method of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CF.sfield = new java.lang.StringBuilder().append(CF.sfield).append("[").append(x).append("]").toString();
+        return;
+    }
+
+    public static void main(java.lang.String[] a) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `CF`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        chain();
+        pair();
+        call();
+        single();
+        CF c = new CF();
+        c.enable(0);
+        c.enable(3);
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(CF.sa).append("/").append(CF.sb).append("/").append(CF.sc).append("/").append(chainLocal()).append("/").append(c.flags).append("/").append(c.add("x").add("y").field).toString());
+        c.disable(3);
+        sAdd("z");
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(c.flags).append("/").append(CF.sfield).append("/").append(CF.arr[0]).toString());
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `CF`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CF.sfield = "s";
+        CF.arr = new int[2];
+    }
+}

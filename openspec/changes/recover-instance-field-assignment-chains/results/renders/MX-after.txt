@@ -1,0 +1,83 @@
+// jarde: presentation of `MX` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class MX extends java.lang.Object {
+    int a;
+
+    int b;
+
+    static int s;
+
+    public MX() {
+        // @method <init>()V
+        // @declaration a constructor of `MX`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    void mixStaticRight() {
+        // jarde: not recovered: the recovery run for `mixStaticRight()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method mixStaticRight()V
+        // @declaration an instance method of `MX`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4 0 1 2 3 7 8 11 14
+        // the copy at BCI 3 has no proved local assignment
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 8
+        // the value at BCI 8 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 11
+        // the value at BCI 11 comes from an Other at BCI 7, which produces no expression this subset writes
+        jarde_refused_body();
+    }
+
+    void mixStaticLeft() {
+        // @method mixStaticLeft()V
+        // @declaration an instance method of `MX`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+        return;
+    }
+
+    void mixStaticMid() {
+        // @method mixStaticMid()V
+        // @declaration an instance method of `MX`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+        // @bytecode 8
+        // the value at BCI 8 comes from an Other at BCI 4, which produces no expression this subset writes
+        // @bytecode 9
+        // the copy at BCI 8 belongs to a chain whose saved value this run could not commit
+        // @bytecode 12
+        // the copy at BCI 8 belongs to a chain whose saved value this run could not commit
+        return;
+    }
+
+    public static void main(java.lang.String[] args) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `MX`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        MX m = new MX();
+        m.mixStaticRight();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(m.a).append("/").append(m.b).append("/").append(MX.s).toString());
+        m.mixStaticLeft();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(m.a).append("/").append(m.b).append("/").append(MX.s).toString());
+        m.mixStaticMid();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(m.a).append("/").append(m.b).append("/").append(MX.s).toString());
+        return;
+    }
+}

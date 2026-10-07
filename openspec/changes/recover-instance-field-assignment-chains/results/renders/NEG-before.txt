@@ -1,0 +1,113 @@
+// jarde: presentation of `NEG` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NEG extends java.lang.Object {
+    static NEG o1 = new NEG();
+
+    static NEG o2 = new NEG();
+
+    int a;
+
+    int b;
+
+    int c;
+
+    public NEG() {
+        // @method <init>()V
+        // @declaration a constructor of `NEG`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    void cross() {
+        // jarde: not recovered: the recovery run for `cross()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method cross()V
+        // @declaration an instance method of `NEG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 6 7 8 11 14
+        // the dependency chain from BCI 0 to final consumer 11 is not bounded
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 8 3
+        // the value at BCI 8 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 11 0 3
+        // the value at BCI 11 was produced by a saved declaration this run could not commit
+        jarde_refused_body();
+    }
+
+    int expr() {
+        // @method expr()I
+        // @declaration an instance method of `NEG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 3, which produces no expression this subset writes
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 3, which produces no expression this subset writes
+        return this.b;
+    }
+
+    static int f() {
+        // @method f()I
+        // @declaration a static method of `NEG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return 9;
+    }
+
+    void saved() {
+        // @method saved()V
+        // @declaration an instance method of `NEG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        f();
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes
+        // @bytecode 10
+        // the instruction at BCI 10 is not part of the provable subset
+        // @bytecode 11
+        // the value at BCI 11 comes from an Other at BCI 10, which produces no expression this subset writes
+        // @bytecode 14
+        // the value at BCI 14 comes from an Other at BCI 10, which produces no expression this subset writes
+        return;
+    }
+
+    void holderChain() {
+        // jarde: not recovered: the recovery run for `holderChain()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method holderChain()V
+        // @declaration an instance method of `NEG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 5 8 9 10 13 16
+        // the dependency chain from BCI 1 to final consumer 13 is not bounded
+        // @bytecode 9
+        // the instruction at BCI 9 is not part of the provable subset
+        // @bytecode 10
+        // the value at BCI 10 comes from an Other at BCI 9, which produces no expression this subset writes
+        // @bytecode 13 1 0 4
+        // the value at BCI 13 was produced by a saved declaration this run could not commit
+        jarde_refused_body();
+    }
+
+    NEG h() {
+        // @method h()LNEG;
+        // @declaration an instance method of `NEG`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this;
+    }
+
+    public static void main(java.lang.String[] args) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NEG`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NEG n = new NEG();
+        n.cross();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(NEG.o1.a).append("/").append(NEG.o2.b).toString());
+        java.lang.System.out.println("" + n.expr());
+        n.saved();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(n.a).append("/").append(n.b).append("/").append(n.c).toString());
+        n.holderChain();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(n.a).append("/").append(n.b).toString());
+        return;
+    }
+}
