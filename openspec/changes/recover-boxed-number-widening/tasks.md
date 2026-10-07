@@ -35,4 +35,4 @@
 - [x] 3.2 C8 与变体三方对照；记录输出 SHA。
       → 三方（源 class / 装机 javac 腿 / 真 javac 8 腿）对照与渲染/输出 SHA 见 `results/02-rows-anchors-tests.md`
       与 `results/cli-roundtrip.out`。
-- [ ] 3.3 root 复核闭集逐对与三方行为，更新 EM 账本与巡查记录。（留 root）
+- [x] 3.3 root 复核闭集逐对与三方行为，更新 EM 账本与巡查记录。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：四项前提漂移处置复核 ✓（20400 类名反射闭集、姊妹片不重复、Boolean 语言事实钉单元测试）、六行最小 diff ✓、定向/回放/oracle 3/3 ✓、门禁 334 targets ok/0 FAILED ✓、corpus 移动恰 C8 两渲染；EM 账本与巡查处置节随本验收关闭）
