@@ -1,0 +1,64 @@
+// jarde: presentation of `ML` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ML extends java.lang.Object {
+    private final java.util.concurrent.locks.ReentrantLock a;
+
+    private final java.util.concurrent.locks.ReentrantLock b;
+
+    private int count;
+
+    public ML() {
+        // @method <init>()V
+        // @declaration a constructor of `ML`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.a = new java.util.concurrent.locks.ReentrantLock();
+        this.b = new java.util.concurrent.locks.ReentrantLock();
+        this.count = 0;
+        return;
+    }
+
+    void nestedLocks() {
+        // jarde: not recovered: the recovery run for `nestedLocks()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nestedLocks()V
+        // @declaration an instance method of `ML`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25 28 31 32 35 38
+        // BCI 41: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 41 42 43 46 49 50 53 56 57 58
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [58, 41]
+        jarde_refused_body();
+    }
+
+    void interruptibly() throws java.lang.InterruptedException {
+        // jarde: not recovered: the recovery run for `interruptibly()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method interruptibly()V
+        // @declaration an instance method of `ML`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 9 12 13 14 17 18 21 24
+        // BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 27 28 29 32 35 36 37
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [37, 27]
+        jarde_refused_body();
+    }
+
+    int multiAwait() throws java.lang.InterruptedException {
+        // jarde: not recovered: the recovery run for `multiAwait()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method multiAwait()I
+        // @declaration an instance method of `ML`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 15 22 31 40 46 70
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `ML`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ML local1 = new ML();
+        local1.nestedLocks();
+        local1.interruptibly();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(local1.count).toString());
+        return;
+    }
+}
