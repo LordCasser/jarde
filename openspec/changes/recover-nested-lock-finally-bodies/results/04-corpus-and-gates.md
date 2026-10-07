@@ -43,20 +43,24 @@ tests/fixtures/corpus-fingerprint.json | 90 ++++++++++++++++++++++++++++++++++
 **纯增**：18 条新条目（6 源 + 12 class），既有条目的 blake3/字节数一行未动；重生成后
 `cargo test --test p5_corpus_fingerprint --locked` → `5 passed; 0 failed; 1 ignored`。
 
+本片随后加入第三条登记边界（`MLProbe.nestedLocksBranching`：分支体使释放副本自成一块、canonical
+把方法自身的 `return` 融进该块）后，清单再记一次 **3 条重测**（`MLProbe.java` 源 + 两条腿的
+`MLProbe.class`，706→945 字节），其余条目仍一行未动；重测后同命令绿。
+
 ## 读者侧语料人口断言（corpus-moving 纪律）
 
 `crates/jarde-reader/src/classfile.rs::repository_class_fixtures_validate_without_false_target_rejections`
 在实现后按设计红：`fixture population changed: re-measure these counts`，
-`left = (945, 4055, 398, 2515, 8)` vs `right = (933, 3993, 368, 2475, 8)`。按既有惯例**更新断言**
-（不删断言）：期望值改为测量值，并补一段本片 fixture 的登记注释（12 class、62 body、30 handler
-record、40 branch target、0 subroutine；每腿 31 body / 15 row / 20 branch）。更新后该测试绿。
+`left = (945, 4057, 400, 2519, 8)` vs `right = (933, 3993, 368, 2475, 8)`。按既有惯例**更新断言**
+（不删断言）：期望值改为测量值，并补一段本片 fixture 的登记注释（12 class、64 body、32 handler
+record、44 branch target、0 subroutine；每腿 32 body / 16 row / 22 branch）。更新后该测试绿。
 
 ## 门禁（本工作树，最终态）
 
 ```
 $ cargo fmt --all -- --check                      # 见下方逐字尾（clean）
 $ sh /tmp/ci-clippy-strict.sh                     # ci.yml 46-76 的同一命令 + `-D warnings`
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.26s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 20.39s
 $ cargo test --workspace --all-targets --all-features --locked --no-fail-fast
     WORKSPACE-EXIT=0
     grep -c "test result: ok"      = 342
@@ -71,3 +75,36 @@ $ openspec validate --all --strict
 （342 = 上一片 341 个 target + 本片新增测试文件 `tests/recover_nested_lock_finally_bodies.rs`；
 314 = 上一片 313 + 本 change 自身。）首次全量跑在读者人口断言处红一次（上节），更新后同命令全绿，
 无其它红——无已知 flake 家族出现，故无单测重跑。
+
+### 逐字门禁尾（最终态，权威）
+
+```
+$ cargo fmt --all -- --check
+fmt-exit=0
+
+$ sh /tmp/ci-clippy-strict.sh        # = ci.yml 46-76 的命令 + 该 job 尾部的 `-D warnings`
+    Checking jarde-cli v0.1.0 (…/crates/jarde-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 20.39s
+
+$ cargo test --workspace --all-targets --all-features --locked --no-fail-fast
+    test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    WORKSPACE-EXIT=0
+  # 权威合计：exit 0 + `grep -c "test result: ok"` = 342 + `grep -c "test result: FAILED"` = 0
+
+$ cargo test --test p3_execution_comparison --all-features --locked -- --ignored
+    test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 43.86s
+    ORACLE-EXIT=0
+
+$ openspec validate --all --strict
+    Totals: 314 passed, 0 failed (314 items)
+
+$ cargo test --test recover_nested_lock_finally_bodies --locked -- --ignored
+    test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1.41s
+$ cargo test --test recover_io_resource_finally --locked -- --ignored
+    test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1.40s
+```
+
+`/tmp` 占用（清理前）：`/tmp/gate`（4 个门控二进制 63M×4 + 渲染 456K + 输出 776K）、
+`/tmp/mlwork`、`/tmp/rt`、`/tmp/guard-impl.rs`（参考副本）、`/tmp/ci-clippy*.sh`；均为本片
+临时件，收尾清除（`/tmp/scriptos-*` 为其它会话的，不动）。
+

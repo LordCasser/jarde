@@ -33,8 +33,9 @@
 //! * the negatives — a release sequence that is not the acquisition order reversed, a release of a
 //!   lock the statement never acquired, an acquisition the row itself covers — keep their refusals
 //!   **verbatim**, on both legs;
-//! * the registered boundaries — a `try`/`finally` inside the guarded range, and three locks —
-//!   keep their refusals **verbatim**;
+//! * the registered boundaries — a `try`/`finally` inside the guarded range, three locks, and a
+//!   body whose branch moves the release copy into a block of its own (the canonical graph fuses
+//!   the trailing `return` into it) — keep their refusals **verbatim**;
 //! * the patrol's `multiAwait` stays byte-identical: it is this slice's zero-regression control,
 //!   refused before and after with the patrol's own recorded text.
 
@@ -109,6 +110,15 @@ const THREE_LOCKS: [&str; 4] = [
     "// BCI 55: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
     "// @bytecode 55 56 57 60 63 64 67 70 71 74 77 78 79",
     "// 2 live block(s) are reachable only through edges the normal-flow view leaves out: [79, 55]",
+];
+/// The branching body's boundary: the branch moves the release copy into a block of its own, and
+/// the canonical graph fuses the method's trailing `return` into it, so the void completion's
+/// transfer has no successor block to state.
+const BRANCHING_BODY: [&str; 4] = [
+    "// @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25",
+    "// BCI 55: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+    "// @bytecode 28 31 32 34 37 38 39 42 45 46 49 52 55 56 57 60 63 64 67 70 71 72",
+    "// 3 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 38, 55]",
 ];
 
 /// What `MLOrderDriver` prints against the fixture's own class and against the presented text: the
@@ -332,6 +342,7 @@ fn the_registered_boundaries_stay_refused() {
         for (name, refusals) in [
             ("nestedTry", &NESTED_TRY[..]),
             ("threeLocks", &THREE_LOCKS[..]),
+            ("nestedLocksBranching", &BRANCHING_BODY[..]),
         ] {
             let method = method_text(&report, name);
             assert!(

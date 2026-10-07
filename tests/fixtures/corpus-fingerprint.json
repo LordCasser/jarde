@@ -8582,8 +8582,8 @@
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/MLOrderDriver.java"
     },
     {
-      "blake3": "1ed7c4241b9424f5b7ad1ae8591a3fdba455d3107b371f17525f22a1f61df00f",
-      "bytes": 1658,
+      "blake3": "ec3c57381302b72ce54bc47f8e91f435b9ee96563d2874359ad94238de0cd331",
+      "bytes": 2455,
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/MLProbe.java"
     },
     {
@@ -8612,8 +8612,8 @@
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/MLOrderDriver.class"
     },
     {
-      "blake3": "a2aac04e369f479b8d6b2a231cae1704827ede461f22ea357c2f1d9025db50e0",
-      "bytes": 706,
+      "blake3": "e05e9fce38273516f19fdd96e8314e1da87b64dbfaebeeb73fe222d757b008da",
+      "bytes": 945,
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8-javac8/MLProbe.class"
     },
     {
@@ -8642,8 +8642,8 @@
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/MLOrderDriver.class"
     },
     {
-      "blake3": "6325150374a2dd8c694db80d2a0c273ad1c1282c7d94008327ca039000c0f2b0",
-      "bytes": 706,
+      "blake3": "2585873f249d67a54aa9b7fd0e0a5f16f2163ff6b2c45f7e9d22c0a1be27cde7",
+      "bytes": 945,
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/v8/MLProbe.class"
     },
     {

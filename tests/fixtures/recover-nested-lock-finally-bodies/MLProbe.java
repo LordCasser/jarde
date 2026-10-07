@@ -6,7 +6,12 @@
 ///   statement): the table states two rows over two handlers, and this certificate's own row set
 ///   is one row over one handler, so the nested statement stays refused;
 /// * `threeLocks()` — three acquisitions and three releases: the multi-statement finally body's
-///   own bound is two statements, so the third lock's statement stays refused.
+///   own bound is two statements, so the third lock's statement stays refused;
+/// * `nestedLocksBranching()` — the same two-lock guard whose **body branches**: the branch puts
+///   the release copy in a block of its own, and the canonical graph fuses the method's own
+///   trailing `return` into that block (nothing else enters it), so the void completion's transfer
+///   has no successor block to state. The shape is the certificate's own except for that fused
+///   layout, and it stays refused: a boundary registered rather than assumed.
 public class MLProbe {
     private final java.util.concurrent.locks.ReentrantLock a =
             new java.util.concurrent.locks.ReentrantLock();
@@ -38,6 +43,20 @@ public class MLProbe {
             this.count++;
         } finally {
             this.c.unlock();
+            this.b.unlock();
+            this.a.unlock();
+        }
+    }
+
+    void nestedLocksBranching(boolean fail) {
+        this.a.lock();
+        this.b.lock();
+        try {
+            this.count++;
+            if (fail) {
+                throw new IllegalStateException("body failed");
+            }
+        } finally {
             this.b.unlock();
             this.a.unlock();
         }
