@@ -7262,6 +7262,56 @@
       "path": "tests/fixtures/recover-array-initializer-value-positions/v8/MD3.class"
     },
     {
+      "blake3": "8b7a3dc535d33674ab289def4ba65988f398162251fc7b52fb854878b3a878ab",
+      "bytes": 961,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/BW.java"
+    },
+    {
+      "blake3": "8b2683b7d0688488feed9b43641757b24d08e5d8c844d9f89679a8023062e845",
+      "bytes": 693,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/BWN.java"
+    },
+    {
+      "blake3": "a4fc3ac4166ddd20ddc803524b21dadadf2e416eee7c1dee7eb67579ae012d8e",
+      "bytes": 536,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/BWR.java"
+    },
+    {
+      "blake3": "dc7a5dc801a4ea0a7c3b5f6508b325a26626a17a7a8883ff10c94d0e875198eb",
+      "bytes": 1338,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/patrol-BW.class"
+    },
+    {
+      "blake3": "c2c5e43d4553e5f86d972369aa348f537de8256c6460a9ad1b47d8c616de3423",
+      "bytes": 1631,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/v8-javac8/BW.class"
+    },
+    {
+      "blake3": "4ec5693e69f1c6ceecc73856483e3cc151e6aa6e243542c4a21845ace32d290d",
+      "bytes": 1640,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/v8-javac8/BWN.class"
+    },
+    {
+      "blake3": "7f81b17dafba2842f89c84b9dcea5109a766b1d598663455c3397e731ef83ea8",
+      "bytes": 1366,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/v8-javac8/BWR.class"
+    },
+    {
+      "blake3": "6a72f553670fc66994a36917ff8ecb9622eaf29646e37fb918338b842f12c9bc",
+      "bytes": 1631,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/v8/BW.class"
+    },
+    {
+      "blake3": "82a268e5bd60972e8f419dadb7c5752fd40fa460d5856b20488630b73528a202",
+      "bytes": 1640,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/v8/BWN.class"
+    },
+    {
+      "blake3": "4eb49bc6797c3bb78ff45c8d7ae71b29823099d0c8fc7556518c793efce79cbe",
+      "bytes": 1366,
+      "path": "tests/fixtures/recover-boolean-int-bitwise-operands/v8/BWR.class"
+    },
+    {
       "blake3": "e7ac9292a93c6bf9b27f4fd9dde5ac89daaa8c297d39943cc339f79a3505f2d1",
       "bytes": 1682,
       "path": "tests/fixtures/recover-chained-field-assignment/CF.java"
