@@ -486,23 +486,29 @@ pub enum Shape {
         /// producer's store — each with the `areturn` that reads its slot back.
         returns: [(u32, u32); 2],
     },
-    /// The lock-guard skeleton: one throwing acquisition call before the protected range, one
-    /// catch-all row over it and **no self-protection row**, a protected body that may loop, and a
-    /// handler that is exactly the release call plus the rethrow of the exception it bound.
+    /// The lock-guard skeleton: one or two acquisition calls before the protected range — the
+    /// instructions of the walk's own block before the range when the row begins inside it — one
+    /// catch-all row over the protected range and **no self-protection row**, a protected body that
+    /// may loop, and a handler that is exactly the release copies plus the rethrow of the exception
+    /// it bound.
     ///
-    /// The two release copies call the same method on the same field read, and each read loads the
-    /// same SSA value of the receiver the acquisition call read its field from; the method writes
-    /// that field nowhere. That is the whole safety source: the object both copies release is the
-    /// object the acquisition call took, so folding the two copies into one `finally` runs the
-    /// release exactly once per exit path of the body, on the lock the body holds.
+    /// The two release copies are the same sequence of one or two three-instruction groups, each
+    /// group calling the same method on the same field read and loading the same SSA value of the
+    /// receiver the matching acquisition call read its field from; the method writes those fields
+    /// nowhere. That is the whole safety source: each object both copies release is the object one
+    /// acquisition call took, so folding the two copies into one `finally` runs each release
+    /// exactly once per exit path of the body, on the locks the body holds — in the reverse of the
+    /// order they were acquired.
     ///
-    /// `acquire` is the one invocation before the protected range — the acquisition. The body's own
-    /// shape is the region walk's: a body that holds a loop is presented by the loop's own reader,
-    /// never by a copy of its instructions.
+    /// `acquires` are the invocations before the protected range — the acquisitions, each one
+    /// outside every row of the table, so a call that may throw (`lockInterruptibly`) is admitted
+    /// exactly where its own completion is what the row set states. The body's own shape is the
+    /// region walk's: a body that holds a loop is presented by the loop's own reader, never by a
+    /// copy of its instructions.
     LockGuardFinally {
         row_ordinal: u32,
-        /// The acquisition call the protected range follows.
-        acquire: u32,
+        /// The acquisition calls the protected range follows, in the order they run.
+        acquires: Vec<u32>,
         /// The release copy the normal path runs, as an instruction range.
         normal_cleanup: (u32, u32),
         /// The release copy the handler runs, as an instruction range.
@@ -3643,19 +3649,44 @@ fn lock_guard_copy(facts: &Facts<'_>, copy: &[u32]) -> Option<(crate::facts::Cal
     Some((target.clone(), facts.resolve(*receiver)))
 }
 
-/// The lock-guard certificate: `lock(); try { … } finally { unlock(); }`.
+/// The release copies of one `finally` body, in the order the source writes them: consecutive
+/// [`lock_guard_copy`] groups of three instructions, one group per statement the clause holds.
+///
+/// The nested-lock statement's clause is a **sequence** — `b.unlock(); a.unlock();` — so the copy
+/// the proof compares is the whole run, group by group. This slice's own bound is two groups; the
+/// one-group answer is the shape the single `unlock()` clause has always had, read by the same
+/// three-instruction grammar, so nothing about that clause's reading changes here.
+fn lock_guard_copies(
+    facts: &Facts<'_>,
+    copy: &[u32],
+) -> Option<Vec<(crate::facts::CallTarget, ValueId)>> {
+    if copy.is_empty() || !copy.len().is_multiple_of(3) || copy.len() > 6 {
+        return None;
+    }
+    let mut copies = Vec::with_capacity(copy.len() / 3);
+    for group in copy.chunks(3) {
+        copies.push(lock_guard_copy(facts, group)?);
+    }
+    Some(copies)
+}
+
+/// The lock-guard certificate: `lock(); try { … } finally { unlock(); }`, and the nested-lock
+/// statement beside it: `a.lock(); b.lock(); try { … } finally { b.unlock(); a.unlock(); }`.
 ///
 /// This is a shape of its own beside the resource-close copies, not a relaxation of them. What it
 /// proves, instruction by instruction, is:
 ///
-/// * exactly one catch-all row, and the protected range begins where this walk's block does;
-/// * **one** invocation before the protected range — the acquisition — whose receiver is an
-///   instance field read, and the field is written nowhere in the method;
-/// * both release copies are the same three-instruction grammar, load the same SSA value of the
-///   receiver (the definition the acquisition's own read is on), read the same field and call the
-///   same target, so the one `finally` this statement writes releases the object the acquisition
-///   took, on both paths;
-/// * the handler is exactly `astore; <copy>; aload; athrow`, the rethrow of the value it bound, and
+/// * exactly one catch-all row, and the protected range begins where this walk's block does or
+///   after it — the instructions of the block before the range are the statement's **lead**, the
+///   run the acquisitions stand in, and no row of the table covers one of them;
+/// * one or two invocations before the protected range — the acquisitions — whose receivers are
+///   instance field reads, and every one of those fields is written nowhere in the method;
+/// * both release copies are the same sequence of one or two three-instruction groups, each group
+///   loading the same SSA value of a receiver (the definition the matching acquisition's own read
+///   is on), reading the same field and calling the same target, and the groups pair with the
+///   acquisitions in **reverse** order — the last acquisition's object is released first, which is
+///   the nested-lock statement's own invariant;
+/// * the handler is exactly `astore; <copies>; aload; athrow`, the rethrow of the value it bound, and
 ///   has no successor: no other effect runs on the exceptional path;
 /// * the release copies lie outside the protected range (a release that could re-enter the handler
 ///   would run twice) and no instruction of the range returns (a return inside the range would skip
@@ -3664,6 +3695,12 @@ fn lock_guard_copy(facts: &Facts<'_>, copy: &[u32]) -> Option<(crate::facts::Cal
 ///   it is this row's — so the two copies cover exactly the exits the one `finally` covers;
 /// * the completion is one of the two forms javac writes: a saved value returned after the release,
 ///   or a transfer to the method's own value-less return.
+///
+/// The lead is what admits a call that **may throw**: `lockInterruptibly()` is an acquisition like
+/// any other exactly when the row set leaves it outside every protected range, because then the
+/// call must complete before the range begins — a throw from it never enters the range and the
+/// release must not run, which is what the bytecode itself states. A call the table covers is not
+/// this certificate's, and neither is one after the range begins.
 ///
 /// The protected body itself is not this proof's: the walk recovers it as a region of its own, loops
 /// included, and the statement is presented only when that walk covered the exact blocks the body's
@@ -3676,7 +3713,7 @@ fn prove_lock_guard_finally(
         return Ok(None);
     };
     if row.catch_type_index.is_some()
-        || row.start_bci != current.bci()
+        || row.start_bci < current.bci()
         || row.start_bci >= row.end_bci
     {
         return Ok(None);
@@ -3687,16 +3724,43 @@ fn prove_lock_guard_finally(
     if handler.bci() != row.handler_bci || !facts.view.successor_ids(&handler).is_empty() {
         return Ok(None);
     }
-    // The acquisition: the one invocation before the protected range.
+    // The statement's lead: the instructions of this block before the protected range begins. This
+    // is where the acquisitions stand, and no row of the table may cover one of them — the row set
+    // itself states the ordering a call that may throw needs: it completes before the range, so a
+    // throw from it never enters and the release must not run.
+    let lead: Vec<u32> = facts.bcis((current.bci(), row.start_bci));
+    for bci in &lead {
+        facts.charge(*bci)?;
+        if !facts.covering(*bci).is_empty() {
+            return Ok(None);
+        }
+    }
+    if lead.iter().any(|bci| {
+        matches!(
+            facts.op(*bci),
+            Some(Operation::Return) | Some(Operation::Throw)
+        )
+    }) {
+        return Ok(None);
+    }
+    // The acquisitions: the invocations before the protected range. A nested-lock statement takes
+    // up to two of them, and each release copy below pairs with one of them; a call the table
+    // covers is not an acquisition this proof states.
     let before: Vec<u32> = facts.bcis((0, row.start_bci));
     let acquisitions: Vec<u32> = before
         .iter()
         .copied()
         .filter(|bci| matches!(facts.op(*bci), Some(Operation::Invoke(_))))
         .collect();
-    let [acquire] = acquisitions.as_slice() else {
+    if acquisitions.is_empty() || acquisitions.len() > 2 {
         return Ok(None);
-    };
+    }
+    for acquire in &acquisitions {
+        facts.charge(*acquire)?;
+        if !facts.covering(*acquire).is_empty() {
+            return Ok(None);
+        }
+    }
     for bci in &before {
         facts.charge(*bci)?;
     }
@@ -3750,7 +3814,7 @@ fn prove_lock_guard_finally(
     {
         return Ok(None);
     }
-    let Some(handler_copy) = lock_guard_copy(facts, handler_cleanup) else {
+    let Some(handler_copies) = lock_guard_copies(facts, handler_cleanup) else {
         return Ok(None);
     };
     // The normal path: the release copy, then this shape's completion.
@@ -3850,39 +3914,53 @@ fn prove_lock_guard_finally(
     if normal_cleanup.is_empty() {
         return Ok(None);
     }
-    let Some(normal_copy) = lock_guard_copy(facts, normal_cleanup) else {
+    let Some(normal_copies) = lock_guard_copies(facts, normal_cleanup) else {
         return Ok(None);
     };
-    // The two copies release the same target on the same value.
-    if normal_copy != handler_copy {
+    // The two copies release the same targets on the same values, group by group.
+    if normal_copies != handler_copies {
         return Ok(None);
     }
-    // The acquisition's own three instructions are the same grammar on the same value: the field
-    // read it calls on is the field both copies read, from the definition both copies load.
-    let (Some(acquire_field), Some(acquire_load)) = (
-        facts.previous_bci(*acquire),
-        facts
-            .previous_bci(*acquire)
-            .and_then(|field| facts.previous_bci(field)),
-    ) else {
+    // Each copy's own three instructions are the same grammar on the same value as one
+    // acquisition's: the field read it calls on is the field the copy reads, from the definition
+    // the copy loads. The pairing is the **reverse** of the acquisition order — the last
+    // acquisition's object is the first release — which is the nested-lock statement's own
+    // invariant, and it is what makes the one `finally` the source's clause.
+    if acquisitions.len() != normal_copies.len() {
         return Ok(None);
-    };
-    let Some((_, acquire_value)) = lock_guard_copy(facts, &[acquire_load, acquire_field, *acquire])
-    else {
-        return Ok(None);
-    };
-    if facts.op(acquire_field) != facts.op(normal_cleanup[1]) || acquire_value != normal_copy.1 {
-        return Ok(None);
+    }
+    let mut fields = Vec::with_capacity(acquisitions.len());
+    for (index, copy) in normal_cleanup.chunks(3).enumerate() {
+        let acquire = acquisitions[acquisitions.len() - 1 - index];
+        let (Some(acquire_field), Some(acquire_load)) = (
+            facts.previous_bci(acquire),
+            facts
+                .previous_bci(acquire)
+                .and_then(|field| facts.previous_bci(field)),
+        ) else {
+            return Ok(None);
+        };
+        let Some((_, acquire_value)) =
+            lock_guard_copy(facts, &[acquire_load, acquire_field, acquire])
+        else {
+            return Ok(None);
+        };
+        if facts.op(acquire_field) != facts.op(copy[1]) || acquire_value != normal_copies[index].1 {
+            return Ok(None);
+        }
+        fields.push(facts.op(acquire_field).cloned());
     }
     // The value is an entry definition — the method's own `this` (or a parameter), never a value
     // the body wrote — so the field read at the release is the field read at the acquisition.
-    if !matches!(
-        facts.ssa.value(facts.resolve(normal_copy.1)).def(),
-        Definition::Entry { .. }
-    ) {
+    if normal_copies.iter().any(|(_, value)| {
+        !matches!(
+            facts.ssa.value(facts.resolve(*value)).def(),
+            Definition::Entry { .. }
+        )
+    }) {
         return Ok(None);
     }
-    let field = facts.op(acquire_field).cloned();
+    // Every acquired field is written nowhere in the method.
     let order = facts.order.clone();
     for bci in &order {
         facts.charge(*bci)?;
@@ -3891,7 +3969,7 @@ fn prove_lock_guard_finally(
             Some(Operation::Field {
                 access: crate::facts::FieldAccess::Write,
                 ..
-            }) if facts.op(*bci) == field.as_ref()
+            }) if fields.iter().any(|field| field.as_ref() == facts.op(*bci))
         ) {
             return Ok(None);
         }
@@ -3989,7 +4067,7 @@ fn prove_lock_guard_finally(
             }
         }
     }
-    let mut owned = facts.blocks_in((row.start_bci, handler.bci()));
+    let mut owned = facts.blocks_in((current.bci(), handler.bci()));
     if !owned.contains(&handler) {
         owned.push(handler);
     }
@@ -4003,7 +4081,7 @@ fn prove_lock_guard_finally(
     Ok(Some(Plan {
         shape: Shape::LockGuardFinally {
             row_ordinal: row.ordinal,
-            acquire: *acquire,
+            acquires: acquisitions.clone(),
             normal_cleanup: (
                 normal_cleanup[0],
                 facts.span_end(*normal_cleanup.last().unwrap()),
@@ -4014,7 +4092,7 @@ fn prove_lock_guard_finally(
             ),
             completion,
         },
-        lead: (row.start_bci, row.start_bci),
+        lead: (current.bci(), row.start_bci),
         body: (row.start_bci, row.end_bci),
         owned,
         join,
@@ -10836,19 +10914,20 @@ pub(crate) fn shared_finally_candidate(
     }
     if handlers.len() == 1 {
         let row = &handlers[0];
-        // The lock-guard skeleton is asked first: its lead is the one throwing acquisition call
-        // *before* the protected range, so the entry-anchored precondition below does not describe
-        // it. The question asked here is the cheap half of that certificate's own shape — one
-        // catch-all row beginning where this block does, with exactly one invocation before it —
-        // so a row no lock-guard proof could claim keeps the charge it has today.
+        // The lock-guard skeleton is asked first: its lead is the acquisition run *before* the
+        // protected range — one call, or the nested-lock statement's two — so the entry-anchored
+        // precondition below does not describe it. The question asked here is the cheap half of
+        // that certificate's own shape — one catch-all row beginning where this block does or after
+        // it, with one or two invocations before it — so a row no lock-guard proof could claim
+        // keeps the charge it has today.
+        let acquisitions = ops
+            .iter()
+            .take_while(|(bci, _)| **bci < row.start_bci)
+            .filter(|(_, operation)| matches!(operation, Operation::Invoke(_)))
+            .count();
         let lock_guard = row.catch_type_index.is_none()
-            && row.start_bci == current.bci()
-            && ops
-                .iter()
-                .take_while(|(bci, _)| **bci < row.start_bci)
-                .filter(|(_, operation)| matches!(operation, Operation::Invoke(_)))
-                .count()
-                == 1;
+            && row.start_bci >= current.bci()
+            && matches!(acquisitions, 1 | 2);
         // This private slice begins at the method entry and its normal cleanup begins by
         // loading `this`. Reject other one-row finally shapes before charging a new probe.
         if !lock_guard
