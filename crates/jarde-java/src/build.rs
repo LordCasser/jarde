@@ -2495,46 +2495,81 @@ fn decide_types(
             }
         }
     }
-    while let Some(variable) = queue.pop_front() {
-        let Some(write) = first.get(&variable) else {
-            continue;
-        };
-        // The work this entry pays for is the decision it spreads; the entry's own write BCI is
-        // where a run that cannot afford it stops, exactly as the statements bill their own.
-        charge(budget, CountedBudgetDimension::IrItems, 1, Some(write.at))?;
-        poll(budget, Some(write.at))?;
-        for reader in readers.get(&variable).into_iter().flatten() {
-            let Some(candidate) = first.get(reader) else {
+    // The fixpoint the two spreads share: the copy chain's own reads, then the accumulate counters
+    // the change's own rule admits (`recover-boolean-int-bitwise-operands`). A counter the second
+    // admits is evidence for the first, and a variable the first admits can be the sibling a
+    // counter's bitwise update reads, so neither runs once and stops.
+    loop {
+        while let Some(variable) = queue.pop_front() {
+            let Some(write) = first.get(&variable) else {
                 continue;
             };
-            if boolean_variables.contains(reader) {
+            // The work this entry pays for is the decision it spreads; the entry's own write BCI is
+            // where a run that cannot afford it stops, exactly as the statements bill their own.
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(write.at))?;
+            poll(budget, Some(write.at))?;
+            for reader in readers.get(&variable).into_iter().flatten() {
+                let Some(candidate) = first.get(reader) else {
+                    continue;
+                };
+                if boolean_variables.contains(reader) {
+                    continue;
+                }
+                let proof = {
+                    let is_boolean_local = |value, at| {
+                        read_variable(ssa, operations, reuse, value, at)
+                            .is_some_and(|dependency| boolean_variables.contains(&dependency))
+                    };
+                    let mut visit = |at| charge_bitwise_proof_node(operations, at, budget);
+                    let mut context = BooleanProofContext {
+                        ssa,
+                        operations,
+                        parameter_types,
+                        fields,
+                        is_boolean_local,
+                        visit: &mut visit,
+                    };
+                    boolean_proof(
+                        &mut context,
+                        candidate.stored,
+                        candidate.at,
+                        0,
+                        &mut BTreeMap::new(),
+                    )?
+                };
+                if proof.has_seed() && boolean_variables.insert(*reader) {
+                    queue.push_back(*reader);
+                }
+            }
+        }
+        let mut admitted = false;
+        for variable in first.keys() {
+            if boolean_variables.contains(variable) {
                 continue;
             }
-            let proof = {
-                let is_boolean_local = |value, at| {
-                    read_variable(ssa, operations, reuse, value, at)
-                        .is_some_and(|dependency| boolean_variables.contains(&dependency))
-                };
-                let mut visit = |at| charge_bitwise_proof_node(operations, at, budget);
-                let mut context = BooleanProofContext {
-                    ssa,
-                    operations,
-                    parameter_types,
-                    fields,
-                    is_boolean_local,
-                    visit: &mut visit,
-                };
-                boolean_proof(
-                    &mut context,
-                    candidate.stored,
-                    candidate.at,
-                    0,
-                    &mut BTreeMap::new(),
-                )?
+            let Some(accesses) = uses.get(variable) else {
+                continue;
             };
-            if proof.has_seed() && boolean_variables.insert(*reader) {
-                queue.push_back(*reader);
+            if accumulates_boolean(
+                *variable,
+                accesses,
+                ssa,
+                operations,
+                reuse,
+                parameter_types,
+                fields,
+                return_type,
+                parameters,
+                &boolean_variables,
+                budget,
+            )? && boolean_variables.insert(*variable)
+            {
+                queue.push_back(*variable);
+                admitted = true;
             }
+        }
+        if !admitted {
+            break;
         }
     }
     // The decision every consumer reads: the descriptor's boolean for a parameter, the propagated
@@ -2786,6 +2821,119 @@ fn decide_types(
         decided.insert(*variable, decision);
     }
     Ok(decided)
+}
+
+/// Whether one local variable is a `boolean` **accumulate counter**
+/// (`recover-boolean-int-bitwise-operands`).
+///
+/// `boolean r = false; for (boolean x : f) r ^= x; return r;` lowers `r` to an `int` local: the
+/// initialising write stores `iconst_0`, the loop's write stores `iload r; iload x; ixor`, and the
+/// method's own `Z` return reads the counter. The frames state one `int` shape for the four
+/// int-sized primitives, so no frame states the type — but the counter's whole value graph does:
+///
+/// * **every write** stores a `0`/`1` value: the literal a `boolean` is initialised with, or the
+///   value of a bitwise operator whose operands are boolean evidence — the production chain stays in
+///   the boolean bitwise context the change states;
+/// * **every read** is consumed where a `boolean` is read: an operand of a bitwise operator whose
+///   other operand is boolean evidence, the `ireturn` of a `Z` method, or a store into a variable
+///   this decision already states `boolean` (the counter's own write, judged by
+///   [`BooleanConsumption`]);
+/// * at least one write is that accumulation, so a variable that only ever stores literals states
+///   nothing about a boolean context.
+///
+/// The candidate itself reads as a `boolean` while its own writes are judged — the value it carries
+/// is what its own update combines — and every other variable reads from the decision so far. That
+/// is what makes this a data-flow sufficiency test rather than a guess: an `int` counter whose
+/// update combines it with an `int` sibling has no evidence at all, and one whose value is consumed
+/// by arithmetic, a comparison or an `int` store fails the read walk and keeps the refusal.
+#[allow(clippy::too_many_arguments)]
+fn accumulates_boolean(
+    candidate: LocalVariable,
+    accesses: &[SlotUse],
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    parameter_types: &BTreeMap<u16, Type>,
+    fields: &field::Plan,
+    return_type: Option<&Type>,
+    parameters: u16,
+    boolean_variables: &BTreeSet<LocalVariable>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    // A parameter's type is the signature's: a body's writes cannot widen it, and the counter the
+    // change reads back is a local the body declares.
+    if candidate.slot() < parameters {
+        return Ok(false);
+    }
+    let is_boolean_variable =
+        |variable: LocalVariable| variable == candidate || boolean_variables.contains(&variable);
+    let mut accumulated = false;
+    for access in accesses.iter().filter(|access| access.written.is_some()) {
+        let Some(stored) = access.stored else {
+            return Ok(false);
+        };
+        let Definition::Instruction { bci, .. } = ssa.value(stored).def() else {
+            return Ok(false);
+        };
+        let operation = operations.get(*bci);
+        // The write's own production stays in the boolean bitwise context: the `0`/`1` literal a
+        // `boolean` is initialised with, or the value of a bitwise operator.
+        if !matches!(operation, Some(Operation::Push(ConstantValue::Int(0 | 1))))
+            && !matches!(operation, Some(Operation::Bitwise { .. }))
+        {
+            return Ok(false);
+        }
+        let proof = {
+            let is_boolean_local = |value: ValueId, at: u32| {
+                read_variable(ssa, operations, reuse, value, at).is_some_and(is_boolean_variable)
+            };
+            let mut visit = |at| charge_bitwise_proof_node(operations, at, budget);
+            let mut context = BooleanProofContext {
+                ssa,
+                operations,
+                parameter_types,
+                fields,
+                is_boolean_local,
+                visit: &mut visit,
+            };
+            boolean_proof(&mut context, stored, access.bci, 0, &mut BTreeMap::new())?
+        };
+        if !proof.is_boolean() {
+            return Ok(false);
+        }
+        accumulated |= proof.has_seed();
+    }
+    if !accumulated {
+        return Ok(false);
+    }
+    for access in accesses.iter().filter(|access| access.read.is_some()) {
+        let Some(load) = instruction_at(ssa, access.bci) else {
+            return Ok(false);
+        };
+        let Some(Operation::Load { slot: load_slot }) = operations.get(access.bci) else {
+            return Ok(false);
+        };
+        let [(Slot::Stack(_), loaded)] = load.writes() else {
+            return Ok(false);
+        };
+        if *load_slot != candidate.slot() || !matches!(load.opcode(), 0x15 | 0x1a..=0x1d) {
+            return Ok(false);
+        }
+        let mut consumption = BooleanConsumption {
+            ssa,
+            operations,
+            reuse,
+            parameter_types,
+            fields,
+            return_type,
+            is_boolean_variable: &is_boolean_variable,
+            budget: Some(&mut *budget),
+        };
+        if !consumption.consumed(*loaded, access.bci, 0, &mut BTreeSet::new())? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 /// The first write of Test5's reused slot is a pending `null` return. Its
@@ -15559,9 +15707,10 @@ impl Builder<'_> {
         ))
     }
 
-    /// Whether the one instruction that consumes a conditional value is the **field compound
-    /// assignment's own bitwise operation**, whose other operand a descriptor proves boolean
-    /// (`recover-conditional-rhs-field-compound`).
+    /// Whether the one instruction that consumes a conditional value is a **bitwise operation**
+    /// whose other operand a descriptor proves boolean, and whose own value is read where a
+    /// `boolean` is read (`recover-conditional-rhs-field-compound`,
+    /// `recover-boolean-int-bitwise-operands`).
     ///
     /// `this.ok &= x > 0` lowers the comparison's `0`/`1` to the branch's arms and the join's Phi,
     /// and the Phi's one consumer is the `iand` the field's own value is computed by — the value the
@@ -15572,11 +15721,12 @@ impl Builder<'_> {
     /// method's `Z` return and a `Z` parameter already state, and the same 0/1 branch-value shape
     /// both positions share.
     ///
-    /// The operation must be the value a claimed **field write** takes: the compound assignment
-    /// whose receiver copy this change proves. A materialised `0`/`1` beside a boolean operand in
-    /// any other position — a plain `a & !b` returned, say — is the boolean–int operand
-    /// restoration `recover-boolean-int-bitwise-operands` owns, and this change's admission stays
-    /// inside the field compound it exists for.
+    /// The operation must also be one whose **own value** is read where a `boolean` is read
+    /// (`recover-boolean-int-bitwise-operands`): a claimed **field write** (the compound assignment
+    /// this certificate proves), the `ireturn` of a `Z` method (`return a & !b;`), or another
+    /// bitwise operation whose sibling operand a descriptor proves boolean. Any other consumer — an
+    /// arithmetic, a comparison, an `int` store, a call argument, a branch test — leaves the
+    /// materialised `0`/`1` as the `int` it is and the operand pair keeps its refusal.
     fn bitwise_boolean_operand(&self, proof: &ConditionalValueProof) -> bool {
         let Some(instruction) = self.instructions.get(&proof.consumer_bci).copied() else {
             return false;
@@ -15604,13 +15754,21 @@ impl Builder<'_> {
         let Some((_, value)) = one_stack_output(instruction) else {
             return false;
         };
-        self.ssa.value(value).uses().iter().any(|use_| {
-            use_.bci().is_some_and(|bci| {
-                self.fields
-                    .claim(bci)
-                    .is_some_and(|(_, shape)| shape.writes() && shape.value == Some(value))
-            })
-        })
+        // This check reads the same evidence [`Self::boolean_evidence`] does and stops at nothing:
+        // its own walk is infallible, so the answer is unwrapped exactly as that one's is.
+        let mut consumption = BooleanConsumption {
+            ssa: self.ssa,
+            operations: self.operations,
+            reuse: self.reuse,
+            parameter_types: self.parameter_types,
+            fields: self.fields,
+            return_type: self.return_type.as_ref(),
+            is_boolean_variable: &|variable| self.decided_boolean(variable),
+            budget: None,
+        };
+        consumption
+            .consumed(value, proof.consumer_bci, 0, &mut BTreeSet::new())
+            .unwrap_or(false)
     }
 
     /// Whether the one call that consumes a conditional value reads it through a parameter the
@@ -29173,6 +29331,185 @@ where
     };
     memo.insert(key, evidence);
     Ok(evidence)
+}
+
+/// Whether every consumer of one value reads it where a `boolean` is read
+/// (`recover-boolean-int-bitwise-operands`).
+///
+/// The read-back has two halves. A value's whole **production** chain must be boolean bitwise
+/// context — the evidence [`boolean_proof`] reads, with the `0`/`1` literal the plan's own decision
+/// admits — and **every consumption** of the value must be a position a `boolean` is read in. This
+/// is the second half, stated as a walk over the value's SSA uses: the same graph the declarations
+/// plan already reads, never a guess from the text around the value.
+///
+/// A use is a boolean position when it is one of
+///
+/// * a store into a local variable the caller's decision states `boolean` — the accumulate
+///   counter's own write, and the merge that carries the value into a `boolean` local's phi;
+/// * an `ireturn` from a method whose descriptor returns `Z` — the boolean-from-int outlet the
+///   return position already writes as `value % 2 != 0`, which the read-back makes the value's own
+///   boolean (`return a & !b;`, not `return (a & (b ? 1 : 0)) % 2 != 0;`);
+/// * a claimed write of a field ([`field::Plan::claim`]) — the admission
+///   `recover-conditional-rhs-field-compound` states for the field compound;
+/// * a bitwise operator whose **other** operand is boolean evidence, whose own value this walk then
+///   judges in turn: Java accepts `&`, `|` and `^` only between two `boolean`s or two integrals, so
+///   a boolean sibling states the operation's type (`(a & !b) & c`).
+///
+/// Every other use — arithmetic, a comparison, an `int` store, a call argument, a branch test — is
+/// not a boolean position, so the value keeps the `int` presentation it has and the refusal the
+/// operand pair states stands.
+struct BooleanConsumption<'a> {
+    ssa: &'a SsaTable,
+    operations: &'a Operations,
+    reuse: &'a reuse::Plan,
+    parameter_types: &'a BTreeMap<u16, Type>,
+    fields: &'a field::Plan,
+    return_type: Option<&'a Type>,
+    /// Whether one local variable is a `boolean` by the caller's own decision: the plan's answer for
+    /// every variable, or the candidate the accumulate rule is judging while it judges it.
+    is_boolean_variable: &'a dyn Fn(LocalVariable) -> bool,
+    /// The budget one judged consumer is billed against, where the caller has one. The declarations
+    /// plan charges its walk; the render pass's own admission check runs unbilled, exactly as the
+    /// boolean evidence read beside it does.
+    budget: Option<&'a mut Budget>,
+}
+
+impl BooleanConsumption<'_> {
+    /// Whether every use of `value` is a position that reads a `boolean`.
+    fn consumed(
+        &mut self,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+        seen: &mut BTreeSet<ValueId>,
+    ) -> Result<bool, StopReason> {
+        if depth > MAX_VALUE_DEPTH || !seen.insert(value) {
+            // A walk that cannot state where it stops states nothing: the value is refused rather
+            // than read back as a boolean.
+            return Ok(false);
+        }
+        for use_ in self.ssa.value(value).uses() {
+            let Some(bci) = use_.bci() else {
+                // A phi operand is a merge, not a consumer: the value travels through the join, and
+                // the merge's own value is what the following instructions read. Where that merge is
+                // a **local variable's** own phi the value becomes that variable's value, and every
+                // read of the variable is judged by the decision for it — so the variable must be
+                // one the caller states `boolean`. Any other merge (a stack phi) is not a position
+                // this walk can state, and is refused.
+                if !self.merged_into_boolean_local(value, use_.block(), at) {
+                    return Ok(false);
+                }
+                continue;
+            };
+            if let Some(budget) = self.budget.as_mut() {
+                poll(budget, Some(bci))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+            }
+            if !self.boolean_consumer(bci, value, at, depth, seen)? {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+
+    /// Whether the instruction at `bci` is one a `boolean` is read at.
+    fn boolean_consumer(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+        seen: &mut BTreeSet<ValueId>,
+    ) -> Result<bool, StopReason> {
+        let Some(instruction) = instruction_at(self.ssa, bci) else {
+            return Ok(false);
+        };
+        match self.operations.get(bci) {
+            Some(Operation::Store { slot }) => Ok(self
+                .reuse
+                .variable_at(*slot, bci)
+                .is_some_and(|variable| (self.is_boolean_variable)(variable))),
+            Some(Operation::Return) => {
+                Ok(instruction.opcode() == 0xac && self.return_type == Some(&Type::Boolean))
+            }
+            Some(Operation::Field {
+                access: FieldAccess::Write,
+                ..
+            }) => Ok(self
+                .fields
+                .claim(bci)
+                .is_some_and(|(_, shape)| shape.writes() && shape.value == Some(value))),
+            Some(Operation::Bitwise { .. }) => {
+                let operands = stack_operands(instruction);
+                let [(_, left), (_, right)] = operands.as_slice() else {
+                    return Ok(false);
+                };
+                let other = if *left == value {
+                    *right
+                } else if *right == value {
+                    *left
+                } else {
+                    return Ok(false);
+                };
+                if !self.evidence(other, bci)?.has_seed() {
+                    return Ok(false);
+                }
+                let Some((_, output)) = one_stack_output(instruction) else {
+                    return Ok(false);
+                };
+                self.consumed(output, at, depth + 1, seen)
+            }
+            _ => Ok(false),
+        }
+    }
+
+    /// The boolean evidence one operand carries, read with the caller's own variable decision.
+    fn evidence(&mut self, value: ValueId, at: u32) -> Result<BooleanEvidence, StopReason> {
+        let ssa = self.ssa;
+        let operations = self.operations;
+        let reuse = self.reuse;
+        let parameter_types = self.parameter_types;
+        let fields = self.fields;
+        let is_boolean_variable = self.is_boolean_variable;
+        let mut budget = self.budget.as_mut();
+        let mut visit = |bci| match budget.as_deref_mut() {
+            Some(budget) => charge_bitwise_proof_node(operations, bci, budget),
+            None => Ok(()),
+        };
+        let mut context = BooleanProofContext {
+            ssa,
+            operations,
+            parameter_types,
+            fields,
+            is_boolean_local: &|value: ValueId, at: u32| {
+                read_variable(ssa, operations, reuse, value, at)
+                    .is_some_and(is_boolean_variable)
+            },
+            visit: &mut visit,
+        };
+        boolean_proof(&mut context, value, at, 0, &mut BTreeMap::new())
+    }
+
+    /// Whether one phi operand record carries the value into a local variable's own phi that the
+    /// caller's decision states `boolean`.
+    fn merged_into_boolean_local(&self, value: ValueId, block: &CanonicalBlockId, at: u32) -> bool {
+        self.ssa
+            .phis()
+            .iter()
+            .filter(|phi| phi.block() == block)
+            .any(|phi| {
+                let Slot::Local(slot) = phi.slot() else {
+                    return false;
+                };
+                phi.inputs()
+                    .iter()
+                    .any(|input| matches!(input, PhiInput::Value(input) if *input == value))
+                    && self
+                        .reuse
+                        .variable_at(slot, at)
+                        .is_some_and(|variable| (self.is_boolean_variable)(variable))
+            })
+    }
 }
 
 /// Collect the local reads that can change one first-write boolean proof.

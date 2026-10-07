@@ -1,0 +1,63 @@
+SELF-TEST OK: BW refusals 2 -> 0 with both anchors; BWN byte-identical; BI/RC/RCN/CF/NEG/ICM/ICN byte-identical
+pass A loose candidate classes: 2822
+MOVED (single-class): openspec/evidence/java-syntax-2026-10-05/boolean-int-bitwise-patrol/fixture/BW.class
+    30c30
+    <         int local1;
+    ---
+    >         boolean local1;
+    32c32
+    <         local1 = 0;
+    ---
+    >         local1 = false;
+MOVED (single-class): tests/fixtures/recover-boolean-int-bitwise-operands/v8/BW.class
+    30c30
+    <         int r;
+    ---
+    >         boolean r;
+    32c32
+    <         r = 0;
+    ---
+    >         r = false;
+MOVED (single-class): tests/fixtures/recover-boolean-int-bitwise-operands/v8/BWR.class
+    16c16
+    <         int r;
+    ---
+    >         boolean r;
+    18c18
+    <         r = 0;
+    ---
+    >         r = false;
+MOVED (single-class): tests/fixtures/recover-boolean-int-bitwise-operands/v8-javac8/BW.class
+    30c30
+    <         int r;
+    ---
+    >         boolean r;
+    32c32
+    <         r = 0;
+    ---
+    >         r = false;
+MOVED (single-class): tests/fixtures/recover-boolean-int-bitwise-operands/v8-javac8/BWR.class
+    16c16
+    <         int r;
+    ---
+    >         boolean r;
+    18c18
+    <         r = 0;
+    ---
+    >         r = false;
+MOVED (single-class): tests/fixtures/recover-boolean-int-bitwise-operands/patrol-BW.class
+    30c30
+    <         int local1;
+    ---
+    >         boolean local1;
+    32c32
+    <         local1 = 0;
+    ---
+    >         local1 = false;
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+pass A: moved=6 unrendered=1
+archive candidate classes: 739
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+pass C: moved=0 unrendered=1
+moved classes: single-class=6 jar=0 total=6
+unrendered candidates: A=1 C=1
