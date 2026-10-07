@@ -12056,7 +12056,15 @@ mod tests {
             // super-argument probes, `ReadArg`'s family and `CallArg`'s family with its helper,
             // seven classes, seven bodies: thirteen classes, twenty-one bodies, no handler record,
             // no branch target and no subroutine) moved it again.
-            (857, 3723, 290, 2273, 8),
+            // The 2026-10-07 recover-boxed-number-widening fixtures (the patrol's own `C8` — its
+            // boxed ternary, its loop-carried builder with the `break`, and the `larger(3, 7)`
+            // call site — beside `BN` with the six boxed argument positions and `BNX` with the two
+            // out-of-row refusals, three classes on both compiler legs: six classes, thirty-four
+            // bodies — seventeen per leg — eighteen branch targets per leg (`C8`'s ten: the
+            // ternary pair, the loop pair, the `break` pair and the loop's back edge; `BN`'s four
+            // and `BNX`'s four: the two ternary bodies each), no handler record and no subroutine)
+            // moved it again.
+            (863, 3757, 290, 2309, 8),
             "fixture population changed: re-measure these counts"
         );
     }
