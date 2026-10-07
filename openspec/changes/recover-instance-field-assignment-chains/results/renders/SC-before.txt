@@ -1,0 +1,109 @@
+// jarde: presentation of `SC` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class SC extends java.lang.Object {
+    // jarde: renamed physical lambda helper "lambda$curried$1" after proving its single class-wide use
+    // jarde: renamed physical lambda helper "lambda$nested$3" after proving its single class-wide use
+    // jarde: renamed physical lambda helper "lambda$nested$2" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$curried$0" after proving its single class-wide use
+    java.lang.String field;
+
+    static java.lang.String localCat(java.lang.String arg0, int arg1) {
+        // @method localCat(Ljava/lang/String;I)Ljava/lang/String;
+        // @declaration a static method of `SC`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String local2;
+        int local3;
+        local2 = arg0;
+        for (local3 = 0; local3 < arg1; local3 = local3 + 1) {
+            local2 = local2 + "-" + local3;
+        }
+        return local2;
+    }
+
+    SC(java.lang.String arg1) {
+        // @method <init>(Ljava/lang/String;)V
+        // @declaration a constructor of `SC`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.field = arg1;
+        return;
+    }
+
+    SC add(java.lang.String arg1) {
+        // @method add(Ljava/lang/String;)LSC;
+        // @declaration an instance method of `SC`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        this.field = this.field + "[" + arg1 + "]";
+        return this;
+    }
+
+    static java.lang.String preAssign(java.lang.String arg0) {
+        // @method preAssign(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `SC`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String local1 = "p";
+        local1 = local1 + arg0;
+        return local1;
+    }
+
+    static java.util.function.Function curried() {
+        // jarde: generic Signature projection refused for `curried()Ljava/util/function/Function;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+        // jarde: lambda companion call renamed at invokedynamic@0
+        // @method curried()Ljava/util/function/Function;
+        // @declaration a static method of `SC`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.Object p0) -> SC.lambda$curried$1$jarde((java.lang.Integer) p0);
+    }
+
+    static java.util.function.Supplier nested() {
+        // jarde: generic Signature projection refused for `nested()Ljava/util/function/Supplier;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+        // jarde: lambda companion call renamed at invokedynamic@0
+        // @method nested()Ljava/util/function/Supplier;
+        // @declaration a static method of `SC`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return () -> SC.lambda$nested$3$jarde();
+    }
+
+    static int useCurried() {
+        // @method useCurried()I
+        // @declaration a static method of `SC`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return ((java.lang.Integer) ((java.util.function.Function) curried().apply((java.lang.Object) java.lang.Integer.valueOf(3))).apply((java.lang.Object) java.lang.Integer.valueOf(4))).intValue();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `SC`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append((java.lang.String) localCat("a", 3)).append("/").append(new SC("f").add("x").add("y").field).append("/").append((java.lang.String) preAssign("q")).append("/").append(useCurried()).toString());
+        ((java.lang.Runnable) nested().get()).run();
+        return;
+    }
+
+    private static java.lang.Runnable lambda$nested$3$jarde() {
+        // jarde: renamed physical lambda helper "lambda$nested$3" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // jarde: lambda companion call renamed at invokedynamic@0
+        // @method lambda$nested$3()Ljava/lang/Runnable;
+        // @declaration a static method of `SC`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return () -> SC.lambda$nested$2$jarde();
+    }
+
+    private static void lambda$nested$2$jarde() {
+        // jarde: renamed physical lambda helper "lambda$nested$2" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // @method lambda$nested$2()V
+        // @declaration a static method of `SC`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("nested-run");
+        return;
+    }
+
+    private static java.util.function.Function lambda$curried$1$jarde(java.lang.Integer arg0) {
+        // jarde: renamed physical lambda helper "lambda$curried$1" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // jarde: lambda companion body inlined at invokedynamic@1
+        // @method lambda$curried$1(Ljava/lang/Integer;)Ljava/util/function/Function;
+        // @declaration a static method of `SC`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.Object arg1) -> java.lang.Integer.valueOf(arg0.intValue() + ((java.lang.Integer) arg1).intValue());
+    }
+}

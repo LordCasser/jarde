@@ -1,0 +1,59 @@
+// jarde: presentation of `CP` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CP extends java.lang.Object {
+    int a;
+
+    int b;
+
+    int c;
+
+    public CP() {
+        // @method <init>()V
+        // @declaration a constructor of `CP`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    void inst() {
+        // @method inst()V
+        // @declaration an instance method of `CP`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+        return;
+    }
+
+    void pair() {
+        // @method pair()V
+        // @declaration an instance method of `CP`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+        // @bytecode 8
+        // the value at BCI 8 comes from an Other at BCI 4, which produces no expression this subset writes
+        return;
+    }
+
+    public static void main(java.lang.String[] args) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `CP`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CP p = new CP();
+        p.inst();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(p.a).append("/").append(p.b).append("/").append(p.c).toString());
+        p.pair();
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("").append(p.a).append("/").append(p.b).append("/").append(p.c).toString());
+        return;
+    }
+}

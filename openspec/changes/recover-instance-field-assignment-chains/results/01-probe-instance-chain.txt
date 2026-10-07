@@ -1,0 +1,159 @@
+# Task 1.1 — the rebuilt CP probe, the reader's dup filter, and the stack geometry
+
+The probe recorded as a boundary by `recover-chained-field-assignment`
+(`results/02-probe-instance-chain.txt`) is rebuilt here from its own source on **both** compiler
+legs, and the reason the static chain's proof never read the dance is located. Sources are archived
+as `results/probe/{CP,MX,NEG}.java`; the class files are the committed fixtures
+`tests/fixtures/recover-instance-field-assignment-chains/{v8,v8-javac8}/`.
+
+## The probe source
+
+```java
+public class CP {
+    int a, b, c;
+    void inst() { this.a = this.b = this.c = 5; }
+    void pair() { this.a = this.b = 7; }
+    public static void main(String[] args) { … }
+}
+```
+
+## The bytes, both legs (`javap -p -c`)
+
+javac 23.0.1 `--release 8 -g -nowarn`:
+
+```text
+  void inst();
+       0: aload_0
+       1: aload_0
+       2: aload_0
+       3: iconst_5
+       4: dup_x1
+       5: putfield      #7                  // Field c:I
+       8: dup_x1
+       9: putfield      #13                 // Field b:I
+      12: putfield      #16                 // Field a:I
+      15: return
+```
+
+Corretto 1.8.0_432 (real javac 8):
+
+```text
+  void inst();
+       0: aload_0
+       1: aload_0
+       2: aload_0
+       3: iconst_5
+       4: dup_x1
+       5: putfield      #2                  // Field c:I
+       8: dup_x1
+       9: putfield      #3                  // Field b:I
+      12: putfield      #4                  // Field a:I
+      15: return
+```
+
+The two legs' instruction sequences are **identical** — the only difference is which
+constant-pool index each `putfield` names — so the criterion this change states is a *bytecode*
+criterion and not one compiler's habit. The recorded probe's BCIs (4, 5, 8, 9, 12) are exactly
+these, and the baseline refusal below is the recorded one line for line.
+
+## The stack geometry (the discriminator)
+
+The receivers are already on the stack when the value is pushed, and every `dup_x1` inserts its
+copy **under the top receiver word**. Writing `[this₁, this₂, this₃, 5]` for the stack before the
+first copy, with `dup_x1`'s own JVMS pattern `[…, B, T] → […, T, B, T]`:
+
+```text
+BCI 0  aload_0     [this₁]
+BCI 1  aload_0     [this₁, this₂]
+BCI 2  aload_0     [this₁, this₂, this₃]
+BCI 3  iconst_5    [this₁, this₂, this₃, 5]
+BCI 4  dup_x1      below = this₃ (slot 2), top = 5 (slot 3)
+                   [this₁, this₂, 5′, this₃, 5″]
+                   writes: slot 2 = 5′  (the copy that stays **under** the receiver)
+                           slot 3 = this₃ (the value it **moved** into the top's own slot)
+                           slot 4 = 5″  (the copy left on top)
+BCI 5  putfield c  receiver = slot 3 = the moved this₃, value = slot 4 = 5″
+                   [this₁, this₂, 5′]
+BCI 8  dup_x1      below = this₂ (slot 1), top = 5′ (slot 2)
+                   [this₁, 5‴, this₂, 5⁗]
+                   writes: slot 1 = 5‴ (stays under), slot 2 = this₂ (moved), slot 3 = 5⁗
+BCI 9  putfield b  receiver = the moved this₂, value = 5⁗
+                   [this₁, 5‴]
+BCI 12 putfield a  receiver = this₁ (the receiver that never left the bottom), value = 5‴
+                   []
+```
+
+So the instance dance is the static chain's once-evaluated value with the receivers **interleaved**
+into it: the value copy each store takes is inserted below the receiver the same store is called
+on, and the copy that survives below is what the next copy reads. The last store has no copy in
+front of it: it takes the surviving copy and the receiver that never moved.
+
+The SSA table states exactly these identities (read off the probe; `Stack(depth) = ValueId`):
+
+```text
+instr 0 aload_0  read Local(0) = V0 (entry of slot 0)   write Stack(0) = V1
+instr 1 aload_0  read Local(0) = V0                     write Stack(1) = V2
+instr 2 aload_0  read Local(0) = V0                     write Stack(2) = V3
+instr 3 iconst_5                                        write Stack(3) = V4
+instr 4 dup_x1   read Stack(3) = V4 (top), Stack(2) = V3 (below)
+                 write Stack(2) = V5, Stack(3) = V6, Stack(4) = V7
+instr 5 putfield c  read Stack(4) = V7 (value), Stack(3) = V6 (receiver)
+instr 8 dup_x1   read Stack(2) = V5 (top), Stack(1) = V2 (below)
+                 write Stack(1) = V8, Stack(2) = V9, Stack(3) = V10
+instr 9 putfield b  read Stack(3) = V10 (value), Stack(2) = V9 (receiver)
+instr 12 putfield a read Stack(1) = V8 (value), Stack(0) = V1 (receiver)
+```
+
+Three `aload_0`s are three values (V1, V2, V3) and the copies move two of them again (V6, V9) — but
+every one of them is a read of the **one** value local 0's entry state holds (V0), which is the
+identity the change's criterion is stated on. The value the stores write is V4, reached through the
+copies V7, V5, V8 and V10.
+
+## Why the chain proof did not read it — the reader's dup filter
+
+`FieldCopies::prove` dispatches on the copy's opcode:
+
+* `OPCODE_DUP` → `field_chain_at` (the static chain), then `receiver_copy_at`, then the
+  conditional receiver copy;
+* `OPCODE_DUP_X1` → `receiver_copy_at`, then the conditional receiver copy — **and nothing else**.
+
+`field_chain_at` is therefore never called for a `dup_x1`, and the receiver-copy proof refuses the
+dance on its own first condition: the instruction right after the copy must be a field **read** of
+the member the later write writes (`read_pos != index + 1` fails where the copy is followed by a
+`putfield`). The dance lands on the copy gate with the cascade the recorded boundary names:
+
+```text
+// @bytecode 4
+// the instruction at BCI 4 is not part of the provable subset
+// @bytecode 5
+// the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+// @bytecode 8
+// the instruction at BCI 8 is not part of the provable subset
+// @bytecode 9
+// the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes
+// @bytecode 12
+// the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+```
+
+Reproduced on the parent commit's binary (`/tmp/jarde-base-target/debug/jarde-cli`, both legs —
+the two legs' renders are identical): `results/renders/CP-before.txt`.
+
+## The gating experiment
+
+The instance form was added to `prove`'s `OPCODE_DUP_X1` arm and to nothing else: the static
+chain's proof, the receiver-copy proof and the conditional receiver copy are untouched, and the
+only other change is the receiver value's own rendering (`FieldCopy::moved`). With that admission
+in place:
+
+| probe | before | after |
+| --- | --- | --- |
+| `CP.inst` (`this.a = this.b = this.c = 5`) | refused (6 cascade lines above) | `this.c = 5; this.b = 5; this.a = 5;` — no quote |
+| `CP.pair` (`this.a = this.b = 7`) | refused (3 lines) | `this.b = 7; this.a = 7;` — no quote |
+| `CH.chain` (static anchor) | `CH.c = 5; CH.b = 5; CH.a = 5;` | **byte-identical** |
+| `SC.add` (compound anchor) | `this.field = this.field + "[" + arg1 + "]"; return this;` | **byte-identical** |
+| `BF.enable`/`BF.disable` | `this.flags = this.flags \| 1 << arg1;` / `… & (1 << arg1 ^ -1);` | **byte-identical** |
+| `CF` (the chained-field change's own fixtures) | recovered | **byte-identical** |
+
+The two anchors' byte-identity is measured on the whole corpus in `results/03-corpus-delta.md`
+(the before/after render differential over every committed class) and pinned by the existing
+`recover_chained_field_assignment` suite, which stays green.
