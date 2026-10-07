@@ -12089,7 +12089,22 @@ mod tests {
             // `ifeq` — `LockGuardNegatives`'s five — `lockMismatch`'s, `localLockRewritten`'s and
             // `throwingRelease`'s `goto`s and `guardedRelease`'s `ifnull`/`goto` pair — and the
             // probe's `ifnull`/`goto` pair), no subroutine) moved it again.
-            (873, 3801, 332, 2359, 8),
+            // The 2026-10-07 recover-short-circuit-local-branch-reads fixtures (the branch
+            // condition position of a proved short-circuit boolean local: `BranchReads` with the
+            // ternary, the `if` statement and the mid-chain read, `BranchReadNegatives` with the
+            // loop condition and the catch-crossing boundaries, and the two hand-patched opcode
+            // controls `NumericBranch`/`NotZeroBranch` — three classes on both compiler legs: six
+            // classes, twenty-eight bodies — two handler records (`crossCatch`'s
+            // `NullPointerException` catch, one per leg) and eighty-six branch targets (forty-three
+            // per leg: `BranchReads`' and the controls' sixteen each — `ternaryRead`'s five (the
+            // chain's two `ifle` and its `goto`, the condition's `ifeq` and the arms' `goto`),
+            // `ifStatement`'s four (the same chain and `ifeq`, both arms returning) and
+            // `midChain`'s seven (the first chain's three and the second chain's
+            // `ifle`/`ifeq`/`if_icmpge`/`goto`) — and `BranchReadNegatives`' eleven:
+            // `loopCondition`'s six (the chain's three and the loop's `ifeq`/`if_icmple`/`goto`)
+            // and `crossCatch`'s five (the chain's three and the ternary's `ifeq`/`goto`)), no
+            // subroutine) moved it again.
+            (879, 3829, 334, 2445, 8),
             "fixture population changed: re-measure these counts"
         );
     }
