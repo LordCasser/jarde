@@ -7802,6 +7802,66 @@
       "path": "tests/fixtures/recover-conditional-rhs-field-compound/v8/RCN.class"
     },
     {
+      "blake3": "0b76992f126697ea47abb626fdb4858b2d95509e466034b883452c11d1aed50f",
+      "bytes": 1027,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/AS.java"
+    },
+    {
+      "blake3": "ec09f650a7fb13b7a52134b8b952ac56f407d1f7d523929dfebf5a16310c496b",
+      "bytes": 333,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/SC.java"
+    },
+    {
+      "blake3": "6f71585341b6ccb77dd2a14af2a2d8c8a301996dd2fb3162a0554b6405f73344",
+      "bytes": 2454,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/SD.java"
+    },
+    {
+      "blake3": "9053884f2dd1b5ba8f0e288a5a819463c475abc1bcdb0c59d5ebdf965e41b660",
+      "bytes": 632,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/UB.java"
+    },
+    {
+      "blake3": "5cf03cd768425809d355c036c07d5752bc7ec6f75e1679824e6eafd82b6074b7",
+      "bytes": 1028,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8-javac8/AS.class"
+    },
+    {
+      "blake3": "39c6371dff6753b18ceeae091f447586eaf79d51a11f56b643dfbd41b8837dd1",
+      "bytes": 562,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8-javac8/SC.class"
+    },
+    {
+      "blake3": "29444d4ca252aea9cb9c7c9f2828d11b69df66a2a43d946b45c547b168a1b0a9",
+      "bytes": 2267,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8-javac8/SD.class"
+    },
+    {
+      "blake3": "8543e19035d97824de1ffb0395bc408dcf0b6499e8ef3c49842fda76513ab126",
+      "bytes": 891,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8-javac8/UB.class"
+    },
+    {
+      "blake3": "2af17364a677a56de7ca7108318620c00e15d4fdd949f4fd408365d8048c7492",
+      "bytes": 1025,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8/AS.class"
+    },
+    {
+      "blake3": "c334ea71b1785d5b9d7543df6ec2aaf22ff5ff09a315441ab085e2a758b46775",
+      "bytes": 562,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8/SC.class"
+    },
+    {
+      "blake3": "d9d3e2edd09350799a5b7a43420159beeaa3561032d57701e114c60dc8500480",
+      "bytes": 2264,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8/SD.class"
+    },
+    {
+      "blake3": "20d30b6c6184271bb190acb89e974d29942897d9cf2c99dd38261bf3d90475de",
+      "bytes": 888,
+      "path": "tests/fixtures/recover-covariant-array-store-receiver/v8/UB.class"
+    },
+    {
       "blake3": "29cb957d6998c8560b6567aeab2dfdbbf48bb335886d003395f07fdebadb7797",
       "bytes": 694,
       "path": "tests/fixtures/recover-dup-store-conditional/DS.java"

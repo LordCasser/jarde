@@ -12113,7 +12113,18 @@ mod tests {
             // three in `DBS`/`DBM`/`DBN`/`DBS2`, two in `DBM$1` (its constructor and `mark`), and
             // one in each of `DBS$1`, `DBN$1`, `Carrier`, `Carrier$Nested` and `DBS2$1` — no
             // handler record, no branch target and no subroutine) moved it again.
-            (899, 3867, 334, 2445, 8),
+            // The 2026-10-07 recover-covariant-array-store-receiver fixtures (the patrol's own
+            // `AS` — `storeWrong`, `storeRight`, `storeNumber` and their `main` — beside this
+            // change's `SD` driver (the same-type read-back, the two proven-compatible controls,
+            // the three caught covariant stores, the primitive-array negative and the same-type
+            // element receiver), the `UB` unproven-receiver negative (the merged local and the
+            // `checkcast` receiver) and the `SC` subtype-value probe, four classes on both
+            // compiler legs — eight classes, forty-four bodies, twenty-two per leg — ten handler
+            // records (`AS.main`'s two `ArrayStoreException` rows and `SD`'s three catches, one
+            // each in `catchWrong`, `catchNumber` and `catchElement`, per leg) and eight branch
+            // targets (`AS.main`'s two `goto`s and `UB.merged`'s `ifeq`/`goto` pair, four per
+            // leg), no subroutine).
+            (907, 3911, 344, 2453, 8),
             "fixture population changed: re-measure these counts"
         );
     }
