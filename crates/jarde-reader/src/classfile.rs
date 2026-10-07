@@ -12027,7 +12027,21 @@ mod tests {
             // two negatives' four `ifeq`s and two `goto`s, the chain's `ifle`/`ifgt`) and nine in
             // `CC` (the three positions' six and the find's `goto`, the chain's `ifle`/`ifgt`),
             // per leg) moved it again.
-            (828, 3596, 290, 2211, 8),
+            // The 2026-10-07 recover-boolean-int-bitwise-operands fixtures (the int-ified boolean
+            // operand of a bitwise expression: the patrol's own frozen `BW` — `mix`'s accumulate
+            // counter and `andNot`'s materialised `!b` beside the healthy same-type shapes —
+            // recompiled as the two legs' `BW`, this change's `BWR` with the four admitted shapes
+            // (`accXor`, `andNotAnd`, `orNot`, `notOr`) and `BWN` with the five refusals
+            // (`plusOne`, `andNotInt`, `compareRead`, `intSibling`, `passed`), three classes on
+            // both compiler legs — six classes, forty-four bodies — plus the frozen `patrol-BW`
+            // copy, seven classes and fifty-three bodies in all, no handler record or subroutine,
+            // and sixty-two branch targets: `BW`'s six (`mix`'s `if_icmpge`/`goto`, `andNot`'s
+            // `ifne`/`goto` and `bits`'s `ifeq`/`goto`), `BWR`'s eight (`accXor`'s, `andNotAnd`'s,
+            // `orNot`'s and `notOr`'s pairs), `BWN`'s fourteen (`plusOne`'s and `intSibling`'s and
+            // `passed`'s pairs, `andNotInt`'s four — the materialisation's and the ternary's — and
+            // `compareRead`'s four — the loop's and the comparison's), and the frozen copy's six,
+            // per leg) moved it again.
+            (835, 3649, 290, 2273, 8),
             "fixture population changed: re-measure these counts"
         );
     }
