@@ -1,0 +1,16 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114b3-51b1-7e73-a02d-ef993197db80)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.36s
+     Running tests/p4_plugins.rs (target/debug/deps/p4_plugins-4f95d8a22e59c72f)
+
+running 1 test
+test the_plugin_plane_leaves_the_structural_planes_own_answer_untouched ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/p4_plugins.rs (target/debug/deps/p4_plugins-4f95d8a22e59c72f)
+
+running 1 test
+test the_plugin_plane_leaves_the_structural_planes_own_answer_untouched ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s

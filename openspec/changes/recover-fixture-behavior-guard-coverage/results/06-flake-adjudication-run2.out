@@ -1,0 +1,31 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114b3-51b1-7e73-a02d-ef993197db80)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s
+     Running tests/d3_artifact_binding.rs (target/debug/deps/d3_artifact_binding-f2a6eba821877b58)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/d3_artifact_binding.rs (target/debug/deps/d3_artifact_binding-f2a6eba821877b58)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a114b3-51b1-7e73-a02d-ef993197db80)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.02s
+     Running tests/engine.rs (target/debug/deps/engine-6f869b3516deb9f5)
+
+running 1 test
+test standalone_engine_reports_owned_source_and_usage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/engine.rs (target/debug/deps/engine-6f869b3516deb9f5)
+
+running 1 test
+test standalone_engine_reports_owned_source_and_usage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
