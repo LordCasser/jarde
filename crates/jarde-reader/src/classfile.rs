@@ -12153,7 +12153,17 @@ mod tests {
             // receiver a call produced, three classes on both compiler legs: six classes,
             // thirty-six bodies, eighteen per leg (`CP`'s four, `MX`'s five and `NEG`'s nine), no
             // handler record, no branch target and no subroutine) moved it again.
-            (933, 3993, 368, 2475, 8),
+            // The 2026-10-08 recover-nested-lock-finally-bodies fixtures (the multi-lock patrol's
+            // own `ML` — rendered first from its frozen jar and recompiled on both legs — with
+            // `MLOrder` the same two guards over its own recording lock, `Order` the recorder,
+            // `MLOrderDriver` the behavior driver, `MLNegatives` the three refusals and `MLProbe`
+            // the three registered boundaries, six classes on both compiler legs: twelve classes,
+            // sixty-four bodies, thirty-two handler records — the two guards' own rows, the
+            // negatives' and the boundaries', sixteen per leg — forty-four branch targets
+            // (twenty-two per leg: `ML`'s five, `MLNegatives`' three, `MLOrder`'s four,
+            // `MLOrderDriver`'s three, `MLProbe`'s five and `Order`'s two) and no subroutine) moved
+            // it again.
+            (945, 4057, 400, 2519, 8),
             "fixture population changed: re-measure these counts"
         );
     }
