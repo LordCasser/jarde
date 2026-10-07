@@ -12,4 +12,4 @@
       → `tests/recover_postfix_condition_positions.rs`（4+1 ignored；`CC` 的三形各答自增计数，do-while 扫描的迭代数由输出精确比对）；A 相套件 4+1 绿（`NG.condShape` 这一 A 相 out-of-scope 门按预期移动，断言更新而非删除）；`recover_dup_store_conditional` 3+1 绿（`ioLoop` 兄弟形未动）。
 - [x] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。
       → `results/04-gates.md`（fmt/clippy/workspace 329 ok 0 FAILED/openspec 307/oracle 3-3）；`results/03-corpus-*.{sh,out,md}`（10 moved，逐个分类，两个 outgrowth 行为复核）；读者夹具普查与 `corpus-fingerprint.json` 按先例重测重渲染；提交见 `results/04-gates.md` 末节。
-- [ ] 3.2 root 独立复核：门控两问、判据零放宽、三形/A 相/负例实测、账本（postfix 域 B 相关闭）。（留 root）
+- [x] 3.2 root 独立复核：门控两问、判据零放宽、三形/A 相/负例实测、账本（postfix 域 B 相关闭）。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：两问门控分离复核 ✓（真拒绝点=region 纯度门+two-exit lead，快照消费者从不是）、单处 test_expression_instruction 收拢 ✓、ChainPositionBound 围栏与 two-exit 不围栏取舍 ✓、CP7 三形 root 实测 0 引注+迭代计数精确回放 ✓、A 相/dup-store/oracle 3/3 全绿 ✓、门禁 329 targets ok/0 FAILED ✓、数组读外沿两例追认（行为验证）；postfix 域 B 相关闭——账本同步）
