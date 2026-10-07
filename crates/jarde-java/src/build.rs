@@ -28633,16 +28633,29 @@ fn platform_array_argument_widens(java_release: u16, presented: &str, required: 
 }
 
 /// The Java 8 `java.util` collection hierarchy one invocation argument may cross, stated as the
-/// fixed direct edges of the release-8 tree. A class row is a javadoc `extends` (one superclass) or
+/// fixed direct edges of the release-8 tree, plus the two `java.io` reader edges the three-layer
+/// stream-construction chain states. A class row is a javadoc `extends` (one superclass) or
 /// `implements` (one interface) relation of that class; an interface row is a javadoc `extends`
 /// relation of that interface. The walk follows the rows to their roots, so the answer is exactly
 /// the ancestors this closed set reaches — `List -> Collection -> Iterable`, `TreeSet ->
 /// NavigableSet -> SortedSet -> Set -> Collection`, and the like — and nothing outside the
 /// enumerated `java.util` collection types (`java.util.concurrent`, the `Collections`/`Arrays`
 /// factories, `EnumSet`/`IdentityHashMap`/`PriorityQueue` and the non-collection `java.util` types
-/// such as `Dictionary`/`Date`, plus every user class) widens until a resolution-environment
-/// hierarchy proof exists. The same channel already states the `java.lang` Throwable tree
-/// ([`java_lang_throwable_widens`]); this is its `java.util` counterpart.
+/// such as `Dictionary`/`Date`, plus every user class), and nothing outside the two `java.io`
+/// edges' own ancestors, widens until a resolution-environment hierarchy proof exists. The same
+/// channel already states the `java.lang` Throwable tree ([`java_lang_throwable_widens`]); this is
+/// its `java.util` counterpart.
+///
+/// The two `java.io` rows are the third layer of the wrapped-stream construction: a
+/// `BufferedReader` over an `InputStreamReader` over a `FileInputStream` presents each inner
+/// stream at the next constructor's own parameter type. Both rows are `javap` transcriptions of
+/// the release-8 library (`InputStreamReader`'s constructor is `(java.io.InputStream,
+/// java.lang.String)` and `BufferedReader`'s is `(java.io.Reader)`, and each class's own header
+/// names the direct superclass the row states); the transcription and its self-check live in
+/// `openspec/evidence/java-syntax-2026-10-05/widening-row-sources/`. The set stays closed: a
+/// presented type widens exactly to the ancestors these declared edges reach, and no other
+/// `java.io` type states an edge here, so `java.io.FileReader` (a subclass of `InputStreamReader`)
+/// and every other reader stay refused until their own row is transcribed.
 fn platform_reference_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
     // One row per documented direct `extends`/`implements` of the release-8 `java.util` collection
     // tree. A row's two names are the javadoc's own declaration of that type.
@@ -28694,6 +28707,12 @@ fn platform_reference_argument_widens(java_release: u16, presented: &str, requir
         ("java.util.NavigableSet", "java.util.SortedSet"),
         ("java.util.SortedMap", "java.util.Map"),
         ("java.util.NavigableMap", "java.util.SortedMap"),
+        // The two `java.io` edges of the three-layer stream chain: `FileInputStream` at
+        // `InputStreamReader(InputStream, String)` and `InputStreamReader` at
+        // `BufferedReader(Reader)`. Each is the class's own `extends` clause (javap,
+        // release 8), transcribed with its header in the widening-row-sources protocol file.
+        ("java.io.FileInputStream", "java.io.InputStream"),
+        ("java.io.InputStreamReader", "java.io.Reader"),
     ];
     // The rows are one acyclic superclass/interface graph, so the walk from the presented type
     // reaches every ancestor the table proves; the step cap only bounds a corrupted table the same
@@ -32019,6 +32038,10 @@ mod tests {
             ("java.util.ArrayDeque", "java.util.Deque"),
             ("java.util.ArrayDeque", "java.util.Queue"),
             ("java.util.ArrayDeque", "java.util.Collection"),
+            // The two `java.io` rows of the three-layer stream chain, each one direct `extends`
+            // of the release-8 class its own header names.
+            ("java.io.FileInputStream", "java.io.InputStream"),
+            ("java.io.InputStreamReader", "java.io.Reader"),
         ] {
             assert!(
                 platform_reference_argument_widens(8, presented, required),
@@ -32055,6 +32078,21 @@ mod tests {
             (8, "java.util.ArrayList[]", "java.util.List[]"),
             (8, "int", "java.util.List"),
             (8, "java.util.ArrayList", "int"),
+            // The `java.io` table is two rows and no hierarchy: the rows' own directions, the
+            // neighbouring readers whose edges are not transcribed, and the interface positions
+            // they never state all stay refused.
+            (8, "java.io.InputStream", "java.io.FileInputStream"),
+            (8, "java.io.InputStream", "java.io.Reader"),
+            (8, "java.io.Reader", "java.io.InputStreamReader"),
+            (8, "java.io.Reader", "java.io.InputStream"),
+            (8, "java.io.FileInputStream", "java.io.Reader"),
+            (8, "java.io.FileReader", "java.io.Reader"),
+            (8, "java.io.BufferedReader", "java.io.Reader"),
+            (8, "java.*", "java.io.InputStream"),
+            (7, "java.io.FileInputStream", "java.io.InputStream"),
+            (9, "java.io.FileInputStream", "java.io.InputStream"),
+            (7, "java.io.InputStreamReader", "java.io.Reader"),
+            (9, "java.io.InputStreamReader", "java.io.Reader"),
         ] {
             assert!(
                 !platform_reference_argument_widens(release, presented, required),
