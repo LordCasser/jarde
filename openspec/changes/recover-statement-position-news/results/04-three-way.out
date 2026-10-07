@@ -1,0 +1,26 @@
+=== B5
+    original   javac-exit=n/a run-exit=0 output-sha256=667c0fe773ac1afedfa0a9720f55cb5268db74adc085d08df8979a009f626885
+    input      javac-exit=0 run-exit=0 output-sha256=667c0fe773ac1afedfa0a9720f55cb5268db74adc085d08df8979a009f626885
+    recovered  javac-exit=0 run-exit=0 output-sha256=667c0fe773ac1afedfa0a9720f55cb5268db74adc085d08df8979a009f626885
+    original vs recovered: IDENTICAL
+    frozen input vs recovered: IDENTICAL
+=== B6
+    original  run-exit=0 output-sha256=2e6d31a5983a91251bfae5aefa1c0a19d8ba3cf601d0e8a706b4cfa9661a6b8a
+    recovered javac-exit=1 — a refusal keeps this text incomplete (the safe form)
+    recovered javac says: B6.java:32: 错误: 找不到符号
+=== SP
+    original   javac-exit=n/a run-exit=0 output-sha256=724195f8732315fc0b78995bd3d7ff497ec1cb8202a4c3d80650c4f9b503b78d
+    input      javac-exit=0 run-exit=0 output-sha256=724195f8732315fc0b78995bd3d7ff497ec1cb8202a4c3d80650c4f9b503b78d
+    recovered  javac-exit=0 run-exit=0 output-sha256=724195f8732315fc0b78995bd3d7ff497ec1cb8202a4c3d80650c4f9b503b78d
+    original vs recovered: IDENTICAL
+    frozen input vs recovered: IDENTICAL
+=== SB
+    original   javac-exit=n/a run-exit=0 output-sha256=2e6d31a5983a91251bfae5aefa1c0a19d8ba3cf601d0e8a706b4cfa9661a6b8a
+    input      javac-exit=0 run-exit=0 output-sha256=2e6d31a5983a91251bfae5aefa1c0a19d8ba3cf601d0e8a706b4cfa9661a6b8a
+    recovered  javac-exit=0 run-exit=0 output-sha256=2e6d31a5983a91251bfae5aefa1c0a19d8ba3cf601d0e8a706b4cfa9661a6b8a
+    original vs recovered: IDENTICAL
+    frozen input vs recovered: IDENTICAL
+=== SPC (the statement-position counterexample)
+    original run-exit=0 output=CST output-sha256=a27e286a14ba7f002bbfe9b7b025c5d9214175dbd1f432c11bed91749ab495aa
+    recovered javac-exit=1 (the text keeps its refusal)
+    recovered javac says: SPC.java:3: 错误: 找不到符号

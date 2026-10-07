@@ -8860,8 +8860,11 @@ fn anonymous_superclass_refuses_unproved_local_declaration_sites() {
         unresolvable.diagnostics
     );
 
-    // 不可拼写 owner 的分配: the child body's allocation is quoted at recovery, so the child
-    // method is not a complete structured body and the projection refuses whole.
+    // 不可拼写 owner 的分配: before `recover-statement-position-news` the child body's allocation
+    // was quoted at recovery, so the child method was not a complete structured body and the
+    // projection refused whole. The statement position now writes the child's own statement
+    // (`new DeepCarrier.Mid.Leaf();`), the child method is complete, and the anonymous fold happens
+    // with the child's method inside it — the very shape the fixture's source states.
     let unspellable = physical(
         &[
             (b"UnspellableOwnerAlloc.class", UNSPELLABLE_OWNER_ALLOC_ROOT),
@@ -8874,14 +8877,19 @@ fn anonymous_superclass_refuses_unproved_local_declaration_sites() {
         "UnspellableOwnerAlloc",
     );
     assert!(
-        unspellable
-            .text
-            .contains("new UnspellableOwnerAlloc$1((java.lang.String) text("),
+        unspellable.text.contains(
+            "Base local1 = new Base((java.lang.String) text(\"a\", \"x\"), number(\"b\", 1)) {"
+        ),
         "{}",
         unspellable.text
     );
     assert!(
-        unspellable
+        unspellable.text.contains("new DeepCarrier.Mid.Leaf();"),
+        "{}",
+        unspellable.text
+    );
+    assert!(
+        !unspellable
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == "anonymous_child_methods_incomplete"),

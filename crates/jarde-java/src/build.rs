@@ -21480,9 +21480,23 @@ impl Builder<'_> {
         // A statement's own lead is the third: the instructions a `try` wrote in front of itself
         // (the block's run before the protected range began) are already in the text, and the body
         // that begins in that block holds them only because the block is where the range starts.
-        if self.array_initializers.owns(at)
-            || self.chains.owns(at)
-            || self.sites.owns(at)
+        //
+        // The one exception is the **statement position** (`recover-statement-position-news`): a
+        // construction whose finished instance the body discards has no consumer to write its text
+        // at, so its own constructor instruction writes the statement `new X(args);` here — the
+        // site's proof states the `pop` that discards the instance, and the `pop` itself is
+        // accounted for by [`Builder::discarded_evaluations`] exactly as the discard of a call's
+        // own result is (P3 2c.31), so it writes nothing a second time.
+        if self.array_initializers.owns(at) || self.chains.owns(at) {
+            return Ok(());
+        }
+        if let Some(site) = self.sites.site_of(at)
+            && at == site.constructor
+            && site.discarded.is_some()
+        {
+            return self.discarded_construction(site, at);
+        }
+        if self.sites.owns(at)
             || self.clause_parameters.contains(&at)
             || self.settled.contains(&at)
             || self.finally_catch_pop == Some(at)
@@ -25352,6 +25366,38 @@ impl Builder<'_> {
                 args,
             },
             origin,
+        ))
+    }
+
+    /// Writes the one statement a **statement-position** construction is: `new X(args);`.
+    ///
+    /// A construction whose finished instance the body discards — the `pop` the site's own proof
+    /// read ([`init::Site::discarded`]) — has no store, call, `return` or claimed field access to
+    /// write its text at, so the statement is written here, where the bytecode wrote the
+    /// constructor call. The expression is the site's own ([`Self::new_expr`]): the allocation,
+    /// the arguments and the constructor call, with every site anchor as a derived origin. The
+    /// statement's own anchor is the `pop` that discards it, exactly as a consumed construction's
+    /// statement is anchored at the store, the call or the `return` that reads it (P3 2.3) — and
+    /// the `pop` writes no statement of its own, because the discard plan accounts for it
+    /// ([`Builder::discarded_evaluations`]).
+    ///
+    /// A text this layer cannot write is refused the way every site refusal is: the quote names
+    /// the constructor call, the site's own instructions and the `pop` its text would have
+    /// discarded, so nothing the bytecode evaluated leaves the artifact unaccounted for.
+    fn discarded_construction(&mut self, site: &init::Site, at: u32) -> Result<(), StopReason> {
+        let Some(discard) = site.discarded else {
+            return Ok(());
+        };
+        let expression = match self.new_expr(site, at, 0) {
+            Ok(expression) => expression,
+            Err(reason) => {
+                let bcis = self.binding_quote_bcis(at)?;
+                return self.fallback(bcis, &reason, at);
+            }
+        };
+        self.push(Stmt::new(
+            StmtKind::Expr(expression),
+            OriginSet::new(Origin::direct(discard)),
         ))
     }
 

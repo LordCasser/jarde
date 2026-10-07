@@ -278,7 +278,16 @@ fn allocation_qualifier_without_arguments_folds_on_both_legs() {
 }
 
 #[test]
-fn a_construction_with_no_rendering_reader_refuses_on_both_legs() {
+fn a_construction_whose_only_reader_is_the_discard_keeps_the_member_form_out() {
+    // The frozen behavior this test states is the tail dance's: the `dup; <check>; pop` window
+    // admits nothing by itself, and the **member** fold (`new In()`, which needs the member
+    // projection's own proof) must not appear. `recover-statement-position-news` moved the
+    // *reader* half of this shape: the statement position reads the discarded instance, so the
+    // construction is written as the expression statement `new D3$In(new D3());` — the site's own
+    // expression spelling, exactly what this channel already writes for the same site in a consumed
+    // position — and the class is no longer quoted whole. What this test keeps is the boundary the
+    // slice above it froze: the member form is still absent, because the tail dance still proves no
+    // member relation.
     for (label, jar) in [
         ("real8-d3", d3_jar()),
         ("javac23-d3", compile_with_path_javac("d323", D3_SOURCE)),
@@ -286,12 +295,12 @@ fn a_construction_with_no_rendering_reader_refuses_on_both_legs() {
         let report = source_of(&jar, "D3");
         assert!(
             !report.text.contains("new In()"),
-            "{label}: the discarded construction must not fold:\n{}",
+            "{label}: the discarded construction must not fold into the member form:\n{}",
             report.text
         );
         assert!(
-            report.text.contains("@bytecode"),
-            "{label}: the refusal quotes the construction loudly:\n{}",
+            report.text.contains("new D3$In(new D3());"),
+            "{label}: the statement position writes the construction in its own name:\n{}",
             report.text
         );
     }

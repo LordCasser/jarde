@@ -1,0 +1,29 @@
+===== B5 (baseline HEAD 9faae256) =====
+  <init> quality=structured
+    head=23 class=java/lang/StringBuilder presented=True code=None
+    head=61 class=java/lang/StringBuilder presented=True code=None
+  <init> quality=structured
+  main quality=fallback
+    head=0 class=B5 presented=False code=jre_new_shape
+      message: the construction at BCI 0 was not presented: the instance the allocation at BCI 0 builds is read only by instructions this build quotes (BCIs 7), so the construction has no place in the body
+    head=8 class=B5 presented=False code=jre_new_shape
+      message: the construction at BCI 8 was not presented: the instance the allocation at BCI 8 builds is read only by instructions this build quotes (BCIs 17), so the construction has no place in the body
+    head=18 class=B5$Sub presented=False code=jre_new_shape
+      message: the construction at BCI 18 was not presented: the instance the allocation at BCI 18 builds is read only by instructions this build quotes (BCIs 25), so the construction has no place in the body
+===== B6 (baseline HEAD 9faae256) =====
+  <init> quality=structured
+  <init> quality=structured
+  argless quality=fallback
+    head=0 class=B6 presented=False code=jre_new_shape
+      message: the construction at BCI 0 was not presented: the instance the allocation at BCI 0 builds is read only by instructions this build quotes (BCIs 7), so the construction has no place in the body
+  withArg quality=fallback
+    head=0 class=B6 presented=False code=jre_new_shape
+      message: the construction at BCI 0 was not presented: the instance the allocation at BCI 0 builds is read only by instructions this build quotes (BCIs 9), so the construction has no place in the body
+  consumed quality=structured
+    head=0 class=B6 presented=True code=None
+  chained quality=fallback
+    head=0 class=B6 presented=False code=jre_new_shape
+      message: the construction at BCI 0 was not presented: the construction at BCI 4 completes inside the construction at BCI 0, and its value is not one of the arguments of the constructor call at BCI 15: the `new` expression has no single place to write it
+    head=4 class=B6 presented=True code=None
+  main quality=structured
+    head=15 class=B6 presented=True code=None

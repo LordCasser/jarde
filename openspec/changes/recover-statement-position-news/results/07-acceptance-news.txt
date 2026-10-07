@@ -1,0 +1,19 @@
+===== B5 =====
+  <init>       quality=structured news=[(23, True, None), (61, True, None)]
+      2 construction candidate(s) read under new@1: 2 presented as `new`, 0 refused
+  <init>       quality=structured news=[]
+  main         quality=structured news=[(0, True, None), (8, True, None), (18, True, None)]
+      3 construction candidate(s) read under new@1: 3 presented as `new`, 0 refused
+===== B6 =====
+  <init>       quality=structured news=[]
+  <init>       quality=structured news=[]
+  argless      quality=structured news=[(0, True, None)]
+      1 construction candidate(s) read under new@1: 1 presented as `new`, 0 refused
+  withArg      quality=structured news=[(0, True, None)]
+      1 construction candidate(s) read under new@1: 1 presented as `new`, 0 refused
+  consumed     quality=structured news=[(0, True, None)]
+      1 construction candidate(s) read under new@1: 1 presented as `new`, 0 refused
+  chained      quality=fallback news=[(0, False, 'jre_new_shape'), (4, True, None)]
+      2 construction candidate(s) read under new@1: 1 presented as `new`, 1 refused
+  main         quality=structured news=[(15, True, None)]
+      1 construction candidate(s) read under new@1: 1 presented as `new`, 0 refused

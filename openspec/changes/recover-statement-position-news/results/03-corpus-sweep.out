@@ -1,0 +1,135 @@
+SELF-TEST OK: B5 refusals 3 -> 0 with all three statements; SPC/SPN byte-identical; BW/BWN byte-identical; BI/RC/RCN/CF/NEG/ICM/ICN byte-identical
+pass A loose candidate classes: 2838
+MOVED (single-class): openspec/evidence/java-syntax-2026-10-05/ctor-throw-init-patrol/fixture/CE.class
+    44,55c44,45
+    <             // @bytecode 0
+    <             // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <             // @bytecode 3
+    <             // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <             // @bytecode 5 8
+    <             // the copy at BCI 3 has no proved local assignment
+    <             // @bytecode 9
+MOVED (single-class): openspec/evidence/java-syntax-2026-10-05/discarded-allocation-patrol/fixture/DN.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `discarded()V` produced no statement (explanation only); the artifact's own comment lines are below
+    17,23c16,18
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8 11 13 16
+MOVED (single-class): openspec/evidence/java-syntax-2026-10-05/discarded-allocation-patrol/fixture/CD.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    17,23c16,18
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8 11 14 15 18 20 23 26 27 30 33 36 39 42
+MOVED (single-class): openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B5.class
+    31d30
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    35,53c34,37
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8 11 12 14 17 18 21 22 25 26
+MOVED (single-class): openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B6.class
+    25d24
+    <         // jarde: not recovered: the recovery run for `argless()V` produced no statement (explanation only); the artifact's own comment lines are below
+    29,35c28,29
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8
+MOVED (single-class): tests/fixtures/recover-javac8-allocation-qualifier-null-check/d3/D3.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    17,23c16,18
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 14 0 3 4 7 8 15 18 20 23
+MOVED (single-class): tests/fixtures/recover-statement-position-news/v8/SB.class
+    25d24
+    <         // jarde: not recovered: the recovery run for `argless()V` produced no statement (explanation only); the artifact's own comment lines are below
+    29,35c28,29
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8
+MOVED (single-class): tests/fixtures/recover-statement-position-news/v8/SP.class
+    36d35
+    <         // jarde: not recovered: the recovery run for `argless()V` produced no statement (explanation only); the artifact's own comment lines are below
+    40,46c39,40
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8
+MOVED (single-class): tests/fixtures/recover-statement-position-news/v8-javac8/SB.class
+    25d24
+    <         // jarde: not recovered: the recovery run for `argless()V` produced no statement (explanation only); the artifact's own comment lines are below
+    29,35c28,29
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8
+MOVED (single-class): tests/fixtures/recover-statement-position-news/v8-javac8/SP.class
+    36d35
+    <         // jarde: not recovered: the recovery run for `argless()V` produced no statement (explanation only); the artifact's own comment lines are below
+    40,46c39,40
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8
+MOVED (single-class): tests/fixtures/p3-nested-parent-projection/v8/Multiseg.class
+    22d21
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    26,32c25,26
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 14 0 3 4 7 8 15
+MOVED (single-class): tests/fixtures/p3-nested-parent-projection/v8-javac8/Multiseg.class
+    22d21
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    26,32c25,26
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 11 14 0 3 4 7 8 15
+MOVED (single-class): tests/fixtures/proved-java-structure/anonymous-local-decl-site-refusals/unspellable-owner-alloc/UnspellableOwnerAlloc$1.class
+    13d12
+    <         // jarde: not recovered: the recovery run for `render()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+    17,22c16,18
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8 10 13 14 17
+UNRENDERED: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class renders under no name it states
+pass A: moved=13 unrendered=1
+archive candidate classes: 739
+UNRENDERED: openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar!com/example/package-info.class renders under its own entry name
+MOVED (jar): openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/fam.jar!B5.class
+    31d30
+    <         // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+    35,53c34,37
+    <         // @bytecode 0
+    <         // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 3
+    <         // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+    <         // @bytecode 4 7 0 3 8 11 12 14 17 18 21 22 25 26
+pass C: moved=1 unrendered=1
+moved classes: single-class=13 jar=1 total=14
+unrendered candidates: A=1 C=1
