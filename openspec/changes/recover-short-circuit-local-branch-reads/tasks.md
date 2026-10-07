@@ -16,4 +16,4 @@
       → `tests/recover_short_circuit_local_branch_reads.rs`：默认套件 5 测试（OP2 锚+残余、双腿三条件位、循环/catch 边界逐字、补丁控制宽度、预算）；`#[ignore]` replay 3 测试（OP2 冻结源码 `main` 替换后双腿编译运行与冻结 jar 逐行一致含 `condAssignOld(0)`；`BranchReads` 整类双腿往返一致；边界文本不可编译 + 控制 `-Xverify:all`）。
 - [x] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。
       → 见 `results/03-corpus-and-oracle.md`、`results/04-gates.md`、`results/05-fingerprint.md`。
-- [ ] 3.2 root 独立复核：门控、白名单最小性、锚/负例实测、账本（census 重跑 OP2 单点关闭）。（留 root）
+- [x] 3.2 root 独立复核：门控、白名单最小性、锚/负例实测、账本（census 重跑 OP2 单点关闭）。（root 2026-10-07 完成，见 [verification-root.md](verification-root.md)：门控 37 输入复核 ✓、+12 最小 diff ✓、两处测量更正追认（while 位归 elevation 片并冻负例；mid-chain 准入冻正面）✓、5+3 ignored/oracle 3/3/全量 0 FAILED（scratch 家族复跑两轮绿）✓；census OP2 单点关闭——账本同步）
