@@ -12064,7 +12064,19 @@ mod tests {
             // ternary pair, the loop pair, the `break` pair and the loop's back edge; `BN`'s four
             // and `BNX`'s four: the two ternary bodies each), no handler record and no subroutine)
             // moved it again.
-            (863, 3757, 290, 2309, 8),
+            // The 2026-10-07 preserve-local-scope-plan fixtures (the declaration plan's three
+            // answers, tasks 1.2/1.3 of that change: `ScopePlan` — the catch-only local, the
+            // `try`/`catch` join, the `if` join and the two nested-`try` joins — and
+            // `ScopePlanCrossing` with the two crossing refusals, two classes on both compiler
+            // legs: four classes, twenty bodies — ten per leg, seven in `ScopePlan` and three in
+            // `ScopePlanCrossing` — twenty-two handler records (`ScopePlan`'s six: `catchOnly`,
+            // `assignedAcrossTry`, `nestedHandlerOnly`'s two and `nestedAcross`'s two;
+            // `ScopePlanCrossing`'s five: `flatFinally`'s three and `resourceAcrossFinally`'s two:
+            // eleven per leg) and twenty-four branch targets (twelve per leg: `catchOnly`'s,
+            // `assignedAcrossTry`'s, `assignedAcrossIf`'s and `nestedHandlerOnly`'s `if` pairs,
+            // `nestedAcross`'s two nested pairs, `main`'s four `print` statements' pairs and
+            // `flatFinally`'s pair), no subroutine) moved it again.
+            (867, 3777, 312, 2333, 8),
             "fixture population changed: re-measure these counts"
         );
     }
