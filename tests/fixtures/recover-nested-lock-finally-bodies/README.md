@@ -85,6 +85,13 @@ pinned, not assumed:
 | --- | --- | --- |
 | `nestedTry()V` | a `try`/`finally` **inside** the guarded range: two rows (`[14,24) -> 34`, `[7,44) -> 54`) over two handlers | `jre_guard_finally_copy` at BCI 54 + `[44, 34, 54]` |
 | `threeLocks()V` | three acquisitions and three releases: past the clause's two-statement bound | `jre_guard_finally_copy` at BCI 55 + `[79, 55]` |
+| `nestedLocksBranching(Z)V` | the same two-lock guard with a **branching body**: the branch puts the release copy in a block of its own (`[14,38) -> 55`), and the canonical graph fuses the method's trailing `return` into that block because nothing else enters it — so the void completion's transfer has no successor block to state. The certificate's own shape except for that fused layout | `jre_guard_finally_copy` at BCI 55 + `[28, 38, 55]` |
+
+`MLOrder.nestedLocksThrowing` is the same **behavior** without that layout: its body's last
+statement is a call the row protects (`this.check()`), so the copy stays in the protected call's
+block and the shape presents. The two together are the measured line: the admission covers the
+guards whose completion the canonical graph states as a separate block, and the fused-trail layout
+stays a registered boundary.
 
 ## Reproduce and verify the checked-in bytes
 
@@ -108,13 +115,13 @@ The class-file versions are 52.0. Both legs answer the same lines under `java -X
 | `v8` | `MLOrder.class` | 1053 | `971697bcc2d34bebcaf465ede872decec993695d720651a383d6216bef5d7660` |
 | `v8` | `Order.class` | 1473 | `e2f8c33403c24db4933624abe4bd10bf0acd629234a99ffd9b1708dca4c1d5f0` |
 | `v8` | `MLNegatives.class` | 891 | `e0ec5b7e05302a87d46a7bbc96613d576d3681c206c79461aaec421774af38c8` |
-| `v8` | `MLProbe.class` | 706 | `d8797854f76fde8ba33b105f74d26834d2ac3259bb3de4b9afbea2dd61309108` |
+| `v8` | `MLProbe.class` | 945 | `2a91b90f9714e0cf0039d1bfe81733229b71d5f44f7978e8277a3b5a7962932b` |
 | `v8` | `MLOrderDriver.class` | 1869 | `516e76f726440aaac8b90a9d582e95edbf510b3c2d5988be2e5e6361348aa052` |
 | `v8-javac8` | `ML.class` | 1481 | `e68f292ed74063d2ab015e3fe00393e443b6075c54984e94eed5165911aa5007` |
 | `v8-javac8` | `MLOrder.class` | 1053 | `bcac2e592c00bda62aa35c3d50c632a1b1b2daa37a007056989abd4aa07eb6f8` |
 | `v8-javac8` | `Order.class` | 1473 | `accdc999e76b9eb915bdc4b73af3f12ed94bf9f68d40a1340481f77127c389ba` |
 | `v8-javac8` | `MLNegatives.class` | 891 | `0926727e3304a0f8ea3f8859f3cad0ddf839f652c49c0dd03943a6c6303bc6f0` |
-| `v8-javac8` | `MLProbe.class` | 706 | `91568c39c1c8d946805c6769df3f3d79ad8c7b00ba0e27d8da156a98a658d1b1` |
+| `v8-javac8` | `MLProbe.class` | 945 | `891a7cdcb7df8f9d2853b71026a8dd3d239559035fd7911e9528674e22d131a4` |
 | `v8-javac8` | `MLOrderDriver.class` | 1869 | `516e76f726440aaac8b90a9d582e95edbf510b3c2d5988be2e5e6361348aa052` |
 
 The same bytes are recorded in `tests/fixtures/corpus-fingerprint.json` (blake3), which the P5
