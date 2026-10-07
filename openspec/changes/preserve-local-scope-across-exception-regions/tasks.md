@@ -6,6 +6,10 @@
 - [x] 1.4 对无 LVT 的 `p3_nested_try`、`p3_typed_catch` 和 `p3_stated_rows::a_row_whose_range_holds_no_throwing_instruction_is_still_a_catch` 中相邻/嵌套 handler 复用 slot 1 的失败，按 clause 路径、handler entry store 和 SSA 定义—使用证明是独立绑定还是实际逃逸；恢复可证明的 catch，真实跨作用域使用仍拒绝。`p3_stated_rows` 当前误报 `local 1 escapes catch parameter scope at region [0, 1]`，其方法没有分支或循环，不能归咎于循环转移改动。不得仅因 `RegionPaths.catch_parameters` 的 slot 相同就报逃逸，也不得无条件拆分同槽的 try/catch 汇合局部。先固定现有错误文本与原/JADX/Jarde 对照，再做最小规划改动。
 - [x] 1.5 用已冻结的 `LoopTryHandlerEntry.loopTry(II)I`（原 class SHA-256 `79254ba10b17846830ed420a8c13451a92630209edef9cb5d977fb6765e77f38`）闭合跨异常区的计算写入：BCI 1 的外层初始化、BCI 13 的 `result + maybeFail(...)`、BCI 19 的 catch 写入与 BCI 27 的循环后读取属于同一局部。复用现有表达式/单次消费与 Region/SSA 证据，在声明规划时证明可呈现写入及 definite assignment；正常与真实抛出两条路径原/JADX/Jarde 整类 Java 8 重编和 `-Xverify:all` 输出均为 `normal=6`、`caught=0`。不得以“写入不是直接整数常量”为唯一拒绝理由；若计算 producer 被引用或任一写入不能呈现，依赖切片仍完整拒绝，不能通过给局部任意默认值或移动调用出 try 来放行。该任务与 1.4 的 catch 参数同槽绑定分开验收，且不自动勾选 1.2、1.3 或整个 change。
 
+> **锚 12/13（root 2026-10-05 巡查登记，2026-10-07 入 tasks；1.2/1.3 的行为验收锚）**：
+> **第 12 锚（[explicit-lock 巡查](../../evidence/java-syntax-2026-10-05/explicit-lock-patrol/README.md)）**：ReentrantLock/Condition 有界缓冲（`lock(); try { while-await; signalAll; } finally { unlock(); }`）与 tryLock 守卫形全拒（exception-handler shape / finally-copy merge 未证；非 void 缺 return=SAFE）；jadx 全解；j.u.c 最高频骨架。`put()` 作为 soundness 片 void 修复验收 fixture 记入其 proposal。
+> **第 13 锚（[io-wrapping 巡查](../../evidence/java-syntax-2026-10-05/io-wrapping-patrol/README.md)）**：resource-across-finally（`BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(...))); try { while((line=r.readLine())!=null){...} } finally { r.close(); }`）整方法 crosses——资源句柄的 def-use 跨循环读区+finally 关闭区（第 11 锚 save/restore 的资源变体）；空 body 缺 return=SAFE；jadx 完整解；IO 样板=真实代码最高频资源管理形。IO 宽化位点另入第 6 族簇（local-scope 落地后）。
+
 ## 2. 原子拒绝与行为验收
 
 - [ ] 2.1 为保护区 fallback、异常边不完整及嵌套/共享 handler 增加负向 fixture；核对拒绝闭包包括相关定义、handler、汇合/transfer 和区域外 consumer 的 bytecode/origin，且正文不出现 catch 内声明后在外层读取的越界名称。
