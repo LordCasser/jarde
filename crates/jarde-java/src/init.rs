@@ -79,6 +79,12 @@ pub(crate) struct Site {
     pub(crate) arguments: Vec<u32>,
     /// Call-site proof for a selected member target. Projection is enabled by the AST slice.
     pub(crate) member_inner: Option<MemberInnerSite>,
+    /// The `pop` that discards the finished instance, when this site is a **statement-position**
+    /// construction: `new X(args);`. The bytecode's only reader of the instance is that category-1
+    /// discard, so the site's text is a statement of its own, written where the bytecode wrote the
+    /// constructor call — and the `pop` is the anchor it is written at. `None` for every
+    /// construction a store, a call, a `return` or a claimed field access consumes.
+    pub(crate) discarded: Option<u32>,
     /// Every BCI the site owns: the allocation, the copy and the constructor call. An owned
     /// instruction produces no statement of its own — its text is the `new` expression, written
     /// where the instance is consumed and nowhere else.
@@ -736,7 +742,30 @@ fn verify(
         .copied()
         .filter(|bci| renders_its_reads(operations, fields, *bci))
         .collect();
-    if written.is_empty() {
+    // The **statement position** (`recover-statement-position-news`): a construction whose finished
+    // instance the body discards has no store, call, `return` or claimed field access to write its
+    // text at — `new X(args);` is a statement of its own, and the category-1 `pop` that discards
+    // the instance is where it is written. Three facts are read here, and all three are the
+    // bytecode's own: the reader is the `pop` immediately after the constructor call, that `pop`
+    // reads the value the call wrote and nothing else reads it, and every argument is a value the
+    // `new` expression writes in place — a constant, a direct local or parameter read, or a
+    // construction this same proof completed ([`arguments_without_invocations`]).
+    //
+    // A construction whose arguments carry an invocation of their own keeps the refusal
+    // `refuse-unconsumed-construction-invokes` froze for the CST counterexample, and the invocation
+    // that is not an argument's value dependency is refused earlier still — before this check, by
+    // the argument-effect scan above — so that counterexample's code and BCI never move.
+    let discarded = if member.is_none()
+        && written.is_empty()
+        && let [pop] = readers.as_slice()
+        && discards_the_instance(ssa, block, at, *pop)
+        && arguments_without_invocations(ssa, operations, &operands, &nested_sites)
+    {
+        Some(*pop)
+    } else {
+        None
+    };
+    if written.is_empty() && discarded.is_none() {
         return Err(shape(if readers.is_empty() {
             format!(
                 "nothing in this method reads the instance the allocation at BCI {head} builds, so the construction has no place in the body"
@@ -762,6 +791,12 @@ fn verify(
                 .join(", ")
         )));
     }
+    // The one place the instance is written: the `pop` that discards it, when the body discards it,
+    // and the reader's own instruction otherwise.
+    let written: Vec<u32> = match discarded {
+        Some(pop) => vec![pop],
+        None => written,
+    };
     let mut owned: BTreeSet<u32> = produced_by.iter().copied().collect();
     if let Some(member) = &member {
         owned.extend(member.owned.iter().copied());
@@ -838,6 +873,7 @@ fn verify(
         class: ty,
         arguments,
         member_inner: member.map(|proof| proof.site),
+        discarded,
         owned,
         instance: produced_by,
         expression,
@@ -1640,6 +1676,113 @@ fn is_the_instance(ssa: &SsaTable, value: ValueId, produced_by: &[u32]) -> bool 
         Definition::Instruction { bci, .. } => produced_by.contains(bci),
         _ => false,
     }
+}
+
+/// Whether the instruction at `pop` is the category-1 discard of one construction's finished
+/// instance: the statement position's reader.
+///
+/// Every fact is an identity the bytecode states rather than a guess from the sequence, and they are
+/// the ones the builder's own discard plan reads (P3 2c.31): the instruction is the `pop` — the
+/// decode states no operation for it, so the opcode is read from the instruction itself — and it is
+/// the block instruction **immediately after** the constructor call, so nothing runs between the
+/// construction and the discard. It reads exactly one value, that value is the one the constructor
+/// call itself wrote — the finished instance, not a copy some slot took — and nothing else reads
+/// it: the discard is the whole of what the body did with the instance.
+fn discards_the_instance(
+    ssa: &SsaTable,
+    block: &[SsaInstruction],
+    constructor: u32,
+    pop: u32,
+) -> bool {
+    let Some(index) = block
+        .iter()
+        .position(|instruction| instruction.bci() == constructor)
+    else {
+        return false;
+    };
+    let Some(instruction) = block.get(index + 1).filter(|next| next.bci() == pop) else {
+        return false;
+    };
+    if instruction.opcode() != 0x57 {
+        return false;
+    }
+    let reads = stack_operands(instruction);
+    let [read] = reads.as_slice() else {
+        return false;
+    };
+    produced_at(ssa, read.1) == Some(constructor) && single_use_at(ssa, read.1, pop)
+}
+
+/// Whether every argument of one construction is a value the `new` expression writes **in place**
+/// with no invocation of its own.
+///
+/// Three producers are admitted, and they are the whole of the criterion
+/// (`recover-statement-position-news`):
+///
+/// * a constant the allocation's own argument run pushes ([`Operation::Push`]) — the literal is
+///   written where the bytecode pushed it;
+/// * a direct local or parameter read ([`Operation::Load`]) whose read value is the slot's own
+///   entry state ([`Definition::Entry`]) — the name denotes the value the bytecode read, because no
+///   instruction of this body wrote that slot before the read;
+/// * the completed instance of a construction this same proof stepped over (`nested_sites`) — the
+///   nested `new` expression is written in the argument position, which is where the bytecode
+///   evaluated it.
+///
+/// Every other producer — an invocation, a field read, an arithmetic or conversion chain, a merge —
+/// keeps the construction's refusal: the statement position admits no call of its own, so a
+/// `new X(args);` whose argument evaluates one is not a statement this rule states. The check reads
+/// the physical arguments the constructor call takes, which is the same list the written expression
+/// keeps.
+fn arguments_without_invocations(
+    ssa: &SsaTable,
+    operations: &Operations,
+    operands: &[(jarde_jvm::method_ir::Slot, ValueId)],
+    nested_sites: &[Site],
+) -> bool {
+    operands.iter().skip(1).all(|(_, value)| {
+        nested_sites
+            .iter()
+            .any(|nested| is_the_instance(ssa, *value, nested.instance.as_slice()))
+            || match produced_at(ssa, *value) {
+                Some(bci) => match operations.get(bci) {
+                    Some(Operation::Push(_)) => true,
+                    Some(Operation::Load { .. }) => direct_read(ssa, instruction_at(ssa, bci)),
+                    _ => false,
+                },
+                None => false,
+            }
+    })
+}
+
+/// The instruction of one body at `bci`, when this body states one.
+fn instruction_at(ssa: &SsaTable, bci: u32) -> Option<&SsaInstruction> {
+    ssa.blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .find(|instruction| instruction.bci() == bci)
+}
+
+/// Whether one `Load` reads a slot's own entry state — the value nothing in this body wrote.
+///
+/// A load's operand is a **local** slot, not a stack value: the read the instruction states is the
+/// value that slot holds where the load runs, and [`Definition::Entry`] is the SSA's own statement
+/// that no instruction of this body produced it (a parameter, `this`, or a local nothing wrote
+/// yet). A load of a slot some store filled reads that store's value instead, and the name would
+/// denote a value this body computed rather than the one the constructor argument is.
+fn direct_read(ssa: &SsaTable, instruction: Option<&SsaInstruction>) -> bool {
+    let Some(instruction) = instruction else {
+        return false;
+    };
+    let reads: Vec<ValueId> = instruction
+        .reads()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Local(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    let [read] = reads.as_slice() else {
+        return false;
+    };
+    matches!(ssa.value(*read).def(), Definition::Entry { .. })
 }
 
 /// The BCI the instruction that produced one value sits at, when an instruction produced it.
