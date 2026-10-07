@@ -5,8 +5,9 @@
 ## 当前状态（2026-10-07 终态，最新）
 
 - **本段再合入三片 + census 重跑**（全部 root 独立验收）：`recover-statement-position-news`（B5 ctor 副作用恢复，CST 顺序双测试钉死）、`recover-fixture-behavior-guard-coverage`（**16 个冻结 fixture 全部有 CI 引用**；负向自检打在 10-04 事故同款洞上并被新测试捕获；零生产码）、`recover-capture-ctor-super-order`（双括号捕获形呈现缺陷关闭——第三条件"调用不可观察组字段"=守卫同源声明视图+SSA 闭包 walk，四顺序敏感 fixture 保字节序，DB 家族 root 亲测 `2/z` 一致）。census 重跑（`a7aba5cf`）：45-jar 采样 96 行残余全部归属已登记边界，**前沿从新族发现转入边界收口**。
-- **本日累计 18 片**（10-06→10-07：temporal/interface/nonnull-v2/loop-else-if/static-generic/postfix-A/dup-store/inline-concat/chained-field/conditional-rhs/array-dance/postfix-B/boolean-bitwise/spn/guard-coverage/capture-ctor/boxed-widening + multireads 关闭重定位）+ oracle 回归修复 + 两族 census 归因修正。
-- **队列（下一会话）**：local-scope 12/13 锚（explicit-lock/io-wrapping，j.u.c/IO 骨架）→ double-brace B 路径（分配点双括号形）→ array-covariant-store。均已立项 spec 就绪。
+- **本日累计 20 片**（+ local-scope 1.2/1.3 测试面 + multireads 关闭重定位）+ oracle 回归修复 + 两族 census 归因修正。第 19 片 `recover-lock-guard-loop-finally`（**锚 12 关闭**：j.u.c 锁卫骨架 guard 层新证书——local-scope 门控实验证明锚 12/13 拒绝在 guard 层非声明规划，1.2/1.3 测试面先行合入）；第 20 片 `recover-boxed-number-widening`（六行 Number 表）。
+- **事件（2026-10-07）**：lock-guard 实现者（deepseek-flash）**死于磁盘压力收尾段**（5.2Gi 临界，fingerprint/census/证据提交未竟）——root 按账本诚实纪律代收尾（其 2 个实现 commits 完好，root 完成 census/fingerprint/results/全套验证）。**教训强化**：subagent 的磁盘纪律在"全量测试中段"无法自救（不能中断测试去 clean），root 侧应在 <15Gi 时**主动清 subagent 报告的 baseline target**（ask_subagent 询问占用清单有效——它列出了 /tmp/lk/baseline-target 等 root 不知情的占用）；root target 验收后立即清（本日两次忘记导致 30G+20G 峰值）。
+- **队列（下一会话）**：`recover-short-circuit-local-branch-reads`（已立项：布尔局部白名单的 ifeq/ifne 分支臂，census 重跑 OP2 单点 22 行）→ double-brace B → array-covariant-store → io 整类（family-6+jre_new_shape 位点）→ 多锁/lockInterruptibly。
 - **纪律新增**：/tmp 探针目录按 mtime 批量清理（90 分钟阈值，当前活动 subagent 产物保留）；root 探针脚本的池名伴生需三单元联编验证（`DB`+`DB1`+`DB2` 改写模式）。
 - 磁盘 41Gi；全部 worktree/target 已回收；末片 CI 0412e6cd 监控中。
 
