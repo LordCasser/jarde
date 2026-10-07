@@ -17650,6 +17650,124 @@ impl Builder<'_> {
                         }
                         pushed
                     }
+                    guard::Shape::LockGuardFinally {
+                        normal_cleanup,
+                        completion,
+                        ..
+                    } => {
+                        // The statement is the one `try { … } finally { … }` the certificate
+                        // proved: the protected body is the walk's own region tree (a loop
+                        // included), the saved value's return is the body's last statement where
+                        // the shape saves one, and the normal release copy is the `finally` body.
+                        // The exceptional copy and the handler are folded away, exactly as the
+                        // resource shapes' copies are.
+                        let Some(inner) = structured_body.as_deref() else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("lock guard checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the lock guard has no bounded protected body",
+                                plan.body().0,
+                            );
+                        };
+                        let saved_return = match completion {
+                            guard::LockGuardCompletion::SavedReturn { save, returns } => {
+                                Some((*save, *returns))
+                            }
+                            guard::LockGuardCompletion::Void { .. } => None,
+                        };
+                        let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
+                        let outer = std::mem::take(&mut self.stmts);
+                        self.body_span = Some(plan.body());
+                        self.finally_return = saved_return;
+                        let walked = self.region(inner, &child(path, 0));
+                        self.body_span = None;
+                        self.finally_return = None;
+                        let body = std::mem::replace(&mut self.stmts, outer);
+                        if let Err(stop) = walked {
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("lock guard checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let finally_body = match self.body_range(*normal_cleanup) {
+                            Ok(body) => body,
+                            Err(stop) => {
+                                if let Some(checkpoint) = finally_checkpoint.take() {
+                                    self.restore_finally(checkpoint);
+                                }
+                                return Err(stop);
+                            }
+                        };
+                        // The saved value's return is the body's own completion: the block the
+                        // store stands in wrote it where the store ran (`finally_return`), so the
+                        // body must hold one — a body that wrote no return would drop the value.
+                        if saved_return.is_some()
+                            && !body
+                                .iter()
+                                .any(|statement| matches!(statement.kind, StmtKind::Return { .. }))
+                        {
+                            let bcis = self.region_quote(region, at);
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("lock guard checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the lock guard's saved return is not a statement of the body",
+                                at,
+                            );
+                        }
+                        if body.iter().chain(&finally_body).any(statement_has_fallback) {
+                            let bcis = self.region_quote(region, at);
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("lock guard checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the lock guard contains an instruction this Java writer cannot state",
+                                at,
+                            );
+                        }
+                        let mut origin = OriginSet::new(Origin::direct(plan.body().0));
+                        for bci in plan.facts() {
+                            origin = origin.plus_derived(Origin::derived(*bci));
+                        }
+                        let statement = Stmt::new(
+                            StmtKind::Try {
+                                resources: Vec::new(),
+                                catches: Vec::new(),
+                                body,
+                                finally_body: Some(finally_body),
+                            },
+                            origin,
+                        );
+                        if undeclared_local(&statement, &self.undeclared).is_some()
+                            || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
+                                self.stmts[checkpoint.stmts.len()..]
+                                    .iter()
+                                    .any(statement_has_fallback)
+                            })
+                        {
+                            let bcis = self.region_quote(region, at);
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("lock guard checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the lock guard has an unpresented declaration or lead",
+                                at,
+                            );
+                        }
+                        let pushed = self.push(statement);
+                        if pushed.is_err()
+                            && let Some(checkpoint) = finally_checkpoint.take()
+                        {
+                            self.restore_finally(checkpoint);
+                        }
+                        pushed
+                    }
                     guard::Shape::ConditionalFinally { normal_return, .. }
                     | guard::Shape::NullableResourceFinally {
                         saved_return: (_, normal_return),
