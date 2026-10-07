@@ -7397,6 +7397,51 @@
       "path": "tests/fixtures/recover-boolean-int-bitwise-operands/v8/BWR.class"
     },
     {
+      "blake3": "5688a88d7ca1c5a5140fb79820ff92994f8baa4d1c040be8659db1e25bec4405",
+      "bytes": 857,
+      "path": "tests/fixtures/recover-boxed-number-widening/BN.java"
+    },
+    {
+      "blake3": "186bd22bf864e644b20b2399b7da517be8ebea7de1641fa5df58e0c4b1194db6",
+      "bytes": 526,
+      "path": "tests/fixtures/recover-boxed-number-widening/BNX.java"
+    },
+    {
+      "blake3": "feca486ba939baae4cb56c11958f95d781c417b3b805a98aafd8d4fcd4d37909",
+      "bytes": 787,
+      "path": "tests/fixtures/recover-boxed-number-widening/C8.java"
+    },
+    {
+      "blake3": "ef4fff6dfc84972892543ebb90fbaaf9908b42688b6d950c469997cb7e991a43",
+      "bytes": 1786,
+      "path": "tests/fixtures/recover-boxed-number-widening/v8-javac8/BN.class"
+    },
+    {
+      "blake3": "bbcec6f9436c2d6db0b437f489addd001cba8d84c914ef44c41bb51c597a0f3f",
+      "bytes": 957,
+      "path": "tests/fixtures/recover-boxed-number-widening/v8-javac8/BNX.class"
+    },
+    {
+      "blake3": "bee43a6793af43141bb2520e61eeca23b8ad65da680f0a8d14e3e7e6157f1fa8",
+      "bytes": 1708,
+      "path": "tests/fixtures/recover-boxed-number-widening/v8-javac8/C8.class"
+    },
+    {
+      "blake3": "ab79f2f9b5c40dac3fa4082412a9a221dd2480c443fe31d3f917858245ecef93",
+      "bytes": 1780,
+      "path": "tests/fixtures/recover-boxed-number-widening/v8/BN.class"
+    },
+    {
+      "blake3": "155d48f1cae38694732c16fbf61324468d23a6e4522aac0ff2c3a4441da53f4a",
+      "bytes": 954,
+      "path": "tests/fixtures/recover-boxed-number-widening/v8/BNX.class"
+    },
+    {
+      "blake3": "75ef9f3814780f9d6c3011c5acbedeb1c4ee253bb5021b8e354064f255005b25",
+      "bytes": 1699,
+      "path": "tests/fixtures/recover-boxed-number-widening/v8/C8.class"
+    },
+    {
       "blake3": "e7ac9292a93c6bf9b27f4fd9dde5ac89daaa8c297d39943cc339f79a3505f2d1",
       "bytes": 1682,
       "path": "tests/fixtures/recover-chained-field-assignment/CF.java"
