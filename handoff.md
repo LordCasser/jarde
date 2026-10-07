@@ -2,7 +2,12 @@
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态（2026-10-08 续，最新）
+## 当前状态（2026-10-08 终态，最新）
+
+- **里程碑：`preserve-local-scope-across-exception-regions` 全 change 完结**（`839b28b1`，CI 监控中）——1.2/1.3 回填（三分类 pin 两腿仍绿、两锚由 guard 族恢复且摘要一致）+ 2.1-2.5 全交付（拒绝闭包覆盖断言/边界 sibling/固定 SHA 三方/停止契约/2.5 审计两裁决）；零生产码。残余位点移交 guard/copy 家族（IO.readAll、变异 p3_try_local close、ScopeRefusalsEscape 未变异形）。
+- **10-08 累计 5 片 + 巡查 + 自纠**：covariant-store / io-resource-finally（锚 13）/ instance-chains（chained-field 域清）/ nested-lock（多锁族关闭+行内 lead 发现）/ local-scope 收尾。多锁巡查归档（multiAwait 假零自纠）。export_cli 诊断增强在案。
+- **队列（下一会话）**：readAll（copy 族纯度：loop-test copy-and-store + guard 体循环局部声明位）→ branching-guard 体形（释放副本独块+尾 return 融合）→ family-6 形态 4（lambda→JDK ctor）→ Hold<T> 擦除对投影 → ScopeRefusalsEscape。
+- 磁盘 52Gi；全部 worktree/target 回收；两日累计 27 片。
 
 - **10-08 已合入四片 + 巡查 + 自纠**：`recover-covariant-array-store-receiver`（+59/−2；巡查"SAFE 拒形"更正为静默未编译面）、`recover-io-resource-finally`（**锚 13 关闭**）、`recover-instance-field-assignment-chains`（dup_x1 栈几何；chained-field 域边界全清）、`recover-nested-lock-finally-bodies`（**多锁族关闭**：多语句 finally 体+行外可抛双 admission；行内 lead 发现——canonical CFG 不在行边界断块）。多锁巡查（10-08）归档；**root 巡查自纠**：multiAwait"已恢复"是探针 void-only awk 空段假零（README 已纠，真缺口=Condition 局部跨区归 local-scope）；export_cli 计时 flake 第 5 见→诊断增强（`07f7d427`）。溯源事件 #5（io 片 ruling 未授权→重裁）在案。
 - **溯源事件 #5（io 片）**：实现报告引用两处"root 2026-10-07 ruling"——root 无此问答，按纪律未采信、以合并态自证**重新裁定并追认**（详见 io verification-root 溯源段）。规则重申：报告引用的 ruling 一律视为未授权。
