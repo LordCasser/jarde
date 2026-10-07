@@ -12041,7 +12041,16 @@ mod tests {
             // `passed`'s pairs, `andNotInt`'s four — the materialisation's and the ternary's — and
             // `compareRead`'s four — the loop's and the comparison's), and the frozen copy's six,
             // per leg) moved it again.
-            (835, 3649, 290, 2273, 8),
+            // The 2026-10-07 recover-statement-position-news fixtures (the statement position of a
+            // construction: `SP` with the five recovering shapes — `argless`, `withArg`, `fromArg`,
+            // `nestedArgument` and `mixed` — beside its consumed controls, its `SP$Inner` static
+            // nested companion, `SB` (the patrol's `B6` shapes without the registered `chained`
+            // boundary) and `SPN` with the four refusals (`callArgument`, `fieldArgument`,
+            // `arithmeticArgument`, `chained`) on both compiler legs — eight classes, fifty-two
+            // bodies — plus the hand-built `SPC`, the statement-position twin of the frozen
+            // counterexample, nine classes and fifty-three bodies in all, no handler record, no
+            // branch target and no subroutine) moved it again.
+            (844, 3702, 290, 2273, 8),
             "fixture population changed: re-measure these counts"
         );
     }
