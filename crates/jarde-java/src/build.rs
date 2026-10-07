@@ -29482,8 +29482,7 @@ impl BooleanConsumption<'_> {
             parameter_types,
             fields,
             is_boolean_local: &|value: ValueId, at: u32| {
-                read_variable(ssa, operations, reuse, value, at)
-                    .is_some_and(is_boolean_variable)
+                read_variable(ssa, operations, reuse, value, at).is_some_and(is_boolean_variable)
             },
             visit: &mut visit,
         };
