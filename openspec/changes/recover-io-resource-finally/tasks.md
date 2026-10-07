@@ -10,4 +10,4 @@
 - [x] 2.1 实现行集 resource-guard 扩展 + 两宽化表行（纯增）+ 深度 2→3；lock-guard 单行判据与既有表行逐字不动。→ 提交 `feat(java): present the resource guard across a finally`、`feat(java): widen the wrapped-stream chain's two java.io argument positions`、`feat(java): present a three-layer construction run`
 - [x] 2.2 对照测试：`countLines` 恢复（重编+`-Xverify:all` 行为一致）；`recover_lock_guard_loop_finally`/`preserve_local_scope_plan`/宽化系列套件零回退；负例拒绝逐字。→ [results/02-gating.md](results/02-gating.md)（显式更新的三处对照）、[results/06-gates.md](results/06-gates.md)
 - [x] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。→ [results/05-corpus-and-oracle.md](results/05-corpus-and-oracle.md)、[results/06-gates.md](results/06-gates.md)
-- [ ] 3.2 root 独立复核：门控、行集安全来源（SSA 同一）、锚/负例实测、账本（local-scope 锚 13 关闭、1.2/1.3 回填评估）。（留 root）
+- [x] 3.2 root 独立复核：门控、行集安全来源（SSA 同一）、锚/负例实测、账本（local-scope 锚 13 关闭、1.2/1.3 回填评估）。（root 2026-10-08 完成，见 [verification-root.md](verification-root.md)：**实现报告引用的两处"root ruling"溯源为未授权（root 无此问答）——已按自证重新裁定并追认**（深度 2→3=锚形状本属的测量边界、四层仍拒；readAll=copy 族纯度域另片）；四配置组件门控与 LK/CF-16 逐字节复核 ✓、countLines 完整恢复 root 实测 ✓、340 targets ok/0 FAILED + oracle 3/3 ✓；锚 13 关闭、1.2/1.3 回填留 local-scope 独立验收轮）
