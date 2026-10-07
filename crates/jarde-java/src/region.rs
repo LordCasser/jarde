@@ -1965,6 +1965,10 @@ struct Frame {
     /// The proved two-row void finally whose protected body holds ordinary loops: a loop body
     /// frame keeps the certificate's own row so its covered exception edges stay accounted.
     void_loop_finally: bool,
+    /// The proved lock guard whose protected body holds ordinary loops: a loop body frame keeps
+    /// the certificate's own row so its covered exception edges stay accounted, exactly as the
+    /// two-row void finally's does.
+    lock_guard_finally: bool,
     /// The sole inner named row admitted by a proved two-copy outer finally body.
     nested_finally_row: Option<u32>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
@@ -2057,6 +2061,7 @@ impl Frame {
             segmented_finally_rows: None,
             multi_return_finally_rows: None,
             void_loop_finally: self.void_loop_finally,
+            lock_guard_finally: self.lock_guard_finally,
             nested_finally_row: None,
             case_entries: self.case_entries.clone(),
             loop_exit: exit,
@@ -2098,6 +2103,7 @@ impl Frame {
             segmented_finally_rows: self.segmented_finally_rows,
             multi_return_finally_rows: self.multi_return_finally_rows,
             void_loop_finally: self.void_loop_finally,
+            lock_guard_finally: self.lock_guard_finally,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -2130,6 +2136,7 @@ impl Frame {
             segmented_finally_rows: self.segmented_finally_rows,
             multi_return_finally_rows: self.multi_return_finally_rows,
             void_loop_finally: self.void_loop_finally,
+            lock_guard_finally: self.lock_guard_finally,
             nested_finally_row: self.nested_finally_row,
             case_entries: Some(case_entries),
             loop_exit: self.loop_exit,
@@ -2159,6 +2166,7 @@ impl Frame {
             segmented_finally_rows: self.segmented_finally_rows,
             multi_return_finally_rows: self.multi_return_finally_rows,
             void_loop_finally: self.void_loop_finally,
+            lock_guard_finally: self.lock_guard_finally,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -2564,27 +2572,6 @@ impl Walker<'_> {
                 // region ends where its caller continues.
                 return Ok(one(Region::Straight { blocks: prefix }, None));
             }
-            // A loop this walk enters from outside is a region of its own, and it *starts* one: the
-            // run that led here ends before the loop, because the loop's test is written inside the
-            // statement that presents it. Re-entering a block that is not a loop header this subset
-            // can prove (an arm that jumps back, an irreducible cycle) stays the stated fallback
-            // below.
-            if self.view.is_loop_header(node) && frame.own_loop != Some(node) {
-                // Arriving at the header of the loop this frame is inside — an arm walk, a
-                // protected body or any nested frame following the loop's own latch edge — is
-                // that back edge (`continue`'s target), not a nested loop entry: the run ends
-                // here and the caller continues at the header. Entering the loop *again* would
-                // build a second region over the same blocks and the completed tree would own
-                // them twice. A header no enclosing loop target names stays a fresh entry.
-                let latch_edge_of_own_loop = frame
-                    .loop_targets
-                    .last()
-                    .is_some_and(|target| target.header == node);
-                if prefix.is_empty() && !latch_edge_of_own_loop {
-                    return self.loop_region(&current, node, frame);
-                }
-                return Ok(one(Region::Straight { blocks: prefix }, Some(current)));
-            }
             // A protected range the exception table states with a named `catch` type is the
             // `try`/`catch` statement here, where the guarded rules of P3 2.4 say the region is not
             // theirs. This is read **before** the block is marked visited: the statement's own range
@@ -2613,6 +2600,9 @@ impl Walker<'_> {
                 let recovered = match plan.shape() {
                     crate::guard::Shape::Finally { .. } => self
                         .finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
+                    crate::guard::Shape::LockGuardFinally { .. } => self
+                        .lock_guard_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
                     crate::guard::Shape::LoopFinally { .. } => self
                         .loop_finally_regions(&current, &plan, frame)?
@@ -2721,6 +2711,27 @@ impl Walker<'_> {
                     return Ok((run, next));
                 }
                 return Ok((run, join));
+            }
+            // A loop this walk enters from outside is a region of its own, and it *starts* one: the
+            // run that led here ends before the loop, because the loop's test is written inside the
+            // statement that presents it. Re-entering a block that is not a loop header this subset
+            // can prove (an arm that jumps back, an irreducible cycle) stays the stated fallback
+            // below.
+            if self.view.is_loop_header(node) && frame.own_loop != Some(node) {
+                // Arriving at the header of the loop this frame is inside — an arm walk, a
+                // protected body or any nested frame following the loop's own latch edge — is
+                // that back edge (`continue`'s target), not a nested loop entry: the run ends
+                // here and the caller continues at the header. Entering the loop *again* would
+                // build a second region over the same blocks and the completed tree would own
+                // them twice. A header no enclosing loop target names stays a fresh entry.
+                let latch_edge_of_own_loop = frame
+                    .loop_targets
+                    .last()
+                    .is_some_and(|target| target.header == node);
+                if prefix.is_empty() && !latch_edge_of_own_loop {
+                    return self.loop_region(&current, node, frame);
+                }
+                return Ok(one(Region::Straight { blocks: prefix }, Some(current)));
             }
             let leaving = self.leaving_edge(&current);
             // Examine once, before ownership changes. A structured finally consumes the verdict
@@ -6358,6 +6369,44 @@ impl Walker<'_> {
         )
     }
 
+    /// The lock-guard statement's protected body: the same bounded walker the void and multi-return
+    /// finally shapes use, with the certificate's own row as the one row that accounts for a loop's
+    /// exception edges.
+    ///
+    /// The body is where the difference from the resource shapes lives: a lock guard's protected body
+    /// is ordinary code, so it may hold a loop, and the loop is presented by the loop's own reader
+    /// ([`Self::header_tested_loop`] keeps the certificate's row while it walks that body). The
+    /// cleanup copies are not this walk's: the certificate proved them equal and the builder writes
+    /// the normal one as the statement's `finally` body.
+    fn lock_guard_finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::LockGuardFinally {
+            row_ordinal,
+            completion,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let save = match completion {
+            crate::guard::LockGuardCompletion::SavedReturn { save, .. } => Some(*save),
+            crate::guard::LockGuardCompletion::Void { .. } => None,
+        };
+        self.bounded_shared_finally_body(
+            start,
+            plan.body(),
+            save,
+            ((*row_ordinal, plan.body()), None),
+            plan,
+            outer,
+            None,
+        )
+    }
+
     fn bounded_shared_finally_body(
         &mut self,
         start: &CanonicalBlockId,
@@ -6425,6 +6474,24 @@ impl Walker<'_> {
                 ..
             }
         );
+        // The shapes whose protected body is presented with its own control flow: the fixed body
+        // loops, and the lock guard, whose body is ordinary code the walk recovers — a loop
+        // included. The flag is set by the claim alone, so no other shape widens.
+        let looping_body = span == plan.body()
+            && matches!(
+                plan.shape(),
+                crate::guard::Shape::SharedFinally {
+                    binding_row: Some(_),
+                    ..
+                } | crate::guard::Shape::MultiReturnLoopFinally { .. }
+                    | crate::guard::Shape::LockGuardFinally { .. }
+                    | crate::guard::Shape::Finally {
+                        completion: crate::guard::FinallyCompletion::Void { .. },
+                        ..
+                    }
+            );
+        frame.lock_guard_finally =
+            matches!(plan.shape(), crate::guard::Shape::LockGuardFinally { .. });
         let walked = self.region_at(start, &frame);
         let (mut regions, mut next) = match walked {
             Ok(result) => result,
@@ -6433,19 +6500,7 @@ impl Walker<'_> {
                 return Err(stop);
             }
         };
-        if span == plan.body()
-            && matches!(
-                plan.shape(),
-                crate::guard::Shape::SharedFinally {
-                    binding_row: Some(_),
-                    ..
-                } | crate::guard::Shape::MultiReturnLoopFinally { .. }
-                    | crate::guard::Shape::Finally {
-                        completion: crate::guard::FinallyCompletion::Void { .. },
-                        ..
-                    }
-            )
-        {
+        if looping_body {
             while let Some(at) = next.as_ref() {
                 if !self
                     .view
@@ -6494,21 +6549,7 @@ impl Walker<'_> {
             })
             .count();
         if next.is_some()
-            || !shared_join_body_supported(
-                &body,
-                span == plan.body()
-                    && matches!(
-                        plan.shape(),
-                        crate::guard::Shape::SharedFinally {
-                            binding_row: Some(_),
-                            ..
-                        } | crate::guard::Shape::MultiReturnLoopFinally { .. }
-                            | crate::guard::Shape::Finally {
-                                completion: crate::guard::FinallyCompletion::Void { .. },
-                                ..
-                            }
-                    ),
-            )
+            || !shared_join_body_supported(&body, looping_body)
             || actual != expected
             || actual.len() != blocks.len()
             || save_count != usize::from(save.is_some())
@@ -10023,6 +10064,13 @@ impl Walker<'_> {
         // protected body leaves through the certificate's handler, and the row is what accounts
         // for that edge. The flag is set by the claim alone, so no other two-row shape widens.
         if self.handlers.len() == 2 && frame.void_loop_finally {
+            body_frame.own_finally = frame.own_finally;
+            body_frame.own_try = frame.own_try;
+        }
+        // The proved lock guard's body is ordinary code, so its loop is walked the same way and
+        // leaves through the same certificate handler: the one row the claim proved is what
+        // accounts for that edge. Like the flag above, this one is set by the claim alone.
+        if frame.lock_guard_finally && frame.own_finally.is_some() && frame.own_try.is_some() {
             body_frame.own_finally = frame.own_finally;
             body_frame.own_try = frame.own_try;
         }
