@@ -14,8 +14,10 @@
 //!
 //! 1. `DB$2` (the capture form) presents `super();` first and the capture write after it, in both
 //!    legs, with the synthetic field declaration and the envelope's own header still presented;
-//! 2. `DB$1` (the no-capture form) and `DB`'s own call form (`new DB$2(arg0)`, `new DB$1()`) keep
-//!    the presentation they had before the change — the zero-regression anchor;
+//! 2. `DB$1` (the no-capture form) keeps the presentation it had before the change — the
+//!    zero-regression anchor — while `DB`'s two allocation points present the **source-level
+//!    double-brace form** (change `recover-double-brace-allocation-site`, which replaced the
+//!    `new DB$2(arg0)`/`new DB$1()` call forms this file pinned before it);
 //! 3. the three recovered texts compile together under `javac --release 8`, run under
 //!    `java -Xverify:all` and print `2/z`, the original classes' own output;
 //! 4. the two hand-made super-argument probes
@@ -138,7 +140,13 @@ fn the_capture_companion_presents_the_capture_write_after_the_constructor_call()
 }
 
 #[test]
-fn the_no_capture_companion_and_the_host_call_forms_are_unchanged() {
+fn the_companions_keep_their_presentation_and_the_host_presents_the_double_brace_form() {
+    // Updated by change `recover-double-brace-allocation-site` (assertion update, not deletion):
+    // both anchors now present the **source-level double-brace form** at their allocation points,
+    // so the host assertions below read that form instead of the physical-class calls. Every
+    // companion-side assertion is unchanged: the companions' own class texts keep the order this
+    // change's slice (`recover-capture-ctor-super-order`) presented, and the physical companions
+    // stay queryable.
     for (label, root, one, two) in legs() {
         let snapshot = open(jar_of(&[
             (b"DB.class", root),
@@ -161,18 +169,28 @@ fn the_no_capture_companion_and_the_host_call_forms_are_unchanged() {
             no_capture.text
         );
 
-        // The host: the companion instantiations are the physical-class calls they were, and no
-        // constructor text of either companion is inlined into it (the host's own default
-        // constructor is its own `super();` and is not what this asserts about).
+        // The host: both allocation points present the double-brace form, the capture read spelled
+        // as the enclosing method's own parameter, and neither companion is named anywhere in the
+        // text. The physical-class calls are gone, and with them every pool-form name.
         let host = class_source_of(&snapshot, "DB");
         assert!(
-            host.text.contains("return new DB$2(s);") && host.text.contains("DB.dbl = new DB$1();"),
-            "`{label}`: the host keeps its companion call forms:\n{}",
+            host.text
+                .contains("return new java.util.ArrayList() {\n            {\n                this.add((java.lang.Object) s);\n            }\n        };"),
+            "`{label}`: the capture anchor presents the double-brace form:\n{}",
             host.text
         );
         assert!(
-            !host.text.contains("val$s") && !host.text.contains("this.add("),
-            "`{label}`: no companion constructor is inlined into the host:\n{}",
+            host.text.contains(
+                "DB.dbl = new java.util.ArrayList() {\n            {\n                this.add((java.lang.Object) \"a\");\n                this.add((java.lang.Object) \"b\");\n            }\n        };"
+            ),
+            "`{label}`: the no-capture anchor presents the double-brace form:\n{}",
+            host.text
+        );
+        assert!(
+            !host.text.contains("DB$1")
+                && !host.text.contains("DB$2")
+                && !host.text.contains("val$"),
+            "`{label}`: no companion name and no synthetic capture survives in the host:\n{}",
             host.text
         );
     }

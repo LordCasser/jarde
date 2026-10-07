@@ -602,6 +602,228 @@ pub fn class_source_anonymous_argument_local(
     Some((name.clone(), argument.presented.clone()))
 }
 
+/// The same-run source spelling of one allocation's argument, read from the allocation node the
+/// presentation wrote at `allocation_bci` — **wherever its statement sits**.
+///
+/// [`class_source_anonymous_argument_local`] reads the same spelling out of the site scan's two
+/// statement shapes; the double-brace allocation point owns a third one (the allocation is the
+/// value of an assignment — the static initializer's field write), so it reads the node by the
+/// emission's own match instead. `None` unless the expression is exactly a local reference.
+#[doc(hidden)]
+pub fn class_source_allocation_argument_local(
+    ast: &ClassSourceMethodAst,
+    allocation_bci: u32,
+    index: usize,
+) -> Option<(String, Option<Type>)> {
+    let expression = allocation_expression(&ast.projection.program.stmts, allocation_bci)?;
+    let ExprKind::New { args, .. } = &expression.kind else {
+        return None;
+    };
+    let argument = args.get(index)?;
+    let ExprKind::Local(name) = &argument.kind else {
+        return None;
+    };
+    Some((name.clone(), argument.presented.clone()))
+}
+
+/// Whether one allocation's class name is the pool form of an anonymous child of `root`: the
+/// root's own internal name, `$`, and an anonymous ordinal.
+///
+/// The shape is the cheap reading of javac's own minting scheme; the class's `InnerClasses` row
+/// (an anonymous row has neither an outer class nor an inner name) is the admission's own proof of
+/// the same fact. The double-brace allocation point reads it in both layers: the recovery layer
+/// retains this body's AST for it, and the class-source admission selects the site with it.
+#[doc(hidden)]
+pub fn class_source_anonymous_child_name(root: &str, child: &str) -> bool {
+    child
+        .strip_prefix(root)
+        .and_then(|rest| rest.strip_prefix('$'))
+        .is_some_and(|ordinal| {
+            !ordinal.is_empty() && ordinal.bytes().all(|byte| byte.is_ascii_digit())
+        })
+}
+
+/// Whether this body's own allocation scan holds a verified allocation of one of the **declaring
+/// class's own** anonymous children (`X$N`) — the double-brace allocation point's cheap
+/// pre-filter, read before the AST is retained.
+fn allocates_an_anonymous_child(
+    request: &RecoveryRequest<'_>,
+    anonymous_allocations: Option<&Option<AnonymousAllocationScan>>,
+) -> bool {
+    let Some(declaring) = request
+        .facts
+        .method()
+        .declaring_class()
+        .map(|class| class.name().to_owned())
+    else {
+        return false;
+    };
+    anonymous_allocations
+        .and_then(|scan| scan.as_ref())
+        .is_some_and(|scan| {
+            scan.allocations.iter().any(|site| {
+                site.verified && class_source_anonymous_child_name(&declaring, &site.class)
+            })
+        })
+}
+
+/// The `new` expression one presentation wrote at `allocation_bci`: the node the anonymous
+/// emission itself matches — the allocation's own type with the BCI on the expression's primary
+/// anchor or on one of its derived ones.
+fn allocation_expression<'a>(
+    statements: &'a [crate::ast::Stmt],
+    allocation_bci: u32,
+) -> Option<&'a Expr> {
+    let mut statements: Vec<&crate::ast::Stmt> = statements.iter().collect();
+    let mut expressions: Vec<&Expr> = Vec::new();
+    while let Some(statement) = statements.pop() {
+        use StmtKind as K;
+        match &statement.kind {
+            K::Declare { value, .. } => expressions.extend(value.iter()),
+            K::Assign { value, .. } | K::Expr(value) | K::Throw { value } => {
+                expressions.push(value)
+            }
+            K::FieldAssign {
+                receiver, value, ..
+            } => {
+                expressions.extend(receiver.iter());
+                expressions.push(value);
+            }
+            K::IndexAssign {
+                array,
+                index,
+                value,
+                ..
+            } => expressions.extend([array, index, value]),
+            K::ConstructorCall { args, .. } => expressions.extend(args),
+            K::Return { value } => expressions.extend(value.iter()),
+            K::Assert { cond, message } => {
+                expressions.push(cond);
+                expressions.extend(message.iter());
+            }
+            K::If {
+                cond,
+                then_body,
+                else_body,
+            } => {
+                expressions.push(cond);
+                statements.extend(then_body);
+                statements.extend(else_body);
+            }
+            K::While { cond, body, .. } | K::DoWhile { cond, body, .. } => {
+                expressions.push(cond);
+                statements.extend(body);
+            }
+            K::For {
+                init,
+                cond,
+                update,
+                body,
+                ..
+            } => {
+                statements.push(init);
+                statements.push(update);
+                expressions.push(cond);
+                statements.extend(body);
+            }
+            K::ForEach { iterable, body, .. } => {
+                expressions.push(iterable);
+                statements.extend(body);
+            }
+            K::Switch { value, arms } => {
+                expressions.push(value);
+                for arm in arms {
+                    statements.extend(&arm.body);
+                }
+            }
+            K::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
+                for resource in resources {
+                    expressions.push(&resource.value);
+                }
+                for catch in catches {
+                    statements.extend(&catch.body);
+                }
+                statements.extend(body);
+                statements.extend(finally_body.iter().flatten());
+            }
+            K::Synchronized { lock, body } => {
+                expressions.push(lock);
+                statements.extend(body);
+            }
+            K::Break { .. } | K::Continue { .. } | K::Fallback { .. } => {}
+        }
+    }
+    while let Some(expression) = expressions.pop() {
+        if matches!(&expression.kind, ExprKind::New { .. })
+            && (expression.origin.primary().bci() == allocation_bci
+                || expression
+                    .origin
+                    .derived()
+                    .iter()
+                    .any(|origin| origin.bci() == allocation_bci))
+        {
+            return Some(expression);
+        }
+        use ExprKind as E;
+        match &expression.kind {
+            E::LocalAssign { value, .. } => expressions.push(value),
+            E::Call { receiver, args, .. } => {
+                expressions.extend(receiver.iter().map(|receiver| &**receiver));
+                expressions.extend(args);
+            }
+            E::New {
+                qualifier, args, ..
+            } => {
+                expressions.extend(qualifier.iter().map(|qualifier| &**qualifier));
+                expressions.extend(args);
+            }
+            E::Lambda { body, .. } => expressions.push(body),
+            E::MethodReference { qualifier, .. } => expressions.push(qualifier),
+            E::Field { receiver, .. } => expressions.push(receiver),
+            E::Index { array, index } => expressions.extend([&**array, &**index]),
+            E::PostfixUpdate { target, .. } => expressions.push(target),
+            E::ArrayLength { array } => expressions.push(array),
+            E::NewArray {
+                lengths,
+                initializers,
+                ..
+            } => {
+                expressions.extend(lengths);
+                expressions.extend(initializers.iter().flatten());
+            }
+            E::Binary { left, right, .. } => expressions.extend([&**left, &**right]),
+            E::Conditional {
+                test,
+                when_true,
+                when_false,
+            } => expressions.extend([&**test, &**when_true, &**when_false]),
+            E::Concat { parts } => expressions.extend(parts.iter().map(|part| &part.value)),
+            E::Cast { value, .. } => expressions.push(value),
+            E::Not { value } | E::Neg { value } => expressions.push(value),
+            E::InstanceOf { value, .. } => expressions.push(value),
+            E::Local(_)
+            | E::Integer(_)
+            | E::IntegerConstantName { .. }
+            | E::Boolean(_)
+            | E::Long(_)
+            | E::Float(_)
+            | E::Double(_)
+            | E::Str(_)
+            | E::Null
+            | E::ClassLiteral { .. }
+            | E::Path(_)
+            | E::QualifiedThis { .. }
+            | E::Super { .. } => {}
+        }
+    }
+    None
+}
+
 /// The same-run spelling for the sole physical parameter at `slot`. This bounded helper is used
 /// only after a descriptor/SSA proof has established that the anonymous constructor receives that
 /// exact entry parameter.
@@ -999,6 +1221,370 @@ pub fn emit_class_source_anonymous_constructor_initializer(
     .map(Some)
 }
 
+/// The proved instance-block body of one anonymous subclass constructor, as the double-brace
+/// allocation point presents it (change `recover-double-brace-allocation-site`).
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAnonymousInstanceBlock {
+    /// Every top-level statement the constructor runs after its call, minus the certified capture
+    /// store and the closing `return`, emitted at the requested indentation.
+    pub text: String,
+    /// How many of the constructor's leading parameters the call forwards, in order. The
+    /// double-brace form re-states the *allocation's* arguments as the superclass constructor's
+    /// own, so this count is what closes the two lists against each other: the site's arguments
+    /// are the constructor's parameters, and the call forwards its leading ones.
+    pub forwarded_parameters: usize,
+}
+
+/// Emits the instance-block statements of one proved anonymous constructor: every top-level
+/// statement after the constructor call, minus the certified capture store and the closing
+/// `return`, with every proved read of the capture field re-spelled as the allocation site's own
+/// local.
+///
+/// # What the shape is, and why every conjunct is read and not assumed
+///
+/// javac compiles an anonymous subclass of a superclass as: the synthetic capture stores, the
+/// `super(…)` call, the instance initializer's statements — and a closing `return`. The
+/// double-brace source form re-creates all of that from one expression, so the reading has to
+/// state which statements the block owns and that the form's own re-creation cannot differ:
+///
+/// * the call is the constructor's own **prologue**, at top level and unique, and everything
+///   before it is the certified capture store the caller's proof named (`capture_write_bci`);
+/// * the body is everything after the call, minus that same store (the certified group may sit
+///   after the call as well as before it) and minus the closing `return`; an **empty** body is not
+///   this shape — the double-brace form is the *block*, and a constructor with nothing to run is
+///   the empty class body the existing anonymous-superclass presentation already writes;
+/// * the call's arguments are the constructor's own **leading parameters, in order**. The form
+///   re-states the allocation's arguments in that order, so a call that reads anything else would
+///   compile into a program the class file does not have;
+/// * the block is placed in the **enclosing method's scope**, so nothing in it may name a thing
+///   that scope does not resolve the same way: a read of one of the constructor's parameters
+///   (other than through the capture field, which is re-spelled), a `return` — illegal in an
+///   initializer — a pool-form allocation (`X$1$1` is not a source name), and a local declaration
+///   that would shadow one of the caller's reserved names are each a refusal rather than a text
+///   that silently means something else.
+#[doc(hidden)]
+pub fn emit_class_source_anonymous_instance_block(
+    ast: &ClassSourceMethodAst,
+    capture_write_bci: Option<u32>,
+    capture_reads: &[ProvedCapturedParameterRead],
+    reserved_names: &[String],
+    indentation: usize,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceAnonymousInstanceBlock>, crate::stop::StopReason> {
+    let statements = &ast.projection.program.stmts;
+    if ast.projection.program.ragged || ast.projection.program.statements != statements.len() {
+        return Ok(None);
+    }
+    let mut prologue = None;
+    for (index, statement) in statements.iter().enumerate() {
+        if matches!(
+            statement.kind,
+            StmtKind::ConstructorCall {
+                target: ConstructorTarget::Super,
+                ..
+            }
+        ) {
+            if prologue.is_some() {
+                return Ok(None);
+            }
+            prologue = Some(index);
+        }
+    }
+    let Some(prologue) = prologue else {
+        return Ok(None);
+    };
+    if statements[..prologue]
+        .iter()
+        .any(|statement| Some(statement.origin.primary().bci()) != capture_write_bci)
+    {
+        return Ok(None);
+    }
+    let Some((closing, body)) = statements[prologue + 1..].split_last() else {
+        return Ok(None);
+    };
+    if !matches!(closing.kind, StmtKind::Return { value: None }) {
+        return Ok(None);
+    }
+    let body: Vec<&crate::ast::Stmt> = body
+        .iter()
+        .filter(|statement| Some(statement.origin.primary().bci()) != capture_write_bci)
+        .collect();
+    if body.is_empty() {
+        return Ok(None);
+    }
+    let StmtKind::ConstructorCall { args, .. } = &statements[prologue].kind else {
+        unreachable!("the prologue was matched as a constructor call")
+    };
+    let parameters = &ast.projection.parameter_names;
+    if args.len() > parameters.len() {
+        return Ok(None);
+    }
+    let leading: Vec<&str> = parameters[..args.len()]
+        .iter()
+        .map(|name| name.as_deref())
+        .collect::<Option<Vec<_>>>()
+        .unwrap_or_default();
+    if leading.len() != args.len()
+        || args.iter().zip(&leading).any(
+            |(argument, name)| !matches!(&argument.kind, ExprKind::Local(local) if local == name),
+        )
+    {
+        return Ok(None);
+    }
+    let mut findings = InstanceBlockFindings::default();
+    for statement in &body {
+        instance_block_findings(statement, &mut findings, budget)?;
+    }
+    let named: std::collections::BTreeSet<&str> = parameters
+        .iter()
+        .filter_map(|name| name.as_deref())
+        .collect();
+    if findings
+        .reads
+        .iter()
+        .any(|read| named.contains(read.as_str()))
+        || findings.declares.iter().any(|declared| {
+            named.contains(declared.as_str()) || reserved_names.iter().any(|name| name == declared)
+        })
+        || findings.pool_form_allocation
+        || findings.returns
+    {
+        return Ok(None);
+    }
+    // The capture reads are re-spelled before the emission: the block reads the *enclosing*
+    // method's local, which is the value javac's own recapture would hand the recompiled
+    // anonymous class. A read the proof lists that does not map to exactly one field expression
+    // in this AST keeps the physical presentation.
+    let projected =
+        match project_class_source_converted_parameter_reads(ast, capture_reads, budget)? {
+            Some(projected) => projected,
+            None if capture_reads.is_empty() => (*ast).clone(),
+            None => return Ok(None),
+        };
+    let projected_statements = &projected.projection.program.stmts;
+    if projected_statements.len() != statements.len() {
+        return Ok(None);
+    }
+    let projected_body: Vec<crate::ast::Stmt> = projected_statements
+        [prologue + 1..projected_statements.len() - 1]
+        .iter()
+        .filter(|statement| Some(statement.origin.primary().bci()) != capture_write_bci)
+        .cloned()
+        .collect();
+    let text = crate::emit::emit_class_source_statements(
+        &projected_body,
+        &projected.projection.member,
+        projected.projection.current_class.as_deref(),
+        &projected.projection.nested_class_members,
+        indentation,
+        budget,
+    )?;
+    Ok(Some(ClassSourceAnonymousInstanceBlock {
+        text,
+        forwarded_parameters: args.len(),
+    }))
+}
+
+/// What an instance block emitted into the enclosing method's scope must not carry, each read
+/// from the same-run AST: a read of a name that scope may not resolve to the same thing, a local
+/// declaration that would shadow one, a pool-form allocation, and a `return` an initializer may
+/// not hold.
+#[derive(Default)]
+struct InstanceBlockFindings {
+    /// Every local name the block reads.
+    reads: Vec<String>,
+    /// Every local name the block declares or assigns.
+    declares: Vec<String>,
+    /// Whether the block allocates a type whose name is the pool form (`X$1$1`).
+    pool_form_allocation: bool,
+    /// Whether the block holds a `return`, at any depth.
+    returns: bool,
+}
+
+/// Reads one statement subtree into [`InstanceBlockFindings`]. Every charge is per node, so a
+/// block that does not close is a stop the caller sees rather than a silent admission.
+fn instance_block_findings(
+    statement: &crate::ast::Stmt,
+    findings: &mut InstanceBlockFindings,
+    budget: &mut Budget,
+) -> Result<(), crate::stop::StopReason> {
+    let mut statements = vec![statement];
+    let mut expressions: Vec<&Expr> = Vec::new();
+    while let Some(statement) = statements.pop() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(statement.origin.primary().bci()),
+        )?;
+        crate::stop::poll(budget, Some(statement.origin.primary().bci()))?;
+        use StmtKind as K;
+        match &statement.kind {
+            K::Declare { name, value, .. } => {
+                findings.declares.push(name.clone());
+                expressions.extend(value.iter());
+            }
+            K::Assign { name, value } => {
+                findings.declares.push(name.clone());
+                expressions.push(value);
+            }
+            K::Expr(value) | K::Throw { value } => expressions.push(value),
+            K::FieldAssign {
+                receiver, value, ..
+            } => {
+                expressions.extend(receiver.iter());
+                expressions.push(value);
+            }
+            K::IndexAssign {
+                array,
+                index,
+                value,
+                ..
+            } => expressions.extend([array, index, value]),
+            K::ConstructorCall { args, .. } => expressions.extend(args),
+            K::Return { value } => {
+                findings.returns = true;
+                expressions.extend(value.iter());
+            }
+            K::Assert { cond, message } => {
+                expressions.push(cond);
+                expressions.extend(message.iter());
+            }
+            K::If {
+                cond,
+                then_body,
+                else_body,
+            } => {
+                expressions.push(cond);
+                statements.extend(then_body);
+                statements.extend(else_body);
+            }
+            K::While { cond, body, .. } | K::DoWhile { cond, body, .. } => {
+                expressions.push(cond);
+                statements.extend(body);
+            }
+            K::For {
+                init,
+                cond,
+                update,
+                body,
+                ..
+            } => {
+                statements.push(init);
+                statements.push(update);
+                expressions.push(cond);
+                statements.extend(body);
+            }
+            K::ForEach {
+                name,
+                iterable,
+                body,
+                ..
+            } => {
+                findings.declares.push(name.clone());
+                expressions.push(iterable);
+                statements.extend(body);
+            }
+            K::Switch { value, arms } => {
+                expressions.push(value);
+                for arm in arms {
+                    statements.extend(&arm.body);
+                }
+            }
+            K::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
+                for resource in resources {
+                    findings.declares.push(resource.name.clone());
+                    expressions.push(&resource.value);
+                }
+                for catch in catches {
+                    findings.declares.push(catch.name.clone());
+                    statements.extend(&catch.body);
+                }
+                statements.extend(body);
+                statements.extend(finally_body.iter().flatten());
+            }
+            K::Synchronized { lock, body } => {
+                expressions.push(lock);
+                statements.extend(body);
+            }
+            K::Break { .. } | K::Continue { .. } | K::Fallback { .. } => {}
+        }
+    }
+    while let Some(expression) = expressions.pop() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(expression.origin.primary().bci()),
+        )?;
+        use ExprKind as E;
+        match &expression.kind {
+            E::Local(name) => findings.reads.push(name.clone()),
+            E::LocalAssign { name, value, .. } => {
+                findings.declares.push(name.clone());
+                expressions.push(value);
+            }
+            E::Call { receiver, args, .. } => {
+                expressions.extend(receiver.iter().map(|receiver| &**receiver));
+                expressions.extend(args);
+            }
+            E::New {
+                ty,
+                qualifier,
+                args,
+                ..
+            } => {
+                findings.pool_form_allocation |= ty.contains('$');
+                expressions.extend(qualifier.iter().map(|qualifier| &**qualifier));
+                expressions.extend(args);
+            }
+            E::Lambda { body, .. } => expressions.push(body),
+            E::MethodReference { qualifier, .. } => expressions.push(qualifier),
+            E::Field { receiver, .. } => expressions.push(receiver),
+            E::Index { array, index } => expressions.extend([&**array, &**index]),
+            E::PostfixUpdate { target, .. } => expressions.push(target),
+            E::ArrayLength { array } => expressions.push(array),
+            E::NewArray {
+                lengths,
+                initializers,
+                ..
+            } => {
+                expressions.extend(lengths);
+                expressions.extend(initializers.iter().flatten());
+            }
+            E::Binary { left, right, .. } => expressions.extend([&**left, &**right]),
+            E::Conditional {
+                test,
+                when_true,
+                when_false,
+            } => expressions.extend([&**test, &**when_true, &**when_false]),
+            E::Concat { parts } => expressions.extend(parts.iter().map(|part| &part.value)),
+            E::Cast { value, .. } => expressions.push(value),
+            E::Not { value } | E::Neg { value } => expressions.push(value),
+            E::InstanceOf { value, .. } => expressions.push(value),
+            E::Integer(_)
+            | E::IntegerConstantName { .. }
+            | E::Boolean(_)
+            | E::Long(_)
+            | E::Float(_)
+            | E::Double(_)
+            | E::Str(_)
+            | E::Null
+            | E::ClassLiteral { .. }
+            | E::Path(_)
+            | E::QualifiedThis { .. }
+            | E::Super { .. } => {}
+        }
+    }
+    Ok(())
+}
+
 /// Projects only the exact field-read expressions certified by a class-source capture proof.
 /// The AST is the same-run sidecar: this pass does not reanalyze or recover the method again.
 #[doc(hidden)]
@@ -1011,7 +1597,7 @@ pub fn project_class_source_captured_outer_reads(
         .iter()
         .map(CapturedReadReplacement::Outer)
         .collect::<Vec<_>>();
-    project_class_source_captured_reads(ast, &reads, budget)
+    project_class_source_captured_reads(ast, &reads, CaptureReadAnchor::Field, budget)
 }
 
 /// Projects only the exact field-read expressions certified as a root parameter capture.
@@ -1025,12 +1611,47 @@ pub fn project_class_source_captured_parameter_reads(
         .iter()
         .map(CapturedReadReplacement::Parameter)
         .collect::<Vec<_>>();
-    project_class_source_captured_reads(ast, &reads, budget)
+    project_class_source_captured_reads(ast, &reads, CaptureReadAnchor::Field, budget)
+}
+
+/// [`project_class_source_captured_parameter_reads`] with one conversion admitted over the field:
+/// the reading the double-brace allocation point states (change
+/// `recover-double-brace-allocation-site`), whose reads sit in the companion constructor's block
+/// statements — mostly argument positions the build converts explicitly.
+#[doc(hidden)]
+pub fn project_class_source_converted_parameter_reads(
+    ast: &ClassSourceMethodAst,
+    reads: &[ProvedCapturedParameterRead],
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
+    let reads = reads
+        .iter()
+        .map(CapturedReadReplacement::Parameter)
+        .collect::<Vec<_>>();
+    project_class_source_captured_reads(ast, &reads, CaptureReadAnchor::Converted, budget)
 }
 
 enum CapturedReadReplacement<'a> {
     Outer(&'a ProvedCapturedOuterRead),
     Parameter(&'a ProvedCapturedParameterRead),
+}
+
+/// Which node a proved capture read's anchor may sit on, as the containment pattern every
+/// widening in this family keeps: one reading admits one new shape only for the path whose slice
+/// proved it, so a widening on one slice never opens another slice's acceptance set as a side
+/// effect.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CaptureReadAnchor {
+    /// The field expression itself: the reading every companion-body projection states, because
+    /// the reads it re-spells sit where the child's own body wrote them.
+    Field,
+    /// The field expression, or one `Cast` over it. The build wraps a value in an explicit cast to
+    /// preserve an argument position's conversion, so a read of `add(Object)`'s argument is
+    /// `(java.lang.Object) this.val$x` — the field is one node inside the conversion, and the
+    /// conversion stays written around the local the read is re-spelled as. The double-brace
+    /// allocation point reads a companion's constructor, whose block statements are mostly
+    /// argument positions, so it states this reading.
+    Converted,
 }
 
 impl CapturedReadReplacement<'_> {
@@ -1052,6 +1673,7 @@ impl CapturedReadReplacement<'_> {
 fn project_class_source_captured_reads(
     ast: &ClassSourceMethodAst,
     reads: &[CapturedReadReplacement<'_>],
+    anchor: CaptureReadAnchor,
     budget: &mut Budget,
 ) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
     if reads.is_empty() {
@@ -1095,7 +1717,7 @@ fn project_class_source_captured_reads(
     let mut projection = (*ast.projection).clone();
     let mut matched = std::collections::BTreeMap::<u32, usize>::new();
     for statement in &mut projection.program.stmts {
-        project_captured_stmt(statement, &expected, &mut matched, budget)?;
+        project_captured_stmt(statement, &expected, anchor, &mut matched, budget)?;
     }
     if expected.keys().any(|bci| matched.get(bci) != Some(&1))
         || matched
@@ -1112,6 +1734,7 @@ fn project_class_source_captured_reads(
 fn project_captured_stmt(
     stmt: &mut crate::ast::Stmt,
     expected: &std::collections::BTreeMap<u32, &CapturedReadReplacement<'_>>,
+    anchor: CaptureReadAnchor,
     matched: &mut std::collections::BTreeMap<u32, usize>,
     budget: &mut Budget,
 ) -> Result<(), crate::stop::StopReason> {
@@ -1126,14 +1749,14 @@ fn project_captured_stmt(
     match &mut stmt.kind {
         StmtKind::Declare { value, .. } => value
             .iter_mut()
-            .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?,
+            .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?,
         StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
-            project_captured_expr(value, expected, matched, budget)?
+            project_captured_expr(value, expected, anchor, matched, budget)?
         }
         StmtKind::Assert { cond, message } => {
-            project_captured_expr(cond, expected, matched, budget)?;
+            project_captured_expr(cond, expected, anchor, matched, budget)?;
             if let Some(message) = message {
-                project_captured_expr(message, expected, matched, budget)?;
+                project_captured_expr(message, expected, anchor, matched, budget)?;
             }
         }
         StmtKind::FieldAssign {
@@ -1141,8 +1764,8 @@ fn project_captured_stmt(
         } => {
             receiver
                 .iter_mut()
-                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
-            project_captured_expr(value, expected, matched, budget)?;
+                .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?;
+            project_captured_expr(value, expected, anchor, matched, budget)?;
         }
         StmtKind::IndexAssign {
             array,
@@ -1150,28 +1773,28 @@ fn project_captured_stmt(
             value,
             ..
         } => {
-            project_captured_expr(array, expected, matched, budget)?;
-            project_captured_expr(index, expected, matched, budget)?;
-            project_captured_expr(value, expected, matched, budget)?;
+            project_captured_expr(array, expected, anchor, matched, budget)?;
+            project_captured_expr(index, expected, anchor, matched, budget)?;
+            project_captured_expr(value, expected, anchor, matched, budget)?;
         }
         StmtKind::ConstructorCall { args, .. } => args
             .iter_mut()
-            .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?,
+            .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?,
         StmtKind::Return { value } => value
             .iter_mut()
-            .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?,
+            .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?,
         StmtKind::If {
             cond,
             then_body,
             else_body,
         } => {
-            project_captured_expr(cond, expected, matched, budget)?;
-            project_captured_stmts(then_body, expected, matched, budget)?;
-            project_captured_stmts(else_body, expected, matched, budget)?;
+            project_captured_expr(cond, expected, anchor, matched, budget)?;
+            project_captured_stmts(then_body, expected, anchor, matched, budget)?;
+            project_captured_stmts(else_body, expected, anchor, matched, budget)?;
         }
         StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
-            project_captured_expr(cond, expected, matched, budget)?;
-            project_captured_stmts(body, expected, matched, budget)?;
+            project_captured_expr(cond, expected, anchor, matched, budget)?;
+            project_captured_stmts(body, expected, anchor, matched, budget)?;
         }
         StmtKind::For {
             init,
@@ -1180,19 +1803,19 @@ fn project_captured_stmt(
             body,
             ..
         } => {
-            project_captured_stmt(init, expected, matched, budget)?;
-            project_captured_expr(cond, expected, matched, budget)?;
-            project_captured_stmt(update, expected, matched, budget)?;
-            project_captured_stmts(body, expected, matched, budget)?;
+            project_captured_stmt(init, expected, anchor, matched, budget)?;
+            project_captured_expr(cond, expected, anchor, matched, budget)?;
+            project_captured_stmt(update, expected, anchor, matched, budget)?;
+            project_captured_stmts(body, expected, anchor, matched, budget)?;
         }
         StmtKind::ForEach { iterable, body, .. } => {
-            project_captured_expr(iterable, expected, matched, budget)?;
-            project_captured_stmts(body, expected, matched, budget)?;
+            project_captured_expr(iterable, expected, anchor, matched, budget)?;
+            project_captured_stmts(body, expected, anchor, matched, budget)?;
         }
         StmtKind::Switch { value, arms } => {
-            project_captured_expr(value, expected, matched, budget)?;
+            project_captured_expr(value, expected, anchor, matched, budget)?;
             for arm in arms {
-                project_captured_stmts(&mut arm.body, expected, matched, budget)?;
+                project_captured_stmts(&mut arm.body, expected, anchor, matched, budget)?;
             }
         }
         StmtKind::Try {
@@ -1202,19 +1825,19 @@ fn project_captured_stmt(
             finally_body,
         } => {
             for resource in resources {
-                project_captured_expr(&mut resource.value, expected, matched, budget)?;
+                project_captured_expr(&mut resource.value, expected, anchor, matched, budget)?;
             }
-            project_captured_stmts(body, expected, matched, budget)?;
+            project_captured_stmts(body, expected, anchor, matched, budget)?;
             for catch in catches {
-                project_captured_stmts(&mut catch.body, expected, matched, budget)?;
+                project_captured_stmts(&mut catch.body, expected, anchor, matched, budget)?;
             }
             if let Some(body) = finally_body {
-                project_captured_stmts(body, expected, matched, budget)?;
+                project_captured_stmts(body, expected, anchor, matched, budget)?;
             }
         }
         StmtKind::Synchronized { lock, body } => {
-            project_captured_expr(lock, expected, matched, budget)?;
-            project_captured_stmts(body, expected, matched, budget)?;
+            project_captured_expr(lock, expected, anchor, matched, budget)?;
+            project_captured_stmts(body, expected, anchor, matched, budget)?;
         }
         StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
     }
@@ -1224,11 +1847,12 @@ fn project_captured_stmt(
 fn project_captured_stmts(
     stmts: &mut [crate::ast::Stmt],
     expected: &std::collections::BTreeMap<u32, &CapturedReadReplacement<'_>>,
+    anchor: CaptureReadAnchor,
     matched: &mut std::collections::BTreeMap<u32, usize>,
     budget: &mut Budget,
 ) -> Result<(), crate::stop::StopReason> {
     for stmt in stmts {
-        project_captured_stmt(stmt, expected, matched, budget)?;
+        project_captured_stmt(stmt, expected, anchor, matched, budget)?;
     }
     Ok(())
 }
@@ -1236,6 +1860,7 @@ fn project_captured_stmts(
 fn project_captured_expr(
     expr: &mut Expr,
     expected: &std::collections::BTreeMap<u32, &CapturedReadReplacement<'_>>,
+    anchor: CaptureReadAnchor,
     matched: &mut std::collections::BTreeMap<u32, usize>,
     budget: &mut Budget,
 ) -> Result<(), crate::stop::StopReason> {
@@ -1272,6 +1897,15 @@ fn project_captured_expr(
             }
             return Ok(());
         }
+        // The anchor may sit on one conversion the position wrote rather than on the field
+        // itself: the `Cast` the build inserts to preserve an argument position's conversion
+        // carries the read's own anchor and holds the field expression one node in.
+        if anchor == CaptureReadAnchor::Converted
+            && let ExprKind::Cast { value, .. } = &mut expr.kind
+        {
+            project_captured_expr(value, expected, anchor, matched, budget)?;
+            return Ok(());
+        }
         *matched.entry(read.read_bci()).or_default() += 2;
         return Ok(());
     }
@@ -1282,33 +1916,35 @@ fn project_captured_expr(
         | ExprKind::ArrayLength { array: value }
         | ExprKind::Cast { value, .. }
         | ExprKind::Not { value }
-        | ExprKind::Neg { value } => project_captured_expr(value, expected, matched, budget)?,
+        | ExprKind::Neg { value } => {
+            project_captured_expr(value, expected, anchor, matched, budget)?
+        }
         ExprKind::Call { receiver, args, .. } => {
             receiver
                 .iter_mut()
-                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+                .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?;
             args.iter_mut()
-                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+                .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?;
         }
         ExprKind::New {
             qualifier, args, ..
         } => {
             qualifier
                 .iter_mut()
-                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+                .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?;
             args.iter_mut()
-                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+                .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?;
         }
         ExprKind::Lambda { body, .. }
         | ExprKind::MethodReference {
             qualifier: body, ..
-        } => project_captured_expr(body, expected, matched, budget)?,
+        } => project_captured_expr(body, expected, anchor, matched, budget)?,
         ExprKind::Field { receiver, .. } => {
-            project_captured_expr(receiver, expected, matched, budget)?
+            project_captured_expr(receiver, expected, anchor, matched, budget)?
         }
         ExprKind::Index { array, index } => {
-            project_captured_expr(array, expected, matched, budget)?;
-            project_captured_expr(index, expected, matched, budget)?;
+            project_captured_expr(array, expected, anchor, matched, budget)?;
+            project_captured_expr(index, expected, anchor, matched, budget)?;
         }
         ExprKind::NewArray {
             lengths,
@@ -1317,28 +1953,28 @@ fn project_captured_expr(
         } => {
             lengths
                 .iter_mut()
-                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+                .try_for_each(|e| project_captured_expr(e, expected, anchor, matched, budget))?;
             if let Some(values) = initializers {
-                values
-                    .iter_mut()
-                    .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+                values.iter_mut().try_for_each(|e| {
+                    project_captured_expr(e, expected, anchor, matched, budget)
+                })?;
             }
         }
         ExprKind::Binary { left, right, .. } => {
-            project_captured_expr(left, expected, matched, budget)?;
-            project_captured_expr(right, expected, matched, budget)?;
+            project_captured_expr(left, expected, anchor, matched, budget)?;
+            project_captured_expr(right, expected, anchor, matched, budget)?;
         }
         ExprKind::Conditional {
             test,
             when_true,
             when_false,
         } => {
-            project_captured_expr(test, expected, matched, budget)?;
-            project_captured_expr(when_true, expected, matched, budget)?;
-            project_captured_expr(when_false, expected, matched, budget)?;
+            project_captured_expr(test, expected, anchor, matched, budget)?;
+            project_captured_expr(when_true, expected, anchor, matched, budget)?;
+            project_captured_expr(when_false, expected, anchor, matched, budget)?;
         }
         ExprKind::Concat { parts } => parts.iter_mut().try_for_each(|part| {
-            project_captured_expr(&mut part.value, expected, matched, budget)
+            project_captured_expr(&mut part.value, expected, anchor, matched, budget)
         })?,
         ExprKind::Local(_)
         | ExprKind::Integer(_)
@@ -5630,8 +6266,17 @@ fn recover_inner(
         Ok(program) => program,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
+    // The AST is retained for three reasons, each a consumer that cannot re-derive it: the
+    // class-source assembler's own full retention, the site scan's two statement shapes (the
+    // companion-body projections read the node the scan found), and — since change
+    // `recover-double-brace-allocation-site` — one verified allocation of a class's **own
+    // anonymous child** (`X$N`), whose allocation point the double-brace presentation re-emits
+    // wherever the statement sits (the site scan does not own the assignment position the static
+    // initializer's field write is).
     if let Some(slot) = class_source_ast.as_deref_mut()
-        && (retain_all_method_asts || class_source_anonymous_site(&program).is_some())
+        && (retain_all_method_asts
+            || class_source_anonymous_site(&program).is_some()
+            || allocates_an_anonymous_child(request, anonymous_allocations.as_deref()))
         && let Some(member) = request
             .ir
             .declaration()
