@@ -1,0 +1,3 @@
+captures: 2725 per leg
+differing captures: 1440
+diff -r /tmp/jarde-scan-evidence/a/java-syntax-2026-10-05_array-covariant-store-patrol_fixture_as.jar::AS.class__976266ed.txt /tmp/jarde-scan-evidence/b/java-syntax-2026-10-05_array-covariant-store-patrol_fixture_as.jar::AS.class__976266ed.txt

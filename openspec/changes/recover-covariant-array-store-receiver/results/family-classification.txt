@@ -1,0 +1,15 @@
+scan-family-diff.txt: render 6, plane 6, timing 322
+render deltas (6):
+  classified   /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::AS.class__32eaf647.txt
+  classified   /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SC.class__0ae89a5d.txt
+  classified   /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SD.class__4aae5028.txt
+  classified   /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::AS.class__f82a260d.txt
+  classified   /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SC.class__5d7a4911.txt
+  classified   /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SD.class__8411996b.txt
+plane deltas (6):
+  with a render delta    /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::AS.class__32eaf647.err
+  with a render delta    /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SC.class__0ae89a5d.err
+  with a render delta    /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8-javac8::SD.class__4aae5028.err
+  with a render delta    /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::AS.class__f82a260d.err
+  with a render delta    /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SC.class__5d7a4911.err
+  with a render delta    /tmp/jarde-scan-family/a/recover-covariant-array-store-receiver_v8::SD.class__8411996b.err

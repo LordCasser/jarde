@@ -1,0 +1,5 @@
+scan-evidence-diff.txt: render 1, plane 1, timing 1438
+render deltas (1):
+  classified   /tmp/jarde-scan-evidence/a/java-syntax-2026-10-05_array-covariant-store-patrol_fixture_as.jar::AS.class__976266ed.txt
+plane deltas (1):
+  with a render delta    /tmp/jarde-scan-evidence/a/java-syntax-2026-10-05_array-covariant-store-patrol_fixture_as.jar::AS.class__976266ed.err
