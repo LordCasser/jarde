@@ -6642,6 +6642,91 @@
       "path": "tests/fixtures/proved-java-structure/anonymous-top-level/run.sh"
     },
     {
+      "blake3": "8a55232677561e6ca9488d7ac7902988bb504784fe5bf20aec4cb2717539c71b",
+      "bytes": 644,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/SHA256SUMS"
+    },
+    {
+      "blake3": "d8acda0629bcf3fd58fef3dc669e26858441a3265cc41fb24cb121a39e437fb2",
+      "bytes": 470,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/call-arg/CallArg$1.class"
+    },
+    {
+      "blake3": "467922e3a6b21368be7f76ea90d5dc42325ef321da6546d633c1bbdeb6df91d3",
+      "bytes": 299,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/call-arg/CallArg$Base.class"
+    },
+    {
+      "blake3": "b34641fe8565bdf7ba7fa2fbaabc64292e0667a5585439a9562b3f4232250031",
+      "bytes": 443,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/call-arg/CallArg$Helper.class"
+    },
+    {
+      "blake3": "365be88365429d5b99c2a61e7b068fdf3aef9f9774f37656e13e8de6795b4fe7",
+      "bytes": 511,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/call-arg/CallArg.class"
+    },
+    {
+      "blake3": "924a71a810526b04cc945f4263e576affdb1780a2777198cffd627adfefcee8d",
+      "bytes": 391,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/read-arg/ReadArg$1.class"
+    },
+    {
+      "blake3": "a6d1fa29ee899a1e4c93aeea308023a6369bc3f6a3b614038e8acdee9ca02405",
+      "bytes": 299,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/read-arg/ReadArg$Base.class"
+    },
+    {
+      "blake3": "3d80ed718dfca5ed9c274ac23cf33a8aec168308f802f0f68d38b73ed9b85bde",
+      "bytes": 431,
+      "path": "tests/fixtures/proved-java-structure/capture-super-arg-probes/read-arg/ReadArg.class"
+    },
+    {
+      "blake3": "def3a1d0ed88c2cf26c3c03832965ab878ea0bfb83eec3d32343722539e4eb56",
+      "bytes": 462,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/DB.java"
+    },
+    {
+      "blake3": "da474dad74b857b6cb4e95827af8040b30211ee70b037da63c7909760909ceba",
+      "bytes": 479,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/SHA256SUMS"
+    },
+    {
+      "blake3": "75594470243c2cf46bdb22dc05661cda2df493e4a6599564d11863c23e3f5eb0",
+      "bytes": 397,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/run.sh"
+    },
+    {
+      "blake3": "c07d777b5d87703fc590dd222ab1bf4a2ba2a44e668b9ecfae80bb60dad74a59",
+      "bytes": 441,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/v23/DB$1.class"
+    },
+    {
+      "blake3": "53490964691eb0845e213c2dd357db17bb00737db10525221d75500cba1026d2",
+      "bytes": 552,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/v23/DB$2.class"
+    },
+    {
+      "blake3": "7849a3a581e3fd8d73b59f7ea2b807f9ffe7ad882f6355be74572653c28bdd4d",
+      "bytes": 1345,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/v23/DB.class"
+    },
+    {
+      "blake3": "b9d6dfad78c87edb2e11146f173cdfd5b36787e8d73a2a8a0e99eff7e62ceaa0",
+      "bytes": 437,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/v8/DB$1.class"
+    },
+    {
+      "blake3": "929ffbd5bfee85ce76d6876a0918d4b8c3f2603d9bebee866fa80298379d989d",
+      "bytes": 552,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/v8/DB$2.class"
+    },
+    {
+      "blake3": "03e12b0590289da4d70a127037d887b926282cccfcac31ed4461f493dbeb69d8",
+      "bytes": 1345,
+      "path": "tests/fixtures/proved-java-structure/double-brace-capture/v8/DB.class"
+    },
+    {
       "blake3": "13e47669e064f4c66311540f23f82b6098665f6c869da17b92eaca5bfa7f232e",
       "bytes": 38,
       "path": "tests/fixtures/proved-java-structure/enum-arity/Empty.java"
