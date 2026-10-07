@@ -1,0 +1,38 @@
+self-test positive C8: base 1 -> patched 0 refusals
+self-test positive BN: base 8 -> patched 0 refusals
+SELF-TEST OK: known positives recover; known negative BNX 2 -> 2 refusals
+loose candidate classes (target descriptor in the pool): 16
+archive candidate classes: 6
+MOVED: openspec/evidence/java-syntax-2026-10-03/boxed-number-widening-patrol/fixture/C8.class (refusals 1 -> 0)
+--- /tmp/bn-render/sweep/class_openspec_evidence_java-syntax-2026-10-03_boxed-number-widening-patrol_fixture_C8.class.base.txt	2026-10-07 16:11:15
++++ /tmp/bn-render/sweep/class_openspec_evidence_java-syntax-2026-10-03_boxed-number-widening-patrol_fixture_C8.class.patched.txt	2026-10-07 16:11:15
+@@ -56,12 +56,13 @@
+     }
+ 
+     public static void main(java.lang.String[] arg0) {
+-        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+         // @method main([Ljava/lang/String;)V
+         // @declaration a static method of `C8`, member flags 0x0009
+         // recovered from bytecode; presentation is not claimed to compile
+-        // @bytecode 66 51 63 55 60 0 3 6 7 10 13 16 19 22 23 26 27 30 33 35 38 39 42 45 48 54 58 69 72 74 77 80
+-        // the parameter 0 of the invocation at BCI 63 is declared `java.lang.Number` presents `java.lang.Integer` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence
+-        jarde_refused_body();
++        java.lang.System.out.println((java.lang.String) new C8().useWitness());
+MOVED: openspec/evidence/java-syntax-2026-10-03/boxed-number-widening-patrol/fixture/c8.jar!C8.class (refusals 1 -> 0)
+--- /tmp/bn-render/sweep/jar_openspec_evidence_java-syntax-2026-10-03_boxed-number-widening-patrol_fixture_c8.jar_C8.base.txt	2026-10-07 16:11:16
++++ /tmp/bn-render/sweep/jar_openspec_evidence_java-syntax-2026-10-03_boxed-number-widening-patrol_fixture_c8.jar_C8.patched.txt	2026-10-07 16:11:16
+@@ -56,12 +56,13 @@
+     }
+ 
+     public static void main(java.lang.String[] arg0) {
+-        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+         // @method main([Ljava/lang/String;)V
+         // @declaration a static method of `C8`, member flags 0x0009
+         // recovered from bytecode; presentation is not claimed to compile
+-        // @bytecode 66 51 63 55 60 0 3 6 7 10 13 16 19 22 23 26 27 30 33 35 38 39 42 45 48 54 58 69 72 74 77 80
+-        // the parameter 0 of the invocation at BCI 63 is declared `java.lang.Number` presents `java.lang.Integer` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence
+-        jarde_refused_body();
++        java.lang.System.out.println((java.lang.String) new C8().useWitness());
+moved classes: 2
+non-render candidates (identical on both binaries, not counted): 0
+refusal sentences across the rendered candidates: 2 -> 0

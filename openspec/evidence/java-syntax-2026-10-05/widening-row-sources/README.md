@@ -38,3 +38,18 @@
 自检：[`results/selfcheck-javap-rows.sh`](../../../changes/recover-temporal-argument-widening/results/selfcheck-javap-rows.sh)
 对十二个类型重跑 `javap`、按本文件索引列（短名补到 33 列、长名单空格）重排后与该文件**逐字节 diff 相同**。
 
+## change `recover-boxed-number-widening` 的表行（2026-10-07）
+
+同一 rt.jar（sha256 同上）、同一命令。本片不新增转录行：六行的依据就是本文件**既有的**六装箱行
+（`Comparable` 片落的行），各自的 `extends java.lang.Number` 子句逐字在案；`java.lang.Number` 自身的行
+（`public abstract class java.lang.Number implements java.io.Serializable {`）也在本文件里，是六行目标
+的对照。索引列、命令与读法与前面各段同规。
+
+| 表 | 行（呈现类型 → 目标） | 依据（转录行） |
+| --- | --- | --- |
+| Number 族（**六行**，[装箱 Number 巡查](../../../evidence/java-syntax-2026-10-03/boxed-number-widening-patrol/README.md)） | `java.lang.Byte` / `java.lang.Short` / `java.lang.Integer` / `java.lang.Long` / `java.lang.Float` / `java.lang.Double` → `java.lang.Number` | 六个类的 header 各自逐字声明 `extends java.lang.Number`（转录行见上表 Comparable 段）；`java.lang.Number` 自身只 `implements java.io.Serializable`（不实现 `Comparable`），故六行的目标位只有 `Number` 一个。**行集封闭性**由反射核对（非 javadoc 记忆）：`changes/recover-boxed-number-widening/results/probe/number-universe.out` 对 rt.jar 全部 20400 个类名逐一 `Class.forName` 后测得 java.lang 直接子类**恰为这六个**、java.lang 间接子类 **0**；表外子类 `java.math.BigDecimal`/`BigInteger`、`java.util.concurrent.atomic.AtomicInteger`/`AtomicLong`/`Striped64` 如实记录并保持拒绝。 |
+
+自检：[`results/selfcheck-javap-rows.sh`](../../../changes/recover-boxed-number-widening/results/selfcheck-javap-rows.sh)
+对七型（六装箱 + `Number`）重跑 `javap`、按本文件索引列重排后与该文件逐字节 diff 相同
+（`SELF-CHECK OK: the committed lines are javap's own, byte for byte`）。
+
