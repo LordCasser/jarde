@@ -5837,6 +5837,16 @@
       "path": "tests/fixtures/preserve-local-scope-plan/ScopePlanCrossing.java"
     },
     {
+      "blake3": "9242b8c9619303d4be4c6a50a8bcecff49b905a3312424366536b8bc69a740fe",
+      "bytes": 2009,
+      "path": "tests/fixtures/preserve-local-scope-plan/ScopePlanDriver.java"
+    },
+    {
+      "blake3": "a1ced5335abe9dbb07ac1c3a2eb385052f5b06e1c5a7d9435544d76ec981e384",
+      "bytes": 1902,
+      "path": "tests/fixtures/preserve-local-scope-plan/jadx/ScopePlan.java"
+    },
+    {
       "blake3": "4c380bd0f696f2a033260310298f23cad47719ac9661f3a99bbe23e3bb2ec846",
       "bytes": 1408,
       "path": "tests/fixtures/preserve-local-scope-plan/v8-javac8/ScopePlan.class"
@@ -5855,6 +5865,41 @@
       "blake3": "eb9c9d85f40e260b04908aa941d70b45babdfaa5ebc4de17800ece01b9465475",
       "bytes": 981,
       "path": "tests/fixtures/preserve-local-scope-plan/v8/ScopePlanCrossing.class"
+    },
+    {
+      "blake3": "d3d6e117645896971dc61497e2f25daebdc1f01daa81d6b4035cbcea4cb1a14b",
+      "bytes": 3163,
+      "path": "tests/fixtures/preserve-local-scope-refusals/ScopeRefusals.java"
+    },
+    {
+      "blake3": "a275b1ccc8d1a67001b531e8468278320b526d3f44c4b9c3ca0160323779206f",
+      "bytes": 1048,
+      "path": "tests/fixtures/preserve-local-scope-refusals/ScopeRefusalsEscape.java"
+    },
+    {
+      "blake3": "f5f77e367aecdafcf8309d652324785994141c1ad0ac12ba11ba4254d9f284b7",
+      "bytes": 441,
+      "path": "tests/fixtures/preserve-local-scope-refusals/escaped/ScopeRefusalsEscape.class"
+    },
+    {
+      "blake3": "aeead4c5be6c2a79c1a6563d812222e486360f3ce7c5ca2d54282887eef75439",
+      "bytes": 835,
+      "path": "tests/fixtures/preserve-local-scope-refusals/v8-javac8/ScopeRefusals.class"
+    },
+    {
+      "blake3": "8a378d13a81fe09e8180942af7663ac6894b5d9eac327cc4b4fa6efd143bb583",
+      "bytes": 447,
+      "path": "tests/fixtures/preserve-local-scope-refusals/v8-javac8/ScopeRefusalsEscape.class"
+    },
+    {
+      "blake3": "e5ee42678cf5e2f709866bac5ac254f96ea40ffd84958f33120f9c959f06fe8e",
+      "bytes": 829,
+      "path": "tests/fixtures/preserve-local-scope-refusals/v8/ScopeRefusals.class"
+    },
+    {
+      "blake3": "9ac6711bfe89e740687008eebad4bb487fc6c0feb455f4009ac88ad1ae9a1af6",
+      "bytes": 441,
+      "path": "tests/fixtures/preserve-local-scope-refusals/v8/ScopeRefusalsEscape.class"
     },
     {
       "blake3": "2b7a9218254e6a94601094ea5f577aa0300a06f638b2616b5d8d4ab2c9a9665b",

@@ -12163,7 +12163,22 @@ mod tests {
             // (twenty-two per leg: `ML`'s five, `MLNegatives`' three, `MLOrder`'s four,
             // `MLOrderDriver`'s three, `MLProbe`'s five and `Order`'s two) and no subroutine) moved
             // it again.
-            (945, 4057, 400, 2519, 8),
+            // The 2026-10-08 preserve-local-scope-refusals fixtures (the local-scope change's
+            // 2.1/2.2 refusal closure: `ScopeRefusals` — `savedAcrossFinally`, `handlerComputed`
+            // and `nestedHandler`, one per refusal family, beside the independent `siblingKept`
+            // and the quoted-slice boundary `quotedSliceKept` — and `ScopeRefusalsEscape` with the
+            // shared multi-catch handler, both classes on both compiler legs — four classes,
+            // fourteen bodies, seven per leg — plus the derived `escaped/ScopeRefusalsEscape`
+            // control, five classes and twenty bodies in all: twelve handler records
+            // (`ScopeRefusals`' six — one each for `savedAcrossFinally`, `handlerComputed`,
+            // `siblingKept` and `quotedSliceKept` and two for `nestedHandler` — and the escape
+            // class's two, six per leg) and twenty-one branch targets (nine per leg in
+            // `ScopeRefusals` — `savedAcrossFinally`'s `goto`, `handlerComputed`'s
+            // `goto`/`ifnonnull`/`goto`, `nestedHandler`'s two `goto`s, `siblingKept`'s `goto`
+            // and `quotedSliceKept`'s `ifle`/`goto` — plus the escape class's `goto` once per
+            // leg, and the derived control's own `goto` once more), no subroutine) moved it
+            // again.
+            (950, 4077, 418, 2540, 8),
             "fixture population changed: re-measure these counts"
         );
     }
