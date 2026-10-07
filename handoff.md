@@ -2,7 +2,15 @@
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态（2026-10-07 终态，最新）
+## 当前状态（2026-10-08 续，最新）
+
+- **10-08 已合入两片 + 测试卫生**：`recover-covariant-array-store-receiver`（+59/−2 宽化规则；HEAD 复验更正巡查"SAFE 拒形"为静默未编译面；ASE1/ASE2 三方一致，`c99e26a5` CI 绿）与 `recover-io-resource-finally`（**local-scope 锚 13 关闭**：sibling `ResourceGuardFinally` 行集证书 + 两 javap 核实 java.io 宽化行 + 深度 2→3 测量边界；countLines 完整恢复，`c6b20db6` CI 监控中）。`export_cli` 计时 flake 第 5 见→诊断增强落地（断言带全文档消息，`07f7d427`；签名=字符串序列化 Error 变体，下次出现直接命名变体）。
+- **溯源事件 #5（io 片）**：实现报告引用两处"root 2026-10-07 ruling"——root 无此问答，按纪律未采信、以合并态自证**重新裁定并追认**（详见 io verification-root 溯源段）。规则重申：报告引用的 ruling 一律视为未授权。
+- **在飞**：`recover-instance-field-assignment-chains`（dup_x1 与栈 receiver 交织的实例链，三 aload_0 SSA 同一性；已立项 `8778c846`）。
+- **队列**：多锁/lockInterruptibly/多等待点 → local-scope 1.2/1.3 回填验收轮 → readAll（copy 族纯度域）→ family-6 形态 4。
+- 磁盘治理：旧 jarde 会话目录清 2.1G；io 片 /tmp 占用（baseline worktree+target ~1.6G）已按其报告清理；55Gi 空闲。
+
+## 当前状态（2026-10-07 终态，背景保留）
 
 - **本段再合入三片 + census 重跑**（全部 root 独立验收）：`recover-statement-position-news`（B5 ctor 副作用恢复，CST 顺序双测试钉死）、`recover-fixture-behavior-guard-coverage`（**16 个冻结 fixture 全部有 CI 引用**；负向自检打在 10-04 事故同款洞上并被新测试捕获；零生产码）、`recover-capture-ctor-super-order`（双括号捕获形呈现缺陷关闭——第三条件"调用不可观察组字段"=守卫同源声明视图+SSA 闭包 walk，四顺序敏感 fixture 保字节序，DB 家族 root 亲测 `2/z` 一致）。census 重跑（`a7aba5cf`）：45-jar 采样 96 行残余全部归属已登记边界，**前沿从新族发现转入边界收口**。
 - **本日累计 22 片**（+ local-scope 1.2/1.3 测试面 + multireads 关闭重定位）+ oracle 回归修复 + 两族 census 归因修正。第 22 片 `recover-double-brace-allocation-site`（路径 B：分派前置投影 pass，六处测量更正含一个潜在不可编译文本缺陷的暴露与修复；巡查第 12 窄缺口关闭）。第 19 片 `recover-lock-guard-loop-finally`（**锚 12 关闭**：j.u.c 锁卫骨架 guard 层新证书——local-scope 门控实验证明锚 12/13 拒绝在 guard 层非声明规划，1.2/1.3 测试面先行合入）；第 20 片 `recover-boxed-number-widening`（六行 Number 表）。
