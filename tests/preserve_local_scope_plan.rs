@@ -477,15 +477,22 @@ fn the_lifted_declaration_carries_the_origin_of_every_region_it_covers() {
 #[test]
 fn a_crossing_local_keeps_the_dependent_slice_refused() {
     // Re-measured when the re-sliced region-layer work landed
-    // (`recover-lock-guard-loop-finally`, the lock-guard certificate): both members below are
-    // **unchanged**, on both legs, byte for byte. The re-slice is the lock-guard certificate, whose
-    // shape is one catch-all row (no self-protection row), one invocation before the protected
-    // range whose receiver is an instance field read, and two release copies on that same field —
-    // so `flatFinally` (three rows, a named catch, the range at BCI 0) and `resourceAcrossFinally`
-    // (a local handle, a construction chain before the range, the resource lowering's
-    // self-protection row) keep the answer this test pins. These two expectations are the control,
-    // not a stale pin: the certificate that would flip them is the io-wrapping family's, which the
-    // change registers as its boundary.
+    // (`recover-lock-guard-loop-finally`, the lock-guard certificate): both members below were
+    // **unchanged** then, on both legs, byte for byte. The re-slice was the lock-guard certificate,
+    // whose shape is one catch-all row (no self-protection row), one invocation before the
+    // protected range whose receiver is an instance field read, and two release copies on that same
+    // field — so `flatFinally` (three rows, a named catch, the range at BCI 0) and
+    // `resourceAcrossFinally` (a local handle, a construction chain before the range, the resource
+    // lowering's self-protection row) kept the answer this test pinned. Those two expectations were
+    // the control, not a stale pin, and the certificate that would flip them is the io-wrapping
+    // family's, which that change registered as its boundary.
+    //
+    // `recover-io-resource-finally` is that family, and the control is updated **explicitly** here
+    // rather than deleted: `resourceAcrossFinally` is the anchor's own shape (the local handle, the
+    // three-layer construction chain, the read loop and the close), so it now presents whole with
+    // its local lifted, and `flatFinally` — three rows with a named catch and the range at BCI 0 —
+    // keeps its refusal verbatim: the row-set certificate's rows are catch-all and reach one
+    // handler, and that shape is not one of them.
     for (leg, bytes) in [("v8", CROSSING_V8), ("v8-javac8", CROSSING_V8_JAVAC8)] {
         let snapshot = open(bytes);
         let report = class_source_of(&snapshot, "ScopePlanCrossing");
@@ -496,35 +503,54 @@ fn a_crossing_local_keeps_the_dependent_slice_refused() {
             "{leg}: the render states its own header before anything is counted:\n{}",
             report.text
         );
-        for (name, quote) in [
-            ("flatFinally", "// @bytecode 0 15 28"),
-            ("resourceAcrossFinally", "// @bytecode 0 27 36 42 52"),
-        ] {
-            let run = run_of(&report, name);
-            assert_eq!(
-                run.content,
-                RecoveryContent::ExplanationOnly,
-                "{leg}/{name}: the dependent slice is refused whole:\n{}",
-                run.text
-            );
-            assert_eq!(
-                run.representation,
-                Representation::Mixed,
-                "{leg}/{name}: the refusal is the mixed presentation it was:\n{}",
-                run.text
-            );
-            assert!(
-                run.text.contains(quote) && run.text.contains(CROSSING),
-                "{leg}/{name}: the refusal names every instruction it covers and keeps its own \
-                 sentence:\n{}",
-                run.text
-            );
-            assert!(
-                !run.text.contains("return local1;") && !run.text.contains("int local1"),
-                "{leg}/{name}: no read of the crossing local is written outside its region:\n{}",
-                run.text
-            );
-        }
+        let flat = run_of(&report, "flatFinally");
+        assert_eq!(
+            flat.content,
+            RecoveryContent::ExplanationOnly,
+            "{leg}/flatFinally: the dependent slice is refused whole:\n{}",
+            flat.text
+        );
+        assert_eq!(
+            flat.representation,
+            Representation::Mixed,
+            "{leg}/flatFinally: the refusal is the mixed presentation it was:\n{}",
+            flat.text
+        );
+        assert!(
+            flat.text.contains("// @bytecode 0 15 28") && flat.text.contains(CROSSING),
+            "{leg}/flatFinally: the refusal names every instruction it covers and keeps its own \
+             sentence:\n{}",
+            flat.text
+        );
+        assert!(
+            !flat.text.contains("return local1;") && !flat.text.contains("int local1"),
+            "{leg}/flatFinally: no read of the crossing local is written outside its region:\n{}",
+            flat.text
+        );
+
+        // The flipped control, pinned whole: the same member that refused when the certificate
+        // landed renders the one `try { … } finally { … }` its source wrote, with the resource
+        // local declared above the statement and the close inside the `finally`.
+        let across = run_of(&report, "resourceAcrossFinally");
+        assert_eq!(
+            across.content,
+            RecoveryContent::ContainsStatements,
+            "{leg}/resourceAcrossFinally: the anchor's shape is presented whole:\n{}",
+            across.text
+        );
+        assert!(
+            across.text.contains(
+                "{\n    java.io.BufferedReader local1;\n    local1 = new java.io.BufferedReader((java.io.Reader) new java.io.InputStreamReader((java.io.InputStream) new java.io.FileInputStream(arg0), \"UTF-8\"));\n    try {\n        int local2;\n        local2 = 0;\n        while (local1.readLine() != null) {\n            local2 = local2 + 1;\n        }\n        int local4 = local2;\n        return local4;\n    } finally {\n        local1.close();\n    }\n}\n"
+            ),
+            "{leg}/resourceAcrossFinally: the statement, the lifted local and the close are the \
+             source's own form:\n{}",
+            across.text
+        );
+        assert!(
+            !across.text.contains(CROSSING) && !across.text.contains("@bytecode"),
+            "{leg}/resourceAcrossFinally: no refusal of the family is left in the member:\n{}",
+            across.text
+        );
     }
 }
 

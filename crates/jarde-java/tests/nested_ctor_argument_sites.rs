@@ -208,10 +208,19 @@ fn the_variant_constructions_present_and_the_negatives_stay_quoted() {
         recovered_text(X3, "sameClassTwice", "()Ljava/lang/String;", 0),
         "// @method sameClassTwice()Ljava/lang/String;\n// @declaration a static method of `X3`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    return java.lang.String.valueOf((java.lang.Object) new X3$TwoSame(new X3$B(\"1\"), new X3$B(\"2\")));\n}\n"
     );
-    // The three-layer run, the double-purpose nested value and the cross-block conditional keep
-    // their refusals: the body quotes bytecode and writes no partial `new` expression.
+    // The three-layer run presents since `recover-io-resource-finally`: the wrapped-stream chain
+    // (`new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))`) is three
+    // layers, and its outermost `new` has no single place to write unless the whole chain does. The
+    // update is explicit — the refusal this test used to pin is now the positive it states — and
+    // the depth boundary one layer deeper is pinned by this change's own fixture
+    // (`tests/fixtures/recover-io-resource-finally/NestedDepth.java`: `fourLayer` stays refused).
+    assert_eq!(
+        recovered_text(X4, "threeLayer", "()Ljava/lang/String;", 0),
+        "// @method threeLayer()Ljava/lang/String;\n// @declaration a static method of `X4`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    return java.lang.String.valueOf((java.lang.Object) new X4$Top(new X4$Mid(new X4$Leaf(\"z\"))));\n}\n"
+    );
+    // The double-purpose nested value and the cross-block conditional keep their refusals: the body
+    // quotes bytecode and writes no partial `new` expression.
     for (name, descriptor, quoted) in [
-        ("threeLayer", "()Ljava/lang/String;", "new X4$Top"),
         ("doubleUse", "()Ljava/lang/String;", "new X4$Tag"),
         ("crossBlock", "(Z)Ljava/lang/String;", "new X4$Tag"),
     ] {

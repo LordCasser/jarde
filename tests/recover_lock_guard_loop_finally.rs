@@ -258,11 +258,21 @@ fn the_negatives_keep_their_refusals_verbatim() {
 }
 
 #[test]
-fn the_resource_across_finally_probe_stays_outside_the_certificate() {
+fn the_resource_across_finally_probe_presents_under_the_resource_guard() {
     // The io-wrapping patrol's shape as a single-method probe: one local handle, a construction
-    // chain before the range, a loop, a saved return and a protected release. The certificate
-    // proves an acquire/release pair on one field read, so this shape keeps its refusal — the
-    // whole-class IO acceptance is another slice's, and this is the boundary measured.
+    // chain before the range, a loop, a saved return and a protected release. When this slice
+    // landed the certificate proved an acquire/release pair on one field read, so the probe kept
+    // its refusal — the boundary measured rather than assumed — and the whole-class IO acceptance
+    // was registered as another slice's.
+    //
+    // `recover-io-resource-finally` is that slice, and this control is updated **explicitly** here
+    // rather than deleted: the probe is now the resource-guard certificate's own shape (the
+    // resource local's one definition before the range, the row set over one handler, the same SSA
+    // value at the body's read and both closes), so it presents the one
+    // `try { … } finally { r.close(); }` its source wrote. The lock guard's own three methods are
+    // untouched — the first test of this file still pins them byte for byte — and the negatives
+    // beside them keep their refusals verbatim.
+    const PRESENTED: &str = "        java.io.BufferedReader local1;\n        local1 = new java.io.BufferedReader((java.io.Reader) new java.io.InputStreamReader((java.io.InputStream) new java.io.FileInputStream(arg0), \"UTF-8\"));\n        try {\n            int local2;\n            local2 = 0;\n            while (local1.readLine() != null) {\n                local2 = local2 + 1;\n            }\n            int local4 = local2;\n            return local4;\n        } finally {\n            local1.close();\n        }\n";
     for (leg, bytes) in [("v8", PROBE_V8), ("v8-javac8", PROBE_V8_JAVAC8)] {
         let snapshot = open(bytes);
         let report = report(&snapshot, "LockGuardProbe", EnvironmentPolicy::SingleClass);
@@ -275,13 +285,17 @@ fn the_resource_across_finally_probe_stays_outside_the_certificate() {
         );
         let method = method_text(&report, "countLines");
         assert!(
-            !method.contains("finally {") && method.contains("@bytecode"),
-            "{leg}: the probe keeps its refusal whole:\n{method}"
+            method.contains(PRESENTED),
+            "{leg}: the probe presents the statement, the loop and the close:\n{method}"
+        );
+        assert!(
+            !method.contains("@bytecode"),
+            "{leg}: no instruction of the probe stays quoted:\n{method}"
         );
         for refusal in PROBE {
             assert!(
-                method.contains(refusal),
-                "{leg}: the probe keeps `{refusal}` verbatim:\n{method}"
+                !method.contains(refusal),
+                "{leg}: the family's refusal `{refusal}` is gone:\n{method}"
             );
         }
     }
