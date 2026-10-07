@@ -8085,6 +8085,7 @@ pub(crate) fn build(
         builder.operations,
         builder.fields,
         inputs.class_fields,
+        inputs.class_methods,
         inputs.declaring_class,
         inputs.prologues,
         inputs.parameters,

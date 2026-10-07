@@ -5698,16 +5698,19 @@ fn a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue
 /// field flags as the negative cases state them, and `extra` writing one ordinary field after the
 /// captures when an interleave negative asks for it.
 fn capture_ctor_class(captures: &[(&str, u16)], extra: Option<(&str, u16)>) -> Vec<u8> {
-    capture_ctor_class_for("java/lang/Object", captures, extra)
+    capture_ctor_class_for("java/lang/Object", captures, extra, false)
 }
 
 /// The same capture-constructor body with the constructor call's owner named: the prologue-first
-/// presentation moves the group only past `java/lang/Object.<init>()V`, the one constructor call
-/// that cannot dispatch into user code, so the dispatch-guard negative names any other owner.
+/// presentation moves the group only past a call the group's fields cannot be observed through —
+/// `java/lang/Object.<init>()V` (owner, name and descriptor exactly), or a call whose class
+/// declares no code the call could dispatch into — so the dispatch-guard negatives name any other
+/// owner, with (`reader`) and without the class's own method beside the constructor.
 fn capture_ctor_class_for(
     super_owner: &str,
     captures: &[(&str, u16)],
     extra: Option<(&str, u16)>,
+    reader: bool,
 ) -> Vec<u8> {
     let mut pool = Pool::default();
     let _code = code_attribute(&mut pool);
@@ -5750,25 +5753,37 @@ fn capture_ctor_class_for(
     code = code
         .op(0x2a) // aload_0
         .op(0xb7)
-        .index(super_init) // invokespecial java/lang/Object.<init>()V
+        .index(super_init) // invokespecial <super>.<init>()V
         .op(0xb1); // return
     let method_name = pool.utf8("<init>");
     let method_descriptor = pool.utf8(&descriptor);
-    class_bytes_with(
-        &pool,
-        CLASS_FLAGS,
-        class,
-        superclass,
-        &fields,
-        &[MemberDef {
-            flags: 0x0000,
-            name: method_name,
-            descriptor: method_descriptor,
-            max_stack: 2,
-            max_locals: u16::try_from(captures.len() + 1).expect("few captures"),
-            code: code.done(),
-        }],
-    )
+    let mut methods = vec![MemberDef {
+        flags: 0x0000,
+        name: method_name,
+        descriptor: method_descriptor,
+        max_stack: 2,
+        max_locals: u16::try_from(captures.len() + 1).expect("few captures"),
+        code: code.done(),
+    }];
+    if reader {
+        // The class's own code beside the constructor: the method a superclass constructor can
+        // dispatch into during the call, and the shape that reads the moved capture there.
+        let field = field_ref(&mut pool, class, captures[0].0, "I");
+        methods.push(MemberDef {
+            flags: 0x0001,
+            name: pool.utf8("read"),
+            descriptor: pool.utf8("()I"),
+            max_stack: 1,
+            max_locals: 1,
+            code: Code::default()
+                .op(0x2a) // aload_0
+                .op(0xb4)
+                .index(field) // getfield p/Cap.<capture>:I
+                .op(0xac) // ireturn
+                .done(),
+        });
+    }
+    class_bytes_with(&pool, CLASS_FLAGS, class, superclass, &fields, &methods)
 }
 
 const ACC_FINAL_SYNTHETIC: u16 = 0x1010;
@@ -5997,14 +6012,15 @@ fn a_synthetic_capture_of_a_computed_value_stays_where_the_bytecode_made_it() {
 
 #[test]
 fn a_synthetic_capture_before_a_user_class_constructor_call_stays_where_the_bytecode_made_it() {
-    // The dispatch guard: the certified group moves only past `java/lang/Object.<init>()V`, the
-    // one constructor call that cannot dispatch into user code. A user class's constructor may
-    // call an overridden method on `this` while it runs, and that override reads the capture from
-    // the field this prefix writes — so where the bytes store the capture is what the override
-    // sees, and the verbatim order stays even though the prefix is the compiler's own group. The
-    // text this leaves is an uncompilable flexible constructor body, which fails loudly where
-    // the moved shape would fail silently.
-    let class = capture_ctor_class_for("p/Base", &[("val$base", ACC_FINAL_SYNTHETIC)], None);
+    // The dispatch guard, as `recover-capture-ctor-super-order` narrowed it to the fact that
+    // decides it: a user class's constructor may call a method on `this` while it runs, and that
+    // method reads the capture from the field this prefix writes — so where the bytes store the
+    // capture is what it sees. What the class's own method table states is whether any such code
+    // exists: this fixture declares one method beside the constructor, so the call can run this
+    // class's own code, the field is observable during it, and the verbatim order stays — an
+    // uncompilable flexible constructor body, which fails loudly where the moved shape would fail
+    // silently.
+    let class = capture_ctor_class_for("p/Base", &[("val$base", ACC_FINAL_SYNTHETIC)], None, true);
     let report = present_in(&class, b"<init>", b"(I)V", 2, capture_debug(1));
     assert!(report.produced(), "{:?}", report.stop());
     let write_line = line_with(&report, "this.val$base = arg1;");
@@ -6012,6 +6028,19 @@ fn a_synthetic_capture_before_a_user_class_constructor_call_stays_where_the_byte
     assert!(
         write_line < super_line,
         "a user-class constructor call keeps the capture write where its bytes put it:\n{}",
+        report.text
+    );
+
+    // The same bytes with the constructor alone: no code of the class can run during the call, so
+    // nothing can observe the field there — the group moves past it, the order the source had.
+    let class = capture_ctor_class_for("p/Base", &[("val$base", ACC_FINAL_SYNTHETIC)], None, false);
+    let report = present_in(&class, b"<init>", b"(I)V", 2, capture_debug(1));
+    assert!(report.produced(), "{:?}", report.stop());
+    let write_line = line_with(&report, "this.val$base = arg1;");
+    let super_line = line_with(&report, "super();");
+    assert!(
+        super_line < write_line,
+        "a class that declares no code the call could run moves the group past it:\n{}",
         report.text
     );
 }
