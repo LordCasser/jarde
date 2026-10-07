@@ -5827,6 +5827,36 @@
       "path": "tests/fixtures/preserve-guarded-return-expression/v8/GuardReturnEffectsRunner.class"
     },
     {
+      "blake3": "aa9d423df1421534589116e8910a941cc2cb4fd2b5731b062a1a7142e31c0244",
+      "bytes": 1984,
+      "path": "tests/fixtures/preserve-local-scope-plan/ScopePlan.java"
+    },
+    {
+      "blake3": "a9b7e734416cbf3e2784f109ec66feed54715c23ceff6c75a56de1459f2f427a",
+      "bytes": 782,
+      "path": "tests/fixtures/preserve-local-scope-plan/ScopePlanCrossing.java"
+    },
+    {
+      "blake3": "4c380bd0f696f2a033260310298f23cad47719ac9661f3a99bbe23e3bb2ec846",
+      "bytes": 1408,
+      "path": "tests/fixtures/preserve-local-scope-plan/v8-javac8/ScopePlan.class"
+    },
+    {
+      "blake3": "a58de15a90f33a264418400b77814c1054b3ec0a130bc49b500e3c4010ff6a9e",
+      "bytes": 987,
+      "path": "tests/fixtures/preserve-local-scope-plan/v8-javac8/ScopePlanCrossing.class"
+    },
+    {
+      "blake3": "4a4934f82a71023d03d5ba6f44690eb1205efd67d0264d35343d98475339f324",
+      "bytes": 1399,
+      "path": "tests/fixtures/preserve-local-scope-plan/v8/ScopePlan.class"
+    },
+    {
+      "blake3": "eb9c9d85f40e260b04908aa941d70b45babdfaa5ebc4de17800ece01b9465475",
+      "bytes": 981,
+      "path": "tests/fixtures/preserve-local-scope-plan/v8/ScopePlanCrossing.class"
+    },
+    {
       "blake3": "2b7a9218254e6a94601094ea5f577aa0300a06f638b2616b5d8d4ab2c9a9665b",
       "bytes": 475,
       "path": "tests/fixtures/preserve-monitor-exit-evaluation-order/NL.java"
