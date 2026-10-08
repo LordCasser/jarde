@@ -1,0 +1,42 @@
+=== the fused-layout trace at HEAD (instrumented guard.rs: the void completion's Transfer arm) ===
+=== MLProbe v8 (nestedLocksBranching — refused at HEAD) ===
+TRACE LG-TRANSFER transfer=52 block=38 successors=[] instructions=[38, 39, 42, 45, 46, 49, 52, 72] row=(14, 38, 55) handler=55
+TRACE LG-TRANSFER refuse at successor-less transfer block
+=== MLProbe v8-javac8 ===
+TRACE LG-TRANSFER transfer=52 block=38 successors=[] instructions=[38, 39, 42, 45, 46, 49, 52, 72] row=(14, 38, 55) handler=55
+TRACE LG-TRANSFER refuse at successor-less transfer block
+=== ML v8 (nestedLocks — presents: separate return block) ===
+TRACE LG-TRANSFER transfer=38 block=0 successors=[58] instructions=[0, 1, 4, 7, 8, 11, 14, 15, 16, 19, 20, 21, 24, 25, 28, 31, 32, 35, 38] row=(14, 24, 41) handler=41
+TRACE LG-TRANSFER transfer=24 block=0 successors=[37] instructions=[0, 1, 4, 7, 8, 9, 12, 13, 14, 17, 18, 21, 24] row=(7, 17, 27) handler=27
+=== MLOrder v8 (nestedLocksThrowing — presents: separate return block) ===
+TRACE LG-TRANSFER transfer=38 block=0 successors=[58] instructions=[0, 1, 4, 7, 8, 11, 14, 15, 16, 19, 20, 21, 24, 25, 28, 31, 32, 35, 38] row=(14, 24, 41) handler=41
+TRACE LG-TRANSFER transfer=42 block=0 successors=[62] instructions=[0, 1, 4, 7, 8, 11, 14, 15, 16, 19, 20, 21, 24, 25, 28, 29, 32, 35, 36, 39, 42] row=(14, 28, 45) handler=45
+TRACE LG-TRANSFER transfer=24 block=0 successors=[37] instructions=[0, 1, 4, 7, 8, 9, 12, 13, 14, 17, 18, 21, 24] row=(7, 17, 27) handler=27
+
+=== the admission's reading trace: which blocks reach the fused-tail reading (this slice's binary) ===
+--- MLProbe (recover-nested-lock-finally-bodies/v8/MLProbe.class) ---
+TRACE LGV transfer=52 block=38 successors=[] preds=[] instructions=[38, 39, 42, 45, 46, 49, 52, 72]
+TRACE FVR transfer=52 block=38 instructions=[38, 39, 42, 45, 46, 49, 52, 72]
+--- LK (recover-lock-guard-loop-finally/v8/LK.class) ---
+TRACE LGV transfer=53 block=27 successors=[66] preds=[[27]] instructions=[27, 28, 29, 32, 33, 34, 37, 38, 41, 46, 47, 50, 53]
+--- BG (recover-branching-guard-body/v8/BG.class) ---
+TRACE LGV transfer=52 block=38 successors=[] preds=[] instructions=[38, 39, 42, 45, 46, 49, 52, 72]
+TRACE FVR transfer=52 block=38 instructions=[38, 39, 42, 45, 46, 49, 52, 72]
+TRACE LGV transfer=55 block=41 successors=[] preds=[] instructions=[41, 42, 45, 48, 49, 52, 55, 75]
+TRACE FVR transfer=55 block=41 instructions=[41, 42, 45, 48, 49, 52, 55, 75]
+--- BGNegatives (recover-branching-guard-body/v8/BGNegatives.class) ---
+TRACE LGV transfer=55 block=41 successors=[] preds=[] instructions=[41, 42, 45, 48, 49, 52, 55, 75, 78, 79, 81, 84]
+TRACE FVR transfer=55 block=41 instructions=[41, 42, 45, 48, 49, 52, 55, 75, 78, 79, 81, 84]
+TRACE LGV transfer=55 block=41 successors=[] preds=[] instructions=[41, 42, 45, 48, 49, 52, 55, 75, 76, 79]
+TRACE FVR transfer=55 block=41 instructions=[41, 42, 45, 48, 49, 52, 55, 75, 76, 79]
+TRACE LGV transfer=57 block=43 successors=[] preds=[] instructions=[43, 44, 47, 50, 51, 54, 57, 77]
+TRACE FVR transfer=57 block=43 instructions=[43, 44, 47, 50, 51, 54, 57, 77]
+TRACE LGV transfer=81 block=67 successors=[] preds=[] instructions=[67, 68, 71, 74, 75, 78, 81, 101]
+TRACE FVR transfer=81 block=67 instructions=[67, 68, 71, 74, 75, 78, 81, 101]
+--- BGProbe (recover-branching-guard-body/v8/BGProbe.class) ---
+TRACE LGV transfer=66 block=52 successors=[] preds=[] instructions=[52, 53, 56, 59, 60, 63, 66, 86]
+TRACE FVR transfer=66 block=52 instructions=[52, 53, 56, 59, 60, 63, 66, 86]
+TRACE LGV transfer=56 block=42 successors=[] preds=[] instructions=[42, 43, 46, 49, 50, 53, 56, 76]
+TRACE FVR transfer=56 block=42 instructions=[42, 43, 46, 49, 50, 53, 56, 76]
+TRACE LGV transfer=48 block=34 successors=[] preds=[] instructions=[34, 35, 38, 41, 42, 45, 48, 68]
+TRACE FVR transfer=48 block=34 instructions=[34, 35, 38, 41, 42, 45, 48, 68]
