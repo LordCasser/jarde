@@ -29908,8 +29908,8 @@ fn capture_value_type(
 }
 
 /// The reference type a direct constant producer gives a value whose frame leaves its reference
-/// type unknown, through only stores and `dup`. Explicitly named frame types remain authoritative;
-/// a `null` push and a merge also keep the frame answer.
+/// type unknown, through only stores. Explicitly named frame types remain authoritative; a `null`
+/// push and a merge also keep the frame answer.
 fn constant_of_value(
     ssa: &SsaTable,
     operations: &Operations,
@@ -29940,13 +29940,6 @@ fn constant_of_value(
             }
             let stored = store_operand(operations, instruction_at(ssa, *bci)?)?;
             constant_of_value(ssa, operations, stored, depth + 1)
-        }
-        Operation::Duplicate => {
-            if depth >= MAX_VALUE_DEPTH {
-                return None;
-            }
-            let (_, copied) = single_stack_read(instruction_at(ssa, *bci)?)?;
-            constant_of_value(ssa, operations, copied, depth + 1)
         }
         _ => None,
     }

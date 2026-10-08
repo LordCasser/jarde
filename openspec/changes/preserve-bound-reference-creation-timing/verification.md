@@ -5,7 +5,7 @@
 - Reused the existing `receiver_nonnull` gate for direct and adapted bound method references. A direct reference without a same-run proof is refused.
 - Builder proves entry `this` only when the member facts say it has a receiver, uses the existing completed-allocation/stable-move proof, and recognizes String constant type/non-null facts from the existing constant producer reader. Static local 0 remains an ordinary nullable parameter.
 - For a refused bound reference inside a constructor argument, source mapping now retains the exact SSA producer's closed construction interval. Refused lambda capture producers are included only on that refusal path. Additional interval BCIs are counted in the existing bounded quote walk.
-- `constant_of_value` is reused for capture producer types and retains its original `RefType::Unknown` entry guard while following only direct String/Class constants through stores and `dup`; explicitly named frame types remain authoritative. `written_type` keeps its original call. The Class literal `dup; getClass; pop` source rendering remains conservatively refused and is recorded as a deferred duplicate-shape limitation.
+- `constant_of_value` is reused for capture producer types and retains its original `RefType::Unknown` entry guard while following direct String/Class constants through stores; explicitly named frame types remain authoritative. `written_type` keeps its original call. The Class literal `dup; getClass; pop` source rendering remains conservatively refused and is recorded as a deferred duplicate-shape limitation.
 
 ## Targeted checks
 
