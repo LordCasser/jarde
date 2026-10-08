@@ -9,3 +9,5 @@ root 与 Luna 独立核对 emitter、Budget、OperationLedger、bulk closing 与
 修改仅涉及两个测试文件。bulk 用例分别严格验证局部拒绝与全局扣费拒绝：总额不越限、四类归属求和、停止维度与 owner、完整有序流或真实有序前缀、Partial 汇总、最终记录是否实际交付。p1 用两份 Methods budget 先同时探测同一字节、再依次扣费，确定性确认探测不预留、第二次扣费被原子拒绝、拒绝未计费、取消与首停止归属保持准确。未移除拒绝路径或单 worker 的全部交付要求。
 
 本地复验：`cargo test --test bulk_recovery_delivery --test p1_budget_ledger --all-features --locked` 3 + 18 项通过；最终 all-features 二进制的预算用例连续 30 次通过；fmt、两个修改目标的 CI 同口径 clippy 与 strict OpenSpec 321/321 通过。使用主仓共享 target，单 Cargo worker/无 incremental。日志在 `results/local-gates/ci-delivery-*.log`。远端全工作区两 seed 与实际 JDK25 oracle 仍须在最新 HEAD 验收。
+
+修正提交为 `d6598866`，完整远端门禁见 [run 37808909595](https://github.com/LordCasser/jarde/actions/runs/37808909595)。根 handoff 提供最新 main HEAD 查询命令；后续文档提交只更新交接记录，不能用旧失败 run 代替当前状态。

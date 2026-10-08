@@ -39,3 +39,9 @@ CrossHold 四腿恢复 U 构造参数，字段 T 擦除为 Object并行为一致
 完整源码/原 class/jar/javap、JADX 与基线日志在 `evidence`；最终 root 对照在 `results/root`，初版回退在 `results/initial-root`。CLI 与生产源码 SHA 在 `results/acceptance-manifest.json`。最终生产源码只比完整 Java 重放 CLI 多一项等价 lint 修正：map_or(true, predicate) 换成 is_none_or(predicate)，工作区门禁在修正后的源码运行，不把重放 CLI hash冒充修正后新二进制 hash。
 
 下一片 raw receiver 的实测证据保存到 `openspec/evidence/raw-receiver-source-selection-patrol`，没有混入本片生产代码。只读巡查确认 static raw 参数/保留 raw alias 与被 renderer 折成 this 的 alias 必须区分；field T 的反事实编译不是当前反编译输出，不计为本片恢复。
+
+## 主线交接与远端复验入口
+
+实现、冻结输入和独立验收已合入并推送 main；仅剩 main 分支。15 个工作树的辅助树均为干净 detached 副本，HEAD 全为 main 祖先，未留下实现分支占用。受固定任务保护的副本被 Codex 归档工具拒绝删除，保留保护，不绕过。共享 target 已清空：先释放 17.1 GiB，再清理 CI 修正复验的 979.5 MiB。
+
+首次远端 CI 第二 seed 的既有 bulk 并发断言失败已单独取证和修正，见 [CI 验收说明](ci-delivery-verification-root.md)。修正提交 `d6598866` 的远端 [run 37808909595](https://github.com/LordCasser/jarde/actions/runs/37808909595) 执行全工作区两 seed、实际 JDK25 oracle、P3、构造实参、依赖边界、strict OpenSpec 及 MSRV/fuzz/supply chain。最后的交接文档提交不再改动生产或测试；接续时使用根 handoff 的命令核对最新 main HEAD 的实际 CI，不从历史基线推断状态。

@@ -11,4 +11,4 @@
 ## 3. Root 验收与主线交接
 
 - [x] 3.1 root 独立重放全部四腿完整类编译、独立运行与反射，并复核 production diff 和源码 SHA；正例必须全部闭环，拒绝族单列，泛型字段写前片冻结族无新增编译/行为退化。
-- [ ] 3.2 root 执行 fmt、CI 同口径 clippy、两固定 seed 工作区测试、显式 ignored P3/构造实参/绑定引用门禁与 strict OpenSpec；提交合入推送，更新 handoff/陈旧账本，核对最新 HEAD 的 CI，解除实现分支占用并清理共享 Cargo 残留。
+- [x] 3.2 root 执行 fmt、CI 同口径 clippy、两固定 seed 工作区测试、显式 ignored P3/构造实参/绑定引用门禁与 strict OpenSpec；提交合入推送，更新 handoff/陈旧账本，核对最新 HEAD 的 CI，解除实现分支占用并清理共享 Cargo 残留。
