@@ -19,6 +19,10 @@ the previous state's items + this change. The workspace run reports 3206 individ
 and 92 ignored, with no `test result: FAILED` line — so no known flake family was sighted and no
 single-test rerun was owed.)
 
+The workspace gate, the formatter and clippy were **re-run at the final commit** (`ea484b2e`, after
+the last edits): `WORKSPACE-EXIT=0`, `grep -c "test result: ok"` = 345, `grep -c "test result:
+FAILED"` = 0, `fmt-exit=0`, `clippy-exit=0` — the tails above are the final state's.
+
 ### Verbatim gate tails (final state, authoritative)
 
 ```
@@ -64,9 +68,10 @@ $ cargo test --test recover_lock_guard_loop_finally --locked -- --ignored
 
 ### Disk and `/tmp` occupancy
 
-`df -h /` before every build round; the lowest free space seen during the slice was 28 GiB (above
-the 20 GiB floor), after the workspace test's link step. `/tmp` occupancies this slice created and
-their fate:
+`df -h /` before every build round; the slice started at 46 GiB free and the lowest free space seen
+was **21 GiB** (above the 20 GiB floor, after the final workspace gate; the worktree's own
+`target/` holds 28 G of debug + all-targets artifacts, which a `cargo clean` here would free for
+the acceptance build). `/tmp` occupancies this slice created and their fate:
 
 | path | what | fate |
 | --- | --- | --- |
