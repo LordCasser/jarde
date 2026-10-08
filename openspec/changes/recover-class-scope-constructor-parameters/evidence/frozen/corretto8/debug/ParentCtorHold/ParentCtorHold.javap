@@ -1,0 +1,67 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/debug/ParentCtorHold/ParentCtorHold.jar!/ParentCtorHold.class
+  Last modified 2026-10-8; size 527 bytes
+  MD5 checksum 390a832415c22d37efbe6bc067833a27
+  Compiled from "ParentCtorHold.java"
+public class ParentCtorHold<T extends java.lang.Object> extends java.util.Vector<T>
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#22         // java/util/Vector."<init>":(I)V
+   #2 = Fieldref           #3.#23         // ParentCtorHold.v:Ljava/lang/Object;
+   #3 = Class              #24            // ParentCtorHold
+   #4 = Class              #25            // java/util/Vector
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               (Ljava/lang/Object;)V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               LParentCtorHold;
+  #16 = Utf8               LocalVariableTypeTable
+  #17 = Utf8               LParentCtorHold<TT;>;
+  #18 = Utf8               (TT;)V
+  #19 = Utf8               <T:Ljava/lang/Object;>Ljava/util/Vector<TT;>;
+  #20 = Utf8               SourceFile
+  #21 = Utf8               ParentCtorHold.java
+  #22 = NameAndType        #9:#26         // "<init>":(I)V
+  #23 = NameAndType        #5:#6          // v:Ljava/lang/Object;
+  #24 = Utf8               ParentCtorHold
+  #25 = Utf8               java/util/Vector
+  #26 = Utf8               (I)V
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public ParentCtorHold(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iconst_1
+         2: invokespecial #1                  // Method java/util/Vector."<init>":(I)V
+         5: aload_0
+         6: aload_1
+         7: putfield      #2                  // Field v:Ljava/lang/Object;
+        10: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0  this   LParentCtorHold;
+            0      11     1     v   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0  this   LParentCtorHold<TT;>;
+            0      11     1     v   TT;
+    Signature: #18                          // (TT;)V
+}
+Signature: #19                          // <T:Ljava/lang/Object;>Ljava/util/Vector<TT;>;
+SourceFile: "ParentCtorHold.java"

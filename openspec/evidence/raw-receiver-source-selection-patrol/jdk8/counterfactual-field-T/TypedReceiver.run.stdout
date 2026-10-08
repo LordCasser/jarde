@@ -1,0 +1,4 @@
+field=T
+method=observe;type-parameters=0;parameters=[TypedReceiver<T>]
+method=put;type-parameters=0;parameters=[TypedReceiver, java.lang.Object]
+behavior=java.lang.String:probe

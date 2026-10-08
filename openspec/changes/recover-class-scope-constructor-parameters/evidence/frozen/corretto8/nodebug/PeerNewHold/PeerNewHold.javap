@@ -1,0 +1,69 @@
+Classfile jar:file:/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/PeerNewHold/PeerNewHold.jar!/PeerNewHold.class
+  Last modified 2026-10-8; size 391 bytes
+  MD5 checksum a898126197b835484907665c9f5a5729
+public class PeerNewHold<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#17         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#18         // PeerNewHold.v:Ljava/lang/Object;
+   #3 = Class              #19            // PeerNewHold
+   #4 = Methodref          #3.#20         // PeerNewHold."<init>":(Ljava/lang/Object;Z)V
+   #5 = Class              #21            // java/lang/Object
+   #6 = Utf8               v
+   #7 = Utf8               Ljava/lang/Object;
+   #8 = Utf8               Signature
+   #9 = Utf8               TT;
+  #10 = Utf8               <init>
+  #11 = Utf8               (Ljava/lang/Object;)V
+  #12 = Utf8               Code
+  #13 = Utf8               (TT;)V
+  #14 = Utf8               (Ljava/lang/Object;Z)V
+  #15 = Utf8               (TT;Z)V
+  #16 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #17 = NameAndType        #10:#22        // "<init>":()V
+  #18 = NameAndType        #6:#7          // v:Ljava/lang/Object;
+  #19 = Utf8               PeerNewHold
+  #20 = NameAndType        #10:#14        // "<init>":(Ljava/lang/Object;Z)V
+  #21 = Utf8               java/lang/Object
+  #22 = Utf8               ()V
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #9                           // TT;
+
+  public PeerNewHold(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=4, locals=3, args_size=2
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: aload_1
+         6: putfield      #2                  // Field v:Ljava/lang/Object;
+         9: new           #3                  // class PeerNewHold
+        12: dup
+        13: aload_1
+        14: iconst_1
+        15: invokespecial #4                  // Method "<init>":(Ljava/lang/Object;Z)V
+        18: astore_2
+        19: return
+    Signature: #13                          // (TT;)V
+
+  public PeerNewHold(T, boolean);
+    descriptor: (Ljava/lang/Object;Z)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: aload_1
+         6: putfield      #2                  // Field v:Ljava/lang/Object;
+         9: return
+    Signature: #15                          // (TT;Z)V
+}
+Signature: #16                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

@@ -1,0 +1,41 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/nodebug/UnusedHold/UnusedHold.jar!/UnusedHold.class
+  Last modified 2026-10-8; size 276 bytes
+  MD5 checksum 645ac9864991b00e13e239193811c31d
+public class UnusedHold<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#13         // java/lang/Object."<init>":()V
+   #2 = Class              #14            // UnusedHold
+   #3 = Class              #15            // java/lang/Object
+   #4 = Utf8               v
+   #5 = Utf8               Ljava/lang/Object;
+   #6 = Utf8               Signature
+   #7 = Utf8               TT;
+   #8 = Utf8               <init>
+   #9 = Utf8               (Ljava/lang/Object;)V
+  #10 = Utf8               Code
+  #11 = Utf8               (TT;)V
+  #12 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #13 = NameAndType        #8:#16         // "<init>":()V
+  #14 = Utf8               UnusedHold
+  #15 = Utf8               java/lang/Object
+  #16 = Utf8               ()V
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #7                           // TT;
+
+  public UnusedHold(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+    Signature: #11                          // (TT;)V
+}
+Signature: #12                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

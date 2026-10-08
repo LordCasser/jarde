@@ -1,0 +1,59 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/nodebug/MultiHold/MultiHold.jar!/MultiHold.class
+  Last modified 2026-10-8; size 421 bytes
+  MD5 checksum aba616a4ae982b723bbbdcd7fdbefc5c
+public class MultiHold<T extends java.lang.Object, U extends java.lang.CharSequence> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#18         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #4.#19         // MultiHold.first:Ljava/lang/Object;
+   #3 = Fieldref           #4.#20         // MultiHold.second:Ljava/lang/CharSequence;
+   #4 = Class              #21            // MultiHold
+   #5 = Class              #22            // java/lang/Object
+   #6 = Utf8               first
+   #7 = Utf8               Ljava/lang/Object;
+   #8 = Utf8               Signature
+   #9 = Utf8               TT;
+  #10 = Utf8               second
+  #11 = Utf8               Ljava/lang/CharSequence;
+  #12 = Utf8               TU;
+  #13 = Utf8               <init>
+  #14 = Utf8               (Ljava/lang/Object;Ljava/lang/CharSequence;)V
+  #15 = Utf8               Code
+  #16 = Utf8               (TT;TU;)V
+  #17 = Utf8               <T:Ljava/lang/Object;U::Ljava/lang/CharSequence;>Ljava/lang/Object;
+  #18 = NameAndType        #13:#23        // "<init>":()V
+  #19 = NameAndType        #6:#7          // first:Ljava/lang/Object;
+  #20 = NameAndType        #10:#11        // second:Ljava/lang/CharSequence;
+  #21 = Utf8               MultiHold
+  #22 = Utf8               java/lang/Object
+  #23 = Utf8               ()V
+{
+  public T first;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #9                           // TT;
+
+  public U second;
+    descriptor: Ljava/lang/CharSequence;
+    flags: ACC_PUBLIC
+    Signature: #12                          // TU;
+
+  public MultiHold(T, U);
+    descriptor: (Ljava/lang/Object;Ljava/lang/CharSequence;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: aload_1
+         6: putfield      #2                  // Field first:Ljava/lang/Object;
+         9: aload_0
+        10: aload_2
+        11: putfield      #3                  // Field second:Ljava/lang/CharSequence;
+        14: return
+    Signature: #16                          // (TT;TU;)V
+}
+Signature: #17                          // <T:Ljava/lang/Object;U::Ljava/lang/CharSequence;>Ljava/lang/Object;

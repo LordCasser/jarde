@@ -1,0 +1,102 @@
+{
+  "Hold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/Hold/Hold.java"
+  },
+  "BoundHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/BoundHold/BoundHold.java"
+  },
+  "ArrayHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/ArrayHold/ArrayHold.java"
+  },
+  "WideHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/WideHold/WideHold.java"
+  },
+  "RepeatedHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/RepeatedHold/RepeatedHold.java"
+  },
+  "WideStoredHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/WideStoredHold/WideStoredHold.java"
+  },
+  "MultiHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/MultiHold/MultiHold.java"
+  },
+  "UnusedHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/UnusedHold/UnusedHold.java"
+  },
+  "RawNewHold": {
+    "kind": "positive",
+    "boundary": null,
+    "source": "fixtures/RawNewHold/RawNewHold.java"
+  },
+  "PeerNewHold": {
+    "kind": "partial_positive",
+    "boundary": "partial positive: the two-argument constructor parameter is class-bound T, while the one-argument constructor writes an erased Object into the same field after constructing a peer instance",
+    "source": "fixtures/PeerNewHold/PeerNewHold.java"
+  },
+  "ObjectHold": {
+    "kind": "boundary",
+    "boundary": "constructor formal parameter is Object, not class variable T",
+    "source": "fixtures/ObjectHold/ObjectHold.java"
+  },
+  "ErasedCastHold": {
+    "kind": "boundary",
+    "boundary": "source unchecked cast from Object to T has no runtime cast evidence",
+    "source": "fixtures/ErasedCastHold/ErasedCastHold.java"
+  },
+  "RewrittenHold": {
+    "kind": "boundary",
+    "boundary": "constructor parameter is reassigned before the field write",
+    "source": "fixtures/RewrittenHold/RewrittenHold.java"
+  },
+  "PhiHold": {
+    "kind": "boundary",
+    "boundary": "field RHS joins parameter and null through a conditional value",
+    "source": "fixtures/PhiHold/PhiHold.java"
+  },
+  "CallHold": {
+    "kind": "boundary",
+    "boundary": "field RHS comes from a method call",
+    "source": "fixtures/CallHold/CallHold.java"
+  },
+  "ShadowHold": {
+    "kind": "boundary",
+    "boundary": "constructor type variable T shadows class type variable T; declaration identity differs",
+    "source": "fixtures/ShadowHold/ShadowHold.java"
+  },
+  "CrossHold": {
+    "kind": "boundary",
+    "boundary": "constructor parameter belongs to class variable U while field belongs to T; body casts between erased variables",
+    "source": "fixtures/CrossHold/CrossHold.java"
+  },
+  "ParentCtorHold": {
+    "kind": "boundary",
+    "boundary": "constructor calls a non-Object superclass constructor",
+    "source": "fixtures/ParentCtorHold/ParentCtorHold.java"
+  },
+  "ThisDelegateHold": {
+    "kind": "boundary",
+    "boundary": "one constructor delegates with this(...) to another constructor",
+    "source": "fixtures/ThisDelegateHold/ThisDelegateHold.java"
+  },
+  "ExceptionHold": {
+    "kind": "boundary",
+    "boundary": "field write is enclosed by exception handling and a method call",
+    "source": "fixtures/ExceptionHold/ExceptionHold.java"
+  }
+}

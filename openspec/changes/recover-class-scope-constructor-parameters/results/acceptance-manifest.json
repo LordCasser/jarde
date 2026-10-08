@@ -1,0 +1,130 @@
+{
+  "baseline": "790579e23e6e84e0b45fe3565d20df2295ab8459",
+  "baseline_cli_sha256": "34a5288badf6fb40020c5117ef749ae4705545b29ee35a9fefda48de24276b53",
+  "java_replay_cli_sha256": "604d1f091198b1a6de5a39f180dd1c020a4aa95c984435bc8b19a2c9775d8e88",
+  "equivalent_post_replay_lint_change": "instructions.last().map_or(true, predicate) changed to is_none_or(predicate); complete CI-compatible gates run on final source",
+  "production_source_sha256": {
+    "crates/jarde-java/src/report.rs": "793bb383bf66ee0cbeca21641f72a16fdf175c2b1e8b12084b100850da955412",
+    "src/class_source.rs": "5431ee40e27ee62446c0131dc731dbc0564e51a2992aef2be0e0938768bca81e",
+    "src/facade.rs": "b368c48315696155e07cf0ff5d92745395665535eb33c04b73fe1851a018bdb6"
+  },
+  "families": {
+    "Hold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/Hold/Hold.java"
+    },
+    "BoundHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/BoundHold/BoundHold.java"
+    },
+    "ArrayHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/ArrayHold/ArrayHold.java"
+    },
+    "WideHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/WideHold/WideHold.java"
+    },
+    "RepeatedHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/RepeatedHold/RepeatedHold.java"
+    },
+    "WideStoredHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/WideStoredHold/WideStoredHold.java"
+    },
+    "MultiHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/MultiHold/MultiHold.java"
+    },
+    "UnusedHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/UnusedHold/UnusedHold.java"
+    },
+    "RawNewHold": {
+      "kind": "positive",
+      "boundary": null,
+      "source": "fixtures/RawNewHold/RawNewHold.java"
+    },
+    "PeerNewHold": {
+      "kind": "partial_positive",
+      "boundary": "partial positive: the two-argument constructor parameter is class-bound T, while the one-argument constructor writes an erased Object into the same field after constructing a peer instance",
+      "source": "fixtures/PeerNewHold/PeerNewHold.java"
+    },
+    "ObjectHold": {
+      "kind": "boundary",
+      "boundary": "constructor formal parameter is Object, not class variable T",
+      "source": "fixtures/ObjectHold/ObjectHold.java"
+    },
+    "ErasedCastHold": {
+      "kind": "boundary",
+      "boundary": "source unchecked cast from Object to T has no runtime cast evidence",
+      "source": "fixtures/ErasedCastHold/ErasedCastHold.java"
+    },
+    "RewrittenHold": {
+      "kind": "boundary",
+      "boundary": "constructor parameter is reassigned before the field write",
+      "source": "fixtures/RewrittenHold/RewrittenHold.java"
+    },
+    "PhiHold": {
+      "kind": "boundary",
+      "boundary": "field RHS joins parameter and null through a conditional value",
+      "source": "fixtures/PhiHold/PhiHold.java"
+    },
+    "CallHold": {
+      "kind": "boundary",
+      "boundary": "field RHS comes from a method call",
+      "source": "fixtures/CallHold/CallHold.java"
+    },
+    "ShadowHold": {
+      "kind": "boundary",
+      "boundary": "constructor type variable T shadows class type variable T; declaration identity differs",
+      "source": "fixtures/ShadowHold/ShadowHold.java"
+    },
+    "CrossHold": {
+      "kind": "boundary",
+      "boundary": "constructor parameter belongs to class variable U while field belongs to T; body casts between erased variables",
+      "source": "fixtures/CrossHold/CrossHold.java"
+    },
+    "ParentCtorHold": {
+      "kind": "boundary",
+      "boundary": "constructor calls a non-Object superclass constructor",
+      "source": "fixtures/ParentCtorHold/ParentCtorHold.java"
+    },
+    "ThisDelegateHold": {
+      "kind": "boundary",
+      "boundary": "one constructor delegates with this(...) to another constructor",
+      "source": "fixtures/ThisDelegateHold/ThisDelegateHold.java"
+    },
+    "ExceptionHold": {
+      "kind": "boundary",
+      "boundary": "field write is enclosed by exception handling and a method call",
+      "source": "fixtures/ExceptionHold/ExceptionHold.java"
+    }
+  },
+  "jdk_homes": {
+    "corretto8": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+    "openjdk23": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+  },
+  "final_cli_sha256": "3e7241e99b0068ede015b4dbc419212f5a4f63cb9a78f37429662b34f6d7a48c",
+  "seed_results": {
+    "5350648285461741569": {
+      "passed": 3243,
+      "failed": 0,
+      "ignored": 93
+    },
+    "5350648285461741570": {
+      "passed": 3243,
+      "failed": 0,
+      "ignored": 93
+    }
+  }
+}

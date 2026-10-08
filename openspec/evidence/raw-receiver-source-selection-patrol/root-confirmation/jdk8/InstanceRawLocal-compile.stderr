@@ -1,0 +1,6 @@
+/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde/openspec/evidence/raw-receiver-source-selection-patrol/jdk8/counterfactual-field-T/InstanceRawLocal.java:20: 错误: 不兼容的类型: Object无法转换为T
+        this.value = arg1;
+                     ^
+  其中, T是类型变量:
+    T扩展已在类 InstanceRawLocal中声明的Object
+1 个错误

@@ -1,0 +1,28 @@
+[
+  {
+    "leg": "jdk8",
+    "class": "RawParam",
+    "compile_exit": 0,
+    "counterfactual": true,
+    "run_exit": 0
+  },
+  {
+    "leg": "jdk8",
+    "class": "InstanceRawLocal",
+    "compile_exit": 1,
+    "counterfactual": true
+  },
+  {
+    "leg": "jdk23",
+    "class": "RawParam",
+    "compile_exit": 0,
+    "counterfactual": true,
+    "run_exit": 0
+  },
+  {
+    "leg": "jdk23",
+    "class": "InstanceRawLocal",
+    "compile_exit": 1,
+    "counterfactual": true
+  }
+]

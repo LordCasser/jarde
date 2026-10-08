@@ -1,0 +1,910 @@
+[
+  {
+    "leg": "javac8",
+    "class": "ArrayObjectSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ArrayObjectSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ArraySetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ArraySetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "CrossSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "CrossSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "DeferredSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "DeferredSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "Hold",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "Hold",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "MixedSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "MixedSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "NullSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "NullSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "ObjectHold",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ObjectHold",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ObjectSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ObjectSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "RawListField",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "RawListField",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "SCGA",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "SCGA",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "SCGB",
+    "version": "baseline",
+    "compile": 1,
+    "reflection_scope": "all_declared_parameters_and_field"
+  },
+  {
+    "leg": "javac8",
+    "class": "SCGB",
+    "version": "candidate",
+    "compile": 1,
+    "reflection_scope": "all_declared_parameters_and_field"
+  },
+  {
+    "leg": "javac8",
+    "class": "ShadowSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ShadowSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "TypedSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "TypedSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "RawBoundWriter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "RawBoundWriter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "SCGBCompat",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "SCGBCompat",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "ListWrong",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "ListWrong",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "NullLocal",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "NullLocal",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ParamReassigned",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ParamReassigned",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ParameterShift",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "ParameterShift",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "RawAllocationVariable",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "RawAllocationVariable",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac8",
+    "class": "RawParamArray",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "RawParamArray",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "StaticRawField",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac8",
+    "class": "StaticRawField",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "ArrayObjectSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ArrayObjectSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ArraySetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ArraySetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "CrossSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "CrossSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "DeferredSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "DeferredSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "Hold",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "Hold",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "MixedSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "MixedSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "NullSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "NullSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "ObjectHold",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ObjectHold",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ObjectSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ObjectSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "RawListField",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "RawListField",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "SCGA",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "SCGA",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "SCGB",
+    "version": "baseline",
+    "compile": 1,
+    "reflection_scope": "all_declared_parameters_and_field"
+  },
+  {
+    "leg": "javac23",
+    "class": "SCGB",
+    "version": "candidate",
+    "compile": 1,
+    "reflection_scope": "all_declared_parameters_and_field"
+  },
+  {
+    "leg": "javac23",
+    "class": "ShadowSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ShadowSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "TypedSetter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "TypedSetter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "RawBoundWriter",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "RawBoundWriter",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "SCGBCompat",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "SCGBCompat",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "all_declared_parameters_and_field",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "ListWrong",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "ListWrong",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "NullLocal",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "NullLocal",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ParamReassigned",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ParamReassigned",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ParameterShift",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "ParameterShift",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "RawAllocationVariable",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "RawAllocationVariable",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": false
+  },
+  {
+    "leg": "javac23",
+    "class": "RawParamArray",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "RawParamArray",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "StaticRawField",
+    "version": "baseline",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  },
+  {
+    "leg": "javac23",
+    "class": "StaticRawField",
+    "version": "candidate",
+    "compile": 0,
+    "reflection_scope": "field_only",
+    "run": 0,
+    "behavior_match": true,
+    "reflection_match": true
+  }
+]

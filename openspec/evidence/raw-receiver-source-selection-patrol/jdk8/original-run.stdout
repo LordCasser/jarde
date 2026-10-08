@@ -1,0 +1,14 @@
+field=T
+method=rawParameter<0>=[RawReceiver, java.lang.Object]
+method=staticRawLocal<0>=[RawReceiver, java.lang.Object]
+method=instanceRawLocal<0>=[java.lang.Object]
+method=thisReceiver<0>=[T]
+method=parameterizedReceiver<0>=[RawReceiver<T>, T]
+method=shadowMethodT<1>=[RawReceiver<T>, T]
+rawParameter=java.lang.Integer
+staticRawLocal=java.lang.Integer
+instanceRawLocal=java.lang.Integer
+thisReceiver=this
+parameterizedReceiver=parameterized
+shadowMethodT=4
+read=parameterized

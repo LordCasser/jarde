@@ -1,0 +1,18 @@
+{
+  "original": [
+    "field=T",
+    "method=put;type-parameters=0;parameters=[RawParam, java.lang.Object]",
+    "behavior=java.lang.Object"
+  ],
+  "candidate": [
+    "field=java.lang.Object",
+    "method=put;type-parameters=0;parameters=[RawParam, java.lang.Object]",
+    "behavior=java.lang.Object"
+  ],
+  "original_class_sha256": "357454ca1b1a6ef05a7c9b19b8aa03ba8205f8da556027f3a6c7cf7e3bd21a7b",
+  "candidate_class_sha256": "e25942f71e81f971afc481bab97016fc45dfa09ab37272e84ba2befecf5c0e0c",
+  "jarde_source_sha256": "012a256dca281c1d12b54291dd2e1e5ce8142f306bf2e8ce3b1945b621bfd65a",
+  "jar_subject_only": [
+    "RawParam.class"
+  ]
+}

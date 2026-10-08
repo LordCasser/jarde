@@ -1,0 +1,216 @@
+[
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target"
+    }
+  },
+  {
+    "name": "clippy",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked",
+      "--",
+      "-A",
+      "clippy::too_many_arguments",
+      "-A",
+      "clippy::cloned_ref_to_slice_refs",
+      "-A",
+      "clippy::collapsible_if",
+      "-A",
+      "clippy::type_complexity",
+      "-A",
+      "clippy::len_zero",
+      "-A",
+      "clippy::needless_option_as_deref",
+      "-A",
+      "clippy::needless_borrow",
+      "-A",
+      "clippy::useless_conversion",
+      "-A",
+      "clippy::large_enum_variant",
+      "-A",
+      "clippy::question_mark",
+      "-A",
+      "clippy::comparison_to_empty",
+      "-A",
+      "clippy::op_ref",
+      "-A",
+      "clippy::manual_range_patterns",
+      "-A",
+      "clippy::if_same_then_else",
+      "-A",
+      "clippy::filter_map_bool_then",
+      "-A",
+      "clippy::filter_next",
+      "-A",
+      "clippy::unneeded_struct_pattern",
+      "-A",
+      "clippy::redundant_guards",
+      "-A",
+      "clippy::map_identity",
+      "-A",
+      "clippy::redundant_slicing",
+      "-A",
+      "clippy::unnecessary_get_then_check",
+      "-A",
+      "clippy::unnecessary_unwrap",
+      "-A",
+      "clippy::redundant_locals",
+      "-A",
+      "clippy::replace_box",
+      "-A",
+      "clippy::map_clone",
+      "-A",
+      "clippy::unnecessary_mut_passed",
+      "-A",
+      "clippy::single_element_loop",
+      "-A",
+      "clippy::unnecessary_to_owned",
+      "-A",
+      "clippy::needless_lifetimes",
+      "-D",
+      "warnings"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target"
+    }
+  },
+  {
+    "name": "seed1",
+    "command": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target",
+      "PROPTEST_RNG_SEED": "5350648285461741569"
+    }
+  },
+  {
+    "name": "seed2",
+    "command": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target",
+      "PROPTEST_RNG_SEED": "5350648285461741570"
+    }
+  },
+  {
+    "name": "p3",
+    "command": [
+      "cargo",
+      "test",
+      "--test",
+      "p3_execution_comparison",
+      "--locked",
+      "--",
+      "--ignored"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target"
+    }
+  },
+  {
+    "name": "functional",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-cli",
+      "--test",
+      "json_cli",
+      "--locked",
+      "--",
+      "--ignored",
+      "--exact",
+      "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target"
+    }
+  },
+  {
+    "name": "bound",
+    "command": [
+      "cargo",
+      "test",
+      "--test",
+      "recover_proved_nonnull_bound_receivers",
+      "--locked",
+      "--",
+      "--ignored",
+      "--exact",
+      "every_stripped_anchor_answers_what_its_class_answers"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target"
+    }
+  },
+  {
+    "name": "strict",
+    "command": [
+      "openspec",
+      "validate",
+      "--all",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit": 0,
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TARGET_DIR": "shared primary checkout target"
+    }
+  }
+]

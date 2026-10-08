@@ -1,0 +1,34 @@
+{
+  "jdk_homes": {
+    "corretto8": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+    "openjdk23": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+  },
+  "jadx": "/opt/homebrew/bin/jadx",
+  "jadx_version": "1.5.6",
+  "cases": [
+    "ArrayHold",
+    "BoundHold",
+    "CallHold",
+    "CrossHold",
+    "ErasedCastHold",
+    "ExceptionHold",
+    "Hold",
+    "MultiHold",
+    "ObjectHold",
+    "ParentCtorHold",
+    "PeerNewHold",
+    "PhiHold",
+    "RawNewHold",
+    "RepeatedHold",
+    "RewrittenHold",
+    "ShadowHold",
+    "ThisDelegateHold",
+    "UnusedHold",
+    "WideHold",
+    "WideStoredHold"
+  ],
+  "modes": [
+    "debug",
+    "nodebug"
+  ]
+}

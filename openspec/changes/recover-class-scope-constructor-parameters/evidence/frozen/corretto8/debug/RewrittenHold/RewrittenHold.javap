@@ -1,0 +1,75 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/debug/RewrittenHold/RewrittenHold.jar!/RewrittenHold.class
+  Last modified 2026-10-8; size 604 bytes
+  MD5 checksum 66eb146e1b3c7bce87e86b37ada16f8d
+  Compiled from "RewrittenHold.java"
+public class RewrittenHold<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#23         // java/lang/Object."<init>":()V
+   #2 = Methodref          #24.#25        // java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+   #3 = Fieldref           #4.#26         // RewrittenHold.v:Ljava/lang/Object;
+   #4 = Class              #27            // RewrittenHold
+   #5 = Class              #28            // java/lang/Object
+   #6 = Utf8               v
+   #7 = Utf8               Ljava/lang/Object;
+   #8 = Utf8               Signature
+   #9 = Utf8               TT;
+  #10 = Utf8               <init>
+  #11 = Utf8               (Ljava/lang/Object;)V
+  #12 = Utf8               Code
+  #13 = Utf8               LineNumberTable
+  #14 = Utf8               LocalVariableTable
+  #15 = Utf8               this
+  #16 = Utf8               LRewrittenHold;
+  #17 = Utf8               LocalVariableTypeTable
+  #18 = Utf8               LRewrittenHold<TT;>;
+  #19 = Utf8               (TT;)V
+  #20 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #21 = Utf8               SourceFile
+  #22 = Utf8               RewrittenHold.java
+  #23 = NameAndType        #10:#29        // "<init>":()V
+  #24 = Class              #30            // java/lang/String
+  #25 = NameAndType        #31:#32        // valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+  #26 = NameAndType        #6:#7          // v:Ljava/lang/Object;
+  #27 = Utf8               RewrittenHold
+  #28 = Utf8               java/lang/Object
+  #29 = Utf8               ()V
+  #30 = Utf8               java/lang/String
+  #31 = Utf8               valueOf
+  #32 = Utf8               (Ljava/lang/Object;)Ljava/lang/String;
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #9                           // TT;
+
+  public RewrittenHold(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_1
+         5: invokestatic  #2                  // Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+         8: astore_1
+         9: aload_0
+        10: aload_1
+        11: putfield      #3                  // Field v:Ljava/lang/Object;
+        14: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   LRewrittenHold;
+            0      15     1     v   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   LRewrittenHold<TT;>;
+            0      15     1     v   TT;
+    Signature: #19                          // (TT;)V
+}
+Signature: #20                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "RewrittenHold.java"

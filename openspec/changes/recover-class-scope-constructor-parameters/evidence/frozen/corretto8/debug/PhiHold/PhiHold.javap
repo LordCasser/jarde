@@ -1,0 +1,85 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/debug/PhiHold/PhiHold.jar!/PhiHold.class
+  Last modified 2026-10-8; size 592 bytes
+  MD5 checksum a482fd88d4e2ac3fdb66cf3a5376ce9c
+  Compiled from "PhiHold.java"
+public class PhiHold<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#27         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#28         // PhiHold.v:Ljava/lang/Object;
+   #3 = Class              #29            // PhiHold
+   #4 = Class              #30            // java/lang/Object
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               (Ljava/lang/Object;Z)V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               LPhiHold;
+  #16 = Utf8               choose
+  #17 = Utf8               Z
+  #18 = Utf8               LocalVariableTypeTable
+  #19 = Utf8               LPhiHold<TT;>;
+  #20 = Utf8               StackMapTable
+  #21 = Class              #29            // PhiHold
+  #22 = Class              #30            // java/lang/Object
+  #23 = Utf8               (TT;Z)V
+  #24 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #25 = Utf8               SourceFile
+  #26 = Utf8               PhiHold.java
+  #27 = NameAndType        #9:#31         // "<init>":()V
+  #28 = NameAndType        #5:#6          // v:Ljava/lang/Object;
+  #29 = Utf8               PhiHold
+  #30 = Utf8               java/lang/Object
+  #31 = Utf8               ()V
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public PhiHold(T, boolean);
+    descriptor: (Ljava/lang/Object;Z)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iload_2
+         6: ifeq          13
+         9: aload_1
+        10: goto          14
+        13: aconst_null
+        14: putfield      #2                  // Field v:Ljava/lang/Object;
+        17: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      18     0  this   LPhiHold;
+            0      18     1     v   Ljava/lang/Object;
+            0      18     2 choose   Z
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      18     0  this   LPhiHold<TT;>;
+            0      18     1     v   TT;
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 13
+          locals = [ class PhiHold, class java/lang/Object, int ]
+          stack = [ class PhiHold ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 0
+          locals = [ class PhiHold, class java/lang/Object, int ]
+          stack = [ class PhiHold, class java/lang/Object ]
+    Signature: #23                          // (TT;Z)V
+}
+Signature: #24                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "PhiHold.java"

@@ -1,0 +1,62 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/debug/UnusedHold/UnusedHold.jar!/UnusedHold.class
+  Last modified 2026-10-8; size 499 bytes
+  MD5 checksum 77f58e1bdd8e2af79d6e6b27c097037e
+  Compiled from "UnusedHold.java"
+public class UnusedHold<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#22         // java/lang/Object."<init>":()V
+   #2 = Class              #23            // UnusedHold
+   #3 = Class              #24            // java/lang/Object
+   #4 = Utf8               v
+   #5 = Utf8               Ljava/lang/Object;
+   #6 = Utf8               Signature
+   #7 = Utf8               TT;
+   #8 = Utf8               <init>
+   #9 = Utf8               (Ljava/lang/Object;)V
+  #10 = Utf8               Code
+  #11 = Utf8               LineNumberTable
+  #12 = Utf8               LocalVariableTable
+  #13 = Utf8               this
+  #14 = Utf8               LUnusedHold;
+  #15 = Utf8               ignored
+  #16 = Utf8               LocalVariableTypeTable
+  #17 = Utf8               LUnusedHold<TT;>;
+  #18 = Utf8               (TT;)V
+  #19 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #20 = Utf8               SourceFile
+  #21 = Utf8               UnusedHold.java
+  #22 = NameAndType        #8:#25         // "<init>":()V
+  #23 = Utf8               UnusedHold
+  #24 = Utf8               java/lang/Object
+  #25 = Utf8               ()V
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #7                           // TT;
+
+  public UnusedHold(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LUnusedHold;
+            0       5     1 ignored   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LUnusedHold<TT;>;
+            0       5     1 ignored   TT;
+    Signature: #18                          // (TT;)V
+}
+Signature: #19                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "UnusedHold.java"

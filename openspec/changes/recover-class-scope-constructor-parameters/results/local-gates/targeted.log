@@ -1,0 +1,23 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.61s
+     Running tests/class_scope_constructor_projection.rs (/Users/lordcasser/workspace/projects/jarde/target/debug/deps/class_scope_constructor_projection-be6b9092a4cb99da)
+
+running 6 tests
+test class_scope_constructor_positives_recompile_and_preserve_behavior_and_binders ... ok
+test cross_hold_restores_u_constructor_binder_and_keeps_t_field_erased ... ok
+test peer_new_restores_only_the_two_argument_constructor_binder ... ok
+test positive_constructor_output_budget_and_early_cancellation_stop_cleanly ... ok
+test this_delegate_keeps_physical_signature_and_recompiles_with_original_behavior ... ok
+test unproved_constructor_shapes_keep_physical_parameters_and_refusals ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.11s
+
+     Running tests/generic_constructor_projection.rs (/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_constructor_projection-1aeeea95ae8c17ad)
+
+running 4 tests
+test body_budget_and_cancellation_never_publish_a_partial_constructor_header ... ok
+test generic_constructor_projects_atomically_for_debug_and_no_debug_classes ... ok
+test same_class_constructor_binding_and_adjacent_generic_method_are_independent ... ok
+test unproved_constructor_body_keeps_its_physical_parameter ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.24s

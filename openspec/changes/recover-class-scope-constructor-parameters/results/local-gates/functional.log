@@ -1,0 +1,10 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde)
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde/crates/jarde-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.26s
+     Running tests/json_cli.rs (/Users/lordcasser/workspace/projects/jarde/target/debug/deps/json_cli-126f95a844ae451b)
+
+running 1 test
+test functional_constructor_arguments_replay_the_complete_class_on_both_jdks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 16 filtered out; finished in 1.02s

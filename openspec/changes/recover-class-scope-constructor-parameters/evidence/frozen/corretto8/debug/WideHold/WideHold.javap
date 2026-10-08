@@ -1,0 +1,72 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/debug/WideHold/WideHold.jar!/WideHold.class
+  Last modified 2026-10-8; size 549 bytes
+  MD5 checksum 6c2f7fcf142565a28141475cb95d2bad
+  Compiled from "WideHold.java"
+public class WideHold<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#26         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#27         // WideHold.v:Ljava/lang/Object;
+   #3 = Class              #28            // WideHold
+   #4 = Class              #29            // java/lang/Object
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               (JDLjava/lang/Object;)V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               LWideHold;
+  #16 = Utf8               sequence
+  #17 = Utf8               J
+  #18 = Utf8               weight
+  #19 = Utf8               D
+  #20 = Utf8               LocalVariableTypeTable
+  #21 = Utf8               LWideHold<TT;>;
+  #22 = Utf8               (JDTT;)V
+  #23 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #24 = Utf8               SourceFile
+  #25 = Utf8               WideHold.java
+  #26 = NameAndType        #9:#30         // "<init>":()V
+  #27 = NameAndType        #5:#6          // v:Ljava/lang/Object;
+  #28 = Utf8               WideHold
+  #29 = Utf8               java/lang/Object
+  #30 = Utf8               ()V
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public WideHold(long, double, T);
+    descriptor: (JDLjava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=6, args_size=4
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: aload         5
+         7: putfield      #2                  // Field v:Ljava/lang/Object;
+        10: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0  this   LWideHold;
+            0      11     1 sequence   J
+            0      11     3 weight   D
+            0      11     5     v   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0  this   LWideHold<TT;>;
+            0      11     5     v   TT;
+    Signature: #22                          // (JDTT;)V
+}
+Signature: #23                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "WideHold.java"

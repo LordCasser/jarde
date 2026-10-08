@@ -1,0 +1,4 @@
+field=T
+method=observe;type-parameters=1;parameters=[ShadowMethodT<T>, T]
+method=put;type-parameters=1;parameters=[ShadowMethodT<T>, T]
+behavior=java.lang.Object

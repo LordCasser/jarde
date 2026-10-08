@@ -1,0 +1,18 @@
+{
+  "original": [
+    "field=T",
+    "method=put;type-parameters=0;parameters=[T]",
+    "behavior=java.lang.Object"
+  ],
+  "candidate": [
+    "field=T",
+    "method=put;type-parameters=0;parameters=[T]",
+    "behavior=java.lang.Object"
+  ],
+  "original_class_sha256": "1320acb37e0cadc4ed6ac25d05795ee463147cb457dd88909eaa9f7c286071ee",
+  "candidate_class_sha256": "1320acb37e0cadc4ed6ac25d05795ee463147cb457dd88909eaa9f7c286071ee",
+  "jarde_source_sha256": "0c40a3e0e09b0e97ca13b527dcc647a9f01c29a3f73f31f6d7de68b4408b0d8f",
+  "jar_subject_only": [
+    "ThisReceiver.class"
+  ]
+}

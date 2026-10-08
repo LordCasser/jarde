@@ -46,7 +46,7 @@
 use jarde_jvm::ir::{CompileStatus, Quality, Representation, SemanticValidation, SyntaxStatus};
 use jarde_jvm::method_ir::{Definition, MethodIr, Slot, SsaTable};
 use jarde_reader::budget::{Budget, BudgetDimension, UsageSnapshot};
-use jarde_reader::classfile::VerificationStatus;
+use jarde_reader::classfile::{DescriptorKind, VerificationStatus, descriptor_facts};
 use jarde_reader::model::{
     Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalDefinitionId, PhysicalMethodId,
     TerminationReason,
@@ -2248,8 +2248,23 @@ pub struct GenericConstructorCandidate {
     /// order. This is populated only for the exact single-block `aload_0; load*; invokespecial;
     /// return` prologue proved below.
     pub forwarded_parameter_slots: Vec<u16>,
+    /// Direct instance-field writes performed after the proved Object() call. A non-empty list
+    /// distinguishes the new initialization proof from the older empty/forwarding proof; each
+    /// load is tied to one physical write and may not be reused by another consumer.
+    pub field_writes: Vec<GenericConstructorFieldWrite>,
     /// The `init@1` record derived from the same run's prologue decision.
     pub init: InitRecord,
+}
+
+/// One proved `this.field = parameter` operation in a generic constructor body.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GenericConstructorFieldWrite {
+    pub bci: u32,
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    pub parameter_slot: u16,
 }
 
 #[doc(hidden)]
@@ -5284,10 +5299,10 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
     }
 }
 
-/// Capture only an exact constructor prologue: either an Object() call with every declared
-/// parameter unread, or direct, ordered forwarding of every parameter to the selected superclass
-/// constructor. The prologue is the decision from which the selected `InitRecord` is materialized;
-/// carrying its BCI here makes this sidecar independent of the caller's evidence selection.
+/// Capture a complete constructor shape proved from its AST, Code, SSA, operations, and effects:
+/// an empty Object() body, ordered forwarding to the selected superclass constructor, or direct
+/// parameter-to-field writes after Object(). The prologue is the decision from which the selected
+/// `InitRecord` is materialized; carrying it makes this sidecar independent of evidence selection.
 fn generic_constructor_candidate(
     program: &build::Program,
     names: &NameTable,
@@ -5297,6 +5312,7 @@ fn generic_constructor_candidate(
     prologues: &init::Prologues,
     parameter_types: &std::collections::BTreeMap<u16, Type>,
     constructor_descriptor: &str,
+    declaring_class: Option<&[u8]>,
     budget: &mut Budget,
 ) -> Result<Option<GenericConstructorCandidate>, StopReason> {
     macro_rules! no_candidate {
@@ -5312,12 +5328,11 @@ fn generic_constructor_candidate(
         None,
     )?;
     if program.ragged
-        || program.stmts.len() != 2
-        || program.statements != 2
+        || program.stmts.len() < 2
+        || program.statements != program.stmts.len()
         || code.stopped_at.is_some()
         || code.exception_handler_count != 0
         || !code.exception_handlers.is_empty()
-        || (code.instructions.len() != 3 && code.instructions.len() != parameter_types.len() + 3)
         || ssa.blocks().len() != 1
         || !ssa.phis().is_empty()
     {
@@ -5329,6 +5344,22 @@ fn generic_constructor_candidate(
         9,
         None,
     )?;
+    if program.stmts.len() > 2
+        || (code.instructions.len() != 3 && code.instructions.len() != parameter_types.len() + 3)
+    {
+        return generic_constructor_field_writes_candidate(
+            program,
+            names,
+            ssa,
+            operations,
+            code,
+            prologues,
+            parameter_types,
+            constructor_descriptor,
+            declaring_class,
+            budget,
+        );
+    }
     let parameter_slots: Vec<u16> = parameter_types.keys().copied().collect();
     let StmtKind::ConstructorCall {
         target: ConstructorTarget::Super,
@@ -5499,6 +5530,339 @@ fn generic_constructor_candidate(
     Ok(Some(GenericConstructorCandidate {
         parameters,
         forwarded_parameter_slots: forwarded_parameter_slots.to_vec(),
+        field_writes: Vec::new(),
+        init,
+    }))
+}
+
+/// Prove the deliberately small constructor initializer: Object(), followed by one or more direct
+/// writes of unchanged parameter loads to this class's instance fields, then return.
+fn generic_constructor_field_writes_candidate(
+    program: &build::Program,
+    names: &NameTable,
+    ssa: &SsaTable,
+    operations: &Operations,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    prologues: &init::Prologues,
+    parameter_types: &std::collections::BTreeMap<u16, Type>,
+    constructor_descriptor: &str,
+    declaring_class: Option<&[u8]>,
+    budget: &mut Budget,
+) -> Result<Option<GenericConstructorCandidate>, StopReason> {
+    macro_rules! no_candidate {
+        () => {{ return Ok(None) }};
+    }
+    crate::stop::poll(budget, None)?;
+    let field_count = program.stmts.len().saturating_sub(2);
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(field_count)
+            .unwrap_or(u64::MAX)
+            .saturating_mul(7)
+            .saturating_add(
+                u64::try_from(parameter_types.len())
+                    .unwrap_or(u64::MAX)
+                    .saturating_mul(2),
+            ),
+        None,
+    )?;
+    if field_count == 0
+        || program.ragged
+        || program.statements != program.stmts.len()
+        || code.stopped_at.is_some()
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+        || ssa.blocks().len() != 1
+        || !ssa.phis().is_empty()
+        || !matches!(program.stmts.first().map(|stmt| &stmt.kind), Some(StmtKind::ConstructorCall { target: ConstructorTarget::Super, args }) if args.is_empty())
+        || !matches!(
+            program.stmts.last().map(|stmt| &stmt.kind),
+            Some(StmtKind::Return { value: None })
+        )
+    {
+        no_candidate!();
+    }
+    let descriptor =
+        match descriptor_facts(constructor_descriptor.as_bytes(), DescriptorKind::Method) {
+            Ok(descriptor) if constructor_descriptor.ends_with(")V") => descriptor,
+            _ => no_candidate!(),
+        };
+    if descriptor.parameters().len() != parameter_types.len() {
+        no_candidate!();
+    }
+    let slots = match jarde_jvm::method_ir::parameter_positions(&descriptor, false) {
+        Some(slots) if slots.len() == descriptor.parameters().len() => slots,
+        _ => no_candidate!(),
+    };
+    let mut parameter_descriptors = std::collections::BTreeMap::new();
+    for (component, slot) in descriptor.parameters().iter().zip(slots) {
+        crate::stop::poll(budget, None)?;
+        let Some(bytes) = component.bytes(constructor_descriptor.as_bytes()) else {
+            no_candidate!();
+        };
+        let Ok(spelling) = std::str::from_utf8(bytes) else {
+            no_candidate!();
+        };
+        if !parameter_types.contains_key(&slot) {
+            no_candidate!();
+        }
+        parameter_descriptors.insert(slot, spelling.to_owned());
+    }
+    if parameter_descriptors.len() != parameter_types.len() {
+        no_candidate!();
+    }
+
+    let init = prologues.record();
+    let Some(init_bci) = init.bci else {
+        no_candidate!();
+    };
+    let Some(declaring_class) = declaring_class else {
+        no_candidate!();
+    };
+    let Ok(this_class) = std::str::from_utf8(declaring_class) else {
+        no_candidate!();
+    };
+    if !init.presented
+        || init.target != Some(ConstructorTarget::Super)
+        || init.class.as_deref() != Some("java/lang/Object")
+        || init.declared.as_deref() != Some(this_class)
+        || init_bci != program.stmts[0].origin.primary().bci()
+    {
+        no_candidate!();
+    }
+    let Some(Operation::Invoke(target)) = operations.get(init_bci) else {
+        no_candidate!();
+    };
+    if target.kind() != crate::facts::InvokeKind::Special
+        || target.owner() != "java/lang/Object"
+        || target.name() != "<init>"
+        || target.descriptor() != "()V"
+        || target.is_interface_reference()
+    {
+        no_candidate!();
+    }
+
+    let expected_instruction_count = field_count.saturating_mul(3).saturating_add(3);
+    if code.instructions.len() != expected_instruction_count
+        || ssa.blocks()[0].instructions().len() != expected_instruction_count
+        || ssa.effects().instructions().len() != expected_instruction_count
+        || operations.iter().count() != expected_instruction_count
+    {
+        no_candidate!();
+    }
+    let mut seen_bcis = std::collections::BTreeSet::new();
+    for (index, ((raw, instruction), effect)) in code
+        .instructions
+        .iter()
+        .zip(ssa.blocks()[0].instructions())
+        .zip(ssa.effects().instructions())
+        .enumerate()
+    {
+        crate::stop::poll(budget, Some(raw.bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(raw.bci),
+        )?;
+        if raw.bci != instruction.bci()
+            || raw.bci != effect.bci()
+            || raw.opcode != instruction.opcode()
+            || raw.opcode != effect.opcode()
+            || !seen_bcis.insert(raw.bci)
+            || !effect.handlers().is_empty()
+            || effect.may_throw() != matches!(raw.opcode, 0xb7 | 0xb5)
+            || (index == 0 && raw.opcode != 0x2a)
+            || (index == 1 && raw.opcode != 0xb7)
+            || (index + 1 == expected_instruction_count && raw.opcode != 0xb1)
+        {
+            no_candidate!();
+        }
+    }
+    let instructions = ssa.blocks()[0].instructions();
+    let [(Slot::Local(0), entry_this)] = instructions[0].reads() else {
+        no_candidate!();
+    };
+    let [(Slot::Stack(0), uninitialized_this)] = instructions[0].writes() else {
+        no_candidate!();
+    };
+    let [(Slot::Local(0), initialized_this)] = instructions[1].writes() else {
+        no_candidate!();
+    };
+    if !matches!(
+        ssa.value(*entry_this).def(),
+        Definition::Entry {
+            slot: Slot::Local(0),
+            ..
+        }
+    ) || !matches!(
+        operations.get(code.instructions[0].bci),
+        Some(Operation::Load { slot: 0 })
+    ) || !matches!(operations.get(init_bci), Some(Operation::Invoke(actual)) if actual == target)
+        || !matches!(instructions[1].reads(), [(Slot::Stack(0), value)] if value == uninitialized_this)
+        || !matches!(ssa.value(*initialized_this).def(), Definition::Instruction { bci, .. } if *bci == init_bci)
+    {
+        no_candidate!();
+    }
+
+    let mut parameters = Vec::with_capacity(parameter_types.len());
+    for slot in parameter_types.keys() {
+        crate::stop::poll(budget, None)?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            None,
+        )?;
+        let Some(name) = names.whole(*slot) else {
+            no_candidate!();
+        };
+        parameters.push((*slot, name.text().to_owned()));
+    }
+    let parameter_names: std::collections::BTreeMap<_, _> = parameters
+        .iter()
+        .map(|(slot, name)| (*slot, name.as_str()))
+        .collect();
+    let mut field_writes = Vec::with_capacity(field_count);
+    for field_index in 0..field_count {
+        let stmt = &program.stmts[field_index + 1];
+        let base = field_index * 3 + 2;
+        let receiver_load = &instructions[base];
+        let parameter_load = &instructions[base + 1];
+        let field_instruction = &instructions[base + 2];
+        let receiver_bci = code.instructions[base].bci;
+        let parameter_bci = code.instructions[base + 1].bci;
+        let field_bci = code.instructions[base + 2].bci;
+        if receiver_load.opcode() != 0x2a
+            || !matches!(
+                operations.get(receiver_bci),
+                Some(Operation::Load { slot: 0 })
+            )
+            || !matches!(receiver_load.reads(), [(Slot::Local(0), value)] if *value == *initialized_this)
+            || !matches!(receiver_load.writes(), [(Slot::Stack(_), _)])
+        {
+            no_candidate!();
+        }
+        let [(Slot::Local(parameter_slot), parameter_entry)] = parameter_load.reads() else {
+            no_candidate!();
+        };
+        let Some(parameter_type) = parameter_types.get(parameter_slot) else {
+            no_candidate!();
+        };
+        let Some(parameter_descriptor) = parameter_descriptors.get(parameter_slot) else {
+            no_candidate!();
+        };
+        let expected_load = if *parameter_slot <= 3 {
+            (match parameter_type {
+                Type::Long => 0x1e,
+                Type::Float => 0x22,
+                Type::Double => 0x26,
+                Type::Reference(_) => 0x2a,
+                Type::Int | Type::Boolean | Type::Byte | Type::Char | Type::Short => 0x1a,
+            }) + *parameter_slot as u8
+        } else {
+            match parameter_type {
+                Type::Long => 0x16,
+                Type::Float => 0x17,
+                Type::Double => 0x18,
+                Type::Reference(_) => 0x19,
+                Type::Int | Type::Boolean | Type::Byte | Type::Char | Type::Short => 0x15,
+            }
+        };
+        if parameter_load.opcode() != expected_load
+            || !matches!(operations.get(parameter_bci), Some(Operation::Load { slot }) if slot == parameter_slot)
+            || !matches!(ssa.value(*parameter_entry).def(), Definition::Entry { slot: Slot::Local(entry_slot), .. } if entry_slot == parameter_slot)
+            || !matches!(parameter_load.writes(), [(Slot::Stack(_), parameter_value)]
+                if ssa.value(*parameter_value).uses().len() == 1
+                    && ssa.value(*parameter_value).uses()[0].bci() == Some(field_bci))
+        {
+            no_candidate!();
+        }
+        let Some(Operation::Field {
+            access: FieldAccess::Write,
+            is_static: false,
+            owner,
+            name,
+            descriptor,
+        }) = operations.get(field_bci)
+        else {
+            no_candidate!();
+        };
+        if owner != this_class
+            || descriptor != parameter_descriptor
+            || field_instruction.opcode() != 0xb5
+            || !field_instruction.writes().is_empty()
+            || field_instruction.reads().len() != 2
+        {
+            no_candidate!();
+        }
+        let [(Slot::Stack(_), receiver_value)] = receiver_load.writes() else {
+            no_candidate!();
+        };
+        let [(Slot::Stack(_), parameter_value)] = parameter_load.writes() else {
+            no_candidate!();
+        };
+        if !field_instruction
+            .reads()
+            .iter()
+            .any(|(_, value)| value == receiver_value)
+            || !field_instruction
+                .reads()
+                .iter()
+                .any(|(_, value)| value == parameter_value)
+        {
+            no_candidate!();
+        }
+        let StmtKind::FieldAssign {
+            receiver: Some(receiver),
+            name: ast_name,
+            op: crate::ast::AssignOp::Assign,
+            value,
+        } = &stmt.kind
+        else {
+            no_candidate!();
+        };
+        let Some(parameter_name) = parameter_names.get(parameter_slot).copied() else {
+            no_candidate!();
+        };
+        if ast_name != name
+            || stmt.origin.primary().bci() != field_bci
+            || !matches!(&receiver.kind, crate::ast::ExprKind::Local(local) if local == "this")
+            || receiver.origin.primary().bci() != receiver_bci
+            || !matches!(&value.kind, crate::ast::ExprKind::Local(local) if local == parameter_name)
+            || value.origin.primary().bci() != parameter_bci
+        {
+            no_candidate!();
+        }
+        field_writes.push(GenericConstructorFieldWrite {
+            bci: field_bci,
+            owner: owner.clone(),
+            name: name.clone(),
+            descriptor: descriptor.clone(),
+            parameter_slot: *parameter_slot,
+        });
+    }
+    if instructions.last().is_none_or(|instruction| {
+        instruction.opcode() != 0xb1
+            || !instruction.reads().is_empty()
+            || !instruction.writes().is_empty()
+            || !matches!(
+                operations.get(code.instructions.last().map(|raw| raw.bci).unwrap_or(0)),
+                Some(Operation::Return)
+            )
+    }) {
+        no_candidate!();
+    }
+    if code.instructions.last().map(|instruction| instruction.bci)
+        != program.stmts.last().map(|stmt| stmt.origin.primary().bci())
+    {
+        no_candidate!();
+    }
+    Ok(Some(GenericConstructorCandidate {
+        parameters,
+        forwarded_parameter_slots: Vec::new(),
+        field_writes,
         init,
     }))
 }
@@ -6401,6 +6765,10 @@ fn recover_inner(
                 &prologues,
                 &parameter_types,
                 request.facts.method().descriptor(),
+                request
+                    .ir
+                    .declaration()
+                    .map(|declaration| declaration.class_name().0.as_slice()),
                 budget,
             ) {
                 Ok(candidate) => *slot = candidate,

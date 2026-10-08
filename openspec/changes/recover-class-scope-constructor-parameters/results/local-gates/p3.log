@@ -1,0 +1,10 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.45s
+     Running tests/p3_execution_comparison.rs (/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_execution_comparison-0a797ca2b2f1d159)
+
+running 3 tests
+test the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour ... ok
+test the_corpus_is_read_the_same_way_by_every_legal_flag_set ... ok
+test the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 74.77s

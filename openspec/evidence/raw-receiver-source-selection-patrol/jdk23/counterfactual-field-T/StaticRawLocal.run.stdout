@@ -1,0 +1,3 @@
+field=T
+method=put;type-parameters=0;parameters=[StaticRawLocal, java.lang.Object]
+behavior=java.lang.String:probe

@@ -1,0 +1,47 @@
+Classfile jar:file:/private/tmp/jarde-class-ctor-evidence/frozen/corretto8/nodebug/ParentCtorHold/ParentCtorHold.jar!/ParentCtorHold.class
+  Last modified 2026-10-8; size 302 bytes
+  MD5 checksum 5580a2116c0890b770cb3465bf3a0fb8
+public class ParentCtorHold<T extends java.lang.Object> extends java.util.Vector<T>
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#14         // java/util/Vector."<init>":(I)V
+   #2 = Fieldref           #3.#15         // ParentCtorHold.v:Ljava/lang/Object;
+   #3 = Class              #16            // ParentCtorHold
+   #4 = Class              #17            // java/util/Vector
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               (Ljava/lang/Object;)V
+  #11 = Utf8               Code
+  #12 = Utf8               (TT;)V
+  #13 = Utf8               <T:Ljava/lang/Object;>Ljava/util/Vector<TT;>;
+  #14 = NameAndType        #9:#18         // "<init>":(I)V
+  #15 = NameAndType        #5:#6          // v:Ljava/lang/Object;
+  #16 = Utf8               ParentCtorHold
+  #17 = Utf8               java/util/Vector
+  #18 = Utf8               (I)V
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public ParentCtorHold(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iconst_1
+         2: invokespecial #1                  // Method java/util/Vector."<init>":(I)V
+         5: aload_0
+         6: aload_1
+         7: putfield      #2                  // Field v:Ljava/lang/Object;
+        10: return
+    Signature: #12                          // (TT;)V
+}
+Signature: #13                          // <T:Ljava/lang/Object;>Ljava/util/Vector<TT;>;

@@ -2234,6 +2234,17 @@ pub(crate) struct SameClassInvokeUse {
     pub(crate) owner: Vec<u8>,
     pub(crate) name: Vec<u8>,
     pub(crate) descriptor: Vec<u8>,
+    /// For a constructor invocation, the receiver identity established by the same run's SSA.
+    /// `None` means this is not a constructor invocation; `Unknown` stays local to this site and
+    /// must not make unrelated same-class consumers incomplete.
+    pub(crate) constructor_receiver: Option<SameClassConstructorReceiver>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum SameClassConstructorReceiver {
+    UninitializedThis,
+    NewObject,
+    Unknown,
 }
 
 /// One physically decoded field access of the selected class's own body set. A write site carries
@@ -2297,6 +2308,41 @@ pub(crate) struct SameClassUseFacts<'a> {
     pub(crate) invokes: &'a [SameClassInvokeUse],
     pub(crate) field_uses: &'a [SameClassFieldUse],
     pub(crate) member_refs: &'a [SameClassMemberRef],
+}
+
+/// Find a same-class constructor call whose receiver is this object's uninitialized `this`, or
+/// whose receiver identity the same-run SSA could not establish. The source argument adaptation of
+/// that delegation is outside the class-scope constructor proof, so either result blocks that
+/// constructor's projected header. A `new` allocation is positively classified and remains safe.
+pub(crate) fn unproved_same_class_this_delegate_bci(
+    class_internal: &[u8],
+    member: &MemberHeader,
+    facts: &SameClassUseFacts,
+    budget: &mut Budget,
+) -> Result<Option<u32>> {
+    if member.name.raw().0 != b"<init>" {
+        return Ok(None);
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(facts.invokes.len()).unwrap_or(u64::MAX),
+    )?;
+    for use_site in facts.invokes {
+        budget.poll()?;
+        if use_site.owner != class_internal
+            || use_site.name != b"<init>"
+            || use_site.descriptor != member.descriptor.raw().0
+        {
+            continue;
+        }
+        match use_site.constructor_receiver {
+            Some(SameClassConstructorReceiver::UninitializedThis)
+            | Some(SameClassConstructorReceiver::Unknown)
+            | None => return Ok(Some(use_site.bci)),
+            Some(SameClassConstructorReceiver::NewObject) => {}
+        }
+    }
+    Ok(None)
 }
 
 /// The number of parameters one method descriptor declares.
@@ -2881,6 +2927,7 @@ pub(crate) fn project_method_signature(
     attributes: &MemberAttributes,
     candidate: Option<&GenericReturnCandidate>,
     constructor_candidate: Option<&GenericConstructorCandidate>,
+    physical_fields: &[MemberHeader],
     bytes: &[u8],
     pool: &[CpEntryFacts],
     class_internal: &[u8],
@@ -2891,6 +2938,7 @@ pub(crate) fn project_method_signature(
     class_signature_present: bool,
     resolved_inner_classes: &[ResolvedInnerClass],
     same_class: SameClassBinding,
+    unproved_this_delegate_bci: Option<u32>,
     budget: &mut Budget,
 ) -> Result<SignatureProjection> {
     let shells = attribute_shells(member, b"Signature");
@@ -2978,7 +3026,13 @@ pub(crate) fn project_method_signature(
         )?;
         let no_body_generic = matches!(record.outcome, ClassSourceOutcome::NoBody)
             && !parsed.type_parameters.is_empty();
-        let generic_constructor = name == b"<init>" && !parsed.type_parameters.is_empty();
+        let class_scope_constructor = name == b"<init>"
+            && parsed.type_parameters.is_empty()
+            && class_signature_present
+            && !class_scope.is_empty()
+            && constructor_candidate.is_some();
+        let generic_constructor =
+            name == b"<init>" && (!parsed.type_parameters.is_empty() || class_scope_constructor);
         if no_body_generic {
             prove_no_body_generic_hierarchy(
                 record,
@@ -3071,6 +3125,14 @@ pub(crate) fn project_method_signature(
                 }
             }
         }
+        if class_scope_constructor && let Some(bci) = unproved_this_delegate_bci {
+            return Err(Error::unsupported(
+                "unproved_this_delegate_call",
+                format!(
+                    "same-class this-constructor delegation at BCI {bci} has no source argument adaptation proof"
+                ),
+            ));
+        }
         let (declaration, proof) = if generic_constructor {
             (
                 generic_constructor_declaration(
@@ -3079,14 +3141,25 @@ pub(crate) fn project_method_signature(
                     &parsed,
                     &erasure.type_parameters,
                     constructor_candidate,
+                    physical_fields,
                     class_internal,
                     class_flags,
                     class_superclass,
                     class_interfaces,
                     class_scope,
+                    class_signature_present,
                     budget,
                 )?,
-                "same-run AST/SSA empty-constructor proof",
+                if class_scope_constructor
+                    && constructor_candidate
+                        .is_some_and(|candidate| !candidate.field_writes.is_empty())
+                {
+                    "same-run AST/Code/SSA direct field-initializer proof"
+                } else if class_scope_constructor {
+                    "same-run AST/Code/SSA empty Object-constructor proof"
+                } else {
+                    "same-run AST/SSA empty-constructor proof"
+                },
             )
         } else if no_body_generic {
             let declaration = no_body_generic_method_declaration(
@@ -3426,11 +3499,13 @@ fn generic_constructor_declaration(
     parsed: &jarde_reader::signature::MethodSignature,
     method_scope: &[TypeParameterErasure],
     candidate: Option<&GenericConstructorCandidate>,
+    physical_fields: &[MemberHeader],
     class_internal: &[u8],
     class_flags: u16,
     class_superclass: Option<&[u8]>,
     class_interfaces: &[Vec<u8>],
     class_scope: &[TypeParameterErasure],
+    class_signature_present: bool,
     budget: &mut Budget,
 ) -> Result<String> {
     let refused = |why| Error::unsupported("generic_constructor_source_unproved", why);
@@ -3475,12 +3550,18 @@ fn generic_constructor_declaration(
     }
     let mut signature = method_descriptor(&item.descriptor.raw().0, false, false)
         .ok_or_else(|| refused("physical constructor descriptor cannot be spelled"))?;
+    let class_scope_constructor = parsed.type_parameters.is_empty();
     if signature.parameters.len() != parsed.parameters.len()
         || signature.parameters.len() != candidate.parameters.len()
-        || parsed.type_parameters.is_empty()
+        || (class_scope_constructor
+            && (!candidate.forwarded_parameter_slots.is_empty()
+                || !method_scope.is_empty()
+                || class_scope.is_empty()
+                || !class_signature_present))
+        || (!class_scope_constructor && !candidate.field_writes.is_empty())
     {
         return Err(refused(
-            "constructor Signature and physical parameter positions differ",
+            "constructor Signature, physical parameter positions, and same-run body proof differ",
         ));
     }
     let mut scope = Vec::with_capacity(class_scope.len() + method_scope.len());
@@ -3526,6 +3607,43 @@ fn generic_constructor_declaration(
     for ((spelling, _), ty) in signature.parameters.iter_mut().zip(parameter_types) {
         *spelling = ty;
     }
+    if class_scope_constructor {
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(candidate.parameters.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(
+                    u64::try_from(candidate.field_writes.len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_mul(
+                            u64::try_from(candidate.parameters.len()).unwrap_or(u64::MAX),
+                        ),
+                ),
+        )?;
+        for write in &candidate.field_writes {
+            budget.poll()?;
+            let mut parameter_found = false;
+            for (slot, _) in &candidate.parameters {
+                budget.poll()?;
+                parameter_found |= *slot == write.parameter_slot;
+            }
+            if write.owner.as_bytes() != class_internal || !parameter_found {
+                return Err(refused(
+                    "same-run field write does not name this class and a physical constructor parameter",
+                ));
+            }
+            if !generic_constructor_field_matches_physical_field(
+                write,
+                class_internal,
+                physical_fields,
+                budget,
+            )? {
+                return Err(refused(
+                    "same-run field write does not name one unique instance field declaration",
+                ));
+            }
+        }
+    }
     let class_name = simple_name(class_internal);
     if !is_java_identifier(&class_name) || class_name.contains('$') {
         return Err(refused("class name has no faithful constructor spelling"));
@@ -3549,6 +3667,35 @@ fn generic_constructor_declaration(
         format!("{} ", words.join(" "))
     };
     Ok(format!("{prefix}{class_name}({})", args.join(", ")))
+}
+
+fn generic_constructor_field_matches_physical_field(
+    write: &jarde_java::report::GenericConstructorFieldWrite,
+    class_internal: &[u8],
+    physical_fields: &[MemberHeader],
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(physical_fields.len()).unwrap_or(u64::MAX),
+    )?;
+    if write.owner.as_bytes() != class_internal {
+        return Ok(false);
+    }
+    let mut matching = None;
+    for field in physical_fields {
+        budget.poll()?;
+        if field.name.raw().0 == write.name.as_bytes() {
+            if matching.is_some() {
+                return Ok(false);
+            }
+            matching = Some(field);
+        }
+    }
+    Ok(matching.is_some_and(|field| {
+        field.descriptor.raw().0 == write.descriptor.as_bytes()
+            && field.access_flags & ACC_STATIC == 0
+    }))
 }
 
 /// The initial no-body projection proves the class has no inherited source contract to satisfy.
@@ -11081,6 +11228,7 @@ fn table_name(stop: &MemberTableStop) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use jarde_java::report::GenericConstructorFieldWrite;
 
     const MEMBER_ANNOTATION_TARGET: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
@@ -12487,6 +12635,152 @@ mod tests {
             )
             .expect("an incomplete inventory is a refusal, not an error"),
             SameClassBinding::Unproved,
+        );
+    }
+
+    #[test]
+    fn generic_constructor_field_write_requires_one_unique_instance_field_by_name() {
+        fn member(name: &[u8], descriptor: &[u8], access_flags: u16) -> MemberHeader {
+            let jvm_string = |raw: &[u8]| {
+                serde_json::from_value::<jarde_reader::model::JvmString>(serde_json::json!({
+                    "raw": raw,
+                    "utf16": raw.iter().map(|byte| *byte as u16).collect::<Vec<_>>(),
+                    "escaped": String::from_utf8_lossy(raw),
+                }))
+                .unwrap()
+            };
+            MemberHeader {
+                name: jvm_string(name),
+                descriptor: jvm_string(descriptor),
+                access_flags,
+                attributes: Vec::new(),
+            }
+        }
+
+        let write = GenericConstructorFieldWrite {
+            bci: 9,
+            owner: "Hold".to_owned(),
+            name: "value".to_owned(),
+            descriptor: "Ljava/lang/Object;".to_owned(),
+            parameter_slot: 1,
+        };
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        assert!(
+            generic_constructor_field_matches_physical_field(
+                &write,
+                b"Hold",
+                &[member(b"value", b"Ljava/lang/Object;", 0)],
+                &mut budget,
+            )
+            .expect("one matching instance field is a proof")
+        );
+
+        for fields in [
+            vec![member(b"value", b"Ljava/lang/String;", 0)],
+            vec![
+                member(b"value", b"Ljava/lang/Object;", 0),
+                member(b"value", b"Ljava/lang/String;", 0),
+            ],
+            vec![member(b"value", b"Ljava/lang/Object;", ACC_STATIC)],
+        ] {
+            let mut budget = Budget::new(unlimited_annotation_test_limits());
+            assert!(
+                !generic_constructor_field_matches_physical_field(
+                    &write,
+                    b"Hold",
+                    &fields,
+                    &mut budget,
+                )
+                .expect("a mismatched physical field is a refusal")
+            );
+        }
+    }
+
+    #[test]
+    fn class_scope_constructor_gate_matches_exact_same_class_target_and_receiver() {
+        fn member(name: &[u8], descriptor: &[u8]) -> MemberHeader {
+            let jvm_string = |raw: &[u8]| {
+                serde_json::from_value::<jarde_reader::model::JvmString>(serde_json::json!({
+                    "raw": raw,
+                    "utf16": raw.iter().map(|byte| *byte as u16).collect::<Vec<_>>(),
+                    "escaped": String::from_utf8_lossy(raw),
+                }))
+                .unwrap()
+            };
+            MemberHeader {
+                name: jvm_string(name),
+                descriptor: jvm_string(descriptor),
+                access_flags: 0,
+                attributes: Vec::new(),
+            }
+        }
+        fn invoke(
+            owner: &[u8],
+            descriptor: &[u8],
+            receiver: Option<SameClassConstructorReceiver>,
+            bci: u32,
+        ) -> SameClassInvokeUse {
+            SameClassInvokeUse {
+                caller: "caller()V".to_owned(),
+                bci,
+                opcode: 0xb7,
+                owner: owner.to_vec(),
+                name: b"<init>".to_vec(),
+                descriptor: descriptor.to_vec(),
+                constructor_receiver: receiver,
+            }
+        }
+
+        let target = member(b"<init>", b"(Ljava/lang/Object;)V");
+        for (receiver, expected) in [
+            (
+                Some(SameClassConstructorReceiver::UninitializedThis),
+                Some(11),
+            ),
+            (Some(SameClassConstructorReceiver::Unknown), Some(11)),
+            (None, Some(11)),
+            (Some(SameClassConstructorReceiver::NewObject), None),
+        ] {
+            let invokes = [invoke(b"pkg/Hold", b"(Ljava/lang/Object;)V", receiver, 11)];
+            let facts = SameClassUseFacts {
+                complete: true,
+                invokes: &invokes,
+                field_uses: &[],
+                member_refs: &[],
+            };
+            let mut budget = Budget::new(unlimited_annotation_test_limits());
+            assert_eq!(
+                unproved_same_class_this_delegate_bci(b"pkg/Hold", &target, &facts, &mut budget,)
+                    .expect("bounded invocation scan succeeds"),
+                expected,
+            );
+        }
+
+        let invokes = [
+            invoke(
+                b"pkg/Other",
+                b"(Ljava/lang/Object;)V",
+                Some(SameClassConstructorReceiver::UninitializedThis),
+                21,
+            ),
+            invoke(
+                b"pkg/Hold",
+                b"(Ljava/lang/String;)V",
+                Some(SameClassConstructorReceiver::UninitializedThis),
+                22,
+            ),
+        ];
+        let facts = SameClassUseFacts {
+            complete: true,
+            invokes: &invokes,
+            field_uses: &[],
+            member_refs: &[],
+        };
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        assert_eq!(
+            unproved_same_class_this_delegate_bci(b"pkg/Hold", &target, &facts, &mut budget,)
+                .expect("bounded invocation scan succeeds"),
+            None,
         );
     }
 }

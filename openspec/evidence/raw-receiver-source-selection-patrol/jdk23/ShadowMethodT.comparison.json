@@ -1,0 +1,20 @@
+{
+  "original": [
+    "field=T",
+    "method=observe;type-parameters=1;parameters=[ShadowMethodT<T>, T]",
+    "method=put;type-parameters=1;parameters=[ShadowMethodT<T>, T]",
+    "behavior=java.lang.Object"
+  ],
+  "candidate": [
+    "field=java.lang.Object",
+    "method=observe;type-parameters=0;parameters=[ShadowMethodT, java.lang.Object]",
+    "method=put;type-parameters=0;parameters=[ShadowMethodT, java.lang.Object]",
+    "behavior=java.lang.Object"
+  ],
+  "original_class_sha256": "51318e77ccfc29fbdfc286a49b547908e4954b084dfde72fc846f122ddc0d38f",
+  "candidate_class_sha256": "3584abc99a637b82992ab6b61bb1aff55162422c605826eba911679345b1a2a0",
+  "jarde_source_sha256": "07c2c03d198ffb28def5cf7352a78718fe5ed408e67e932ac221204995b7ccf5",
+  "jar_subject_only": [
+    "ShadowMethodT.class"
+  ]
+}

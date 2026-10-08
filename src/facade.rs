@@ -5662,7 +5662,8 @@ impl Engine {
             String::new()
         } else if let Some(proof) = proof {
             let forwarded: Vec<u16> = proof.parameters.iter().map(|(slot, _)| *slot).collect();
-            if proof.forwarded_parameter_slots != forwarded
+            if !proof.field_writes.is_empty()
+                || proof.forwarded_parameter_slots != forwarded
                 || proof.init.class.as_deref() != std::str::from_utf8(&parent_name).ok()
                 || proof.init.target != Some(jarde_java::ast::ConstructorTarget::Super)
                 || !proof.init.presented
@@ -7437,6 +7438,7 @@ impl Engine {
                     &attributes,
                     None,
                     None,
+                    &read.facts.fields,
                     &read.bytes,
                     &pool,
                     &read.facts.this_class.raw().0,
@@ -7453,6 +7455,7 @@ impl Engine {
                     class_signature_present,
                     &assembly_context.resolved_inner_classes,
                     class_source::SameClassBinding::Pending,
+                    None,
                     budget,
                 ) {
                     Ok(class_source::SignatureProjection::Settled) => {}
@@ -7610,6 +7613,7 @@ impl Engine {
                                     &attributes,
                                     signature_candidate,
                                     generic_constructor.as_ref(),
+                                    &read.facts.fields,
                                     &read.bytes,
                                     &pool,
                                     &read.facts.this_class.raw().0,
@@ -7626,6 +7630,7 @@ impl Engine {
                                     class_signature_present,
                                     &assembly_context.resolved_inner_classes,
                                     class_source::SameClassBinding::Pending,
+                                    None,
                                     budget,
                                 ) {
                                     Ok(class_source::SignatureProjection::Settled) => {}
@@ -7798,12 +7803,27 @@ impl Engine {
                         break;
                     }
                 };
+                let this_delegate_bci = match class_source::unproved_same_class_this_delegate_bci(
+                    &read.facts.this_class.raw().0,
+                    &read.facts.methods[index],
+                    &facts,
+                    budget,
+                ) {
+                    Ok(bci) => bci,
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
+                    }
+                };
                 match class_source::project_method_signature(
                     &mut methods[index],
                     &read.facts.methods[index],
                     &attributes,
                     candidate.as_ref(),
                     constructor_candidate.as_ref(),
+                    &read.facts.fields,
                     &read.bytes,
                     &pool,
                     &read.facts.this_class.raw().0,
@@ -7820,6 +7840,7 @@ impl Engine {
                     class_signature_present,
                     &assembly_context.resolved_inner_classes,
                     binding,
+                    this_delegate_bci,
                     budget,
                 ) {
                     Ok(_) => {}
@@ -12087,14 +12108,52 @@ fn scan_member_uses(
         };
         if (0xb6..=0xb9).contains(&opcode) {
             match method_reference_identity(pool, index) {
-                Some(target) => scan.invokes.push(class_source::SameClassInvokeUse {
-                    caller: caller.clone(),
-                    bci: instruction.bci,
-                    opcode,
-                    owner: target.owner.0.clone(),
-                    name: target.name.0.clone(),
-                    descriptor: target.descriptor.0.clone(),
-                }),
+                Some(target) => {
+                    let constructor_receiver = if target.name.0 == b"<init>" {
+                        budget.poll()?;
+                        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                        let receiver = if opcode != 0xb7 || !ssa_bci_is_unique {
+                            class_source::SameClassConstructorReceiver::Unknown
+                        } else if let Some(ssa_instruction) = ssa_by_bci.get(&instruction.bci)
+                            && ssa_instruction.opcode() == opcode
+                        {
+                            budget.charge(
+                                CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(ssa_instruction.reads().len()).unwrap_or(u64::MAX),
+                            )?;
+                            // Invocation reads consume arguments before the receiver. Its stack
+                            // depth is not fixed: `new; dup` leaves the receiver at Stack(1).
+                            match ssa_instruction.reads().last() {
+                                Some((jarde_jvm::method_ir::Slot::Stack(_), receiver)) => {
+                                    match ssa.map(|ssa| ssa.value(*receiver).ty()) {
+                                        Some(jarde_jvm::method_ir::Value::UninitializedThis) => {
+                                            class_source::SameClassConstructorReceiver::UninitializedThis
+                                        }
+                                        Some(jarde_jvm::method_ir::Value::Uninitialized { .. }) => {
+                                            class_source::SameClassConstructorReceiver::NewObject
+                                        }
+                                        _ => class_source::SameClassConstructorReceiver::Unknown,
+                                    }
+                                }
+                                _ => class_source::SameClassConstructorReceiver::Unknown,
+                            }
+                        } else {
+                            class_source::SameClassConstructorReceiver::Unknown
+                        };
+                        Some(receiver)
+                    } else {
+                        None
+                    };
+                    scan.invokes.push(class_source::SameClassInvokeUse {
+                        caller: caller.clone(),
+                        bci: instruction.bci,
+                        opcode,
+                        owner: target.owner.0.clone(),
+                        name: target.name.0.clone(),
+                        descriptor: target.descriptor.0.clone(),
+                        constructor_receiver,
+                    });
+                }
                 None => scan.complete = false,
             }
         } else if matches!(opcode, 0xb2 | 0xb3 | 0xb4 | 0xb5) {
@@ -27144,7 +27203,10 @@ fn prove_static_family_target(
             constructor_recovery.report.execution,
             ExecutionReport::Complete { .. }
         )
-        || constructor_recovery.generic_constructor.is_none()
+        || !constructor_recovery
+            .generic_constructor
+            .as_ref()
+            .is_some_and(|candidate| candidate.field_writes.is_empty())
     {
         return Ok(None);
     }

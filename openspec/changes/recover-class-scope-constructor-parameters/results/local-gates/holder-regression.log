@@ -1,0 +1,9 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.30s
+     Running tests/same_class_generic_binding.rs (/Users/lordcasser/workspace/projects/jarde/target/debug/deps/same_class_generic_binding-92c8a8247a2a16df)
+
+running 1 test
+test frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 5.06s

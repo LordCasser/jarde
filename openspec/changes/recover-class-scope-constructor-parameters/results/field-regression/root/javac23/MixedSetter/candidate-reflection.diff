@@ -1,0 +1,9 @@
+--- original
++++ candidate-reflection
+@@ -1,5 +1,5 @@
+ fieldValue=object
+-fieldGenericType=T
++fieldGenericType=java.lang.Object
+ classvars=1
+ method=putObject methodvars=0 parameterGenericType=java.lang.Object
+ method=putT methodvars=0 parameterGenericType=T

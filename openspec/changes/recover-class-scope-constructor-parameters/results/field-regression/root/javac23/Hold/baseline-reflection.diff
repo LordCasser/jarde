@@ -1,0 +1,9 @@
+--- original
++++ baseline-reflection
+@@ -1,4 +1,4 @@
+ fieldValue=ctor
+-fieldGenericType=T
++fieldGenericType=java.lang.Object
+ classvars=1
+-ctorParameterGenericType=T
++ctorParameterGenericType=java.lang.Object

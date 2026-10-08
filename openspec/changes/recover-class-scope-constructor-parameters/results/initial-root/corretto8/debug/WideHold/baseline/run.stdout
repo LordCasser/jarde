@@ -1,0 +1,9 @@
+REFLECT|ctor[0].formalCount=3;typeVariableCount=0
+REFLECT|ctor[0].param[0]=long;binder=non-variable
+REFLECT|ctor[0].param[1]=double;binder=non-variable
+REFLECT|ctor[0].param[2]=java.lang.Object;binder=non-variable
+REFLECT|classTypeVariableCount=1
+REFLECT|classVar[0]=T;bounds=java.lang.Object
+REFLECT|field[v]=java.lang.Object;binder=non-variable
+BEHAVIOR|field[v]=arg2
+BEHAVIOR|constructed=WideHold

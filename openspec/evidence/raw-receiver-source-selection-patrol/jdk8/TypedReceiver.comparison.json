@@ -1,0 +1,20 @@
+{
+  "original": [
+    "field=T",
+    "method=observe;type-parameters=0;parameters=[TypedReceiver<T>]",
+    "method=put;type-parameters=0;parameters=[TypedReceiver<T>, T]",
+    "behavior=java.lang.Object"
+  ],
+  "candidate": [
+    "field=java.lang.Object",
+    "method=observe;type-parameters=0;parameters=[TypedReceiver<T>]",
+    "method=put;type-parameters=0;parameters=[TypedReceiver, java.lang.Object]",
+    "behavior=java.lang.Object"
+  ],
+  "original_class_sha256": "2588e6f4da7ab0e04119c076e0df4536c9d1c1cd72c93cc5ee5232cfb653b5f3",
+  "candidate_class_sha256": "3e45b3d4ff3e7e5eb064dfacfa70a503fee7e14ee94a679cffa65c043ce2bac4",
+  "jarde_source_sha256": "b3a15874629893b586ed184f3a29c0b4fbcb217fa3c0272778a203c928c131bd",
+  "jar_subject_only": [
+    "TypedReceiver.class"
+  ]
+}
