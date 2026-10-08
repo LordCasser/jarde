@@ -1,0 +1,7 @@
+openspec/evidence/java-syntax-2026-10-08/generic-holder-patrol/v8-javac8/family-recompiled/CrossSetter.java:10: 错误: 不兼容的类型: U无法转换为T
+        this.v = arg1;
+                 ^
+  其中, U,T是类型变量:
+    U扩展已在类 CrossSetter中声明的Object
+    T扩展已在类 CrossSetter中声明的Object
+1 个错误
