@@ -95,6 +95,11 @@ jobs:
         # `cargo test` above (a machine with no JDK stays green); this step is the JDK-present half.
         run: cargo test --test p3_execution_comparison --locked -- --ignored
 
+      - name: Run the functional-constructor full-class comparison
+        # Recompile both frozen javac input legs with the installed JDK and compare their driver
+        # output under full verification. The test fails if a JDK is absent; it never skips this leg.
+        run: cargo test -p jarde-cli --test json_cli --locked -- --ignored --exact functional_constructor_arguments_replay_the_complete_class_on_both_jdks
+
       - name: Run public API example
         run: |
           cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class
