@@ -2,7 +2,12 @@
 
 本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
 
-## 当前状态（2026-10-08 终态，最新）
+## 当前状态（2026-10-08 深夜续，最新）
+
+- **里程碑追加：io 域全恢复**（`14fb15ef`，CI 监控中）——`recover-loop-test-copy-store` 关闭 readAll（IO 类 0 引注）。两项结构性发现入账：(1) readAll 拒绝链实为 guard **Transfer-完成收窄**（非 copy 纯度）→ 双部件落地（fused continuation 读为 transfer 块尾 span + 循环测试位 copy-and-store 原位呈现）；(2) root spec 措辞与场景自相矛盾被实现者抓出 → 验收时更正（双消费身份+体声明槽+原位表达式）。
+- **flake 根治**：`d3_artifact_binding` 重建证据族第 4 见终于打出双侧快照——全字段等唯 `elapsed_millis` 0 vs 1；usage 相等契约改为排除墙钟（`74eec0ad`）——**多次 docs-only 红的根因关闭**。export_cli 族诊断增强在案（下次出现即命名变体）。
+- **队列（下一会话）**：branching-guard 体形（释放副本独块+尾 return 融合）→ family-6 形态 4（lambda→JDK ctor）→ Hold<T> 擦除对投影 → ScopeRefusalsEscape → 巡查新前沿。
+- 磁盘 43Gi；全部资源回收。
 
 - **里程碑：`preserve-local-scope-across-exception-regions` 全 change 完结**（`839b28b1`，CI 监控中）——1.2/1.3 回填（三分类 pin 两腿仍绿、两锚由 guard 族恢复且摘要一致）+ 2.1-2.5 全交付（拒绝闭包覆盖断言/边界 sibling/固定 SHA 三方/停止契约/2.5 审计两裁决）；零生产码。残余位点移交 guard/copy 家族（IO.readAll、变异 p3_try_local close、ScopeRefusalsEscape 未变异形）。
 - **10-08 累计 5 片 + 巡查 + 自纠**：covariant-store / io-resource-finally（锚 13）/ instance-chains（chained-field 域清）/ nested-lock（多锁族关闭+行内 lead 发现）/ local-scope 收尾。多锁巡查归档（multiAwait 假零自纠）。export_cli 诊断增强在案。
