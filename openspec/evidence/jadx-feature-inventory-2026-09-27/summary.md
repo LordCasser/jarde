@@ -164,4 +164,11 @@ EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-cal
 
 **第 20/21 锚修复落地（2026-10-06）**：`preserve-monitor-exit-evaluation-order`（案 a：InnerMonitor.returns + expression_inside 值链 fail-closed）——NL 判别锚往返 `nY`，第 7 族关闭；`recover-array-element-field-receiver`（闭包注入：array_of_value 组件类型接入 field.rs 身份证明）——RG `put(c.label,c)` 恢复、12/12 锚方法零引注，第 8 族关闭。**compilable-wrong 开口面至此全部关闭**（六族=守卫升级拒，7/8 族=源头修复）；剩余为可恢复性缺口（local-scope 十四数据点、平台接口单边扩宽、体内嵌套引注等）。
 
+## 2026-10-08 接续验收补记
+
+上述“全部关闭”是当时冻结锚的结论，不能外推所有合法字节码。新增合法 major52 无 check 绑定引用 NoCheck/NoStand：原 JVM 创建成功、调用 NPE，JADX 1.5.6 与旧 Jarde 的 `arg0::start` 重编会提前到创建 NPE。候选 `preserve-bound-reference-creation-timing` 复用既有非空证明门安全拒绝，并保留精确工厂/捕获/消费者来源；this 与直接 String 的整类正例保持。见 [root 验收](../../changes/preserve-bound-reference-creation-timing/verification-root.md)。
+
+`recover-functional-constructor-arguments` 九种构造函数实参已由 root 在真实 JDK8/JDK23 对照源码/JADX/Jarde，完整 FunctionalConstructors + IntBox 重编回放一致。旧 LG 只有 pqLambda 本轮改善，其他四方法逐字节不变；LG 整类仍因既有局部类型复用与 finalize 拒绝不能重编，JADX 的整类也有 raw lambda 参数编译失败。不得把方法级闭环计为完整 LG 或整个函数表达式单元完成。见 [完整范围及输出](../../changes/recover-functional-constructor-arguments/verification-root.md)。
+
+新增泛型字段写与 class-scope 构造参数两个独立根因：五个 Holder 形中四个当前整类编译失败，TypedSetter 为正例。字段写证明已有 [OpenSpec](../../changes/prove-generic-field-write-source-types/)（0/6 未实现），class-scope 构造参数尚未立项。71 单元总数不变；以上是在现有单元内扩展证据，最终主线/门禁状态以 handoff.md 为准。
 

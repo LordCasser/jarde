@@ -1,0 +1,1 @@
+47 nonempty class-source guard/copy/IO/loop fixtures compared to pre-change main; changed=[]

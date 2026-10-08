@@ -1,0 +1,21 @@
+Root acceptance candidate: 7a296303fcbb200b7bcd07861e44b62f4bac4460
+Checkout: /Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde
+One builder, shared root target, jobs=1, incremental=0, RUST_TEST_THREADS=1.
+
+fmt: exit 0
+clippy: exit 0
+seed-1569: exit 0; passed=3224, failed=0, ignored=93
+seed-1570: exit 0; passed=3224, failed=0, ignored=93
+p3-ignored: exit 0; passed=3, failed=0, ignored=0
+functional-ignored: exit 0; passed=1, failed=0, ignored=0
+bound-ignored: exit 0; passed=1, failed=0, ignored=0
+cli-build: exit 0
+
+Seeds: 5350648285461741569 and 5350648285461741570.
+Clippy: CI all-targets/all-features whitelist and -D warnings.
+Strict OpenSpec: 320 passed, 0 failed.
+Root final replay: real Corretto8 and OpenJDK23 passed full FunctionalConstructors+IntBox, raw NoCheck/NoStand creation timing negatives, full KnownBoundPositive, LG.pqLambda partial; full LG failures retained.
+47 guard/IO/loop/copy class-source inputs: byte-identical to pre-change main.
+Worker panic exact regression: 20/20.
+Export ir_items tight/wide exact integration: 20/20.
+JDK25 boundary/MSRV/supply-chain/fuzz: remote CI; local8/23 not claimed as JDK25.

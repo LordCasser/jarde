@@ -1,0 +1,25 @@
+---- non_monitor_handler_and_back_edge_do_not_borrow_the_monitor_split stdout ----
+
+thread 'non_monitor_handler_and_back_edge_do_not_borrow_the_monitor_split' (451854) panicked at tests/p3_scope.rs:251:5:
+// @method monitorInOuterLoop(I)I
+// @declaration a static method of `NonGuard`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    int local1;
+    int local2;
+    local1 = 0;
+    int local3;
+    for (local2 = 0; local2 < 2; local2 = local2 + 1) {
+        synchronized (NonGuard.class) {
+            local3 = arg0 + local2;
+        }
+        // @bytecode 34
+        // local 4 is treated as one source variable, but BCI 12 writes `java.lang.Class` and BCI 34 writes `int`; no Java declaration can hold both, so this region is refused instead of publishing a contradictory local
+        // @bytecode 36 38 39 42 43 45 46 47
+        // the statement at BCI 39 reads `local4`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+    return local1;
+}
+
+
+Resolution: removed Duplicate expansion from shared constant_of_value; existing p3_scope assertion remains unchanged.

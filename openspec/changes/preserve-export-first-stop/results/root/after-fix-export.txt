@@ -1,0 +1,19 @@
+Candidate 7a296303, seed1569 workspace root run.
+
+     Running tests/export_cli.rs (/Users/lordcasser/workspace/projects/jarde/target/debug/deps/export_cli-e5b5b4a6e3b17448)
+
+running 11 tests
+test a_counted_dimension_override_is_accepted_and_stops_the_run_at_that_dimension ... ok
+test a_roots_document_declares_the_same_roots_as_repeated_root_arguments ... ok
+test a_small_allowance_keeps_a_readable_prefix_and_never_confirms_completeness ... ok
+test a_whole_package_reaches_its_final_under_the_commands_own_defaults ... ok
+test a_zero_or_unknown_dimension_is_refused_before_anything_is_read ... ok
+test an_existing_output_is_refused_and_left_exactly_as_it_was ... ok
+test an_incomplete_traversal_reaches_a_final_and_exits_four ... ok
+test auto_and_one_worker_finish_in_one_process_and_the_header_reports_the_configuration ... ok
+test every_record_of_the_stream_is_the_library_value_of_the_same_run ... ok
+test one_account_bounds_the_library_and_the_stream_at_every_job_setting ... ok
+test zero_and_nonnumeric_jobs_are_usage_errors_that_create_no_file ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.68s
+

@@ -36,3 +36,7 @@ Root's independent JVM oracle confirmed the no-explicit-check, exact-typed nulla
 ## Disk and temporary output
 
 The shared target directory measured 2.8 GiB after the runs (it measured 2.1 GiB before this work); free space was 69 GiB, above the 20 GiB stop line. Test-local temp directories clean themselves. Manually created verifier fixture files under `/tmp/functional-ctor-nondep` and associated logs are removed before handoff. No target directory was created inside this worktree.
+
+## Root final acceptance
+
+上述 Deferred review boundary 是主片首次实现时的历史状态。后续 preserve-bound-reference-creation-timing 已完成，root 用最终候选 7a296303 双 JVM 验证 NoCheck/NoStand 安全拒绝及精确来源，完整构造类与非空引用正例回放通过；task 2.1 已验收。以 verification-root.md 与 results/root/gates-summary.txt 的最终记录为准。

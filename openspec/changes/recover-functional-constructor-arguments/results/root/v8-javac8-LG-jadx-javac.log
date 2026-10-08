@@ -1,0 +1,13 @@
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-lg-8nb_k_wr/jadxsrc/LG.java:14: 错误: 找不到符号
+            return num2.intValue() - num.intValue();
+                       ^
+  符号:   方法 intValue()
+  位置: 类型为Object的变量 num2
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-lg-8nb_k_wr/jadxsrc/LG.java:14: 错误: 找不到符号
+            return num2.intValue() - num.intValue();
+                                        ^
+  符号:   方法 intValue()
+  位置: 类型为Object的变量 num
+注: /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-lg-8nb_k_wr/jadxsrc/LG.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+2 个错误

@@ -5,5 +5,5 @@
 
 ## 2. 独立验收
 
-- [ ] 2.1 双JDK -Xverify:all确认冻结原class创建成功/调用NPE；正式产物拒绝或行为一致，真实javac带check负例保持保守，root独立审查差异。
+- [x] 2.1 双JDK -Xverify:all确认冻结原class创建成功/调用NPE；正式产物拒绝或行为一致，真实javac带check负例保持保守，root独立审查差异。
 - [ ] 2.2 与functional-constructor主片共同完成fmt/clippy/两seed workspace、ignored整类oracle和strict spec，root验收后合并推送，清理Rust/worktree。

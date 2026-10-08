@@ -1,0 +1,151 @@
+// jarde: presentation of `FunctionalConstructors` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class FunctionalConstructors extends java.lang.Object {
+    // jarde: renamed physical lambda helper "lambda$runnable$0" after proving its single class-wide use
+    // jarde: renamed physical lambda helper "lambda$captured$1" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$comparator$2" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$callable$3" after proving its single class-wide use
+    // jarde: omitted physical lambda helper "lambda$primitive$4" after proving its single class-wide use
+    // jarde: renamed physical lambda helper "lambda$ordered$5" after proving its single class-wide use
+    // jarde: renamed physical lambda helper "lambda$overload$6" after proving its single class-wide use
+    public static int trace;
+
+    public FunctionalConstructors() {
+        // @method <init>()V
+        // @declaration a constructor of `FunctionalConstructors`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.Thread runnable() {
+        // jarde: lambda companion call renamed at invokedynamic@4
+        // @method runnable()Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.Thread((java.lang.Runnable) (() -> FunctionalConstructors.lambda$runnable$0$jarde()));
+    }
+
+    public static java.lang.Thread captured(int arg0) {
+        // jarde: lambda companion call renamed at invokedynamic@5
+        // @method captured(I)Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.Thread((java.lang.Runnable) (() -> FunctionalConstructors.lambda$captured$1$jarde(arg0)));
+    }
+
+    public static java.util.PriorityQueue comparator() {
+        // jarde: generic Signature projection refused for `comparator()Ljava/util/PriorityQueue;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+        // jarde: lambda companion body inlined at invokedynamic@4
+        // @method comparator()Ljava/util/PriorityQueue;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.util.PriorityQueue((java.util.Comparator) ((java.lang.Object arg0, java.lang.Object arg1) -> ((java.lang.Integer) arg1).intValue() - ((java.lang.Integer) arg0).intValue()));
+    }
+
+    // jarde: generic Signature projection refused for `reference()Ljava/util/PriorityQueue;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.util.PriorityQueue reference() {
+        // @method reference()Ljava/util/PriorityQueue;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.util.PriorityQueue((java.util.Comparator) ((java.lang.Object p0, java.lang.Object p1) -> FunctionalConstructors.compare((java.lang.Integer) p0, (java.lang.Integer) p1)));
+    }
+
+    public static int compare(java.lang.Integer arg0, java.lang.Integer arg1) {
+        // @method compare(Ljava/lang/Integer;Ljava/lang/Integer;)I
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1.intValue() - arg0.intValue();
+    }
+
+    public static java.util.concurrent.FutureTask callable() {
+        // jarde: generic Signature projection refused for `callable()Ljava/util/concurrent/FutureTask;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+        // jarde: lambda companion body inlined at invokedynamic@4
+        // @method callable()Ljava/util/concurrent/FutureTask;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.util.concurrent.FutureTask((java.util.concurrent.Callable) (() -> 7));
+    }
+
+    public static IntBox primitive(int arg0) {
+        // jarde: lambda companion body inlined at invokedynamic@5
+        // @method primitive(I)LIntBox;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new IntBox((java.util.function.IntUnaryOperator) ((int arg1) -> arg0 + arg1));
+    }
+
+    public static IntBox primitiveReference() {
+        // @method primitiveReference()LIntBox;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new IntBox((java.util.function.IntUnaryOperator) FunctionalConstructors::twice);
+    }
+
+    public static int twice(int arg0) {
+        // @method twice(I)I
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 * 2;
+    }
+
+    public static java.lang.String name() {
+        // @method name()Ljava/lang/String;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace * 10 + 1;
+        return "worker";
+    }
+
+    public static java.lang.Thread ordered(int arg0) {
+        // jarde: lambda companion call renamed at invokedynamic@5
+        // @method ordered(I)Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.Thread((java.lang.Runnable) (() -> FunctionalConstructors.lambda$ordered$5$jarde(arg0)), (java.lang.String) name());
+    }
+
+    public static java.lang.Thread overload() {
+        // jarde: lambda companion call renamed at invokedynamic@4
+        // @method overload()Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.Thread((java.lang.Runnable) (() -> FunctionalConstructors.lambda$overload$6$jarde()));
+    }
+
+    private static void lambda$overload$6$jarde() {
+        // jarde: renamed physical lambda helper "lambda$overload$6" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // @method lambda$overload$6()V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace + 2;
+        return;
+    }
+
+    private static void lambda$ordered$5$jarde(int arg0) {
+        // jarde: renamed physical lambda helper "lambda$ordered$5" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // @method lambda$ordered$5(I)V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace * 10 + arg0;
+        return;
+    }
+
+    private static void lambda$captured$1$jarde(int arg0) {
+        // jarde: renamed physical lambda helper "lambda$captured$1" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // @method lambda$captured$1(I)V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace + arg0;
+        return;
+    }
+
+    private static void lambda$runnable$0$jarde() {
+        // jarde: renamed physical lambda helper "lambda$runnable$0" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // @method lambda$runnable$0()V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace + 3;
+        return;
+    }
+}
