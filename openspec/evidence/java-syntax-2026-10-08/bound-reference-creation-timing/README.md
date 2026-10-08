@@ -14,3 +14,5 @@ invocation=NPE
 正式修复`preserve-bound-reference-creation-timing`是构造片前置；没有验证前不合并。默认拒绝无同轮nonnull证据的直接绑定引用，不引入猜测的check或capture移动算法。JADX此非javac字节码变体尚未对照，不声称其覆盖或缺陷。未来接手可直接重放原class与冻结错误输出，无须Rust builder。
 
 原始fixture只有NoCheck.class/NoStand.class，Driver及recompiled class为输出不入库。源语义相当于捕获参数后的 `() -> arg0.start()`，但冻结字节码直接用虚拟handle，不假称由javac直接生成。
+
+`positive/` 保存由 Corretto 8 编译的 `KnownBound` 源码、原class和Driver。`entryThis()` 的 `this::value` 与 `constantString()` 的 `"value"::length` 是本片验证的安全正例。`constantClass()` 的 `KnownBound.class::getName` 在javac8 class中是 `ldc; dup; invokevirtual Object.getClass; pop; invokedynamic`；当前builder保守拒绝这条dup形状，不把这个待处理的duplicate表达式所有权债务并入本片。
