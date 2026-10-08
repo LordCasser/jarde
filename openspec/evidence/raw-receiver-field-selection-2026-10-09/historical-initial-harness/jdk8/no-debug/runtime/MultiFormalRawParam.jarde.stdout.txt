@@ -1,0 +1,7 @@
+field.type=java.lang.Object
+field.declaring=MultiFormalRawParam
+field.identity=java.lang.Object
+method=put;params=MultiFormalRawParam,java.lang.Object,java.lang.Object;return=void;typeParameters=
+behavior.value=MultiFormalRawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

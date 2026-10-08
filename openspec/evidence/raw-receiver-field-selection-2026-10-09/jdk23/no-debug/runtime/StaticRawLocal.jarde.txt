@@ -1,0 +1,13 @@
+field.type=java.lang.Object
+field.physical-type=java.lang.Object
+field.declaring=StaticRawLocal
+field.identity=java.lang.Object
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:StaticRawLocal;owner=true
+method=put;params=StaticRawLocal,java.lang.Object;return=void;typeParameters=;physical-params=StaticRawLocal,java.lang.Object;physical-return=void;declaration=put(StaticRawLocal;java.lang.Object;)void
+behavior.value=StaticRawLocal
+behavior.array-length=n/a
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=false
+behavior.number-value=n/a
+behavior.return-is-receiver=false

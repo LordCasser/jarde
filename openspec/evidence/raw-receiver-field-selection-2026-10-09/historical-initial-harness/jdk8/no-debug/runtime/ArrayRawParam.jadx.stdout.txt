@@ -1,0 +1,7 @@
+field.type=T[]
+field.declaring=defpackage.ArrayRawParam
+field.identity=T{declaration=class:defpackage.ArrayRawParam,owner=true,method=false}[]
+method=put;params=defpackage.ArrayRawParam,java.lang.Object[];return=void;typeParameters=
+behavior.value=[Ljava.lang.Object;
+behavior.array-length=1
+behavior.return-is-receiver=false

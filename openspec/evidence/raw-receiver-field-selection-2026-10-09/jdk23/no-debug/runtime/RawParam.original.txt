@@ -1,0 +1,13 @@
+field.type=T
+field.physical-type=java.lang.Object
+field.declaring=RawParam
+field.identity=T{declaration=class:RawParam,owner=true,method=false}
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:RawParam;owner=true
+method=put;params=RawParam,java.lang.Object;return=void;typeParameters=;physical-params=RawParam,java.lang.Object;physical-return=void;declaration=put(RawParam;java.lang.Object;)void
+behavior.value=RawParam
+behavior.array-length=n/a
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=false
+behavior.number-value=n/a
+behavior.return-is-receiver=false

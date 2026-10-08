@@ -1,0 +1,8 @@
+field.type=T
+field.declaring=ShadowMethodT
+field.identity=T{declaration=class:ShadowMethodT,owner=true,method=false}
+method=observe;params=ShadowMethodT<T{declaration=method:observe,owner=false,method=true}>,T{declaration=method:observe,owner=false,method=true};return=void;typeParameters=T{declaration=method:observe,owner=false,method=true}
+method=put;params=ShadowMethodT<T{declaration=method:put,owner=false,method=true}>,T{declaration=method:put,owner=false,method=true};return=void;typeParameters=T{declaration=method:put,owner=false,method=true}
+behavior.value=ShadowMethodT
+behavior.array-length=n/a
+behavior.return-is-receiver=false

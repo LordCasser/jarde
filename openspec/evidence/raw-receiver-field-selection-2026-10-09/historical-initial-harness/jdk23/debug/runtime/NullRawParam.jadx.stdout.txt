@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=defpackage.NullRawParam
+field.identity=T{declaration=class:defpackage.NullRawParam,owner=true,method=false}
+method=put;params=defpackage.NullRawParam;return=void;typeParameters=
+behavior.value=null
+behavior.array-length=n/a
+behavior.return-is-receiver=false

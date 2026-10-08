@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=RawParam
+field.identity=T{declaration=class:RawParam,owner=true,method=false}
+method=put;params=RawParam,java.lang.Object;return=void;typeParameters=
+behavior.value=RawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

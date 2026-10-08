@@ -1,0 +1,7 @@
+/tmp/jarde-raw-receiver-v3-ctor-regression-root-20261009/corretto8/debug/ExceptionHold/candidate/ExceptionHold.java:15: 错误: 不兼容的类型: Object无法转换为T
+            this.v = this.maybe(v);
+                                ^
+  其中, T是类型变量:
+    T扩展已在类 ExceptionHold中声明的Object
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+1 个错误

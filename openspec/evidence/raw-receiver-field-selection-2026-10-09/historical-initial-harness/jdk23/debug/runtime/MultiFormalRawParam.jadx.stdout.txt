@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=defpackage.MultiFormalRawParam
+field.identity=T{declaration=class:defpackage.MultiFormalRawParam,owner=true,method=false}
+method=put;params=defpackage.MultiFormalRawParam,K{declaration=method:put,owner=false,method=true},java.lang.Object;return=void;typeParameters=K{declaration=method:put,owner=false,method=true}
+behavior.value=defpackage.MultiFormalRawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

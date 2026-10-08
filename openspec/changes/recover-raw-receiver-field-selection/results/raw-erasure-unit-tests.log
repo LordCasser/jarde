@@ -1,0 +1,10 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.35s
+     Running unittests src/lib.rs (target/debug/deps/jarde-3864b398be2c3436)
+
+running 2 tests
+test class_source::tests::raw_receiver_assignment_uses_java_reference_and_array_erasure_rules ... ok
+test class_source::tests::raw_receiver_type_proof_propagates_budget_and_cancellation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 186 filtered out; finished in 0.00s
+

@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=InstanceRawLocal
+field.identity=T{declaration=class:InstanceRawLocal,owner=true,method=false}
+method=put;params=java.lang.Object;return=void;typeParameters=
+behavior.value=java.lang.Object
+behavior.array-length=n/a
+behavior.return-is-receiver=false

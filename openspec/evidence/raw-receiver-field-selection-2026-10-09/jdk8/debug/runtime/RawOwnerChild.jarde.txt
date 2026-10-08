@@ -1,0 +1,12 @@
+field.type=T
+field.physical-type=java.lang.Object
+field.declaring=RawOwnerBase
+field.identity=T{declaration=class:RawOwnerBase,owner=true,method=false}
+method=put;params=RawOwnerChild,java.lang.Object;return=void;typeParameters=;physical-params=RawOwnerChild,java.lang.Object;physical-return=void;declaration=put(RawOwnerChild;java.lang.Object;)void
+behavior.value=RawOwnerChild
+behavior.array-length=n/a
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=false
+behavior.number-value=n/a
+behavior.return-is-receiver=false

@@ -1,0 +1,8 @@
+--- original
++++ candidate
+@@ -2,4 +2,4 @@
+ fieldGenericType=T
+ classvars=1
+ method=put methodvars=0 parameterGenericType=T
+-method=sink methodvars=0 parameterGenericType=T
++method=sink methodvars=0 parameterGenericType=java.lang.Object

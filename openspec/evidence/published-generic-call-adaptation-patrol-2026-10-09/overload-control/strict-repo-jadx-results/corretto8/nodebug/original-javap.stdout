@@ -1,0 +1,86 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/BoundOverload.jar!/BoundOverload.class
+  Last modified 2026-10-9; size 615 bytes
+  MD5 checksum 1226aa7400983ff757ef79de7579b681
+public class BoundOverload<T extends java.lang.Number & java.lang.Comparable<T>> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#20         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #21.#22        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #23            // number
+   #4 = Methodref          #24.#25        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #5 = String             #26            // comparable
+   #6 = Methodref          #7.#27         // BoundOverload.pick:(Ljava/lang/Number;)V
+   #7 = Class              #28            // BoundOverload
+   #8 = Class              #29            // java/lang/Object
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               pick
+  #13 = Utf8               (Ljava/lang/Number;)V
+  #14 = Utf8               (Ljava/lang/Comparable;)V
+  #15 = Utf8               Signature
+  #16 = Utf8               (Ljava/lang/Comparable<TT;>;)V
+  #17 = Utf8               relay
+  #18 = Utf8               (TT;)V
+  #19 = Utf8               <T:Ljava/lang/Number;:Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;
+  #20 = NameAndType        #9:#10         // "<init>":()V
+  #21 = Class              #30            // java/lang/System
+  #22 = NameAndType        #31:#32        // out:Ljava/io/PrintStream;
+  #23 = Utf8               number
+  #24 = Class              #33            // java/io/PrintStream
+  #25 = NameAndType        #34:#35        // println:(Ljava/lang/String;)V
+  #26 = Utf8               comparable
+  #27 = NameAndType        #12:#13        // pick:(Ljava/lang/Number;)V
+  #28 = Utf8               BoundOverload
+  #29 = Utf8               java/lang/Object
+  #30 = Utf8               java/lang/System
+  #31 = Utf8               out
+  #32 = Utf8               Ljava/io/PrintStream;
+  #33 = Utf8               java/io/PrintStream
+  #34 = Utf8               println
+  #35 = Utf8               (Ljava/lang/String;)V
+{
+  public BoundOverload();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void pick(java.lang.Number);
+    descriptor: (Ljava/lang/Number;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #3                  // String number
+         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: return
+
+  public void pick(java.lang.Comparable<T>);
+    descriptor: (Ljava/lang/Comparable;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #5                  // String comparable
+         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: return
+    Signature: #16                          // (Ljava/lang/Comparable<TT;>;)V
+
+  public void relay(T);
+    descriptor: (Ljava/lang/Number;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #6                  // Method pick:(Ljava/lang/Number;)V
+         5: return
+    Signature: #18                          // (TT;)V
+}
+Signature: #19                          // <T:Ljava/lang/Number;:Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;

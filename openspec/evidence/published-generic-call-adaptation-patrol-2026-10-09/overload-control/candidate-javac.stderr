@@ -1,0 +1,5 @@
+openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/candidate/BoundOverload.java:35: 错误: 对pick的引用不明确
+        this.pick(value);
+            ^
+  BoundOverload 中的方法 pick(Number) 和 BoundOverload 中的方法 pick(Comparable) 都匹配
+1 个错误

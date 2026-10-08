@@ -1,0 +1,57 @@
+leg	variant	case	jarde_behavior_vs_original	jadx_behavior_vs_original	original_field_type	jarde_field_type	jadx_field_type
+jdk8	debug	RawParam	true	true	T	java.lang.Object	T
+jdk8	debug	StaticRawLocal	true	true	T	java.lang.Object	T
+jdk8	debug	InstanceRawLocal	true	false	T	java.lang.Object	
+jdk8	debug	TypedReceiver	true	true	T	java.lang.Object	T
+jdk8	debug	ThisReceiver	true	true	T	T	T
+jdk8	debug	ShadowMethodT	true	true	T	java.lang.Object	T
+jdk8	debug	DirectInstanceRawParam	true	true	T	java.lang.Object	T
+jdk8	debug	WideRawParam	true	true	T	java.lang.Object	T
+jdk8	debug	ArrayRawParam	true	true	T[]	java.lang.Object[]	T[]
+jdk8	debug	BoundRawParam	true	true	T	java.lang.Number	T
+jdk8	debug	NullRawParam	true	true	T	T	T
+jdk8	debug	RetainedAliasRawParam	true	true	T	java.lang.Object	T
+jdk8	debug	MultiFormalRawParam	true	true	T	java.lang.Object	T
+jdk8	debug	RawOwnerChild	true	true	T	T	T
+jdk8	no-debug	RawParam	true	true	T	java.lang.Object	T
+jdk8	no-debug	StaticRawLocal	true	true	T	java.lang.Object	T
+jdk8	no-debug	InstanceRawLocal	true	false	T	java.lang.Object	
+jdk8	no-debug	TypedReceiver	true	true	T	java.lang.Object	T
+jdk8	no-debug	ThisReceiver	true	true	T	T	T
+jdk8	no-debug	ShadowMethodT	true	true	T	java.lang.Object	T
+jdk8	no-debug	DirectInstanceRawParam	true	true	T	java.lang.Object	T
+jdk8	no-debug	WideRawParam	true	true	T	java.lang.Object	T
+jdk8	no-debug	ArrayRawParam	true	true	T[]	java.lang.Object[]	T[]
+jdk8	no-debug	BoundRawParam	true	true	T	java.lang.Number	T
+jdk8	no-debug	NullRawParam	true	true	T	T	T
+jdk8	no-debug	RetainedAliasRawParam	true	true	T	java.lang.Object	T
+jdk8	no-debug	MultiFormalRawParam	true	true	T	java.lang.Object	T
+jdk8	no-debug	RawOwnerChild	true	true	T	T	T
+jdk23	debug	RawParam	true	true	T	java.lang.Object	T
+jdk23	debug	StaticRawLocal	true	true	T	java.lang.Object	T
+jdk23	debug	InstanceRawLocal	true	false	T	java.lang.Object	
+jdk23	debug	TypedReceiver	true	true	T	java.lang.Object	T
+jdk23	debug	ThisReceiver	true	true	T	T	T
+jdk23	debug	ShadowMethodT	true	true	T	java.lang.Object	T
+jdk23	debug	DirectInstanceRawParam	true	true	T	java.lang.Object	T
+jdk23	debug	WideRawParam	true	true	T	java.lang.Object	T
+jdk23	debug	ArrayRawParam	true	true	T[]	java.lang.Object[]	T[]
+jdk23	debug	BoundRawParam	true	true	T	java.lang.Number	T
+jdk23	debug	NullRawParam	true	true	T	T	T
+jdk23	debug	RetainedAliasRawParam	true	true	T	java.lang.Object	T
+jdk23	debug	MultiFormalRawParam	true	true	T	java.lang.Object	T
+jdk23	debug	RawOwnerChild	true	true	T	T	T
+jdk23	no-debug	RawParam	true	true	T	java.lang.Object	T
+jdk23	no-debug	StaticRawLocal	true	true	T	java.lang.Object	T
+jdk23	no-debug	InstanceRawLocal	true	false	T	java.lang.Object	
+jdk23	no-debug	TypedReceiver	true	true	T	java.lang.Object	T
+jdk23	no-debug	ThisReceiver	true	true	T	T	T
+jdk23	no-debug	ShadowMethodT	true	true	T	java.lang.Object	T
+jdk23	no-debug	DirectInstanceRawParam	true	true	T	java.lang.Object	T
+jdk23	no-debug	WideRawParam	true	true	T	java.lang.Object	T
+jdk23	no-debug	ArrayRawParam	true	true	T[]	java.lang.Object[]	T[]
+jdk23	no-debug	BoundRawParam	true	true	T	java.lang.Number	T
+jdk23	no-debug	NullRawParam	true	true	T	T	T
+jdk23	no-debug	RetainedAliasRawParam	true	true	T	java.lang.Object	T
+jdk23	no-debug	MultiFormalRawParam	true	true	T	java.lang.Object	T
+jdk23	no-debug	RawOwnerChild	true	true	T	T	T

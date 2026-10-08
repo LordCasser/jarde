@@ -1,0 +1,13 @@
+field.type=java.lang.Object
+field.physical-type=java.lang.Object
+field.declaring=WideRawParam
+field.identity=java.lang.Object
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:WideRawParam;owner=true
+method=put;params=long,WideRawParam,double,java.lang.Object;return=void;typeParameters=;physical-params=long,WideRawParam,double,java.lang.Object;physical-return=void;declaration=put(long;WideRawParam;double;java.lang.Object;)void
+behavior.value=WideRawParam
+behavior.array-length=n/a
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=false
+behavior.number-value=n/a
+behavior.return-is-receiver=false

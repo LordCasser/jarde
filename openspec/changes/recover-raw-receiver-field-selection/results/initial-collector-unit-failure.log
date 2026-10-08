@@ -1,0 +1,27 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 54.58s
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-962e3f8838370d64)
+
+running 1 test
+test report::raw_receiver_site_budget_tests::receiver_collector_stops_at_its_ast_scan_budget_and_cancellation ... FAILED
+
+failures:
+
+---- report::raw_receiver_site_budget_tests::receiver_collector_stops_at_its_ast_scan_budget_and_cancellation stdout ----
+
+thread 'report::raw_receiver_site_budget_tests::receiver_collector_stops_at_its_ast_scan_budget_and_cancellation' (1402153) panicked at crates/jarde-java/src/report.rs:9880:9:
+assertion `left == right` failed
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    report::raw_receiver_site_budget_tests::receiver_collector_stops_at_its_ast_scan_budget_and_cancellation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 291 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p jarde-java --lib`

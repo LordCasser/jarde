@@ -7197,6 +7197,236 @@
       "path": "tests/fixtures/r2-annotation-positions/v8/CodeOnly.class"
     },
     {
+      "blake3": "33751fc4be311f3b9bc145c78b8531130f0fe8d87065aab8f0a2cc1e1913a2f8",
+      "bytes": 477,
+      "path": "tests/fixtures/raw-receiver-field-selection/Array2DRawParam.jar"
+    },
+    {
+      "blake3": "7ad7f89757c62e80b21df7add306bf6bc3424b98abc31cca5c59e792f7fcaa2e",
+      "bytes": 170,
+      "path": "tests/fixtures/raw-receiver-field-selection/Array2DRawParam.java"
+    },
+    {
+      "blake3": "7d1d529a230b7531d25e4fe890b85565590aa9afc22efb7fa722eb4eab44d9d1",
+      "bytes": 379,
+      "path": "tests/fixtures/raw-receiver-field-selection/ArrayRawParam.jar"
+    },
+    {
+      "blake3": "baa04b9e7a7c04994dfff9b4531987fd52d905e63e2c020dd8058e62680cf5ef",
+      "bytes": 164,
+      "path": "tests/fixtures/raw-receiver-field-selection/ArrayRawParam.java"
+    },
+    {
+      "blake3": "272038df3e8bfd09940f50844ab4b2a8d4d08b7b3619928fd328a149bcc46173",
+      "bytes": 395,
+      "path": "tests/fixtures/raw-receiver-field-selection/BoundRawParam.jar"
+    },
+    {
+      "blake3": "787eb391ebf30ac53893039734cf8108c9cb251248be6a098f4dc1de726db6b1",
+      "bytes": 191,
+      "path": "tests/fixtures/raw-receiver-field-selection/BoundRawParam.java"
+    },
+    {
+      "blake3": "d39d11689fb4930027a7944949119cf5103628281bbc9394d661cad1824265cd",
+      "bytes": 398,
+      "path": "tests/fixtures/raw-receiver-field-selection/DirectInstanceRawParam.jar"
+    },
+    {
+      "blake3": "1edfce8dc1156634da5043f334cf97bfacdbc5f5175415d505f5cc3c705ddff8",
+      "bytes": 171,
+      "path": "tests/fixtures/raw-receiver-field-selection/DirectInstanceRawParam.java"
+    },
+    {
+      "blake3": "c2fb07164e6a643d98c7a0f2398e6316a2a814f060a247cef44b936210cf7196",
+      "bytes": 380,
+      "path": "tests/fixtures/raw-receiver-field-selection/InstanceRawLocal.jar"
+    },
+    {
+      "blake3": "c5f5b7bfcb1189985604b60197ed536253b94078342c7ce30b04f344af8a1f08",
+      "bytes": 139,
+      "path": "tests/fixtures/raw-receiver-field-selection/InstanceRawLocal.java"
+    },
+    {
+      "blake3": "f848cb09ce12f4efffbc64286d2c45f3b81d42f0fc36cbac99be65872a61241e",
+      "bytes": 433,
+      "path": "tests/fixtures/raw-receiver-field-selection/MultiFormalRawParam.jar"
+    },
+    {
+      "blake3": "b42f39b2adb73d424f1e2404c081e5c923abdf5f1135c415ad8ef668c682d549",
+      "bytes": 207,
+      "path": "tests/fixtures/raw-receiver-field-selection/MultiFormalRawParam.java"
+    },
+    {
+      "blake3": "7e0ba1cad608671688d8f4e802b7eb73090646683430a18309a84c5632a707da",
+      "bytes": 831,
+      "path": "tests/fixtures/raw-receiver-field-selection/NestedAliasRawParam.jar"
+    },
+    {
+      "blake3": "81c4bb55dcfe1673e2c0f3fffb7fae64e29351c140a591f859a6ea5fdba509ac",
+      "bytes": 373,
+      "path": "tests/fixtures/raw-receiver-field-selection/NestedAliasRawParam.java"
+    },
+    {
+      "blake3": "3500ecd0a0f858ff5050585e28d7f860d3bc92c943f2fd3c7fd7e3e24465420f",
+      "bytes": 361,
+      "path": "tests/fixtures/raw-receiver-field-selection/NullRawParam.jar"
+    },
+    {
+      "blake3": "6da1e1fe84536d880b85f4c106a831f3dc18500c89fbab157f76b515239494a5",
+      "bytes": 143,
+      "path": "tests/fixtures/raw-receiver-field-selection/NullRawParam.java"
+    },
+    {
+      "blake3": "7fc561a38123621eab336637138087aea80488d7e22390dbdc47bb5342fcc51f",
+      "bytes": 485,
+      "path": "tests/fixtures/raw-receiver-field-selection/PrimitiveArrayRawParam.jar"
+    },
+    {
+      "blake3": "e2cf460975035447cde892e314f6cb60c7e995f5c31933d4590ffcb4efc1756e",
+      "bytes": 177,
+      "path": "tests/fixtures/raw-receiver-field-selection/PrimitiveArrayRawParam.java"
+    },
+    {
+      "blake3": "c35b9d231df50a849ca0b165ed941a2ccc8f97d17f328e7b00fd301f4f266f7d",
+      "bytes": 53,
+      "path": "tests/fixtures/raw-receiver-field-selection/RawOwnerBase.java"
+    },
+    {
+      "blake3": "c653240409d45301516b3f2de22cabfc6ba4557047a847cb632d009a126f9a92",
+      "bytes": 663,
+      "path": "tests/fixtures/raw-receiver-field-selection/RawOwnerChild.jar"
+    },
+    {
+      "blake3": "b8dd18f06f528961d1357393b9ca9d25731d3276075c1a6a2315b0715a5daa0d",
+      "bytes": 163,
+      "path": "tests/fixtures/raw-receiver-field-selection/RawOwnerChild.java"
+    },
+    {
+      "blake3": "57d3d39ed576bbddc3869f8449cd872de8aa715a4a5f5b67c3d4e95a2fb1b34c",
+      "bytes": 354,
+      "path": "tests/fixtures/raw-receiver-field-selection/RawParam.jar"
+    },
+    {
+      "blake3": "f5c9923564018817172821eea90886f2c5f64a04fd78b6e8e923eddec4f7c3eb",
+      "bytes": 129,
+      "path": "tests/fixtures/raw-receiver-field-selection/RawParam.java"
+    },
+    {
+      "blake3": "5cf8473fd84052b0d92025d6296271ccd9e09973ed80423a7f8c7226fcfe6394",
+      "bytes": 928,
+      "path": "tests/fixtures/raw-receiver-field-selection/ReboundAliasRawParam.jar"
+    },
+    {
+      "blake3": "b05d4058ec4b2100cfdcf2286a825901c98b03aa181d2d95ac53a2448b412d5a",
+      "bytes": 378,
+      "path": "tests/fixtures/raw-receiver-field-selection/ReboundAliasRawParam.java"
+    },
+    {
+      "blake3": "febc8e98e65dbe2d842a7f1cd1efbf56ef0075d78d6efb7a73d634944a91a17f",
+      "bytes": 5709,
+      "path": "tests/fixtures/raw-receiver-field-selection/ReceiverProbe.java"
+    },
+    {
+      "blake3": "f2ed870b7428955c05f126642a53135659ed87d0bc3a11cfff5cb1d3e83a92ac",
+      "bytes": 404,
+      "path": "tests/fixtures/raw-receiver-field-selection/RetainedAliasRawParam.jar"
+    },
+    {
+      "blake3": "2638a4e3515a1767d2c3359699bb73ae9805e1aa68d9b5dbca50e430507c4341",
+      "bytes": 245,
+      "path": "tests/fixtures/raw-receiver-field-selection/RetainedAliasRawParam.java"
+    },
+    {
+      "blake3": "8541add8eae09ded6ac4defe8da6a2ec38db6f23501695627132be8bf3eeb626",
+      "bytes": 405,
+      "path": "tests/fixtures/raw-receiver-field-selection/ShadowMethodT.jar"
+    },
+    {
+      "blake3": "5e0a15ad8b69d118b6213a394ac281bcc3911b668e68044b075a4ff4a2beb115",
+      "bytes": 228,
+      "path": "tests/fixtures/raw-receiver-field-selection/ShadowMethodT.java"
+    },
+    {
+      "blake3": "946da9d790228d5688f3337b9c4474ddc3a93ef58ae1fb81d9b8a23dbae59df0",
+      "bytes": 375,
+      "path": "tests/fixtures/raw-receiver-field-selection/StaticRawLocal.jar"
+    },
+    {
+      "blake3": "7f14db9b2f10c8eca249e263dfda11f62563bfa80d41f1381154eaf3aff35150",
+      "bytes": 171,
+      "path": "tests/fixtures/raw-receiver-field-selection/StaticRawLocal.java"
+    },
+    {
+      "blake3": "2f982cadb495cf8069765d506569a3e702eacb3958456c632640a82fbf654eec",
+      "bytes": 774,
+      "path": "tests/fixtures/raw-receiver-field-selection/SyntheticAccessorGuard.class"
+    },
+    {
+      "blake3": "769b297f6b64852f2e58c8934d6eaf1a08d5938cce9447350acdce9aa379838d",
+      "bytes": 572,
+      "path": "tests/fixtures/raw-receiver-field-selection/SyntheticAccessorGuard.jar"
+    },
+    {
+      "blake3": "05bda4f6fbafb2e3021d255b8b92dbaac2a5db8d1523a3bf9d32d56d995ca7ab",
+      "bytes": 263,
+      "path": "tests/fixtures/raw-receiver-field-selection/SyntheticAccessorGuard.java"
+    },
+    {
+      "blake3": "b8ce034bfb33f0a9285cf4ae086e695583870145ec6872e6b98e507de19970be",
+      "bytes": 372,
+      "path": "tests/fixtures/raw-receiver-field-selection/ThisReceiver.jar"
+    },
+    {
+      "blake3": "cde1a00f5aad65ef9521f0931d0a14712fad2aea8dfb70d8a81fa03fab645a39",
+      "bytes": 98,
+      "path": "tests/fixtures/raw-receiver-field-selection/ThisReceiver.java"
+    },
+    {
+      "blake3": "c4df380f86533d91ff8fe510dba0a6e6bd6e212070fdae0039482a19d6cc7609",
+      "bytes": 411,
+      "path": "tests/fixtures/raw-receiver-field-selection/TypedReceiver.jar"
+    },
+    {
+      "blake3": "bc0236fa4dfc01583ff8096784b4d4de4e89ff7ed2d9ea82b875f9b7f2567d5d",
+      "bytes": 197,
+      "path": "tests/fixtures/raw-receiver-field-selection/TypedReceiver.java"
+    },
+    {
+      "blake3": "b385308277af9e39dd7bbc3994ced298bbbb3ac8ca75664b718c22186e60cc7a",
+      "bytes": 419,
+      "path": "tests/fixtures/raw-receiver-field-selection/UnknownWriter.jar"
+    },
+    {
+      "blake3": "b0883ce06a15a746fc6eb2fda9cedb5949c51bf5ea72d4c88025c1f1434e4ec7",
+      "bytes": 252,
+      "path": "tests/fixtures/raw-receiver-field-selection/UnknownWriter.java"
+    },
+    {
+      "blake3": "e17a25003b229d8b6997f7b60e6fd78d88fb718c5c334cb4caddd49889bf90e6",
+      "bytes": 417,
+      "path": "tests/fixtures/raw-receiver-field-selection/UnsafeOtherWriter.jar"
+    },
+    {
+      "blake3": "9c144ebc0ad2922c297ba34adbee99cfd5c172f0e95a0b4dc22bb9231a5e2d98",
+      "bytes": 300,
+      "path": "tests/fixtures/raw-receiver-field-selection/UnsafeOtherWriter.java"
+    },
+    {
+      "blake3": "da7e1f0a4a2bdfb11b7a789ce84a71c66f8e37d71c6887b81e06f182057590e2",
+      "bytes": 371,
+      "path": "tests/fixtures/raw-receiver-field-selection/WideRawParam.jar"
+    },
+    {
+      "blake3": "1bdf2819970cb902b0ff7cb81e6cca0fa9b4300fa916f10c8f6e3eb85a1f622d",
+      "bytes": 186,
+      "path": "tests/fixtures/raw-receiver-field-selection/WideRawParam.java"
+    },
+    {
+      "blake3": "56e90eda929ad73da3cdbce72b5fa7cc7b1c8649f27b2a82da87022159787626",
+      "bytes": 813,
+      "path": "tests/fixtures/raw-receiver-field-selection/alias-pressure-provenance.tsv"
+    },
+    {
       "blake3": "02e5274a6b1249d8d9146116f2a7fb66c81ff92da107e218f854fd5f8a099b4d",
       "bytes": 545,
       "path": "tests/fixtures/recover-array-element-field-receiver/EM.java"

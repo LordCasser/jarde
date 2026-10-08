@@ -1,0 +1,1737 @@
+{
+  "purpose": "Strict four-leg whole-class overload control; source, CLI, and tools are hashed or named below.",
+  "jarde_cli": "/tmp/jarde-raw-receiver-final-v3-cli",
+  "jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "jadx_cli": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+  "jadx_cli_sha256": "5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3",
+  "jadx_version_stdout": "dev\n",
+  "jadx_version_stderr": "",
+  "jadx_lib_directory": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib",
+  "jadx_lib_jars": [
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+      "bytes": 239543,
+      "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+      "bytes": 721157,
+      "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+      "bytes": 17536,
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+      "bytes": 445288,
+      "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+      "bytes": 1153819,
+      "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+      "bytes": 167761,
+      "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+      "bytes": 126151,
+      "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+      "bytes": 13371507,
+      "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+      "bytes": 208835,
+      "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+      "bytes": 609182,
+      "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+      "bytes": 1039009,
+      "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+      "bytes": 25886,
+      "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+      "bytes": 2020,
+      "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+      "bytes": 20255,
+      "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+      "bytes": 4617,
+      "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+      "bytes": 313604,
+      "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+      "bytes": 2785359,
+      "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+      "bytes": 8781,
+      "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+      "bytes": 23547,
+      "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+      "bytes": 16590,
+      "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+      "bytes": 11946,
+      "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+      "bytes": 8282,
+      "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+      "bytes": 6769,
+      "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+      "bytes": 65020,
+      "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+      "bytes": 2400805,
+      "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+      "bytes": 107404,
+      "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+      "bytes": 54158,
+      "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+      "bytes": 19973,
+      "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+      "bytes": 115864,
+      "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+      "bytes": 56006,
+      "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+      "bytes": 33989,
+      "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+      "bytes": 43273,
+      "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+      "bytes": 25907,
+      "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+      "bytes": 10711,
+      "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+      "bytes": 10470,
+      "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+      "bytes": 27061,
+      "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+      "bytes": 2497,
+      "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+      "bytes": 94038,
+      "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+      "bytes": 19936,
+      "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+      "bytes": 910795,
+      "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+      "bytes": 3750100,
+      "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+      "bytes": 1841933,
+      "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "bytes": 2199,
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+      "bytes": 293273,
+      "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+      "bytes": 650132,
+      "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+      "bytes": 262096,
+      "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+      "bytes": 1876598,
+      "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+      "bytes": 20603304,
+      "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+      "bytes": 32614,
+      "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+      "bytes": 43019,
+      "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+      "bytes": 69982,
+      "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+      "bytes": 313205,
+      "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+      "bytes": 132972,
+      "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+      "bytes": 1194123,
+      "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+      "bytes": 33331,
+      "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+      "bytes": 148627,
+      "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+      "bytes": 82498,
+      "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6"
+    }
+  ],
+  "replay_script": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/replay-strict.py",
+  "replay_script_sha256": "a2b2179834529b1a5b6ed67070b29d71e5a8d4d85d70cc7175fcbb620a0f2da5",
+  "source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java",
+  "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+  "commands": [
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "9c5955fc99a60b8f6dee6cf582c4420d91e1b3e2a201f532c91e2cbdfce7fa51",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "label": "java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-j4xuy24p/empty-input-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-j4xuy24p/empty-input-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-j4xuy24p/input-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/BoundOverload.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-j4xuy24p/input-classes",
+        "BoundOverload.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/BoundOverload.jar",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "f00ff4715ae3f08e851c6aff839e47580fa95bc23c7f4e07db91b58d4d86e882",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/BoundOverload.jar",
+        "--class",
+        "BoundOverload",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f",
+      "stderr_sha256": "d7bbdcac10105bb4878582fa07c92d235bff760dce620c74ac74a9d5fd4295ff"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/jadx/full-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/BoundOverload.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-fzh4l3n0/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-fzh4l3n0/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-fzh4l3n0/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/original/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-fzh4l3n0/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-fzh4l3n0/classes",
+        "RelayDriver",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-ksh7x7pb/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-ksh7x7pb/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-ksh7x7pb/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/jarde/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-ksh7x7pb/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "42c3f1e0d7f4b5ea0762aa539f4baa01037ed8de050bc2e37a19f3996df7e242"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-8z0ofjet/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-8z0ofjet/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-8z0ofjet/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/jadx/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-8z0ofjet/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2c30b4ac9fa5d26f40584615a063966933ff6e924c937301ad25add79e31659b"
+    },
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-pdchl1uk/empty-input-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-pdchl1uk/empty-input-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-pdchl1uk/input-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/BoundOverload.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-pdchl1uk/input-classes",
+        "BoundOverload.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/BoundOverload.jar",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "d7432a1901b21c170feb7b540b963a262e8179aaadf83772b474dab08e7690e3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/BoundOverload.jar",
+        "--class",
+        "BoundOverload",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8",
+      "stderr_sha256": "ae6224441d0cbeb38cd1c75025ba98082cd6f6b76fa1a98107b808f547e6e76b"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/jadx/full-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/BoundOverload.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-lveqautu/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-lveqautu/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-lveqautu/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/original/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-lveqautu/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-lveqautu/classes",
+        "RelayDriver",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-9dr26tfv/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-9dr26tfv/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-9dr26tfv/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/jarde/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-9dr26tfv/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "92e1685503e0699c5c9ddc44679a334ee7ce328ac195b597368233db8d0aa5a1"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-xafedeay/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-xafedeay/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-xafedeay/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/jadx/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-xafedeay/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "132dfa3b0e01336d3fcc633375b361500afdea20330aa28b1012ff2a81a0360a"
+    },
+    {
+      "label": "javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-8ttp45y0/empty-input-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-8ttp45y0/empty-input-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-8ttp45y0/input-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+        "cf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/BoundOverload.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-8ttp45y0/input-classes",
+        "BoundOverload.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/BoundOverload.jar",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "08cf7a4c77d522e417096fd7f88e94ab75f4a8392c900e6e9c5eb2991bf0ac8e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/BoundOverload.jar",
+        "--class",
+        "BoundOverload",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f",
+      "stderr_sha256": "2d1b8b90447ef2b3ae32c4efc0f376bce3aaf6be94b732590f286f860f90d9f3"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/jadx/full-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/BoundOverload.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-ro8cjmzo/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-ro8cjmzo/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-ro8cjmzo/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/original/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-ro8cjmzo/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-ro8cjmzo/classes",
+        "RelayDriver",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-vph0v_fm/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-vph0v_fm/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-vph0v_fm/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/jarde/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-vph0v_fm/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4e40fdbaaae0be8c961c1f3c328600ac760c4816d5f3a0af7db59dcaf3a18bb4"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-m8raslxd/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-m8raslxd/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-m8raslxd/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/jadx/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-m8raslxd/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "60cf7b22fc1264cfe11c1b9c1791e075b80d5fa4a13423246d0183567d13bbc5"
+    },
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-ev02519d/empty-input-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-ev02519d/empty-input-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-ev02519d/input-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+        "cf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/BoundOverload.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-strict-ev02519d/input-classes",
+        "BoundOverload.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/BoundOverload.jar",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "03561e14bf8cdbc616afb82423307b1458399c76fe1349926b70514f7c72ac07",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/BoundOverload.jar",
+        "--class",
+        "BoundOverload",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8",
+      "stderr_sha256": "046fc46e6a2f62c84dcb6357b88cd3bc90d31034ada194973d01241cc3ae1f78"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/jadx/full-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/BoundOverload.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-nnllfxzu/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-nnllfxzu/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-nnllfxzu/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/original/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-nnllfxzu/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-original-nnllfxzu/classes",
+        "RelayDriver",
+        "BoundOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 0,
+      "stdout_sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-o2vh5qjq/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-o2vh5qjq/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-o2vh5qjq/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/jarde/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jarde-o2vh5qjq/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3d4f57934f1316a603844cf381df8c289ad8cf988a3e16d7c1a51f772b674800"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-as98kesf/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-as98kesf/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-as98kesf/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/jadx/BoundOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/bound-overload-jadx-as98kesf/RelayDriver.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "38dfe21d2611205cdd7e8d0ae0bfce99fb6fb9236f6aed6b47ea804d171d5c8d"
+    }
+  ],
+  "cases": [
+    {
+      "leg": "corretto8",
+      "debug": "debug",
+      "compiler": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "java": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "release_args": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ],
+      "debug_args": [
+        "-g"
+      ],
+      "input_source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java",
+      "input_source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/debug/BoundOverload.jar",
+      "input_jar_sha256": "c5c95197056df5fe44bd82e81b06d1b040b80a4b6cfae546de5d42a1503330a3",
+      "input_class_sha256": "0be007a47bd4d2ef5540d15e14734cec661c69125c343293156ae020916f5d60",
+      "original_relay_selected_descriptor": "Ljava/lang/Number;",
+      "original_relay_has_checkcast": false,
+      "jarde_source_sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f",
+      "jadx_source_sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954",
+      "jadx_class_name": "defpackage.BoundOverload",
+      "results": {
+        "original": {
+          "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+          "compile_exit": 0,
+          "runtime_exit": 0,
+          "runtime_stdout": "number\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f",
+          "compile_exit": 1
+        },
+        "jadx": {
+          "source_sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954",
+          "compile_exit": 1
+        }
+      }
+    },
+    {
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "compiler": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "java": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "release_args": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ],
+      "debug_args": [
+        "-g:none"
+      ],
+      "input_source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java",
+      "input_source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/corretto8/nodebug/BoundOverload.jar",
+      "input_jar_sha256": "af33659eb44cd3776c59bb0fab58bceed02ca742517399e42ec7d7c0279d9cbb",
+      "input_class_sha256": "4ee257415d7daf46285e37d523e7bec536a32d23cabd20290cd8b9dd3bc45716",
+      "original_relay_selected_descriptor": "Ljava/lang/Number;",
+      "original_relay_has_checkcast": false,
+      "jarde_source_sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8",
+      "jadx_source_sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5",
+      "jadx_class_name": "defpackage.BoundOverload",
+      "results": {
+        "original": {
+          "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+          "compile_exit": 0,
+          "runtime_exit": 0,
+          "runtime_stdout": "number\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8",
+          "compile_exit": 1
+        },
+        "jadx": {
+          "source_sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5",
+          "compile_exit": 1
+        }
+      }
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "debug",
+      "compiler": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "java": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "release_args": [
+        "--release",
+        "8"
+      ],
+      "debug_args": [
+        "-g"
+      ],
+      "input_source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java",
+      "input_source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/debug/BoundOverload.jar",
+      "input_jar_sha256": "a302c1ee47aa3dc8a0cbe5251eda1ea12948760bb61c30e2f8741f768be6474f",
+      "input_class_sha256": "a49fb20d29e1611ed84bd4309729715c646905c2b8eb89a8db94a036a6b53df3",
+      "original_relay_selected_descriptor": "Ljava/lang/Number;",
+      "original_relay_has_checkcast": false,
+      "jarde_source_sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f",
+      "jadx_source_sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954",
+      "jadx_class_name": "defpackage.BoundOverload",
+      "results": {
+        "original": {
+          "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+          "compile_exit": 0,
+          "runtime_exit": 0,
+          "runtime_stdout": "number\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f",
+          "compile_exit": 1
+        },
+        "jadx": {
+          "source_sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954",
+          "compile_exit": 1
+        }
+      }
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "compiler": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "java": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "release_args": [
+        "--release",
+        "8"
+      ],
+      "debug_args": [
+        "-g:none"
+      ],
+      "input_source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java",
+      "input_source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/openjdk23/nodebug/BoundOverload.jar",
+      "input_jar_sha256": "d2ada48608b9b577c659f0c21e0765bf7b56d4fbb4ebf64dbafca7f53bbb69e4",
+      "input_class_sha256": "cffc0dd85d9f2ec512645251eece148654525a1ba80a5c81a2a6a6fe8d74377a",
+      "original_relay_selected_descriptor": "Ljava/lang/Number;",
+      "original_relay_has_checkcast": false,
+      "jarde_source_sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8",
+      "jadx_source_sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5",
+      "jadx_class_name": "defpackage.BoundOverload",
+      "results": {
+        "original": {
+          "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+          "compile_exit": 0,
+          "runtime_exit": 0,
+          "runtime_stdout": "number\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8",
+          "compile_exit": 1
+        },
+        "jadx": {
+          "source_sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5",
+          "compile_exit": 1
+        }
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "corretto8/debug/BoundOverload.jar",
+      "bytes": 977,
+      "sha256": "c5c95197056df5fe44bd82e81b06d1b040b80a4b6cfae546de5d42a1503330a3"
+    },
+    {
+      "path": "corretto8/debug/BoundOverload.original.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "corretto8/debug/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/freeze-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/jadx/BoundOverload.java",
+      "bytes": 444,
+      "sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954"
+    },
+    {
+      "path": "corretto8/debug/jadx/full-output/sources/defpackage/BoundOverload.java",
+      "bytes": 444,
+      "sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954"
+    },
+    {
+      "path": "corretto8/debug/jadx/jadx-javac.stderr",
+      "bytes": 474,
+      "sha256": "2c30b4ac9fa5d26f40584615a063966933ff6e924c937301ad25add79e31659b"
+    },
+    {
+      "path": "corretto8/debug/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "corretto8/debug/jarde/BoundOverload.java",
+      "bytes": 2126,
+      "sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f"
+    },
+    {
+      "path": "corretto8/debug/jarde/class-source.stderr",
+      "bytes": 90678,
+      "sha256": "d7bbdcac10105bb4878582fa07c92d235bff760dce620c74ac74a9d5fd4295ff"
+    },
+    {
+      "path": "corretto8/debug/jarde/class-source.stdout",
+      "bytes": 2126,
+      "sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f"
+    },
+    {
+      "path": "corretto8/debug/jarde/jarde-javac.stderr",
+      "bytes": 386,
+      "sha256": "42c3f1e0d7f4b5ea0762aa539f4baa01037ed8de050bc2e37a19f3996df7e242"
+    },
+    {
+      "path": "corretto8/debug/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/original/BoundOverload.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "corretto8/debug/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/original/original-java.stdout",
+      "bytes": 7,
+      "sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599"
+    },
+    {
+      "path": "corretto8/debug/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/original-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/original-javap.stdout",
+      "bytes": 6125,
+      "sha256": "f00ff4715ae3f08e851c6aff839e47580fa95bc23c7f4e07db91b58d4d86e882"
+    },
+    {
+      "path": "corretto8/java-version.stderr",
+      "bytes": 174,
+      "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "path": "corretto8/java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/javac-version.stderr",
+      "bytes": 16,
+      "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "path": "corretto8/javac-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/BoundOverload.jar",
+      "bytes": 815,
+      "sha256": "af33659eb44cd3776c59bb0fab58bceed02ca742517399e42ec7d7c0279d9cbb"
+    },
+    {
+      "path": "corretto8/nodebug/BoundOverload.original.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "corretto8/nodebug/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/freeze-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/jadx/BoundOverload.java",
+      "bytes": 442,
+      "sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5"
+    },
+    {
+      "path": "corretto8/nodebug/jadx/full-output/sources/defpackage/BoundOverload.java",
+      "bytes": 442,
+      "sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5"
+    },
+    {
+      "path": "corretto8/nodebug/jadx/jadx-javac.stderr",
+      "bytes": 472,
+      "sha256": "132dfa3b0e01336d3fcc633375b361500afdea20330aa28b1012ff2a81a0360a"
+    },
+    {
+      "path": "corretto8/nodebug/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "corretto8/nodebug/jarde/BoundOverload.java",
+      "bytes": 2122,
+      "sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8"
+    },
+    {
+      "path": "corretto8/nodebug/jarde/class-source.stderr",
+      "bytes": 90624,
+      "sha256": "ae6224441d0cbeb38cd1c75025ba98082cd6f6b76fa1a98107b808f547e6e76b"
+    },
+    {
+      "path": "corretto8/nodebug/jarde/class-source.stdout",
+      "bytes": 2122,
+      "sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8"
+    },
+    {
+      "path": "corretto8/nodebug/jarde/jarde-javac.stderr",
+      "bytes": 387,
+      "sha256": "92e1685503e0699c5c9ddc44679a334ee7ce328ac195b597368233db8d0aa5a1"
+    },
+    {
+      "path": "corretto8/nodebug/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/original/BoundOverload.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "corretto8/nodebug/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/original/original-java.stdout",
+      "bytes": 7,
+      "sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599"
+    },
+    {
+      "path": "corretto8/nodebug/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/original-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/original-javap.stdout",
+      "bytes": 4030,
+      "sha256": "d7432a1901b21c170feb7b540b963a262e8179aaadf83772b474dab08e7690e3"
+    },
+    {
+      "path": "jadx-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jadx-version.stdout",
+      "bytes": 4,
+      "sha256": "9c5955fc99a60b8f6dee6cf582c4420d91e1b3e2a201f532c91e2cbdfce7fa51"
+    },
+    {
+      "path": "openjdk23/debug/BoundOverload.jar",
+      "bytes": 964,
+      "sha256": "a302c1ee47aa3dc8a0cbe5251eda1ea12948760bb61c30e2f8741f768be6474f"
+    },
+    {
+      "path": "openjdk23/debug/BoundOverload.original.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "openjdk23/debug/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/freeze-javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openjdk23/debug/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/jadx/BoundOverload.java",
+      "bytes": 444,
+      "sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954"
+    },
+    {
+      "path": "openjdk23/debug/jadx/full-output/sources/defpackage/BoundOverload.java",
+      "bytes": 444,
+      "sha256": "3d26ec7637e3ca50ce2f4ac835c07e99840de5d260675bd0080b91c8f1a4e954"
+    },
+    {
+      "path": "openjdk23/debug/jadx/jadx-javac.stderr",
+      "bytes": 717,
+      "sha256": "60cf7b22fc1264cfe11c1b9c1791e075b80d5fa4a13423246d0183567d13bbc5"
+    },
+    {
+      "path": "openjdk23/debug/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "openjdk23/debug/jarde/BoundOverload.java",
+      "bytes": 2126,
+      "sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f"
+    },
+    {
+      "path": "openjdk23/debug/jarde/class-source.stderr",
+      "bytes": 90678,
+      "sha256": "2d1b8b90447ef2b3ae32c4efc0f376bce3aaf6be94b732590f286f860f90d9f3"
+    },
+    {
+      "path": "openjdk23/debug/jarde/class-source.stdout",
+      "bytes": 2126,
+      "sha256": "8b46c34fd735dcdf4f63bfc2b6aeca395a2a23ad91e0acf1edb9baa28869e99f"
+    },
+    {
+      "path": "openjdk23/debug/jarde/jarde-javac.stderr",
+      "bytes": 629,
+      "sha256": "4e40fdbaaae0be8c961c1f3c328600ac760c4816d5f3a0af7db59dcaf3a18bb4"
+    },
+    {
+      "path": "openjdk23/debug/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/original/BoundOverload.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "openjdk23/debug/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/original/original-java.stdout",
+      "bytes": 7,
+      "sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599"
+    },
+    {
+      "path": "openjdk23/debug/original/original-javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openjdk23/debug/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/original-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/original-javap.stdout",
+      "bytes": 6390,
+      "sha256": "08cf7a4c77d522e417096fd7f88e94ab75f4a8392c900e6e9c5eb2991bf0ac8e"
+    },
+    {
+      "path": "openjdk23/java-version.stderr",
+      "bytes": 152,
+      "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "path": "openjdk23/java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/javac-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/javac-version.stdout",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "openjdk23/nodebug/BoundOverload.jar",
+      "bytes": 798,
+      "sha256": "d2ada48608b9b577c659f0c21e0765bf7b56d4fbb4ebf64dbafca7f53bbb69e4"
+    },
+    {
+      "path": "openjdk23/nodebug/BoundOverload.original.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "openjdk23/nodebug/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/freeze-javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openjdk23/nodebug/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/jadx/BoundOverload.java",
+      "bytes": 442,
+      "sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5"
+    },
+    {
+      "path": "openjdk23/nodebug/jadx/full-output/sources/defpackage/BoundOverload.java",
+      "bytes": 442,
+      "sha256": "6907c4784d757b3b5660c0531cb59ab315ce3297102e0b406760f15dad9962f5"
+    },
+    {
+      "path": "openjdk23/nodebug/jadx/jadx-javac.stderr",
+      "bytes": 715,
+      "sha256": "38dfe21d2611205cdd7e8d0ae0bfce99fb6fb9236f6aed6b47ea804d171d5c8d"
+    },
+    {
+      "path": "openjdk23/nodebug/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "openjdk23/nodebug/jarde/BoundOverload.java",
+      "bytes": 2122,
+      "sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8"
+    },
+    {
+      "path": "openjdk23/nodebug/jarde/class-source.stderr",
+      "bytes": 90624,
+      "sha256": "046fc46e6a2f62c84dcb6357b88cd3bc90d31034ada194973d01241cc3ae1f78"
+    },
+    {
+      "path": "openjdk23/nodebug/jarde/class-source.stdout",
+      "bytes": 2122,
+      "sha256": "2057e550428b5b4360ca9c4fabb85b0bddb37b9a894e587e59443769dda584a8"
+    },
+    {
+      "path": "openjdk23/nodebug/jarde/jarde-javac.stderr",
+      "bytes": 630,
+      "sha256": "3d4f57934f1316a603844cf381df8c289ad8cf988a3e16d7c1a51f772b674800"
+    },
+    {
+      "path": "openjdk23/nodebug/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/original/BoundOverload.java",
+      "bytes": 261,
+      "sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452"
+    },
+    {
+      "path": "openjdk23/nodebug/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/original/original-java.stdout",
+      "bytes": 7,
+      "sha256": "6d6f1adcd1e1ef897b5c352f40eea7233da6c10069009bf14cb6abb527efc599"
+    },
+    {
+      "path": "openjdk23/nodebug/original/original-javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openjdk23/nodebug/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/original-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/original-javap.stdout",
+      "bytes": 4295,
+      "sha256": "03561e14bf8cdbc616afb82423307b1458399c76fe1349926b70514f7c72ac07"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 2186,
+      "sha256": "333b528a1e4057e75c2b03d4952590154bd708c1cde96f68523d413baa115804"
+    }
+  ]
+}

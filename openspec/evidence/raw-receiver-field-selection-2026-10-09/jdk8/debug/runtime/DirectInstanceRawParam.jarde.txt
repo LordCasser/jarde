@@ -1,0 +1,13 @@
+field.type=java.lang.Object
+field.physical-type=java.lang.Object
+field.declaring=DirectInstanceRawParam
+field.identity=java.lang.Object
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:DirectInstanceRawParam;owner=true
+method=put;params=DirectInstanceRawParam,java.lang.Object;return=void;typeParameters=;physical-params=DirectInstanceRawParam,java.lang.Object;physical-return=void;declaration=put(DirectInstanceRawParam;java.lang.Object;)void
+behavior.value=DirectInstanceRawParam
+behavior.array-length=n/a
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=false
+behavior.number-value=n/a
+behavior.return-is-receiver=false

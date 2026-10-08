@@ -1,0 +1,85 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.88s
+     Running tests/class_scope_constructor_projection.rs (target/debug/deps/class_scope_constructor_projection-be6b9092a4cb99da)
+
+running 6 tests
+test class_scope_constructor_positives_recompile_and_preserve_behavior_and_binders ... ok
+test cross_hold_restores_u_constructor_binder_and_keeps_t_field_erased ... ok
+test peer_new_restores_only_the_two_argument_constructor_binder ... ok
+test positive_constructor_output_budget_and_early_cancellation_stop_cleanly ... ok
+test this_delegate_keeps_physical_signature_and_recompiles_with_original_behavior ... ok
+test unproved_constructor_shapes_keep_physical_parameters_and_refusals ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.02s
+
+     Running tests/field_generic_projection.rs (target/debug/deps/field_generic_projection-17c6f400d66beacf)
+
+running 3 tests
+test field_signature_refusals_keep_descriptor_for_mismatch_unbound_and_body_use ... ok
+test standalone_field_signatures_recompile_and_match_reflection_and_caller_types ... ok
+test type_use_annotations_and_stopped_requests_do_not_publish_field_candidates ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.12s
+
+     Running tests/generic_constructor_projection.rs (target/debug/deps/generic_constructor_projection-1aeeea95ae8c17ad)
+
+running 4 tests
+test body_budget_and_cancellation_never_publish_a_partial_constructor_header ... ok
+test generic_constructor_projects_atomically_for_debug_and_no_debug_classes ... ok
+test same_class_constructor_binding_and_adjacent_generic_method_are_independent ... ok
+test unproved_constructor_body_keeps_its_physical_parameter ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.65s
+
+     Running tests/ordinary_generic_projection.rs (target/debug/deps/ordinary_generic_projection-d9dc578b796cceba)
+
+running 14 tests
+test bounded_class_variable_on_bodyless_interface_preserves_reflection ... ok
+test budget_and_cancellation_never_publish_a_partial_parameterized_header ... ok
+test class_variable_and_unproved_body_keep_their_separate_evidence ... ok
+test class_variable_direct_return_preserves_generic_caller_and_reflection ... ok
+test class_variable_header_is_atomic_across_evidence_and_budget ... ok
+test evidence_selection_preserves_source_and_independent_method_reports ... ok
+test frozen_identity_shapes_and_raw_control_project_together ... ok
+test interface_bodyless_method_keeps_its_generic_return ... ok
+test ordinary_wildcards_instance_and_bodyless_members_are_complete ... ok
+test parameter_reassignment_cannot_use_the_identity_body_proof ... ok
+test parameterized_parent_does_not_publish_an_unproved_class_variable_header ... ok
+test same_class_overload_caller_proves_the_target_projection ... ok
+test type_use_annotation_is_a_whole_declaration_refusal ... ok
+test varargs_exception_and_method_annotation_keep_their_positions ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.07s
+
+     Running tests/raw_receiver_field_selection.rs (target/debug/deps/raw_receiver_field_selection-b0af61ca58cc91d5)
+
+running 5 tests
+test a_folded_this_unknown_writer_other_unsafe_write_and_inherited_owner_stay_closed ... ok
+test pre_cancelled_receiver_recovery_is_not_a_silent_success ... ok
+test raw_formals_use_their_field_erasure_including_slots_null_arrays_and_bounds ... ok
+test synthetic_static_setter_does_not_lend_its_raw_formal_to_a_typed_caller ... ok
+test typed_this_and_published_headers_keep_their_own_binder_boundaries ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+     Running tests/same_class_generic_binding.rs (target/debug/deps/same_class_generic_binding-92c8a8247a2a16df)
+
+running 15 tests
+test adjacent_same_arity_overload_keeps_the_binding_refusal ... ok
+test budget_and_cancellation_never_publish_a_partial_binding_projection ... ok
+test deferred_same_class_writer_settles_before_its_generic_field ... ok
+test essential_and_all_evidence_admit_the_same_binding_projections ... ok
+test field_shadowing_projection_keeps_the_own_field_binding ... ok
+test frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs ... ok
+test generic_field_write_sources_keep_the_frozen_safe_and_unsafe_boundaries ... ok
+test published_raw_class_bound_keeps_its_unchecked_parameterized_field_assignment ... ok
+test raw_reference_parameters_keep_array_and_static_assignments ... ok
+test receiver_consumed_field_read_keeps_the_field_refusal ... ok
+test same_class_field_read_write_proves_binding_and_reflects_like_the_original ... ok
+test same_class_method_call_proves_binding_and_reflects_like_the_original ... ok
+test unconsumed_same_class_pool_entries_do_not_block_projection ... ok
+test unproved_field_write_sources_and_shadowed_types_keep_erased_fields ... ok
+test z1_family_replays_item_by_item_after_the_binding_proof ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.32s
+

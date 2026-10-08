@@ -1,0 +1,8 @@
+field.type=java.lang.Object
+field.declaring=ShadowMethodT
+field.identity=java.lang.Object
+method=observe;params=ShadowMethodT,java.lang.Object;return=void;typeParameters=
+method=put;params=ShadowMethodT,java.lang.Object;return=void;typeParameters=
+behavior.value=ShadowMethodT
+behavior.array-length=n/a
+behavior.return-is-receiver=false

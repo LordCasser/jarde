@@ -1,0 +1,5 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/corretto8/nodebug/jarde/BoundOverload.java:35: 错误: 对pick的引用不明确
+        this.pick(arg1);
+            ^
+  BoundOverload 中的方法 pick(Number) 和 BoundOverload 中的方法 pick(Comparable) 都匹配
+1 个错误

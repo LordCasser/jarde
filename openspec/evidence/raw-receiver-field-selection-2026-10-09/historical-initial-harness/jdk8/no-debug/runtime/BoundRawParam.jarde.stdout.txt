@@ -1,0 +1,7 @@
+field.type=java.lang.Number
+field.declaring=BoundRawParam
+field.identity=java.lang.Number
+method=put;params=BoundRawParam,java.lang.Number;return=void;typeParameters=
+behavior.value=java.lang.Integer
+behavior.array-length=n/a
+behavior.return-is-receiver=false

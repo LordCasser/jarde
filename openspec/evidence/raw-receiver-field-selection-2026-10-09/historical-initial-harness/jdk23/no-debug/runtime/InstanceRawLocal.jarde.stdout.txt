@@ -1,0 +1,7 @@
+field.type=java.lang.Object
+field.declaring=InstanceRawLocal
+field.identity=java.lang.Object
+method=put;params=java.lang.Object;return=void;typeParameters=
+behavior.value=java.lang.Object
+behavior.array-length=n/a
+behavior.return-is-receiver=false

@@ -1,0 +1,8 @@
+field.type=java.lang.Object
+field.declaring=TypedReceiver
+field.identity=java.lang.Object
+method=observe;params=TypedReceiver<T{declaration=class:TypedReceiver,owner=true,method=false}>;return=void;typeParameters=
+method=put;params=TypedReceiver,java.lang.Object;return=void;typeParameters=
+behavior.value=TypedReceiver
+behavior.array-length=n/a
+behavior.return-is-receiver=false

@@ -1,0 +1,13 @@
+field.type=java.lang.Object
+field.physical-type=java.lang.Object
+field.declaring=PrimitiveArrayRawParam
+field.identity=java.lang.Object
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:PrimitiveArrayRawParam;owner=true
+method=put;params=PrimitiveArrayRawParam,int[];return=void;typeParameters=;physical-params=PrimitiveArrayRawParam,[I;physical-return=void;declaration=put(PrimitiveArrayRawParam;[I;)void
+behavior.value=[I
+behavior.array-length=1
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=true
+behavior.number-value=n/a
+behavior.return-is-receiver=false

@@ -2,6 +2,16 @@
 
 先核对 Git 和最新 HEAD 的 CI，再按下方队列继续。历史交接已在 Git 中保留，不从旧任务勾选数、分支名或旧 CI 结果推断当前状态。
 
+## 当前接续补记（raw receiver 本地验收完成）
+
+本片基线是 `564e22c1`，基线远端CI四个job全部成功。`recover-raw-receiver-field-selection` 实现与root独立对照、本地全部门禁已完成；提交后的最新main HEAD CI尚待远端核对，不能引用基线CI作为本片结果。最终CLI hash、16族64输入对照、23字段族与80构造输入回归见 [本片root验收](openspec/changes/recover-raw-receiver-field-selection/verification-root.md)。字段反射12/64→60/64，完整三类API反射44/64，64/64完整编译并行为一致；方法API没有扩容。
+
+当前OpenSpec为6/8任务完成，待远端最新HEAD CI与最终交接勾选。fmt、CI同口径clippy、两固定seed各3253 passed/0 failed/93 ignored、显式ignored P3 3项/constructor 1项/bound-receiver 1项、strict OpenSpec 322/322均通过，命令和日志在 `results/local-gates`。三次首轮门禁失败分别是新增corpus登记、零formal静态初始化器额外扫描收费、standalone fixture总数断言遗漏，均修正并保留失败日志。
+
+root共享Cargo已清理8105个文件、19.0GiB，target/fuzz target均不存在，可用空间约72GiB；其他项目的构建不动。本片没有新增分支或worktree，14个辅助树均detached、干净且HEAD是main祖先；受Codex保护的副本保持原样。
+
+下一项是 [普通泛型调用实参适配巡查](openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/summary.md)，尚未立项。CallHold/ExceptionHold原/JADX八输入可编译，Jarde均因Object→已发布T callee失败。新增BoundOverload四腿原源码均选择Number重载，Jarde与参考源码构建的JADX都因歧义失败；完整证据保留。已有void setter证明不能泛化为所有调用消费位证明，getter反向依赖另片处理。重绑定raw alias/phi、分离局部scope仍在本片保持擦除。
+
 ## 当前收尾状态
 
 基线 `790579e2` 的四个 CI job 已成功：[run 37786347619](https://github.com/LordCasser/jarde/actions/runs/37786347619)。前一片泛型字段源码写证明已经合入。本轮 `recover-class-scope-constructor-parameters` 实现、独立对照与本地完整门禁已完成，代码和证据一起合入 main 并推送。fmt、CI 同口径 clippy、两固定 seed 各 3,243 passed/0 failed/93 ignored、显式 ignored P3 3 项/构造实参 1 项/绑定引用 1 项、strict OpenSpec 321/321 全部通过。实现提交 `698a219e` 的远端 [run 37804470415](https://github.com/LordCasser/jarde/actions/runs/37804470415) 第二 seed 在既有 bulk 预算并发断言失败，后续 JDK25 oracle 未执行。修正已合入并推送 `d6598866`，按原 OpenSpec 区分两种预算拒绝并加入确定性 probe/charge 对照，生产预算与语法恢复逻辑未变；本地 21 项及最终二进制 30 次并发用例复验通过。见 [CI 预算验收](openspec/changes/recover-class-scope-constructor-parameters/ci-delivery-verification-root.md) 与 [修正提交 CI](https://github.com/LordCasser/jarde/actions/runs/37808909595)。交接文档提交不改变生产代码或测试；最终远端结论按最新 main HEAD 查询。本地通过不能替代实际 JDK25 oracle。
@@ -14,7 +24,7 @@ root 首次对照抓到 ThisDelegateHold 新回退：callee 发布 T，但 calle
 
 ## 下一步队列
 
-1. **raw receiver 字段选择类型**：未立项。新证据在 [只读巡查](openspec/evidence/raw-receiver-source-selection-patrol/summary.md)。static raw 参数与保留 raw local 的字段 T 反事实可编译；InstanceRawLocal 被 renderer 折成 this，字段 T 反事实失败。因此不能只用 SSA 来源或物理擦除判断 receiver raw，需实际发射 AST 与已发布方法参数事实；先 direct raw 参数最小闭环，alias 分拆。原型取证不等于当前已恢复。
+1. **raw receiver 字段选择类型**：已立项并进入root验收，当前状态以上方接续补记为准。以下为立项前判断。新证据在 [只读巡查](openspec/evidence/raw-receiver-source-selection-patrol/summary.md)。static raw 参数与保留 raw local 的字段 T 反事实可编译；InstanceRawLocal 被 renderer 折成 this，字段 T 反事实失败。因此不能只用 SSA 来源或物理擦除判断 receiver raw，需实际发射 AST 与已发布方法参数事实；先 direct raw 参数最小闭环，alias 分拆。原型取证不等于当前已恢复。
 2. **普通泛型调用实参适配**：未立项。构造器 evidence 的 CallHold/ExceptionHold 正文已恢复，但 Object 参数传给实际发布 T 的 identity 方法，整类仍编译失败；JADX 四腿可编译。这是参数完整使用/实际已发布 callee 类型证明，不能误写成“正文拒绝”，也不能猜 cast。this 委派同类目标本片只安全拒绝，并未恢复其泛型链。
 3. **构造器其他形与泛型剩余边界**：method-formal 字段赋值、this 委派/non-Object 父类/复杂正文、成员类 TestGeneric8 的完整恢复均不在本片；SCGB 原有 main 正文拒绝、DeferredSetter sink 反射及 ArraySetter T[] 参数仍有前片记录。不能把少量 fixture 的闭环当成整个泛型单元追平。
 4. 接着按旧队列确认 ScopeRefusalsEscape 合法未变异形、LoopTestValues.storeTest 真实源形、switchBody guard。Class 字面量绑定引用的复制值/check 与完整 LG 的局部类型复用/finalize 是独立片，不混入 generic。

@@ -1,0 +1,7 @@
+field.type=java.lang.Object
+field.declaring=RawParam
+field.identity=java.lang.Object
+method=put;params=RawParam,java.lang.Object;return=void;typeParameters=
+behavior.value=RawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

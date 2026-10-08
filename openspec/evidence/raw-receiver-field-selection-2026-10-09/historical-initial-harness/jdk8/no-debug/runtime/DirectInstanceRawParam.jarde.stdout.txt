@@ -1,0 +1,7 @@
+field.type=java.lang.Object
+field.declaring=DirectInstanceRawParam
+field.identity=java.lang.Object
+method=put;params=DirectInstanceRawParam,java.lang.Object;return=void;typeParameters=
+behavior.value=DirectInstanceRawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

@@ -1,0 +1,12 @@
+{
+  "baseline_commit": "564e22c1340d2d0901117012b986277fb5292313",
+  "baseline_cli_sha256": "3e7241e99b0068ede015b4dbc419212f5a4f63cb9a78f37429662b34f6d7a48c",
+  "candidate_cli_sha256": "798661dc9b27c0393678923397288828a85b81ff84188f9a12ba8418dfd4bec6",
+  "source_sha256": {
+    "crates/jarde-java/src/report.rs": "500b60add5012246bfe41f05d63556d7cfd3bcbe37f62f9f60544bbbfe1d0082",
+    "src/class_source.rs": "50c08bb62bc76659b8a51ea7b57ff0e453992c03a1c5755e0542aa95eedcc19a",
+    "src/facade.rs": "773b2456eb2644727061dd04ee3d0fa3496a4afc4db3ab0223a741eb7b3e04b4",
+    "tests/raw_receiver_field_selection.rs": "fdc55cf0ba73d625b206324edd66a1758171d4c66c931fce69753e591834bdf9"
+  },
+  "probe_sha256": "a411376a5e0aef02c9da74de267722cd25c06692bf745c6446613be3da069489"
+}

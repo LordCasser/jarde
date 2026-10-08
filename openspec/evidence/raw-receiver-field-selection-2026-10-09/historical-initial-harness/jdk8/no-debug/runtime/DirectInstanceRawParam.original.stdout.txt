@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=DirectInstanceRawParam
+field.identity=T{declaration=class:DirectInstanceRawParam,owner=true,method=false}
+method=put;params=DirectInstanceRawParam,java.lang.Object;return=void;typeParameters=
+behavior.value=DirectInstanceRawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

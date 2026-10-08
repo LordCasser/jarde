@@ -1,0 +1,88 @@
+{
+  "cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "jdk": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+  "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+  "input_sha256": "5395c57ac632a5df9a68fb1aff27594d82ee0b29200e945bccda56bc20d1df9e",
+  "commands": [
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-bound-overload-kilbtaz0/empty",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-bound-overload-kilbtaz0/empty",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-bound-overload-kilbtaz0/classes",
+        "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.java"
+      ],
+      "returncode": 0
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-bound-overload-kilbtaz0/classes",
+        "BoundOverload.class"
+      ],
+      "returncode": 0
+    },
+    {
+      "label": "original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.jar",
+        "BoundOverload"
+      ],
+      "returncode": 0
+    },
+    {
+      "label": "candidate-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/BoundOverload.jar",
+        "--class",
+        "BoundOverload",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "returncode": 0
+    },
+    {
+      "label": "candidate-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-bound-overload-kilbtaz0/empty",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-bound-overload-kilbtaz0/empty",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-bound-overload-kilbtaz0/classes",
+        "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/candidate/BoundOverload.java"
+      ],
+      "returncode": 1
+    }
+  ]
+}

@@ -12209,7 +12209,9 @@ mod tests {
             // targets (forty-two per leg: `BG`'s five, `BGOrder`'s eight, `BGNegatives`' ten —
             // `switchBody`'s `tableswitch` included — `BGProbe`'s nine, the driver's nine and the
             // lock's own `goto`), no subroutine) moved it again.
-            (968, 4161, 456, 2660, 8),
+            // The 2026-10-09 raw-receiver-field-selection standalone accessor guard adds one
+            // class and three straight-line Code bodies; the other inputs are frozen jars.
+            (969, 4164, 456, 2660, 8),
             "fixture population changed: re-measure these counts"
         );
     }

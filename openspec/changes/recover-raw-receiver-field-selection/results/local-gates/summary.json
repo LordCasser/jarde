@@ -1,0 +1,44 @@
+{
+  "clippy": {
+    "exit": 0,
+    "passed": 0,
+    "failed": 0,
+    "ignored": 0
+  },
+  "seed-5350648285461741569": {
+    "exit": 0,
+    "passed": 3253,
+    "failed": 0,
+    "ignored": 93
+  },
+  "seed-5350648285461741570": {
+    "exit": 0,
+    "passed": 3253,
+    "failed": 0,
+    "ignored": 93
+  },
+  "ignored-p3": {
+    "exit": 0,
+    "passed": 3,
+    "failed": 0,
+    "ignored": 0
+  },
+  "ignored-constructor": {
+    "exit": 0,
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "ignored-bound-receiver": {
+    "exit": 0,
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "fmt": {
+    "exit": 0
+  },
+  "spec-before-delivery": {
+    "exit": 0
+  }
+}

@@ -1,0 +1,13 @@
+field.type=T
+field.physical-type=java.lang.Object
+field.declaring=defpackage.RetainedAliasRawParam
+field.identity=T{declaration=class:defpackage.RetainedAliasRawParam,owner=true,method=false}
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:defpackage.RetainedAliasRawParam;owner=true
+method=put;params=defpackage.RetainedAliasRawParam,java.lang.Object;return=java.lang.Object;typeParameters=;physical-params=defpackage.RetainedAliasRawParam,java.lang.Object;physical-return=java.lang.Object;declaration=put(defpackage.RetainedAliasRawParam;java.lang.Object;)java.lang.Object
+behavior.value=java.lang.Object
+behavior.array-length=n/a
+behavior.value-is-marker=true
+behavior.array-element-is-marker=true
+behavior.value-is-input=true
+behavior.number-value=n/a
+behavior.return-is-receiver=true

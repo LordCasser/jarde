@@ -1,0 +1,8 @@
+field.type=T
+field.declaring=TypedReceiver
+field.identity=T{declaration=class:TypedReceiver,owner=true,method=false}
+method=observe;params=TypedReceiver<T{declaration=class:TypedReceiver,owner=true,method=false}>;return=void;typeParameters=
+method=put;params=TypedReceiver<T{declaration=class:TypedReceiver,owner=true,method=false}>,T{declaration=class:TypedReceiver,owner=true,method=false};return=void;typeParameters=
+behavior.value=TypedReceiver
+behavior.array-length=n/a
+behavior.return-is-receiver=false

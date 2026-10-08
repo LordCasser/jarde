@@ -1,0 +1,7 @@
+field.type=java.lang.Object[]
+field.declaring=ArrayRawParam
+field.identity=java.lang.Object[]
+method=put;params=ArrayRawParam,java.lang.Object[];return=void;typeParameters=
+behavior.value=[Ljava.lang.Object;
+behavior.array-length=1
+behavior.return-is-receiver=false

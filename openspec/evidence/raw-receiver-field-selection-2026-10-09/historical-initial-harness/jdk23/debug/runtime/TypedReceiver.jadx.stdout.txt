@@ -1,0 +1,8 @@
+field.type=T
+field.declaring=defpackage.TypedReceiver
+field.identity=T{declaration=class:defpackage.TypedReceiver,owner=true,method=false}
+method=observe;params=defpackage.TypedReceiver<T{declaration=class:defpackage.TypedReceiver,owner=true,method=false}>;return=void;typeParameters=
+method=put;params=defpackage.TypedReceiver<T{declaration=class:defpackage.TypedReceiver,owner=true,method=false}>,T{declaration=class:defpackage.TypedReceiver,owner=true,method=false};return=void;typeParameters=
+behavior.value=defpackage.TypedReceiver
+behavior.array-length=n/a
+behavior.return-is-receiver=false

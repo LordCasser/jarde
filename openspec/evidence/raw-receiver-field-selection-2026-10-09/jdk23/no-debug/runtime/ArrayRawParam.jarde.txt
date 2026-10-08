@@ -1,0 +1,13 @@
+field.type=java.lang.Object[]
+field.physical-type=[Ljava.lang.Object;
+field.declaring=ArrayRawParam
+field.identity=java.lang.Object[]
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:ArrayRawParam;owner=true
+method=put;params=ArrayRawParam,java.lang.Object[];return=void;typeParameters=;physical-params=ArrayRawParam,[Ljava.lang.Object;;physical-return=void;declaration=put(ArrayRawParam;[Ljava.lang.Object;;)void
+behavior.value=[Ljava.lang.Object;
+behavior.array-length=1
+behavior.value-is-marker=false
+behavior.array-element-is-marker=true
+behavior.value-is-input=true
+behavior.number-value=n/a
+behavior.return-is-receiver=false

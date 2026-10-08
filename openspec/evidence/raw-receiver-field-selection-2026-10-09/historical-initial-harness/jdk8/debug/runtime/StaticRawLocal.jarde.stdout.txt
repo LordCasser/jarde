@@ -1,0 +1,7 @@
+field.type=java.lang.Object
+field.declaring=StaticRawLocal
+field.identity=java.lang.Object
+method=put;params=StaticRawLocal,java.lang.Object;return=void;typeParameters=
+behavior.value=StaticRawLocal
+behavior.array-length=n/a
+behavior.return-is-receiver=false

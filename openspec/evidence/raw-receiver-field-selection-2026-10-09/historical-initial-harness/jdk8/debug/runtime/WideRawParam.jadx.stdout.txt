@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=defpackage.WideRawParam
+field.identity=T{declaration=class:defpackage.WideRawParam,owner=true,method=false}
+method=put;params=long,defpackage.WideRawParam,double,java.lang.Object;return=void;typeParameters=
+behavior.value=defpackage.WideRawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

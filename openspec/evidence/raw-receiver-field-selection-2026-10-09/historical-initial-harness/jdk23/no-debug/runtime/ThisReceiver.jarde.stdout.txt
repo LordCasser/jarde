@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=ThisReceiver
+field.identity=T{declaration=class:ThisReceiver,owner=true,method=false}
+method=put;params=T{declaration=class:ThisReceiver,owner=true,method=false};return=void;typeParameters=
+behavior.value=java.lang.Object
+behavior.array-length=n/a
+behavior.return-is-receiver=false

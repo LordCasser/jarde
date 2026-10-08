@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=defpackage.StaticRawLocal
+field.identity=T{declaration=class:defpackage.StaticRawLocal,owner=true,method=false}
+method=put;params=defpackage.StaticRawLocal,java.lang.Object;return=void;typeParameters=
+behavior.value=defpackage.StaticRawLocal
+behavior.array-length=n/a
+behavior.return-is-receiver=false

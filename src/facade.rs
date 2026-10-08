@@ -6834,6 +6834,10 @@ impl Engine {
         // the census off entirely, so its charges and texts stay exactly what they were; the
         // census itself is decided after the pool binding below resolves.
         let mut member_use_scans: Vec<MemberUseScan> = Vec::new();
+        let mut field_receiver_sites =
+            Vec::<jarde_java::report::ClassSourceFieldReceiverSite>::new();
+        let mut field_write_accessors =
+            Vec::<jarde_java::report::ClassSourceFieldWriteAccessor>::new();
         let mut deferred_fields: Vec<(usize, Option<class_source::MemberDefault>)> = Vec::new();
         let mut deferred_methods: Vec<(
             usize,
@@ -7520,6 +7524,8 @@ impl Engine {
                                 array_helper_uses,
                                 enum_switch_field_uses,
                                 member_uses: member_use_scan,
+                                field_receivers,
+                                field_write_accessor_sites,
                                 generic_return,
                                 typed_functional_target,
                                 generic_constructor,
@@ -7554,6 +7560,8 @@ impl Engine {
                                 if let Some(scan) = member_use_scan {
                                     member_use_scans.push(scan);
                                 }
+                                field_receiver_sites.extend(field_receivers);
+                                field_write_accessors.extend(field_write_accessor_sites);
                                 if let Some(uses) = enum_switch_field_uses {
                                     enum_switch_scanned_members.push(item.identity.clone());
                                     enum_switch_field_use_runs.extend(uses);
@@ -7747,9 +7755,87 @@ impl Engine {
                 .iter()
                 .flat_map(|scan| scan.field_uses.iter().cloned())
                 .collect();
+            let mut receiver_by_site = std::collections::HashMap::new();
+            for receiver in &field_receiver_sites {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                let key = (
+                    receiver.method.clone(),
+                    receiver.bci,
+                    receiver.owner.clone(),
+                    receiver.name.clone(),
+                    receiver.descriptor.clone(),
+                );
+                if receiver_by_site
+                    .insert(key, Some(receiver.source.clone()))
+                    .is_some()
+                {
+                    let key = (
+                        receiver.method.clone(),
+                        receiver.bci,
+                        receiver.owner.clone(),
+                        receiver.name.clone(),
+                        receiver.descriptor.clone(),
+                    );
+                    receiver_by_site.insert(key, None);
+                }
+            }
+            let mut field_write_accessor_sites = std::collections::HashSet::new();
+            for accessor in &field_write_accessors {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                field_write_accessor_sites.insert((
+                    accessor.callee.clone(),
+                    accessor.owner.clone(),
+                    accessor.name.clone(),
+                    accessor.descriptor.clone(),
+                ));
+            }
+            for use_site in &mut field_uses {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                if use_site.opcode == 0xb5 {
+                    let key = (
+                        use_site.physical_method.clone(),
+                        use_site.bci,
+                        use_site.owner.clone(),
+                        use_site.name.clone(),
+                        use_site.descriptor.clone(),
+                    );
+                    if let Some(Some(source)) = receiver_by_site.get(&key) {
+                        use_site.receiver_source = match source {
+                            jarde_java::report::ClassSourceFieldReceiverSource::This => {
+                                Some(class_source::SameClassFieldReceiverSource::This)
+                            }
+                            jarde_java::report::ClassSourceFieldReceiverSource::Parameter {
+                                slot,
+                            } => Some(class_source::SameClassFieldReceiverSource::Parameter {
+                                slot: *slot,
+                            }),
+                            jarde_java::report::ClassSourceFieldReceiverSource::RawLocal {
+                                ..
+                            } => Some(class_source::SameClassFieldReceiverSource::RawLocal),
+                        };
+                    }
+                }
+                // A presented setter call emits its caller's receiver expression. The setter's
+                // physical formal is therefore not the source-level receiver that selected this
+                // field, so only this closed sidecar is disabled and the old proof remains in use.
+                if field_write_accessor_sites.contains(&(
+                    use_site.physical_method.clone(),
+                    use_site.owner.clone(),
+                    use_site.name.clone(),
+                    use_site.descriptor.clone(),
+                )) {
+                    use_site.receiver_source = None;
+                }
+            }
             budget.charge(
                 CountedBudgetDimension::AnalysisSteps,
-                u64::try_from(methods.len() + field_uses.len()).unwrap_or(u64::MAX),
+                u64::try_from(methods.len()).unwrap_or(u64::MAX),
             )?;
             let mut source_complete_methods = std::collections::HashSet::<PhysicalMethodId>::new();
             for method in &methods {
@@ -11726,6 +11812,11 @@ fn same_class_published_method_parameters(
         {
             required.insert(method.clone());
         }
+        if let Some(class_source::SameClassFieldReceiverSource::Parameter { .. }) =
+            use_site.receiver_source.as_ref()
+        {
+            required.insert(use_site.physical_method.clone());
+        }
     }
     let mut result = Vec::with_capacity(required.len());
     for (index, (header, method)) in headers.iter().zip(methods).enumerate() {
@@ -12209,6 +12300,7 @@ fn scan_member_uses(
                 descriptor: descriptor.0.clone(),
                 read_expressible,
                 write_source,
+                receiver_source: None,
                 source_complete: false,
             });
         } else if matches!(opcode, 0x12..=0x14) {
@@ -13432,6 +13524,8 @@ struct PreparedMemberRecovery {
     array_helper_uses: Option<ArrayHelperUseScan>,
     enum_switch_field_uses: Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     member_uses: Option<MemberUseScan>,
+    field_receivers: Vec<jarde_java::report::ClassSourceFieldReceiverSite>,
+    field_write_accessor_sites: Vec<jarde_java::report::ClassSourceFieldWriteAccessor>,
     generic_return: Option<jarde_java::report::GenericReturnCandidate>,
     typed_functional_target: Option<jarde_java::report::TypedFunctionalTarget>,
     generic_constructor: Option<jarde_java::report::GenericConstructorCandidate>,
@@ -13726,6 +13820,8 @@ fn recover_prepared_member(
         generic_constructor,
         anonymous_allocations,
         ast,
+        field_receivers,
+        field_write_accessor_sites,
     ) = recovery_presented_for_class_source(
         content,
         request,
@@ -13770,6 +13866,8 @@ fn recover_prepared_member(
         array_helper_uses,
         enum_switch_field_uses,
         member_uses,
+        field_receivers,
+        field_write_accessor_sites,
         generic_return,
         typed_functional_target,
         generic_constructor,
@@ -27815,7 +27913,7 @@ mod member_inner_target_tests {
             };
             let evidence = jarde_java::RecoveryEvidenceRequest::essential()
                 .with_kind(jarde_java::RecoveryEvidenceKind::RuleDetails);
-            let (detailed, _, _, _, _, _, _, _, generic_return, _, _, _) =
+            let (detailed, _, _, _, _, _, _, _, generic_return, _, _, _, _, _) =
                 recovery_from_with_class_candidates(
                     std::slice::from_ref(&snapshot),
                     &request,
@@ -34432,6 +34530,8 @@ fn recovery_presented_for_class_source(
     Option<jarde_java::report::GenericConstructorCandidate>,
     Option<jarde_java::report::AnonymousAllocationScan>,
     Option<jarde_java::report::ClassSourceMethodAst>,
+    Vec<jarde_java::report::ClassSourceFieldReceiverSite>,
+    Vec<jarde_java::report::ClassSourceFieldWriteAccessor>,
 )> {
     recovery_from_with_class_candidates(
         content,
@@ -34652,7 +34752,7 @@ fn recovery_from(
         false,
         false,
     )
-    .map(|(recovered, _, _, _, _, _, _, _, _, _, _, _)| recovered)
+    .map(|(recovered, _, _, _, _, _, _, _, _, _, _, _, _, _)| recovered)
 }
 
 fn recovery_from_with_class_candidates(
@@ -34684,6 +34784,8 @@ fn recovery_from_with_class_candidates(
     Option<jarde_java::report::GenericConstructorCandidate>,
     Option<jarde_java::report::AnonymousAllocationScan>,
     Option<jarde_java::report::ClassSourceMethodAst>,
+    Vec<jarde_java::report::ClassSourceFieldReceiverSite>,
+    Vec<jarde_java::report::ClassSourceFieldWriteAccessor>,
 )> {
     let mut facts = crate::facade::recovery_facts(
         analyzed.ir().declaration(),
@@ -34832,6 +34934,8 @@ fn recovery_from_with_class_candidates(
         generic_constructor,
         anonymous_allocations,
         ast,
+        field_receivers,
+        field_write_accessor_sites,
     ) = match &members {
         Some(members) if include_class_source_candidates => {
             let result = jarde_java::report::recover_for_class_source_with_anonymous_ast(
@@ -34857,6 +34961,8 @@ fn recovery_from_with_class_candidates(
                 result.generic_constructor,
                 result.anonymous_allocations,
                 result.ast,
+                result.field_receivers,
+                result.field_write_accessors,
             )
         }
         None if include_class_source_candidates => {
@@ -34883,6 +34989,8 @@ fn recovery_from_with_class_candidates(
                 result.generic_constructor,
                 result.anonymous_allocations,
                 result.ast,
+                result.field_receivers,
+                result.field_write_accessors,
             )
         }
         Some(members) => (
@@ -34898,6 +35006,8 @@ fn recovery_from_with_class_candidates(
             None,
             None,
             None,
+            Vec::new(),
+            Vec::new(),
         ),
         None => (
             jarde_java::recover(&request, budget),
@@ -34912,6 +35022,8 @@ fn recovery_from_with_class_candidates(
             None,
             None,
             None,
+            Vec::new(),
+            Vec::new(),
         ),
     };
     // What the read evidence publishes (change `add-demand-driven-core-results`, D3). The read above
@@ -34973,6 +35085,8 @@ fn recovery_from_with_class_candidates(
         generic_constructor,
         anonymous_allocations,
         ast,
+        field_receivers,
+        field_write_accessor_sites,
     ))
 }
 

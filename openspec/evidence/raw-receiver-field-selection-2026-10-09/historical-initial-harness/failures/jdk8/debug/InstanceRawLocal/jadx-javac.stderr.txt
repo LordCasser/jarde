@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/jadx/InstanceRawLocal.java:9: 错误: 不兼容的类型: Object无法转换为T
+        this.value = obj;
+                     ^
+  其中, T是类型变量:
+    T扩展已在类 InstanceRawLocal中声明的Object
+1 个错误

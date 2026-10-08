@@ -1,0 +1,7 @@
+field.type=T
+field.declaring=RetainedAliasRawParam
+field.identity=T{declaration=class:RetainedAliasRawParam,owner=true,method=false}
+method=put;params=RetainedAliasRawParam,java.lang.Object;return=java.lang.Object;typeParameters=
+behavior.value=RetainedAliasRawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=true

@@ -1,0 +1,7 @@
+field.type=java.lang.Object
+field.declaring=WideRawParam
+field.identity=java.lang.Object
+method=put;params=long,WideRawParam,double,java.lang.Object;return=void;typeParameters=
+behavior.value=WideRawParam
+behavior.array-length=n/a
+behavior.return-is-receiver=false

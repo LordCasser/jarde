@@ -1,0 +1,16 @@
+field.type=T
+field.physical-type=java.lang.Object
+field.declaring=defpackage.ShadowMethodT
+field.identity=T{declaration=class:defpackage.ShadowMethodT,owner=true,method=false}
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:defpackage.ShadowMethodT;owner=true
+method=observe;params=defpackage.ShadowMethodT<T{declaration=method:observe(defpackage.ShadowMethodT;java.lang.Object;)void,owner=false,method=true}>,T{declaration=method:observe(defpackage.ShadowMethodT;java.lang.Object;)void,owner=false,method=true};return=void;typeParameters=T{declaration=method:observe(defpackage.ShadowMethodT;java.lang.Object;)void,owner=false,method=true};physical-params=defpackage.ShadowMethodT,java.lang.Object;physical-return=void;declaration=observe(defpackage.ShadowMethodT;java.lang.Object;)void
+method.type-parameter=observe(defpackage.ShadowMethodT;java.lang.Object;)void;name=T;bounds=java.lang.Object;declaration=method:observe(defpackage.ShadowMethodT;java.lang.Object;)void;method-identity=true
+method=put;params=defpackage.ShadowMethodT<T{declaration=method:put(defpackage.ShadowMethodT;java.lang.Object;)void,owner=false,method=true}>,T{declaration=method:put(defpackage.ShadowMethodT;java.lang.Object;)void,owner=false,method=true};return=void;typeParameters=T{declaration=method:put(defpackage.ShadowMethodT;java.lang.Object;)void,owner=false,method=true};physical-params=defpackage.ShadowMethodT,java.lang.Object;physical-return=void;declaration=put(defpackage.ShadowMethodT;java.lang.Object;)void
+method.type-parameter=put(defpackage.ShadowMethodT;java.lang.Object;)void;name=T;bounds=java.lang.Object;declaration=method:put(defpackage.ShadowMethodT;java.lang.Object;)void;method-identity=true
+behavior.value=defpackage.ShadowMethodT
+behavior.array-length=n/a
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=false
+behavior.number-value=n/a
+behavior.return-is-receiver=false

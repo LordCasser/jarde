@@ -1,0 +1,11 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-raw-receiver-v3-ctor-regression-root-20261009/openjdk23/nodebug/CrossHold/jadx-source/CrossHold.java:7: 错误: 不兼容的类型: U无法转换为T
+        this.v = u;
+                 ^
+  其中, U,T是类型变量:
+    U扩展已在类 CrossHold中声明的Object
+    T扩展已在类 CrossHold中声明的Object
+1 个错误
+3 个警告
