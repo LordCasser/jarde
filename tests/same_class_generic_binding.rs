@@ -374,6 +374,74 @@ fn compile_frozen_report_and_run(
     (rebuilt, original)
 }
 
+/// Hold's constructor parameter must use the class's `T`, not a constructor-local `T` with the
+/// same name. The shared reflection driver compares generic type names; this check compares the
+/// actual GenericDeclaration identity on both rebuilt and frozen classes.
+fn assert_hold_constructor_binder_is_class(report_source: &str, jar: &[u8]) {
+    const DRIVER: &str = r#"
+import java.lang.reflect.*;
+public final class HoldBinderDriver {
+  public static void main(String[] args) throws Exception {
+    Class<?> owner = Class.forName("Hold");
+    Constructor<?> constructor = owner.getDeclaredConstructor(Object.class);
+    Type parameter = constructor.getGenericParameterTypes()[0];
+    if (!(parameter instanceof TypeVariable)
+        || ((TypeVariable<?>) parameter).getGenericDeclaration() != owner
+        || constructor.getTypeParameters().length != 0) {
+      throw new AssertionError("constructor parameter is not class-bound T: " + parameter);
+    }
+    System.out.println("constructorBinder=class;constructorTypeVariables=0");
+  }
+}
+"#;
+    let temp = TestDirectory::new("hold-constructor-binder");
+    let source = temp.path().join("Hold.java");
+    let driver = temp.path().join("HoldBinderDriver.java");
+    let original_jar = temp.path().join("family.jar");
+    let rebuilt = temp.path().join("rebuilt");
+    std::fs::create_dir_all(&rebuilt).expect("the rebuilt class directory is created");
+    std::fs::write(&source, report_source).expect("the complete Hold source is written");
+    std::fs::write(&driver, DRIVER).expect("the constructor binder Driver is written");
+    std::fs::write(&original_jar, jar).expect("the frozen original Hold JAR is written");
+    let compiled = Command::new("javac")
+        .args(["--release", "8", "-d"])
+        .arg(&rebuilt)
+        .arg(&source)
+        .arg(&driver)
+        .output()
+        .expect("javac compiles the recovered Hold and binder Driver");
+    assert!(
+        compiled.status.success(),
+        "the recovered Hold and binder Driver compile:\n{}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
+
+    let run = |classpath: &std::ffi::OsStr| {
+        let output = Command::new("java")
+            .args(["-Xverify:all", "-cp"])
+            .arg(classpath)
+            .arg("HoldBinderDriver")
+            .output()
+            .expect("the constructor binder Driver runs");
+        assert!(
+            output.status.success(),
+            "the constructor binder is class-bound:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).expect("the binder Driver prints UTF-8")
+    };
+    let rebuilt_path = std::env::join_paths([rebuilt.as_os_str()])
+        .expect("the rebuilt class directory is a valid class path");
+    let rebuilt_output = run(&rebuilt_path);
+    let original_path = std::env::join_paths([original_jar.as_os_str(), rebuilt.as_os_str()])
+        .expect("the original JAR and binder Driver form a valid class path");
+    let original_output = run(&original_path);
+    assert_eq!(
+        rebuilt_output, original_output,
+        "the recovered constructor binder matches the frozen class binder"
+    );
+}
+
 /// Appends dangling same-class member references to a compiled class's constant pool: one
 /// `Methodref` and one `Fieldref` naming members nothing in the class consumes. The mutation is
 /// append-only, so every existing pool index stays valid; the JVM accepts extra pool entries,
@@ -731,6 +799,7 @@ fn frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs() {
 
     for (compiler, class, jar, runner_args, typed_positive) in cases {
         let report = source_of(jar, class);
+        let full_generic_positive = typed_positive || class == "Hold";
         assert!(
             !report.text.trim().is_empty(),
             "{compiler}/{class}: the complete class-source report is non-empty"
@@ -744,7 +813,7 @@ fn frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs() {
             field.declaration.is_some(),
             "{compiler}/{class}: field is presented"
         );
-        if typed_positive {
+        if full_generic_positive {
             assert!(
                 field
                     .declaration
@@ -791,6 +860,23 @@ fn frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs() {
                 .any(|method| method.item.name.raw().0 == expected_method),
             "{compiler}/{class}: the physical writer method remains in the report"
         );
+        if class == "Hold" {
+            let constructor = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"<init>")
+                .and_then(|method| method.declaration.as_deref())
+                .expect("Hold retains its physical constructor declaration");
+            assert!(
+                constructor.contains("Hold(T "),
+                "{compiler}/Hold: constructor parameter uses class T:\n{}",
+                report.text
+            );
+            assert!(
+                !constructor.contains("java.lang.Object"),
+                "{compiler}/Hold: constructor source no longer erases T:\n{constructor}"
+            );
+        }
 
         let (rebuilt, original) = compile_frozen_report_and_run(
             &format!("{compiler}-{class}"),
@@ -799,11 +885,14 @@ fn frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs() {
             runner_args,
             jar,
         );
-        if typed_positive {
+        if full_generic_positive {
             assert_eq!(
                 rebuilt, original,
                 "{compiler}/{class}: generic reflection and behavior match the frozen class"
             );
+            if class == "Hold" {
+                assert_hold_constructor_binder_is_class(&report.text, jar);
+            }
         } else {
             let behavior = |output: &str| {
                 output

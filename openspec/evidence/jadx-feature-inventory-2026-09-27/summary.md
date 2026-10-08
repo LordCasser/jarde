@@ -170,5 +170,5 @@ EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-cal
 
 `recover-functional-constructor-arguments` 九种构造函数实参已由 root 在真实 JDK8/JDK23 对照源码/JADX/Jarde，完整 FunctionalConstructors + IntBox 重编回放一致。旧 LG 只有 pqLambda 本轮改善，其他四方法逐字节不变；LG 整类仍因既有局部类型复用与 finalize 拒绝不能重编，JADX 的整类也有 raw lambda 参数编译失败。不得把方法级闭环计为完整 LG 或整个函数表达式单元完成。见 [完整范围及输出](../../changes/recover-functional-constructor-arguments/verification-root.md)。
 
-新增泛型字段写与 class-scope 构造参数两个独立根因：五个 Holder 形中四个当前整类编译失败，TypedSetter 为正例。字段写证明已有 [OpenSpec](../../changes/prove-generic-field-write-source-types/)（0/6 未实现），class-scope 构造参数尚未立项。71 单元总数不变；以上是在现有单元内扩展证据，最终主线/门禁状态以 handoff.md 为准。
+泛型字段写与 class-scope 构造参数是两个独立根因。字段写证明已合入 `790579e2`：[root 验收](../../changes/prove-generic-field-write-source-types/verification-root.md)，23 族双 JDK 每腿完整编译由 10/23 提升到 22/23。构造器参数片已实现并完成 root 四腿对照：[root 验收](../../changes/recover-class-scope-constructor-parameters/verification-root.md)，20 族/80 输入无新增编译或行为回退，9 个正例/36 输入完整泛型反射一致。CrossHold 与 PeerNewHold 仅部分恢复；this 委派保持安全擦除，CallHold/ExceptionHold 仍有原有泛型调用实参编译失败。本地/远端门禁和合入状态以 handoff.md 为准。原 TestGeneric8 是非静态成员类，本片只闭合其顶层字段初始化子形，不能把它或整个泛型单元标成全覆盖。raw receiver 的源码选择类型另有[实测队列](../raw-receiver-source-selection-patrol/summary.md)，未混入当前生产代码。71 单元总数不变。
 
