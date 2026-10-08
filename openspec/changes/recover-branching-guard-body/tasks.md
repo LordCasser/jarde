@@ -2,9 +2,9 @@
 
 > 纪律：门控实验先行（fused-void-continuation 准入单独翻 nestedLocksBranching、五族锚不动）；行号按锚点名重验（`nestedLocksBranching`/`BCI 55` 拒绝与 loop-test-copy 的 fused continuation 读法）。
 
-- [ ] 1.1 复核 `nestedLocksBranching` 在 HEAD 的现状（nested-lock 片 fixture 在库）；定位 void 完成形的 transfer 判据处与 loop-test-copy 片的 tail-span 读法（复用先例还是姊妹读法）；门控实验转录存证据。
-- [ ] 1.2 冻结锚与负例双腿：branching 形（含 if/else 与单 if 两变体）；负例=尾 span 含 control flow 形（goto 非直线）、多重分支形——各保持拒绝。
-- [ ] 2.1 实现 void 完成形的融合尾 continuation；既有证书判据逐字不动。
-- [ ] 2.2 对照测试：branching 恢复（重编+`-Xverify:all` 双驱动一致）；五族 guard 套件零回退；负例拒绝逐字。
-- [ ] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。
+- [x] 1.1 复核 `nestedLocksBranching` 在 HEAD 的现状（nested-lock 片 fixture 在库）；定位 void 完成形的 transfer 判据处与 loop-test-copy 片的 tail-span 读法（复用先例还是姊妹读法）；门控实验转录存证据。→ [results/01-refusal-and-reading.md](results/01-refusal-and-reading.md)（双腿逐字复现 BCI 55 拒绝 + 插桩 trace；判据 = `prove_lock_guard_finally` 的 Transfer 臂 vs 先例的 `[]` 尾 span 分支；**写姊妹读法** `fused_void_return`——同融合、同块、void 完成形自己的判据，理由与对照实测同文）+ [results/02-gating.md](results/02-gating.md)（48 输入：37 逐字节不动、10 移动；三列细门控：证书单独只移动诊断、行走边界才成呈现）
+- [x] 1.2 冻结锚与负例双腿：branching 形（含 if/else 与单 if 两变体）；负例=尾 span 含 control flow 形（goto 非直线）、多重分支形——各保持拒绝。→ [results/03-anchors-and-negatives.md](results/03-anchors-and-negatives.md)（fixture `tests/fixtures/recover-branching-guard-body/` 双腿 + README；锚 `singleIf`/`ifElse`；负例 `tailThrow`/`tailStoredThrow`/`bodyReturn` 逐字保持、`switchBody`（多路分支）保持拒绝而诊断移动——**实测更正**：顺序/嵌套多分支体（`BGProbe`）呈现，登记的 MVP 注记比准入窄，已在 fixture README、测试与结果里显式登记）
+- [x] 2.1 实现 void 完成形的融合尾 continuation；既有证书判据逐字不动。→ `crates/jarde-java/src/guard.rs::fused_void_return` + Transfer 臂的 `[]` 分支（`Continues`/`Continuation::Tail`）；分离块判据的语句原样搬入 `_` 臂（门控 37 输入逐字节不动即证）；`region.rs::bounded_shared_finally_body` 的 body 边界 = 保护区终点所在块（既有 `boundary` 机制，无新区域形态）
+- [x] 2.2 对照测试：branching 恢复（重编+`-Xverify:all` 双驱动一致）；五族 guard 套件零回退；负例拒绝逐字。→ `tests/recover_branching_guard_body.rs`（锚/探针/负例/顺序腿 + ignored 双编译器回放：剥离文本两腿编译、驱动对原类与重编文本各答同八行）；`tests/recover_nested_lock_finally_bodies.rs` 的第三边界断言改为呈现（附改前拒绝原文）；五族门控与语料普查见 [results/02-gating.md](results/02-gating.md) / [results/04-corpus-and-oracle.md](results/04-corpus-and-oracle.md)
+- [x] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。→ [results/05-gates.md](results/05-gates.md)（fmt/clippy/workspace 345 ok 0 FAILED/oracle 3 ok/openspec 316；语料 968 类 10 处移动全分类；指纹纯增 90 行；读者人口断言更新为实测 `(968, 4161, 456, 2660, 8)`）；提交 `d3a4a92d`（feat）/`5caabe30`（test）/`32ccfc29`（docs），未 push
 - [ ] 3.2 root 独立复核：门控、尾 span 判据、锚/负例实测、账本（guard 族第 3 边界关闭）。（留 root）
