@@ -6430,7 +6430,8 @@ impl Walker<'_> {
         };
         let save = match completion {
             crate::guard::LockGuardCompletion::SavedReturn { save, .. } => Some(*save),
-            crate::guard::LockGuardCompletion::Void { .. } => None,
+            crate::guard::LockGuardCompletion::Void { .. }
+            | crate::guard::LockGuardCompletion::Continues { .. } => None,
         };
         self.bounded_shared_finally_body(
             start,
@@ -6465,7 +6466,8 @@ impl Walker<'_> {
         };
         let save = match completion {
             crate::guard::LockGuardCompletion::SavedReturn { save, .. } => Some(*save),
-            crate::guard::LockGuardCompletion::Void { .. } => None,
+            crate::guard::LockGuardCompletion::Void { .. }
+            | crate::guard::LockGuardCompletion::Continues { .. } => None,
         };
         // The body row is the first of the set: it is the one whose range is the protected body, and
         // the rows beside it cover the handler's binding store alone.
@@ -7164,6 +7166,16 @@ impl Walker<'_> {
         if self.unobservable_store_dance_part(block, instruction) {
             return true;
         }
+        // The same dance with a store the program *can* observe: the copy hands one value to the
+        // store and the other to the test, so both instructions are still the expression's own
+        // machinery — the assignment is written where the bytecode ran it, at the test's own
+        // operand position (`recover-loop-test-copy-store`). Whether the store's target is read
+        // later decides *which* presentation the builder writes, and the builder's own proof is
+        // what proves the dance; this precondition only states that the block holds no effect the
+        // test's text has nowhere to put.
+        if self.store_dance_part(block, test_bci, instruction) {
+            return true;
+        }
         // The increment and the load of the slot it updates, when the old value the load took is
         // read once after the update by the condition itself (`recover-postfix-condition-
         // positions`): the test writes the postfix expression where the bytecode read the value,
@@ -7375,6 +7387,109 @@ impl Walker<'_> {
                 .writes()
                 .iter()
                 .all(|(_, value)| self.ssa.value(*value).uses().is_empty())
+    }
+
+    /// Whether one instruction is a half of the `dup; store` pair whose stored value the test
+    /// consumes — the copy-and-store dance at a test block's own position
+    /// (`recover-dup-store-conditional`, and its loop-test position
+    /// `recover-loop-test-copy-store`).
+    ///
+    /// The pair is the assignment dance: the copy produces two values, the store takes one into a
+    /// local slot and the test reads the other, so the assignment's text is the test's own operand
+    /// and no instruction of the pair writes an effect of its own. Both halves are required
+    /// together: a copy whose values anything else consumes, and a store whose value no test reads,
+    /// keep the `StatementFree` refusal they have always had, at the BCI they named.
+    fn store_dance_part(
+        &self,
+        block: &CanonicalBlockId,
+        test_bci: u32,
+        instruction: &SsaInstruction,
+    ) -> bool {
+        let Some(names) = self.ssa.block(block) else {
+            return false;
+        };
+        let Some(position) = names
+            .instructions()
+            .iter()
+            .position(|candidate| candidate.bci() == instruction.bci())
+        else {
+            return false;
+        };
+        let (duplicate, store) = match self.operations.get(instruction.bci()) {
+            Some(Operation::Duplicate) => {
+                let Some(store) = names.instructions().get(position + 1) else {
+                    return false;
+                };
+                (instruction, store)
+            }
+            Some(Operation::Store { .. }) => {
+                let Some(duplicate) = position
+                    .checked_sub(1)
+                    .and_then(|position| names.instructions().get(position))
+                else {
+                    return false;
+                };
+                (duplicate, instruction)
+            }
+            _ => return false,
+        };
+        if duplicate.opcode() != 0x59
+            || !matches!(
+                self.operations.get(store.bci()),
+                Some(Operation::Store { .. })
+            )
+        {
+            return false;
+        }
+        // The store writes one local slot the **body** declares and takes one of the copy's two
+        // values: a parameter's declaration is the signature, and the in-place assignment
+        // expression this position writes is the copy family's local form — a parameter target
+        // keeps the refusal the loop's own test has always stated for it.
+        let [(Slot::Local(slot), _)] = store.writes() else {
+            return false;
+        };
+        if self.slot_is_parameter(*slot) {
+            return false;
+        }
+        let Some((_, stored)) = crate::build::stack_operands(store).last().copied() else {
+            return false;
+        };
+        // The test reads the copy's other value: the two copies have exactly these consumers.
+        let copies: Vec<ValueId> = duplicate
+            .writes()
+            .iter()
+            .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+            .collect();
+        let [first, second] = copies.as_slice() else {
+            return false;
+        };
+        let Some(test) = names
+            .instructions()
+            .iter()
+            .find(|candidate| candidate.bci() == test_bci)
+        else {
+            return false;
+        };
+        let tested = |value: &ValueId| {
+            test.reads()
+                .iter()
+                .any(|(slot, read)| matches!(slot, Slot::Stack(_)) && read == value)
+        };
+        (stored == *first && tested(second)) || (stored == *second && tested(first))
+    }
+
+    /// Whether one local slot is a parameter (or the receiver) of this method.
+    ///
+    /// The method's entry block's own entry state defines exactly the slots the signature declares,
+    /// so a slot it defines is one the body does not declare — the same fact the builder's own
+    /// `parameters` count states, read from the graph rather than from the descriptor.
+    fn slot_is_parameter(&self, slot: u16) -> bool {
+        self.ssa.blocks().first().is_some_and(|block| {
+            block
+                .entry()
+                .iter()
+                .any(|(entry, _)| matches!(entry, Slot::Local(entry) if *entry == slot))
+        })
     }
 
     /// The same-block producers whose values the terminal branch consumes, directly or through

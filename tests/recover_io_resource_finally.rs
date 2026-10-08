@@ -20,12 +20,14 @@
 //! * `countLines` renders whole — no refusal of the family, one `finally`, one `close()` — on the
 //!   patrol's jar and on both compiler legs (javac 23.0.1 `--release 8 -g:none` and the real
 //!   javac 8), byte for byte the same text;
-//! * `readAll` (the `FileReader` char loop) keeps its refusal **verbatim**: it is the copy
-//!   family's registered boundary — its loop test's copy-and-store dance has an observable target,
-//!   which that family's purity criterion refuses — and this change neither widens that criterion
-//!   nor hides the member. The whole-class text therefore does not compile while that boundary
-//!   stands, and the mid-read leg's behavior is exercised through the certificate's own shape over
-//!   a **caller-owned** stream (`IOMidRead.countRemaining`), whose close is observable;
+//! * `readAll` (the `FileReader` char loop) is the io slice's registered boundary and is now
+//!   **recovered** by its own follow-up slice (`recover-loop-test-copy-store`): its loop test's
+//!   copy-and-store dance has an observable target, and the loop-test position presents it as the
+//!   in-place assignment expression — `while ((local3 = local1.read()) != -1)` — inside the guard
+//!   body this certificate presents. The class renders with no refusal anywhere, so the
+//!   whole-class text compiles and its own driver answers what the original answers; the mid-read
+//!   leg's behavior is still exercised through the certificate's own shape over a **caller-owned**
+//!   stream (`IOMidRead.countRemaining`), whose close is observable;
 //! * the negatives — two nested `finally`s over two resources, and a cleanup call that returns a
 //!   value — keep their refusals verbatim on both legs;
 //! * the `new@1` depth boundary this change moves: three layers present as one expression, four
@@ -81,12 +83,8 @@ const IO_BEHAVIOR: &str = "2/hello|world|";
 /// close the failing reader observed.
 const MID_BEHAVIOR: &str = "normal=3\ncaught=read 3 failed closed=true";
 
-/// The refusal `readAll` keeps, verbatim: the copy family's registered boundary.
-const READ_ALL_REFUSAL: [&str; 3] = [
-    "// @bytecode 0 17 27 37 44 53",
-    "// local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice",
-    "readAll(Ljava/lang/String;)Ljava/lang/String;` produced no statement",
-];
+/// `readAll`, whole: the loop test's assignment in place, inside the one `try { … } finally`.
+const READ_ALL: &str = "    static java.lang.String readAll(java.lang.String arg0) throws java.io.IOException {\n        // @method readAll(Ljava/lang/String;)Ljava/lang/String;\n        // @declaration a static method of `IO`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        java.io.FileReader local1 = new java.io.FileReader(arg0);\n        java.lang.StringBuilder local2 = new java.lang.StringBuilder();\n        try {\n            int local3;\n            while ((local3 = local1.read()) != -1) {\n                local2.append((char) local3);\n            }\n        } finally {\n            local1.close();\n        }\n        return local2.toString();\n    }\n";
 
 /// The refusal `NestedDepth.fourLayer` keeps: the depth boundary one layer past the chain.
 const FOUR_LAYER_REFUSAL: [&str; 2] = [
@@ -115,9 +113,7 @@ const COUNT_REMAINING: &str = "    static int countRemaining(java.io.BufferedRea
 /// `NestedDepth.threeLayer`, whole: the three-layer chain as one `new` expression.
 const THREE_LAYER: &str = "    public static java.lang.String threeLayer() {\n        // @method threeLayer()Ljava/lang/String;\n        // @declaration a static method of `NestedDepth`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        return new NestedDepth$First(new NestedDepth$Second(new NestedDepth$Third(\"t\"))).inner.inner.s;\n    }\n";
 
-/// The `IO` class's whole text, pinned: `countLines` presented, `readAll` the registered boundary,
-/// `main` the patrol's own driver.
-const IO_TEXT: &str = "// jarde: presentation of `IO` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npublic class IO extends java.lang.Object {\n    public IO() {\n        // @method <init>()V\n        // @declaration a constructor of `IO`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    static int countLines(java.lang.String arg0) throws java.io.IOException {\n        // @method countLines(Ljava/lang/String;)I\n        // @declaration a static method of `IO`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        java.io.BufferedReader local1;\n        local1 = new java.io.BufferedReader((java.io.Reader) new java.io.InputStreamReader((java.io.InputStream) new java.io.FileInputStream(arg0), \"UTF-8\"));\n        try {\n            int local2;\n            local2 = 0;\n            while (local1.readLine() != null) {\n                local2 = local2 + 1;\n            }\n            int local4 = local2;\n            return local4;\n        } finally {\n            local1.close();\n        }\n    }\n\n    static java.lang.String readAll(java.lang.String arg0) throws java.io.IOException {\n        // jarde: not recovered: the recovery run for `readAll(Ljava/lang/String;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method readAll(Ljava/lang/String;)Ljava/lang/String;\n        // @declaration a static method of `IO`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 0 17 27 37 44 53\n        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n    }\n\n    public static void main(java.lang.String[] arg0) throws java.lang.Exception {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `IO`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.System.out.println(\"\" + countLines(\"data.txt\") + \"/\" + readAll(\"data.txt\").replace((java.lang.CharSequence) \"\\n\", (java.lang.CharSequence) \"|\"));\n        return;\n    }\n}\n";
+const IO_TEXT: &str = "// jarde: presentation of `IO` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npublic class IO extends java.lang.Object {\n    public IO() {\n        // @method <init>()V\n        // @declaration a constructor of `IO`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    static int countLines(java.lang.String arg0) throws java.io.IOException {\n        // @method countLines(Ljava/lang/String;)I\n        // @declaration a static method of `IO`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        java.io.BufferedReader local1;\n        local1 = new java.io.BufferedReader((java.io.Reader) new java.io.InputStreamReader((java.io.InputStream) new java.io.FileInputStream(arg0), \"UTF-8\"));\n        try {\n            int local2;\n            local2 = 0;\n            while (local1.readLine() != null) {\n                local2 = local2 + 1;\n            }\n            int local4 = local2;\n            return local4;\n        } finally {\n            local1.close();\n        }\n    }\n\n    static java.lang.String readAll(java.lang.String arg0) throws java.io.IOException {\n        // @method readAll(Ljava/lang/String;)Ljava/lang/String;\n        // @declaration a static method of `IO`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        java.io.FileReader local1 = new java.io.FileReader(arg0);\n        java.lang.StringBuilder local2 = new java.lang.StringBuilder();\n        try {\n            int local3;\n            while ((local3 = local1.read()) != -1) {\n                local2.append((char) local3);\n            }\n        } finally {\n            local1.close();\n        }\n        return local2.toString();\n    }\n\n    public static void main(java.lang.String[] arg0) throws java.lang.Exception {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `IO`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.System.out.println(\"\" + countLines(\"data.txt\") + \"/\" + readAll(\"data.txt\").replace((java.lang.CharSequence) \"\\n\", (java.lang.CharSequence) \"|\"));\n        return;\n    }\n}\n";
 
 /// The `IOMidRead` class's whole text, pinned.
 const MID_TEXT: &str = "// jarde: presentation of `IOMidRead` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npublic final class IOMidRead extends java.lang.Object {\n    private IOMidRead() {\n        // @method <init>()V\n        // @declaration a constructor of `IOMidRead`, member flags 0x0002\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    static int countRemaining(java.io.BufferedReader arg0) throws java.io.IOException {\n        // @method countRemaining(Ljava/io/BufferedReader;)I\n        // @declaration a static method of `IOMidRead`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        java.io.BufferedReader local1;\n        local1 = arg0;\n        try {\n            int local2;\n            local2 = 0;\n            while (local1.readLine() != null) {\n                local2 = local2 + 1;\n            }\n            int local4 = local2;\n            return local4;\n        } finally {\n            local1.close();\n        }\n    }\n}\n";
@@ -202,7 +198,7 @@ fn the_anchors_guard_presents_whole_on_every_leg() {
         );
         assert_eq!(
             report.text, IO_TEXT,
-            "{leg}: the class renders its guard, its registered boundary and its driver"
+            "{leg}: the class renders its guard, its recovered sibling and its driver"
         );
         // The family's refusal is gone from the guard: one `finally`, one close, no quote.
         let guard = method_text(&report, "countLines");
@@ -216,17 +212,26 @@ fn the_anchors_guard_presents_whole_on_every_leg() {
             !guard.contains("@bytecode"),
             "{leg}: no instruction of the guard stays quoted:\n{guard}"
         );
-        // The registered boundary stays visible, verbatim, in the member beside it.
-        let refused = method_text(&report, "readAll");
-        for refusal in READ_ALL_REFUSAL {
-            assert!(
-                refused.contains(refusal),
-                "{leg}/readAll: the registered boundary keeps `{refusal}` verbatim:\n{refused}"
-            );
-        }
+        // The registered boundary is recovered by its own follow-up slice: the loop test's
+        // copy-and-store assignment stands where the bytecode ran it, inside the same guard.
+        let read_all = method_text(&report, "readAll");
+        assert_eq!(
+            read_all, READ_ALL,
+            "{leg}/readAll: the loop test's assignment presents in place, inside the guard"
+        );
         assert!(
-            !refused.contains("finally {"),
-            "{leg}/readAll: the copy family's criterion is not widened here:\n{refused}"
+            !read_all.contains("@bytecode") && !read_all.contains("not recovered"),
+            "{leg}/readAll: the member carries no refusal:\n{read_all}"
+        );
+        assert_eq!(
+            read_all.matches("(local3 = local1.read()) != -1").count(),
+            1,
+            "{leg}/readAll: the assignment is written once, at the test's own operand position:\n{read_all}"
+        );
+        assert_eq!(
+            read_all.matches("finally {").count(),
+            1,
+            "{leg}/readAll: the one `finally` its source wrote:\n{read_all}"
         );
         texts.push((leg, report.text));
     }
@@ -540,10 +545,10 @@ fn the_mid_read_guard_answers_what_its_class_answers() {
 }
 
 #[test]
-#[ignore = "needs both JDKs: it runs the anchor's own classes on both legs and states why the \
-            whole-class text stays uncompilable while `readAll` is the registered boundary (see \
-            the module doc)"]
-fn the_anchors_own_class_answers_its_baseline_and_its_boundary_is_stated() {
+#[ignore = "needs both JDKs: it runs the anchor's own classes on both legs and then compiles \
+            the whole-class text and runs its own driver beside them — `readAll` recovered, the \
+            registered boundary closed (see the module doc)"]
+fn the_anchors_own_class_answers_its_baseline_and_its_presentation_too() {
     for leg in LEGS {
         let temp = TempDir::new("anchor");
         let directory = temp.path().join("original");
@@ -559,11 +564,13 @@ fn the_anchors_own_class_answers_its_baseline_and_its_boundary_is_stated() {
             leg.label
         );
 
-        // The boundary, stated rather than hidden: `readAll`'s refusal leaves the member without a
-        // `return`, so the whole-class text does not compile while that criterion stands. A run
-        // that compiles it is a change this test wants to hear about — the follow-up slice's own
-        // acceptance will flip this assertion with its evidence.
-        let source = temp.path().join("IO.java");
+        // The boundary the follow-up slice closed: `readAll`'s loop test presents, so the
+        // whole-class text compiles — and its own driver, reading a real file to EOF, answers what
+        // the original class answers.
+        let presented_dir = temp.path().join("presented");
+        fs::create_dir_all(&presented_dir).expect("create the presented directory");
+        fs::write(presented_dir.join("data.txt"), DATA).expect("the input file is written");
+        let source = presented_dir.join("IO.java");
         fs::write(
             &source,
             stripped(
@@ -576,19 +583,13 @@ fn the_anchors_own_class_answers_its_baseline_and_its_boundary_is_stated() {
             ),
         )
         .expect("write the presented text");
-        let result = leg
-            .javac()
-            .args(["-d"])
-            .arg(temp.path())
-            .arg(&source)
-            .output()
-            .expect("the leg's compiler is installed");
-        assert!(
-            !result.status.success(),
-            "{}: the whole-class text must stay uncompilable while `readAll`'s copy-family \
-             boundary stands:\n{}",
-            leg.label,
-            fs::read_to_string(&source).expect("the text reads")
+        leg.compile(&source, &presented_dir);
+        assert_eq!(
+            leg.run(&presented_dir, "IO"),
+            IO_BEHAVIOR,
+            "{}: the presented whole-class text answers what the class answers — `countLines`' \
+             count, `readAll`'s text to EOF and the driver's own join",
+            leg.label
         );
     }
 }
