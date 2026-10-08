@@ -2506,6 +2506,10 @@ struct FixtureBody {
 
 impl Fixture {
     fn new() -> Self {
+        Self::new_with_method_descriptor("()V")
+    }
+
+    fn new_with_method_descriptor(descriptor: &str) -> Self {
         let mut fixture = Self {
             pool: Vec::new(),
             entries: 0,
@@ -2517,7 +2521,7 @@ impl Fixture {
         let object = fixture.utf8("java/lang/Object"); // 3
         fixture.class(object); // 4
         fixture.utf8("method"); // 5
-        fixture.utf8("()V"); // 6
+        fixture.utf8(descriptor); // 6
         fixture.utf8("Code"); // 7
         fixture.utf8("BootstrapMethods"); // 8
         fixture
@@ -2620,17 +2624,29 @@ impl Fixture {
     /// fixture needs an index it cannot know while it is describing the site.
     fn finish(
         self,
-        mut code: Vec<u8>,
+        code: Vec<u8>,
         site_bci: usize,
         site_index: u16,
         max_stack: u16,
         max_locals: u16,
     ) -> Vec<u8> {
-        assert_eq!(
-            code[site_bci], 0xba,
-            "the fixture's site must be at the BCI the caller names"
-        );
-        code[site_bci + 1..site_bci + 3].copy_from_slice(&site_index.to_be_bytes());
+        self.finish_with_sites(code, &[(site_bci, site_index)], max_stack, max_locals)
+    }
+
+    fn finish_with_sites(
+        self,
+        mut code: Vec<u8>,
+        sites: &[(usize, u16)],
+        max_stack: u16,
+        max_locals: u16,
+    ) -> Vec<u8> {
+        for (site_bci, site_index) in sites {
+            assert_eq!(
+                code[*site_bci], 0xba,
+                "the fixture's site must be at the BCI the caller names"
+            );
+            code[*site_bci + 1..*site_bci + 3].copy_from_slice(&site_index.to_be_bytes());
+        }
         let mut out = Vec::new();
         out.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
         out.extend_from_slice(&0_u16.to_be_bytes()); // minor
@@ -3086,6 +3102,326 @@ fn arbitrary_bootstrap_class() -> Vec<u8> {
     )
 }
 
+/// A legal straight-line constructor argument run with an unrelated functional value that is
+/// created and discarded before the actual constructor argument: `new Thread; dup; indy; pop;
+/// indy; invokespecial; areturn`. The first site is not an SSA dependency of the physical argument
+/// and its creation effect must keep the construction quoted.
+fn unrelated_dynamic_constructor_argument_class() -> Vec<u8> {
+    let mut fixture = Fixture::new_with_method_descriptor("()Ljava/lang/Thread;");
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_nat = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_nat);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("()V");
+    let sam_type = fixture.method_type(sam);
+    let impl_owner_name = fixture.utf8("Test");
+    let impl_owner = fixture.class(impl_owner_name);
+    let impl_name = fixture.utf8("lambda$method$0");
+    let impl_descriptor = fixture.utf8("()V");
+    let impl_nat = fixture.name_and_type(impl_name, impl_descriptor);
+    let impl_ref = fixture.method_ref(impl_owner, impl_nat);
+    let impl_handle = fixture.method_handle(6, impl_ref);
+    let instantiated = fixture.method_type(impl_descriptor);
+    let bootstrap = fixture.bootstrap(factory_handle, vec![sam_type, impl_handle, instantiated]);
+    let site_name = fixture.utf8("run");
+    let site_descriptor = fixture.utf8("()Ljava/lang/Runnable;");
+    let site_nat = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_nat);
+    fixture.body("lambda$method$0", "()V");
+
+    let thread_name = fixture.utf8("java/lang/Thread");
+    let thread_class = fixture.class(thread_name);
+    let ctor_name = fixture.utf8("<init>");
+    let ctor_descriptor = fixture.utf8("(Ljava/lang/Runnable;)V");
+    let ctor_nat = fixture.name_and_type(ctor_name, ctor_descriptor);
+    let ctor_ref = fixture.method_ref(thread_class, ctor_nat);
+    let mut code = vec![
+        0xbb, 0, 0,    // 0: new Thread
+        0x59, // 3: dup
+        0xba, 0, 0, 0, 0,    // 4: invokedynamic Runnable (unrelated, then discarded)
+        0x57, // 9: pop unrelated functional value
+        0xba, 0, 0, 0, 0, // 10: invokedynamic Runnable (constructor argument)
+        0xb7, 0, 0,    // 15: invokespecial Thread.<init>(Runnable)
+        0xb0, // 18: areturn constructed Thread
+    ];
+    code[1..3].copy_from_slice(&thread_class.to_be_bytes());
+    code[11..13].copy_from_slice(&site_index.to_be_bytes());
+    code[16..18].copy_from_slice(&ctor_ref.to_be_bytes());
+    fixture.finish_with_sites(code, &[(4, site_index), (10, site_index)], 3, 0)
+}
+
+/// A constructor candidate whose first independent functional creation is consumed by an ordinary
+/// invocation before the actual constructor argument is created. This candidate reaches the
+/// physical effect scan, which must refuse to move the unrelated dynamic creation into `new`.
+fn unrelated_dynamic_argument_effect_class() -> Vec<u8> {
+    let mut fixture = Fixture::new();
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_nat = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_nat);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("()V");
+    let sam_type = fixture.method_type(sam);
+    let impl_owner_name = fixture.utf8("Test");
+    let impl_owner = fixture.class(impl_owner_name);
+    let impl_name = fixture.utf8("lambda$method$0");
+    let impl_descriptor = fixture.utf8("()V");
+    let impl_nat = fixture.name_and_type(impl_name, impl_descriptor);
+    let impl_ref = fixture.method_ref(impl_owner, impl_nat);
+    let impl_handle = fixture.method_handle(6, impl_ref);
+    let instantiated = fixture.method_type(impl_descriptor);
+    let bootstrap = fixture.bootstrap(factory_handle, vec![sam_type, impl_handle, instantiated]);
+    let site_name = fixture.utf8("run");
+    let site_descriptor = fixture.utf8("()Ljava/lang/Runnable;");
+    let site_nat = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_nat);
+    fixture.body("lambda$method$0", "()V");
+
+    let thread_name = fixture.utf8("java/lang/Thread");
+    let thread_class = fixture.class(thread_name);
+    let ctor_name = fixture.utf8("<init>");
+    let ctor_descriptor = fixture.utf8("(Ljava/lang/Runnable;)V");
+    let ctor_nat = fixture.name_and_type(ctor_name, ctor_descriptor);
+    let ctor_ref = fixture.method_ref(thread_class, ctor_nat);
+    let runnable_name = fixture.utf8("java/lang/Runnable");
+    let runnable_class = fixture.class(runnable_name);
+    let run_name = fixture.utf8("run");
+    let run_descriptor = fixture.utf8("()V");
+    let run_nat = fixture.name_and_type(run_name, run_descriptor);
+    let run_ref = fixture.interface_method_ref(runnable_class, run_nat);
+    let mut code = vec![
+        0xbb, 0, 0,    // 0: new Thread
+        0x59, // 3: dup
+        0xba, 0, 0, 0, 0, // 4: invokedynamic Runnable (independent value)
+        0xb9, 0, 0, 1, 0, // 9: invokeinterface Runnable.run
+        0xba, 0, 0, 0, 0, // 14: invokedynamic Runnable (constructor argument)
+        0xb7, 0, 0,    // 19: invokespecial Thread.<init>(Runnable)
+        0x57, // 22: discard Thread
+        0xb1, // 23: return
+    ];
+    code[1..3].copy_from_slice(&thread_class.to_be_bytes());
+    code[10..12].copy_from_slice(&run_ref.to_be_bytes());
+    code[20..22].copy_from_slice(&ctor_ref.to_be_bytes());
+    fixture.finish_with_sites(code, &[(4, site_index), (14, site_index)], 3, 0)
+}
+
+/// The value of the constructed object is discarded: `new Thread(lambda);`. A verified lambda
+/// argument does not give the `new` site a statement position when the constructed value has no
+/// reader the current rule can present.
+fn discarded_dynamic_constructor_argument_class() -> Vec<u8> {
+    let mut fixture = Fixture::new();
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_nat = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_nat);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("()V");
+    let sam_type = fixture.method_type(sam);
+    let impl_owner_name = fixture.utf8("Test");
+    let impl_owner = fixture.class(impl_owner_name);
+    let impl_name = fixture.utf8("lambda$method$0");
+    let impl_descriptor = fixture.utf8("()V");
+    let impl_nat = fixture.name_and_type(impl_name, impl_descriptor);
+    let impl_ref = fixture.method_ref(impl_owner, impl_nat);
+    let impl_handle = fixture.method_handle(6, impl_ref);
+    let instantiated = fixture.method_type(impl_descriptor);
+    let bootstrap = fixture.bootstrap(factory_handle, vec![sam_type, impl_handle, instantiated]);
+    let site_name = fixture.utf8("run");
+    let site_descriptor = fixture.utf8("()Ljava/lang/Runnable;");
+    let site_nat = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_nat);
+    fixture.body("lambda$method$0", "()V");
+
+    let thread_name = fixture.utf8("java/lang/Thread");
+    let thread_class = fixture.class(thread_name);
+    let ctor_name = fixture.utf8("<init>");
+    let ctor_descriptor = fixture.utf8("(Ljava/lang/Runnable;)V");
+    let ctor_nat = fixture.name_and_type(ctor_name, ctor_descriptor);
+    let ctor_ref = fixture.method_ref(thread_class, ctor_nat);
+    let mut code = vec![
+        0xbb, 0, 0,    // 0: new Thread
+        0x59, // 3: dup
+        0xba, 0, 0, 0, 0, // 4: invokedynamic Runnable
+        0xb7, 0, 0,    // 9: invokespecial Thread.<init>(Runnable)
+        0x57, // 12: discard the constructed Thread
+        0xb1, // 13: return
+    ];
+    code[1..3].copy_from_slice(&thread_class.to_be_bytes());
+    code[10..12].copy_from_slice(&ctor_ref.to_be_bytes());
+    fixture.finish(code, 4, site_index, 3, 0)
+}
+
+/// The factory ran earlier and its value was stored before the allocation: the constructor's
+/// physical argument is a local load, so `new@1` must not treat the old invokedynamic as an effect
+/// inside the construction span or widen its handler coverage.
+fn materialized_dynamic_constructor_argument_class() -> Vec<u8> {
+    let mut fixture = Fixture::new_with_method_descriptor("()Ljava/lang/Thread;");
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_nat = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_nat);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("()V");
+    let sam_type = fixture.method_type(sam);
+    let impl_owner_name = fixture.utf8("Test");
+    let impl_owner = fixture.class(impl_owner_name);
+    let impl_name = fixture.utf8("lambda$method$0");
+    let impl_descriptor = fixture.utf8("()V");
+    let impl_nat = fixture.name_and_type(impl_name, impl_descriptor);
+    let impl_ref = fixture.method_ref(impl_owner, impl_nat);
+    let impl_handle = fixture.method_handle(6, impl_ref);
+    let instantiated = fixture.method_type(impl_descriptor);
+    let bootstrap = fixture.bootstrap(factory_handle, vec![sam_type, impl_handle, instantiated]);
+    let site_name = fixture.utf8("run");
+    let site_descriptor = fixture.utf8("()Ljava/lang/Runnable;");
+    let site_nat = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_nat);
+    fixture.body("lambda$method$0", "()V");
+
+    let thread_name = fixture.utf8("java/lang/Thread");
+    let thread_class = fixture.class(thread_name);
+    let ctor_name = fixture.utf8("<init>");
+    let ctor_descriptor = fixture.utf8("(Ljava/lang/Runnable;)V");
+    let ctor_nat = fixture.name_and_type(ctor_name, ctor_descriptor);
+    let ctor_ref = fixture.method_ref(thread_class, ctor_nat);
+    let mut code = vec![
+        0xba, 0, 0, 0, 0,    // 0: invokedynamic Runnable
+        0x4b, // 5: astore_0 (materialize the functional value)
+        0xbb, 0, 0,    // 6: new Thread
+        0x59, // 9: dup
+        0x2a, // 10: aload_0
+        0xb7, 0, 0,    // 11: invokespecial Thread.<init>(Runnable)
+        0xb0, // 14: areturn
+    ];
+    code[7..9].copy_from_slice(&thread_class.to_be_bytes());
+    code[12..14].copy_from_slice(&ctor_ref.to_be_bytes());
+    fixture.finish(code, 0, site_index, 3, 1)
+}
+
+/// A frame-entry `Object` that may be null, composed as the receiver of a `Runnable` method
+/// reference inside a constructor argument. The lambda proof cannot establish the reference's
+/// receiver type or its creation-time null behavior, so `new@1` must keep the whole run quoted.
+fn unproved_bound_constructor_argument_class() -> Vec<u8> {
+    let mut fixture = Fixture::new_with_method_descriptor("(Ljava/lang/Object;)Ljava/lang/Thread;");
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_nat = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_nat);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("()V");
+    let sam_type = fixture.method_type(sam);
+    let runnable_name = fixture.utf8("java/lang/Runnable");
+    let runnable_class = fixture.class(runnable_name);
+    let start_name = fixture.utf8("run");
+    let start_descriptor = fixture.utf8("()V");
+    let start_nat = fixture.name_and_type(start_name, start_descriptor);
+    let start_ref = fixture.interface_method_ref(runnable_class, start_nat);
+    let start_handle = fixture.method_handle(9, start_ref);
+    let instantiated = fixture.method_type(start_descriptor);
+    let bootstrap = fixture.bootstrap(factory_handle, vec![sam_type, start_handle, instantiated]);
+    let site_name = fixture.utf8("run");
+    let site_descriptor = fixture.utf8("(Ljava/lang/Object;)Ljava/lang/Runnable;");
+    let site_nat = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_nat);
+
+    let thread_name = fixture.utf8("java/lang/Thread");
+    let thread_class = fixture.class(thread_name);
+    let ctor_name = fixture.utf8("<init>");
+    let runnable_descriptor = fixture.utf8("(Ljava/lang/Runnable;)V");
+    let ctor_nat = fixture.name_and_type(ctor_name, runnable_descriptor);
+    let ctor_ref = fixture.method_ref(thread_class, ctor_nat);
+    let mut code = vec![
+        0xbb, 0, 0,    // 0: new Thread
+        0x59, // 3: dup
+        0x2a, // 4: aload_0 (nullable Object receiver without a proven Runnable type)
+        0xba, 0, 0, 0, 0, // 5: invokedynamic Runnable bound reference
+        0xb7, 0, 0,    // 10: invokespecial Thread.<init>(Runnable)
+        0xb0, // 13: areturn
+    ];
+    code[1..3].copy_from_slice(&thread_class.to_be_bytes());
+    code[11..13].copy_from_slice(&ctor_ref.to_be_bytes());
+    fixture.finish(code, 5, site_index, 3, 1)
+}
+
+/// A typed nullable `Thread` receiver is explicitly checked before creating the bound method
+/// reference. The check is a real factory-time effect inside the constructor argument span and
+/// outside the invokedynamic's value dependency; `new@1` must preserve it with a whole-run quote.
+fn nullable_bound_constructor_argument_with_creation_check_class() -> Vec<u8> {
+    let mut fixture = Fixture::new_with_method_descriptor("(Ljava/lang/Thread;)Ljava/lang/Thread;");
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_nat = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_nat);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("()V");
+    let sam_type = fixture.method_type(sam);
+    let thread_name = fixture.utf8("java/lang/Thread");
+    let thread_class = fixture.class(thread_name);
+    let start_name = fixture.utf8("start");
+    let start_descriptor = fixture.utf8("()V");
+    let start_nat = fixture.name_and_type(start_name, start_descriptor);
+    let start_ref = fixture.method_ref(thread_class, start_nat);
+    let start_handle = fixture.method_handle(5, start_ref);
+    let instantiated = fixture.method_type(start_descriptor);
+    let bootstrap = fixture.bootstrap(factory_handle, vec![sam_type, start_handle, instantiated]);
+    let site_name = fixture.utf8("start");
+    let site_descriptor = fixture.utf8("(Ljava/lang/Thread;)Ljava/lang/Runnable;");
+    let site_nat = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_nat);
+
+    let objects_name = fixture.utf8("java/util/Objects");
+    let objects_class = fixture.class(objects_name);
+    let require_name = fixture.utf8("requireNonNull");
+    let require_descriptor = fixture.utf8("(Ljava/lang/Object;)Ljava/lang/Object;");
+    let require_nat = fixture.name_and_type(require_name, require_descriptor);
+    let require_ref = fixture.method_ref(objects_class, require_nat);
+    let ctor_name = fixture.utf8("<init>");
+    let ctor_descriptor = fixture.utf8("(Ljava/lang/Runnable;)V");
+    let ctor_nat = fixture.name_and_type(ctor_name, ctor_descriptor);
+    let ctor_ref = fixture.method_ref(thread_class, ctor_nat);
+    let mut code = vec![
+        0xbb, 0, 0,    // 0: new Thread
+        0x59, // 3: dup
+        0x2a, // 4: aload_0 (nullable bound receiver)
+        0xb8, 0, 0,    // 5: invokestatic Objects.requireNonNull
+        0x57, // 8: pop checked receiver
+        0x2a, // 9: aload_0
+        0xba, 0, 0, 0, 0, // 10: invokedynamic bound Thread::start
+        0xb7, 0, 0,    // 15: invokespecial Thread.<init>(Runnable)
+        0xb0, // 18: areturn
+    ];
+    code[1..3].copy_from_slice(&thread_class.to_be_bytes());
+    code[6..8].copy_from_slice(&require_ref.to_be_bytes());
+    code[11..13].copy_from_slice(&site_index.to_be_bytes());
+    code[16..18].copy_from_slice(&ctor_ref.to_be_bytes());
+    fixture.finish(code, 10, site_index, 3, 1)
+}
+
 /// `()` → `Runnable`, capturing an `int[]` the body created with `newarray` (DT-26).
 ///
 /// The frame pass leaves that value an unknown reference — the array of a primitive element type is
@@ -3310,6 +3646,16 @@ fn recover_class_under(
         &RecoveryRequest::new(payload.analysis.ir(), &facts, profile)
             .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut budget,
+    )
+}
+
+fn recover_method(class: &[u8], descriptor: &[u8], parameters: u16) -> jarde_java::RecoveryReport {
+    let payload = analyze(class, b"method", descriptor);
+    let facts = facts_of(class, b"method", parameters, Vec::new());
+    recover(
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &mut Budget::new(limits()),
     )
 }
 
@@ -3696,6 +4042,162 @@ fn an_arbitrary_bootstrap_is_never_presented_as_a_lambda() {
         report.fallbacks.is_empty(),
         "the site is refused as a *statement*, not as a region: {:?}",
         report.fallbacks
+    );
+}
+
+#[test]
+fn an_unrelated_dynamic_argument_effect_stays_inside_the_constructor_fallback() {
+    let class = unrelated_dynamic_argument_effect_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report.text.contains("@bytecode 19 22 0 3 4 9 14 23"),
+        "the whole physical run stays quoted: {}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("new java.lang.Thread"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("->"), "{}", report.text);
+    assert!(
+        report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "jre_new_interleaved_effect"
+                && diagnostic
+                    .message
+                    .contains("instruction at BCI 4 is an InvokeDynamic")
+        }),
+        "the dependency gate refuses the independent dynamic effect: {:?}",
+        report.diagnostics
+    );
+    let unrelated = report.lambdas.iter().find(|site| site.use_site == 4);
+    assert!(unrelated.is_some_and(|site| site.form.is_some()));
+}
+
+#[test]
+fn a_verifier_valid_unrelated_dynamic_creation_is_not_guessed_as_a_constructor_argument() {
+    let class = unrelated_dynamic_constructor_argument_class();
+    let report = recover_method(&class, b"()Ljava/lang/Thread;", 0);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(report.text.contains("@bytecode 4"), "{}", report.text);
+    assert!(
+        !report.text.contains("new java.lang.Thread"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("->"), "{}", report.text);
+}
+#[test]
+fn an_untyped_bound_reference_stays_refused_inside_a_constructor_argument() {
+    let class = unproved_bound_constructor_argument_class();
+    let report = recover_method(&class, b"(Ljava/lang/Object;)Ljava/lang/Thread;", 1);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        !report.text.contains("new java.lang.Thread"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("->"), "{}", report.text);
+    assert!(!report.text.contains("::"), "{}", report.text);
+    assert_eq!(
+        report.lambdas.len(),
+        1,
+        "diagnostics={:?}\n{}",
+        report.diagnostics,
+        report.text
+    );
+    let site = site_of(&report, 5);
+    assert_eq!(site.form, None, "the capture conversion is not proven");
+    assert_eq!(
+        site.captures,
+        vec![jarde_java::LambdaCapture { bci: Some(4) }]
+    );
+    assert_eq!(
+        site.refusal.as_ref().map(|refusal| refusal.code),
+        Some("jre_lambda_sam_types")
+    );
+    assert!(report.text.contains("@bytecode 13"), "{}", report.text);
+}
+
+#[test]
+fn a_discarded_construction_with_a_dynamic_argument_stays_refused() {
+    let class = discarded_dynamic_constructor_argument_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        !report.text.contains("new java.lang.Thread"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("->"), "{}", report.text);
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_new_shape"),
+        "the unconsumed construction keeps its `new@1` refusal: {:?}",
+        report.diagnostics
+    );
+}
+
+#[test]
+fn an_earlier_materialized_lambda_remains_outside_the_constructor_expression() {
+    let class = materialized_dynamic_constructor_argument_class();
+    let report = recover_method(&class, b"()Ljava/lang/Thread;", 0);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("return new java.lang.Thread("),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("new java.lang.Thread(local0)"),
+        "{}",
+        report.text
+    );
+    assert!(report.text.contains("Runnable local0"), "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    let site = site_of(&report, 0);
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::Lambda));
+    let construction = report
+        .news
+        .iter()
+        .find(|site| site.head == 6)
+        .expect("the constructor site has a record");
+    assert_eq!(construction.arguments, vec![10]);
+    assert!(
+        !construction.arguments.contains(&0),
+        "the earlier factory is outside the constructor's physical argument: {construction:?}"
+    );
+}
+
+#[test]
+fn a_nullable_bound_constructor_argument_preserves_its_creation_time_check() {
+    let class = nullable_bound_constructor_argument_with_creation_check_class();
+    let report = recover_method(&class, b"(Ljava/lang/Thread;)Ljava/lang/Thread;", 0);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(report.text.contains("@bytecode 0"), "{}", report.text);
+    assert!(
+        !report.text.contains("new java.lang.Thread"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "jre_new_interleaved_effect"
+                && diagnostic.message.contains("invocation")
+        }),
+        "the check remains an unrelated creation-time effect: {:?}",
+        report.diagnostics
     );
 }
 
