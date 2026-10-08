@@ -18041,7 +18041,8 @@ impl Builder<'_> {
                             guard::LockGuardCompletion::SavedReturn { save, returns } => {
                                 Some((*save, *returns))
                             }
-                            guard::LockGuardCompletion::Void { .. } => None,
+                            guard::LockGuardCompletion::Void { .. }
+                            | guard::LockGuardCompletion::Continues { .. } => None,
                         };
                         let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
                         let outer = std::mem::take(&mut self.stmts);
@@ -18125,7 +18126,21 @@ impl Builder<'_> {
                                 at,
                             );
                         }
-                        let pushed = self.push(statement);
+                        let pushed = self.push(statement).and_then(|()| {
+                            // The statement's own continuation, where the body's completion is
+                            // carried past the release: the transfer's own block's tail — the
+                            // `goto`'s target was fused into it — written after the `try` as the
+                            // statements the bytecode runs there, the `return` the method answers
+                            // included (`recover-loop-test-copy-store`).
+                            if let guard::LockGuardCompletion::Continues {
+                                continuation: guard::Continuation::Tail { span },
+                                ..
+                            } = completion
+                            {
+                                self.range(*span)?;
+                            }
+                            Ok(())
+                        });
                         if pushed.is_err()
                             && let Some(checkpoint) = finally_checkpoint.take()
                         {
