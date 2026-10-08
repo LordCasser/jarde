@@ -11,4 +11,4 @@
 ## 3. 主线验收
 
 - [x] 3.1 root 独立审查 diff，复测源码/JADX/Jarde 全类行为，记录实际改进、泛型/绑定接收者保守边界及附近构造回归。
-- [ ] 3.2 fmt、CI 同口径 clippy、两固定 seed workspace 测试、strict OpenSpec 校验及必要 corpus fingerprint 通过；证据落盘后提交推送、清理临时 worktree 与 Rust 构建残留，更新 handoff。
+- [x] 3.2 fmt、CI 同口径 clippy、两固定 seed workspace 测试、strict OpenSpec 校验及必要 corpus fingerprint 通过；证据落盘后提交推送、清理临时 worktree 与 Rust 构建残留，更新 handoff。

@@ -6,4 +6,4 @@
 ## 2. 主线收尾
 
 - [x] 2.1 fmt/clippy、两个固定 seed workspace、strict OpenSpec 与共同 ignored oracle 通过，记录 root 验收。
-- [ ] 2.2 合入推送 main、核对 CI、释放实现分支并更新 handoff，清理 Rust 编译残留。
+- [x] 2.2 合入推送 main、核对 CI、释放实现分支并更新 handoff，清理 Rust 编译残留。
