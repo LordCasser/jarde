@@ -33,9 +33,14 @@
 //! * the negatives — a release sequence that is not the acquisition order reversed, a release of a
 //!   lock the statement never acquired, an acquisition the row itself covers — keep their refusals
 //!   **verbatim**, on both legs;
-//! * the registered boundaries — a `try`/`finally` inside the guarded range, three locks, and a
-//!   body whose branch moves the release copy into a block of its own (the canonical graph fuses
-//!   the trailing `return` into it) — keep their refusals **verbatim**;
+//! * the registered boundaries — a `try`/`finally` inside the guarded range and three locks — keep
+//!   their refusals **verbatim**;
+//! * the third boundary this slice registered — a body whose branch moves the release copy into a
+//!   block of its own, the canonical graph fusing the trailing `return` into it — **presents** now:
+//!   the follow-up slice `recover-branching-guard-body` reads the fused tail as the void
+//!   completion, so this test asserts the member's presentation where it asserted the refusal (the
+//!   pre-change text is recorded in that change's
+//!   `results/03-anchors-and-negatives.md`);
 //! * the patrol's `multiAwait` stays byte-identical: it is this slice's zero-regression control,
 //!   refused before and after with the patrol's own recorded text.
 
@@ -111,15 +116,14 @@ const THREE_LOCKS: [&str; 4] = [
     "// @bytecode 55 56 57 60 63 64 67 70 71 74 77 78 79",
     "// 2 live block(s) are reachable only through edges the normal-flow view leaves out: [79, 55]",
 ];
-/// The branching body's boundary: the branch moves the release copy into a block of its own, and
-/// the canonical graph fuses the method's trailing `return` into it, so the void completion's
-/// transfer has no successor block to state.
-const BRANCHING_BODY: [&str; 4] = [
-    "// @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25",
-    "// BCI 55: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
-    "// @bytecode 28 31 32 34 37 38 39 42 45 46 49 52 55 56 57 60 63 64 67 70 71 72",
-    "// 3 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 38, 55]",
-];
+/// The branching body's boundary — registered by this slice, **presented** by
+/// `recover-branching-guard-body`: the branch moves the release copy into a block of its own, the
+/// canonical graph fuses the method's trailing `return` into it, and the fused tail is now read as
+/// the void completion. The refusal this member kept here before that slice was
+/// `// BCI 55: the exceptional path repeats …` + `// @bytecode 28 31 32 34 37 38 39 42 45 46 49 52
+/// 55 56 57 60 63 64 67 70 71 72` + `// 3 live block(s) … [28, 38, 55]` (recorded in that change's
+/// `results/03-anchors-and-negatives.md`); the text below is what it renders now.
+const BRANCHING_BODY: &str = "        this.a.lock();\n        this.b.lock();\n        try {\n            this.count += 1;\n            if (arg1) {\n                throw new java.lang.IllegalStateException(\"body failed\");\n            }\n        } finally {\n            this.b.unlock();\n            this.a.unlock();\n        }\n        return;\n";
 
 /// What `MLOrderDriver` prints against the fixture's own class and against the presented text: the
 /// release order (`b` before `a`), the `finally` on the exceptional path, no release after the
@@ -328,7 +332,7 @@ fn the_negatives_keep_their_refusals_verbatim() {
 }
 
 #[test]
-fn the_registered_boundaries_stay_refused() {
+fn the_boundaries_keep_their_refusals_and_the_branching_body_presents() {
     for (leg, bytes) in [("v8", PROBE_V8), ("v8-javac8", PROBE_V8_JAVAC8)] {
         let snapshot = open(bytes);
         let report = report(&snapshot, "MLProbe", EnvironmentPolicy::SingleClass);
@@ -342,7 +346,6 @@ fn the_registered_boundaries_stay_refused() {
         for (name, refusals) in [
             ("nestedTry", &NESTED_TRY[..]),
             ("threeLocks", &THREE_LOCKS[..]),
-            ("nestedLocksBranching", &BRANCHING_BODY[..]),
         ] {
             let method = method_text(&report, name);
             assert!(
@@ -356,6 +359,18 @@ fn the_registered_boundaries_stay_refused() {
                 );
             }
         }
+        // The third boundary presents now: `recover-branching-guard-body` reads the fused tail as
+        // the void completion. This slice's own claim was the refusal; the follow-up's claim is the
+        // presentation, and this assertion is the flip its evidence records.
+        let branching = method_text(&report, "nestedLocksBranching");
+        assert!(
+            branching.contains(BRANCHING_BODY),
+            "{leg}: the branching body presents as its source wrote it:\n{branching}"
+        );
+        assert!(
+            !branching.contains("@bytecode") && !branching.contains("jarde_refused_body"),
+            "{leg}: no instruction of `nestedLocksBranching` stays quoted:\n{branching}"
+        );
     }
 }
 

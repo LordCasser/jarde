@@ -1,0 +1,132 @@
+// jarde: presentation of `Scratch2` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Scratch2 extends java.lang.Object {
+    private final java.util.concurrent.locks.ReentrantLock a;
+
+    private final java.util.concurrent.locks.ReentrantLock b;
+
+    private int count;
+
+    private boolean flag;
+
+    private java.lang.IllegalStateException stored;
+
+    public Scratch2() {
+        // @method <init>()V
+        // @declaration a constructor of `Scratch2`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.a = new java.util.concurrent.locks.ReentrantLock();
+        this.b = new java.util.concurrent.locks.ReentrantLock();
+        this.count = 0;
+        this.flag = false;
+        this.stored = new java.lang.IllegalStateException("stored");
+        return;
+    }
+
+    void plainTailStoredThrow() {
+        // jarde: not recovered: the recovery run for `plainTailStoredThrow()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method plainTailStoredThrow()V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25 28 31 32 35 38
+        // BCI 41: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 41 42 43 46 49 50 53 56 57 58 59 62
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [58, 41]
+        jarde_refused_body();
+    }
+
+    void plainTailThrow() {
+        // jarde: not recovered: the recovery run for `plainTailThrow()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method plainTailThrow()V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25 28 31 32 35 38
+        // BCI 41: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 41 42 43 46 49 50 53 56 57 58 61 62 64 67
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [58, 41]
+        jarde_refused_body();
+    }
+
+    void plainTailAssign() {
+        // jarde: not recovered: the recovery run for `plainTailAssign()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method plainTailAssign()V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25 28 31 32 35 38
+        // BCI 41: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 41 42 43 46 49 50 53 56 57 58 59 60 63 64 65 68
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [58, 41]
+        jarde_refused_body();
+    }
+
+    void plainTailLoop() {
+        // jarde: not recovered: the recovery run for `plainTailLoop()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method plainTailLoop()V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25 28 31 32 35 38
+        // BCI 41: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 41 42 43 46 49 50 53 56 57 58 59 62 65 66 67 70 71 72 75 78
+        // 4 live block(s) are reachable only through edges the normal-flow view leaves out: [58, 41, 65, 78]
+        jarde_refused_body();
+    }
+
+    void plainSwitchBody(int arg1) {
+        // jarde: not recovered: the recovery run for `plainSwitchBody(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method plainSwitchBody(I)V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25
+        // BCI 84: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 44 45 46 49 50 51 54 57 58 59 62 63 64 67 68 71 74 75 78 81 84 85 86 89 92 93 96 99 100 101
+        // 4 live block(s) are reachable only through edges the normal-flow view leaves out: [44, 57, 84, 67]
+        jarde_refused_body();
+    }
+
+    void bothArmsThrow(boolean arg1) {
+        // jarde: not recovered: the recovery run for `bothArmsThrow(Z)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method bothArmsThrow(Z)V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25
+        // BCI 48: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 28 31 32 34 37 38 41 42 44 47 48 49 50 53 56 57 60 63 64
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 38, 48]
+        jarde_refused_body();
+    }
+
+    void ladder(int arg1) {
+        // jarde: not recovered: the recovery run for `ladder(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method ladder(I)V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25
+        // BCI 73: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 28 29 30 33 34 35 38 41 42 43 46 47 48 51 52 53 56 57 60 63 64 67 70 73 74 75 78 81 82 85 88 89 90
+        // 5 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 41, 73, 56, 46]
+        jarde_refused_body();
+    }
+
+    void bodyLoop() {
+        // jarde: not recovered: the recovery run for `bodyLoop()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method bodyLoop()V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 14 21 34 51 68
+        // the quoted block at BCI 34 ends in a control-flow exit at BCI 68 (a return, a throw, or a transfer whose destination the presented structure does not own), the presented structure reaches that quote, and the body without it would still compile and silently change what the method does; the whole method is quoted
+        jarde_refused_body();
+    }
+
+    void bodyBranchLoop(boolean arg1) {
+        // jarde: not recovered: the recovery run for `bodyBranchLoop(Z)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method bodyBranchLoop(Z)V
+        // @declaration an instance method of `Scratch2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 7 8 11 14 15 16 19 20 21 24 25
+        // BCI 65: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 28 29 32 35 36 37 40 41 42 45 48 49 52 55 56 59 62 65 66 67 70 73 74 77 80 81 82
+        // 4 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 48, 65, 35]
+        jarde_refused_body();
+    }
+}

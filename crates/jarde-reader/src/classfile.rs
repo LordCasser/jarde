@@ -12192,7 +12192,24 @@ mod tests {
             // `ProbeControls`' six — `parameterTarget`'s loop pair and `guardIfFirst`'s loop and
             // `if` pairs — and `MultiCopy`'s six — the patched loop's pair beside `guardPlain`'s
             // four), no subroutine) moved it again.
-            (956, 4101, 430, 2576, 8),
+            // The 2026-10-08 recover-branching-guard-body fixtures (the nested-lock slice's third
+            // measured boundary presented: the anchor `BG` with `singleIf` — the patrol's boundary
+            // shape verbatim — and `ifElse`, the `BGOrder` order-and-exception leg with
+            // `singleIf`/`ifElse`/`twoIfs` over the fixture's own recording `Order` lock,
+            // `BGNegatives` with the two fused tails that are not the method's value-less return,
+            // the branch that returns inside the range and the multi-way branch, and `BGProbe`
+            // with the walk's branch shapes beyond the filing's MVP note — six classes on both
+            // compiler legs: twelve classes, sixty bodies, thirty per leg (three in `BG`, six in
+            // `BGOrder`, ten in `Order` — its seven `Lock` methods beside the constructor, `log`
+            // and `reset` — five in `BGNegatives`, four in `BGProbe` and two in the driver, whose
+            // `main` is compiled per leg and never recovered) — twenty-six handler records
+            // (thirteen per leg: `BG`'s two — one per guarded member — `BGOrder`'s three,
+            // `BGNegatives`' four — `bodyReturn`'s early-return arm carries a second row — and
+            // `BGProbe`'s three, plus the driver's own catch in `main`) and eighty-four branch
+            // targets (forty-two per leg: `BG`'s five, `BGOrder`'s eight, `BGNegatives`' ten —
+            // `switchBody`'s `tableswitch` included — `BGProbe`'s nine, the driver's nine and the
+            // lock's own `goto`), no subroutine) moved it again.
+            (968, 4161, 456, 2660, 8),
             "fixture population changed: re-measure these counts"
         );
     }

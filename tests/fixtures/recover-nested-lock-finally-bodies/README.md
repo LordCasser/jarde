@@ -85,13 +85,15 @@ pinned, not assumed:
 | --- | --- | --- |
 | `nestedTry()V` | a `try`/`finally` **inside** the guarded range: two rows (`[14,24) -> 34`, `[7,44) -> 54`) over two handlers | `jre_guard_finally_copy` at BCI 54 + `[44, 34, 54]` |
 | `threeLocks()V` | three acquisitions and three releases: past the clause's two-statement bound | `jre_guard_finally_copy` at BCI 55 + `[79, 55]` |
-| `nestedLocksBranching(Z)V` | the same two-lock guard with a **branching body**: the branch puts the release copy in a block of its own (`[14,38) -> 55`), and the canonical graph fuses the method's trailing `return` into that block because nothing else enters it — so the void completion's transfer has no successor block to state. The certificate's own shape except for that fused layout | `jre_guard_finally_copy` at BCI 55 + `[28, 38, 55]` |
+| `nestedLocksBranching(Z)V` | the same two-lock guard with a **branching body**: the branch puts the release copy in a block of its own (`[14,38) -> 55`), and the canonical graph fuses the method's trailing `return` into that block because nothing else enters it — so the void completion's transfer has no successor block to state. The certificate's own shape except for that fused layout | **presented** by the follow-up slice `recover-branching-guard-body` (the fused tail is read as the void completion). The refusal this row recorded — `jre_guard_finally_copy` at BCI 55 + `[28, 38, 55]` — is kept verbatim in that change's `results/03-anchors-and-negatives.md` |
 
 `MLOrder.nestedLocksThrowing` is the same **behavior** without that layout: its body's last
 statement is a call the row protects (`this.check()`), so the copy stays in the protected call's
-block and the shape presents. The two together are the measured line: the admission covers the
-guards whose completion the canonical graph states as a separate block, and the fused-trail layout
-stays a registered boundary.
+block and the shape presents. The two together are the measured line this change registered: the
+admission covers the guards whose completion the canonical graph states as a separate block, and the
+fused-trail layout was the boundary. The follow-up slice `recover-branching-guard-body` closes that
+boundary — it reads the fused tail as the void completion — so the third row above is a
+presentation now, on the same measured pair.
 
 ## Reproduce and verify the checked-in bytes
 
