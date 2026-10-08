@@ -172,3 +172,10 @@ EM-13 的[可变参数冻结 fixture](../../../tests/fixtures/proved-varargs-cal
 
 泛型字段写与 class-scope 构造参数是两个独立根因。字段写证明已合入 `790579e2`：[root 验收](../../changes/prove-generic-field-write-source-types/verification-root.md)，23 族双 JDK 每腿完整编译由 10/23 提升到 22/23。构造器参数片已实现并完成 root 四腿对照：[root 验收](../../changes/recover-class-scope-constructor-parameters/verification-root.md)，20 族/80 输入无新增编译或行为回退，9 个正例/36 输入完整泛型反射一致。CrossHold 与 PeerNewHold 仅部分恢复；this 委派保持安全擦除，CallHold/ExceptionHold 仍有原有泛型调用实参编译失败。本地/远端门禁和合入状态以 handoff.md 为准。原 TestGeneric8 是非静态成员类，本片只闭合其顶层字段初始化子形，不能把它或整个泛型单元标成全覆盖。raw receiver 的源码选择类型另有[实测队列](../raw-receiver-source-selection-patrol/summary.md)，未混入当前生产代码。71 单元总数不变。
 
+## 2026-10-09 raw receiver 接续验收
+
+DT-18的字段投影子形继续推进：[raw receiver root验收](../../changes/recover-raw-receiver-field-selection/verification-root.md)。实际发射的raw formal/唯一raw local，按访问点字段擦除检查RHS，而字段声明仍保持原class binder；折成this的alias、未知写者、accessor内联caller及继承owner不借物理来源放行。16族真8/23×debug/no-debug的64输入整类编译/行为全部一致，完整字段反射由12/64提高到60/64；方法API52/64、类formal60/64保持原样，完整三类反射44/64。JADX四个InstanceRawLocal输入仍完整编译失败，失败全文保留。修正探针receiver/RHS混淆后独立重跑，旧探针不计最终行为证据。
+
+前片23字段族与80构造输入没有新增回退。合法raw alias重绑定/phi与renderer合并的分离局部scope仍保守擦除，不能把它们算成已经恢复；TypedReceiver/ShadowMethodT/MultiFormalRawParam仅恢复字段，并未扩大方法头。普通调用适配另有[八输入root巡查](../published-generic-call-adaptation-patrol-2026-10-09/summary.md)：Jarde完整重编0/8，原与JADX8/8，原因是Object实参传给实际发布T callee。下一片从JADX调用参数/结果规则与完整caller使用清单展开，不默认通用fixpoint。门禁、提交与最新HEAD远端结果以handoff和本片验收为准，71单元总数不变。
+
+普通调用巡查补充了BoundOverload四腿：原源码4/4选择Number重载，Jarde与参考源码构建的JADX均0/4完整编译，保留无checkcast的实际pick(Number)调用和两者歧义失败全文。见 `openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/summary.md`；它属于下一调用片的消费位/重载证明，当前raw receiver生产实现未混入此债务，71单元总数不变。

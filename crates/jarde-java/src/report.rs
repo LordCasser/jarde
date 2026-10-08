@@ -509,6 +509,707 @@ pub struct ClassSourceRecovery {
     pub anonymous_allocations: Option<AnonymousAllocationScan>,
     /// The same-run AST retained only for bounded class-source projection.
     pub ast: Option<ClassSourceMethodAst>,
+    /// The actual receiver expressions of committed own-field writes in this body.
+    pub field_receivers: Vec<ClassSourceFieldReceiverSite>,
+    /// Presented field-write accessors whose caller-side write selects the field type.
+    pub field_write_accessors: Vec<ClassSourceFieldWriteAccessor>,
+}
+
+/// One actual emitted receiver, bound to a physical own-field write.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceFieldReceiverSite {
+    pub method: jarde_reader::model::PhysicalMethodId,
+    pub bci: u32,
+    pub owner: Vec<u8>,
+    pub name: Vec<u8>,
+    pub descriptor: Vec<u8>,
+    pub source: ClassSourceFieldReceiverSource,
+}
+
+/// The source-level form that selected an own instance field at one emitted write.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ClassSourceFieldReceiverSource {
+    This,
+    Parameter { slot: u16 },
+    RawLocal { name: String },
+}
+
+/// A presented synthetic setter and the physical field write its caller emits.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceFieldWriteAccessor {
+    pub callee: jarde_reader::model::PhysicalMethodId,
+    pub owner: Vec<u8>,
+    pub name: Vec<u8>,
+    pub descriptor: Vec<u8>,
+}
+
+fn same_class_field_receiver_sites(
+    program: &build::Program,
+    fields: &field::Plan,
+    presented: &std::collections::BTreeSet<u32>,
+    request: &RecoveryRequest<'_>,
+    names: &NameTable,
+    reuse: &crate::reuse::Plan,
+    ssa: &SsaTable,
+    budget: &mut Budget,
+) -> Result<
+    (
+        Vec<ClassSourceFieldReceiverSite>,
+        Vec<ClassSourceFieldWriteAccessor>,
+    ),
+    StopReason,
+> {
+    use crate::ast::{ExprKind, Stmt, StmtKind, Type};
+    use jarde_jvm::method_ir::{Definition, Slot};
+
+    enum Node<'a> {
+        Stmt(&'a Stmt),
+        Expr(&'a crate::ast::Expr),
+    }
+
+    fn push_expression_children<'a>(expression: &'a crate::ast::Expr, pending: &mut Vec<Node<'a>>) {
+        use crate::ast::ExprKind;
+        match &expression.kind {
+            ExprKind::LocalAssign { value, .. }
+            | ExprKind::InstanceOf { value, .. }
+            | ExprKind::Cast { value, .. }
+            | ExprKind::Not { value }
+            | ExprKind::Neg { value } => pending.push(Node::Expr(value)),
+            ExprKind::Call { receiver, args, .. } => {
+                pending.extend(args.iter().map(Node::Expr));
+                pending.extend(receiver.iter().map(|value| Node::Expr(value)));
+            }
+            ExprKind::New {
+                qualifier, args, ..
+            } => {
+                pending.extend(args.iter().map(Node::Expr));
+                pending.extend(qualifier.iter().map(|value| Node::Expr(value)));
+            }
+            ExprKind::Lambda { body, .. } => pending.push(Node::Expr(body)),
+            ExprKind::MethodReference { qualifier, .. } => {
+                pending.push(Node::Expr(qualifier));
+            }
+            ExprKind::Field { receiver, .. } => pending.push(Node::Expr(receiver)),
+            ExprKind::ArrayLength { array } => pending.push(Node::Expr(array)),
+            ExprKind::Index { array, index } => {
+                pending.push(Node::Expr(index));
+                pending.push(Node::Expr(array));
+            }
+            ExprKind::PostfixUpdate { target, .. } => pending.push(Node::Expr(target)),
+            ExprKind::NewArray {
+                lengths,
+                initializers,
+                ..
+            } => {
+                pending.extend(initializers.iter().flatten().map(Node::Expr));
+                pending.extend(lengths.iter().map(Node::Expr));
+            }
+            ExprKind::Binary { left, right, .. } => {
+                pending.push(Node::Expr(right));
+                pending.push(Node::Expr(left));
+            }
+            ExprKind::Conditional {
+                test,
+                when_true,
+                when_false,
+            } => {
+                pending.push(Node::Expr(when_false));
+                pending.push(Node::Expr(when_true));
+                pending.push(Node::Expr(test));
+            }
+            ExprKind::Concat { parts } => {
+                pending.extend(parts.iter().rev().map(|part| Node::Expr(&part.value)));
+            }
+            ExprKind::Local(_)
+            | ExprKind::Integer(_)
+            | ExprKind::IntegerConstantName { .. }
+            | ExprKind::Boolean(_)
+            | ExprKind::Long(_)
+            | ExprKind::Float(_)
+            | ExprKind::Double(_)
+            | ExprKind::Str(_)
+            | ExprKind::Null
+            | ExprKind::ClassLiteral { .. }
+            | ExprKind::Path(_)
+            | ExprKind::QualifiedThis { .. }
+            | ExprKind::Super { .. } => {}
+        }
+    }
+
+    fn build_ssa_instruction_index<'a>(
+        ssa: &'a SsaTable,
+        budget: &mut Budget,
+    ) -> Result<
+        std::collections::HashMap<u32, Option<&'a jarde_jvm::method_ir::SsaInstruction>>,
+        StopReason,
+    > {
+        let mut by_bci = std::collections::HashMap::new();
+        for block in ssa.blocks() {
+            for instruction in block.instructions() {
+                let bci = instruction.bci();
+                crate::stop::poll(budget, Some(bci))?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(bci),
+                )?;
+                if by_bci.insert(bci, Some(instruction)).is_some() {
+                    by_bci.insert(bci, None);
+                }
+            }
+        }
+        Ok(by_bci)
+    }
+
+    fn receiver_load_slot(
+        bci: u32,
+        receiver: jarde_jvm::method_ir::ValueId,
+        ssa: &SsaTable,
+        instructions: &std::collections::HashMap<
+            u32,
+            Option<&jarde_jvm::method_ir::SsaInstruction>,
+        >,
+        budget: &mut Budget,
+    ) -> Result<Option<(u16, u32, jarde_jvm::method_ir::ValueId)>, StopReason> {
+        crate::stop::poll(budget, Some(bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        let value = ssa.value(receiver);
+        if value.uses().len() != 1 || value.uses()[0].bci() != Some(bci) {
+            return Ok(None);
+        }
+        let Some(Some(use_instruction)) = instructions.get(&bci) else {
+            return Ok(None);
+        };
+        if use_instruction
+            .reads()
+            .iter()
+            .filter(|(slot, value)| matches!(slot, Slot::Stack(_)) && *value == receiver)
+            .count()
+            != 1
+        {
+            return Ok(None);
+        }
+        let Definition::Instruction { bci: load_bci, .. } = value.def() else {
+            return Ok(None);
+        };
+        let Some(Some(load)) = instructions.get(load_bci) else {
+            return Ok(None);
+        };
+        if !matches!(load.opcode(), 0x19 | 0x2a..=0x2d) {
+            return Ok(None);
+        }
+        if load
+            .writes()
+            .iter()
+            .filter(|(slot, value)| matches!(slot, Slot::Stack(_)) && *value == receiver)
+            .count()
+            != 1
+        {
+            return Ok(None);
+        }
+        let mut local_reads = load.reads().iter().filter_map(|(slot, value)| match slot {
+            Slot::Local(slot) => Some((*slot, *value)),
+            Slot::Stack(_) => None,
+        });
+        let Some((slot, entry)) = local_reads.next() else {
+            return Ok(None);
+        };
+        if local_reads.next().is_some() {
+            return Ok(None);
+        }
+        Ok(Some((slot, *load_bci, entry)))
+    }
+
+    let Some(declaration) = request.ir.declaration() else {
+        return Ok((Vec::new(), Vec::new()));
+    };
+    let Some(class) = request.facts.method().declaring_class() else {
+        return Ok((Vec::new(), Vec::new()));
+    };
+    let class_internal = class.name().replace('.', "/").into_bytes();
+    let class_source = String::from_utf8_lossy(&class_internal).replace('/', ".");
+    let method = declaration.identity().clone();
+    let Ok(descriptor) = descriptor_facts(
+        declaration.descriptor().0.as_slice(),
+        DescriptorKind::Method,
+    ) else {
+        return Ok((Vec::new(), Vec::new()));
+    };
+    let Some(parameter_slots) = jarde_jvm::method_ir::parameter_positions(
+        &descriptor,
+        declaration.access_flags() & 0x0008 != 0,
+    ) else {
+        return Ok((Vec::new(), Vec::new()));
+    };
+
+    let mut accessors = Vec::new();
+    for site in &program.accessors {
+        crate::stop::poll(budget, Some(site.call_site))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(site.call_site),
+        )?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(site.call_site),
+        )?;
+        if !site.presented
+            || site.evidence.shape != Some(crate::accessor::AccessorShape::FieldWrite)
+        {
+            continue;
+        }
+        let (Some(callee), Some(field)) = (&site.evidence.identity, &site.evidence.field) else {
+            continue;
+        };
+        accessors.push(ClassSourceFieldWriteAccessor {
+            callee: callee.clone(),
+            owner: field.owner.as_bytes().to_vec(),
+            name: field.name.as_bytes().to_vec(),
+            descriptor: field.descriptor.as_bytes().to_vec(),
+        });
+    }
+
+    // Static bodies without formals cannot supply this slice's direct-formal receiver or a
+    // raw local initialized from one. Accessor guards above still describe their emitted calls.
+    if parameter_slots.is_empty() && declaration.access_flags() & 0x0008 != 0 {
+        return Ok((Vec::new(), accessors));
+    }
+
+    // Do not walk an unrelated method's full AST. The prior committed-presentation pass already
+    // charged this complete AST; this narrow pass is needed only for a committed own instance write.
+    let mut has_candidate = false;
+    for bci in presented {
+        crate::stop::poll(budget, Some(*bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(*bci),
+        )?;
+        if fields.claim(*bci).is_some_and(|(evidence, shape)| {
+            evidence.access == crate::facts::FieldAccess::Write
+                && !evidence.is_static
+                && evidence.owner.as_bytes() == class_internal
+                && matches!(evidence.descriptor.as_bytes().first(), Some(b'L' | b'['))
+                && shape.writes()
+        }) {
+            has_candidate = true;
+            break;
+        }
+    }
+    if !has_candidate {
+        return Ok((Vec::new(), accessors));
+    }
+
+    let instructions = build_ssa_instruction_index(ssa, budget)?;
+    let mut writes = Vec::<&Stmt>::new();
+    let mut write_counts = std::collections::HashMap::<u32, usize>::new();
+    let mut declarations = std::collections::HashMap::<
+        String,
+        Vec<(u32, &Type, Option<&String>, Option<&crate::ast::Expr>)>,
+    >::new();
+    let mut rebound = std::collections::HashSet::<String>::new();
+    let mut pending: Vec<_> = program.stmts.iter().map(Node::Stmt).collect();
+    while let Some(node) = pending.pop() {
+        let at = match node {
+            Node::Stmt(statement) => statement.origin.primary().bci(),
+            Node::Expr(expression) => expression.origin.primary().bci(),
+        };
+        crate::stop::poll(budget, Some(at))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(at),
+        )?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(at),
+        )?;
+        match node {
+            Node::Expr(expression) => {
+                if let ExprKind::LocalAssign { name, .. } = &expression.kind {
+                    rebound.insert(name.clone());
+                }
+                push_expression_children(expression, &mut pending);
+            }
+            Node::Stmt(statement) => match &statement.kind {
+                StmtKind::Declare {
+                    ty,
+                    source_type_name,
+                    name,
+                    value,
+                } => {
+                    declarations.entry(name.clone()).or_default().push((
+                        at,
+                        ty,
+                        source_type_name.as_ref(),
+                        value.as_ref(),
+                    ));
+                    pending.extend(value.iter().map(Node::Expr));
+                }
+                StmtKind::Assign { name, value } => {
+                    rebound.insert(name.clone());
+                    pending.push(Node::Expr(value));
+                }
+                StmtKind::FieldAssign {
+                    receiver, value, ..
+                } => {
+                    writes.push(statement);
+                    *write_counts.entry(at).or_default() += 1;
+                    pending.push(Node::Expr(value));
+                    pending.extend(receiver.iter().map(Node::Expr));
+                }
+                StmtKind::Expr(value) | StmtKind::Throw { value } => {
+                    pending.push(Node::Expr(value));
+                }
+                StmtKind::Assert { cond, message } => {
+                    pending.extend(message.iter().map(Node::Expr));
+                    pending.push(Node::Expr(cond));
+                }
+                StmtKind::IndexAssign {
+                    array,
+                    index,
+                    value,
+                    ..
+                } => {
+                    pending.push(Node::Expr(value));
+                    pending.push(Node::Expr(index));
+                    pending.push(Node::Expr(array));
+                }
+                StmtKind::ConstructorCall { args, .. } => {
+                    pending.extend(args.iter().map(Node::Expr));
+                }
+                StmtKind::Return { value } => pending.extend(value.iter().map(Node::Expr)),
+                StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
+                StmtKind::If {
+                    cond,
+                    then_body,
+                    else_body,
+                } => {
+                    pending.extend(else_body.iter().map(Node::Stmt));
+                    pending.extend(then_body.iter().map(Node::Stmt));
+                    pending.push(Node::Expr(cond));
+                }
+                StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                    pending.extend(body.iter().map(Node::Stmt));
+                    pending.push(Node::Expr(cond));
+                }
+                StmtKind::For {
+                    init,
+                    cond,
+                    update,
+                    body,
+                    ..
+                } => {
+                    pending.extend(body.iter().map(Node::Stmt));
+                    pending.push(Node::Stmt(update));
+                    pending.push(Node::Expr(cond));
+                    pending.push(Node::Stmt(init));
+                }
+                StmtKind::ForEach {
+                    name,
+                    iterable,
+                    body,
+                    ..
+                } => {
+                    rebound.insert(name.clone());
+                    pending.extend(body.iter().map(Node::Stmt));
+                    pending.push(Node::Expr(iterable));
+                }
+                StmtKind::Switch { value, arms } => {
+                    for arm in arms.iter().rev() {
+                        pending.extend(arm.body.iter().rev().map(Node::Stmt));
+                    }
+                    pending.push(Node::Expr(value));
+                }
+                StmtKind::Try {
+                    resources,
+                    catches,
+                    body,
+                    finally_body,
+                } => {
+                    for resource in resources {
+                        rebound.insert(resource.name.clone());
+                        pending.push(Node::Expr(&resource.value));
+                    }
+                    for catch in catches.iter().rev() {
+                        rebound.insert(catch.name.clone());
+                        pending.extend(catch.body.iter().rev().map(Node::Stmt));
+                    }
+                    pending.extend(body.iter().rev().map(Node::Stmt));
+                    if let Some(body) = finally_body {
+                        pending.extend(body.iter().rev().map(Node::Stmt));
+                    }
+                }
+                StmtKind::Synchronized { lock, body } => {
+                    pending.extend(body.iter().map(Node::Stmt));
+                    pending.push(Node::Expr(lock));
+                }
+            },
+        }
+    }
+
+    let mut receivers = Vec::new();
+    for statement in writes {
+        let bci = statement.origin.primary().bci();
+        crate::stop::poll(budget, Some(bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        if statement.origin.primary().method().is_some() || !presented.contains(&bci) {
+            continue;
+        }
+        if write_counts.get(&bci) != Some(&1) {
+            continue;
+        }
+        let StmtKind::FieldAssign {
+            receiver: Some(receiver),
+            name,
+            op: crate::ast::AssignOp::Assign,
+            ..
+        } = &statement.kind
+        else {
+            continue;
+        };
+        let ExprKind::Local(local_name) = &receiver.kind else {
+            continue;
+        };
+        if receiver.origin.primary().method().is_some() {
+            continue;
+        }
+        let Some((evidence, shape)) = fields.claim(bci) else {
+            continue;
+        };
+        if evidence.access != crate::facts::FieldAccess::Write
+            || evidence.is_static
+            || evidence.owner.as_bytes() != class_internal
+            || evidence.name != *name
+            || !matches!(evidence.descriptor.as_bytes().first(), Some(b'L' | b'['))
+            || !shape.writes()
+        {
+            continue;
+        }
+        let Some(receiver_value) = shape.receiver else {
+            continue;
+        };
+        let Some((slot, load_bci, local_value)) =
+            receiver_load_slot(bci, receiver_value, ssa, &instructions, budget)?
+        else {
+            continue;
+        };
+        if receiver.origin.primary().bci() != load_bci {
+            continue;
+        }
+        let local_definition = ssa.value(local_value).def();
+
+        let source = if local_name == "this"
+            && declaration.access_flags() & 0x0008 == 0
+            && slot == 0
+            && matches!(
+                local_definition,
+                Definition::Entry {
+                    slot: Slot::Local(0),
+                    ..
+                }
+            ) {
+            Some(ClassSourceFieldReceiverSource::This)
+        } else {
+            crate::stop::poll(budget, Some(bci))?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(parameter_slots.len()).unwrap_or(u64::MAX),
+                Some(bci),
+            )?;
+            let matching_parameter_slots: Vec<_> = parameter_slots
+                .iter()
+                .copied()
+                .filter(|parameter_slot| {
+                    names
+                        .whole(*parameter_slot)
+                        .is_some_and(|parameter| parameter.text() == local_name)
+                })
+                .collect();
+            if matching_parameter_slots.len() == 1
+                && matching_parameter_slots.first() == Some(&slot)
+                && !declarations.contains_key(local_name)
+                && !rebound.contains(local_name)
+                && reuse.variable_at(slot, load_bci)
+                    == Some(crate::names::LocalVariable::whole(slot))
+                && matches!(local_definition, Definition::Entry { slot: Slot::Local(entry_slot), .. } if entry_slot == &slot)
+            {
+                Some(ClassSourceFieldReceiverSource::Parameter { slot })
+            } else if matching_parameter_slots.is_empty()
+                && !rebound.contains(local_name)
+                && receiver.presented.as_ref().is_some_and(|ty| {
+                    matches!(ty, Type::Reference(source_name) if source_name == &class_source)
+                })
+                && declarations.get(local_name).is_some_and(|decls| {
+                    decls.len() == 1
+                        && matches!(local_definition, Definition::Instruction { bci: store_bci, .. } if *store_bci == decls[0].0)
+                        && *decls[0].1 == Type::Reference(class_source.clone())
+                        && decls[0]
+                            .2
+                            .map(|name| name.as_str())
+                            .is_none_or(|source_name| source_name == class_source)
+                })
+                && declarations.get(local_name).is_some_and(|decls| {
+                    let Some((_, _, _, Some(initializer))) = decls.first() else {
+                        return false;
+                    };
+                    let ExprKind::Local(parameter_name) = &initializer.kind else {
+                        return false;
+                    };
+                    let Some((store_bci, _, _, _)) = decls.first() else {
+                        return false;
+                    };
+                    let Definition::Instruction { bci: actual_store, .. } = local_definition else {
+                        return false;
+                    };
+                    if actual_store != store_bci {
+                        return false;
+                    }
+                    let Some(Some(store)) = instructions.get(actual_store) else {
+                        return false;
+                    };
+                    let local_write_count = store
+                        .writes()
+                        .iter()
+                        .filter(|(store_slot, value)| {
+                            *store_slot == Slot::Local(slot) && *value == local_value
+                        })
+                        .count();
+                    let stack_values: Vec<_> = store
+                        .reads()
+                        .iter()
+                        .filter_map(|(store_slot, value)| {
+                            matches!(store_slot, Slot::Stack(_)).then_some(*value)
+                        })
+                        .collect();
+                    if local_write_count != 1 || stack_values.len() != 1 {
+                        return false;
+                    }
+                    if initializer.origin.primary().method().is_some() {
+                        return false;
+                    }
+                    let initializer_bci = initializer.origin.primary().bci();
+                    let Definition::Instruction {
+                        bci: initializer_load_bci,
+                        ..
+                    } = ssa.value(stack_values[0]).def()
+                    else {
+                        return false;
+                    };
+                    if *initializer_load_bci != initializer_bci
+                        || ssa.value(stack_values[0]).uses().len() != 1
+                        || ssa.value(stack_values[0]).uses()[0].bci() != Some(*actual_store)
+                    {
+                        return false;
+                    }
+                    let Some(Some(initializer_load)) = instructions.get(&initializer_bci) else {
+                        return false;
+                    };
+                    if !matches!(initializer_load.opcode(), 0x19 | 0x2a..=0x2d)
+                        || initializer_load
+                            .writes()
+                            .iter()
+                            .filter(|(load_slot, value)| {
+                                matches!(load_slot, Slot::Stack(_)) && *value == stack_values[0]
+                            })
+                            .count()
+                            != 1
+                    {
+                        return false;
+                    }
+                    let mut initializer_local_reads = initializer_load
+                        .reads()
+                        .iter()
+                        .filter_map(|(load_slot, value)| match load_slot {
+                            Slot::Local(load_slot) => Some((*load_slot, *value)),
+                            Slot::Stack(_) => None,
+                        });
+                    let Some((parameter_slot, parameter_value)) = initializer_local_reads.next()
+                    else {
+                        return false;
+                    };
+                    if initializer_local_reads.next().is_some()
+                        || !parameter_slots.contains(&parameter_slot)
+                        || reuse.variable_at(parameter_slot, initializer_bci)
+                            != Some(crate::names::LocalVariable::whole(parameter_slot))
+                    {
+                        return false;
+                    }
+                    let Definition::Entry {
+                        slot: Slot::Local(entry_parameter_slot),
+                        ..
+                    } = ssa.value(parameter_value).def()
+                    else {
+                        return false;
+                    };
+                    *entry_parameter_slot == parameter_slot
+                        && names
+                            .whole(parameter_slot)
+                            .is_some_and(|parameter| parameter.text() == parameter_name)
+                        && reuse.variable_at(slot, *actual_store)
+                            == Some(crate::names::LocalVariable::whole(slot))
+                        && reuse.variable_at(slot, load_bci)
+                            == Some(crate::names::LocalVariable::whole(slot))
+                        && !declarations.contains_key(parameter_name)
+                        && !rebound.contains(parameter_name)
+                })
+            {
+                Some(ClassSourceFieldReceiverSource::RawLocal {
+                    name: local_name.clone(),
+                })
+            } else {
+                None
+            }
+        };
+        let Some(source) = source else {
+            continue;
+        };
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(bci),
+        )?;
+        receivers.push(ClassSourceFieldReceiverSite {
+            method: method.clone(),
+            bci,
+            owner: evidence.owner.as_bytes().to_vec(),
+            name: evidence.name.as_bytes().to_vec(),
+            descriptor: evidence.descriptor.as_bytes().to_vec(),
+            source,
+        });
+    }
+
+    Ok((receivers, accessors))
 }
 
 /// Opaque same-run AST sidecar for class-source adapters; never serialized as report evidence.
@@ -4619,8 +5320,8 @@ impl RecoveryReport {
 /// refusal leaves no work half done — see [`crate::stop`].
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
     recover_inner(
-        request, budget, None, None, None, None, None, None, None, None, None, None, None, false,
-        true,
+        request, budget, None, None, None, None, None, None, None, None, None, None, None, None,
+        None, false, true,
     )
 }
 
@@ -6096,6 +6797,8 @@ pub fn recover_for_class_source_with_anonymous_ast(
     let mut generic_constructor = None;
     let mut anonymous_allocations = None;
     let mut ast = None;
+    let mut field_receivers = None;
+    let mut field_write_accessors = None;
     let report = recover_inner(
         request,
         budget,
@@ -6110,6 +6813,8 @@ pub fn recover_for_class_source_with_anonymous_ast(
         (prove_generic_return || prove_empty_constructor).then_some(&mut generic_constructor),
         Some(&mut anonymous_allocations),
         Some(&mut ast),
+        Some(&mut field_receivers),
+        Some(&mut field_write_accessors),
         retain_all_method_asts,
         false,
     );
@@ -6127,6 +6832,8 @@ pub fn recover_for_class_source_with_anonymous_ast(
         generic_constructor = None;
         anonymous_allocations = None;
         ast = None;
+        field_receivers = None;
+        field_write_accessors = None;
     }
     ClassSourceRecovery {
         report,
@@ -6141,6 +6848,8 @@ pub fn recover_for_class_source_with_anonymous_ast(
         generic_constructor,
         anonymous_allocations,
         ast,
+        field_receivers: field_receivers.unwrap_or_default(),
+        field_write_accessors: field_write_accessors.unwrap_or_default(),
     }
 }
 
@@ -6158,6 +6867,8 @@ fn recover_inner(
     generic_constructor: Option<&mut Option<GenericConstructorCandidate>>,
     mut anonymous_allocations: Option<&mut Option<AnonymousAllocationScan>>,
     mut class_source_ast: Option<&mut Option<ClassSourceMethodAst>>,
+    mut field_receiver_sites: Option<&mut Option<Vec<ClassSourceFieldReceiverSite>>>,
+    mut field_write_accessors: Option<&mut Option<Vec<ClassSourceFieldWriteAccessor>>>,
     retain_all_method_asts: bool,
     allow_array_constructor_method_references: bool,
 ) -> RecoveryReport {
@@ -6975,6 +7686,26 @@ fn recover_inner(
         Ok(presentations) => presentations,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
+    if let Some(receiver_slot) = field_receiver_sites.as_deref_mut() {
+        match same_class_field_receiver_sites(
+            &program,
+            &fields,
+            &field_presentations,
+            &request,
+            &names,
+            &reuse,
+            ssa,
+            budget,
+        ) {
+            Ok((receivers, accessors)) => {
+                *receiver_slot = Some(receivers);
+                if let Some(accessor_slot) = field_write_accessors.as_deref_mut() {
+                    *accessor_slot = Some(accessors);
+                }
+            }
+            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        }
+    }
     // What the artifact that was just committed holds. The classification is taken here, from the
     // emission itself, and not from the AST the build had produced: a statement that was built and
     // then never committed (the emitter stopped inside it) is not in any artifact, and the run that
@@ -8955,5 +9686,319 @@ mod anonymous_capture_projection_tests {
                 ..
             })
         ));
+    }
+}
+
+#[cfg(test)]
+mod raw_receiver_site_budget_tests {
+    use super::*;
+    use crate::ast::{AssignOp, Expr, ExprKind, Stmt, StmtKind};
+    use jarde_jvm::engine::analyze_method_ir;
+    use jarde_jvm::environment::ResolutionEnvironment;
+    use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+    use jarde_jvm::method_ir::Definition;
+    use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+    use jarde_reader::budget::{Budget, CancellationToken, Limits};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant,
+    };
+    use jarde_reader::view::{
+        DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+        MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+        RuntimeView,
+    };
+    use std::collections::{BTreeMap, BTreeSet};
+
+    const CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/raw-receiver-field-selection/SyntheticAccessorGuard.class"
+    );
+    const WRITE_BCI: u32 = 2;
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 10,
+            method_bodies: 10,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 16,
+            dependency_depth: 8,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    #[test]
+    fn receiver_collector_stops_at_its_ast_scan_budget_and_cancellation() {
+        let mut setup_budget = Budget::new(limits());
+        let snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut setup_budget)
+                .expect("the existing field-write fixture opens");
+        let method = PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
+                    length: u64::try_from(CLASS.len()).expect("fixture length fits"),
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"access$set".to_vec()),
+            descriptor: JvmBytes(b"(LSyntheticAccessorGuard;Ljava/lang/Object;)V".to_vec()),
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot.clone()],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method,
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut setup_budget,
+        )
+        .expect("the existing field-write method analyzes");
+        let facts = crate::facts::RecoveryFacts::new(
+            crate::facts::MethodFacts::new(
+                "access$set",
+                "(LSyntheticAccessorGuard;Ljava/lang/Object;)V",
+                2,
+            )
+            .with_access_flags(0x0009)
+            .with_declaring_class(crate::facts::DeclaringClass::new(
+                "SyntheticAccessorGuard",
+                0x1031,
+            )),
+        );
+        let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+        let ir = request.ir;
+        let ssa = ir.ssa().expect("the analyzed method has SSA");
+        let canonical = ir.canonical().expect("the analyzed method has a CFG");
+        let code = ir.code().expect("the analyzed method has code facts");
+        let operations = Operations::of(code, ir.constant_pool());
+        let declaring = request
+            .facts
+            .method()
+            .declaring_class()
+            .expect("the test supplies declaring-class facts");
+        let element_receiver_type = |value| build::element_receiver_type(ssa, &operations, value);
+        let fields = field::plan(
+            ssa,
+            &operations,
+            &element_receiver_type,
+            Some(declaring),
+            "access$set",
+            "(LSyntheticAccessorGuard;Ljava/lang/Object;)V",
+            ir.class_fields(),
+            &[],
+            &mut setup_budget,
+        )
+        .expect("the fixture's own field write is claimed");
+        let shape = fields
+            .claim(WRITE_BCI)
+            .map(|(_, shape)| shape)
+            .expect("the fixture's putfield is at BCI 2");
+        let receiver_value = shape.receiver.expect("putfield has an instance receiver");
+        let Definition::Instruction {
+            bci: receiver_bci, ..
+        } = ssa.value(receiver_value).def()
+        else {
+            panic!("the fixture receiver is loaded from a local");
+        };
+        let origin = |bci| OriginSet::new(crate::source_map::Origin::direct(bci));
+        let presented = BTreeSet::from([WRITE_BCI]);
+        let frames = ir.frames().expect("the analyzed method has frames");
+        let regions: [crate::region::Region; 0] = [];
+        let reuse = crate::reuse::plan(
+            ssa,
+            canonical,
+            &operations,
+            &regions,
+            u16::try_from(frames.locals_slots()).expect("fixture slots fit"),
+            facts.method().parameters(),
+            facts.debug_locals(),
+            &build::resource_slots(&regions),
+            &mut setup_budget,
+        )
+        .expect("the fixture's local reuse plan is complete");
+        let names = NameTable::build_with_reserved(
+            facts.method().parameters(),
+            u16::try_from(frames.locals_slots()).expect("fixture slots fit"),
+            reuse.evidence(),
+            &BTreeSet::new(),
+        );
+        let receiver_name = names
+            .whole(0)
+            .expect("static formal slot 0 has one rendered name")
+            .text()
+            .to_owned();
+        let program = build::Program {
+            stmts: vec![Stmt::new(
+                StmtKind::FieldAssign {
+                    receiver: Some(Expr::new(
+                        ExprKind::Local(receiver_name),
+                        origin(*receiver_bci),
+                    )),
+                    name: "value".to_owned(),
+                    op: AssignOp::Assign,
+                    value: Expr::direct(ExprKind::Boolean(true), WRITE_BCI - 1),
+                },
+                origin(WRITE_BCI),
+            )],
+            field_increments: BTreeMap::new(),
+            statements: 1,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+
+        let mut successful = Budget::new(limits());
+        let (receivers, accessors) = same_class_field_receiver_sites(
+            &program,
+            &fields,
+            &presented,
+            &request,
+            &names,
+            &reuse,
+            ssa,
+            &mut successful,
+        )
+        .expect("the actual candidate reaches and completes the collector");
+        assert!(accessors.is_empty());
+        assert_eq!(receivers.len(), 1);
+        assert_eq!(receivers[0].bci, WRITE_BCI);
+        assert_eq!(
+            receivers[0].source,
+            ClassSourceFieldReceiverSource::Parameter { slot: 0 }
+        );
+
+        let mut duplicate_site = program.clone();
+        duplicate_site.stmts.push(program.stmts[0].clone());
+        let (receivers, _) = same_class_field_receiver_sites(
+            &duplicate_site,
+            &fields,
+            &presented,
+            &request,
+            &names,
+            &reuse,
+            ssa,
+            &mut Budget::new(limits()),
+        )
+        .expect("a duplicated AST receipt is rejected as ambiguous");
+        assert!(receivers.is_empty());
+
+        let mut wrong_receiver_origin = program.clone();
+        let StmtKind::FieldAssign {
+            receiver: Some(receiver),
+            ..
+        } = &mut wrong_receiver_origin.stmts[0].kind
+        else {
+            unreachable!("the test builds a field assignment");
+        };
+        receiver.origin = origin(WRITE_BCI - 1);
+        let (receivers, _) = same_class_field_receiver_sites(
+            &wrong_receiver_origin,
+            &fields,
+            &presented,
+            &request,
+            &names,
+            &reuse,
+            ssa,
+            &mut Budget::new(limits()),
+        )
+        .expect("a receiver from another load site is not a fact");
+        assert!(receivers.is_empty());
+
+        let instruction_count: usize = ssa
+            .blocks()
+            .iter()
+            .map(|block| block.instructions().len())
+            .sum();
+        let mut constrained_limits = limits();
+        constrained_limits.ir_items =
+            u64::try_from(instruction_count).expect("fixture instruction count fits");
+        let mut constrained = Budget::new(constrained_limits);
+        let stopped = same_class_field_receiver_sites(
+            &program,
+            &fields,
+            &presented,
+            &request,
+            &names,
+            &reuse,
+            ssa,
+            &mut constrained,
+        )
+        .expect_err("the first AST node is beyond the exact SSA-index budget");
+        assert_eq!(
+            stopped,
+            StopReason::Budget {
+                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                written: 0,
+                limit: u64::try_from(instruction_count).expect("fixture instruction count fits"),
+                at: Some(WRITE_BCI),
+            }
+        );
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(limits(), token);
+        let stopped = same_class_field_receiver_sites(
+            &program,
+            &fields,
+            &presented,
+            &request,
+            &names,
+            &reuse,
+            ssa,
+            &mut cancelled,
+        )
+        .expect_err("the real candidate's collector poll propagates cancellation");
+        assert_eq!(
+            stopped,
+            StopReason::Cancelled {
+                at: Some(WRITE_BCI)
+            }
+        );
     }
 }

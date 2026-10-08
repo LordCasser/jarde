@@ -2264,7 +2264,16 @@ pub(crate) struct SameClassFieldUse {
     pub(crate) descriptor: Vec<u8>,
     pub(crate) read_expressible: Option<bool>,
     pub(crate) write_source: Option<SameClassFieldWriteSource>,
+    pub(crate) receiver_source: Option<SameClassFieldReceiverSource>,
     pub(crate) source_complete: bool,
+}
+
+/// A receiver fact from the actual committed source statement at this field-use BCI.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum SameClassFieldReceiverSource {
+    This,
+    Parameter { slot: u16 },
+    RawLocal,
 }
 
 /// A narrowly proved source for one same-class field write. `None` on the use site means the
@@ -2776,6 +2785,212 @@ fn raw_reference_assignable(
     let source_name = source_name.replace('/', ".");
     let target_name = target_name.replace('/', ".");
     jarde_java::release_reference_argument_widens(java_release, &source_name, &target_name)
+}
+
+fn descriptor_reference_assignable(source: &[u8], target: &[u8], java_release: u16) -> bool {
+    if source == target {
+        return source
+            .first()
+            .is_some_and(|byte| *byte == b'L' || *byte == b'[');
+    }
+    let source_is_reference = source
+        .first()
+        .is_some_and(|byte| *byte == b'L' || *byte == b'[');
+    if source_is_reference && target == b"Ljava/lang/Object;" {
+        return true;
+    }
+    if source.first() == Some(&b'[')
+        && matches!(target, b"Ljava/lang/Cloneable;" | b"Ljava/io/Serializable;")
+    {
+        return true;
+    }
+    let mut source_component = source;
+    let mut target_component = target;
+    while source_component.first() == Some(&b'[') && target_component.first() == Some(&b'[') {
+        source_component = &source_component[1..];
+        target_component = &target_component[1..];
+        let source_primitive = source_component.first().is_some_and(|byte| {
+            matches!(*byte, b'Z' | b'B' | b'C' | b'S' | b'I' | b'J' | b'F' | b'D')
+        });
+        let target_primitive = target_component.first().is_some_and(|byte| {
+            matches!(*byte, b'Z' | b'B' | b'C' | b'S' | b'I' | b'J' | b'F' | b'D')
+        });
+        if source_primitive || target_primitive {
+            return source_component == target_component;
+        }
+    }
+    match (source_component.first(), target_component.first()) {
+        (Some(b'['), Some(b'L')) => matches!(
+            target_component,
+            b"Ljava/lang/Object;" | b"Ljava/lang/Cloneable;" | b"Ljava/io/Serializable;"
+        ),
+        (Some(b'L'), Some(b'L')) => {
+            let Some((0, source_name)) = descriptor_reference_shape(source_component) else {
+                return false;
+            };
+            let Some((0, target_name)) = descriptor_reference_shape(target_component) else {
+                return false;
+            };
+            target_name == b"java/lang/Object"
+                || raw_reference_names_assignable(&source_name, &target_name, java_release)
+        }
+        _ => false,
+    }
+}
+
+fn raw_reference_names_assignable(
+    source_name: &[u8],
+    target_name: &[u8],
+    java_release: u16,
+) -> bool {
+    if source_name == target_name {
+        return true;
+    }
+    let (Ok(source_name), Ok(target_name)) = (
+        std::str::from_utf8(source_name),
+        std::str::from_utf8(target_name),
+    ) else {
+        return false;
+    };
+    let source_name = source_name.replace('/', ".");
+    let target_name = target_name.replace('/', ".");
+    jarde_java::release_reference_argument_widens(java_release, &source_name, &target_name)
+}
+
+fn raw_field_receiver_source(
+    use_site: &SameClassFieldUse,
+    class_internal: &[u8],
+    class_is_generic: bool,
+    methods: &[SameClassPublishedMethodParameters],
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if !class_is_generic || use_site.opcode != 0xb5 || use_site.owner != class_internal {
+        return Ok(false);
+    }
+    match use_site.receiver_source.as_ref() {
+        Some(SameClassFieldReceiverSource::RawLocal) => Ok(true),
+        Some(SameClassFieldReceiverSource::Parameter { slot }) => {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(methods.len()).unwrap_or(u64::MAX),
+            )?;
+            let mut matching = methods
+                .iter()
+                .filter(|method| method.method == use_site.physical_method);
+            let Some(method) = matching.next() else {
+                return Ok(false);
+            };
+            if matching.next().is_some() {
+                return Ok(false);
+            }
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(method.parameter_slots.len()).unwrap_or(u64::MAX),
+            )?;
+            let Some(position) = method
+                .parameter_slots
+                .iter()
+                .position(|parameter_slot| parameter_slot == slot)
+            else {
+                return Ok(false);
+            };
+            let Some(descriptor) = method.descriptor_parameters.get(position) else {
+                return Ok(false);
+            };
+            if !descriptor_reference_shape(descriptor)
+                .is_some_and(|(dimensions, owner)| dimensions == 0 && owner == class_internal)
+            {
+                return Ok(false);
+            }
+            if let Some(parameters) = &method.generic_parameters {
+                let Some(source) = parameters.get(position) else {
+                    return Ok(false);
+                };
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(descriptor.len()).unwrap_or(u64::MAX),
+                )?;
+                Ok(signature_raw_reference_matches_descriptor(
+                    source, descriptor,
+                ))
+            } else {
+                Ok(true)
+            }
+        }
+        Some(SameClassFieldReceiverSource::This) | None => Ok(false),
+    }
+}
+
+fn raw_field_write_source_assignable(
+    source: &SameClassFieldWriteSource,
+    target_descriptor: &[u8],
+    methods: &[SameClassPublishedMethodParameters],
+    java_release: u16,
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(target_descriptor.len()).unwrap_or(u64::MAX),
+    )?;
+    match source {
+        SameClassFieldWriteSource::Null => Ok(true),
+        SameClassFieldWriteSource::RawAllocation { owner } => {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(owner.len()).unwrap_or(u64::MAX),
+            )?;
+            let mut source = Vec::with_capacity(owner.len().saturating_add(2));
+            source.push(b'L');
+            source.extend_from_slice(owner);
+            source.push(b';');
+            Ok(descriptor_reference_assignable(
+                &source,
+                target_descriptor,
+                java_release,
+            ))
+        }
+        SameClassFieldWriteSource::Parameter { method, slot } => {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(methods.len()).unwrap_or(u64::MAX),
+            )?;
+            let mut matching = methods
+                .iter()
+                .filter(|candidate| candidate.method == *method);
+            let Some(method) = matching.next() else {
+                return Ok(false);
+            };
+            if matching.next().is_some() {
+                return Ok(false);
+            }
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(method.parameter_slots.len()).unwrap_or(u64::MAX),
+            )?;
+            let Some(position) = method
+                .parameter_slots
+                .iter()
+                .position(|candidate| candidate == slot)
+            else {
+                return Ok(false);
+            };
+            let Some(source_descriptor) = method.descriptor_parameters.get(position) else {
+                return Ok(false);
+            };
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(source_descriptor.len()).unwrap_or(u64::MAX),
+            )?;
+            Ok(descriptor_reference_assignable(
+                source_descriptor,
+                target_descriptor,
+                java_release,
+            ))
+        }
+    }
 }
 
 fn raw_method_type_variable_bound<'a>(
@@ -6525,16 +6740,34 @@ pub(crate) fn project_field_signature(
                         ),
                     ));
                 };
-                if !prove_field_write_source_assignable(
-                    source,
-                    &parsed.ty,
-                    class_scope,
+                let raw_receiver = raw_field_receiver_source(
+                    use_site,
+                    class_internal,
+                    class_header_projected && !class_scope.is_empty(),
                     published_method_parameters,
-                    java_release,
                     budget,
-                )? || (matches!(source, SameClassFieldWriteSource::RawAllocation { .. })
-                    && !use_site.source_complete)
-                {
+                )?;
+                let source_complete = raw_receiver
+                    || matches!(source, SameClassFieldWriteSource::RawAllocation { .. });
+                let assignable = if raw_receiver {
+                    raw_field_write_source_assignable(
+                        source,
+                        &use_site.descriptor,
+                        published_method_parameters,
+                        java_release,
+                        budget,
+                    )?
+                } else {
+                    prove_field_write_source_assignable(
+                        source,
+                        &parsed.ty,
+                        class_scope,
+                        published_method_parameters,
+                        java_release,
+                        budget,
+                    )?
+                };
+                if !assignable || (source_complete && !use_site.source_complete) {
                     return Err(Error::unsupported(
                         "field_generic_write_source_unproved",
                         format!(
@@ -11233,6 +11466,118 @@ mod tests {
     const MEMBER_ANNOTATION_TARGET: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
     );
+
+    #[test]
+    fn raw_receiver_assignment_uses_java_reference_and_array_erasure_rules() {
+        let java_release = 8;
+        for (source, target) in [
+            (
+                b"Ljava/lang/String;".as_slice(),
+                b"Ljava/lang/Object;".as_slice(),
+            ),
+            (
+                b"[Ljava/lang/String;".as_slice(),
+                b"[Ljava/lang/Object;".as_slice(),
+            ),
+            (
+                b"[[Ljava/lang/String;".as_slice(),
+                b"[[Ljava/lang/Object;".as_slice(),
+            ),
+            (b"[I".as_slice(), b"Ljava/lang/Object;".as_slice()),
+            (
+                b"[[Ljava/lang/Object;".as_slice(),
+                b"[Ljava/lang/Object;".as_slice(),
+            ),
+            (b"[[I".as_slice(), b"[Ljava/lang/Object;".as_slice()),
+            (b"[I".as_slice(), b"Ljava/lang/Cloneable;".as_slice()),
+        ] {
+            assert!(descriptor_reference_assignable(
+                source,
+                target,
+                java_release
+            ));
+        }
+        for (source, target) in [
+            (b"[I".as_slice(), b"[Ljava/lang/Object;".as_slice()),
+            (b"[I".as_slice(), b"[J".as_slice()),
+            (
+                b"[Ljava/lang/Object;".as_slice(),
+                b"[Ljava/lang/Number;".as_slice(),
+            ),
+        ] {
+            assert!(!descriptor_reference_assignable(
+                source,
+                target,
+                java_release
+            ));
+        }
+    }
+
+    #[test]
+    fn raw_receiver_type_proof_propagates_budget_and_cancellation() {
+        let method = generic_void_probe().0.item.identity;
+        let use_site = SameClassFieldUse {
+            caller: "set".to_owned(),
+            physical_method: method.clone(),
+            bci: 12,
+            opcode: 0xb5,
+            owner: b"probe/Bound".to_vec(),
+            name: b"value".to_vec(),
+            descriptor: b"Ljava/lang/Object;".to_vec(),
+            read_expressible: None,
+            write_source: Some(SameClassFieldWriteSource::Null),
+            receiver_source: Some(SameClassFieldReceiverSource::Parameter { slot: 0 }),
+            source_complete: true,
+        };
+        let published = [SameClassPublishedMethodParameters {
+            method,
+            parameter_slots: vec![0],
+            descriptor_parameters: vec![b"Lprobe/Bound;".to_vec()],
+            generic_parameters: None,
+            method_type_parameters: Vec::new(),
+        }];
+
+        assert!(
+            raw_field_receiver_source(
+                &use_site,
+                b"probe/Bound",
+                true,
+                &published,
+                &mut Budget::new(unlimited_annotation_test_limits()),
+            )
+            .expect("a published generic class can have a raw formal")
+        );
+        assert!(
+            !raw_field_receiver_source(
+                &use_site,
+                b"probe/Bound",
+                false,
+                &published,
+                &mut Budget::new(unlimited_annotation_test_limits()),
+            )
+            .expect("an ordinary nongeneric class reference is not a raw type")
+        );
+
+        let mut limits = unlimited_annotation_test_limits();
+        limits.analysis_steps = 0;
+        let mut budget = Budget::new(limits);
+        assert!(matches!(
+            raw_field_receiver_source(&use_site, b"probe/Bound", true, &published, &mut budget),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+
+        let cancellation = crate::CancellationToken::new();
+        cancellation.cancel();
+        let mut budget =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), cancellation);
+        assert!(matches!(
+            raw_field_receiver_source(&use_site, b"probe/Bound", true, &published, &mut budget),
+            Err(Error::Cancelled { .. })
+        ));
+    }
 
     fn unlimited_annotation_test_limits() -> Limits {
         Limits {
