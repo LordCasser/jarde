@@ -1,0 +1,208 @@
+// jarde: presentation of `FunctionalConstructors` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class FunctionalConstructors extends java.lang.Object {
+    public static int trace;
+
+    public FunctionalConstructors() {
+        // @method <init>()V
+        // @declaration a constructor of `FunctionalConstructors`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.Thread runnable() {
+        // jarde: not recovered: the recovery run for `runnable()Ljava/lang/Thread;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method runnable()Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 9
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    public static java.lang.Thread captured(int arg0) {
+        // jarde: not recovered: the recovery run for `captured(I)Ljava/lang/Thread;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method captured(I)Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 13 10 4
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    // jarde: generic Signature projection refused for `comparator()Ljava/util/PriorityQueue;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    public static java.util.PriorityQueue comparator() {
+        // jarde: not recovered: the recovery run for `comparator()Ljava/util/PriorityQueue;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method comparator()Ljava/util/PriorityQueue;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 9
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    // jarde: generic Signature projection refused for `reference()Ljava/util/PriorityQueue;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    public static java.util.PriorityQueue reference() {
+        // jarde: not recovered: the recovery run for `reference()Ljava/util/PriorityQueue;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method reference()Ljava/util/PriorityQueue;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 9
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    public static int compare(java.lang.Integer arg0, java.lang.Integer arg1) {
+        // @method compare(Ljava/lang/Integer;Ljava/lang/Integer;)I
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1.intValue() - arg0.intValue();
+    }
+
+    // jarde: generic Signature projection refused for `callable()Ljava/util/concurrent/FutureTask;`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    public static java.util.concurrent.FutureTask callable() {
+        // jarde: not recovered: the recovery run for `callable()Ljava/util/concurrent/FutureTask;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method callable()Ljava/util/concurrent/FutureTask;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 9
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    public static IntBox primitive(int arg0) {
+        // jarde: not recovered: the recovery run for `primitive(I)LIntBox;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method primitive(I)LIntBox;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 13 10 4
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    public static IntBox primitiveReference() {
+        // jarde: not recovered: the recovery run for `primitiveReference()LIntBox;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method primitiveReference()LIntBox;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 9
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    public static int twice(int arg0) {
+        // @method twice(I)I
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 * 2;
+    }
+
+    public static java.lang.String name() {
+        // @method name()Ljava/lang/String;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace * 10 + 1;
+        return "worker";
+    }
+
+    public static java.lang.Thread ordered(int arg0) {
+        // jarde: not recovered: the recovery run for `ordered(I)Ljava/lang/Thread;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method ordered(I)Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 16 13 10 4
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    public static java.lang.Thread overload() {
+        // jarde: not recovered: the recovery run for `overload()Ljava/lang/Thread;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method overload()Ljava/lang/Thread;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 9
+        // the copy at BCI 3 has no proved local assignment
+    }
+
+    private static void lambda$overload$6() {
+        // @method lambda$overload$6()V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace + 2;
+        return;
+    }
+
+    private static void lambda$ordered$5(int arg0) {
+        // @method lambda$ordered$5(I)V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace * 10 + arg0;
+        return;
+    }
+
+    private static int lambda$primitive$4(int arg0, int arg1) {
+        // @method lambda$primitive$4(II)I
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 + arg1;
+    }
+
+    private static java.lang.Integer lambda$callable$3() throws java.lang.Exception {
+        // @method lambda$callable$3()Ljava/lang/Integer;
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return 7;
+    }
+
+    private static int lambda$comparator$2(java.lang.Integer arg0, java.lang.Integer arg1) {
+        // @method lambda$comparator$2(Ljava/lang/Integer;Ljava/lang/Integer;)I
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1.intValue() - arg0.intValue();
+    }
+
+    private static void lambda$captured$1(int arg0) {
+        // @method lambda$captured$1(I)V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace + arg0;
+        return;
+    }
+
+    private static void lambda$runnable$0() {
+        // @method lambda$runnable$0()V
+        // @declaration a static method of `FunctionalConstructors`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        FunctionalConstructors.trace = FunctionalConstructors.trace + 3;
+        return;
+    }
+}
