@@ -548,6 +548,64 @@ fn a_quota_refusal_is_the_operations_stop() {
     );
 }
 
+/// A probe observes shared headroom but reserves none of it for the budget that asked.
+#[test]
+fn two_successful_output_probes_do_not_reserve_the_last_unit() {
+    let mut operation = limits(8);
+    operation.output_bytes = 1;
+    let entry = Budget::new(operation);
+    let ledger = OperationLedger::new(&entry);
+
+    // Each worker has local headroom, and both probes see the operation's same last byte. A probe
+    // is read-only: the first charge takes the byte, and the second charge is refused by the total.
+    let mut first = Budget::new(limits(8));
+    first.with_ledger(ledger.clone(), UsageOwner::Methods);
+    let mut second = Budget::new(limits(8));
+    second.with_ledger(ledger.clone(), UsageOwner::Methods);
+
+    first
+        .check(CountedBudgetDimension::OutputBytes, 1)
+        .expect("the first probe sees the available byte");
+    second
+        .check(CountedBudgetDimension::OutputBytes, 1)
+        .expect("the second probe sees the same byte; probes do not reserve it");
+    first
+        .charge(CountedBudgetDimension::OutputBytes, 1)
+        .expect("the first charge takes the operation's last byte");
+    assert_eq!(
+        second
+            .charge(CountedBudgetDimension::OutputBytes, 1)
+            .unwrap_err(),
+        Error::BudgetExceeded {
+            dimension: BudgetDimension::OutputBytes,
+            limit: 1,
+            consumed: 1,
+            requested: 1,
+        }
+    );
+
+    assert_eq!(first.usage().output_bytes, 1);
+    assert_eq!(
+        second.usage().output_bytes,
+        0,
+        "a refused charge is not billed"
+    );
+    assert_eq!(ledger.usage().output_bytes, 1);
+    assert_eq!(ledger.cumulative(UsageOwner::Methods).output_bytes, 1);
+    assert_eq!(
+        ledger.stop_reason(),
+        Some(BulkStop {
+            owner: Some(UsageOwner::Methods),
+            kind: BulkStopKind::Budget,
+            dimension: Some(BudgetDimension::OutputBytes),
+        })
+    );
+    assert!(
+        matches!(second.poll(), Err(Error::Cancelled { .. })),
+        "a total charge refusal cancels the operation after recording its stop"
+    );
+}
+
 /// An overflowing request is refused with the numbers that produced it, never wrapped.
 #[test]
 fn an_overflowing_request_is_refused_rather_than_wrapped() {

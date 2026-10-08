@@ -1,0 +1,10 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.43s
+     Running tests/bulk_recovery_delivery.rs (target/debug/deps/bulk_recovery_delivery-34b39a97fb07fa3a)
+
+running 3 tests
+test a_refused_permit_stops_the_stream_at_the_one_total_and_names_the_delivery_owner ... ok
+test one_declaration_bounds_the_librarys_own_presentation_too ... ok
+test the_terminal_record_pays_for_itself_before_the_call_returns ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s

@@ -1,0 +1,34 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.94s
+     Running tests/bulk_recovery_delivery.rs (target/debug/deps/bulk_recovery_delivery-34b39a97fb07fa3a)
+
+running 3 tests
+test a_refused_permit_stops_the_stream_at_the_one_total_and_names_the_delivery_owner ... ok
+test one_declaration_bounds_the_librarys_own_presentation_too ... ok
+test the_terminal_record_pays_for_itself_before_the_call_returns ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/p1_budget_ledger.rs (target/debug/deps/p1_budget_ledger-314f3bc7aa1ed840)
+
+running 18 tests
+test a_budget_without_a_ledger_keeps_the_direct_path ... ok
+test a_hammered_dimension_admits_exactly_its_limit_and_never_one_more ... ok
+test a_later_operation_on_one_request_folds_the_first_ones_total ... ok
+test a_local_limit_stops_that_work_and_leaves_the_operation_alone ... ok
+test a_permit_taken_before_a_cancellation_is_still_billed ... ok
+test a_quota_refusal_is_the_operations_stop ... ok
+test a_refused_entry_is_reported_with_the_quota_it_needed ... ok
+test a_worker_can_state_which_part_of_the_operation_its_next_work_is ... ok
+test an_overflowing_request_is_refused_rather_than_wrapped ... ok
+test depth_marks_take_the_deepest_value_per_owner ... ok
+test one_ledger_is_one_total_for_every_worker ... ok
+test the_elapsed_clock_is_the_operations_and_not_the_sum_of_worker_time ... ok
+test the_entry_depths_are_part_of_the_operation_and_its_own_work_can_exceed_them ... ok
+test the_entry_usage_counts_against_the_operation_and_is_never_reset ... ok
+test the_first_stop_is_published_and_later_observations_do_not_replace_it ... ok
+test the_total_reports_every_entry_and_the_observation_moves_no_number ... ok
+test two_successful_output_probes_do_not_reserve_the_last_unit ... ok
+test two_workers_race_for_the_last_quota_and_the_refused_one_is_not_billed ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s

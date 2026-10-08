@@ -386,12 +386,11 @@ fn a_refused_permit_stops_the_stream_at_the_one_total_and_names_the_delivery_own
 
 #[test]
 fn one_declaration_bounds_the_librarys_own_presentation_too() {
-    // The other side of "one total": a total that funds less than what the scope's own presentation
-    // costs does not stop the *operation* — the library's presentation of a method that runs out of the
-    // total stops **that method**, discarding the artifact it cannot afford and stating the dimension it
-    // needed — and the operation goes on to deliver every record of the scope. What must never happen,
-    // from either side of the stream, is the account crossing its declaration: the library's work and
-    // the consumer's bytes are two parts of one number, and this case states the library's part.
+    // A presentation first probes whether its next text write fits, then atomically charges it. A
+    // serial probe that finds no room is a method-local stop and the stream continues. With workers,
+    // two successful probes can race for the same remaining bytes: the losing charge is the ledger's
+    // operation-wide Methods/OutputBytes stop and closes dispatch. Both are defined outcomes; the
+    // operation's one total must stay within its declaration in either case.
     let wide = bulk_support::limits();
     let (complete, complete_sink) = run(1, wide.clone(), wide.clone(), 0);
     assert_eq!(
@@ -418,28 +417,28 @@ fn one_declaration_bounds_the_librarys_own_presentation_too() {
         total.output_bytes = allowance;
         let (report, sink) = run(workers, total, wide.clone(), 0);
 
-        assert!(
-            budget_stops(&sink) > 0,
-            "a total that funds half of the scope's own presentation really stops methods inside it \
-             ({workers} worker(s)): {:?}",
-            sink.stops
-        );
-        for stop in &sink.stops {
-            assert!(
-                matches!(
-                    stop,
-                    StopReason::Budget {
-                        dimension: CountedBudgetDimension::OutputBytes,
-                        ..
-                    }
-                ),
-                "and the stop every one of them states names the dimension the operation shares with \
-                 its consumer ({workers} worker(s)): {stop:?}"
-            );
-        }
+        let entry = report
+            .entry_usage
+            .counted_usage(CountedBudgetDimension::OutputBytes);
+        let discovery = report
+            .discovery_usage
+            .counted_usage(CountedBudgetDimension::OutputBytes);
+        let methods = report
+            .method_usage
+            .counted_usage(CountedBudgetDimension::OutputBytes);
+        let delivery = report
+            .delivery_usage
+            .counted_usage(CountedBudgetDimension::OutputBytes);
         let spent = report
             .usage
             .counted_usage(CountedBudgetDimension::OutputBytes);
+        assert_eq!(
+            spent,
+            entry + discovery + methods + delivery,
+            "the one total is entry + discovery + methods + delivery ({workers} worker(s))"
+        );
+        assert_eq!(delivery, sink.written);
+        assert_eq!(sink.written, 0, "this case charges no consumer bytes");
         assert!(
             spent <= allowance,
             "the account stayed inside the declaration ({workers} worker(s)): {spent} of {allowance}"
@@ -448,16 +447,97 @@ fn one_declaration_bounds_the_librarys_own_presentation_too() {
             emitted(&report) <= allowance,
             "and the library's own part of it did too ({workers} worker(s))"
         );
-        assert_eq!(
-            report.summary.methods_delivered, report.summary.methods_declared,
-            "the operation itself was not stopped: every declared method's record was delivered \
-             ({workers} worker(s))"
-        );
         assert!(
             !matches!(report.summary.execution, ExecutionReport::Complete { .. }),
-            "a scope whose methods stopped for the account is not complete ({workers} worker(s)): {:?}",
+            "a scope whose presentation ran out of its account is not complete ({workers} worker(s)): {:?}",
             report.summary.execution
         );
+
+        match report.stop {
+            None => {
+                assert!(
+                    sink.refused.is_none(),
+                    "a local method stop leaves the zero-cost consumer open"
+                );
+                assert!(
+                    budget_stops(&sink) > 0,
+                    "a probe refusal stops the method locally ({workers} worker(s)): {:?}",
+                    sink.stops
+                );
+                for stop in &sink.stops {
+                    assert!(
+                        matches!(
+                            stop,
+                            StopReason::Budget {
+                                dimension: CountedBudgetDimension::OutputBytes,
+                                ..
+                            }
+                        ),
+                        "each local refusal names the output dimension ({workers} worker(s)): {stop:?}"
+                    );
+                }
+                assert_eq!(
+                    report.summary.methods_delivered, report.summary.methods_declared,
+                    "a local presentation stop leaves dispatch open ({workers} worker(s))"
+                );
+                assert_eq!(
+                    sink.accepted, complete_sink.accepted,
+                    "the local-stop run delivers the complete ordered record stream"
+                );
+                assert!(matches!(
+                    report.summary.execution,
+                    ExecutionReport::Partial { .. }
+                ));
+                assert!(
+                    report.final_delivered,
+                    "a local method stop still lets the stream publish its terminal record"
+                );
+            }
+            Some(stop) => {
+                assert_eq!(
+                    workers, 4,
+                    "the serial presentation cannot race a successful probe against another worker"
+                );
+                assert_eq!(
+                    stop,
+                    BulkStop {
+                        owner: Some(UsageOwner::Methods),
+                        kind: BulkStopKind::Budget,
+                        dimension: Some(BudgetDimension::OutputBytes),
+                    },
+                    "the losing atomic charge names the method owner and output dimension"
+                );
+                if let Some(refused) = sink.refused.as_ref() {
+                    assert!(
+                        matches!(refused, Error::Cancelled { .. }),
+                        "only operation cancellation may close the zero-cost consumer: {refused:?}"
+                    );
+                }
+                assert!(matches!(
+                    report.summary.execution,
+                    ExecutionReport::Partial {
+                        reason: TerminationReason::BudgetExceeded {
+                            dimension: BudgetDimension::OutputBytes,
+                        },
+                        ..
+                    }
+                ));
+                assert!(!report.final_delivered);
+                assert_eq!(
+                    sink.accepted,
+                    complete_sink.accepted[..sink.accepted.len()].to_vec(),
+                    "the operation-stop stream is an ordered prefix of the complete stream"
+                );
+                assert_eq!(
+                    report.summary.methods_delivered,
+                    sink.accepted
+                        .iter()
+                        .filter(|record| record.kind == "method")
+                        .count() as u64,
+                    "only confirmed method records count as delivered"
+                );
+            }
+        }
     }
 }
 
