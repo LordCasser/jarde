@@ -1,0 +1,67 @@
+// jarde: presentation of `cf06/NegativeAssignments` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package cf06;
+
+public final class NegativeAssignments extends java.lang.Object {
+    private static int calls;
+
+    public NegativeAssignments() {
+        // @method <init>()V
+        // @declaration a constructor of `cf06.NegativeAssignments`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static int effect() {
+        // jarde: not recovered: the recovery run for `effect()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method effect()I
+        // @declaration a static method of `cf06.NegativeAssignments`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5 0
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6 0
+        // the copy at BCI 5 has no proved local assignment
+        // @bytecode 9 0
+        // the copy at BCI 5 has no proved local assignment
+    }
+
+    public static int interleaved(java.lang.String arg0) {
+        // @method interleaved(Ljava/lang/String;)I
+        // @declaration a static method of `cf06.NegativeAssignments`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.length();
+        // @bytecode 4
+        // the instruction at BCI 4 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 5
+        // the copy at BCI 4 has no proved local assignment
+        // @bytecode 0 14 16 11 6
+        // the copy at BCI 4 has no proved local assignment
+    }
+
+    public static int exceptional(java.lang.String arg0) {
+        // @method exceptional(Ljava/lang/String;)I
+        // @declaration a static method of `cf06.NegativeAssignments`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            arg0.length();
+            // @bytecode 4
+            // the instruction at BCI 4 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 5
+            // the copy at BCI 4 has no proved local assignment
+            // @bytecode 0 10 12 19 7
+            // the copy at BCI 4 has no proved local assignment
+        } catch (java.lang.RuntimeException local2) {
+            return -2;
+        }
+    }
+
+    public static int loopCondition(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `loopCondition(Ljava/lang/String;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method loopCondition(Ljava/lang/String;)I
+        // @declaration a static method of `cf06.NegativeAssignments`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 10 19
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+}

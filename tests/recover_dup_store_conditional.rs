@@ -18,9 +18,12 @@
 //! The texts the copy family's assignment rule already presented (a **local** target with a later
 //! reader, `recover-proved-local-assignments-in-conditions`' in-place assignment expression) stay
 //! byte-identical: that change's own replay pins `(local1 = arg0.length()) > 5`, so this change does
-//! not move it. A dance in a **loop's** own test whose target is read later stays refused — the
-//! split cannot be written in front of a re-evaluated condition, and the assignment expression is
-//! that rule's position, not this one's.
+//! not move it. A dance in a **loop's** own test whose target is read later was refused here — the
+//! split cannot be written in front of a re-evaluated condition — and the in-place assignment
+//! expression at that position is the copy family's own presentation, which
+//! `recover-loop-test-copy-store` delivers: `NEG.liveLine` presents as
+//! `while ((line = read()) != null) { … }` in that slice's own evidence, and this file pins that
+//! text beside the refusals that stay.
 //!
 //! The fixtures are this change's own `DS` (the int form: the eliminated parameter and local forms,
 //! the split form, the eliminated short-circuit form, and the local live control), `REF` (the
@@ -177,9 +180,15 @@ const REF_ELIMINATED: &[&str] = &[
     "        return n;",
 ];
 
-/// `NEG.liveLine` — a **loop** test whose target is read later: the split cannot be written in front
-/// of a re-evaluated condition, so the shape keeps the refusal it had.
-const NEG_LIVE_LINE: &str = "// local 0 crosses a quoted fallback region";
+/// `NEG.liveLine` — a **loop** test whose target is read later. The loop-test position's in-place
+/// assignment expression (`recover-loop-test-copy-store`) presents it: the store already stands at
+/// the test's own operand position, so nothing moves into or out of the loop.
+const NEG_LIVE_LINE: &[&str] = &[
+    "        java.lang.String line;",
+    "        while ((line = read()) != null) {",
+    "            n = n + line.length();",
+    "        return n;",
+];
 
 /// `NEG.shortChain` — a dance inside a short-circuit chain the chain proof refuses (pre-existing:
 /// the same refusal the shape had before this change).
@@ -395,38 +404,60 @@ fn no_recovering_method_keeps_a_quote() {
 // The negatives keep their refusals.
 // -------------------------------------------------------------------------------------------
 
-/// The loop-test shape with a later reader and the short-circuit chain keep the refusals they had,
-/// and the copy family's own multi-reader control keeps its own.
+/// The loop-test shape with a later reader presents in place (`recover-loop-test-copy-store`); the
+/// short-circuit chain keeps the refusal it had, and the copy family's own multi-reader control
+/// keeps its own.
 #[test]
-fn the_negatives_keep_their_refusals_on_both_legs() {
+fn the_loop_test_presents_and_the_short_circuit_chain_keeps_its_refusal() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("NEG"));
         let report = presented(&snapshot, "NEG");
-        for (method, signature, refusal) in [
-            ("liveLine", "liveLine()I", NEG_LIVE_LINE),
-            ("shortChain", "shortChain(I)Z", NEG_SHORT_CHAIN),
-        ] {
+        let live_line = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"liveLine")
+            .expect("`NEG.liveLine` is a member");
+        assert!(
+            !live_line.text.contains("@bytecode") && !live_line.text.contains("not recovered"),
+            "`NEG.liveLine` on {} carries a refusal:\n{}",
+            leg.label,
+            live_line.text
+        );
+        for line in NEG_LIVE_LINE {
             assert!(
-                report.text.contains(refusal),
-                "`NEG.{method}` on {} lost the refusal {refusal:?}:\n{}",
+                live_line.text.contains(line),
+                "`NEG.liveLine` on {} lost `{line}`:\n{}",
                 leg.label,
-                report.text
-            );
-            assert!(
-                report.text.contains(&format!(
-                    "not recovered: the recovery run for `{signature}` produced no statement"
-                )),
-                "`NEG.{method}` on {} is not quoted whole:\n{}",
-                leg.label,
-                report.text
+                live_line.text
             );
         }
-        // The eliminated form is a *presentation*, never a licence: no refused method may write the
-        // store's target as if the assignment had been presented.
-        for line in report.text.lines().filter(|line| !line.contains("//")) {
+        assert_eq!(
+            live_line.text.matches("= read()").count(),
+            1,
+            "`NEG.liveLine` on {} writes the assignment once, at the test's own position:\n{}",
+            leg.label,
+            live_line.text
+        );
+        let short_chain = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"shortChain")
+            .expect("`NEG.shortChain` is a member");
+        assert!(
+            short_chain.text.contains(NEG_SHORT_CHAIN)
+                && report.text.contains(
+                    "not recovered: the recovery run for `shortChain(I)Z` produced no statement"
+                ),
+            "`NEG.shortChain` on {} lost the refusal {NEG_SHORT_CHAIN:?}:\n{}",
+            leg.label,
+            short_chain.text
+        );
+        // The eliminated form is a *presentation*, never a licence: the refused member may not
+        // write the store's target as if the assignment had been presented.
+        for line in short_chain.text.lines().filter(|line| !line.contains("//")) {
             assert!(
                 !line.contains("= x + 1") && !line.contains("= read()"),
-                "`NEG` on {} presented an assignment its own refusal does not cover: {line:?}",
+                "`NEG.shortChain` on {} presented an assignment its own refusal does not cover: {line:?}",
                 leg.label
             );
         }

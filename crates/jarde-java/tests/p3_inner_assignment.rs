@@ -209,7 +209,6 @@ fn incomplete_copy_type_effect_and_scope_candidates_stay_quoted() {
         (WRONG_TYPE, "cf06/InnerAssignCases", "lengthBranch", 11),
         (NEGATIVE, "cf06/NegativeAssignments", "interleaved", 4),
         (NEGATIVE, "cf06/NegativeAssignments", "exceptional", 4),
-        (NEGATIVE, "cf06/NegativeAssignments", "loopCondition", 0),
     ];
     for (class, owner, name, quoted_bci) in controls {
         let report = recover_method(class, owner, name, "(Ljava/lang/String;)I", 1, 0x0009, None);
@@ -220,6 +219,48 @@ fn incomplete_copy_type_effect_and_scope_candidates_stay_quoted() {
         assert!(
             !report.source_map.of_bci(quoted_bci).is_empty(),
             "{name} BCI {quoted_bci}: {}",
+            report.text
+        );
+    }
+}
+
+/// The fifth CF-06 control — `loopCondition`'s loop test — presented in place by
+/// `recover-loop-test-copy-store`: the assignment's store already stands at the test's own operand
+/// position, so the loop's condition writes it there and nothing moves into or out of the loop.
+/// The other four controls above keep their quotes, and this one keeps the same text the
+/// short-circuit position's in-place form has always had.
+#[test]
+fn the_loop_condition_control_presents_the_assignment_in_place() {
+    let report = recover_method(
+        NEGATIVE,
+        "cf06/NegativeAssignments",
+        "loopCondition",
+        "(Ljava/lang/String;)I",
+        1,
+        0x0009,
+        None,
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        report
+            .text
+            .contains("while ((local1 = arg0.length()) > 5) {"),
+        "the assignment stays at the test's own position:\n{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("arg0.length()").count(),
+        1,
+        "the call is read once, where the bytecode read it:\n{}",
+        report.text
+    );
+    assert!(report.text.contains("return local1;"), "{}", report.text);
+    for bci in [0, 4, 5, 7, 10, 19] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci}: {}",
             report.text
         );
     }

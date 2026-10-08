@@ -8607,6 +8607,51 @@
       "path": "tests/fixtures/recover-loop-else-if-early-returns/v8/LR2.class"
     },
     {
+      "blake3": "d1af14bb99f7b2e93b332c434e01543f938719062b9affad064023cefe2620bf",
+      "bytes": 969,
+      "path": "tests/fixtures/recover-loop-test-copy-store/Probe.java"
+    },
+    {
+      "blake3": "758ac7562cf14f8b9ebf4fa4cb7a86c48c50bc33fb31750f157087d42f90251e",
+      "bytes": 891,
+      "path": "tests/fixtures/recover-loop-test-copy-store/ProbeControls.java"
+    },
+    {
+      "blake3": "e55980c788fb1801601cc1aca0af926bf091d52cf906c60ef5b341d108e881a9",
+      "bytes": 12,
+      "path": "tests/fixtures/recover-loop-test-copy-store/data.txt"
+    },
+    {
+      "blake3": "87cc2ef903ab1822e31e8faed7a8afdadae8ebd9d4d9049b1805f2168daef2ba",
+      "bytes": 1267,
+      "path": "tests/fixtures/recover-loop-test-copy-store/v8-javac8/MultiCopy.class"
+    },
+    {
+      "blake3": "915547042e7b99157e24dea2d10a287beba582a2b1ea4a1acccfbcb1bb50453e",
+      "bytes": 1267,
+      "path": "tests/fixtures/recover-loop-test-copy-store/v8-javac8/Probe.class"
+    },
+    {
+      "blake3": "df0f2cc4ddda93cd45ac2267c9f50e0577b0896fa2568d7ebeefd631b36651d4",
+      "bytes": 1077,
+      "path": "tests/fixtures/recover-loop-test-copy-store/v8-javac8/ProbeControls.class"
+    },
+    {
+      "blake3": "2ac17b1d10dbbb1df0f49d691475336b2276d2e27e7fb922da64fd6cd8545fe5",
+      "bytes": 1261,
+      "path": "tests/fixtures/recover-loop-test-copy-store/v8/MultiCopy.class"
+    },
+    {
+      "blake3": "d0c061a5821c78df9f462281d503c8899435e824deba5a8cdad1472a6d071406",
+      "bytes": 1261,
+      "path": "tests/fixtures/recover-loop-test-copy-store/v8/Probe.class"
+    },
+    {
+      "blake3": "6ff4c844d0516be835272f42de3d3cccc046b8e0f175824e3dda338dde21d33e",
+      "bytes": 1074,
+      "path": "tests/fixtures/recover-loop-test-copy-store/v8/ProbeControls.class"
+    },
+    {
       "blake3": "c99436e1b06de27241ea65f95637a9a9f26d3da3e0374cb78320b41d78209cfe",
       "bytes": 1230,
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/ML.java"

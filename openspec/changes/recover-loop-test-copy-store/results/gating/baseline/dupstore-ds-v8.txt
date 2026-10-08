@@ -1,0 +1,69 @@
+// jarde: presentation of `DS` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class DS extends java.lang.Object {
+    public DS() {
+        // @method <init>()V
+        // @declaration a constructor of `DS`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static boolean condAssign(int x) {
+        // @method condAssign(I)Z
+        // @declaration a static method of `DS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return x + 1 > 0;
+    }
+
+    static int deadLocal(int x) {
+        // @method deadLocal(I)I
+        // @declaration a static method of `DS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (x + 1 > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    static int split(int x) {
+        // @method split(I)I
+        // @declaration a static method of `DS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        x = x + 1;
+        if (x > 0) {
+            return x;
+        } else {
+            return -1;
+        }
+    }
+
+    static int splitLocal(int x) {
+        // @method splitLocal(I)I
+        // @declaration a static method of `DS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int y;
+        if ((y = x + 1) > 0) {
+            return y;
+        } else {
+            return -1;
+        }
+    }
+
+    static boolean deadChain(int x) {
+        // @method deadChain(I)Z
+        // @declaration a static method of `DS`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        boolean b = x + 1 > 0 && x > 10;
+        return b;
+    }
+
+    public static void main(java.lang.String[] a) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `DS`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("" + condAssign(0) + "/" + deadLocal(0) + "/" + split(0) + "/" + splitLocal(0) + "/" + deadChain(5));
+        return;
+    }
+}

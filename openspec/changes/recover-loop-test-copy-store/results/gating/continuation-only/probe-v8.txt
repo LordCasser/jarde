@@ -1,0 +1,37 @@
+// jarde: presentation of `Probe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Probe extends java.lang.Object {
+    public Probe() {
+        // @method <init>()V
+        // @declaration a constructor of `Probe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.String readAll(java.lang.String arg0) throws java.io.IOException {
+        // jarde: not recovered: the recovery run for `readAll(Ljava/lang/String;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method readAll(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `Probe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 17 27 37
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    static int guardPlain(java.lang.String arg0) throws java.io.IOException {
+        // jarde: not recovered: the recovery run for `guardPlain(Ljava/lang/String;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method guardPlain(Ljava/lang/String;)I
+        // @declaration a static method of `Probe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 5 8 9 10 11 12 15 16 17 20 21 22 23 24 25 28 29 30 31 34 35 36 37 38 41 42 45 48 50 51 54 56 57 58
+        // the shared catch-all finally has no complete bounded try and catch bodies
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Probe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(readAll("data.txt").replace((java.lang.CharSequence) "\n", (java.lang.CharSequence) "|") + "/" + guardPlain("data.txt"));
+        return;
+    }
+}
