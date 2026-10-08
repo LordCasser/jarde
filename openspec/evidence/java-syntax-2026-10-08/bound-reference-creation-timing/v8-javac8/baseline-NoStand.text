@@ -1,0 +1,10 @@
+// jarde: presentation of `NoStand` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NoStand extends java.lang.Object {
+    public static java.lang.Runnable make(java.lang.Thread arg0) {
+        // @method make(Ljava/lang/Thread;)Ljava/lang/Runnable;
+        // @declaration a static method of `NoStand`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0::start;
+    }
+}
