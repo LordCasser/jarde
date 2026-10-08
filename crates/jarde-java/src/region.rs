@@ -6535,7 +6535,20 @@ impl Walker<'_> {
         let previous = self.visited.clone();
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
-        frame.boundary = None;
+        // The body's own end — the block that begins where the protected range stops — is this
+        // walk's boundary: a branch inside the body whose arm runs to the end of the range reaches
+        // it, and the code after the range is not the body's to claim. Without the boundary that
+        // arm's edge is dropped as one out of the structure the subset can write, and the branch is
+        // quoted ([`FallbackReason::LoopLeavesEarly`]) although the body is a run of ordinary
+        // statements — which is what a branching guard body is. The boundary is the block the
+        // canonical graph starts there; a range whose end is fused into the body's own block has
+        // no such block and needs none.
+        frame.boundary = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() == span.1)
+            .and_then(|block| self.view.index_of(block.id()));
         frame.own_try = Some(start_node);
         frame.own_finally = Some(rows);
         frame.segmented_finally_rows = segmented_rows;
