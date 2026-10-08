@@ -1,0 +1,9 @@
+identity.genericParameters=[T]
+identity.genericReturn=T
+identity.erasedParameters=[class java.lang.Object]
+identity.erasedReturn=java.lang.Object
+relay.genericParameters=[T]
+relay.genericReturn=T
+relay.erasedParameters=[class java.lang.Object]
+relay.erasedReturn=java.lang.Object
+behavior.relay-is-marker=true

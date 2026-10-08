@@ -1,0 +1,1436 @@
+{
+  "scope": "Exploratory four-probe mini-patrol; outputs confined to /tmp.",
+  "java": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+  "jarde_cli": "/tmp/jarde-raw-receiver-final-v3-cli",
+  "jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "jadx_cli": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+  "jadx_cli_sha256": "5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3",
+  "jadx_version_stdout": "dev\n",
+  "cases": [
+    {
+      "probe": "EmptySink",
+      "source_sha256": "bc1d6bad9ce6aff0dd5d5c6c8e93846040c1e8391cb2567abba8997ad928d255",
+      "input_class_sha256": "4fd20309f7267f820e0267ec3139f9bbc17b6c06a6792ed70759bfd3d93839b9",
+      "input_jar_sha256": "55309e13c1063032b8ce1be1be797fad7a87f4219a763d9bb31c02dce3ba0d56",
+      "flavors": {
+        "original": {
+          "source_sha256": "bc1d6bad9ce6aff0dd5d5c6c8e93846040c1e8391cb2567abba8997ad928d255",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "EmptySink.class": "4fd20309f7267f820e0267ec3139f9bbc17b6c06a6792ed70759bfd3d93839b9",
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "sink.genericParameters=[T]\nsink.genericReturn=void\nsink.erasedParameters=[class java.lang.Object]\nsink.erasedReturn=void\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "626222a00ace9b64f7e2f070444fb970c842859180188ed4eaa1673afda665e8",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "EmptySink.class": "ff276cbf653e8411d920c31ef780a2fed782d84f5174ce204abeb6357d8c89b9",
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "sink.genericParameters=[class java.lang.Object]\nsink.genericReturn=void\nsink.erasedParameters=[class java.lang.Object]\nsink.erasedReturn=void\n",
+          "runtime_stderr": ""
+        },
+        "jadx": {
+          "source_sha256": "4c32806620770a7dd8269836d27ccb415ae6851e0f9570e5ccf78b55ce407dfd",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771",
+            "defpackage/EmptySink.class": "6d290c69a2d591446a1f445c4d3bd84832aba981d0e9909125ae402c0ef98bbe"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "sink.genericParameters=[T]\nsink.genericReturn=void\nsink.erasedParameters=[class java.lang.Object]\nsink.erasedReturn=void\n",
+          "runtime_stderr": ""
+        }
+      }
+    },
+    {
+      "probe": "FieldSetter",
+      "source_sha256": "04d36aa5982576baf9da874075fe4d9ae02c1f4213824f6a225eceda056a36b6",
+      "input_class_sha256": "0dd4f33ce696e951afe19ebbd392059284f21add1bfa9f5c2b921b1b004146f2",
+      "input_jar_sha256": "53cfd57d51f02190858a719f897de5a0d8178ef2baf9dca89b7cf2bc5b63fda9",
+      "flavors": {
+        "original": {
+          "source_sha256": "04d36aa5982576baf9da874075fe4d9ae02c1f4213824f6a225eceda056a36b6",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "FieldSetter.class": "0dd4f33ce696e951afe19ebbd392059284f21add1bfa9f5c2b921b1b004146f2",
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "field.generic=T\nset.genericParameters=[T]\nset.genericReturn=void\nset.erasedParameters=[class java.lang.Object]\nset.erasedReturn=void\nbehavior.field-is-marker=true\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "318d63836699fcd4d3b255fa64539bdb9b96cdc378d64def6b898ef04c2dcb7f",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "FieldSetter.class": "06bc5139764beed7f9a01153d4c024ceb87408e3566a442d7c4bc4cebb909ef0",
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "field.generic=T\nset.genericParameters=[T]\nset.genericReturn=void\nset.erasedParameters=[class java.lang.Object]\nset.erasedReturn=void\nbehavior.field-is-marker=true\n",
+          "runtime_stderr": ""
+        },
+        "jadx": {
+          "source_sha256": "3af3c9b627756632e6e760aaf7a1aa0e656b312466eccb340c47b76980dc7f8f",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771",
+            "defpackage/FieldSetter.class": "ed7bb47533c5620a2df2e17c2c5512c7a3591f858971d411d47879a328bb97d9"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "field.generic=T\nset.genericParameters=[T]\nset.genericReturn=void\nset.erasedParameters=[class java.lang.Object]\nset.erasedReturn=void\nbehavior.field-is-marker=true\n",
+          "runtime_stderr": ""
+        }
+      }
+    },
+    {
+      "probe": "CallRelay",
+      "source_sha256": "a05c9fba707ba857244c903300020f2da6ec2c7ccdb328a557d95c5abac0668b",
+      "input_class_sha256": "4697dbc336bb91048cbec5930546174bb442019f23d8b382d1d1cdaa5df94e2f",
+      "input_jar_sha256": "257c718d12011b8b98327369bb90f265d2de7fbfdf4821004bf4e102c0a57d0e",
+      "flavors": {
+        "original": {
+          "source_sha256": "a05c9fba707ba857244c903300020f2da6ec2c7ccdb328a557d95c5abac0668b",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "CallRelay.class": "4697dbc336bb91048cbec5930546174bb442019f23d8b382d1d1cdaa5df94e2f",
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "identity.genericParameters=[T]\nidentity.genericReturn=T\nidentity.erasedParameters=[class java.lang.Object]\nidentity.erasedReturn=java.lang.Object\nrelay.genericParameters=[T]\nrelay.genericReturn=T\nrelay.erasedParameters=[class java.lang.Object]\nrelay.erasedReturn=java.lang.Object\nbehavior.relay-is-marker=true\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "51c9faa740675e884b2a62a2d6f820c172935263f32772a0200f589d7a8fcc6e",
+          "compile_exit": 1,
+          "compiled_class_hashes": {}
+        },
+        "jadx": {
+          "source_sha256": "f9bbfe82e8860fa92fcede4c1da5b0c992fb196efb2e3a780c642ebac69b29b4",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771",
+            "defpackage/CallRelay.class": "cea628cf534f6c6c2f5b6132ddcdd4622a32b20fd1cdd2b14486ea7c1b528cfb"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "identity.genericParameters=[T]\nidentity.genericReturn=T\nidentity.erasedParameters=[class java.lang.Object]\nidentity.erasedReturn=java.lang.Object\nrelay.genericParameters=[T]\nrelay.genericReturn=T\nrelay.erasedParameters=[class java.lang.Object]\nrelay.erasedReturn=java.lang.Object\nbehavior.relay-is-marker=true\n",
+          "runtime_stderr": ""
+        }
+      }
+    },
+    {
+      "probe": "TypedSetter",
+      "source_sha256": "daaa13ea591e59ca63137526100a3cb666a2153973a4ee34ba31f1e04ebdb36c",
+      "input_class_sha256": "d1263b895974ee216575ed3c075ae013b3f57a0e67d5319c0a3dff446aa1b529",
+      "input_jar_sha256": "7f8b1b28a5dacff8511ee009231d65f19705acd116557ff0dd2880957faf7cce",
+      "flavors": {
+        "original": {
+          "source_sha256": "daaa13ea591e59ca63137526100a3cb666a2153973a4ee34ba31f1e04ebdb36c",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771",
+            "TypedSetter.class": "d1263b895974ee216575ed3c075ae013b3f57a0e67d5319c0a3dff446aa1b529"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "field.generic=T\nset.genericParameters=[TypedSetter<T>, T]\nset.genericReturn=void\nset.erasedParameters=[class TypedSetter, class java.lang.Object]\nset.erasedReturn=void\nbehavior.field-is-marker=true\n",
+          "runtime_stderr": ""
+        },
+        "jarde": {
+          "source_sha256": "a2f2bbb1c2a019a57a15ee620ca6579650d7c477551033280eb8d07a42266790",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771",
+            "TypedSetter.class": "d45b3f00e8655906b5e4617601eda027fd72cbe14c8d7a6abeaaa1462130b5d3"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "field.generic=T\nset.genericParameters=[class TypedSetter, class java.lang.Object]\nset.genericReturn=void\nset.erasedParameters=[class TypedSetter, class java.lang.Object]\nset.erasedReturn=void\nbehavior.field-is-marker=true\n",
+          "runtime_stderr": ""
+        },
+        "jadx": {
+          "source_sha256": "0f104a67654a3d95bf48f042233ae110188f381ab2fc0a2730a95d246b22d0c8",
+          "compile_exit": 0,
+          "compiled_class_hashes": {
+            "ProbeDriver.class": "40fe1f815a0b68502393098c0ab9c87163c3507de800fd039022e1c6343c9771",
+            "defpackage/TypedSetter.class": "5bebf6734d4cbf1f5dd136ca82ba95501b62dcc62861eeee6f0a70878a3e276e"
+          },
+          "runtime_exit": 0,
+          "runtime_stdout": "field.generic=T\nset.genericParameters=[defpackage.TypedSetter<T>, T]\nset.genericReturn=void\nset.erasedParameters=[class defpackage.TypedSetter, class java.lang.Object]\nset.erasedReturn=void\nbehavior.field-is-marker=true\n",
+          "runtime_stderr": ""
+        }
+      }
+    }
+  ],
+  "commands": [
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-353dssh0/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-353dssh0/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-353dssh0/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/original/EmptySink.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/EmptySink.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-353dssh0/classes",
+        "EmptySink.class"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/EmptySink.jar",
+        "--class",
+        "EmptySink",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "626222a00ace9b64f7e2f070444fb970c842859180188ed4eaa1673afda665e8",
+      "stderr_sha256": "1451bfe0eed3cc962c32ff6a6eb42ef46be3bf7cb3537e7a3bdc8d8f47f2e363"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/jadx/full-output",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/EmptySink.jar"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-fxqu6eu_/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-fxqu6eu_/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-fxqu6eu_/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/original/EmptySink.java",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-fxqu6eu_/classes",
+        "ProbeDriver",
+        "EmptySink",
+        "EmptySink"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "176d5bfb1dd47e3d0bd3e9a4b52a805ff362970b9091734d0c4c6eb197bce39e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-ec88k0p7/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-ec88k0p7/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-ec88k0p7/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/jarde/EmptySink.java",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-ec88k0p7/classes",
+        "ProbeDriver",
+        "EmptySink",
+        "EmptySink"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "07f8cbe0c4064794101102187f34cd11f9b7211a69b900a858fe2dd4488989a5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-519i0wwl/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-519i0wwl/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-519i0wwl/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/jadx/full-output/sources/defpackage/EmptySink.java",
+        "/private/tmp/jarde-next-call-mini-patrol/EmptySink/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-519i0wwl/classes",
+        "ProbeDriver",
+        "EmptySink",
+        "defpackage.EmptySink"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/EmptySink",
+      "returncode": 0,
+      "stdout_sha256": "176d5bfb1dd47e3d0bd3e9a4b52a805ff362970b9091734d0c4c6eb197bce39e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-xly2hyr3/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-xly2hyr3/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-xly2hyr3/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/original/FieldSetter.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/FieldSetter.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-xly2hyr3/classes",
+        "FieldSetter.class"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/FieldSetter.jar",
+        "--class",
+        "FieldSetter",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "318d63836699fcd4d3b255fa64539bdb9b96cdc378d64def6b898ef04c2dcb7f",
+      "stderr_sha256": "8acf8931acc769f85174c40f0eb617e034e769f4a74733e86bc3925d5200181d"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/jadx/full-output",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/FieldSetter.jar"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-htx56bor/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-htx56bor/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-htx56bor/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/original/FieldSetter.java",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-htx56bor/classes",
+        "ProbeDriver",
+        "FieldSetter",
+        "FieldSetter"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "3e70cd4ee6d6b844be28f46a336f1309f23c0f6a1ef1176329317fe6cfd69fad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-l6bzbkv7/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-l6bzbkv7/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-l6bzbkv7/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/jarde/FieldSetter.java",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-l6bzbkv7/classes",
+        "ProbeDriver",
+        "FieldSetter",
+        "FieldSetter"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "3e70cd4ee6d6b844be28f46a336f1309f23c0f6a1ef1176329317fe6cfd69fad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-pbrqxaq4/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-pbrqxaq4/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-pbrqxaq4/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/jadx/full-output/sources/defpackage/FieldSetter.java",
+        "/private/tmp/jarde-next-call-mini-patrol/FieldSetter/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-pbrqxaq4/classes",
+        "ProbeDriver",
+        "FieldSetter",
+        "defpackage.FieldSetter"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/FieldSetter",
+      "returncode": 0,
+      "stdout_sha256": "3e70cd4ee6d6b844be28f46a336f1309f23c0f6a1ef1176329317fe6cfd69fad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-dt33vc4z/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-dt33vc4z/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-dt33vc4z/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/original/CallRelay.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/CallRelay.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-dt33vc4z/classes",
+        "CallRelay.class"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/CallRelay.jar",
+        "--class",
+        "CallRelay",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "51c9faa740675e884b2a62a2d6f820c172935263f32772a0200f589d7a8fcc6e",
+      "stderr_sha256": "e4ce81b6f53dcccf69b14c1f7f52a9a3b72cfa1415400109dffa1c9192d1ae87"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/jadx/full-output",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/CallRelay.jar"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-mc5danau/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-mc5danau/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-mc5danau/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/original/CallRelay.java",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-mc5danau/classes",
+        "ProbeDriver",
+        "CallRelay",
+        "CallRelay"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "f47620bc3ad1577bedd51a08ad2cc63ff750f7bdabd1ddd22f3e95af53ce62d9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-cbgw1r6i/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-cbgw1r6i/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-cbgw1r6i/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/jarde/CallRelay.java",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "a92ee545151fd06c63e41359b06e7f7760e529c21cf2bd814003cd900ffaa00c"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-x51h_yy3/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-x51h_yy3/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-x51h_yy3/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/jadx/full-output/sources/defpackage/CallRelay.java",
+        "/private/tmp/jarde-next-call-mini-patrol/CallRelay/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-x51h_yy3/classes",
+        "ProbeDriver",
+        "CallRelay",
+        "defpackage.CallRelay"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/CallRelay",
+      "returncode": 0,
+      "stdout_sha256": "f47620bc3ad1577bedd51a08ad2cc63ff750f7bdabd1ddd22f3e95af53ce62d9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-v2sdlq_w/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-v2sdlq_w/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-v2sdlq_w/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/original/TypedSetter.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/TypedSetter.jar",
+        "-C",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-input-v2sdlq_w/classes",
+        "TypedSetter.class"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/TypedSetter.jar",
+        "--class",
+        "TypedSetter",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "a2f2bbb1c2a019a57a15ee620ca6579650d7c477551033280eb8d07a42266790",
+      "stderr_sha256": "476134e2ce695e2e9e8e372debf5dc6ecfcaa9b85968efe2f9ca21a2b4a1b47b"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/jadx/full-output",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/TypedSetter.jar"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-wr1w4jzp/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-wr1w4jzp/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-wr1w4jzp/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/original/TypedSetter.java",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-original-wr1w4jzp/classes",
+        "ProbeDriver",
+        "TypedSetter",
+        "TypedSetter"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "ae6f7b0db59fb1e81a27c37ed6b286451f29431e3521080a0b7341e832a87f0c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-kslqsv3a/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-kslqsv3a/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-kslqsv3a/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/jarde/TypedSetter.java",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2a3cc8194deda4f427a9fb9bd84bccc3035f3f77cdf9a091a94e6d5e9ba6ea10"
+    },
+    {
+      "label": "jarde-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jarde-kslqsv3a/classes",
+        "ProbeDriver",
+        "TypedSetter",
+        "TypedSetter"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "5f8da33c83c2ade90381371d0a65bd00ad3d23ffdd5c08626d6462e3f5a1a57c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-wdt6omex/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-wdt6omex/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-wdt6omex/classes",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/jadx/full-output/sources/defpackage/TypedSetter.java",
+        "/private/tmp/jarde-next-call-mini-patrol/TypedSetter/ProbeDriver.java"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/next-call-jadx-wdt6omex/classes",
+        "ProbeDriver",
+        "TypedSetter",
+        "defpackage.TypedSetter"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol/TypedSetter",
+      "returncode": 0,
+      "stdout_sha256": "f13a7ab6134433f06dfde9dbd077472595fde2436253c9293fcb9b80f9e918cd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/private/tmp/jarde-next-call-mini-patrol",
+      "returncode": 0,
+      "stdout_sha256": "9c5955fc99a60b8f6dee6cf582c4420d91e1b3e2a201f532c91e2cbdfce7fa51",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "files": [
+    {
+      "path": "CallRelay/CallRelay.jar",
+      "bytes": 814,
+      "sha256": "257c718d12011b8b98327369bb90f265d2de7fbfdf4821004bf4e102c0a57d0e"
+    },
+    {
+      "path": "CallRelay/ProbeDriver.java",
+      "bytes": 2325,
+      "sha256": "88e8b3b6ee488458484b2ede6e1ff082820a580030e01fb1ff3034e12ac9df96"
+    },
+    {
+      "path": "CallRelay/jadx/full-output/sources/defpackage/CallRelay.java",
+      "bytes": 225,
+      "sha256": "f9bbfe82e8860fa92fcede4c1da5b0c992fb196efb2e3a780c642ebac69b29b4"
+    },
+    {
+      "path": "CallRelay/jadx/jadx-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/jadx/jadx-java.stdout",
+      "bytes": 310,
+      "sha256": "f47620bc3ad1577bedd51a08ad2cc63ff750f7bdabd1ddd22f3e95af53ce62d9"
+    },
+    {
+      "path": "CallRelay/jadx/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "CallRelay/jarde/CallRelay.java",
+      "bytes": 1721,
+      "sha256": "51c9faa740675e884b2a62a2d6f820c172935263f32772a0200f589d7a8fcc6e"
+    },
+    {
+      "path": "CallRelay/jarde/class-source.stderr",
+      "bytes": 58645,
+      "sha256": "e4ce81b6f53dcccf69b14c1f7f52a9a3b72cfa1415400109dffa1c9192d1ae87"
+    },
+    {
+      "path": "CallRelay/jarde/class-source.stdout",
+      "bytes": 1721,
+      "sha256": "51c9faa740675e884b2a62a2d6f820c172935263f32772a0200f589d7a8fcc6e"
+    },
+    {
+      "path": "CallRelay/jarde/jarde-javac.stderr",
+      "bytes": 374,
+      "sha256": "a92ee545151fd06c63e41359b06e7f7760e529c21cf2bd814003cd900ffaa00c"
+    },
+    {
+      "path": "CallRelay/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/original/CallRelay.java",
+      "bytes": 119,
+      "sha256": "a05c9fba707ba857244c903300020f2da6ec2c7ccdb328a557d95c5abac0668b"
+    },
+    {
+      "path": "CallRelay/original/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/original/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/original/freeze-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/original/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/original/original-java.stdout",
+      "bytes": 310,
+      "sha256": "f47620bc3ad1577bedd51a08ad2cc63ff750f7bdabd1ddd22f3e95af53ce62d9"
+    },
+    {
+      "path": "CallRelay/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CallRelay/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/EmptySink.jar",
+      "bytes": 767,
+      "sha256": "55309e13c1063032b8ce1be1be797fad7a87f4219a763d9bb31c02dce3ba0d56"
+    },
+    {
+      "path": "EmptySink/ProbeDriver.java",
+      "bytes": 2325,
+      "sha256": "88e8b3b6ee488458484b2ede6e1ff082820a580030e01fb1ff3034e12ac9df96"
+    },
+    {
+      "path": "EmptySink/jadx/full-output/sources/defpackage/EmptySink.java",
+      "bytes": 145,
+      "sha256": "4c32806620770a7dd8269836d27ccb415ae6851e0f9570e5ccf78b55ce407dfd"
+    },
+    {
+      "path": "EmptySink/jadx/jadx-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/jadx/jadx-java.stdout",
+      "bytes": 121,
+      "sha256": "176d5bfb1dd47e3d0bd3e9a4b52a805ff362970b9091734d0c4c6eb197bce39e"
+    },
+    {
+      "path": "EmptySink/jadx/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "EmptySink/jarde/EmptySink.java",
+      "bytes": 1228,
+      "sha256": "626222a00ace9b64f7e2f070444fb970c842859180188ed4eaa1673afda665e8"
+    },
+    {
+      "path": "EmptySink/jarde/class-source.stderr",
+      "bytes": 36506,
+      "sha256": "1451bfe0eed3cc962c32ff6a6eb42ef46be3bf7cb3537e7a3bdc8d8f47f2e363"
+    },
+    {
+      "path": "EmptySink/jarde/class-source.stdout",
+      "bytes": 1228,
+      "sha256": "626222a00ace9b64f7e2f070444fb970c842859180188ed4eaa1673afda665e8"
+    },
+    {
+      "path": "EmptySink/jarde/jarde-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/jarde/jarde-java.stdout",
+      "bytes": 142,
+      "sha256": "07f8cbe0c4064794101102187f34cd11f9b7211a69b900a858fe2dd4488989a5"
+    },
+    {
+      "path": "EmptySink/jarde/jarde-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/original/EmptySink.java",
+      "bytes": 59,
+      "sha256": "bc1d6bad9ce6aff0dd5d5c6c8e93846040c1e8391cb2567abba8997ad928d255"
+    },
+    {
+      "path": "EmptySink/original/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/original/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/original/freeze-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/original/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/original/original-java.stdout",
+      "bytes": 121,
+      "sha256": "176d5bfb1dd47e3d0bd3e9a4b52a805ff362970b9091734d0c4c6eb197bce39e"
+    },
+    {
+      "path": "EmptySink/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "EmptySink/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/FieldSetter.jar",
+      "bytes": 794,
+      "sha256": "53cfd57d51f02190858a719f897de5a0d8178ef2baf9dca89b7cf2bc5b63fda9"
+    },
+    {
+      "path": "FieldSetter/ProbeDriver.java",
+      "bytes": 2325,
+      "sha256": "88e8b3b6ee488458484b2ede6e1ff082820a580030e01fb1ff3034e12ac9df96"
+    },
+    {
+      "path": "FieldSetter/jadx/full-output/sources/defpackage/FieldSetter.java",
+      "bytes": 195,
+      "sha256": "3af3c9b627756632e6e760aaf7a1aa0e656b312466eccb340c47b76980dc7f8f"
+    },
+    {
+      "path": "FieldSetter/jadx/jadx-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/jadx/jadx-java.stdout",
+      "bytes": 163,
+      "sha256": "3e70cd4ee6d6b844be28f46a336f1309f23c0f6a1ef1176329317fe6cfd69fad"
+    },
+    {
+      "path": "FieldSetter/jadx/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "FieldSetter/jarde/FieldSetter.java",
+      "bytes": 1317,
+      "sha256": "318d63836699fcd4d3b255fa64539bdb9b96cdc378d64def6b898ef04c2dcb7f"
+    },
+    {
+      "path": "FieldSetter/jarde/class-source.stderr",
+      "bytes": 44163,
+      "sha256": "8acf8931acc769f85174c40f0eb617e034e769f4a74733e86bc3925d5200181d"
+    },
+    {
+      "path": "FieldSetter/jarde/class-source.stdout",
+      "bytes": 1317,
+      "sha256": "318d63836699fcd4d3b255fa64539bdb9b96cdc378d64def6b898ef04c2dcb7f"
+    },
+    {
+      "path": "FieldSetter/jarde/jarde-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/jarde/jarde-java.stdout",
+      "bytes": 163,
+      "sha256": "3e70cd4ee6d6b844be28f46a336f1309f23c0f6a1ef1176329317fe6cfd69fad"
+    },
+    {
+      "path": "FieldSetter/jarde/jarde-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/original/FieldSetter.java",
+      "bytes": 92,
+      "sha256": "04d36aa5982576baf9da874075fe4d9ae02c1f4213824f6a225eceda056a36b6"
+    },
+    {
+      "path": "FieldSetter/original/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/original/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/original/freeze-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/original/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/original/original-java.stdout",
+      "bytes": 163,
+      "sha256": "3e70cd4ee6d6b844be28f46a336f1309f23c0f6a1ef1176329317fe6cfd69fad"
+    },
+    {
+      "path": "FieldSetter/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "FieldSetter/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/ProbeDriver.java",
+      "bytes": 2325,
+      "sha256": "88e8b3b6ee488458484b2ede6e1ff082820a580030e01fb1ff3034e12ac9df96"
+    },
+    {
+      "path": "TypedSetter/TypedSetter.jar",
+      "bytes": 811,
+      "sha256": "7f8b1b28a5dacff8511ee009231d65f19705acd116557ff0dd2880957faf7cce"
+    },
+    {
+      "path": "TypedSetter/jadx/full-output/sources/defpackage/TypedSetter.java",
+      "bytes": 210,
+      "sha256": "0f104a67654a3d95bf48f042233ae110188f381ab2fc0a2730a95d246b22d0c8"
+    },
+    {
+      "path": "TypedSetter/jadx/jadx-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/jadx/jadx-java.stdout",
+      "bytes": 220,
+      "sha256": "f13a7ab6134433f06dfde9dbd077472595fde2436253c9293fcb9b80f9e918cd"
+    },
+    {
+      "path": "TypedSetter/jadx/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "TypedSetter/jarde/TypedSetter.java",
+      "bytes": 1452,
+      "sha256": "a2f2bbb1c2a019a57a15ee620ca6579650d7c477551033280eb8d07a42266790"
+    },
+    {
+      "path": "TypedSetter/jarde/class-source.stderr",
+      "bytes": 44843,
+      "sha256": "476134e2ce695e2e9e8e372debf5dc6ecfcaa9b85968efe2f9ca21a2b4a1b47b"
+    },
+    {
+      "path": "TypedSetter/jarde/class-source.stdout",
+      "bytes": 1452,
+      "sha256": "a2f2bbb1c2a019a57a15ee620ca6579650d7c477551033280eb8d07a42266790"
+    },
+    {
+      "path": "TypedSetter/jarde/jarde-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/jarde/jarde-java.stdout",
+      "bytes": 222,
+      "sha256": "5f8da33c83c2ade90381371d0a65bd00ad3d23ffdd5c08626d6462e3f5a1a57c"
+    },
+    {
+      "path": "TypedSetter/jarde/jarde-javac.stderr",
+      "bytes": 194,
+      "sha256": "2a3cc8194deda4f427a9fb9bd84bccc3035f3f77cdf9a091a94e6d5e9ba6ea10"
+    },
+    {
+      "path": "TypedSetter/jarde/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/original/TypedSetter.java",
+      "bytes": 112,
+      "sha256": "daaa13ea591e59ca63137526100a3cb666a2153973a4ee34ba31f1e04ebdb36c"
+    },
+    {
+      "path": "TypedSetter/original/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/original/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/original/freeze-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/original/freeze-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/original/original-java.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/original/original-java.stdout",
+      "bytes": 198,
+      "sha256": "ae6f7b0db59fb1e81a27c37ed6b286451f29431e3521080a0b7341e832a87f0c"
+    },
+    {
+      "path": "TypedSetter/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "TypedSetter/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jadx-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jadx-version.stdout",
+      "bytes": 4,
+      "sha256": "9c5955fc99a60b8f6dee6cf582c4420d91e1b3e2a201f532c91e2cbdfce7fa51"
+    },
+    {
+      "path": "replay.py",
+      "bytes": 10225,
+      "sha256": "2d742783bb17000ddd93e70cb16ed13f4ce18b2803e93e40cf9532677b0d1a88"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 2259,
+      "sha256": "1872dc6b3a444e73de714a5d06af3238538d99f8beacfc653127bc67f239dc02"
+    }
+  ]
+}

@@ -2,17 +2,17 @@
 
 先核对 Git 和最新 HEAD 的 CI，再按下方队列继续。历史交接已在 Git 中保留，不从旧任务勾选数、分支名或旧 CI 结果推断当前状态。
 
-## 当前接续补记（raw receiver 本地验收完成）
+## 当前接续入口（raw receiver 已交付）
 
-本片基线是 `564e22c1`，基线远端CI四个job全部成功。`recover-raw-receiver-field-selection` 实现与root独立对照、本地全部门禁已完成；提交后的最新main HEAD CI尚待远端核对，不能引用基线CI作为本片结果。最终CLI hash、16族64输入对照、23字段族与80构造输入回归见 [本片root验收](openspec/changes/recover-raw-receiver-field-selection/verification-root.md)。字段反射12/64→60/64，完整三类API反射44/64，64/64完整编译并行为一致；方法API没有扩容。
+实现与全部冻结证据已提交推送main `c5d21640`，[实际CI run 37831218407](https://github.com/LordCasser/jarde/actions/runs/37831218407) 四个job全部成功，包含真正JDK25 oracle。本片基线为 `564e22c1`；本片结论不引用基线CI。此次handoff收尾提交仅含文档/验收元数据/独立巡查证据，生产与Rust测试不变；最新main HEAD CI仍按文末命令查询。最终CLI hash、16族64输入对照、23字段族与80构造输入回归见 [本片root验收](openspec/changes/recover-raw-receiver-field-selection/verification-root.md)。字段反射12/64→60/64，完整三类API反射44/64，64/64完整编译并行为一致；方法API没有扩容。
 
-当前OpenSpec为6/8任务完成，待远端最新HEAD CI与最终交接勾选。fmt、CI同口径clippy、两固定seed各3253 passed/0 failed/93 ignored、显式ignored P3 3项/constructor 1项/bound-receiver 1项、strict OpenSpec 322/322均通过，命令和日志在 `results/local-gates`。三次首轮门禁失败分别是新增corpus登记、零formal静态初始化器额外扫描收费、standalone fixture总数断言遗漏，均修正并保留失败日志。
+当前OpenSpec为8/8任务完成，实现与远端验收均已结束。fmt、CI同口径clippy、两固定seed各3253 passed/0 failed/93 ignored、显式ignored P3 3项/constructor 1项/bound-receiver 1项、strict OpenSpec 322/322均通过，命令和日志在 `results/local-gates`。三次首轮门禁失败分别是新增corpus登记、零formal静态初始化器额外扫描收费、standalone fixture总数断言遗漏，均修正并保留失败日志。
 
-root共享Cargo已清理8105个文件、19.0GiB，target/fuzz target均不存在，可用空间约72GiB；其他项目的构建不动。本片没有新增分支或worktree，14个辅助树均detached、干净且HEAD是main祖先；受Codex保护的副本保持原样。
+root共享Cargo已清理8105个文件、19.0GiB，target/fuzz target均不存在，清理后可用空间约72GiB，最终核对约76GiB；其他项目的构建不动。本片没有新增分支或worktree，14个辅助树均detached、干净且HEAD是main祖先；受Codex保护的副本保持原样。
 
-下一项是 [普通泛型调用实参适配巡查](openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/summary.md)，尚未立项。CallHold/ExceptionHold原/JADX八输入可编译，Jarde均因Object→已发布T callee失败。新增BoundOverload四腿原源码均选择Number重载，Jarde与参考源码构建的JADX都因歧义失败；完整证据保留。已有void setter证明不能泛化为所有调用消费位证明，getter反向依赖另片处理。重绑定raw alias/phi、分离局部scope仍在本片保持擦除。
+下一项是 [普通泛型调用实参适配巡查](openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/summary.md)，尚未立项。CallHold/ExceptionHold原/JADX八输入可编译，Jarde均因Object→已发布T callee失败。新增BoundOverload四腿原源码均选择Number重载，Jarde与参考源码构建的JADX都因歧义失败；完整证据保留。新增四个最小Corretto8 debug巡查（exploratory）在同一evidence的 `mini-patrol`：FieldSetter已恢复set(T)/fieldT；EmptySink与TypedSetter仍有方法API擦除；CallRelay有实际编译失败。已有void setter证明不能泛化为所有调用消费位证明，getter反向依赖另片处理。重绑定raw alias/phi、分离局部scope仍在本片保持擦除。
 
-## 当前收尾状态
+## 已交付的构造器片（历史）
 
 基线 `790579e2` 的四个 CI job 已成功：[run 37786347619](https://github.com/LordCasser/jarde/actions/runs/37786347619)。前一片泛型字段源码写证明已经合入。本轮 `recover-class-scope-constructor-parameters` 实现、独立对照与本地完整门禁已完成，代码和证据一起合入 main 并推送。fmt、CI 同口径 clippy、两固定 seed 各 3,243 passed/0 failed/93 ignored、显式 ignored P3 3 项/构造实参 1 项/绑定引用 1 项、strict OpenSpec 321/321 全部通过。实现提交 `698a219e` 的远端 [run 37804470415](https://github.com/LordCasser/jarde/actions/runs/37804470415) 第二 seed 在既有 bulk 预算并发断言失败，后续 JDK25 oracle 未执行。修正已合入并推送 `d6598866`，按原 OpenSpec 区分两种预算拒绝并加入确定性 probe/charge 对照，生产预算与语法恢复逻辑未变；本地 21 项及最终二进制 30 次并发用例复验通过。见 [CI 预算验收](openspec/changes/recover-class-scope-constructor-parameters/ci-delivery-verification-root.md) 与 [修正提交 CI](https://github.com/LordCasser/jarde/actions/runs/37808909595)。交接文档提交不改变生产代码或测试；最终远端结论按最新 main HEAD 查询。本地通过不能替代实际 JDK25 oracle。
 

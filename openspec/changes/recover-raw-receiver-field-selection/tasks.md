@@ -12,5 +12,5 @@
 ## 3. root独立验收与交接
 
 - [x] 3.1 root构建候选CLI并冻结hash，重跑四腿完整原/JADX/基线/候选矩阵，核对字段反射与实际方法API分别计数，保留JADX失败；重放前片23字段族与80构造输入无新回退，交付verification-root.md。
-- [ ] 3.2 root通过fmt、CI同口径workspace clippy、两固定seed全测试、显式ignored P3/constructor/bound-receiver与strict OpenSpec；提交推送main后按实际最新HEAD核对全部CI（含真正JDK25 oracle）成功，记录命令结果和失败修复。
-- [ ] 3.3 更新handoff与71单元账本中的本片准确边界；全部变更提交推送main，不留分支占用；清理root共享Cargo残留并以git/worktree/df证据核对磁盘与主线交接状态。
+- [x] 3.2 root通过fmt、CI同口径workspace clippy、两固定seed全测试、显式ignored P3/constructor/bound-receiver与strict OpenSpec；提交推送main后按实际最新HEAD核对全部CI（含真正JDK25 oracle）成功，记录命令结果和失败修复。
+- [x] 3.3 更新handoff与71单元账本中的本片准确边界；全部变更提交推送main，不留分支占用；清理root共享Cargo残留并以git/worktree/df证据核对磁盘与主线交接状态。

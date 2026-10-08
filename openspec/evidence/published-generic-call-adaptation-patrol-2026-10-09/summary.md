@@ -25,3 +25,9 @@ root按实际源码复核：`void set(T x) { this.value=x; }`已有 `GenericRetu
 `VoidBody` 的“参数未重写”并不证明其所有调用消费位：新增 [BoundOverload四腿](overload-control/strict-repo-jadx-results/summary.md) 已严格复现 `T extends Number & Comparable<T>` 的 `relay(T x){pick((Number)x);}`。原字节码四腿皆为 `pick(Number)`，无checkcast；原完整源码4/4打印number。Jarde发布relay(T)但仍发射pick(x)，两个重载歧义，0/4完整编译。参考仓库构建的JADX(dev，57个lib jar hash已记录)与Homebrew JADX1.5.6独立各0/4完整编译；Jarde的Comparable参数仍是raw，JADX保留Comparable<T>，失败全文与完整类都保留。root独立核对两份四腿manifest共214个结果文件及两版脚本hash。根overload-control的早期复用-d运行仅作初步诊断，不计正式结果。
 
 JADX `TypeUpdate.invokeListener` 与 `InvokeUpdateCallback` 分别替换receiver类变量、invoke参数/结果；`TypeUtils.getTypeVarMappingForInvoke` 只处理直接type-var映射并明示嵌套List<T>映射TODO。`MethodInvokeVisitor.processOverloaded` 根据compiler arg types与已选target尝试pin/cast，可借其消费位思路，但上述真实失败说明还须连接泛型头恢复。参考具体测试 `TestGenericsInArgs::test/testNoDebug`、`TestGenericFields::test`、`TestGenerics7::test`。它们不是Jarde已通过的验收。下一片先冻结最小调用实参/返回、binder与重载控制，确定已有AST侧车可复用范围，再决定是否需要新事实；这些证据尚不要求通用fixpoint。
+
+## 下一片的有限单腿分类
+
+[mini-patrol](mini-patrol/summary.md) 是CI等待期间的Corretto8 debug exploratory，不是四腿最终验收。原/JADX四类全部完整编译、反射和marker均符合预期。Jarde的FieldSetter已有set(T)/fieldT完整闭环；EmptySink未用T参数仍被擦除；TypedSetter的C<T>/T方法参数被擦除，但raw字段T恢复、行为保持；CallRelay的identity(T)已发布，relay仍按Object发射，完整类因实参Object不能传给T而失败。root逐项核对102个结果文件hash后保留源码/jar、实际CLI输出和日志；历史命令路径仍指向实际运行的/tmp位置，脚本可复制到新的空/tmp目录重放，不覆盖已保存目录。
+
+对参考JADX的追加静态核对发现两个条件性失口：若invoke阶段compiler type仍是擦除Number，重载唯一匹配早退且同型不补cast；若类型已是intersection T而bound与目标Comparable表示不精确相等，TypeCompare在未命中extendTypes.contains时要求所有bounds都narrow，遇首个非narrow提前返回，也可能错误排除另一个适用目标。四腿输出不揭示实际IR状态，未做动态IR调试，不能宣称本例确定命中哪条。Jarde下一片以自己的实际published caller/callee类型、实参来源、物理invoke目标闭合证明，不直接照搬该comparator。

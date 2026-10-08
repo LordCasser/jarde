@@ -179,3 +179,5 @@ DT-18的字段投影子形继续推进：[raw receiver root验收](../../changes
 前片23字段族与80构造输入没有新增回退。合法raw alias重绑定/phi与renderer合并的分离局部scope仍保守擦除，不能把它们算成已经恢复；TypedReceiver/ShadowMethodT/MultiFormalRawParam仅恢复字段，并未扩大方法头。普通调用适配另有[八输入root巡查](../published-generic-call-adaptation-patrol-2026-10-09/summary.md)：Jarde完整重编0/8，原与JADX8/8，原因是Object实参传给实际发布T callee。下一片从JADX调用参数/结果规则与完整caller使用清单展开，不默认通用fixpoint。门禁、提交与最新HEAD远端结果以handoff和本片验收为准，71单元总数不变。
 
 普通调用巡查补充了BoundOverload四腿：原源码4/4选择Number重载，Jarde与参考源码构建的JADX均0/4完整编译，保留无checkcast的实际pick(Number)调用和两者歧义失败全文。见 `openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/summary.md`；它属于下一调用片的消费位/重载证明，当前raw receiver生产实现未混入此债务，71单元总数不变。
+
+raw receiver实现已提交推送main c5d21640，实际CI run 37831218407四个job全部成功（两seed、真正JDK25 oracle、P3/constructor、strict OpenSpec均通过）；OpenSpec本片8/8。最终交接只追加文档/验收元数据/有限巡查，生产和Rust测试保持冻结，main与最新HEAD CI以根handoff命令核对。

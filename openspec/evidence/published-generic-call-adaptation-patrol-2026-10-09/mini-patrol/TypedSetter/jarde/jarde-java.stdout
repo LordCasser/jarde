@@ -1,0 +1,6 @@
+field.generic=T
+set.genericParameters=[class TypedSetter, class java.lang.Object]
+set.genericReturn=void
+set.erasedParameters=[class TypedSetter, class java.lang.Object]
+set.erasedReturn=void
+behavior.field-is-marker=true

@@ -1,0 +1,122 @@
+{
+  "implementation_commit": "c5d216401f924105f2cf0a80a09f9a4c6f9e7414",
+  "implementation_ci_run": 37831218407,
+  "auxiliary_worktrees": [
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "ancestor_main": true,
+      "target_exists": false
+    }
+  ],
+  "branches": "* main                c5d21640 [origin/main] feat: recover generic fields selected through raw receivers\n  remotes/origin/HEAD -> origin/main\n  remotes/origin/main c5d21640 feat: recover generic fields selected through raw receivers\n",
+  "root_target_exists": false,
+  "fuzz_target_exists": false,
+  "df": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s1   460Gi   357Gi    76Gi    83%    4.0M  802M    1%   /System/Volumes/Data\n"
+}

@@ -1,0 +1,6 @@
+field.generic=T
+set.genericParameters=[T]
+set.genericReturn=void
+set.erasedParameters=[class java.lang.Object]
+set.erasedReturn=void
+behavior.field-is-marker=true

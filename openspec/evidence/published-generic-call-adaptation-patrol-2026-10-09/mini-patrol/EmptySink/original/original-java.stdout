@@ -1,0 +1,4 @@
+sink.genericParameters=[T]
+sink.genericReturn=void
+sink.erasedParameters=[class java.lang.Object]
+sink.erasedReturn=void
