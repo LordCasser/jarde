@@ -1,0 +1,6 @@
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-ne_gc5di/ArrayObjectSetter/baseline/ArrayObjectSetter.java:20: 错误: 不兼容的类型: Object[]无法转换为T[]
+        this.v = (java.lang.Object[]) arg1;
+                 ^
+  其中, T是类型变量:
+    T扩展已在类 ArrayObjectSetter中声明的Object
+1 个错误

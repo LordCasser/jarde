@@ -7202,6 +7202,9 @@ impl Engine {
                 constant.as_ref(),
                 class_source::SameClassBinding::Pending,
                 "",
+                &[],
+                &[],
+                environment.runtime.profile.java_release,
                 budget,
             ) {
                 Ok(class_source::SignatureProjection::Settled) => {}
@@ -7735,10 +7738,35 @@ impl Engine {
                 .iter()
                 .flat_map(|scan| scan.invokes.iter().cloned())
                 .collect();
-            let field_uses: Vec<class_source::SameClassFieldUse> = member_use_scans
+            let mut field_uses: Vec<class_source::SameClassFieldUse> = member_use_scans
                 .iter()
                 .flat_map(|scan| scan.field_uses.iter().cloned())
                 .collect();
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(methods.len() + field_uses.len()).unwrap_or(u64::MAX),
+            )?;
+            let mut source_complete_methods = std::collections::HashSet::<PhysicalMethodId>::new();
+            for method in &methods {
+                budget.poll()?;
+                if matches!(
+                    &method.outcome,
+                    class_source::ClassSourceOutcome::Recovered { report, analysis }
+                        if matches!(report.execution, ExecutionReport::Complete { .. })
+                            && matches!(analysis.execution, ExecutionReport::Complete { .. })
+                            && report.quality == Quality::Structured
+                            && report.representation == crate::ir::Representation::Java
+                            && report.content == RecoveryContent::ContainsStatements
+                            && report.fallbacks.is_empty()
+                ) {
+                    source_complete_methods.insert(method.item.identity.clone());
+                }
+            }
+            for use_site in &mut field_uses {
+                budget.poll()?;
+                use_site.source_complete =
+                    source_complete_methods.contains(&use_site.physical_method);
+            }
             let member_refs: Vec<class_source::SameClassMemberRef> = member_use_scans
                 .iter()
                 .flat_map(|scan| scan.member_refs.iter().cloned())
@@ -7749,50 +7777,6 @@ impl Engine {
                 field_uses: &field_uses,
                 member_refs: &member_refs,
             };
-            for (index, constant) in deferred_fields {
-                let member_name = read.facts.fields[index].name.raw().0.clone();
-                let binding = match class_source::prove_same_class_field_binding(
-                    &read.facts.this_class.raw().0,
-                    &read.facts.fields,
-                    index,
-                    &facts,
-                    budget,
-                ) {
-                    Ok(binding) => binding,
-                    Err(error) => {
-                        merge_execution(&mut execution, stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        ended = true;
-                        break;
-                    }
-                };
-                let note = class_source::same_class_field_use_note(&facts, &member_name);
-                match class_source::project_field_signature(
-                    &mut fields[index],
-                    &read.facts.fields[index],
-                    &read.bytes,
-                    &pool,
-                    &declaration.item.declaration.this_class.raw().0,
-                    declaration.item.declaration.access_flags,
-                    class_scope
-                        .as_ref()
-                        .map(|proof| proof.type_parameters.as_slice())
-                        .unwrap_or(&[]),
-                    class_scope.is_some(),
-                    constant.as_ref(),
-                    binding,
-                    &note,
-                    budget,
-                ) {
-                    Ok(_) => {}
-                    Err(error) => {
-                        merge_execution(&mut execution, stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        ended = true;
-                        break;
-                    }
-                }
-            }
             for (index, attributes, candidate, constructor_candidate) in deferred_methods {
                 let binding = match class_source::prove_same_class_method_binding(
                     &read.facts.this_class.raw().0,
@@ -7844,6 +7828,85 @@ impl Engine {
                         diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
                         ended = true;
                         break;
+                    }
+                }
+            }
+            if !ended {
+                let published_method_parameters = match same_class_published_method_parameters(
+                    &methods,
+                    &read.facts.methods,
+                    &field_uses,
+                    &read.bytes,
+                    &pool,
+                    budget,
+                ) {
+                    Ok(parameters) => parameters,
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        Vec::new()
+                    }
+                };
+                if !ended {
+                    for (index, constant) in deferred_fields {
+                        let member_name = read.facts.fields[index].name.raw().0.clone();
+                        let binding = match class_source::prove_same_class_field_binding(
+                            &read.facts.this_class.raw().0,
+                            &read.facts.fields,
+                            index,
+                            &facts,
+                            budget,
+                        ) {
+                            Ok(binding) => binding,
+                            Err(error) => {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                ended = true;
+                                break;
+                            }
+                        };
+                        let note = match class_source::same_class_field_use_note(
+                            &facts,
+                            &member_name,
+                            budget,
+                        ) {
+                            Ok(note) => note,
+                            Err(error) => {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                ended = true;
+                                break;
+                            }
+                        };
+                        match class_source::project_field_signature(
+                            &mut fields[index],
+                            &read.facts.fields[index],
+                            &read.bytes,
+                            &pool,
+                            &declaration.item.declaration.this_class.raw().0,
+                            declaration.item.declaration.access_flags,
+                            class_scope
+                                .as_ref()
+                                .map(|proof| proof.type_parameters.as_slice())
+                                .unwrap_or(&[]),
+                            class_scope.is_some(),
+                            constant.as_ref(),
+                            binding,
+                            &note,
+                            &field_uses,
+                            &published_method_parameters,
+                            environment.runtime.profile.java_release,
+                            budget,
+                        ) {
+                            Ok(_) => {}
+                            Err(error) => {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                ended = true;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -11618,6 +11681,324 @@ fn classify_field_read_consumers(
         })
 }
 
+/// Retain each writer method's source parameter list once, after deferred method projections have
+/// settled. A refused or absent method `Signature` contributes only descriptor parameters.
+fn same_class_published_method_parameters(
+    methods: &[ClassSourceMethod],
+    headers: &[MemberHeader],
+    field_uses: &[class_source::SameClassFieldUse],
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<Vec<class_source::SameClassPublishedMethodParameters>> {
+    use class_source::SameClassFieldWriteSource;
+
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(field_uses.len()).unwrap_or(u64::MAX),
+    )?;
+    let mut required = std::collections::HashSet::<PhysicalMethodId>::new();
+    for use_site in field_uses {
+        budget.poll()?;
+        if let Some(SameClassFieldWriteSource::Parameter { method, .. }) =
+            use_site.write_source.as_ref()
+        {
+            required.insert(method.clone());
+        }
+    }
+    let mut result = Vec::with_capacity(required.len());
+    for (index, (header, method)) in headers.iter().zip(methods).enumerate() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !required.contains(&method.item.identity) {
+            continue;
+        }
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let descriptor = header.descriptor.raw().0.as_slice();
+        let descriptor_facts = descriptor_facts(descriptor, DescriptorKind::Method)?;
+        let slots = jarde_jvm::method_ir::parameter_positions(
+            &descriptor_facts,
+            header.access_flags & 0x0008 != 0,
+        )
+        .ok_or_else(|| {
+            Error::unsupported(
+                "field_generic_write_parameter_unproved",
+                "writer method parameter slots are not representable",
+            )
+        })?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(slots.len()).unwrap_or(u64::MAX),
+        )?;
+        let mut descriptor_parameters = Vec::with_capacity(descriptor_facts.parameters().len());
+        for component in descriptor_facts.parameters() {
+            budget.poll()?;
+            let span = component.span();
+            let start = usize::try_from(span.start).unwrap_or(usize::MAX);
+            let end = start.saturating_add(usize::try_from(span.length).unwrap_or(usize::MAX));
+            let Some(raw) = descriptor.get(start..end) else {
+                return Err(Error::unsupported(
+                    "field_generic_write_parameter_unproved",
+                    "writer parameter descriptor span is outside its physical descriptor",
+                ));
+            };
+            descriptor_parameters.push(raw.to_vec());
+        }
+        let generic_signature = if method.generic_signature_projected {
+            let shells: Vec<_> = header
+                .attributes
+                .iter()
+                .filter(|attribute| attribute.name.raw().0 == b"Signature")
+                .cloned()
+                .collect();
+            if shells.len() != 1 {
+                return Err(Error::unsupported(
+                    "field_generic_write_parameter_unproved",
+                    "a published generic writer does not have one physical Signature attribute",
+                ));
+            }
+            let facts = attribute_facts(bytes, &shells, pool, budget)?;
+            let raw = facts.signature.as_ref().ok_or_else(|| {
+                Error::invalid_input(
+                    "jvm_signature_missing",
+                    "published writer Signature did not resolve",
+                )
+            })?;
+            Some(jarde_reader::signature::parse_method_signature(
+                &raw.0, budget,
+            )?)
+        } else {
+            None
+        };
+        let generic_parameters = if let Some(signature) = generic_signature.as_ref() {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(signature.parameters.len()).unwrap_or(u64::MAX),
+            )?;
+            let mut parameters = Vec::with_capacity(signature.parameters.len());
+            for parameter in &signature.parameters {
+                budget.poll()?;
+                parameters.push(parameter.clone());
+            }
+            Some(parameters)
+        } else {
+            None
+        };
+        let mut method_type_parameters = Vec::new();
+        if let Some(signature) = generic_signature {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(signature.type_parameters.len()).unwrap_or(u64::MAX),
+            )?;
+            for parameter in signature.type_parameters {
+                budget.poll()?;
+                method_type_parameters.push(parameter);
+            }
+        }
+        if generic_parameters
+            .as_ref()
+            .is_some_and(|parameters| parameters.len() != slots.len())
+        {
+            return Err(Error::unsupported(
+                "field_generic_write_parameter_unproved",
+                format!("writer method table entry {index} has mismatched Signature parameters"),
+            ));
+        }
+        result.push(class_source::SameClassPublishedMethodParameters {
+            method: method.item.identity.clone(),
+            parameter_slots: slots,
+            descriptor_parameters,
+            generic_parameters,
+            method_type_parameters,
+        });
+    }
+    Ok(result)
+}
+
+fn field_write_source(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    instruction_index: usize,
+    ssa: &jarde_jvm::method_ir::SsaTable,
+    ssa_by_bci: &std::collections::HashMap<u32, &jarde_jvm::method_ir::SsaInstruction>,
+    code_by_bci: &std::collections::HashMap<u32, &InstructionFact>,
+    ssa_bci_is_unique: bool,
+    budget: &mut Budget,
+) -> Result<Option<class_source::SameClassFieldWriteSource>> {
+    use class_source::SameClassFieldWriteSource as Source;
+    use jarde_jvm::method_ir::{Definition, Slot, Value};
+    use jarde_reader::classfile::CpEntryKind as K;
+
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if !ssa_bci_is_unique {
+        return Ok(None);
+    }
+    let instruction = &code.instructions[instruction_index];
+    let Some(ssa_instruction) = ssa_by_bci.get(&instruction.bci) else {
+        return Ok(None);
+    };
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(ssa_instruction.reads().len()).unwrap_or(u64::MAX),
+    )?;
+    let Some((_, rhs)) = ssa_instruction
+        .reads()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .max_by_key(|(slot, _)| *slot)
+    else {
+        return Ok(None);
+    };
+    let value = ssa.value(*rhs);
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(value.uses().len()).unwrap_or(u64::MAX),
+    )?;
+    if matches!(value.ty(), Value::Null) {
+        if let Definition::Instruction { bci, .. } = value.def()
+            && code_by_bci
+                .get(bci)
+                .is_some_and(|candidate| candidate.opcode == 0x01)
+            && value.uses().len() == 1
+            && value.uses()[0].bci() == Some(instruction.bci)
+        {
+            return Ok(Some(Source::Null));
+        }
+        return Ok(None);
+    }
+
+    if let Some(declaration) = ir.declaration() {
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(declaration.descriptor().0.len()).unwrap_or(u64::MAX),
+        )?;
+    }
+    if let Definition::Instruction { bci, .. } = value.def()
+        && let Some(load) = code_by_bci.get(bci)
+        && matches!(load.opcode, 0x19 | 0x2a..=0x2d)
+        && value.uses().len() == 1
+        && value.uses()[0].bci() == Some(instruction.bci)
+        && let Some(load_ssa) = ssa_by_bci.get(bci)
+        && let Some((Slot::Local(local), entry)) = load_ssa
+            .reads()
+            .iter()
+            .find(|(slot, _)| matches!(slot, Slot::Local(_)))
+        && matches!(ssa.value(*entry).def(), Definition::Entry { slot: Slot::Local(slot), .. } if slot == local)
+        && let Some(declaration) = ir.declaration()
+        && let Ok(descriptor) = descriptor_facts(
+            declaration.descriptor().0.as_slice(),
+            DescriptorKind::Method,
+        )
+        && let Some(parameters) = jarde_jvm::method_ir::parameter_positions(
+            &descriptor,
+            declaration.access_flags() & 0x0008 != 0,
+        )
+        && parameters.contains(local)
+    {
+        return Ok(Some(Source::Parameter {
+            method: declaration.identity().clone(),
+            slot: *local,
+        }));
+    }
+
+    // The only allocation spelling admitted here is the already-supported direct
+    // `new; dup; invokespecial <init>()V; putfield/putstatic` source shape. The uninitialized
+    // aliases must share one `new_site` token; initialization then defines the RHS ValueId.
+    // Locals, casts, merges and nested calls cannot enter this branch.
+    if instruction_index < 3 {
+        return Ok(None);
+    }
+    let allocation = &code.instructions[instruction_index - 3];
+    let duplicate = &code.instructions[instruction_index - 2];
+    let constructor = &code.instructions[instruction_index - 1];
+    if allocation.opcode != 0xbb || duplicate.opcode != 0x59 || constructor.opcode != 0xb7 {
+        return Ok(None);
+    }
+    if !matches!(value.def(), Definition::Instruction { bci, .. } if *bci == constructor.bci)
+        || value.uses().len() != 1
+        || value.uses()[0].bci() != Some(instruction.bci)
+    {
+        return Ok(None);
+    }
+    let pool = ir.constant_pool();
+    let Some(allocation_index) = code.operands()[instruction_index - 3].constant_pool_index else {
+        return Ok(None);
+    };
+    let Some(constructor_index) = code.operands()[instruction_index - 1].constant_pool_index else {
+        return Ok(None);
+    };
+    let Ok(allocation_entry) = jarde_reader::classfile::cp_entry(pool, allocation_index) else {
+        return Ok(None);
+    };
+    let K::Class { name: owner, .. } = &allocation_entry.kind else {
+        return Ok(None);
+    };
+    let Ok(constructor_entry) = jarde_reader::classfile::cp_entry(pool, constructor_index) else {
+        return Ok(None);
+    };
+    let K::MethodRef {
+        owner: constructor_owner,
+        name,
+        descriptor,
+        ..
+    } = &constructor_entry.kind
+    else {
+        return Ok(None);
+    };
+    if constructor_owner != owner || name.0 != b"<init>" || descriptor.0 != b"()V" {
+        return Ok(None);
+    }
+    let (Some(allocation_ssa), Some(duplicate_ssa), Some(constructor_ssa)) = (
+        ssa_by_bci.get(&allocation.bci),
+        ssa_by_bci.get(&duplicate.bci),
+        ssa_by_bci.get(&constructor.bci),
+    ) else {
+        return Ok(None);
+    };
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            allocation_ssa
+                .writes()
+                .len()
+                .saturating_add(duplicate_ssa.reads().len())
+                .saturating_add(duplicate_ssa.writes().len())
+                .saturating_add(constructor_ssa.reads().len())
+                .saturating_add(constructor_ssa.writes().len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    let uninitialized_at = |value: jarde_jvm::method_ir::ValueId| match ssa.value(value).ty() {
+        Value::Uninitialized { new_site } => Some(new_site.bci()),
+        _ => None,
+    };
+    let has_uninitialized_at = |values: &[(Slot, jarde_jvm::method_ir::ValueId)], bci| {
+        values
+            .iter()
+            .any(|(_, value)| uninitialized_at(*value) == Some(bci))
+    };
+    let allocation_is_same_site = has_uninitialized_at(allocation_ssa.writes(), allocation.bci);
+    let duplicate_reads_same_site = has_uninitialized_at(duplicate_ssa.reads(), allocation.bci);
+    let duplicate_writes_same_site = has_uninitialized_at(duplicate_ssa.writes(), allocation.bci);
+    let constructor_reads_same_site = has_uninitialized_at(constructor_ssa.reads(), allocation.bci);
+    let initialized_alias = constructor_ssa
+        .writes()
+        .iter()
+        .any(|(_, value)| *value == *rhs);
+    if !allocation_is_same_site
+        || !duplicate_reads_same_site
+        || !duplicate_writes_same_site
+        || !constructor_reads_same_site
+        || !initialized_alias
+    {
+        return Ok(None);
+    }
+    Ok(Some(Source::RawAllocation {
+        owner: owner.0.clone(),
+    }))
+}
+
 /// The bounded same-class use-site scan over one member body's decoded Code, in the shape of the
 /// array-helper census beside it: physical instructions, their pool entries, the readable
 /// non-body sources, and a completeness flag that turns any stop or unresolvable source into "not
@@ -11644,6 +12025,32 @@ fn scan_member_uses(
         CountedBudgetDimension::IrItems,
         instruction_cost.saturating_add(bootstrap_cost),
     )?;
+    let ssa = ir.ssa();
+    let ssa_instruction_count = ssa.map_or(0, |ssa| {
+        ssa.blocks()
+            .iter()
+            .map(|block| block.instructions().len())
+            .sum::<usize>()
+    });
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(ssa_instruction_count).unwrap_or(u64::MAX),
+    )?;
+    let mut ssa_by_bci = std::collections::HashMap::new();
+    if let Some(ssa) = ssa {
+        for block in ssa.blocks() {
+            for instruction in block.instructions() {
+                budget.poll()?;
+                ssa_by_bci.insert(instruction.bci(), instruction);
+            }
+        }
+    }
+    let ssa_bci_is_unique = ssa_by_bci.len() == ssa_instruction_count;
+    let mut code_by_bci = std::collections::HashMap::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        code_by_bci.insert(instruction.bci, instruction);
+    }
     let pool = ir.constant_pool();
     let caller = ir
         .declaration()
@@ -11663,7 +12070,10 @@ fn scan_member_uses(
             .map(|declaration| declaration.identity().clone()),
         ..MemberUseScan::default()
     };
-    for (instruction, operands) in code.instructions.iter().zip(code.operands()) {
+    for (instruction_index, (instruction, operands)) in
+        code.instructions.iter().zip(code.operands()).enumerate()
+    {
+        budget.poll()?;
         let opcode = operands.effective_opcode;
         let Some(index) = operands.constant_pool_index else {
             continue;
@@ -11709,14 +12119,38 @@ fn scan_member_uses(
             } else {
                 None
             };
+            let write_source = if matches!(opcode, 0xb3 | 0xb5) {
+                match ssa {
+                    Some(ssa) => field_write_source(
+                        ir,
+                        code,
+                        instruction_index,
+                        ssa,
+                        &ssa_by_bci,
+                        &code_by_bci,
+                        ssa_bci_is_unique,
+                        budget,
+                    )?,
+                    None => None,
+                }
+            } else {
+                None
+            };
+            let Some(physical_method) = scan.member.clone() else {
+                scan.complete = false;
+                continue;
+            };
             scan.field_uses.push(class_source::SameClassFieldUse {
                 caller: caller.clone(),
+                physical_method,
                 bci: instruction.bci,
                 opcode,
                 owner: owner.0.clone(),
                 name: name.0.clone(),
                 descriptor: descriptor.0.clone(),
                 read_expressible,
+                write_source,
+                source_complete: false,
             });
         } else if matches!(opcode, 0x12..=0x14) {
             if let K::MethodHandle { .. } = &entry.kind {

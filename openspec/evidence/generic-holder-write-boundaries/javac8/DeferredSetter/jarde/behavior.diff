@@ -1,0 +1,8 @@
+--- /Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/DeferredSetter/original.run.stdout	2026-10-08 17:06:37
++++ /Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/DeferredSetter/jarde/run.stdout	2026-10-08 17:06:37
+@@ -2,4 +2,4 @@
+ fieldGenericType=T
+ classvars=1
+ method=put methodvars=0 parameterGenericType=T
+-method=sink methodvars=0 parameterGenericType=T
++method=sink methodvars=0 parameterGenericType=java.lang.Object

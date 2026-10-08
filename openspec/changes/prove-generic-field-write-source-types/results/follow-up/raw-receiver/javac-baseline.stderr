@@ -1,0 +1,7 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-raw-receiver-audit/baseline/RawOtherWriter.java:20: 警告: [unchecked] 对作为原始类型RawOtherWriter的成员的变量v的分配未经过检查
+        arg0.v = arg1;
+            ^
+4 个警告

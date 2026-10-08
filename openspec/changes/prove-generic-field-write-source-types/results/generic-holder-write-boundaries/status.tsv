@@ -1,0 +1,197 @@
+javac8	driver_javac=0
+javac8	ArrayObjectSetter	raw_javac=0
+javac8	ArrayObjectSetter	jadx=0
+javac8	ArrayObjectSetter	original_run=0
+javac8	ArrayObjectSetter	jadx_javac=0
+javac8	ArrayObjectSetter	jadx_run=0	stdout_diff=0
+javac8	ArrayObjectSetter	jarde=0	header_assert=0
+javac8	ArrayObjectSetter	jarde_javac=1
+javac8	ArraySetter	raw_javac=0
+javac8	ArraySetter	jadx=0
+javac8	ArraySetter	original_run=0
+javac8	ArraySetter	jadx_javac=0
+javac8	ArraySetter	jadx_run=0	stdout_diff=0
+javac8	ArraySetter	jarde=0	header_assert=0
+javac8	ArraySetter	jarde_javac=1
+javac8	CrossSetter	raw_javac=0
+javac8	CrossSetter	jadx=0
+javac8	CrossSetter	original_run=0
+javac8	CrossSetter	jadx_javac=1
+javac8	CrossSetter	jarde=0	header_assert=0
+javac8	CrossSetter	jarde_javac=1
+javac8	DeferredSetter	raw_javac=0
+javac8	DeferredSetter	jadx=0
+javac8	DeferredSetter	original_run=0
+javac8	DeferredSetter	jadx_javac=0
+javac8	DeferredSetter	jadx_run=0	stdout_diff=0
+javac8	DeferredSetter	jarde=0	header_assert=0
+javac8	DeferredSetter	jarde_javac=0
+javac8	DeferredSetter	jarde_run=0	stdout_diff=1
+javac8	Hold	raw_javac=0
+javac8	Hold	jadx=0
+javac8	Hold	original_run=0
+javac8	Hold	jadx_javac=0
+javac8	Hold	jadx_run=0	stdout_diff=0
+javac8	Hold	jarde=0	header_assert=0
+javac8	Hold	jarde_javac=1
+javac8	MixedSetter	raw_javac=0
+javac8	MixedSetter	jadx=0
+javac8	MixedSetter	original_run=0
+javac8	MixedSetter	jadx_javac=1
+javac8	MixedSetter	jarde=0	header_assert=0
+javac8	MixedSetter	jarde_javac=1
+javac8	NullSetter	raw_javac=0
+javac8	NullSetter	jadx=0
+javac8	NullSetter	original_run=0
+javac8	NullSetter	jadx_javac=0
+javac8	NullSetter	jadx_run=0	stdout_diff=0
+javac8	NullSetter	jarde=0	header_assert=0
+javac8	NullSetter	jarde_javac=0
+javac8	NullSetter	jarde_run=0	stdout_diff=0
+javac8	ObjectHold	raw_javac=0
+javac8	ObjectHold	jadx=0
+javac8	ObjectHold	original_run=0
+javac8	ObjectHold	jadx_javac=1
+javac8	ObjectHold	jarde=0	header_assert=0
+javac8	ObjectHold	jarde_javac=1
+javac8	ObjectSetter	raw_javac=0
+javac8	ObjectSetter	jadx=0
+javac8	ObjectSetter	original_run=0
+javac8	ObjectSetter	jadx_javac=1
+javac8	ObjectSetter	jarde=0	header_assert=0
+javac8	ObjectSetter	jarde_javac=1
+javac8	RawListField	raw_javac=0
+javac8	RawListField	jadx=0
+javac8	RawListField	original_run=0
+javac8	RawListField	jadx_javac=0
+javac8	RawListField	jadx_run=0	stdout_diff=0
+javac8	RawListField	jarde=0	header_assert=0
+javac8	RawListField	jarde_javac=0
+javac8	RawListField	jarde_run=0	stdout_diff=0
+javac8	SCGA	raw_javac=0
+javac8	SCGA	jadx=0
+javac8	SCGA	original_run=0
+javac8	SCGA	jadx_javac=0
+javac8	SCGA	jadx_run=0	stdout_diff=0
+javac8	SCGA	jarde=0	header_assert=0
+javac8	SCGA	jarde_javac=0
+javac8	SCGA	jarde_run=0	stdout_diff=0
+javac8	SCGB	raw_javac=0
+javac8	SCGB	jadx=0
+javac8	SCGB	original_run=0
+javac8	SCGB	jadx_javac=0
+javac8	SCGB	jadx_run=0	stdout_diff=0
+javac8	SCGB	jarde=0	header_assert=0
+javac8	SCGB	jarde_javac=1
+javac8	ShadowSetter	raw_javac=0
+javac8	ShadowSetter	jadx=0
+javac8	ShadowSetter	original_run=0
+javac8	ShadowSetter	jadx_javac=1
+javac8	ShadowSetter	jarde=0	header_assert=0
+javac8	ShadowSetter	jarde_javac=1
+javac8	TypedSetter	raw_javac=0
+javac8	TypedSetter	jadx=0
+javac8	TypedSetter	original_run=0
+javac8	TypedSetter	jadx_javac=0
+javac8	TypedSetter	jadx_run=0	stdout_diff=0
+javac8	TypedSetter	jarde=0	header_assert=0
+javac8	TypedSetter	jarde_javac=0
+javac8	TypedSetter	jarde_run=0	stdout_diff=0
+javac23	driver_javac=0
+javac23	ArrayObjectSetter	raw_javac=0
+javac23	ArrayObjectSetter	jadx=0
+javac23	ArrayObjectSetter	original_run=0
+javac23	ArrayObjectSetter	jadx_javac=1
+javac23	ArrayObjectSetter	jarde=0	header_assert=0
+javac23	ArrayObjectSetter	jarde_javac=1
+javac23	ArraySetter	raw_javac=0
+javac23	ArraySetter	jadx=0
+javac23	ArraySetter	original_run=0
+javac23	ArraySetter	jadx_javac=0
+javac23	ArraySetter	jadx_run=0	stdout_diff=0
+javac23	ArraySetter	jarde=0	header_assert=0
+javac23	ArraySetter	jarde_javac=1
+javac23	CrossSetter	raw_javac=0
+javac23	CrossSetter	jadx=0
+javac23	CrossSetter	original_run=0
+javac23	CrossSetter	jadx_javac=1
+javac23	CrossSetter	jarde=0	header_assert=0
+javac23	CrossSetter	jarde_javac=1
+javac23	DeferredSetter	raw_javac=0
+javac23	DeferredSetter	jadx=0
+javac23	DeferredSetter	original_run=0
+javac23	DeferredSetter	jadx_javac=0
+javac23	DeferredSetter	jadx_run=0	stdout_diff=0
+javac23	DeferredSetter	jarde=0	header_assert=0
+javac23	DeferredSetter	jarde_javac=0
+javac23	DeferredSetter	jarde_run=0	stdout_diff=1
+javac23	Hold	raw_javac=0
+javac23	Hold	jadx=0
+javac23	Hold	original_run=0
+javac23	Hold	jadx_javac=0
+javac23	Hold	jadx_run=0	stdout_diff=0
+javac23	Hold	jarde=0	header_assert=0
+javac23	Hold	jarde_javac=1
+javac23	MixedSetter	raw_javac=0
+javac23	MixedSetter	jadx=0
+javac23	MixedSetter	original_run=0
+javac23	MixedSetter	jadx_javac=1
+javac23	MixedSetter	jarde=0	header_assert=0
+javac23	MixedSetter	jarde_javac=1
+javac23	NullSetter	raw_javac=0
+javac23	NullSetter	jadx=0
+javac23	NullSetter	original_run=0
+javac23	NullSetter	jadx_javac=0
+javac23	NullSetter	jadx_run=0	stdout_diff=0
+javac23	NullSetter	jarde=0	header_assert=0
+javac23	NullSetter	jarde_javac=0
+javac23	NullSetter	jarde_run=0	stdout_diff=0
+javac23	ObjectHold	raw_javac=0
+javac23	ObjectHold	jadx=0
+javac23	ObjectHold	original_run=0
+javac23	ObjectHold	jadx_javac=1
+javac23	ObjectHold	jarde=0	header_assert=0
+javac23	ObjectHold	jarde_javac=1
+javac23	ObjectSetter	raw_javac=0
+javac23	ObjectSetter	jadx=0
+javac23	ObjectSetter	original_run=0
+javac23	ObjectSetter	jadx_javac=1
+javac23	ObjectSetter	jarde=0	header_assert=0
+javac23	ObjectSetter	jarde_javac=1
+javac23	RawListField	raw_javac=0
+javac23	RawListField	jadx=0
+javac23	RawListField	original_run=0
+javac23	RawListField	jadx_javac=0
+javac23	RawListField	jadx_run=0	stdout_diff=0
+javac23	RawListField	jarde=0	header_assert=0
+javac23	RawListField	jarde_javac=0
+javac23	RawListField	jarde_run=0	stdout_diff=0
+javac23	SCGA	raw_javac=0
+javac23	SCGA	jadx=0
+javac23	SCGA	original_run=0
+javac23	SCGA	jadx_javac=0
+javac23	SCGA	jadx_run=0	stdout_diff=0
+javac23	SCGA	jarde=0	header_assert=0
+javac23	SCGA	jarde_javac=0
+javac23	SCGA	jarde_run=0	stdout_diff=0
+javac23	SCGB	raw_javac=0
+javac23	SCGB	jadx=0
+javac23	SCGB	original_run=0
+javac23	SCGB	jadx_javac=0
+javac23	SCGB	jadx_run=0	stdout_diff=0
+javac23	SCGB	jarde=0	header_assert=0
+javac23	SCGB	jarde_javac=1
+javac23	ShadowSetter	raw_javac=0
+javac23	ShadowSetter	jadx=0
+javac23	ShadowSetter	original_run=0
+javac23	ShadowSetter	jadx_javac=1
+javac23	ShadowSetter	jarde=0	header_assert=0
+javac23	ShadowSetter	jarde_javac=1
+javac23	TypedSetter	raw_javac=0
+javac23	TypedSetter	jadx=0
+javac23	TypedSetter	original_run=0
+javac23	TypedSetter	jadx_javac=0
+javac23	TypedSetter	jadx_run=0	stdout_diff=0
+javac23	TypedSetter	jarde=0	header_assert=0
+javac23	TypedSetter	jarde_javac=0
+javac23	TypedSetter	jarde_run=0	stdout_diff=0

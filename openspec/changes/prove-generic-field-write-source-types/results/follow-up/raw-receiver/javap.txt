@@ -1,0 +1,19 @@
+public class RawOtherWriter<T> {
+  public T v;
+    descriptor: Ljava/lang/Object;
+
+  public RawOtherWriter();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void put(RawOtherWriter, java.lang.Object);
+    descriptor: (LRawOtherWriter;Ljava/lang/Object;)V
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #7                  // Field v:Ljava/lang/Object;
+       5: return
+}

@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/ShadowSetter/recompiled/sources/defpackage/ShadowSetter.java:8: 错误: 不兼容的类型: T#1无法转换为T#2
+        this.v = t;
+                 ^
+  其中, T#1,T#2是类型变量:
+    T#1扩展已在方法 <T#1>put(T#1)中声明的Object
+    T#2扩展已在类 ShadowSetter中声明的Object
+1 个错误

@@ -25498,7 +25498,7 @@ impl Builder<'_> {
                 }) {
                     return Ok(cast_argument(argument, required, bci));
                 }
-                if platform_reference_argument_widens(
+                if release_reference_argument_widens(
                     self.profile.java_release,
                     &presented_name,
                     required_name,
@@ -28998,7 +28998,7 @@ fn array_reference_widens(presented: &str, required: &str) -> bool {
 /// reference one, and an array component never meets a class component — exactly as
 /// [`array_reference_widens`] states them; this predicate then states no fact of its own, it only
 /// asks these tables the scalar positions ask. The two channels that answered arrays before this
-/// change are deliberately **not** consulted here: [`platform_reference_argument_widens`] and
+/// change are deliberately **not** consulted here: [`release_reference_argument_widens`] and
 /// [`java_lang_throwable_widens`] keep the array answer they always stated, so an
 /// `IllegalStateException[]` argument at a `Throwable[]` position stays refused exactly as before.
 fn platform_array_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
@@ -29057,7 +29057,11 @@ fn platform_array_argument_widens(java_release: u16, presented: &str, required: 
 /// presented type widens exactly to the ancestors these declared edges reach, and no other
 /// `java.io` type states an edge here, so `java.io.FileReader` (a subclass of `InputStreamReader`)
 /// and every other reader stay refused until their own row is transcribed.
-fn platform_reference_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
+pub(crate) fn release_reference_argument_widens(
+    java_release: u16,
+    presented: &str,
+    required: &str,
+) -> bool {
     // One row per documented direct `extends`/`implements` of the release-8 `java.util` collection
     // tree. A row's two names are the javadoc's own declaration of that type.
     const DIRECT_EDGES: &[(&str, &str)] = &[
@@ -29148,7 +29152,7 @@ fn platform_reference_argument_widens(java_release: u16, presented: &str, requir
 /// already admitted the argument's value to the invoked descriptor's parameter, so an exception
 /// value a `Throwable` slot receives (a wrap-and-rethrow's cause, a forwarding method's caught
 /// exception) cannot fail the widening on either side — the relation is the platform's own fixed
-/// class hierarchy, the same closed knowledge [`platform_reference_argument_widens`] states for
+/// class hierarchy, the same closed knowledge [`release_reference_argument_widens`] states for
 /// its one pair. Every row is one direct superclass edge of the release-8 `java.lang` tree, kept
 /// spelled out for review; the walk admits exactly the ancestors these rows reach, and nothing
 /// outside `java.lang` (the `java.io`, `java.util` and user subclasses of the same family state
@@ -29318,7 +29322,7 @@ fn java_lang_throwable_widens(presented: &str, required: &str) -> bool {
 /// fixed relation between two names the JDK ships, stated exactly as the release-8 javadoc
 /// declares it — a class row is the implementer's own declaration of that interface, or the
 /// superclass whose declaration carries it — and a pair no row states does not widen. The answer is
-/// therefore the same closed knowledge [`platform_reference_argument_widens`] states for its
+/// therefore the same closed knowledge [`release_reference_argument_widens`] states for its
 /// `java.util` tree and [`java_lang_throwable_widens`] for its `java.lang` Throwable family, and a
 /// caller renders a hit exactly as it renders theirs.
 ///
@@ -32444,7 +32448,7 @@ mod tests {
             ("java.io.InputStreamReader", "java.io.Reader"),
         ] {
             assert!(
-                platform_reference_argument_widens(8, presented, required),
+                release_reference_argument_widens(8, presented, required),
                 "{presented} must widen to {required} from the java.util table"
             );
         }
@@ -32495,7 +32499,7 @@ mod tests {
             (9, "java.io.InputStreamReader", "java.io.Reader"),
         ] {
             assert!(
-                !platform_reference_argument_widens(release, presented, required),
+                !release_reference_argument_widens(release, presented, required),
                 "release {release}: {presented} must not widen to {required} from this table"
             );
         }
@@ -32580,7 +32584,7 @@ mod tests {
         // The refusals the closed set exists for: the same family's subpackages and user
         // classes, the non-ancestor java.lang names a slot can spell, the downward and sibling
         // directions, the primitive and array shapes, and the platform pair this answer must
-        // not take over from `platform_reference_argument_widens`.
+        // not take over from `release_reference_argument_widens`.
         for (presented, required) in [
             ("java.io.IOException", "java.lang.Throwable"),
             ("java.io.IOException", "java.lang.Exception"),

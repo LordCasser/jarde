@@ -1,0 +1,7 @@
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-ne_gc5di/CrossSetter/baseline/CrossSetter.java:21: 错误: 不兼容的类型: U无法转换为T
+        this.v = arg1;
+                 ^
+  其中, U,T是类型变量:
+    U扩展已在类 CrossSetter中声明的Object
+    T扩展已在类 CrossSetter中声明的Object
+1 个错误

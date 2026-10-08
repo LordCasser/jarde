@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/ArraySetter/jarde/ArraySetter.java:21: 错误: 不兼容的类型: Object[]无法转换为T[]
+        this.v = arg1;
+                 ^
+  其中, T是类型变量:
+    T扩展已在类 ArraySetter中声明的Object
+1 个错误

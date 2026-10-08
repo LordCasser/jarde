@@ -1,0 +1,10 @@
+javac8	CrossSetter	compile=1
+javac8	Hold	compile=1
+javac8	ObjectHold	compile=1
+javac8	ObjectSetter	compile=1
+javac8	focus_compile_success=0	focus_total=4
+javac23	CrossSetter	compile=1
+javac23	Hold	compile=1
+javac23	ObjectHold	compile=1
+javac23	ObjectSetter	compile=1
+javac23	focus_compile_success=0	focus_total=4

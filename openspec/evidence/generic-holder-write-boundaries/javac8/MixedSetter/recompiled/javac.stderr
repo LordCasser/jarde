@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/MixedSetter/recompiled/sources/defpackage/MixedSetter.java:13: 错误: 不兼容的类型: Object无法转换为T
+        this.v = obj;
+                 ^
+  其中, T是类型变量:
+    T扩展已在类 MixedSetter中声明的Object
+1 个错误

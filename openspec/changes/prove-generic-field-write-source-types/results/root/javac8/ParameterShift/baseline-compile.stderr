@@ -1,0 +1,6 @@
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-ne_gc5di/ParameterShift/baseline/ParameterShift.java:21: 错误: 不兼容的类型: Object无法转换为T
+        this.v = arg5;
+                 ^
+  其中, T是类型变量:
+    T扩展已在类 ParameterShift中声明的Object
+1 个错误

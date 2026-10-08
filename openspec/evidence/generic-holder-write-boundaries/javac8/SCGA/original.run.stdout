@@ -1,0 +1,6 @@
+same-class:same-class
+fieldValue=null
+fieldGenericType=T
+classvars=1
+method=main methodvars=0 parameterGenericType=java.lang.String[]
+method=put methodvars=0 parameterGenericType=T

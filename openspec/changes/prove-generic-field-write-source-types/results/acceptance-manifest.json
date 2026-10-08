@@ -1,0 +1,31 @@
+{
+  "baseline": "2dea3217f10eab2b9d6d58e97a9a39d96e6e4d86",
+  "baseline_cli_sha256": "851fca807325fd2820495ec8f2fb87b6a0123b12d334e023567d89490d45ff41",
+  "candidate_cli_sha256": "51509e377efcd47a8279d5346746ab77bf94f5199fdcf06403a3cea939a8d078",
+  "production_source_sha256": {
+    "src/class_source.rs": "3ad7f38843ab65207c66000cfd1fded3cb6865c86b141a8f65bd30390473b103",
+    "src/facade.rs": "9a72ac37c4de83ec30471be6c107ced85a8ae29b30eb504fbf56c236c415b1f5",
+    "crates/jarde-java/src/build.rs": "42fdcf231d7e410ed3150d76b19f9608c095a756c1f6a8143ef8193da300f355",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8"
+  },
+  "jdk_homes": {
+    "javac8": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+    "javac23": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+  },
+  "source_sha256": {
+    "openspec/evidence/generic-holder-write-boundaries/ArrayObjectSetter/source/ArrayObjectSetter.java": "8f1238d3abe429bddbe0a518afc0eaa5369610cb414ab25447789dafc41ecb95",
+    "openspec/evidence/generic-holder-write-boundaries/ArraySetter/source/ArraySetter.java": "482ac7080dae2d69834788092de0004a02bb04898d5316f77e82b2b5e6b63c5a",
+    "openspec/evidence/generic-holder-write-boundaries/CrossSetter/source/CrossSetter.java": "42bd018e593827dfc367a293234f191c6d2c2e7befd1257795622497448f6647",
+    "openspec/evidence/generic-holder-write-boundaries/DeferredSetter/source/DeferredSetter.java": "3a1bae0c7c8649c88da51c363be239ac3d3c5cd6d287e8c498300bf579f0c7b2",
+    "openspec/evidence/generic-holder-write-boundaries/Hold/source/Hold.java": "cc4cc3469cab77ec43cf9e93d194ebdf4e6cc9d6587f28306d91a415b50caa84",
+    "openspec/evidence/generic-holder-write-boundaries/MixedSetter/source/MixedSetter.java": "09569011f1ca0742ea6863ba18b4a4caa7b0d7a87685a402c59c8109feeee77e",
+    "openspec/evidence/generic-holder-write-boundaries/NullSetter/source/NullSetter.java": "7d5f5447a082dff13c44c2fc37668966a02769ed2c259bd2f852da9cfcbaeaf9",
+    "openspec/evidence/generic-holder-write-boundaries/ObjectHold/source/ObjectHold.java": "4c5b8fb8a20c9e5e44edf502efdd1854dc376ed96ed5cb63347c0a648874331f",
+    "openspec/evidence/generic-holder-write-boundaries/ObjectSetter/source/ObjectSetter.java": "0022639592a1e5373e40a55fbd514cea9b8da89fe20c8220242f3be9b0f2a1e9",
+    "openspec/evidence/generic-holder-write-boundaries/RawListField/source/RawListField.java": "6b47720903441708be5fc646e165315707c81c1ce16de0ce0aed37ce3178f6a5",
+    "openspec/evidence/generic-holder-write-boundaries/SCGA/source/SCGA.java": "5be4580f33be3500139600b24965670a2a9484a5d2aa9fe8e181edec316944eb",
+    "openspec/evidence/generic-holder-write-boundaries/SCGB/source/SCGB.java": "7881e02c16a6ad43929032edee05119dec552b5c204bae8702e458325f4f60fd",
+    "openspec/evidence/generic-holder-write-boundaries/ShadowSetter/source/ShadowSetter.java": "0114b238e74a340b393ab8c8dab0c9320cfd286615290856ef06cad7d26f26ea",
+    "openspec/evidence/generic-holder-write-boundaries/TypedSetter/source/TypedSetter.java": "722b950805b21bd82e1b1fad7959bab72dd26780d0dfb90504d1df9630ccdaa9"
+  }
+}

@@ -1,0 +1,23 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.16s
+     Running tests/same_class_generic_binding.rs (/Users/lordcasser/workspace/projects/jarde/target/debug/deps/same_class_generic_binding-92c8a8247a2a16df)
+
+running 15 tests
+test adjacent_same_arity_overload_keeps_the_binding_refusal ... ok
+test budget_and_cancellation_never_publish_a_partial_binding_projection ... ok
+test deferred_same_class_writer_settles_before_its_generic_field ... ok
+test essential_and_all_evidence_admit_the_same_binding_projections ... ok
+test field_shadowing_projection_keeps_the_own_field_binding ... ok
+test frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs ... ok
+test generic_field_write_sources_keep_the_frozen_safe_and_unsafe_boundaries ... ok
+test published_raw_class_bound_keeps_its_unchecked_parameterized_field_assignment ... ok
+test raw_reference_parameters_keep_array_and_static_assignments ... ok
+test receiver_consumed_field_read_keeps_the_field_refusal ... ok
+test same_class_field_read_write_proves_binding_and_reflects_like_the_original ... ok
+test same_class_method_call_proves_binding_and_reflects_like_the_original ... ok
+test unconsumed_same_class_pool_entries_do_not_block_projection ... ok
+test unproved_field_write_sources_and_shadowed_types_keep_erased_fields ... ok
+test z1_family_replays_item_by_item_after_the_binding_proof ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 18.33s
+

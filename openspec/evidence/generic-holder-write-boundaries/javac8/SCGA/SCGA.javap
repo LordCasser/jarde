@@ -1,0 +1,123 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/SCGA/SCGA.jar!/SCGA.class
+  Last modified 2026-10-8; size 883 bytes
+  MD5 checksum cfc40bd627f10e7bb335e70eb547da9d
+public class SCGA<T extends java.lang.Comparable<T>> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #16.#30        // java/lang/Object."<init>":()V
+   #2 = Methodref          #31.#32        // java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+   #3 = Fieldref           #4.#33         // SCGA.v:Ljava/lang/Comparable;
+   #4 = Class              #34            // SCGA
+   #5 = Methodref          #4.#30         // SCGA."<init>":()V
+   #6 = String             #35            // same-class
+   #7 = Methodref          #4.#36         // SCGA.put:(Ljava/lang/Comparable;)V
+   #8 = Fieldref           #37.#38        // java/lang/System.out:Ljava/io/PrintStream;
+   #9 = Class              #39            // java/lang/StringBuilder
+  #10 = Methodref          #9.#30         // java/lang/StringBuilder."<init>":()V
+  #11 = String             #40            // same-class:
+  #12 = Methodref          #9.#41         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #13 = Class              #42            // java/lang/String
+  #14 = Methodref          #9.#43         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #15 = Methodref          #44.#45        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #16 = Class              #46            // java/lang/Object
+  #17 = Utf8               v
+  #18 = Utf8               Ljava/lang/Comparable;
+  #19 = Utf8               Signature
+  #20 = Utf8               TT;
+  #21 = Utf8               <init>
+  #22 = Utf8               ()V
+  #23 = Utf8               Code
+  #24 = Utf8               put
+  #25 = Utf8               (Ljava/lang/Comparable;)V
+  #26 = Utf8               (TT;)V
+  #27 = Utf8               main
+  #28 = Utf8               ([Ljava/lang/String;)V
+  #29 = Utf8               <T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;
+  #30 = NameAndType        #21:#22        // "<init>":()V
+  #31 = Class              #47            // java/util/Collections
+  #32 = NameAndType        #48:#49        // singletonList:(Ljava/lang/Object;)Ljava/util/List;
+  #33 = NameAndType        #17:#18        // v:Ljava/lang/Comparable;
+  #34 = Utf8               SCGA
+  #35 = Utf8               same-class
+  #36 = NameAndType        #24:#25        // put:(Ljava/lang/Comparable;)V
+  #37 = Class              #50            // java/lang/System
+  #38 = NameAndType        #51:#52        // out:Ljava/io/PrintStream;
+  #39 = Utf8               java/lang/StringBuilder
+  #40 = Utf8               same-class:
+  #41 = NameAndType        #53:#54        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #42 = Utf8               java/lang/String
+  #43 = NameAndType        #55:#56        // toString:()Ljava/lang/String;
+  #44 = Class              #57            // java/io/PrintStream
+  #45 = NameAndType        #58:#59        // println:(Ljava/lang/String;)V
+  #46 = Utf8               java/lang/Object
+  #47 = Utf8               java/util/Collections
+  #48 = Utf8               singletonList
+  #49 = Utf8               (Ljava/lang/Object;)Ljava/util/List;
+  #50 = Utf8               java/lang/System
+  #51 = Utf8               out
+  #52 = Utf8               Ljava/io/PrintStream;
+  #53 = Utf8               append
+  #54 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #55 = Utf8               toString
+  #56 = Utf8               ()Ljava/lang/String;
+  #57 = Utf8               java/io/PrintStream
+  #58 = Utf8               println
+  #59 = Utf8               (Ljava/lang/String;)V
+{
+  public T v;
+    descriptor: Ljava/lang/Comparable;
+    flags: ACC_PUBLIC
+    Signature: #20                          // TT;
+
+  public SCGA();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void put(T);
+    descriptor: (Ljava/lang/Comparable;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_1
+         1: invokestatic  #2                  // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+         4: pop
+         5: aload_0
+         6: aload_1
+         7: putfield      #3                  // Field v:Ljava/lang/Comparable;
+        10: return
+    Signature: #26                          // (TT;)V
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: new           #4                  // class SCGA
+         3: dup
+         4: invokespecial #5                  // Method "<init>":()V
+         7: astore_1
+         8: aload_1
+         9: ldc           #6                  // String same-class
+        11: invokevirtual #7                  // Method put:(Ljava/lang/Comparable;)V
+        14: getstatic     #8                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        17: new           #9                  // class java/lang/StringBuilder
+        20: dup
+        21: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+        24: ldc           #11                 // String same-class:
+        26: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        29: aload_1
+        30: getfield      #3                  // Field v:Ljava/lang/Comparable;
+        33: checkcast     #13                 // class java/lang/String
+        36: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        39: invokevirtual #14                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        42: invokevirtual #15                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        45: return
+}
+Signature: #29                          // <T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;

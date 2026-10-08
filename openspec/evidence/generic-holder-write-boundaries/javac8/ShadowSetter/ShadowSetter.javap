@@ -1,0 +1,54 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/ShadowSetter/ShadowSetter.jar!/ShadowSetter.class
+  Last modified 2026-10-8; size 348 bytes
+  MD5 checksum 8538f8635760cad2097c0ebd94c62657
+public class ShadowSetter<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#16         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#17         // ShadowSetter.v:Ljava/lang/Object;
+   #3 = Class              #18            // ShadowSetter
+   #4 = Class              #19            // java/lang/Object
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               put
+  #13 = Utf8               (Ljava/lang/Object;)V
+  #14 = Utf8               <T:Ljava/lang/Object;>(TT;)V
+  #15 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #16 = NameAndType        #9:#10         // "<init>":()V
+  #17 = NameAndType        #5:#6          // v:Ljava/lang/Object;
+  #18 = Utf8               ShadowSetter
+  #19 = Utf8               java/lang/Object
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public ShadowSetter();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public <T extends java.lang.Object> void put(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #2                  // Field v:Ljava/lang/Object;
+         5: return
+    Signature: #14                          // <T:Ljava/lang/Object;>(TT;)V
+}
+Signature: #15                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
