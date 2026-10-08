@@ -7457,16 +7457,6 @@ fn prove_local_assignments(
                 shape.written,
                 merges.as_ref().expect("the merge index was built above"),
             );
-            // A slice an instruction of which can enter a handler is admitted only where the
-            // assignment is not written at all: the eliminated presentation drops the store, and a
-            // value no instruction reads is unobservable on the handler's path too. Every
-            // presentation that *writes* the assignment keeps the rule — the moved assignment would
-            // run on paths the bytecode did not run it on — which is what a protected body's own
-            // read loop states (`while ((line = r.readLine()) != null)` inside a `finally` guard's
-            // body: the read is protected, and the store's target is read nowhere).
-            if observed && shape.enters_handler {
-                continue;
-            }
             let presentation = if !observed {
                 LocalAssignmentPresentation::Eliminated
             } else if shape.slot >= parameters {
@@ -7475,13 +7465,10 @@ fn prove_local_assignments(
                 // presented it as the in-place assignment expression since it landed, with its own
                 // frozen acceptance record, and this change leaves that text byte-identical. The
                 // presentation here is the one that rule writes, at the position that rule writes
-                // it.
-                match test_kind {
-                    LocalAssignmentTest::Structure | LocalAssignmentTest::Conditional => {
-                        LocalAssignmentPresentation::Expression
-                    }
-                    LocalAssignmentTest::LoopTest => continue,
-                }
+                // it — and a loop's own test is that same position, evaluated once per iteration,
+                // where the assignment's store already stands
+                // (`recover-loop-test-copy-store`).
+                LocalAssignmentPresentation::Expression
             } else {
                 // A **parameter** target is the shape this change admits and the other rule never
                 // did (its proof skips every slot below the parameters). Its assignment is a
@@ -7490,12 +7477,30 @@ fn prove_local_assignments(
                 // not that position: hoisting the assignment past the steps that decide whether it
                 // runs at all would run it on paths the bytecode did not, and the assignment
                 // expression is the other rule's presentation, not this one's — so the shape is not
-                // proved there and keeps the refusal it has today.
+                // proved there and keeps the refusal it has today. A loop's own test is not that
+                // position either: a statement hoisted in front of a re-evaluated condition would
+                // run once where the bytecode ran it every time.
                 match test_kind {
                     LocalAssignmentTest::Structure => LocalAssignmentPresentation::Split,
                     LocalAssignmentTest::Conditional | LocalAssignmentTest::LoopTest => continue,
                 }
             };
+            // A slice an instruction of which can enter a handler is admitted only where the
+            // assignment is not *moved*: the eliminated presentation drops the store, and the
+            // in-place assignment expression writes it where the bytecode ran it — at a
+            // short-circuit step's own position, or at a loop's own test's, which the loop
+            // re-evaluates exactly as the bytecode did (`recover-loop-test-copy-store`). The split
+            // form is written in front of the structure and would run on paths the bytecode did not
+            // run it on, so it keeps the rule — which is what a protected body's own read loop
+            // states (`while ((line = r.readLine()) != null)` inside a `finally` guard's body: the
+            // read is protected, and the store's target is read nowhere).
+            if observed
+                && shape.enters_handler
+                && !(presentation == LocalAssignmentPresentation::Expression
+                    && test_kind == LocalAssignmentTest::LoopTest)
+            {
+                continue;
+            }
             if shape.slot >= parameters && presentation != LocalAssignmentPresentation::Eliminated {
                 let Some(placement) = declarations.placements.get(&variable).cloned() else {
                     continue;
