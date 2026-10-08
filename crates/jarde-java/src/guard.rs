@@ -566,6 +566,17 @@ pub enum LockGuardCompletion {
     /// value-less `return`, which the run continues at ([`Plan::join`]). The lock guard's own
     /// form.
     Void { transfer: u32, returns: u32 },
+    /// The statement's completion is carried past the release into its own continuation: the
+    /// normal path's transfer names the run's own continuation after the `finally` — a block of its
+    /// own where the goto stands alone, or the transfer's block's own tail where the goto's target
+    /// was fused into it — and the statement's own `join` is that continuation
+    /// (`recover-loop-test-copy-store`). The resource guard's form for a protected body that does
+    /// not return — `try { … } finally { r.close(); } return …;` — where the value the method
+    /// answers is built after the statement, not inside it.
+    Continues {
+        transfer: u32,
+        continuation: Continuation,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -605,6 +616,22 @@ pub enum SharedFinallyCompletion {
         transfers: [u32; 2],
         saves: [u32; 2],
     },
+}
+
+/// Where a `Continues` completion hands the run to after the statement.
+///
+/// A `finally`'s normal path ends in the `goto` that carries the body's completion past the release
+/// (`recover-loop-test-copy-store`). The canonical graph keeps that target a block of its own when
+/// the transfer's block has another edge (the protected range's own exception edge, say), and fuses
+/// it into the transfer's block when the two run as one node — so the continuation is either the
+/// block the transfer names or the transfer's own block's tail.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Continuation {
+    /// The transfer names a block of its own, reached from nowhere else: the run continues there.
+    Block(CanonicalBlockId),
+    /// The transfer's target was fused into the transfer's own block: the continuation is the
+    /// block's tail after the transfer, an instruction span, and the run ends where the block does.
+    Tail { span: (u32, u32) },
 }
 
 /// One proved guarded region: the shape, the body it guards, every block it owns, and where the run
@@ -4077,6 +4104,12 @@ fn prove_lock_guard_finally(
     let join = match completion {
         LockGuardCompletion::SavedReturn { .. } => None,
         LockGuardCompletion::Void { returns, .. } => facts.block_at(returns),
+        LockGuardCompletion::Continues {
+            ref continuation, ..
+        } => match continuation {
+            Continuation::Block(block) => Some(block.clone()),
+            Continuation::Tail { .. } => None,
+        },
     };
     Ok(Some(Plan {
         shape: Shape::LockGuardFinally {
@@ -4348,11 +4381,86 @@ fn prove_resource_guard_finally(
             )
         }
         Some(&Operation::Transfer) => {
-            // The transfer form — the body's completion carried past the close into the statement's
-            // own continuation — is not this certificate's. `readAll`'s interrupted read and the
-            // fixed CF-16 void loop both end here, and both keep the answers they had: the copy
-            // family's registered boundary and the fixed certificate's own presentation.
-            return Ok(None);
+            let Some(cleanup_start) = normal_middle.len().checked_sub(handler_cleanup.len()) else {
+                return Ok(None);
+            };
+            let normal_cleanup = &normal_middle[cleanup_start..];
+            // The transfer's one successor is the statement's own continuation: the block the run
+            // continues at after the `finally`, reached from nowhere else. The body's completion is
+            // carried past the close into it (`recover-loop-test-copy-store`): the source's
+            // `try { … } finally { r.close(); }` whose body does not return, so what follows the
+            // statement — the value the method answers is built there — is a statement of the run
+            // and not of the guard.
+            let Some(normal_block) = facts.block_of(normal_last) else {
+                return Ok(None);
+            };
+            let continuation = match facts.view.successor_ids(normal_block).as_slice() {
+                [continuation] => {
+                    let (Some(continuation_node), Some(normal_node)) = (
+                        facts.view.index_of(continuation),
+                        facts.view.index_of(normal_block),
+                    ) else {
+                        return Ok(None);
+                    };
+                    if facts.view.predecessors(continuation_node) != [normal_node] {
+                        return Ok(None);
+                    }
+                    Continuation::Block(continuation.clone())
+                }
+                // The goto's target was fused into the transfer's own block — a single-predecessor
+                // chain — so the continuation is that block's tail after the transfer and the run
+                // ends where the block does. Only a tail the Java writer can state as the
+                // statements it is may be read this way: every instruction but the last is a
+                // straight one (the transfer's own target is the tail's first instruction, so
+                // nothing else enters it), and the last completes the run.
+                [] => {
+                    let instructions = facts.in_block(normal_block);
+                    let Some(position) = instructions
+                        .iter()
+                        .position(|instruction| instruction.bci() == normal_last)
+                    else {
+                        return Ok(None);
+                    };
+                    let tail = &instructions[position + 1..];
+                    let Some((last, straight)) = tail.split_last() else {
+                        return Ok(None);
+                    };
+                    let Some(first) = straight.first() else {
+                        return Ok(None);
+                    };
+                    if straight.iter().any(|instruction| {
+                        !matches!(
+                            facts.op(instruction.bci()),
+                            Some(
+                                Operation::Push(_)
+                                    | Operation::Load { .. }
+                                    | Operation::Store { .. }
+                                    | Operation::Arithmetic { .. }
+                                    | Operation::Negate
+                                    | Operation::PrimitiveConversion { .. }
+                                    | Operation::Invoke(_)
+                                    | Operation::Field { .. }
+                                    | Operation::Transfer
+                            )
+                        )
+                    }) || !matches!(
+                        facts.op(last.bci()),
+                        Some(Operation::Return | Operation::Throw)
+                    ) {
+                        return Ok(None);
+                    }
+                    let span = (first.bci(), facts.span_end(last.bci()));
+                    Continuation::Tail { span }
+                }
+                _ => return Ok(None),
+            };
+            (
+                normal_cleanup,
+                LockGuardCompletion::Continues {
+                    transfer: normal_last,
+                    continuation,
+                },
+            )
         }
         _ => return Ok(None),
     };
@@ -4567,8 +4675,24 @@ fn prove_resource_guard_finally(
     owned.sort_by_key(CanonicalBlockId::bci);
     let end = facts.span_end(rethrow);
     let origins: Vec<u32> = facts.bcis((body_row.start_bci, end));
-    // The run continues nowhere of its own: the saved value's return is written inside the body.
-    let join = None;
+    // The run continues nowhere of its own where the body writes its own return; the continuation
+    // completion joins the block its transfer names, which is the statement's own lexical successor
+    // and no block the statement owns.
+    let join = match completion {
+        LockGuardCompletion::SavedReturn { .. } => None,
+        LockGuardCompletion::Continues {
+            ref continuation, ..
+        } => match continuation {
+            Continuation::Block(block) => Some(block.clone()),
+            Continuation::Tail { .. } => None,
+        },
+        LockGuardCompletion::Void { returns, .. } => facts.block_at(returns),
+    };
+    if let Some(join) = join.as_ref()
+        && owned.contains(join)
+    {
+        return Ok(None);
+    }
     Ok(Some(Plan {
         shape: Shape::ResourceGuardFinally {
             rows: rows.iter().map(|row| row.ordinal).collect(),

@@ -6430,7 +6430,8 @@ impl Walker<'_> {
         };
         let save = match completion {
             crate::guard::LockGuardCompletion::SavedReturn { save, .. } => Some(*save),
-            crate::guard::LockGuardCompletion::Void { .. } => None,
+            crate::guard::LockGuardCompletion::Void { .. }
+            | crate::guard::LockGuardCompletion::Continues { .. } => None,
         };
         self.bounded_shared_finally_body(
             start,
@@ -6465,7 +6466,8 @@ impl Walker<'_> {
         };
         let save = match completion {
             crate::guard::LockGuardCompletion::SavedReturn { save, .. } => Some(*save),
-            crate::guard::LockGuardCompletion::Void { .. } => None,
+            crate::guard::LockGuardCompletion::Void { .. }
+            | crate::guard::LockGuardCompletion::Continues { .. } => None,
         };
         // The body row is the first of the set: it is the one whose range is the protected body, and
         // the rows beside it cover the handler's binding store alone.
