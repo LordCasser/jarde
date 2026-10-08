@@ -19,6 +19,8 @@ Using `CARGO_TARGET_DIR=/Users/lordcasser/workspace/projects/jarde/target CARGO_
 
 The frozen `NoCheck` and `NoStand` originals were independently verified by root on OpenJDK 23 and Corretto 8 as `creation=ok`, then `invocation=NPE`; this implementation intentionally emits no bound reference for them. Full workspace tests, clippy, both-JDK full-class replay, and OpenSpec strict validation remain with root (tasks 2.1–2.2).
 
+The BRN `nullableParameter` refusal expectation now quotes `@bytecode 12 7 2 0 1`: both frozen BRN legs' `javap -c` show `dup` at BCI 2, `invokedynamic` factory at BCI 7, and `Optional.ifPresent` consumer at BCI 12. The additional `7 2` origins preserve the refused factory and its capture producer; the refusal text and every other assertion remain unchanged. This is an expected provenance expansion, not a changed semantic result.
+
 ## Artifacts and limits
 
 No new Cargo target directory was created; builds used the existing shared target above. The positive source/class fixture is under `openspec/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/positive/`. No temporary build fixture was created in `/tmp` by this implementation. Class-literal duplicate-shape recovery remains deferred and must not be inferred from this change.
