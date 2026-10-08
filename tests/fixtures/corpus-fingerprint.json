@@ -7622,6 +7622,96 @@
       "path": "tests/fixtures/recover-boxed-number-widening/v8/C8.class"
     },
     {
+      "blake3": "d3cb4769f9fa5e127f09c3a7fc1cfa4f05d75cdb76efa086962eef1f57550cab",
+      "bytes": 2066,
+      "path": "tests/fixtures/recover-branching-guard-body/BG.java"
+    },
+    {
+      "blake3": "c208a434c1dd21a3bfa525c46611cb4fae2c3ec526fc5eac35fd978db31df00f",
+      "bytes": 3501,
+      "path": "tests/fixtures/recover-branching-guard-body/BGNegatives.java"
+    },
+    {
+      "blake3": "48c5163c39a86a9bf9c6444cd2ac366b4801c69c9a5ea3f7ad29619e1b6f8ae8",
+      "bytes": 1947,
+      "path": "tests/fixtures/recover-branching-guard-body/BGOrder.java"
+    },
+    {
+      "blake3": "8fc6caa889c682b247a16f8aac9a5ca8192d5d0d90c8a9be3657795805c2ce4f",
+      "bytes": 2740,
+      "path": "tests/fixtures/recover-branching-guard-body/BGOrderDriver.java"
+    },
+    {
+      "blake3": "c62060e6a11bad4135d20834425d9f5cb016ed14c726031e138db3da55fb5e3b",
+      "bytes": 2504,
+      "path": "tests/fixtures/recover-branching-guard-body/BGProbe.java"
+    },
+    {
+      "blake3": "5a399953b50e89241432602f85ae7e34f7513e3733343180a067311b33b8116d",
+      "bytes": 1884,
+      "path": "tests/fixtures/recover-branching-guard-body/Order.java"
+    },
+    {
+      "blake3": "29d6d9a2e8349ad63a604324f40f1f688387a1d2ace54d48d6d6916cfe6a7f22",
+      "bytes": 752,
+      "path": "tests/fixtures/recover-branching-guard-body/v8-javac8/BG.class"
+    },
+    {
+      "blake3": "71c9175a3d888da700474da87cfd33f053521c1b11d20f36b35eb2b7bbf89928",
+      "bytes": 1221,
+      "path": "tests/fixtures/recover-branching-guard-body/v8-javac8/BGNegatives.class"
+    },
+    {
+      "blake3": "4d8a37019cdac398e89eb069f0432fc92778f93b10346241cab0e4afecea20f9",
+      "bytes": 962,
+      "path": "tests/fixtures/recover-branching-guard-body/v8-javac8/BGOrder.class"
+    },
+    {
+      "blake3": "d69b0eb3296735f767ee84a828d209057b70fd80315ebed8af1cf2c0932b7da5",
+      "bytes": 1822,
+      "path": "tests/fixtures/recover-branching-guard-body/v8-javac8/BGOrderDriver.class"
+    },
+    {
+      "blake3": "b5e4f6bc0f9294574bfbd2543244280d1e22a92d48dc73a66544287303d85023",
+      "bytes": 848,
+      "path": "tests/fixtures/recover-branching-guard-body/v8-javac8/BGProbe.class"
+    },
+    {
+      "blake3": "974cc564ee8b880bcd44c8cfb3b98f8433809ba9db04359e367d1eaae83667af",
+      "bytes": 1367,
+      "path": "tests/fixtures/recover-branching-guard-body/v8-javac8/Order.class"
+    },
+    {
+      "blake3": "7b950baf0077f46806207e5e63a5962ab9adddd51f8346f4e0c1aa637f86eac3",
+      "bytes": 752,
+      "path": "tests/fixtures/recover-branching-guard-body/v8/BG.class"
+    },
+    {
+      "blake3": "36ca77c370d2b3035721d6fe897012f6958aee223653ab9713b3e919eaf4eb6f",
+      "bytes": 1221,
+      "path": "tests/fixtures/recover-branching-guard-body/v8/BGNegatives.class"
+    },
+    {
+      "blake3": "d223cd4ca6114deceb9762a5fd04ca3840d704ef712d15237b7bc5000a8ccf64",
+      "bytes": 962,
+      "path": "tests/fixtures/recover-branching-guard-body/v8/BGOrder.class"
+    },
+    {
+      "blake3": "d69b0eb3296735f767ee84a828d209057b70fd80315ebed8af1cf2c0932b7da5",
+      "bytes": 1822,
+      "path": "tests/fixtures/recover-branching-guard-body/v8/BGOrderDriver.class"
+    },
+    {
+      "blake3": "255e355135333c95a8976b7130adaa85bbcfbd7c7b01e877a5c6dbc8b9e13476",
+      "bytes": 848,
+      "path": "tests/fixtures/recover-branching-guard-body/v8/BGProbe.class"
+    },
+    {
+      "blake3": "c626a858d823b9bc128e580d5d892ebe221d74e97039736f321eb397c22b2673",
+      "bytes": 1367,
+      "path": "tests/fixtures/recover-branching-guard-body/v8/Order.class"
+    },
+    {
       "blake3": "e7ac9292a93c6bf9b27f4fd9dde5ac89daaa8c297d39943cc339f79a3505f2d1",
       "bytes": 1682,
       "path": "tests/fixtures/recover-chained-field-assignment/CF.java"
