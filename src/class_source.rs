@@ -87,7 +87,7 @@ use jarde_reader::classfile::{
     cp_entry, descriptor_facts,
 };
 use jarde_reader::signature::{
-    ClassSignatureErasureProof, SignatureType, TypeArgument, TypeParameterErasure,
+    ClassSignatureErasureProof, SignatureType, TypeArgument, TypeParameter, TypeParameterErasure,
     parse_class_signature, parse_field_signature, parse_method_signature,
     prove_class_signature_erasure, prove_field_signature_erasure_with_class_scope,
     prove_method_signature_erasure_with_class_scope,
@@ -2237,21 +2237,44 @@ pub(crate) struct SameClassInvokeUse {
 }
 
 /// One physically decoded field access of the selected class's own body set. A write site carries
-/// `None`: an assignment into the physical field stays legal under the projected type because the
-/// reader already proved the `Signature`'s erasure is the descriptor and the bytes verified the
-/// stored value against that descriptor, so the source keeps compiling as the unchecked assignment
-/// it already was. A read site carries the SSA-side classification of what the loaded value feeds:
-/// `Some(true)` only when every consumer keeps accepting the parameterized value (an
+/// its source-level proof when the RHS is one of the narrowly supported same-scope parameter,
+/// literal-null, or completed raw-allocation forms; an absent proof makes the projected field
+/// unsafe for that writer. A read site carries the SSA-side classification of what the loaded
+/// value feeds: `Some(true)` only when every consumer keeps accepting the parameterized value (an
 /// `Object`-parameter argument position, or a consumer that does not select members on it).
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct SameClassFieldUse {
     pub(crate) caller: String,
+    pub(crate) physical_method: PhysicalMethodId,
     pub(crate) bci: u32,
     pub(crate) opcode: u8,
     pub(crate) owner: Vec<u8>,
     pub(crate) name: Vec<u8>,
     pub(crate) descriptor: Vec<u8>,
     pub(crate) read_expressible: Option<bool>,
+    pub(crate) write_source: Option<SameClassFieldWriteSource>,
+    pub(crate) source_complete: bool,
+}
+
+/// A narrowly proved source for one same-class field write. `None` on the use site means the
+/// physical write was decoded but its value did not match one of these closed shapes.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum SameClassFieldWriteSource {
+    Null,
+    Parameter { method: PhysicalMethodId, slot: u16 },
+    RawAllocation { owner: Vec<u8> },
+}
+
+/// The actual source parameter types and declared method bounds a completed same-class method
+/// record publishes. Generic facts are present only when that method's own `Signature` projected
+/// successfully; otherwise only the physical descriptor is available to the field-write proof.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassPublishedMethodParameters {
+    pub(crate) method: PhysicalMethodId,
+    pub(crate) parameter_slots: Vec<u16>,
+    pub(crate) descriptor_parameters: Vec<Vec<u8>>,
+    pub(crate) generic_parameters: Option<Vec<SignatureType>>,
+    pub(crate) method_type_parameters: Vec<TypeParameter>,
 }
 
 /// A member a readable but non-body reference source names: an `ldc` method handle or a
@@ -2430,17 +2453,409 @@ pub(crate) fn prove_same_class_field_binding(
 }
 
 /// The same-class field sites, with their callers and BCIs, for a proven field's source note.
-pub(crate) fn same_class_field_use_note(facts: &SameClassUseFacts, name: &[u8]) -> String {
+pub(crate) fn same_class_field_use_note(
+    facts: &SameClassUseFacts,
+    name: &[u8],
+    budget: &mut Budget,
+) -> Result<String> {
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(facts.field_uses.len()).unwrap_or(u64::MAX),
+    )?;
     let mut sites = Vec::new();
     for use_site in facts.field_uses {
+        budget.poll()?;
         if use_site.name == name && sites.len() < 4 {
             sites.push(format!("{}@{}", use_site.caller, use_site.bci));
         }
     }
     if sites.is_empty() {
-        return "no consumed same-class entry".to_owned();
+        return Ok("no consumed same-class entry".to_owned());
     }
-    format!("same-class uses at {}", sites.join(", "))
+    Ok(format!("same-class uses at {}", sites.join(", ")))
+}
+
+fn class_scope_variable(name: &[u8], class_scope: &[TypeParameterErasure]) -> bool {
+    class_scope.iter().any(|parameter| parameter.name == name)
+}
+
+fn charge_signature_type_proof(ty: &SignatureType, budget: &mut Budget) -> Result<u64> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    match ty {
+        SignatureType::Base(_) => Ok(0),
+        SignatureType::TypeVariable(_) => Ok(1),
+        SignatureType::Array(element) => charge_signature_type_proof(element, budget),
+        SignatureType::Class(class) => {
+            let mut variable_count = 0_u64;
+            for segment in &class.segments {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                for argument in &segment.arguments {
+                    budget.poll()?;
+                    match argument {
+                        TypeArgument::Any => {
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                        }
+                        TypeArgument::Exact(ty)
+                        | TypeArgument::Extends(ty)
+                        | TypeArgument::Super(ty) => {
+                            variable_count = variable_count
+                                .saturating_add(charge_signature_type_proof(ty, budget)?);
+                        }
+                    }
+                }
+            }
+            Ok(variable_count)
+        }
+    }
+}
+
+fn charge_field_write_source_proof(
+    source: &SameClassFieldWriteSource,
+    target: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    methods: &[SameClassPublishedMethodParameters],
+    budget: &mut Budget,
+) -> Result<()> {
+    let target_variables = charge_signature_type_proof(target, budget)?;
+    match source {
+        SameClassFieldWriteSource::Null => {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        }
+        SameClassFieldWriteSource::RawAllocation { owner } => {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(owner.len()).unwrap_or(u64::MAX),
+            )?;
+        }
+        SameClassFieldWriteSource::Parameter { method, slot } => {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(methods.len()).unwrap_or(u64::MAX),
+            )?;
+            budget.poll()?;
+            let Some(method) = methods.iter().find(|candidate| candidate.method == *method) else {
+                return Ok(());
+            };
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(method.parameter_slots.len()).unwrap_or(u64::MAX),
+            )?;
+            budget.poll()?;
+            if let Some(position) = method
+                .parameter_slots
+                .iter()
+                .position(|candidate| candidate == slot)
+            {
+                if let Some(source) = method
+                    .generic_parameters
+                    .as_ref()
+                    .and_then(|parameters| parameters.get(position))
+                {
+                    if let Some(descriptor) = method.descriptor_parameters.get(position) {
+                        budget.charge(
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(descriptor.len()).unwrap_or(u64::MAX),
+                        )?;
+                    }
+                    let source_variables = charge_signature_type_proof(source, budget)?;
+                    budget.charge(
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(
+                            class_scope
+                                .len()
+                                .saturating_add(method.method_type_parameters.len()),
+                        )
+                        .unwrap_or(u64::MAX)
+                        .saturating_mul(target_variables.max(source_variables)),
+                    )?;
+                    if let SignatureType::TypeVariable(name) = source {
+                        for parameter in &method.method_type_parameters {
+                            budget.poll()?;
+                            if parameter.name != *name {
+                                continue;
+                            }
+                            if let Some(bound) = &parameter.class_bound {
+                                charge_signature_type_proof(bound, budget)?;
+                            }
+                            for bound in &parameter.interface_bounds {
+                                charge_signature_type_proof(bound, budget)?;
+                            }
+                        }
+                    }
+                } else if let Some(descriptor) = method.descriptor_parameters.get(position) {
+                    budget.charge(
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(descriptor.len()).unwrap_or(u64::MAX),
+                    )?;
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn class_type_arguments_present(ty: &SignatureType) -> bool {
+    match ty {
+        SignatureType::Array(element) => class_type_arguments_present(element),
+        SignatureType::Class(class) => class
+            .segments
+            .iter()
+            .any(|segment| !segment.arguments.is_empty()),
+        SignatureType::Base(_) | SignatureType::TypeVariable(_) => false,
+    }
+}
+
+fn signature_types_same_class_binding(
+    left: &SignatureType,
+    right: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    method_binders: &[jarde_reader::signature::TypeParameter],
+) -> bool {
+    match (left, right) {
+        (SignatureType::Base(left), SignatureType::Base(right)) => left == right,
+        (SignatureType::Array(left), SignatureType::Array(right)) => {
+            signature_types_same_class_binding(left, right, class_scope, method_binders)
+        }
+        (SignatureType::TypeVariable(left), SignatureType::TypeVariable(right)) => {
+            left == right
+                && class_scope_variable(left, class_scope)
+                && !method_binders.iter().any(|binder| binder.name == *left)
+        }
+        (SignatureType::Class(left), SignatureType::Class(right)) => {
+            left.segments.len() == right.segments.len()
+                && left
+                    .segments
+                    .iter()
+                    .zip(&right.segments)
+                    .all(|(left, right)| {
+                        left.binary_name == right.binary_name
+                            && left.arguments.len() == right.arguments.len()
+                            && left
+                                .arguments
+                                .iter()
+                                .zip(&right.arguments)
+                                .all(|(left, right)| match (left, right) {
+                                    (TypeArgument::Any, TypeArgument::Any) => true,
+                                    (TypeArgument::Exact(left), TypeArgument::Exact(right))
+                                    | (TypeArgument::Extends(left), TypeArgument::Extends(right))
+                                    | (TypeArgument::Super(left), TypeArgument::Super(right)) => {
+                                        signature_types_same_class_binding(
+                                            left,
+                                            right,
+                                            class_scope,
+                                            method_binders,
+                                        )
+                                    }
+                                    _ => false,
+                                })
+                    })
+        }
+        _ => false,
+    }
+}
+
+fn signature_class_erasure(ty: &SignatureType) -> Option<&[u8]> {
+    let SignatureType::Class(class) = ty else {
+        return None;
+    };
+    class
+        .segments
+        .last()
+        .map(|segment| segment.binary_name.as_slice())
+}
+
+fn descriptor_reference_shape(descriptor: &[u8]) -> Option<(u32, Vec<u8>)> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
+    let component = facts.single()?;
+    let Base::Object(name) = component.base() else {
+        return None;
+    };
+    Some((component.dimensions(), name.0.clone()))
+}
+
+fn signature_reference_shape(ty: &SignatureType) -> Option<(u32, &[u8])> {
+    let mut dimensions = 0_u32;
+    let mut base = ty;
+    while let SignatureType::Array(element) = base {
+        dimensions = dimensions.checked_add(1)?;
+        base = element;
+    }
+    Some((dimensions, signature_class_erasure(base)?))
+}
+
+fn signature_raw_reference_matches_descriptor(ty: &SignatureType, descriptor: &[u8]) -> bool {
+    if class_type_arguments_present(ty) {
+        return false;
+    }
+    let Some((signature_dimensions, signature_name)) = signature_reference_shape(ty) else {
+        return false;
+    };
+    let Some((descriptor_dimensions, descriptor_name)) = descriptor_reference_shape(descriptor)
+    else {
+        return false;
+    };
+    signature_dimensions == descriptor_dimensions && signature_name == descriptor_name
+}
+
+fn raw_parameter_assignable(descriptor: &[u8], target: &SignatureType, java_release: u16) -> bool {
+    let Some((source_dimensions, source_name)) = descriptor_reference_shape(descriptor) else {
+        return false;
+    };
+    raw_reference_assignable(source_dimensions, &source_name, target, java_release)
+}
+
+fn raw_reference_assignable(
+    source_dimensions: u32,
+    source_name: &[u8],
+    target: &SignatureType,
+    java_release: u16,
+) -> bool {
+    let Some((target_dimensions, target_name)) = signature_reference_shape(target) else {
+        return false;
+    };
+    if source_dimensions != target_dimensions {
+        return false;
+    }
+    if source_name == target_name {
+        return true;
+    }
+    let (Ok(source_name), Ok(target_name)) = (
+        std::str::from_utf8(source_name),
+        std::str::from_utf8(target_name),
+    ) else {
+        return false;
+    };
+    let source_name = source_name.replace('/', ".");
+    let target_name = target_name.replace('/', ".");
+    jarde_java::release_reference_argument_widens(java_release, &source_name, &target_name)
+}
+
+fn raw_method_type_variable_bound<'a>(
+    source: &SignatureType,
+    method: &'a SameClassPublishedMethodParameters,
+    descriptor: &[u8],
+) -> Option<&'a [u8]> {
+    let SignatureType::TypeVariable(name) = source else {
+        return None;
+    };
+    let mut parameters = method
+        .method_type_parameters
+        .iter()
+        .filter(|parameter| parameter.name == *name);
+    let parameter = parameters.next()?;
+    if parameters.next().is_some() || !parameter.interface_bounds.is_empty() {
+        return None;
+    }
+    let Some(SignatureType::Class(bound)) = parameter.class_bound.as_ref() else {
+        return None;
+    };
+    if bound
+        .segments
+        .iter()
+        .any(|segment| !segment.arguments.is_empty())
+    {
+        return None;
+    }
+    let bound_name = bound.segments.last()?.binary_name.as_slice();
+    let Some((0, descriptor_name)) = descriptor_reference_shape(descriptor) else {
+        return None;
+    };
+    (bound_name == descriptor_name.as_slice()).then_some(bound_name)
+}
+
+fn field_write_source_assignable(
+    source: &SameClassFieldWriteSource,
+    target: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    methods: &[SameClassPublishedMethodParameters],
+    java_release: u16,
+) -> bool {
+    match source {
+        SameClassFieldWriteSource::Null => true,
+        SameClassFieldWriteSource::RawAllocation { owner } => {
+            if !matches!(target, SignatureType::Class(_)) || !class_type_arguments_present(target) {
+                return false;
+            }
+            raw_reference_assignable(0, owner, target, java_release)
+        }
+        SameClassFieldWriteSource::Parameter { method, slot } => {
+            let mut matching = methods
+                .iter()
+                .filter(|candidate| candidate.method == *method);
+            let Some(method) = matching.next() else {
+                return false;
+            };
+            if matching.next().is_some() {
+                return false;
+            }
+            let Some(position) = method
+                .parameter_slots
+                .iter()
+                .position(|candidate| candidate == slot)
+            else {
+                return false;
+            };
+            if let Some(parameters) = &method.generic_parameters {
+                let Some(source) = parameters.get(position) else {
+                    return false;
+                };
+                let Some(descriptor) = method.descriptor_parameters.get(position) else {
+                    return false;
+                };
+                if signature_types_same_class_binding(
+                    source,
+                    target,
+                    class_scope,
+                    &method.method_type_parameters,
+                ) {
+                    return true;
+                }
+                if let Some(bound) = raw_method_type_variable_bound(source, method, descriptor)
+                    && matches!(target, SignatureType::Class(_))
+                    && class_type_arguments_present(target)
+                {
+                    return raw_reference_assignable(0, bound, target, java_release);
+                }
+                // A published Signature may still state a raw reference parameter, such as the
+                // List parameter of an otherwise-generic method. Preserve that source shape as
+                // the unchecked assignment it was; List<String> cannot enter this raw path.
+                return !class_type_arguments_present(source)
+                    && signature_raw_reference_matches_descriptor(source, descriptor)
+                    && class_type_arguments_present(target)
+                    && raw_parameter_assignable(descriptor, target, java_release);
+            }
+            method
+                .descriptor_parameters
+                .get(position)
+                .is_some_and(|descriptor| {
+                    // A raw reference (including a raw component in an array) can flow to its
+                    // parameterized counterpart through Java's existing unchecked assignment.
+                    class_type_arguments_present(target)
+                        && raw_parameter_assignable(descriptor, target, java_release)
+                })
+        }
+    }
+}
+
+fn prove_field_write_source_assignable(
+    source: &SameClassFieldWriteSource,
+    target: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    methods: &[SameClassPublishedMethodParameters],
+    java_release: u16,
+    budget: &mut Budget,
+) -> Result<bool> {
+    charge_field_write_source_proof(source, target, class_scope, methods, budget)?;
+    budget.poll()?;
+    Ok(field_write_source_assignable(
+        source,
+        target,
+        class_scope,
+        methods,
+        java_release,
+    ))
 }
 
 /// Whether one member's generic projection settled in this call, or is held for the class-level
@@ -4461,7 +4876,6 @@ fn spell_signature_type_with_spelling(
                 None;
             for segment in &class.segments {
                 budget.poll()?;
-                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
                 let mapping = unique_member_source_segment(source_type_path, &segment.binary_name)?;
                 if let Some(mapping) = mapping {
                     if !segment.arguments.is_empty()
@@ -5912,6 +6326,9 @@ pub(crate) fn project_field_signature(
     constant: Option<&MemberDefault>,
     same_class: SameClassBinding,
     same_class_note: &str,
+    same_class_field_uses: &[SameClassFieldUse],
+    published_method_parameters: &[SameClassPublishedMethodParameters],
+    java_release: u16,
     budget: &mut Budget,
 ) -> Result<SignatureProjection> {
     let shells = attribute_shells(member, b"Signature");
@@ -5937,6 +6354,50 @@ pub(crate) fn project_field_signature(
             class_scope,
             budget,
         )?;
+
+        if same_class == SameClassBinding::Proven {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(same_class_field_uses.len()).unwrap_or(u64::MAX),
+            )?;
+            for use_site in same_class_field_uses {
+                budget.poll()?;
+                if use_site.owner != class_internal
+                    || use_site.name != member.name.raw().0
+                    || use_site.descriptor != member.descriptor.raw().0
+                    || !matches!(use_site.opcode, 0xb3 | 0xb5)
+                {
+                    continue;
+                }
+                let Some(source) = use_site.write_source.as_ref() else {
+                    return Err(Error::unsupported(
+                        "field_generic_write_source_unproved",
+                        format!(
+                            "writer {}@{} has no closed SSA source",
+                            use_site.caller, use_site.bci
+                        ),
+                    ));
+                };
+                if !prove_field_write_source_assignable(
+                    source,
+                    &parsed.ty,
+                    class_scope,
+                    published_method_parameters,
+                    java_release,
+                    budget,
+                )? || (matches!(source, SameClassFieldWriteSource::RawAllocation { .. })
+                    && !use_site.source_complete)
+                {
+                    return Err(Error::unsupported(
+                        "field_generic_write_source_unproved",
+                        format!(
+                            "writer {}@{} is not source-assignable to the projected field type",
+                            use_site.caller, use_site.bci
+                        ),
+                    ));
+                }
+            }
+        }
 
         if record.declaration.is_none()
             || !record.markers.is_empty()
@@ -5987,7 +6448,9 @@ pub(crate) fn project_field_signature(
                 SameClassBinding::Unproved => {
                     return Err(Error::unsupported(
                         "field_generic_body_unproved",
-                        "a same-class Fieldref names this field and descriptor",
+                        format!(
+                            "a same-class Fieldref names this field and descriptor; {same_class_note}"
+                        ),
                     ));
                 }
             }
@@ -11639,5 +12102,391 @@ mod tests {
         assert!(read.facts.declaration.attributes[0].annotations.is_empty());
         assert!(read.facts.declaration.refusals[0].contains("cancelled:"));
         assert!(matches!(read.errors.as_slice(), [Error::Cancelled { .. }]));
+    }
+
+    #[test]
+    fn field_write_parameter_proof_distinguishes_published_generic_and_raw_parameters() {
+        use jarde_reader::signature::{ClassType, ClassTypeSegment, SignatureType, TypeArgument};
+
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let field = parse_field_signature(b"Ljava/util/List<TT;>;", &mut budget)
+            .expect("the target List<T> signature parses")
+            .ty;
+        let published =
+            parse_method_signature(b"(Ljava/util/List<Ljava/lang/String;>;)V", &mut budget)
+                .expect("the published List<String> parameter parses");
+        let raw_descriptor = b"Ljava/util/List;".to_vec();
+        let method_identity = generic_void_probe().0.item.identity;
+        let source = SameClassFieldWriteSource::Parameter {
+            method: method_identity.clone(),
+            slot: 1,
+        };
+        let class_scope = vec![jarde_reader::signature::TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Object;".to_vec(),
+        }];
+        let published_method = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![raw_descriptor.clone()],
+            generic_parameters: Some(published.parameters),
+            method_type_parameters: Vec::new(),
+        };
+        assert!(!field_write_source_assignable(
+            &source,
+            &field,
+            &class_scope,
+            &[published_method],
+            8,
+        ));
+
+        let published_raw_method = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![b"Ljava/util/List;".to_vec()],
+            generic_parameters: Some(vec![SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/util/List".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })]),
+            method_type_parameters: Vec::new(),
+        };
+        assert!(field_write_source_assignable(
+            &source,
+            &field,
+            &class_scope,
+            &[published_raw_method],
+            8,
+        ));
+        let published_raw_array_list_method = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![b"Ljava/util/ArrayList;".to_vec()],
+            generic_parameters: Some(vec![SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/util/ArrayList".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })]),
+            method_type_parameters: Vec::new(),
+        };
+        assert!(field_write_source_assignable(
+            &source,
+            &field,
+            &class_scope,
+            &[published_raw_array_list_method.clone()],
+            8,
+        ));
+        assert!(!field_write_source_assignable(
+            &source,
+            &field,
+            &class_scope,
+            &[published_raw_array_list_method],
+            9,
+        ));
+
+        let raw_method = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![raw_descriptor],
+            generic_parameters: None,
+            method_type_parameters: Vec::new(),
+        };
+        assert!(field_write_source_assignable(
+            &source,
+            &field,
+            &class_scope,
+            &[raw_method],
+            8,
+        ));
+
+        let raw_array_target = SignatureType::Array(Box::new(SignatureType::Class(ClassType {
+            segments: vec![ClassTypeSegment {
+                binary_name: b"java/util/List".to_vec(),
+                arguments: vec![TypeArgument::Exact(SignatureType::TypeVariable(
+                    b"T".to_vec(),
+                ))],
+            }],
+        })));
+        let array_source = SameClassFieldWriteSource::Parameter {
+            method: method_identity.clone(),
+            slot: 1,
+        };
+        let raw_array_method = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![b"[Ljava/util/List;".to_vec()],
+            generic_parameters: None,
+            method_type_parameters: Vec::new(),
+        };
+        assert!(field_write_source_assignable(
+            &array_source,
+            &raw_array_target,
+            &class_scope,
+            &[raw_array_method],
+            8,
+        ));
+        let published_raw_array_method = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![b"[Ljava/util/List;".to_vec()],
+            generic_parameters: Some(vec![SignatureType::Array(Box::new(SignatureType::Class(
+                ClassType {
+                    segments: vec![ClassTypeSegment {
+                        binary_name: b"java/util/List".to_vec(),
+                        arguments: Vec::new(),
+                    }],
+                },
+            )))]),
+            method_type_parameters: Vec::new(),
+        };
+        assert!(field_write_source_assignable(
+            &array_source,
+            &raw_array_target,
+            &class_scope,
+            &[published_raw_array_method],
+            8,
+        ));
+
+        let shadowed_method = SameClassPublishedMethodParameters {
+            method: method_identity,
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![b"Ljava/lang/Object;".to_vec()],
+            generic_parameters: Some(vec![SignatureType::TypeVariable(b"T".to_vec())]),
+            method_type_parameters: vec![TypeParameter {
+                name: b"T".to_vec(),
+                class_bound: None,
+                interface_bounds: Vec::new(),
+            }],
+        };
+        let class_variable_source = SameClassFieldWriteSource::Parameter {
+            method: shadowed_method.method.clone(),
+            slot: 1,
+        };
+        assert!(!field_write_source_assignable(
+            &class_variable_source,
+            &SignatureType::TypeVariable(b"T".to_vec()),
+            &class_scope,
+            &[shadowed_method],
+            8,
+        ));
+    }
+
+    #[test]
+    fn raw_parameter_platform_widening_rejects_invalid_utf8_name_collisions() {
+        let target = SignatureType::Class(jarde_reader::signature::ClassType {
+            segments: vec![jarde_reader::signature::ClassTypeSegment {
+                binary_name: vec![b'f', b'o', b'o', b'/', 0x81],
+                arguments: vec![jarde_reader::signature::TypeArgument::Exact(
+                    SignatureType::TypeVariable(b"T".to_vec()),
+                )],
+            }],
+        });
+        assert!(!raw_parameter_assignable(b"Lfoo/\x80;", &target, 8));
+    }
+
+    #[test]
+    fn published_method_type_variable_uses_only_its_matching_raw_class_bound() {
+        use jarde_reader::signature::{ClassType, ClassTypeSegment, TypeArgument};
+
+        let string = || {
+            SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/lang/String".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })
+        };
+        let target = SignatureType::Class(ClassType {
+            segments: vec![ClassTypeSegment {
+                binary_name: b"java/util/Map".to_vec(),
+                arguments: vec![TypeArgument::Exact(string()), TypeArgument::Exact(string())],
+            }],
+        });
+        let method_identity = generic_void_probe().0.item.identity;
+        let source = SameClassFieldWriteSource::Parameter {
+            method: method_identity.clone(),
+            slot: 1,
+        };
+        let raw_bound = TypeParameter {
+            name: b"R".to_vec(),
+            class_bound: Some(SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/util/HashMap".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })),
+            interface_bounds: Vec::new(),
+        };
+        let method = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![b"Ljava/util/HashMap;".to_vec()],
+            generic_parameters: Some(vec![SignatureType::TypeVariable(b"R".to_vec())]),
+            method_type_parameters: vec![raw_bound.clone()],
+        };
+        assert!(field_write_source_assignable(
+            &source,
+            &target,
+            &[],
+            &[method.clone()],
+            8,
+        ));
+        assert!(!field_write_source_assignable(
+            &source,
+            &target,
+            &[],
+            &[method.clone()],
+            9,
+        ));
+
+        let parameterized_bound = TypeParameter {
+            class_bound: Some(SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/util/HashMap".to_vec(),
+                    arguments: vec![TypeArgument::Exact(string()), TypeArgument::Exact(string())],
+                }],
+            })),
+            ..raw_bound.clone()
+        };
+        let method_with_parameterized_bound = SameClassPublishedMethodParameters {
+            method: method_identity.clone(),
+            method_type_parameters: vec![parameterized_bound],
+            ..method.clone()
+        };
+        assert!(!field_write_source_assignable(
+            &source,
+            &target,
+            &[],
+            &[method_with_parameterized_bound],
+            8,
+        ));
+
+        let interface_only_bound = TypeParameter {
+            class_bound: None,
+            interface_bounds: vec![SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/util/HashMap".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })],
+            ..raw_bound
+        };
+        let method_with_interface_bound = SameClassPublishedMethodParameters {
+            method: method_identity,
+            method_type_parameters: vec![interface_only_bound],
+            ..method
+        };
+        assert!(!field_write_source_assignable(
+            &source,
+            &target,
+            &[],
+            &[method_with_interface_bound],
+            8,
+        ));
+    }
+
+    #[test]
+    fn field_write_source_type_walk_charges_exact_work_and_propagates_stops() {
+        let mut parse_budget = Budget::new(unlimited_annotation_test_limits());
+        let source_type = parse_field_signature(b"Ljava/util/List<TT;>;", &mut parse_budget)
+            .expect("the parameter source type parses")
+            .ty;
+        let target_type = source_type.clone();
+        let method_identity = generic_void_probe().0.item.identity;
+        let source = SameClassFieldWriteSource::Parameter {
+            method: method_identity.clone(),
+            slot: 1,
+        };
+        let methods = [SameClassPublishedMethodParameters {
+            method: method_identity,
+            parameter_slots: vec![1],
+            descriptor_parameters: vec![b"Ljava/util/List;".to_vec()],
+            generic_parameters: Some(vec![source_type]),
+            method_type_parameters: Vec::new(),
+        }];
+        let class_scope = [jarde_reader::signature::TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Object;".to_vec(),
+        }];
+
+        let mut exact = unlimited_annotation_test_limits();
+        exact.analysis_steps = 25;
+        let mut exact_budget = Budget::new(exact);
+        let assignable = prove_field_write_source_assignable(
+            &source,
+            &target_type,
+            &class_scope,
+            &methods,
+            8,
+            &mut exact_budget,
+        )
+        .expect("exactly twenty-five type and lookup steps fit");
+        assert!(assignable, "the parameter's published type matches");
+        assert_eq!(exact_budget.usage().analysis_steps, 25);
+
+        let mut short = unlimited_annotation_test_limits();
+        short.analysis_steps = 24;
+        let mut short_budget = Budget::new(short);
+        assert!(matches!(
+            prove_field_write_source_assignable(
+                &source,
+                &target_type,
+                &class_scope,
+                &methods,
+                8,
+                &mut short_budget,
+            ),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::AnalysisSteps,
+                limit: 24,
+                consumed: 24,
+                ..
+            })
+        ));
+        assert_eq!(short_budget.usage().analysis_steps, 24);
+
+        let cancellation = crate::CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), cancellation);
+        assert!(matches!(
+            prove_field_write_source_assignable(
+                &source,
+                &target_type,
+                &class_scope,
+                &methods,
+                8,
+                &mut cancelled,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
+        assert_eq!(cancelled.usage().analysis_steps, 0);
+    }
+
+    #[test]
+    fn incomplete_same_class_field_inventory_cannot_prove_a_field_binding() {
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let class = jarde_reader::classfile::class_facts(MEMBER_ANNOTATION_TARGET, &mut budget)
+            .expect("the frozen class structure reads");
+        assert!(!class.fields.is_empty());
+        let facts = SameClassUseFacts {
+            complete: false,
+            invokes: &[],
+            field_uses: &[],
+            member_refs: &[],
+        };
+        assert_eq!(
+            prove_same_class_field_binding(
+                &class.this_class.raw().0,
+                &class.fields,
+                0,
+                &facts,
+                &mut budget,
+            )
+            .expect("an incomplete inventory is a refusal, not an error"),
+            SameClassBinding::Unproved,
+        );
     }
 }

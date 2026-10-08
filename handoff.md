@@ -1,3 +1,44 @@
+# HANDOFF — 当前接续入口（2026-10-08，泛型字段写验收后）
+
+**先读本段，再读具体 change 的 root 验收；下方旧交接仅是历史。** 本轮先读另一位 agent 的 handoff，基线 `2dea3217` 的 CI 已成功（run 37748005579），再沿明确队列完成泛型字段写安全性。没有另开散漫巡查或新增分析 pass。
+
+## 本轮已完成
+
+`openspec/changes/prove-generic-field-write-source-types/` 已实现并完成本地门禁。方法候选先在既有 commit 阶段结清，再以实际发布的 Signature 参数或物理 descriptor 证明字段的全部写位。直接参数、null、直接原始分配和受限 raw class bound 沿现有 SSA/reader/release 关系处理；不同 binder、改写参数、未知来源、未完成清单及预算/取消保守拒绝。root 审查过发布状态、SSA new-site/重复 BCI、既有正例和原子提交，不使用未发布 Signature，也不猜源 cast。
+
+root 独立完整重放 23 类 × 两条实际 JDK 腿：每腿完整编译成功数从基线 10/23 到候选 22/23；22 类全部 `-Xverify:all` 行为一致。六个正例的所有声明参数及字段泛型反射一致。新增 CI 重放五族 × javac8/javac23 的冻结 jar（10 输入），重编执行不携带原 jar。详细界限和结果见 [verification-root.md](openspec/changes/prove-generic-field-write-source-types/verification-root.md)。
+
+本地 fmt、CI 同口径 clippy、strict OpenSpec 320/320 通过；两固定 seed 各 3,235 passed、0 failed、93 ignored。显式 ignored P3 3 项、构造实参整类 1 项、既有 bound receiver 整类 1 项通过。JDK 25 instruction-boundary oracle 交给 CI 的实际 JDK 25，不能以本地 8/23 代替。最终推送后须按最新 main HEAD 查询远端 CI，不把本地通过等同于远端已绿。
+
+## Git 与空间
+
+本片代码、spec、完整取证一起合入主线并推送；实现工作树在合入后 detached，删除 `codex/generic-field-write-types`，主线工作区保持干净。历史固定保护的 detached 工作树是已合入的干净副本，Codex 归档工具曾明确拒绝删除，不绕过保护。只允许 root 使用共享 Cargo target。
+
+本轮已 `cargo clean` 移除 7,612 个文件、16.7 GiB，清理后可用空间约 78 GiB。原始冻结输入 jar/class 与验收文本保留；root 探针的临时编译目录和冗余 jar 已删除。不要清理其他 agent 的独立项目 target。
+
+```sh
+git status -sb
+git rev-parse HEAD origin/main        # 应一致
+git branch -vv                       # 除 main 无占用分支
+git worktree list                    # 辅助树均 detached、干净且祖先已合入
+gh run list --repo LordCasser/jarde --limit 5 # 按最新 HEAD 核对
+df -h /System/Volumes/Data
+```
+
+## 接续顺序与未恢复边界
+
+1. **class-scope 构造器泛型参数**仍未立项。Hold(T) 本轮只获得安全擦除字段和完整源码编译，构造器参数仍为 Object，反射未恢复。现有 constructor candidate 仅空体或原样 super 转发，且分流要求方法级形式参数；不能只取消 `<init>` gate。下一片可复用 InitRecord/参数槽/SSA 字段写来源，但需证明初始化后的 this、完整参数使用、物理字段身份和同一 class binder，不能让未发布构造器 Signature 循环证明自己。
+2. **raw receiver 的字段选择类型**是本轮额外巡查确认的保守退化，需独立立项。RawOtherWriter<T> 的 static `put(RawOtherWriter raw,Object value)` 通过 raw receiver 写字段时，旧字段 T 和候选字段 Object 都能整类编译；候选减少了字段反射 Signature。实际 `raw.v` 的源码选择类型为擦除 Object，当前证明没有 receiver 实例化事实。证据在该 change 的 `results/follow-up/raw-receiver/`，不宣称所有既有泛型投影都保持。
+3. 冻结取证 SCGB 的 main 仍原有正文拒绝；原有 Map 初始化测试以 SCGBCompat 完整通过。DeferredSetter private sink 的泛型参数反射、ArraySetter 未发布 T[] 参数均有既有边界。不能把字段修复当成整个 generic 单元完成。
+4. 然后按旧交接队列确认 ScopeRefusalsEscape、LoopTestValues.storeTest、switchBody guard；Class 字面量 bound reference 和完整 LG 仍独立未立项，不混入构造器/字段片。
+5. 继续依据本地 JADX 测试/实现及 `jadx-feature-inventory-2026-09-27/summary.md` 的 71 个验收单元逐项推进；71 不是成功率。先源码/原 class/JADX/Jarde 对照，OpenSpec 先行，确定性实现用 Luna，root 验收；JADX 算法可参考，语义仍以 JVM 原类实测裁决。
+
+预算/取消及 whole-class 输出必须闭环；不接受空呈现、删拒绝方法后冒充整类恢复或用原 jar 掩盖漏类。架构债务独立记录；20 GiB 可用空间为停建线，禁止辅助树创建独立 target。
+
+---
+
+# 历史交接（以下不得作为当前完成状态或当前队列）
+
 # HANDOFF — jarde 主线交接入口
 
 接续工作先读本文件，再读具体 change 的 `verification-root.md`。不要根据旧分支名或任务勾选数推断仍有未合入代码。

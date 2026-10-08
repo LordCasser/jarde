@@ -88,6 +88,12 @@ mod oracle;
 pub(crate) mod refusal;
 pub(crate) mod reuse;
 
+/// Whether one reference source type widens to a required reference type under a release's
+/// transcribed platform relationships. This closed relation does not inspect or infer user types.
+pub fn release_reference_argument_widens(java_release: u16, source: &str, required: &str) -> bool {
+    build::release_reference_argument_widens(java_release, source, required)
+}
+
 pub use accessor::{
     AccessorCandidate, AccessorField, AccessorRecord, AccessorRefusal, AccessorShape,
 };

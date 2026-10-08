@@ -302,6 +302,78 @@ fn reflect_and_run(label: &str, unit: &str, class_name: &str, runner: &str, jar:
     );
 }
 
+/// Compiles a frozen complete class-source report without the original jar on its classpath,
+/// then compares its execution and reflection with the frozen classfile. The source compilation
+/// therefore cannot silently resolve the original class in place of the recovered declaration.
+fn compile_frozen_report_and_run(
+    label: &str,
+    report: &ClassSourceReport,
+    class_name: &str,
+    args: &[&str],
+    jar: &[u8],
+) -> (String, String) {
+    let temp = TestDirectory::new(label);
+    std::fs::write(temp.path().join("family.jar"), jar).expect("the frozen family jar is written");
+    std::fs::write(temp.path().join(format!("{class_name}.java")), &report.text)
+        .expect("the complete class-source report is written");
+    std::fs::write(
+        temp.path().join("ReflectDriver.java"),
+        include_str!(
+            "../openspec/changes/prove-generic-field-write-source-types/results/generic-holder-write-boundaries/ReflectDriver.java"
+        ),
+    )
+    .expect("the reflection runner is written");
+    let compiled = Command::new("javac")
+        .args(["--release", "8"])
+        .arg(format!("{class_name}.java"))
+        .arg("ReflectDriver.java")
+        .current_dir(temp.path())
+        .output()
+        .expect("javac runs");
+    assert!(
+        compiled.status.success(),
+        "{label}: complete recovered source compiles under --release 8 without the original jar:\n{}\n{}",
+        String::from_utf8_lossy(&compiled.stderr),
+        report.text
+    );
+
+    let run = |directory: &Path, classpath: &str| {
+        let output = Command::new("java")
+            .args(["-Xverify:all", "-cp", classpath, "ReflectDriver"])
+            .args(args)
+            .current_dir(directory)
+            .output()
+            .expect("the reflection runner starts");
+        assert!(
+            output.status.success(),
+            "{label}: recovered or original class verifies and runs:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).expect("the runner prints UTF-8")
+    };
+
+    // The rebuilt run has only the newly compiled source and runner on its classpath.
+    let rebuilt = run(temp.path(), ".");
+    let original_dir = temp.path().join("original");
+    std::fs::create_dir_all(&original_dir).expect("the original run directory is created");
+    std::fs::copy(
+        temp.path().join("family.jar"),
+        original_dir.join("family.jar"),
+    )
+    .expect("the frozen original jar is copied");
+    for entry in std::fs::read_dir(temp.path()).expect("the runner directory reads") {
+        let entry = entry.expect("the runner directory entry reads");
+        let name = entry.file_name();
+        let name = name.to_string_lossy();
+        if name.starts_with("ReflectDriver") && name.ends_with(".class") {
+            std::fs::copy(entry.path(), original_dir.join(name.as_ref()))
+                .expect("every runner class is copied beside the original jar");
+        }
+    }
+    let original = run(&original_dir, ".:family.jar");
+    (rebuilt, original)
+}
+
 /// Appends dangling same-class member references to a compiled class's constant pool: one
 /// `Methodref` and one `Fieldref` naming members nothing in the class consumes. The mutation is
 /// append-only, so every existing pool index stays valid; the JVM accepts extra pool entries,
@@ -401,6 +473,80 @@ fn append_dangling_pool_references(bytes: &[u8], class_internal: &str) -> Vec<u8
 }
 
 const METHOD_SOURCE: &str = "public class SCGA<T extends java.lang.Comparable<T>> {\n    public void note(T value) {\n        java.util.Collections.singletonList(value);\n        return;\n    }\n    public static void main(java.lang.String[] args) {\n        SCGA z = new SCGA<java.lang.String>();\n        java.lang.Comparable word = \"b\";\n        z.note(word);\n        System.out.println(\"note:\" + word.equals(\"b\"));\n    }\n}\n";
+
+const DEFERRED_FIELD_WRITER_SOURCE: &str =
+    include_str!("../openspec/evidence/generic-holder-write-boundaries/SCGA/source/SCGA.java");
+const TYPED_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/evidence/generic-holder-write-boundaries/TypedSetter/source/TypedSetter.java"
+);
+const NULL_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/evidence/generic-holder-write-boundaries/NullSetter/source/NullSetter.java"
+);
+const UNSAFE_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/evidence/generic-holder-write-boundaries/MixedSetter/source/MixedSetter.java"
+);
+const RAW_LIST_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/evidence/generic-holder-write-boundaries/RawListField/source/RawListField.java"
+);
+const CROSS_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/evidence/generic-holder-write-boundaries/CrossSetter/source/CrossSetter.java"
+);
+const SHADOW_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/evidence/generic-holder-write-boundaries/ShadowSetter/source/ShadowSetter.java"
+);
+const ARRAY_OBJECT_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/evidence/generic-holder-write-boundaries/ArrayObjectSetter/source/ArrayObjectSetter.java"
+);
+const NULL_LOCAL_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/NullLocal/NullLocal.java"
+);
+const PARAM_REASSIGNED_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParamReassigned/ParamReassigned.java"
+);
+const RAW_ALLOCATION_VARIABLE_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawAllocationVariable/RawAllocationVariable.java"
+);
+const PARAMETER_SHIFT_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParameterShift/ParameterShift.java"
+);
+const RAW_PARAMETER_ARRAY_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawParamArray/RawParamArray.java"
+);
+const RAW_FALLBACK_LIST_WRITER_SOURCE: &str = include_str!(
+    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/ListWrong/ListWrong.java"
+);
+const STATIC_RAW_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/StaticRawField/StaticRawField.java"
+);
+const RAW_BOUND_FIELD_WRITER_SOURCE: &str = "public class RawBoundWriter { public java.util.Map<java.lang.String,java.lang.String> v; public <R extends java.util.HashMap> void put(R raw, boolean flag) { this.v=raw; } }";
+const HOLD_JAVAC8_JAR: &[u8] =
+    include_bytes!("../openspec/evidence/generic-holder-write-boundaries/javac8/Hold/Hold.jar");
+const OBJECT_HOLD_JAVAC8_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac8/ObjectHold/ObjectHold.jar"
+);
+const OBJECT_SETTER_JAVAC8_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac8/ObjectSetter/ObjectSetter.jar"
+);
+const TYPED_SETTER_JAVAC8_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac8/TypedSetter/TypedSetter.jar"
+);
+const CROSS_SETTER_JAVAC8_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac8/CrossSetter/CrossSetter.jar"
+);
+const HOLD_JAVAC23_JAR: &[u8] =
+    include_bytes!("../openspec/evidence/generic-holder-write-boundaries/javac23/Hold/Hold.jar");
+const OBJECT_HOLD_JAVAC23_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac23/ObjectHold/ObjectHold.jar"
+);
+const OBJECT_SETTER_JAVAC23_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac23/ObjectSetter/ObjectSetter.jar"
+);
+const TYPED_SETTER_JAVAC23_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac23/TypedSetter/TypedSetter.jar"
+);
+const CROSS_SETTER_JAVAC23_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/generic-holder-write-boundaries/javac23/CrossSetter/CrossSetter.jar"
+);
 
 const FIELD_SOURCE: &str = "public class SCGB<T extends java.lang.Comparable<T>> {\n    private java.util.Map<java.lang.String, java.util.List<T>> index = new java.util.HashMap<java.lang.String, java.util.List<T>>();\n    public static void main(java.lang.String[] args) {\n        SCGB<java.lang.String> z = new SCGB<java.lang.String>();\n        if (z.index != null) { System.out.println(\"index:true\"); } else { System.out.println(\"index:false\"); }\n        java.lang.Object read = z.index;\n        if (read instanceof java.util.Map) { System.out.println(\"read:true\"); } else { System.out.println(\"read:false\"); }\n    }\n}\n";
 
@@ -504,6 +650,474 @@ fn same_class_field_read_write_proves_binding_and_reflects_like_the_original() {
         "public class Runner { public static void main(String[] a) throws Exception {\n\
          System.out.println(Class.forName(\"SCGB\").getDeclaredField(\"index\").getGenericType());\n\
          SCGB.main(a);\n} }",
+        &jar,
+    );
+}
+
+#[test]
+fn frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs() {
+    let cases: [(&str, &str, &[u8], &[&str], bool); 10] = [
+        (
+            "javac8",
+            "Hold",
+            HOLD_JAVAC8_JAR,
+            &["Hold", "ctor", ""],
+            false,
+        ),
+        (
+            "javac8",
+            "ObjectHold",
+            OBJECT_HOLD_JAVAC8_JAR,
+            &["ObjectHold", "ctor", ""],
+            false,
+        ),
+        (
+            "javac8",
+            "ObjectSetter",
+            OBJECT_SETTER_JAVAC8_JAR,
+            &["ObjectSetter", "no", "", "put"],
+            false,
+        ),
+        (
+            "javac8",
+            "TypedSetter",
+            TYPED_SETTER_JAVAC8_JAR,
+            &["TypedSetter", "no", "", "put"],
+            true,
+        ),
+        (
+            "javac8",
+            "CrossSetter",
+            CROSS_SETTER_JAVAC8_JAR,
+            &["CrossSetter", "no", "", "put"],
+            false,
+        ),
+        (
+            "javac23",
+            "Hold",
+            HOLD_JAVAC23_JAR,
+            &["Hold", "ctor", ""],
+            false,
+        ),
+        (
+            "javac23",
+            "ObjectHold",
+            OBJECT_HOLD_JAVAC23_JAR,
+            &["ObjectHold", "ctor", ""],
+            false,
+        ),
+        (
+            "javac23",
+            "ObjectSetter",
+            OBJECT_SETTER_JAVAC23_JAR,
+            &["ObjectSetter", "no", "", "put"],
+            false,
+        ),
+        (
+            "javac23",
+            "TypedSetter",
+            TYPED_SETTER_JAVAC23_JAR,
+            &["TypedSetter", "no", "", "put"],
+            true,
+        ),
+        (
+            "javac23",
+            "CrossSetter",
+            CROSS_SETTER_JAVAC23_JAR,
+            &["CrossSetter", "no", "", "put"],
+            false,
+        ),
+    ];
+
+    for (compiler, class, jar, runner_args, typed_positive) in cases {
+        let report = source_of(jar, class);
+        assert!(
+            !report.text.trim().is_empty(),
+            "{compiler}/{class}: the complete class-source report is non-empty"
+        );
+        let field = report
+            .fields
+            .iter()
+            .find(|field| field.item.name.raw().0 == b"v")
+            .unwrap_or_else(|| panic!("{compiler}/{class}: physical v field remains"));
+        assert!(
+            field.declaration.is_some(),
+            "{compiler}/{class}: field is presented"
+        );
+        if typed_positive {
+            assert!(
+                field
+                    .declaration
+                    .as_deref()
+                    .is_some_and(|declaration| declaration.contains("T v")),
+                "{compiler}/{class}: published same-scope writer retains the generic field:\n{}",
+                report.text
+            );
+            assert!(
+                !field
+                    .markers
+                    .iter()
+                    .any(|marker| marker.contains("field_generic_write_source_unproved")),
+                "{compiler}/{class}: the proved writer is not refused:\n{}",
+                report.text
+            );
+        } else {
+            assert!(
+                field
+                    .declaration
+                    .as_deref()
+                    .is_some_and(|declaration| declaration.contains("Object v")),
+                "{compiler}/{class}: an unproved write keeps the erased field:\n{}",
+                report.text
+            );
+            assert!(
+                field.markers.iter().any(|marker| {
+                    marker.contains("field_generic_write_source_unproved") && marker.contains("@")
+                }),
+                "{compiler}/{class}: the field records its refused write source:\n{}",
+                report.text
+            );
+        }
+
+        let expected_method = if class == "Hold" || class == "ObjectHold" {
+            b"<init>".as_slice()
+        } else {
+            b"put".as_slice()
+        };
+        assert!(
+            report
+                .methods
+                .iter()
+                .any(|method| method.item.name.raw().0 == expected_method),
+            "{compiler}/{class}: the physical writer method remains in the report"
+        );
+
+        let (rebuilt, original) = compile_frozen_report_and_run(
+            &format!("{compiler}-{class}"),
+            &report,
+            class,
+            runner_args,
+            jar,
+        );
+        if typed_positive {
+            assert_eq!(
+                rebuilt, original,
+                "{compiler}/{class}: generic reflection and behavior match the frozen class"
+            );
+        } else {
+            let behavior = |output: &str| {
+                output
+                    .lines()
+                    .filter(|line| line.starts_with("fieldValue="))
+                    .map(str::to_owned)
+                    .collect::<Vec<_>>()
+            };
+            assert!(
+                !behavior(&original).is_empty(),
+                "{compiler}/{class}: original driver must report the field value"
+            );
+            assert_eq!(
+                behavior(&rebuilt),
+                behavior(&original),
+                "{compiler}/{class}: behavior matches; only field/constructor generic types may erase"
+            );
+        }
+    }
+}
+
+#[test]
+fn deferred_same_class_writer_settles_before_its_generic_field() {
+    let (jar, _) = compile_family("scg-deferred-field", DEFERRED_FIELD_WRITER_SOURCE);
+    let report = source_of(&jar, "SCGA");
+    let put = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"put")
+        .expect("the physical put method remains");
+    assert!(
+        put.declaration
+            .as_deref()
+            .is_some_and(|declaration| declaration.contains("void put(T "))
+            && put.text.contains("same-class call binding proved"),
+        "the actually deferred writer did not settle to its published Signature:\n{}",
+        report.text
+    );
+    let value = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"v")
+        .expect("the physical field remains");
+    assert!(
+        value
+            .declaration
+            .as_deref()
+            .is_some_and(|declaration| declaration.contains("public T v")),
+        "the field did not use the settled writer parameter type:\n{}",
+        report.text
+    );
+    assert!(
+        value
+            .markers
+            .iter()
+            .any(|marker| marker.contains("same-class uses at")),
+        "the field proof has no same-class writer site:\n{}",
+        report.text
+    );
+    reflect_and_run(
+        "scg-deferred-field",
+        &report.text,
+        "SCGA",
+        "public class Runner { public static void main(String[] a) throws Exception {\n\
+         System.out.println(Class.forName(\"SCGA\").getDeclaredField(\"v\").getGenericType());\n\
+         SCGA.main(a);\n} }",
+        &jar,
+    );
+}
+
+#[test]
+fn generic_field_write_sources_keep_the_frozen_safe_and_unsafe_boundaries() {
+    for (label, class, source, projected) in [
+        (
+            "scg-typed-field",
+            "TypedSetter",
+            TYPED_FIELD_WRITER_SOURCE,
+            true,
+        ),
+        (
+            "scg-null-field",
+            "NullSetter",
+            NULL_FIELD_WRITER_SOURCE,
+            true,
+        ),
+        (
+            "scg-raw-list-field",
+            "RawListField",
+            RAW_LIST_FIELD_WRITER_SOURCE,
+            true,
+        ),
+        (
+            "scg-unsafe-field",
+            "MixedSetter",
+            UNSAFE_FIELD_WRITER_SOURCE,
+            false,
+        ),
+    ] {
+        let (jar, _) = compile_family(label, source);
+        let report = source_of(&jar, class);
+        let field = report
+            .fields
+            .iter()
+            .find(|field| field.item.name.raw().0 == b"v")
+            .expect("the physical field remains present");
+        let declaration = field.declaration.as_deref().unwrap_or_default();
+        if projected {
+            assert!(
+                declaration.contains("List<T> v")
+                    || declaration.contains(" T v")
+                    || declaration.contains("T[] v"),
+                "{class} lost its source-compatible generic field type:\n{}",
+                report.text
+            );
+        } else {
+            assert!(
+                declaration.contains("Object v"),
+                "{class} projected a field written through an unsafe cast:\n{}",
+                report.text
+            );
+            assert!(
+                field.markers.iter().any(|marker| {
+                    marker.contains("field_generic_write_source_unproved")
+                        && marker.contains("putObject(")
+                }),
+                "{class} did not identify the unsafe writer site:\n{}",
+                report.text
+            );
+        }
+    }
+}
+
+#[test]
+fn unproved_field_write_sources_and_shadowed_types_keep_erased_fields() {
+    const UNKNOWN_CALL: &str = "public class UnknownCall<T> { public T v; public T value() { return null; } public void put() { this.v=value(); } }";
+    const PHI_WRITER: &str = "public class PhiWriter<T> { public T v; public void put(boolean choose, T left, T right) { this.v=choose ? left : right; } }";
+    for (label, class, source, field_fragment) in [
+        (
+            "scg-cross-writer",
+            "CrossSetter",
+            CROSS_FIELD_WRITER_SOURCE,
+            "Object v",
+        ),
+        (
+            "scg-shadow-writer",
+            "ShadowSetter",
+            SHADOW_FIELD_WRITER_SOURCE,
+            "Object v",
+        ),
+        (
+            "scg-array-object-writer",
+            "ArrayObjectSetter",
+            ARRAY_OBJECT_FIELD_WRITER_SOURCE,
+            "Object[] v",
+        ),
+        (
+            "scg-null-local-writer",
+            "NullLocal",
+            NULL_LOCAL_FIELD_WRITER_SOURCE,
+            "Object v",
+        ),
+        (
+            "scg-reassigned-writer",
+            "ParamReassigned",
+            PARAM_REASSIGNED_FIELD_WRITER_SOURCE,
+            "Object v",
+        ),
+        (
+            "scg-allocation-local-writer",
+            "RawAllocationVariable",
+            RAW_ALLOCATION_VARIABLE_FIELD_WRITER_SOURCE,
+            "Object v",
+        ),
+        (
+            "scg-parameter-shift-writer",
+            "ParameterShift",
+            PARAMETER_SHIFT_FIELD_WRITER_SOURCE,
+            "Object v",
+        ),
+        (
+            "scg-unknown-call-writer",
+            "UnknownCall",
+            UNKNOWN_CALL,
+            "Object v",
+        ),
+        ("scg-phi-writer", "PhiWriter", PHI_WRITER, "Object v"),
+    ] {
+        let (jar, _) = compile_family(label, source);
+        let report = source_of(&jar, class);
+        let field = report
+            .fields
+            .iter()
+            .find(|field| field.item.name.raw().0 == b"v")
+            .expect("the physical field remains present");
+        assert!(
+            field
+                .declaration
+                .as_deref()
+                .is_some_and(|declaration| declaration.contains(field_fragment)),
+            "{class} projected a field with an unproved source type:\n{}",
+            report.text
+        );
+        assert!(
+            field.markers.iter().any(|marker| {
+                marker.contains("field_generic_write_source_unproved")
+                    && marker.contains("put")
+                    && marker
+                        .rsplit_once('@')
+                        .and_then(|(_, suffix)| suffix.chars().next())
+                        .is_some_and(|character| character.is_ascii_digit())
+            }),
+            "{class} refusal did not identify the writer and BCI:\n{}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn raw_reference_parameters_keep_array_and_static_assignments() {
+    for (label, class, source, expected_field) in [
+        (
+            "scg-raw-param-array",
+            "RawParamArray",
+            RAW_PARAMETER_ARRAY_FIELD_WRITER_SOURCE,
+            "List<T>[] v",
+        ),
+        (
+            "scg-static-raw-field",
+            "StaticRawField",
+            STATIC_RAW_FIELD_WRITER_SOURCE,
+            "java.util.List<java.lang.String> v",
+        ),
+        (
+            "scg-raw-fallback-list",
+            "ListWrong",
+            RAW_FALLBACK_LIST_WRITER_SOURCE,
+            "List<T> v",
+        ),
+    ] {
+        let (jar, _) = compile_family(label, source);
+        let report = source_of(&jar, class);
+        let field = report
+            .fields
+            .iter()
+            .find(|field| field.item.name.raw().0 == b"v")
+            .expect("the physical field remains present");
+        assert!(
+            field
+                .declaration
+                .as_deref()
+                .is_some_and(|declaration| declaration.contains(expected_field)),
+            "{class} lost its established raw-reference source projection:\n{}",
+            report.text
+        );
+        if class == "ListWrong" {
+            let put = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"put")
+                .expect("the physical ListWrong writer remains present");
+            assert!(
+                put.declaration.as_deref().is_some_and(|declaration| {
+                    declaration.contains("put(List ") || declaration.contains("put(java.util.List ")
+                }),
+                "the field proof treated an unpublished writer Signature as source truth:\n{}",
+                report.text
+            );
+        }
+    }
+}
+
+#[test]
+fn published_raw_class_bound_keeps_its_unchecked_parameterized_field_assignment() {
+    let (jar, _) = compile_family("scg-raw-bound-writer", RAW_BOUND_FIELD_WRITER_SOURCE);
+    let report = source_of(&jar, "RawBoundWriter");
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"v")
+        .expect("the physical field remains present");
+    assert!(
+        field.declaration.as_deref().is_some_and(|declaration| {
+            declaration.contains("Map<") && declaration.matches("String").count() == 2
+        }),
+        "the raw HashMap class bound did not retain the field Signature:\n{}",
+        report.text
+    );
+    let put = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"put")
+        .expect("the physical writer remains present");
+    assert!(
+        put.declaration.as_deref().is_some_and(|declaration| {
+            declaration.contains("extends java.util.HashMap")
+                || declaration.contains("extends HashMap")
+        }),
+        "the test did not exercise a published raw class-bound parameter:\n{}",
+        report.text
+    );
+    reflect_and_run(
+        "scg-raw-bound-writer",
+        &report.text,
+        "RawBoundWriter",
+        "public class Runner { public static void main(String[] a) throws Exception {\n\
+         Class<?> type = Class.forName(\"RawBoundWriter\");\n\
+         System.out.println(type.getDeclaredField(\"v\").getGenericType());\n\
+         java.lang.reflect.Method put = type.getDeclaredMethod(\"put\", java.util.HashMap.class, boolean.class);\n\
+         System.out.println(put.getTypeParameters()[0].getBounds()[0]);\n\
+         RawBoundWriter value = new RawBoundWriter();\n\
+         java.util.HashMap raw = new java.util.HashMap();\n\
+         raw.put(\"k\", \"v\");\n\
+         value.put(raw, true);\n\
+         System.out.println(value.v.get(\"k\"));\n} }",
         &jar,
     );
 }
