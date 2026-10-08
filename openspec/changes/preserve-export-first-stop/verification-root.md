@@ -9,3 +9,5 @@
 共同门禁结果记录在 [构造片 gates-summary](../recover-functional-constructor-arguments/results/root/gates-summary.txt)。root 验收还要求 export_cli 全族原有 output_bytes 数字及前缀断言通过，以及原紧/宽 ir_items 用例重复回归；不能只靠某一次随机调度绿灯认定根因修复。
 
 最终本地验收：5 个确定性单测与 export_cli 全族（11 项）在两个固定 seed 均通过；原紧/宽 ir_items 集成精确重复 20/20。完整失败前后与重复凭证见 results/root。首轮/次轮各 3,224 个测试通过，fmt/clippy、ignored P3/构造整类/绑定引用整类与 strict OpenSpec 均通过。远端 CI 状态按 handoff 的命令核对。
+
+主线收尾：全部实现与 root 证据已合入推送；实现分支已解除占用并删除，辅助 worktree 均 detached。cargo clean 移除 19.3 GiB，保护的干净工作树归档被 Codex 拒绝，未绕过。收尾 CI 的最终状态以 handoff 核对命令和远端 run 为准。

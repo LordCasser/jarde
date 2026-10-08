@@ -29,3 +29,5 @@
 最终 fmt/clippy、两个固定 seed 全库、ignored P3/构造整类 oracle 和 strict OpenSpec 的结果见 gates-summary.txt。首 seed 使用 no-fail-fast 收集全库失败；全通过时测试集合与 CI 相同。JDK 25 instruction-boundary oracle 由远端 CI 的 JDK 25 环境执行，本地 8/23 未冒充 25。
 
 本片未恢复构造族的所有泛型返回 Signature，未解决 class-scope 泛型构造器、字段写投影，也未恢复 Class 字面量的 dup/check 形状。前两项已拆分排队；没有追加 planner、IR、全局 fixpoint 或 JDK owner 白名单。
+
+主线收尾：全部实现与 root 证据已合入推送；实现分支已解除占用并删除，辅助 worktree 均 detached。cargo clean 移除 19.3 GiB，保护的干净工作树归档被 Codex 拒绝，未绕过。收尾 CI 的最终状态以 handoff 核对命令和远端 run 为准。
