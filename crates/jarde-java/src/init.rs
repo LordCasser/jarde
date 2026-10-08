@@ -588,6 +588,7 @@ fn verify(
         }
     }
     let mut embedded_concat = false;
+    let mut embedded_dynamic = false;
     let mut embedded_array = BTreeSet::new();
     let mut inline_arrays = BTreeSet::new();
     let arguments = if let Some(member) = &member {
@@ -697,6 +698,14 @@ fn verify(
                 ) => {}
                 Some(Operation::Invoke(_))
                     if argument_dependencies.contains(&instruction.bci()) => {}
+                Some(Operation::InvokeDynamic(_))
+                    if argument_dependencies.contains(&instruction.bci()) =>
+                {
+                    // Set this only for a dynamic value physically inside this closed run. A
+                    // value materialized earlier and later loaded from a local is not re-created
+                    // by the `new` expression and does not widen its handler boundary.
+                    embedded_dynamic = true;
+                }
                 Some(Operation::Invoke(_)) => {
                     return Err(Refusal::unmet(
                         &NEW,
@@ -822,15 +831,16 @@ fn verify(
         ));
     }
     if embedded_concat
+        || embedded_dynamic
         || !embedded_array.is_empty()
         || !inline_arrays.is_empty()
         || !nested_expression.is_empty()
     {
         // A Java expression runs under one exception region. Moving a proved inner run — a
-        // concatenation chain, an inline char[] initializer, an inline array argument chain, a
-        // nested construction — into the outer construction is sound only when every instruction
-        // in the construction and its sole consumer has the same handler coverage as the outer
-        // allocation.
+        // concatenation chain, a dynamic functional argument, an inline char[] initializer, an
+        // inline array argument chain, a nested construction — into the outer construction is
+        // sound only when every instruction in the construction and its sole consumer has the same
+        // handler coverage as the outer allocation.
         let coverage = |bci: u32| -> Vec<u32> {
             facts
                 .code
@@ -847,7 +857,12 @@ fn verify(
             .any(|instruction| coverage(instruction.bci()) != expected)
             || coverage(consumer) != expected
         {
-            let (code, argument) = if embedded_concat {
+            let (code, argument) = if embedded_dynamic {
+                (
+                    "jre_new_dynamic_argument_exception_boundary",
+                    "dynamic functional",
+                )
+            } else if embedded_concat {
                 ("jre_new_concat_exception_boundary", "concatenation")
             } else if !embedded_array.is_empty() {
                 (
@@ -2326,6 +2341,12 @@ mod tests {
     /// `fourLayer` is the boundary one layer deeper.
     const NESTED_DEPTH: &[u8] =
         include_bytes!("../../../tests/fixtures/recover-io-resource-finally/v8/NestedDepth.class");
+    const FUNCTIONAL_CONSTRUCTORS_JAVAC8: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8-javac8/FunctionalConstructors.class"
+    );
+    const FUNCTIONAL_CONSTRUCTORS_JAVAC23: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8/FunctionalConstructors.class"
+    );
 
     fn inline_char_sites(
         name: &str,
@@ -2475,6 +2496,91 @@ mod tests {
             &crate::facts::MethodFacts::new(name, descriptor, 0),
             code,
         )
+    }
+
+    fn sites_of_with_handler(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+        handler_range: (u32, u32),
+    ) -> Sites {
+        let (analysis, _) = analyzed_caller(class, name, descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let mut code = ir.code().expect("code").clone();
+        code.exception_handlers
+            .push(jarde_reader::classfile::ExceptionHandlerFact {
+                ordinal: u32::try_from(code.exception_handlers.len()).unwrap(),
+                start_bci: handler_range.0,
+                end_bci: handler_range.1,
+                handler_bci: 0,
+                catch_type_index: None,
+            });
+        let operations = Operations::of(&code, ir.constant_pool());
+        let fields = field::Plan::empty();
+        let chains = crate::concat::Plan::empty();
+        let arrays = crate::build::ArrayInitializers::default();
+        sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &arrays,
+            8,
+            &[],
+            &crate::facts::MethodFacts::new(name, descriptor, 0),
+            &code,
+        )
+    }
+
+    #[test]
+    fn functional_constructor_arguments_are_in_the_verified_dependency_run() {
+        for (class, leg) in [
+            (FUNCTIONAL_CONSTRUCTORS_JAVAC8, "javac 8"),
+            (FUNCTIONAL_CONSTRUCTORS_JAVAC23, "javac 23 --release 8"),
+        ] {
+            for (name, descriptor, head, dynamic, constructor) in [
+                ("runnable", "()Ljava/lang/Thread;", 0, 4, 9),
+                ("captured", "(I)Ljava/lang/Thread;", 0, 5, 10),
+                ("comparator", "()Ljava/util/PriorityQueue;", 0, 4, 9),
+                ("reference", "()Ljava/util/PriorityQueue;", 0, 4, 9),
+                ("callable", "()Ljava/util/concurrent/FutureTask;", 0, 4, 9),
+                ("primitive", "(I)LIntBox;", 0, 5, 10),
+                ("primitiveReference", "()LIntBox;", 0, 4, 9),
+                ("ordered", "(I)Ljava/lang/Thread;", 0, 5, 13),
+                ("overload", "()Ljava/lang/Thread;", 0, 4, 9),
+            ] {
+                let plan = sites_of(class, name, descriptor);
+                let site = plan
+                    .site_at_head(head)
+                    .unwrap_or_else(|| panic!("{leg} {name} constructor proves"));
+                assert_eq!(site.constructor, constructor, "{leg} {name}");
+                assert!(site.expression.contains(&dynamic), "{leg} {name}");
+                assert!(plan.refusals().next().is_none(), "{leg} {name}");
+            }
+        }
+    }
+
+    #[test]
+    fn dynamic_constructor_arguments_keep_one_handler_coverage() {
+        // `runnable`: allocation 0, dynamic factory 4, constructor 9, sole return consumer 12.
+        // Each independently crossed instruction changes exactly that fact's ordinal vector.
+        for boundary in [(0, 3), (4, 5), (9, 12), (12, 13)] {
+            let plan = sites_of_with_handler(
+                FUNCTIONAL_CONSTRUCTORS_JAVAC8,
+                "runnable",
+                "()Ljava/lang/Thread;",
+                boundary,
+            );
+            assert!(plan.site_at_head(0).is_none(), "boundary {boundary:?}");
+            let refusal = plan.refusals().next().expect("handler refusal");
+            assert_eq!(
+                refusal.code(),
+                "jre_new_dynamic_argument_exception_boundary",
+                "boundary {boundary:?}: {refusal:?}"
+            );
+        }
     }
 
     /// The bound-receiver tail is claimed exactly where the receiver's own value chain ends at an

@@ -70,6 +70,235 @@ fn limits(value: u64) -> Limits {
     }
 }
 
+#[test]
+#[ignore = "external dual-javac full-class replay; run explicitly for recovery evidence"]
+fn functional_constructor_arguments_replay_the_complete_class_on_both_jdks() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments");
+    let temp = TempDir::new();
+    for (leg, preferred_home) in [
+        (
+            "v8-javac8",
+            Path::new("/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home"),
+        ),
+        (
+            "v8",
+            Path::new("/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"),
+        ),
+    ] {
+        let fixture = root.join(leg).join("fixture.jar");
+        let compiler_home = if preferred_home.join("bin/javac").is_file() {
+            Some(preferred_home.to_path_buf())
+        } else {
+            std::env::var_os("JAVA_HOME").map(PathBuf::from)
+        };
+        let javac = compiler_home
+            .as_ref()
+            .map(|home| home.join("bin/javac"))
+            .unwrap_or_else(|| PathBuf::from("javac"));
+        let java = compiler_home
+            .as_ref()
+            .map(|home| home.join("bin/java"))
+            .unwrap_or_else(|| PathBuf::from("java"));
+        let output = Command::new(BIN)
+            .args([
+                "class-source",
+                "--input",
+                fixture.to_str().expect("fixture path is UTF-8"),
+                "--class",
+                "FunctionalConstructors",
+                "--policy",
+                "plain-jar",
+                "--format",
+                "text",
+                "--release",
+                "8",
+            ])
+            .output()
+            .expect("jarde-cli starts");
+        let source = String::from_utf8(output.stdout).expect("class source is UTF-8");
+        assert!(
+            source.contains("public class FunctionalConstructors"),
+            "{leg} class-source did not produce the class text (status {}): {}",
+            output.status,
+            String::from_utf8_lossy(&output.stderr)
+        );
+        for method in [
+            "public static java.lang.Thread runnable()",
+            "public static java.lang.Thread captured(int",
+            "public static java.util.PriorityQueue comparator()",
+            "public static java.util.PriorityQueue reference()",
+            "public static java.util.concurrent.FutureTask callable()",
+            "public static IntBox primitive(int",
+            "public static IntBox primitiveReference()",
+            "public static java.lang.Thread ordered(int",
+            "public static java.lang.Thread overload()",
+        ] {
+            let start = source
+                .find(method)
+                .unwrap_or_else(|| panic!("{leg} lacks {method}"));
+            let body_end = source[start..]
+                .find("\n    }")
+                .map(|offset| start + offset)
+                .unwrap_or_else(|| panic!("{leg} has no complete body for {method}"));
+            let body = &source[start..body_end];
+            assert!(body.contains("new "), "{leg} {method}: {body}");
+            assert!(
+                body.contains("->") || body.contains("::"),
+                "{leg} {method}: {body}"
+            );
+        }
+        for constructed in [
+            "new java.lang.Thread",
+            "new java.util.PriorityQueue",
+            "new java.util.concurrent.FutureTask",
+            "new IntBox",
+        ] {
+            assert!(source.contains(constructed), "{leg} lacks {constructed}");
+        }
+        assert!(
+            !source.contains("@bytecode"),
+            "{leg} class retains bytecode fallback"
+        );
+
+        let report = Command::new(BIN)
+            .args([
+                "class-source",
+                "--input",
+                fixture.to_str().expect("fixture path is UTF-8"),
+                "--class",
+                "FunctionalConstructors",
+                "--policy",
+                "plain-jar",
+                "--format",
+                "json",
+                "--release",
+                "8",
+            ])
+            .output()
+            .expect("jarde-cli JSON report starts");
+        let document: Value = serde_json::from_slice(&report.stdout)
+            .unwrap_or_else(|error| panic!("{leg} class-source JSON parses: {error}"));
+        let runnable = document["methods"]
+            .as_array()
+            .expect("class source has method records")
+            .iter()
+            .find(|method| {
+                method["text"]
+                    .as_str()
+                    .is_some_and(|text| text.contains("runnable()"))
+            })
+            .expect("runnable method record");
+        let segments = runnable["outcome"]["report"]["source_map"]["segments"]
+            .as_array()
+            .expect("source map retains rendered origins");
+        assert!(
+            segments
+                .iter()
+                .any(|segment| { segment["origin"]["primary"]["bci"] == 4 }),
+            "{leg} source map identifies the lambda factory BCI: {segments:?}"
+        );
+        let derived: Vec<u64> = segments
+            .iter()
+            .flat_map(|segment| {
+                segment["origin"]["derived"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+            })
+            .filter_map(|origin| origin["bci"].as_u64())
+            .collect();
+        for producer in [0, 3, 9] {
+            assert!(
+                derived.contains(&producer),
+                "{leg} source map retains constructor producer BCI {producer}: {segments:?}"
+            );
+        }
+
+        let compilable: String = source
+            .lines()
+            .filter(|line| !line.trim_start().starts_with("//"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let leg_output = temp.path.join(leg);
+        fs::create_dir(&leg_output).expect("create a fresh per-leg output directory");
+        let java_source = temp.write("FunctionalConstructors.java", compilable.as_bytes());
+        let int_box_output = Command::new(BIN)
+            .args([
+                "class-source",
+                "--input",
+                fixture.to_str().expect("fixture path is UTF-8"),
+                "--class",
+                "IntBox",
+                "--policy",
+                "plain-jar",
+                "--format",
+                "text",
+                "--release",
+                "8",
+            ])
+            .output()
+            .expect("jarde-cli IntBox class-source starts");
+        let int_box_source =
+            String::from_utf8(int_box_output.stdout).expect("IntBox class source is UTF-8");
+        assert!(
+            int_box_source.contains("public class IntBox"),
+            "{leg} IntBox class-source failed: {}",
+            String::from_utf8_lossy(&int_box_output.stderr)
+        );
+        let int_box_compilable: String = int_box_source
+            .lines()
+            .filter(|line| !line.trim_start().starts_with("//"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let int_box_java_source = temp.write("IntBox.java", int_box_compilable.as_bytes());
+        let driver_source = root.join("source/Driver.java");
+        let compiler_version = Command::new(&javac)
+            .arg("-version")
+            .output()
+            .unwrap_or_else(|error| panic!("{leg} javac starts at {}: {error}", javac.display()));
+        let version_text = format!(
+            "{}{}",
+            String::from_utf8_lossy(&compiler_version.stdout),
+            String::from_utf8_lossy(&compiler_version.stderr)
+        );
+        let is_java8 = version_text.contains("1.8.");
+        let mut compile = Command::new(&javac);
+        if !is_java8 {
+            compile.args(["--release", "8"]);
+        }
+        let compiled = compile
+            .arg("-cp")
+            .arg(&fixture)
+            .arg("-d")
+            .arg(&leg_output)
+            .arg(&java_source)
+            .arg(&int_box_java_source)
+            .arg(&driver_source)
+            .output()
+            .unwrap_or_else(|error| panic!("{leg} javac starts at {}: {error}", javac.display()));
+        assert!(
+            compiled.status.success(),
+            "{leg} full class compilation failed:\n{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let ran = Command::new(&java)
+            .arg("-Xverify:all")
+            .arg("-cp")
+            .arg(format!("{}:{}", leg_output.display(), fixture.display()))
+            .arg("Driver")
+            .output()
+            .unwrap_or_else(|error| panic!("{leg} java starts at {}: {error}", java.display()));
+        assert!(
+            ran.status.success(),
+            "{leg} full class verification/run failed:\n{}",
+            String::from_utf8_lossy(&ran.stderr)
+        );
+        let expected = fs::read(root.join(leg).join("source.stdout")).expect("source output");
+        assert_eq!(ran.stdout, expected, "{leg} behavior differs from source");
+    }
+}
+
 fn u16b(output: &mut Vec<u8>, value: u16) {
     output.extend_from_slice(&value.to_be_bytes());
 }

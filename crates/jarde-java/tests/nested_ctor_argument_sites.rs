@@ -32,6 +32,12 @@ const X3: &[u8] = include_bytes!(
 const X4: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
 );
+const FUNCTIONAL_CONSTRUCTORS_JAVAC8: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8-javac8/FunctionalConstructors.class"
+);
+const FUNCTIONAL_CONSTRUCTORS_JAVAC23: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8/FunctionalConstructors.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -191,6 +197,102 @@ fn every_frozen_construction_presentation_is_byte_identical() {
         ),
         "{init}"
     );
+}
+
+#[test]
+fn functional_constructor_arguments_render_as_complete_method_bodies_on_both_legs() {
+    for (class, leg) in [
+        (FUNCTIONAL_CONSTRUCTORS_JAVAC8, "javac 8"),
+        (FUNCTIONAL_CONSTRUCTORS_JAVAC23, "javac 23 --release 8"),
+    ] {
+        for (name, descriptor, slots, expected) in [
+            (
+                "runnable",
+                "()Ljava/lang/Thread;",
+                0,
+                "return new java.lang.Thread((java.lang.Runnable) (",
+            ),
+            (
+                "captured",
+                "(I)Ljava/lang/Thread;",
+                1,
+                "return new java.lang.Thread((java.lang.Runnable) (",
+            ),
+            (
+                "comparator",
+                "()Ljava/util/PriorityQueue;",
+                0,
+                "return new java.util.PriorityQueue((java.util.Comparator) (",
+            ),
+            (
+                "reference",
+                "()Ljava/util/PriorityQueue;",
+                0,
+                "return new java.util.PriorityQueue((java.util.Comparator) ",
+            ),
+            (
+                "callable",
+                "()Ljava/util/concurrent/FutureTask;",
+                0,
+                "return new java.util.concurrent.FutureTask((java.util.concurrent.Callable) (",
+            ),
+            (
+                "primitive",
+                "(I)LIntBox;",
+                1,
+                "return new IntBox((java.util.function.IntUnaryOperator) (",
+            ),
+            (
+                "primitiveReference",
+                "()LIntBox;",
+                0,
+                "return new IntBox((java.util.function.IntUnaryOperator) ",
+            ),
+            (
+                "ordered",
+                "(I)Ljava/lang/Thread;",
+                1,
+                "return new java.lang.Thread((java.lang.Runnable) ",
+            ),
+            (
+                "overload",
+                "()Ljava/lang/Thread;",
+                0,
+                "return new java.lang.Thread((java.lang.Runnable) ",
+            ),
+        ] {
+            let text = recovered_text(class, name, descriptor, slots);
+            assert!(
+                text.contains(expected),
+                "{leg} {name}: expected complete recovered method `{expected}`:\n{text}"
+            );
+            assert!(
+                !text.contains("@bytecode"),
+                "{leg} {name} retains a bytecode fallback:\n{text}"
+            );
+        }
+    }
+}
+
+#[test]
+fn an_unknown_constructor_argument_bootstrap_keeps_the_whole_method_quoted() {
+    let mut class = FUNCTIONAL_CONSTRUCTORS_JAVAC8.to_vec();
+    let bootstrap_name = b"metafactory";
+    let offset = class
+        .windows(bootstrap_name.len())
+        .position(|window| window == bootstrap_name)
+        .expect("the constant pool names LambdaMetafactory.metafactory");
+    class[offset..offset + bootstrap_name.len()].copy_from_slice(b"bad_factory");
+
+    let text = recovered_text(&class, "runnable", "()Ljava/lang/Thread;", 0);
+    assert!(text.contains("@bytecode 12"), "{text}");
+    assert!(
+        text.contains("bad_factory"),
+        "the refusal names the actual bootstrap: {text}"
+    );
+    assert!(!text.contains("new java.lang.Thread"), "{text}");
+    assert!(!text.contains("->"), "{text}");
+    assert!(!text.contains("::"), "{text}");
 }
 
 #[test]
