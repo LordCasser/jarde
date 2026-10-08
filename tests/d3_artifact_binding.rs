@@ -994,8 +994,19 @@ fn the_evidence_is_rebuilt_after_every_temporary_of_the_first_request_is_dropped
         second.usage.ir_items,
         first_usage.ir_items
     );
+    // Two requests of one shape state the same cost in every counted dimension. The elapsed
+    // clock is deliberately excluded from the equality: it is wall time, not a resource
+    // dimension, and under a loaded CI runner one request legitimately rounds to 0ms while
+    // the other rounds to 1ms — four CI sightings (2026-10-07/08, each docs-only-red with
+    // the same code green locally) were exactly `elapsed_millis: 0` vs `1`, every other
+    // field equal. The destructures bind nothing (the whole snapshots compare afterwards);
+    // they exist so the intent — "everything but the clock" — is stated where it is done.
+    let UsageSnapshot { .. } = &second.usage;
+    let UsageSnapshot { .. } = &first_all_usage;
+    let mut second_without_clock = second.usage.clone();
+    second_without_clock.elapsed_millis = first_all_usage.elapsed_millis;
     assert_eq!(
-        first_all_usage, second.usage,
+        second_without_clock, first_all_usage,
         "and two requests of one shape state the same cost, whatever either one kept"
     );
     assert_eq!(
