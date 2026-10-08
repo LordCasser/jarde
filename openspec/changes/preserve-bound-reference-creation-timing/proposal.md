@@ -5,7 +5,7 @@ root 完整 JVM 对照证明合法 major52 `NoCheck.make(Thread)` 的 LambdaMeta
 ## What Changes
 
 - 直接绑定方法引用与现有 adapter 使用同一个 receiver_nonnull 证明；无法证明创建时等价就拒绝引用输出，保留完整 effect/origin。
-- builder 复用同轮已证明的 receiver tail、真实 entry this、完成分配等明确非 null 事实；不能把 static local0 当 this。
+- builder 复用同轮已证明的 receiver tail、真实 entry this、完成分配与 frame未知时的直接 `CONSTANT_String` 等明确非 null 事实；不能把 static local0 当 this。Class literal 的 `dup; getClass; pop` 形状仍保守拒绝。
 - 独立验证 standalone 与 constructor position 的无 check 反例、真实 javac check 形及已证明非null正例。
 - 前置条件是 frame/SSA 和既有lambda bootstrap/类型证明；非目标：补任意可空receiver的创建时检查机制、自动改写lambda并移动capture、泛型投影及外部层次推测。
 

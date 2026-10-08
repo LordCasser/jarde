@@ -9,8 +9,12 @@
 - **THEN** 系统 SHALL 拒绝无证明的arg0::start输出；若输出可执行函数语法，其创建/调用输出 MUST 与原类逐字一致；不得以可编译替代时机证明
 
 #### Scenario: 已证明的非null接收者
-- **WHEN** receiver是同轮确认的真实实例方法entry this，或完成分配/稳定move chain、受既有receiver-tail证明约束的值，或直接非null常量，并且其余函数证明成立
+- **WHEN** receiver是同轮确认的真实实例方法entry this，或完成分配/稳定move chain、受既有receiver-tail证明约束的值，或frame未知时直接读取的 `CONSTANT_String`，并且其余函数证明成立
 - **THEN** 既有可恢复方法引用 SHALL 保持合法恢复及行为；静态方法/构造器引用、不依赖绑定receiver的lambda SHALL 不退化
+
+#### Scenario: Class literal duplicate remains conservative
+- **WHEN** javac将Class bound receiver写为 `ldc; dup; invokevirtual Object.getClass; pop; invokedynamic`
+- **THEN** 系统 SHALL 保守拒绝该绑定方法引用并保留原字节码来源；本需求不扩展duplicate-expression所有权
 
 #### Scenario: 静态local0和不完整证明
 - **WHEN** 静态方法的第一个参数占local0，或receiver来自不完整/未证明值链
