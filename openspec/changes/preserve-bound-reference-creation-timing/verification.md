@@ -19,7 +19,7 @@ Using `CARGO_TARGET_DIR=/Users/lordcasser/workspace/projects/jarde/target CARGO_
 
 The frozen `NoCheck` and `NoStand` originals were independently verified by root on OpenJDK 23 and Corretto 8 as `creation=ok`, then `invocation=NPE`; this implementation intentionally emits no bound reference for them. Full workspace tests, clippy, both-JDK full-class replay, and OpenSpec strict validation remain with root (tasks 2.1–2.2).
 
-The BRN `nullableParameter` refusal expectation now quotes `@bytecode 12 7 2 0 1`: both frozen BRN legs' `javap -c` show `dup` at BCI 2, `invokedynamic` factory at BCI 7, and `Optional.ifPresent` consumer at BCI 12. The additional `7 2` origins preserve the refused factory and its capture producer; the refusal text and every other assertion remain unchanged. This is an expected provenance expansion, not a changed semantic result.
+The BRN refusal expectations quote their exact consumers, factories, and capture producers. Both frozen legs' `javap -c` show `nullableParameter` as `@bytecode 12 7 2 0 1` (consumer 12, factory 7, capture dup 2, loads 0/1), `nullableField` as `@bytecode 15 10 5 2 0 1` (consumer 15, factory 10, capture dup 5, field producer 2, loads 0/1), and `rewrittenAfterCapture` as `@bytecode 20 15 10 8 9` (consumer 20, factory 15, capture dup 10, loads 8/9). Javac 23 uses `Objects.requireNonNull` and javac 8 uses `Object.getClass` at the intervening check sites; the producer/factory/consumer BCIs are identical. This follow-up changes only the two newly expanded source-origin expectations; refusal semantics and every other method assertion remain unchanged.
 
 ## Artifacts and limits
 
