@@ -1,0 +1,60 @@
+// jarde: presentation of `NEG` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NEG extends java.lang.Object {
+    static java.lang.String[] src;
+
+    static int pos;
+
+    public NEG() {
+        // @method <init>()V
+        // @declaration a constructor of `NEG`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.String read() {
+        // @method read()Ljava/lang/String;
+        // @declaration a static method of `NEG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return NEG.pos < NEG.src.length ? NEG.src[NEG.pos++] : null;
+    }
+
+    static int liveLine() {
+        // @method liveLine()I
+        // @declaration a static method of `NEG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int n;
+        n = 0;
+        java.lang.String line;
+        while ((line = read()) != null) {
+            n = n + line.length();
+        }
+        return n;
+    }
+
+    static boolean shortChain(int x) {
+        // jarde: not recovered: the recovery run for `shortChain(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method shortChain(I)Z
+        // @declaration a static method of `NEG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 2 3 4 5 8 9 11 14 15 18 19 20 21
+        // the short-circuit chain from BCI 5 through 11 reaches a shared value consumer at BCI 19, but this slice has no SSA proof for that value; the complete region is quoted
+    }
+
+    public static void main(java.lang.String[] a) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `NEG`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("" + liveLine());
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `NEG`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        NEG.src = new java.lang.String[]{"a", "b", null};
+        NEG.pos = 0;
+    }
+}

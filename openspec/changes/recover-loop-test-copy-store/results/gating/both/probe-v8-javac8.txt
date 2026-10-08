@@ -1,0 +1,58 @@
+// jarde: presentation of `Probe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Probe extends java.lang.Object {
+    public Probe() {
+        // @method <init>()V
+        // @declaration a constructor of `Probe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.String readAll(java.lang.String arg0) throws java.io.IOException {
+        // @method readAll(Ljava/lang/String;)Ljava/lang/String;
+        // @declaration a static method of `Probe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.FileReader local1;
+        java.lang.StringBuilder local2;
+        local1 = new java.io.FileReader(arg0);
+        local2 = new java.lang.StringBuilder();
+        int local3;
+        while ((local3 = local1.read()) != -1) {
+            local2.append((char) local3);
+        }
+        local1.close();
+        return local2.toString();
+    }
+
+    static int guardPlain(java.lang.String arg0) throws java.io.IOException {
+        // @method guardPlain(Ljava/lang/String;)I
+        // @declaration a static method of `Probe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.FileReader local1;
+        int local2;
+        local1 = new java.io.FileReader(arg0);
+        local2 = 0;
+        try {
+            local2 = local1.read();
+            if (local2 > 0) {
+                local2 = local2 + 1;
+            }
+            int local3;
+            while ((local3 = local1.read()) != -1) {
+                local2 = local2 + local3;
+            }
+        } finally {
+            local1.close();
+        }
+        return local2;
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Probe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(readAll("data.txt").replace((java.lang.CharSequence) "\n", (java.lang.CharSequence) "|") + "/" + guardPlain("data.txt"));
+        return;
+    }
+}

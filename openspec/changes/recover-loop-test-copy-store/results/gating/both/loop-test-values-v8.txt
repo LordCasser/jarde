@@ -1,0 +1,45 @@
+// jarde: presentation of `LoopTestValues` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+final class LoopTestValues extends java.lang.Object {
+    int n;
+
+    LoopTestValues() {
+        // @method <init>()V
+        // @declaration a constructor of `LoopTestValues`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    int fieldThenIncrementTest(int arg1) {
+        // @method fieldThenIncrementTest(I)I
+        // @declaration an instance method of `LoopTestValues`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        while (this.n > 0) {
+            arg1 = arg1 + 1;
+        }
+        while (arg1-- > 0) {
+        }
+        return arg1;
+    }
+
+    int storeTest(int arg1) {
+        // jarde: not recovered: the recovery run for `storeTest(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method storeTest(I)I
+        // @declaration an instance method of `LoopTestValues`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 2 3
+        // the loop@1 rule did not claim the block at BCI 0: it requires a test block whose every instruction is part of a value expression, and the instruction at BCI 1 is not part of one, so presenting the structure would have moved that effect out of the shape it decides
+        // @bytecode 6 9 10
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [6, 9]
+    }
+
+    int incrementTest(int arg1) {
+        // @method incrementTest(I)I
+        // @declaration an instance method of `LoopTestValues`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        while (arg1-- > 0) {
+        }
+        return arg1;
+    }
+}
