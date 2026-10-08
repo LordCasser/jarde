@@ -12178,7 +12178,21 @@ mod tests {
             // and `quotedSliceKept`'s `ifle`/`goto` — plus the escape class's `goto` once per
             // leg, and the derived control's own `goto` once more), no subroutine) moved it
             // again.
-            (950, 4077, 418, 2540, 8),
+            // The 2026-10-08 recover-loop-test-copy-store fixtures (the io slice's registered
+            // boundary closed: the anchor `Probe` — `readAll` the same-form loop outside any guard
+            // body and `guardPlain` the guard-body control whose `if` presents — `ProbeControls`
+            // with the two refusals (`parameterTarget`'s parameter-target loop test and
+            // `guardIfFirst`'s if-position dance inside the protected range), and the byte-patched
+            // `MultiCopy` — `Probe` with the loop test's `iconst_m1` replaced by a `dup`, the
+            // copy's second consumer, three classes on both compiler legs: six classes,
+            // twenty-four bodies, twelve per leg — four in each class — twelve handler records
+            // (`guardPlain`'s two and `guardIfFirst`'s two per leg: the protected range's own row
+            // and the handler's binding-store row) and thirty-six branch targets (eighteen per
+            // leg: `Probe`'s six — `readAll`'s loop pair and `guardPlain`'s loop and `if` pairs —
+            // `ProbeControls`' six — `parameterTarget`'s loop pair and `guardIfFirst`'s loop and
+            // `if` pairs — and `MultiCopy`'s six — the patched loop's pair beside `guardPlain`'s
+            // four), no subroutine) moved it again.
+            (956, 4101, 430, 2576, 8),
             "fixture population changed: re-measure these counts"
         );
     }

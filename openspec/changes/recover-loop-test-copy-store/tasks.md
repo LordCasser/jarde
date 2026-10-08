@@ -2,9 +2,9 @@
 
 > 纪律：门控实验先行（循环测试位准入单独翻转 readAll；copy/dup-store/guard 全负例不翻）；行号按锚点名重验；readAll 当前拒绝链先插桩（copy 族文本？crossing？顺序如何）。
 
-- [ ] 1.1 插桩 IO.readAll 当前拒绝链（逐字诊断与先后）；定位 dup-store 双读者判据的循环测试位缺口的发出处；门控实验转录存证据。
-- [ ] 1.2 冻结锚与负例双腿：IO（巡查件，readAll 为主锚）+ 独立探针（非 guard 体内的同形循环）；负例=store 后读者不止测试形、guard 体内不可观察性违反形。
-- [ ] 2.1 实现循环测试位呈现（测试表达式内 store）+ guard 体局部声明位协调；既有判据逐字不动。
-- [ ] 2.2 对照测试：readAll 恢复（IO 类 0 引注、双腿文件驱动含 EOF 一致）；countLines 零回退；copy/快照/dup-store/guard 五族套件全绿；负例拒绝逐字。
-- [ ] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。
+- [x] 1.1 插桩 IO.readAll 当前拒绝链（逐字诊断与先后）；定位 dup-store 双读者判据的循环测试位缺口的发出处；门控实验转录存证据。→ [results/01-instrumentation-and-gating.md](results/01-instrumentation-and-gating.md)（实测：HEAD 的**发出**诊断是 crossing 级联，其因是 guard 证书的 Transfer 完成形收窄——`prove_resource_guard_finally` 在 `41: goto 53` 处 `Ok(None)`，copy 族纯度判据在 guard 被 claim 之前根本不被询问；四态门控矩阵 28 渲染，见 `results/gating/`）
+- [x] 1.2 冻结锚与负例双腿：IO（巡查件，readAll 为主锚）+ 独立探针（非 guard 体内的同形循环）；负例=store 后读者不止测试形、guard 体内不可观察性违反形。→ [results/03-anchors-and-negatives.md](results/03-anchors-and-negatives.md) + [tests/fixtures/recover-loop-test-copy-store/](../../../tests/fixtures/recover-loop-test-copy-store/README.md)（`Probe` 双腿+jar、`Probe.guardPlain` 对照、`ProbeControls.parameterTarget`/`guardIfFirst`、字节补丁 `MultiCopy`）+ [tests/recover_loop_test_copy_store.rs](../../../tests/recover_loop_test_copy_store.rs)
+- [x] 2.1 实现循环测试位呈现（测试表达式内 store）+ guard 体局部声明位协调；既有判据逐字不动。→ 提交 `feat(java): present the resource guard's continuation completion`（guard 体：Transfer 完成形 + 融合尾 span）、`feat(java): present the loop test's copy-and-store assignment`（copy 族：`store_dance_part` 准入 + LoopTest 就地表达式 + 仅"移动型"呈现保留 `enters_handler` 规则）；[results/02-implementation.md](results/02-implementation.md)
+- [x] 2.2 对照测试：readAll 恢复（IO 类 0 引注、双腿文件驱动含 EOF 一致）；countLines 零回退；copy/快照/dup-store/guard 五族套件全绿；负例拒绝逐字。→ [results/03-anchors-and-negatives.md](results/03-anchors-and-negatives.md)（IO 双腿驱动 `2/hello|world|`、探针驱动 `hello|world|/1105`；`recover_dup_store_conditional` 的 `NEG.liveLine` 与 CF-06 的 `loopCondition` 按语料移动纪律更新断言）
+- [x] 3.1 全门禁（含 oracle ignored 腿）+ corpus 指纹 + 分逻辑提交（不 push）。→ [results/04-corpus-and-oracle.md](results/04-corpus-and-oracle.md)（指纹 +9 纯增、census `(950,4077,418,2540,8)→(956,4101,430,2576,8)`、oracle 3/3 无 stale）、[results/05-gates.md](results/05-gates.md)
 - [ ] 3.2 root 独立复核：插桩链、门控、行为对照、账本（io 域 readAll 残余关闭）。（留 root）
