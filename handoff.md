@@ -1,10 +1,10 @@
-# HANDOFF — jarde 当前接续入口（2026-10-08）
+# HANDOFF — jarde 当前接续入口（2026-10-09）
 
 先核对 Git 和最新 HEAD 的 CI，再按下方队列继续。历史交接已在 Git 中保留，不从旧任务勾选数、分支名或旧 CI 结果推断当前状态。
 
 ## 当前收尾状态
 
-基线 `790579e2` 的四个 CI job 已成功：[run 37786347619](https://github.com/LordCasser/jarde/actions/runs/37786347619)。前一片泛型字段源码写证明已经合入。本轮 `recover-class-scope-constructor-parameters` 实现、独立对照与本地完整门禁已完成，代码和证据一起合入 main 并推送。fmt、CI 同口径 clippy、两固定 seed 各 3,243 passed/0 failed/93 ignored、显式 ignored P3 3 项/构造实参 1 项/绑定引用 1 项、strict OpenSpec 321/321 全部通过。最终远端 CI 必须按最新 main HEAD 查询；本地通过不能替代实际 JDK25 oracle。
+基线 `790579e2` 的四个 CI job 已成功：[run 37786347619](https://github.com/LordCasser/jarde/actions/runs/37786347619)。前一片泛型字段源码写证明已经合入。本轮 `recover-class-scope-constructor-parameters` 实现、独立对照与本地完整门禁已完成，代码和证据一起合入 main 并推送。fmt、CI 同口径 clippy、两固定 seed 各 3,243 passed/0 failed/93 ignored、显式 ignored P3 3 项/构造实参 1 项/绑定引用 1 项、strict OpenSpec 321/321 全部通过。实现提交 `698a219e` 的远端 [run 37804470415](https://github.com/LordCasser/jarde/actions/runs/37804470415) 第二 seed 在既有 bulk 预算并发断言失败，后续 JDK25 oracle 未执行。已按原 OpenSpec 修正测试并加入确定性 probe/charge 对照，生产预算与语法恢复逻辑未变；详情见 [CI 预算验收](openspec/changes/recover-class-scope-constructor-parameters/ci-delivery-verification-root.md)。修正后的最终远端 CI 必须按最新 main HEAD 查询，本地通过不能替代实际 JDK25 oracle。
 
 构造器片沿既有 candidate → method commit → published parameters → field commit 恢复 Object() 后直接 this 字段初始化的类作用域参数。T/T[]、上界、多变量、重复参数加载及宽槽均使用完整 AST/Code/SSA/InitRecord 与物理字段身份。未增加 pass、parser、IR、fixpoint，也不以未发布字段 Signature 循环证明构造参数。方法级字段赋值、任意调用/EH/this 委派仍有独立边界。
 
@@ -28,7 +28,7 @@ root 首次对照抓到 ThisDelegateHold 新回退：callee 发布 T，但 calle
 
 本地门禁：fmt、CI 明列债务白名单之外 -D warnings 的 workspace clippy、两固定 seed 5350648285461741569/70、strict OpenSpec、ignored P3/functional-constructor/bound-receiver。JDK25 instruction-boundary oracle 在远端实际 JDK25 核对，本地8/23不能冒充25。最终远端状态必须按最新 main HEAD查询。
 
-历史固定保护的 detached 工作树是干净且已合入的副本，Codex归档曾明确拒绝删除，不绕过保护。收尾必须确认所有辅助树 detached/干净且 HEAD为main祖先，删除已合入实现分支。
+收尾已核对 15 个工作树：辅助树全部 detached、干净且 HEAD 为 main 祖先；本地和远端只剩 main，没有分支占用。共享 Cargo 曾清理 7,690 个文件、17.1 GiB；CI 修正复验的残留在最终验收后再次清理。历史固定保护的 detached 副本，Codex 归档明确拒绝删除，保留这些副本，不绕过保护。
 
 ```sh
 git status -sb
