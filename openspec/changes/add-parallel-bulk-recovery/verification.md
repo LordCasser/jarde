@@ -355,3 +355,7 @@ w8 与 w1 的 min–max 不重叠；并行收益单调到 8 worker（此前 jobs
 **诊断码读法（复核更正）**：`resolution_definition_unbound` 在 `delivery.analysis` 平面，出现它的 298 个方法记录是 `state=recovered`（已交付），只有 28 个 `class_end` 把码写进自己的 execution 平面；语义是"该物理定义被同名定义遮蔽、不是声明的 loader 会选中的那一个"，不是"引擎拒绝选"；触发条件是本轮 s2-009 声明了 53 个显式 container root 把两份拷贝都纳入。MUST NOT 读作恢复失败。
 
 **环境声明（承重件，须逐条记录）**：bcprov = `snapshot_all` + `PlainJar`；s2-009 = `artifact_tree root` + 53 个显式 container root（含 `WEB-INF/classes/` 前缀）。
+
+## 16. 2026-10-08 主线 CI 审计（待 root 验收）
+
+固定 seed 1569 的全量门禁触发 `bulk_recovery_lifecycle::a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind` 中 `!traversal_complete` 断言。该断言依赖 panic 与遍历 EOF 的观察顺序；二者可按任意顺序发生，`traversal_complete` 只描述 discovery 是否到达 scope 末尾，不代表 execution 成功。最小修正仅删除该断言并保留说明注释；执行失败、`bulk_worker_panicked`、Infrastructure stop、终态事件、worker join/无遗留线程及交付一致性断言均保留。生产语义未改。此测试在主线和候选 worktree 相同；无需新增 spec。**待 root 验收**；本次未运行 cargo。
