@@ -54,9 +54,10 @@ use clap::{ArgAction, Args, ValueEnum};
 use jarde::artifact::budget_dimension_code;
 use jarde::{
     BudgetDimension, BulkDiagnosticEvent, BulkFinalEvent, BulkHeaderEvent, BulkRecoveryReport,
-    BulkRecoveryRequest, BulkStop, ClassEndEvent, ClassPreparedEvent, CountedBudgetDimension,
-    DeliveryAccount, Error, ExecutionReport, FactsCache, FactsCapacity, Limits, MethodResultEvent,
-    RecoveryEvidenceRequest, RecoverySink, SinkControl, task_budget,
+    BulkRecoveryRequest, BulkStop, BulkStopKind, ClassEndEvent, ClassPreparedEvent,
+    CountedBudgetDimension, DeliveryAccount, Error, ExecutionReport, FactsCache, FactsCapacity,
+    Limits, MethodResultEvent, RecoveryEvidenceRequest, RecoverySink, SinkControl, UsageOwner,
+    task_budget,
 };
 use serde::Serialize;
 use std::fs::{File, OpenOptions};
@@ -311,12 +312,13 @@ pub(crate) fn run(args: Export) -> Result<ExitCode, Failure> {
     if status == EXIT_COMPLETE {
         return Ok(ExitCode::from(EXIT_COMPLETE));
     }
-    // The reason the failure document states is the adapter's own stop when there was one, and the
-    // library's own account of the run when there was not.
-    let error = match stopped.as_ref() {
-        Some(stopped) => stopped.error().clone(),
-        None => unfinished_error(&report),
-    };
+    // A file I/O failure is the adapter's own primary stop; an allowance error is primary only when
+    // it matches the operation's first stop. Otherwise the report supplies the original reason.
+    let error = stopped
+        .as_ref()
+        .and_then(|stopped| stopped.error(report.stop.as_ref()))
+        .cloned()
+        .unwrap_or_else(|| unfinished_error(&report));
     let usage = report.usage.clone();
     Err(if status == EXIT_USAGE {
         Failure::export_failed(error, usage)
@@ -511,10 +513,29 @@ enum Stopped {
 }
 
 impl Stopped {
-    /// The error document this stop states.
-    fn error(&self) -> &Error {
+    /// The adapter's error is primary only when it matches the operation's first stop.
+    fn error(&self, first_stop: Option<&BulkStop>) -> Option<&Error> {
         match self {
-            Self::Allowance(error) | Self::Output(error) => error,
+            Self::Output(error) => Some(error),
+            Self::Allowance(error)
+                if matches!(
+                    error,
+                    Error::BudgetExceeded {
+                        dimension: BudgetDimension::OutputBytes,
+                        ..
+                    }
+                ) && matches!(
+                    first_stop,
+                    Some(BulkStop {
+                        owner: Some(UsageOwner::Delivery),
+                        kind: BulkStopKind::Budget,
+                        dimension: Some(BudgetDimension::OutputBytes),
+                    })
+                ) =>
+            {
+                Some(error)
+            }
+            Self::Allowance(_) => None,
         }
     }
 }
@@ -876,5 +897,99 @@ impl Write for Bounded<'_> {
 
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn stop(
+        owner: Option<UsageOwner>,
+        kind: BulkStopKind,
+        dimension: Option<BudgetDimension>,
+    ) -> BulkStop {
+        BulkStop {
+            owner,
+            kind,
+            dimension,
+        }
+    }
+
+    fn cancelled() -> Error {
+        Error::Cancelled {
+            reason: "cooperative cancellation requested".to_owned(),
+        }
+    }
+
+    fn output_budget_error() -> Error {
+        Error::BudgetExceeded {
+            dimension: BudgetDimension::OutputBytes,
+            limit: 100,
+            consumed: 72,
+            requested: 40,
+        }
+    }
+
+    #[test]
+    fn a_secondary_cancellation_does_not_replace_the_first_ir_items_budget_stop() {
+        let stopped = Stopped::Allowance(cancelled());
+        let first_stop = stop(
+            Some(UsageOwner::Methods),
+            BulkStopKind::Budget,
+            Some(BudgetDimension::IrItems),
+        );
+
+        assert_eq!(stopped.error(Some(&first_stop)), None);
+    }
+
+    #[test]
+    fn an_external_cancellation_remains_the_report_reason() {
+        let stopped = Stopped::Allowance(cancelled());
+        let first_stop = stop(None, BulkStopKind::Cancelled, None);
+
+        assert_eq!(stopped.error(Some(&first_stop)), None);
+    }
+
+    #[test]
+    fn a_later_output_budget_does_not_replace_another_first_stop() {
+        let error = output_budget_error();
+        let stopped = Stopped::Allowance(error);
+        let first_stop = stop(
+            Some(UsageOwner::Methods),
+            BulkStopKind::Budget,
+            Some(BudgetDimension::IrItems),
+        );
+
+        assert_eq!(stopped.error(Some(&first_stop)), None);
+    }
+
+    #[test]
+    fn the_matching_delivery_output_budget_keeps_its_numeric_details() {
+        let error = output_budget_error();
+        let stopped = Stopped::Allowance(error.clone());
+        let first_stop = stop(
+            Some(UsageOwner::Delivery),
+            BulkStopKind::Budget,
+            Some(BudgetDimension::OutputBytes),
+        );
+
+        assert_eq!(stopped.error(Some(&first_stop)), Some(&error));
+    }
+
+    #[test]
+    fn an_output_io_failure_remains_primary() {
+        let error = Error::Io {
+            operation: "cli_write_output".to_owned(),
+            message: "write failed".to_owned(),
+        };
+        let stopped = Stopped::Output(error.clone());
+        let first_stop = stop(
+            Some(UsageOwner::Methods),
+            BulkStopKind::Budget,
+            Some(BudgetDimension::IrItems),
+        );
+
+        assert_eq!(stopped.error(Some(&first_stop)), Some(&error));
     }
 }
