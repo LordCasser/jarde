@@ -572,7 +572,9 @@ pub enum LockGuardCompletion {
     /// was fused into it — and the statement's own `join` is that continuation
     /// (`recover-loop-test-copy-store`). The resource guard's form for a protected body that does
     /// not return — `try { … } finally { r.close(); } return …;` — where the value the method
-    /// answers is built after the statement, not inside it.
+    /// answers is built after the statement, not inside it. The lock guard's form for the same
+    /// fused layout where the tail is its own void completion — the method's value-less `return`
+    /// (`recover-branching-guard-body`) — which a branching protected body's release copy leaves.
     Continues {
         transfer: u32,
         continuation: Continuation,
@@ -3697,6 +3699,41 @@ fn lock_guard_copies(
     Some(copies)
 }
 
+/// The lock guard's **void completion** where the canonical graph fused the method's own
+/// value-less `return` into the release copy's block, as the instruction span the run ends at
+/// (`recover-branching-guard-body`).
+///
+/// The `Void` form proves that return as a block of its own — one `Return`, nothing on the stack,
+/// reached from nowhere but the transfer. A **branching** protected body puts the release copy in
+/// a block of its own, and that block carries no exception edge, so nothing else enters the
+/// return and the canonical graph fuses the single-successor/single-predecessor chain: the
+/// transfer has no successor block to state, and the completion is the block's own tail after it.
+///
+/// This is the sibling of the resource guard's tail-span reading (`recover-loop-test-copy-store`):
+/// the same fusion, read on the same block, with the **void** completion's own criterion instead
+/// of "the statements the run continues with". The tail is exactly the method's own value-less
+/// `return` and nothing else, so a tail that holds control flow, a second instruction, or a
+/// completion that carries a value stays refused here — as it stays refused where the same return
+/// is a block of its own.
+fn fused_void_return(facts: &Facts<'_>, transfer: u32) -> Option<(u32, u32)> {
+    let block = facts.block_of(transfer)?;
+    let instructions = facts.in_block(block);
+    let position = instructions
+        .iter()
+        .position(|instruction| instruction.bci() == transfer)?;
+    let [returns] = &instructions[position + 1..] else {
+        return None;
+    };
+    if facts.op(returns.bci()) != Some(&Operation::Return)
+        || !facts
+            .step(returns.bci())
+            .is_some_and(|step| stack_operands(step.instruction).is_empty())
+    {
+        return None;
+    }
+    Some((returns.bci(), facts.span_end(returns.bci())))
+}
+
 /// The lock-guard certificate: `lock(); try { … } finally { unlock(); }`, and the nested-lock
 /// statement beside it: `a.lock(); b.lock(); try { … } finally { b.unlock(); a.unlock(); }`.
 ///
@@ -3720,8 +3757,10 @@ fn lock_guard_copies(
 ///   the release the source's `finally` runs);
 /// * every normal exit of the protected range reaches the release, and every exception edge out of
 ///   it is this row's — so the two copies cover exactly the exits the one `finally` covers;
-/// * the completion is one of the two forms javac writes: a saved value returned after the release,
-///   or a transfer to the method's own value-less return.
+/// * the completion is one of the forms javac writes: a saved value returned after the release, a
+///   transfer to the method's own value-less return where that return is a block of its own, or the
+///   same transfer where the canonical graph fused the trailing return into the release copy's
+///   block ([`fused_void_return`], the form a branching body's release copy takes).
 ///
 /// The lead is what admits a call that **may throw**: `lockInterruptibly()` is an acquisition like
 /// any other exactly when the row set leaves it outside every protected range, because then the
@@ -3903,38 +3942,57 @@ fn prove_lock_guard_finally(
                 return Ok(None);
             };
             let normal_cleanup = &normal_middle[cleanup_start..];
-            // The transfer's one successor is the method's own value-less return, reached from
-            // nowhere else and continuing nowhere.
             let Some(normal_block) = facts.block_of(normal_last) else {
                 return Ok(None);
             };
-            let Some(return_block) = facts.view.successor_ids(normal_block).first().cloned() else {
-                return Ok(None);
+            let successors = facts.view.successor_ids(normal_block);
+            let completion = match successors.as_slice() {
+                // The method's own trailing value-less return was **fused** into the release
+                // copy's block — the canonical graph fuses a single-successor/single-predecessor
+                // chain, and a branching body puts the copy in a block of its own with no
+                // exception edge of its own, so nothing else enters that return — and the transfer
+                // has no successor block to state. The completion is that return read as the
+                // block's own tail after the transfer ([`fused_void_return`]), and the run ends
+                // where the block does: the builder writes the tail after the `try` statement.
+                [] => {
+                    let Some(span) = fused_void_return(facts, normal_last) else {
+                        return Ok(None);
+                    };
+                    LockGuardCompletion::Continues {
+                        transfer: normal_last,
+                        continuation: Continuation::Tail { span },
+                    }
+                }
+                // The transfer's one successor is the method's own value-less return, reached from
+                // nowhere else and continuing nowhere.
+                _ => {
+                    let Some(return_block) = successors.first().cloned() else {
+                        return Ok(None);
+                    };
+                    let returns = return_block.bci();
+                    let (Some(return_node), Some(normal_node)) = (
+                        facts.view.index_of(&return_block),
+                        facts.view.index_of(normal_block),
+                    ) else {
+                        return Ok(None);
+                    };
+                    if facts.in_block(&return_block).len() != 1
+                        || facts.op(returns) != Some(&Operation::Return)
+                        || !facts
+                            .step(returns)
+                            .is_some_and(|step| stack_operands(step.instruction).is_empty())
+                        || !facts.view.successor_ids(&return_block).is_empty()
+                        || facts.view.predecessors(return_node) != [normal_node]
+                    {
+                        return Ok(None);
+                    }
+                    LockGuardCompletion::Void {
+                        transfer: normal_last,
+                        returns,
+                    }
+                }
             };
-            let returns = return_block.bci();
-            let (Some(return_node), Some(normal_node)) = (
-                facts.view.index_of(&return_block),
-                facts.view.index_of(normal_block),
-            ) else {
-                return Ok(None);
-            };
-            if facts.in_block(&return_block).len() != 1
-                || facts.op(returns) != Some(&Operation::Return)
-                || !facts
-                    .step(returns)
-                    .is_some_and(|step| stack_operands(step.instruction).is_empty())
-                || !facts.view.successor_ids(&return_block).is_empty()
-                || facts.view.predecessors(return_node) != [normal_node]
-            {
-                return Ok(None);
-            }
-            (
-                normal_cleanup,
-                LockGuardCompletion::Void {
-                    transfer: normal_last,
-                    returns,
-                },
-            )
+            (normal_cleanup, completion)
         }
         _ => return Ok(None),
     };
