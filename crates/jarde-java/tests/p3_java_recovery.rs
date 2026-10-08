@@ -56,6 +56,18 @@ use jarde_reader::view::{
 const HISTORICAL_V45: &[u8] =
     include_bytes!("../../../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
 
+const BOUND_REFERENCE_NO_CHECK: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/NoCheck.class"
+);
+const BOUND_REFERENCE_NO_STAND: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/NoStand.class"
+);
+const BOUND_REFERENCE_PROVEN_POSITIVES: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/positive/KnownBound.class"
+);
+const BOUND_REFERENCE_ALLOCATION_TAIL: &[u8] =
+    include_bytes!("../../../tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class");
+
 /// The same class compiled by the same compiler at class-file version **52** (P3-R7): its
 /// `finallyPath(I)I` is the committed body whose decode and canonical graph disagree — the class
 /// declares an `any` handler at BCI 9 over `[0, 4)` and the decode reads BCI 9's four instructions,
@@ -2486,11 +2498,50 @@ fn execution_quality_and_representation_each_state_their_own_thing() {
 ///
 /// The member names and indexes 1..8 are the fixture's own preamble (`Test`, its superclass,
 /// `method`, `()V`, `Code`, `BootstrapMethods`); everything a site needs is added after them.
+fn entry_this_bound_reference_class() -> Vec<u8> {
+    let mut fixture = Fixture::new_instance_method_descriptor("()Ljava/util/function/Supplier;");
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_nat = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_nat);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("()Ljava/lang/Object;");
+    let sam_type = fixture.method_type(sam);
+    let test_name = fixture.utf8("Test");
+    let test_class = fixture.class(test_name);
+    let to_string_name = fixture.utf8("toString");
+    let to_string_descriptor = fixture.utf8("()Ljava/lang/String;");
+    let to_string_nat = fixture.name_and_type(to_string_name, to_string_descriptor);
+    let to_string_ref = fixture.method_ref(test_class, to_string_nat);
+    let to_string_handle = fixture.method_handle(5, to_string_ref);
+    let instantiated = fixture.utf8("()Ljava/lang/String;");
+    let instantiated_type = fixture.method_type(instantiated);
+    let bootstrap = fixture.bootstrap(
+        factory_handle,
+        vec![sam_type, to_string_handle, instantiated_type],
+    );
+    let name = fixture.utf8("get");
+    let descriptor = fixture.utf8("(LTest;)Ljava/util/function/Supplier;");
+    let nat = fixture.name_and_type(name, descriptor);
+    let site = fixture.invoke_dynamic(bootstrap, nat);
+    let code = vec![
+        0x2a, // 0: aload_0 (`this`, in a proved instance-method entry)
+        0xba, 0, 0, 0, 0,    // 1: invokedynamic `this::toString`
+        0xb0, // 6: areturn
+    ];
+    fixture.finish(code, 1, site, 1, 1)
+}
+
 struct Fixture {
     pool: Vec<u8>,
     entries: u16,
     bootstraps: Vec<(u16, Vec<u16>)>,
     bodies: Vec<FixtureBody>,
+    method_flags: u16,
 }
 
 /// One member the fixture declares beside `method` — the desugared body method a compiler generates
@@ -2515,6 +2566,7 @@ impl Fixture {
             entries: 0,
             bootstraps: Vec::new(),
             bodies: Vec::new(),
+            method_flags: 0x0009,
         };
         let test = fixture.utf8("Test"); // 1
         fixture.class(test); // 2
@@ -2524,6 +2576,12 @@ impl Fixture {
         fixture.utf8(descriptor); // 6
         fixture.utf8("Code"); // 7
         fixture.utf8("BootstrapMethods"); // 8
+        fixture
+    }
+
+    fn new_instance_method_descriptor(descriptor: &str) -> Self {
+        let mut fixture = Self::new_with_method_descriptor(descriptor);
+        fixture.method_flags = 0x0001; // public instance method
         fixture
     }
 
@@ -2663,7 +2721,7 @@ impl Fixture {
                 .expect("a fixture has few methods")
                 .to_be_bytes(),
         );
-        out.extend_from_slice(&0x0009_u16.to_be_bytes()); // public static
+        out.extend_from_slice(&self.method_flags.to_be_bytes());
         out.extend_from_slice(&5_u16.to_be_bytes()); // name → "method"
         out.extend_from_slice(&6_u16.to_be_bytes()); // descriptor → "()V"
         out.extend_from_slice(&1_u16.to_be_bytes()); // one attribute
@@ -3650,13 +3708,64 @@ fn recover_class_under(
 }
 
 fn recover_method(class: &[u8], descriptor: &[u8], parameters: u16) -> jarde_java::RecoveryReport {
-    let payload = analyze(class, b"method", descriptor);
-    let facts = facts_of(class, b"method", parameters, Vec::new());
+    recover_named_method(class, b"method", descriptor, parameters)
+}
+
+fn recover_named_method(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    parameters: u16,
+) -> jarde_java::RecoveryReport {
+    let payload = analyze(class, name, descriptor);
+    let facts = facts_of(class, name, parameters, Vec::new());
     recover(
         &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
             .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut Budget::new(limits()),
     )
+}
+
+fn recover_instance_method(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+) -> jarde_java::RecoveryReport {
+    let payload = analyze(class, name, descriptor);
+    let facts = RecoveryFacts::new(
+        MethodFacts::new(
+            String::from_utf8_lossy(name),
+            String::from_utf8_lossy(descriptor),
+            1,
+        )
+        .with_access_flags(0x0001)
+        .with_declaring_class(jarde_java::facts::DeclaringClass::new("Test", 0x0021)),
+    );
+    recover(
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &mut Budget::new(limits()),
+    )
+}
+
+#[test]
+fn proved_entry_this_keeps_bound_method_reference() {
+    let entry_this = recover_instance_method(
+        &entry_this_bound_reference_class(),
+        b"method",
+        b"()Ljava/util/function/Supplier;",
+    );
+    assert!(entry_this.produced(), "{:?}", entry_this.outcome);
+    assert!(
+        entry_this.text.contains("this::toString"),
+        "{}",
+        entry_this.text
+    );
+    assert!(
+        !entry_this.text.contains("@bytecode"),
+        "{}",
+        entry_this.text
+    );
 }
 
 /// The one site's record, with the fixture's own use site.
@@ -3665,6 +3774,168 @@ fn site_of(report: &jarde_java::RecoveryReport, bci: u32) -> &jarde_java::Lambda
     let site = &report.lambdas[0];
     assert_eq!(site.use_site, bci, "{site:?}");
     site
+}
+
+#[test]
+fn a_nullable_direct_bound_reference_keeps_creation_and_consumer_producers_quoted() {
+    let constructor = recover_named_method(
+        BOUND_REFERENCE_NO_CHECK,
+        b"make",
+        b"(Ljava/lang/Thread;)Ljava/lang/Thread;",
+        1,
+    );
+    assert!(constructor.produced(), "{:?}", constructor.outcome);
+    assert!(
+        !constructor.text.contains("arg0::start"),
+        "{}",
+        constructor.text
+    );
+    assert!(
+        constructor.text.contains("@bytecode"),
+        "{}",
+        constructor.text
+    );
+    let site = constructor
+        .lambdas
+        .iter()
+        .find(|site| site.use_site == 5)
+        .expect("the constructor argument factory remains represented");
+    assert_eq!(site.form, None);
+    assert_eq!(
+        site.refusal.as_ref().map(|refusal| refusal.code),
+        Some("jre_lambda_sam_types")
+    );
+    assert_eq!(
+        site.captures,
+        vec![jarde_java::LambdaCapture { bci: Some(4) }]
+    );
+    let constructor_origins: std::collections::BTreeSet<u32> = constructor
+        .source_map
+        .segments()
+        .iter()
+        .flat_map(|segment| {
+            std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        })
+        .map(|origin| origin.bci())
+        .collect();
+    assert_eq!(
+        constructor_origins,
+        [0, 3, 4, 5, 10, 13].into_iter().collect()
+    );
+
+    let standalone = recover_named_method(
+        BOUND_REFERENCE_NO_STAND,
+        b"make",
+        b"(Ljava/lang/Thread;)Ljava/lang/Runnable;",
+        1,
+    );
+    assert!(standalone.produced(), "{:?}", standalone.outcome);
+    assert!(
+        !standalone.text.contains("arg0::start"),
+        "{}",
+        standalone.text
+    );
+    assert!(standalone.text.contains("@bytecode"), "{}", standalone.text);
+    let standalone_origins: std::collections::BTreeSet<u32> = standalone
+        .source_map
+        .segments()
+        .iter()
+        .flat_map(|segment| {
+            std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        })
+        .map(|origin| origin.bci())
+        .collect();
+    assert_eq!(standalone_origins, [0, 1, 6].into_iter().collect());
+    let site = standalone
+        .lambdas
+        .iter()
+        .find(|site| site.use_site == 1)
+        .expect("the standalone factory is retained");
+    assert_eq!(site.form, None);
+    assert_eq!(
+        site.captures,
+        vec![jarde_java::LambdaCapture { bci: Some(0) }]
+    );
+
+    let allocation_tail = recover_named_method(
+        BOUND_REFERENCE_ALLOCATION_TAIL,
+        b"sideEffect",
+        b"(Ljava/util/Optional;)Ljava/lang/String;",
+        1,
+    );
+    assert!(allocation_tail.produced(), "{:?}", allocation_tail.outcome);
+    assert!(
+        allocation_tail
+            .lambdas
+            .iter()
+            .any(|site| site.form.is_some() && site.refusal.is_none()),
+        "{}\n{:?}",
+        allocation_tail.text,
+        allocation_tail.lambdas
+    );
+}
+
+#[test]
+fn javac_bound_reference_nonnull_proofs_preserve_safe_forms_and_reject_class_dup() {
+    let entry_this = recover_instance_method(
+        BOUND_REFERENCE_PROVEN_POSITIVES,
+        b"entryThis",
+        b"()Ljava/util/function/Supplier;",
+    );
+    assert!(entry_this.produced(), "{:?}", entry_this.outcome);
+    assert!(
+        entry_this.text.contains("this::value"),
+        "{}",
+        entry_this.text
+    );
+    assert!(
+        !entry_this.text.contains("@bytecode"),
+        "{}",
+        entry_this.text
+    );
+
+    let constant_string = recover_named_method(
+        BOUND_REFERENCE_PROVEN_POSITIVES,
+        b"constantString",
+        b"()Ljava/util/function/IntSupplier;",
+        0,
+    );
+    assert!(constant_string.produced(), "{:?}", constant_string.outcome);
+    assert!(
+        constant_string.text.contains("\"value\"::length"),
+        "{}",
+        constant_string.text
+    );
+    assert!(
+        !constant_string.text.contains("@bytecode"),
+        "{}",
+        constant_string.text
+    );
+
+    let constant_class = recover_named_method(
+        BOUND_REFERENCE_PROVEN_POSITIVES,
+        b"constantClass",
+        b"()Ljava/util/function/Supplier;",
+        0,
+    );
+    assert!(constant_class.produced(), "{:?}", constant_class.outcome);
+    assert!(
+        constant_class.text.contains("@bytecode"),
+        "{}",
+        constant_class.text
+    );
+    assert!(
+        !constant_class.text.contains("KnownBound.class::getName"),
+        "{}",
+        constant_class.text
+    );
+    let site = constant_class
+        .lambdas
+        .iter()
+        .find(|site| site.use_site == 7)
+        .expect("the class literal's bound factory remains represented");
+    assert_eq!(site.form, None);
+    assert!(site.refusal.is_some(), "{site:?}");
 }
 
 #[test]

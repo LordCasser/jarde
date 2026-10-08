@@ -471,12 +471,12 @@ impl LambdaRefusal {
 /// Capture types must agree exactly with the site and implementation descriptors. A site whose
 /// captures are not *readable from this run's facts* is refused as well.
 ///
-/// `receiver_nonnull` states that this run **proved** the site's bound receiver cannot be null where
-/// the site captures it: the value the site reads is the copy of a receiver whose move chain ends at
-/// an allocation, and the local that chain read is not written again after the read
-/// (`crate::init`'s bound-receiver tail, the one proof that also owns the creation-time check javac
-/// wrote over such a receiver). The check the refusal below is about is dead for such a site, so
-/// there is no null failure left to move from creation to invocation.
+/// `receiver_nonnull` states that this run **proved** a site's bound receiver cannot be null where
+/// the site captures it. The builder may establish that from the existing allocation-tail proof,
+/// a real instance-method entry `this`, a complete stable allocation move chain, or a direct
+/// non-null constant. Method-reference syntax itself carries a creation-time null check, so both
+/// adapted and direct bound references require this fact; the factory's capture descriptor is not
+/// evidence of non-nullness.
 #[allow(
     clippy::too_many_arguments,
     reason = "the one-site decision consumes its class, bootstrap, member, value-flow, profile and budget facts"
@@ -828,8 +828,9 @@ pub(crate) fn plan(
     };
     // A method reference has no expression slot where an erased SAM argument can receive its
     // conversions. Keep it only when both stages are identity. A bound receiver also carries a
-    // creation-time null check; converting that reference to a lambda would defer the check until
-    // invocation, so refuse that adaptation shape.
+    // creation-time null check; without an independent non-null proof, either direct syntax would
+    // add a failure that the factory does not have, or adapting it to a lambda would defer the
+    // failure until invocation.
     let typed_reference = typed_target.is_some_and(|target| {
         use crate::report::TypedFunctionalKind;
         let (interface, erased, dynamic) = match target.kind {
@@ -872,7 +873,6 @@ pub(crate) fn plan(
     });
     let reference_shape = receiver == captures.len() && !implementation.is_generated_body();
     if reference_shape
-        && parameter_adaptation
         && implementation.reach() == Reach::Receiver
         && captures.len() == 1
         && !receiver_nonnull
@@ -881,7 +881,11 @@ pub(crate) fn plan(
             evidence,
             outcome: Err(Refusal::shape(
                 "jre_lambda_sam_types",
-                "adapting this bound receiver would move its null failure from functional-value creation to invocation".to_string(),
+                if parameter_adaptation {
+                    "adapting this bound receiver would move its null failure from functional-value creation to invocation".to_string()
+                } else {
+                    "this bound receiver has no non-null proof, so writing a method reference would add a creation-time null failure absent from the functional factory".to_string()
+                },
             )),
         });
     }
@@ -2243,6 +2247,31 @@ mod tests {
         implementation_name: &str,
         members: Option<&ClassMembers>,
     ) -> Verdict {
+        plan_for_named_test_with_receiver_nonnull(
+            site_descriptor,
+            sam_descriptor,
+            implementation_kind,
+            implementation_descriptor,
+            instantiated_descriptor,
+            captures,
+            implementation_name,
+            members,
+            false,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn plan_for_named_test_with_receiver_nonnull(
+        site_descriptor: &str,
+        sam_descriptor: &str,
+        implementation_kind: u8,
+        implementation_descriptor: &str,
+        instantiated_descriptor: &str,
+        captures: &[(Option<u32>, Option<Type>)],
+        implementation_name: &str,
+        members: Option<&ClassMembers>,
+        receiver_nonnull: bool,
+    ) -> Verdict {
         let pool = vec![
             cp(
                 1,
@@ -2298,7 +2327,7 @@ mod tests {
             &pool,
             members,
             captures,
-            false,
+            receiver_nonnull,
             &crate::pass::JAVA_8,
             None,
             &mut budget,
@@ -2690,7 +2719,7 @@ mod tests {
         );
 
         let receiver_capture = [(Some(2), Some(Type::Reference("test.Target".to_string())))];
-        let captured_receiver = plan_for_test(
+        let unproved_receiver = plan_for_test(
             "(Ltest/Target;)Ljava/util/function/Supplier;",
             "()Ljava/lang/Object;",
             5,
@@ -2698,9 +2727,31 @@ mod tests {
             "()Ljava/lang/Integer;",
             &receiver_capture,
         );
-        let captured_receiver = match captured_receiver.outcome {
+        let refusal = match unproved_receiver.outcome {
+            Err(refusal) => refusal,
+            Ok(_) => panic!("an exact method reference still needs a creation-time non-null proof"),
+        };
+        assert_eq!(refusal.code(), "jre_lambda_sam_types");
+        assert!(
+            refusal
+                .message()
+                .contains("add a creation-time null failure")
+        );
+
+        let proved_receiver = plan_for_named_test_with_receiver_nonnull(
+            "(Ltest/Target;)Ljava/util/function/Supplier;",
+            "()Ljava/lang/Object;",
+            5,
+            "()I",
+            "()Ljava/lang/Integer;",
+            &receiver_capture,
+            "apply",
+            None,
+            true,
+        );
+        let captured_receiver = match proved_receiver.outcome {
             Ok(plan) => plan,
-            Err(refusal) => panic!("exact bound receiver remains accepted: {refusal:?}"),
+            Err(refusal) => panic!("proved exact bound receiver remains accepted: {refusal:?}"),
         };
         assert_eq!(captured_receiver.captures, 1);
         assert_eq!(captured_receiver.form, LambdaForm::MethodReference);

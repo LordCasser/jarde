@@ -21793,9 +21793,9 @@ impl Builder<'_> {
         let budget = &*self.budget;
         let (mut bcis, visited_values) = self.quoted_bcis_with_budget(anchor, Some(budget))?;
         // The walker is read-only, so its budget is borrowed immutably while it traverses. Charge
-        // the exact cardinality of its shared first-visit set afterwards: this accounts ordinary
-        // SSA nodes as well as the source BCIs that happen to be quoted, and the set makes a shared
-        // DAG one unit of work per ValueId rather than one unit per path through it.
+        // the SSA walk's shared first-visit count plus any closed producer BCIs it added. This
+        // accounts ordinary SSA nodes once per ValueId and each extra source identity once, rather
+        // than charging a shared DAG once per path through it.
         if visited_values != 0 {
             charge(
                 self.budget,
@@ -26757,6 +26757,7 @@ impl Builder<'_> {
         let mut bcis = vec![at];
         let mut seen = BTreeSet::new();
         let mut stable_loads = BTreeSet::new();
+        let mut additional_source_items = 0usize;
         // The `pop`s this instruction's own text was going to carry (P3 2c.31): a call that refused
         // takes the qualifier it would have written and the discard its statement would have been, so
         // the quote names them beside itself instead of dropping the evaluations they stood for.
@@ -26768,6 +26769,26 @@ impl Builder<'_> {
         self.quoted_qualifier_producer(at, at, &mut bcis, &mut seen, &mut stable_loads, 0, budget)?;
         if let Some(instruction) = self.instructions.get(&at).copied() {
             for (_, value) in stack_operands(instruction) {
+                // A failed value expression still has to quote the complete, closed construction
+                // interval that produced the value. `site_producing` ties this only to the exact
+                // SSA instance the consumer reads; require a refused dynamic site inside that
+                // interval so ordinary construction fallbacks keep their existing ownership.
+                if let Some(site) = self.sites.site_producing(self.ssa, value)
+                    && self.lambdas.iter().any(|lambda| {
+                        lambda.refusal.is_some() && site.expression.contains(&lambda.use_site)
+                    })
+                {
+                    for producer in site.expression.iter().copied() {
+                        if bcis.contains(&producer) {
+                            continue;
+                        }
+                        if let Some(budget) = budget {
+                            poll(budget, Some(producer))?;
+                        }
+                        bcis.push(producer);
+                        additional_source_items = additional_source_items.saturating_add(1);
+                    }
+                }
                 self.deferred_producers(
                     value,
                     at,
@@ -26785,7 +26806,7 @@ impl Builder<'_> {
         {
             append_quoted_stable_loads(&mut bcis, stable_loads, budget)?;
         }
-        Ok((bcis, seen.len()))
+        Ok((bcis, seen.len().saturating_add(additional_source_items)))
     }
 
     /// Adds the source of a static call's popped expression qualifier to the same bounded quote
@@ -26889,6 +26910,26 @@ impl Builder<'_> {
             return Ok(());
         };
         let bci = *bci;
+        if let Some(lambda) = self
+            .lambdas
+            .iter()
+            .find(|lambda| lambda.use_site == bci && lambda.refusal.is_some())
+        {
+            // The lambda planner has read this factory and the capture values but refused their
+            // Java spelling. Keep those original producers beside a refused consumer; the comment
+            // does not claim the bootstrap is safe, it preserves the exact source facts rejected.
+            for producer in
+                std::iter::once(bci).chain(lambda.captures.iter().filter_map(|capture| capture.bci))
+            {
+                if into.contains(&producer) {
+                    continue;
+                }
+                if let Some(budget) = budget {
+                    poll(budget, Some(producer))?;
+                }
+                into.push(producer);
+            }
+        }
         if let Some((_, deferred)) = self
             .deferred
             .iter()
@@ -27422,13 +27463,38 @@ impl Builder<'_> {
                 )
             })
             .collect();
+        let receiver_nonnull = receiver_tail.is_some()
+            || match operands.as_slice() {
+                [(_, receiver)] => {
+                    // Slot 0 is `this` only in an instance method. `receiver_is_entry_this` reads
+                    // the SSA entry/load proof, while this explicit method fact prevents a static
+                    // method's first parameter from becoming a false non-null witness.
+                    (self.has_receiver && self.receiver_is_entry_this(*receiver))
+                        // A complete, stable move chain from `new` is non-null by construction.
+                        // Reuse the same allocation/stability proof that owns receiver-tail checks.
+                        || crate::init::proved_receiver_class(
+                            self.ssa,
+                            self.operations,
+                            *receiver,
+                        )
+                        .is_some()
+                        // A direct CONSTANT_String load is non-null by its opcode/constant fact.
+                        // Do not infer this from rendered text or a frame type; arbitrary class
+                        // literal duplicate/check shapes remain outside this proof.
+                        || constant_of_value(self.ssa, self.operations, *receiver, 0)
+                            .is_some_and(|ty| {
+                                matches!(ty, Type::Reference(name) if name == "java.lang.String")
+                            })
+                }
+                _ => false,
+            };
         let verdict = lambda::plan(
             site,
             self.bootstrap,
             self.pool,
             self.members,
             &captures,
-            receiver_tail.is_some(),
+            receiver_nonnull,
             &self.profile,
             self.typed_functional_target.filter(|target| {
                 target.use_site == bci
@@ -29802,7 +29868,9 @@ fn written_type(
     if let Some((element, dimensions)) = array_of_value(ssa, operations, value, 0) {
         return Ok(array_spelling(&element, dimensions));
     }
-    if let Some(ty) = constant_of_value(ssa, operations, value, 0) {
+    if matches!(ssa.value(value).ty(), Value::Ref(RefType::Unknown))
+        && let Some(ty) = constant_of_value(ssa, operations, value, 0)
+    {
         return Ok(Some(ty));
     }
     value_type(ssa.value(value).ty())
@@ -29822,14 +29890,16 @@ fn written_type(
 /// `int[] local1 = new int[]{0};`). The check therefore compares a type the bytecode stated rather
 /// than the absence of a statement, which is what DT-26's primitive-array capture was refused on.
 ///
-/// Nothing here invents a type: an operand whose frames name a reference, whose value is `null`, or
-/// whose producer states no array keeps the byte-for-byte previous answer, so a site whose frame,
-/// site descriptor and implementation genuinely disagree is still refused by the unchanged check.
+/// Direct String/Class producer types are exact even when a conservative frame calls them `Object`;
+/// all other values keep the frame answer, so a merge or arbitrary conversion cannot acquire a type.
 fn capture_value_type(
     ssa: &SsaTable,
     operations: &Operations,
     value: ValueId,
 ) -> Result<Option<Type>, String> {
+    if let Some(ty) = constant_of_value(ssa, operations, value, 0) {
+        return Ok(Some(ty));
+    }
     if matches!(ssa.value(value).ty(), Value::Ref(RefType::Unknown))
         && let Some((element, dimensions)) = array_of_value(ssa, operations, value, 0)
         && let Some(spelled) = array_spelling(&element, dimensions)
@@ -29839,21 +29909,15 @@ fn capture_value_type(
     value_type(ssa.value(value).ty())
 }
 
-/// The type a pushed constant names, when the value's own frame entry states only an unknown
-/// reference: a `ldc` of a `String` or a class constant names no class at the instruction, so the
-/// frame keeps the conservative unknown reference, and the constant its producer pushes is the
-/// value's one type evidence — the same producer-side reading [`array_of_value`] gives an array
-/// creation. A `null` push states no type of its own: the frame's `Object` spelling stays, and a
-/// merge (a phi, a caught value) keeps the fallback's answer because no single constant owns it.
+/// The reference type a direct constant producer gives its value, through only stores and `dup`.
+/// This may refine a conservative `Object` frame to the exact String/Class type. A `null` push and
+/// a merge keep the frame answer because neither has one non-null constant producer.
 fn constant_of_value(
     ssa: &SsaTable,
     operations: &Operations,
     value: ValueId,
     depth: usize,
 ) -> Option<Type> {
-    if !matches!(ssa.value(value).ty(), Value::Ref(RefType::Unknown)) {
-        return None;
-    }
     let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
         return None;
     };
@@ -29875,6 +29939,13 @@ fn constant_of_value(
             }
             let stored = store_operand(operations, instruction_at(ssa, *bci)?)?;
             constant_of_value(ssa, operations, stored, depth + 1)
+        }
+        Operation::Duplicate => {
+            if depth >= MAX_VALUE_DEPTH {
+                return None;
+            }
+            let (_, copied) = single_stack_read(instruction_at(ssa, *bci)?)?;
+            constant_of_value(ssa, operations, copied, depth + 1)
         }
         _ => None,
     }

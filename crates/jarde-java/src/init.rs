@@ -1488,7 +1488,7 @@ fn receiver_tails(ssa: &SsaTable, operations: &Operations) -> Vec<ReceiverTail> 
 /// The second half is what makes the value the *bytecode* captured and the slot a reader of the
 /// written text re-reads the same object: the site's text names the local, and a store after the
 /// read would put another object in that slot before the site's own invocation.
-fn proved_receiver_class(
+pub(crate) fn proved_receiver_class(
     ssa: &SsaTable,
     operations: &Operations,
     value: ValueId,
