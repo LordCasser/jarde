@@ -29868,9 +29868,7 @@ fn written_type(
     if let Some((element, dimensions)) = array_of_value(ssa, operations, value, 0) {
         return Ok(array_spelling(&element, dimensions));
     }
-    if matches!(ssa.value(value).ty(), Value::Ref(RefType::Unknown))
-        && let Some(ty) = constant_of_value(ssa, operations, value, 0)
-    {
+    if let Some(ty) = constant_of_value(ssa, operations, value, 0) {
         return Ok(Some(ty));
     }
     value_type(ssa.value(value).ty())
@@ -29890,8 +29888,8 @@ fn written_type(
 /// `int[] local1 = new int[]{0};`). The check therefore compares a type the bytecode stated rather
 /// than the absence of a statement, which is what DT-26's primitive-array capture was refused on.
 ///
-/// Direct String/Class producer types are exact even when a conservative frame calls them `Object`;
-/// all other values keep the frame answer, so a merge or arbitrary conversion cannot acquire a type.
+/// A direct constant producer can refine an unknown frame entry; an explicitly named frame type
+/// remains authoritative. This also keeps a conservative Class-literal duplicate shape refused.
 fn capture_value_type(
     ssa: &SsaTable,
     operations: &Operations,
@@ -29909,15 +29907,18 @@ fn capture_value_type(
     value_type(ssa.value(value).ty())
 }
 
-/// The reference type a direct constant producer gives its value, through only stores and `dup`.
-/// This may refine a conservative `Object` frame to the exact String/Class type. A `null` push and
-/// a merge keep the frame answer because neither has one non-null constant producer.
+/// The reference type a direct constant producer gives a value whose frame leaves its reference
+/// type unknown, through only stores and `dup`. Explicitly named frame types remain authoritative;
+/// a `null` push and a merge also keep the frame answer.
 fn constant_of_value(
     ssa: &SsaTable,
     operations: &Operations,
     value: ValueId,
     depth: usize,
 ) -> Option<Type> {
+    if !matches!(ssa.value(value).ty(), Value::Ref(RefType::Unknown)) {
+        return None;
+    }
     let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
         return None;
     };
