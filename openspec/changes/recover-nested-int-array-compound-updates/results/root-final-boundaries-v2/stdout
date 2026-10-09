@@ -1,0 +1,36 @@
+
+running 2 tests
+test constructed_reference_array_elements_recover_as_one_complete_same_snapshot_family ... ok
+test nested_constructor_composition_is_presented_once_and_boundary_controls_remain_honest ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.59s
+
+
+running 4 tests
+test nested_int_array_boundaries_do_not_claim_unproved_compound_updates ... ok
+test nested_int_array_class_source_stops_do_not_claim_complete_members ... ok
+test nested_int_array_updates_are_structured_and_preserve_lvalue_boundaries ... ok
+test nested_int_array_updates_match_the_frozen_runner_oracle ... ignored, requires a real JDK to compile the complete generated class with the fixed Runner and verify behavior
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 4 tests
+test atomic_number_subclass_outside_the_closed_rows_still_refuses ... ok
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_boxed_number_positions_are_presented ... ok
+test the_patrol_anchor_presents_its_boxed_argument ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+test the_frozen_anchor_is_the_recorded_patrol_probe ... ok
+test the_frozen_baseline_of_the_same_anchor_refused_the_capture ... ok
+test the_multianewarray_capture_preserves_its_members_while_the_nested_helper_recovers ... ok
+test the_primitive_array_capture_recovers_in_both_javac_legs ... ok
+test the_recovered_text_recompiles_and_prints_the_original_output ... ok
+test the_reference_capture_and_the_rest_of_the_class_are_unchanged ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+

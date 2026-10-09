@@ -1,6 +1,6 @@
 # Root验收：嵌套int数组复合更新
 
-产品和完整Java语义对照已经通过；当前任务3/7。新增Rust边界/停止测试、最终严格门禁和确切产品CI仍待验收，不能把本片或DT26整个单元记为完成。
+产品、完整Java语义对照及最终Rust边界/停止、指纹/P5已经通过；当前任务7/7。确切产品CI的完整门禁仍待验收，不能把本片或DT26整个单元记为完成。
 
 ## 根因与处理范围
 
@@ -35,3 +35,17 @@ BigDecimal旧产品6997c9f8的CI37989319644真实命中过时closedNumberBoundar
 本片产品推送后必须绑定完整commit SHA收取确切CI原JSON和稳定任务日志，核验四job、双seed、真JDK25及新增nested ignored步骤。若旧8cd run仅供应链失败，可以仅重跑其失败任务以单独完成BigDecimal验收；它的成功不能替代本片新产品CI。未达到这些条件前保留任务2.2/3.1/3.2/3.3未勾。
 
 提交前完整cached diff检查因原始stdout/stderr和正式diff补丁的空白字节返回2，这些字节绑定已记录hash，保留原样。将这些准确证据路径列为例外后的681项源码/spec/script/JSON检查返回0，不修改全局Git属性；见results/root-staged-diff-check-v1.json。v4独立443checks已过，v6增加实际命令退出与物理更新/副作用来源、次数检查后474checks通过；v5因继承旧输出文件名拒绝覆盖，旧v4结果保留。
+
+## 2026-10-10 最终本地补验 — 任务5/7
+
+产品561de209531c021a9d8adb7c979bae5a57d6c3fb已经推送main，[确切CI37994276707](https://github.com/LordCasser/jarde/actions/runs/37994276707)运行中。空闲随后回升到27GiB，root-final-boundaries-v2实际14ordinary通过/2ignored，包含两个新增负例和public late-budget/pre-cancel测试；不能继续把这些项目写成未执行。官方Rust指纹5pass/1ignored验证了最小11条增加与分类，P5严格pins5pass/1ignored通过且未改pins。五产品/最终五测试源仍与冻结metadata一致，见results/local-root-acceptance-v1.json。2.2/3.1完成，3.2/3.3仍待确切CI全门禁；本地没有重复fresh双seed全workspace命令。
+
+8cd8c4f旧CI37991578328已完整结束：stable/MSRV/fuzz成功，唯一supply失败仍是DockerHub429。原完整JSON ci-run-v2.json及stable raw日志无损gzip ci-stable-job-v2.log.gz已落盘；raw1168629bytes/SHA9edd88a86d2602c118560498540fe97d1e0a6a5890df5454f9fa7f6aaf7b59e5。root已仅重跑失败任务，不重跑成功stable或把其证据借给nested产品。
+
+## 确切组合产品CI与最终验收
+
+561de209531c021a9d8adb7c979bae5a57d6c3fb的CI37994276707完整终态success，四job/51steps全部成功。ci-run-v1.json与完整ci-stable-job-v1.log.gz已保存；stable原始1172292bytes，SHA9b70099c24c932aaea3616ad5a6a6d82d891e1894ad753ab25e72d5eb26f7160，未trim或改写。root实际运行verify-ci-product-v1.py，ci-product-root-acceptance-v1.json接受准确commit/CLI/product与final test/workflow/canonical身份。
+
+两个fresh全workspace/all-targets/all-features/locked固定seed各354test-result记录、3348passed/0failed/96ignored，三个新ordinary结构/负例/停止测试在两轮均成功。真Temurin25.0.4+7.0.LTS安装路径及日志已核对；BigDecimal显式ignored2pass、nested全类显式ignored1pass，其它必要Java/MSRV/Clippy/fuzz/OpenSpec及依赖政策步骤均成功。新独立cargo-deny0.20.2的root/fuzz四政策各ok，没有借旧Docker失败run。任务3.2/3.3完成，本片7/7，DT26/71整单元分类仍不变。
+
+低空间时root只清本仓421MiB缓存，冻结新CLI和raw证据保留；随后机器空闲恢复25GiB，按实时20GiB守卫推进下一片。新returned OpenSpec规划4/4、基线/架构2/7，尚无实现验收。

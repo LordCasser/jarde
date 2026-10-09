@@ -1,0 +1,11 @@
+{
+  "command": [
+    "cargo",
+    "clean"
+  ],
+  "exit_code": 0,
+  "before_free_bytes": 15374516224,
+  "after_free_bytes": 15808479232,
+  "time_utc": "2026-10-09T21:59:28.850199+00:00",
+  "scope": "Only current jarde target; frozen CLI and all evidence preserved; no test success inferred."
+}

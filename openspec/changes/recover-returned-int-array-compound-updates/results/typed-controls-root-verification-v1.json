@@ -1,0 +1,9 @@
+{
+  "status": "verified_load_only_controls",
+  "checks": 87,
+  "manifest_sha256": "5792f68356ff4cc1cac32417665bd8f4a2f190aa1bd9efc5be0157e51586f934",
+  "cases": 10,
+  "commands": 12,
+  "target_methods_invoked": false,
+  "scope": "Descriptor-only controls and raw JVM loading verified; not a decompiler acceptance or mutant runtime result."
+}

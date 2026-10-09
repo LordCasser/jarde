@@ -1,0 +1,6 @@
+{
+  "prior_field": "ci-supply-root-verification-v1.json/http429_in_log was a naive substring scan",
+  "actual_http429_error": false,
+  "reason": "matches in the successful CLI supply log were fractional timestamp digits, not HTTP status",
+  "actual_supply_success": true
+}

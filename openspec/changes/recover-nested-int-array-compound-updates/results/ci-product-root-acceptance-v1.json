@@ -1,0 +1,135 @@
+{
+  "schema": "nested-int-array-ci-product-root-acceptance-v1",
+  "product_commit": "561de209531c021a9d8adb7c979bae5a57d6c3fb",
+  "run_id": 37994276707,
+  "url": "https://github.com/LordCasser/jarde/actions/runs/37994276707",
+  "status": "accepted",
+  "raw_ci_json_sha256": "bc2088f1d595019b4d769e8573b0888fea3b6b166b3e4097b729e4a349c2958f",
+  "stable_raw_log_sha256": "9b70099c24c932aaea3616ad5a6a6d82d891e1894ad753ab25e72d5eb26f7160",
+  "stable_gzip_log_sha256": "365363ada094623704365719fe02351cd4069e01805fbaece75b3b903e948559",
+  "jobs": 4,
+  "steps": 51,
+  "all_jobs_and_steps_success": true,
+  "workspace_seed_runs": [
+    {
+      "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+      "seed": "5350648285461741569",
+      "test_result_records": 354,
+      "passed": 3348,
+      "failed": 0,
+      "ignored": 96
+    },
+    {
+      "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+      "seed": "5350648285461741570",
+      "test_result_records": 354,
+      "passed": 3348,
+      "failed": 0,
+      "ignored": 96
+    }
+  ],
+  "bigdecimal_ignored_test": {
+    "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+    "test_result_records": 1,
+    "passed": 2,
+    "failed": 0,
+    "ignored": 0
+  },
+  "installed_jdk": {
+    "distribution": "Temurin",
+    "version": "25.0.4+7.0.LTS",
+    "confirmed_from_stable_log": true
+  },
+  "source_identity": {
+    "crates/jarde-java/src/init.rs": {
+      "category": "product",
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "current_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/report.rs": {
+      "category": "product",
+      "sha256": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+      "current_sha256": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/build.rs": {
+      "category": "product",
+      "sha256": "18a69f648d12c60f16b989fff7922b3ca555ac8ec8f52d8da2550c0d34975c64",
+      "current_sha256": "18a69f648d12c60f16b989fff7922b3ca555ac8ec8f52d8da2550c0d34975c64",
+      "current_matches_ci_product": true
+    },
+    "src/class_source.rs": {
+      "category": "product",
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "current_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "current_matches_ci_product": true
+    },
+    "Cargo.lock": {
+      "category": "product",
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "current_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "current_matches_ci_product": true
+    },
+    "tests/p3_nested_int_array_compound_updates.rs": {
+      "category": "test",
+      "sha256": "14a40dcbaa50da8337142b2208481b6a71fdb6a81acec76edd9191b0cef42e16",
+      "current_sha256": "14a40dcbaa50da8337142b2208481b6a71fdb6a81acec76edd9191b0cef42e16",
+      "current_matches_ci_product": true
+    },
+    "tests/recover_lambda_primitive_array_capture.rs": {
+      "category": "test",
+      "sha256": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5",
+      "current_sha256": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5",
+      "current_matches_ci_product": true
+    },
+    "tests/p3_constructed_reference_array_elements.rs": {
+      "category": "test",
+      "sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2",
+      "current_sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2",
+      "current_matches_ci_product": true
+    },
+    "tests/recover_boxed_number_widening.rs": {
+      "category": "test",
+      "sha256": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824",
+      "current_sha256": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824",
+      "current_matches_ci_product": true
+    },
+    ".github/workflows/ci.yml": {
+      "category": "test",
+      "sha256": "204196749f3621da747576d52d8a2852dd1563e97830b1d43f12b3aba1566b75",
+      "current_sha256": "204196749f3621da747576d52d8a2852dd1563e97830b1d43f12b3aba1566b75",
+      "current_matches_ci_product": true
+    }
+  },
+  "extra_ci_sources": {
+    "crates/jarde-reader/src/classfile.rs": "7371df961f2b30254353fd87673883ec3fa9538c03dd420c5d5961fdd639eb63",
+    "tests/fixtures/corpus-fingerprint.json": "95588e8451a8b39fcc74063bab30836bad861fc23b9ba403c5a4f81d0202df00",
+    "tests/p3_bigdecimal_number_widening.rs": "781ecf4410e8933e5df029d6ce3d9c146e6a7daeaa402fbd6c042884b34fd1a1"
+  },
+  "nested_ignored_test": {
+    "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored",
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "canonical_input_files": 12,
+  "supply_cli": {
+    "version": "0.20.2",
+    "commands": [
+      "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check",
+      "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check"
+    ],
+    "raw_log_sha256": "942dc93c71aadd3ea500bde4e76138b786878bc3fb897f37ba131e0b80c21766",
+    "gzip_log_sha256": "0480c6d1262d7b5c43bb8b7fe46e0ac6a15c8dfb492454a4ad6a90dc07a1c137"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-nested-int-array-cli-v1",
+    "sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+    "metadata_sha256": "d74dbb39559d8bcccc9d94ef75e883cfaace3456f407ff1911ed188e4b8d0480"
+  },
+  "workflow_sha256": "204196749f3621da747576d52d8a2852dd1563e97830b1d43f12b3aba1566b75",
+  "verifier": "verify-ci-product-v1.py",
+  "scope": "Only the immutable product commit and matching frozen CLI are accepted. Different current-source hashes are recorded but not validated by this historical CI.",
+  "log_partition": "two exact workspace command groups with distinct declared seeds plus one exact BigDecimal ignored-test group; API step names/status checked separately"
+}

@@ -1,0 +1,1862 @@
+{
+  "schema": "returned-array-update-next-baseline-v1",
+  "scope": "next-candidate analysis only; no product/spec implementation",
+  "runner_sha256": "8dc11d360cc9d34475601439b81cfd9f6fa3e8924b5df85429a39571509a1401",
+  "candidate_cli_sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+  "expected_stdout": {
+    "path": "expected.stdout",
+    "bytes": 159,
+    "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+  },
+  "source": {
+    "path": "ReturnedIntArrayUpdates.java",
+    "bytes": 1041,
+    "sha256": "073fb19298a16fadd84b3c5cdea58c768013312b9da4105f92b69d62f13f8951"
+  },
+  "runner": {
+    "path": "Runner.java",
+    "bytes": 3643,
+    "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+  },
+  "jadx_version": {
+    "label": "jadx-version",
+    "argv": [
+      "/opt/homebrew/bin/jadx",
+      "--version"
+    ],
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "exit": 0,
+    "stdout": {
+      "path": "streams/jadx-version.stdout",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    "stderr": {
+      "path": "streams/jadx-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "jdk_tools": [
+    {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "bytes": 152128,
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    },
+    {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "bytes": 69872,
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "path": "cases/javac8-original/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "0165fd2120ceee93e7cce4ccf77324ca2e20157d3f2c2b2ce18691cc3e52cf88"
+    },
+    {
+      "path": "cases/javac23-original/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "5a7814b10195117112967f3db8eea0b322e70152544d0c32a5723ed9a59ca793"
+    }
+  ],
+  "commands": [
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      },
+      "stderr": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes",
+        "Runner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 159,
+        "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javap.stdout",
+        "bytes": 6494,
+        "sha256": "d8a907c1c75c40d9da03f58d1ea638aa436a6fe56424dce02cad49dc6e81022f"
+      },
+      "stderr": {
+        "path": "streams/javac8-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-run.stdout",
+        "bytes": 159,
+        "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/classes",
+        "Runner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-run.stdout",
+        "bytes": 159,
+        "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-render.stdout",
+        "bytes": 148623,
+        "sha256": "16fef10c394c9dcd1905b4b0191c0a5ae91a17b1dce1e99ed414d882083e3b94"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 1,
+      "stdout": {
+        "path": "streams/javac8-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-compile.stderr",
+        "bytes": 1148,
+        "sha256": "84053513c7bdc68278dc6e7df7cc5a87ba419ff9892fe98f899a9ab576d3c2db"
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes",
+        "Runner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 159,
+        "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javap.stdout",
+        "bytes": 6841,
+        "sha256": "dd1c34aa13c50f7dfc6d5f1aa0adb0cb25f969e88dd3897bf1d06d40b15d8404"
+      },
+      "stderr": {
+        "path": "streams/javac23-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-run.stdout",
+        "bytes": 159,
+        "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/classes",
+        "Runner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-run.stdout",
+        "bytes": 159,
+        "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-render.stdout",
+        "bytes": 148605,
+        "sha256": "2a00a6468d50b8389832f041bc9df637f390b301da892b81f769bbab6ea03572"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/ReturnedIntArrayUpdates.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/Runner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 1,
+      "stdout": {
+        "path": "streams/javac23-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-compile.stderr",
+        "bytes": 1153,
+        "sha256": "3ea66f079e4f18f50c74a49e64e1ad183a1fa59fe5a9101bdef2df17fb175bdf"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes",
+          "Runner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout",
+          "bytes": 159,
+          "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sources": [
+        {
+          "path": "ReturnedIntArrayUpdates.java",
+          "bytes": 1041,
+          "sha256": "073fb19298a16fadd84b3c5cdea58c768013312b9da4105f92b69d62f13f8951"
+        },
+        {
+          "path": "Runner.java",
+          "bytes": 3643,
+          "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/ReturnedIntArrayUpdates.class",
+          "bytes": 752,
+          "sha256": "0165fd2120ceee93e7cce4ccf77324ca2e20157d3f2c2b2ce18691cc3e52cf88"
+        },
+        {
+          "path": "cases/javac8-original/classes/Runner.class",
+          "bytes": 2410,
+          "sha256": "5f3895d9986c60f3567ce15fde52be5cc4b5998d868d9629311e395324553f5b"
+        }
+      ],
+      "success": true,
+      "kind": "original"
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile": {
+        "label": "javac8-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-run.stdout",
+          "bytes": 159,
+          "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sources": [
+        {
+          "path": "cases/javac8-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+          "bytes": 1546,
+          "sha256": "fe7e87ad28e6c820ac5d9e70389e3772004f6a6dd8fafdb7f481b4d617fda469"
+        },
+        {
+          "path": "cases/javac8-jadx-default/Runner.java",
+          "bytes": 3663,
+          "sha256": "ee6cbce44ed091f844836d5314b670d8cd7c8286a7524c57f2ca0ea200d5ef8e"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/ReturnedIntArrayUpdates.class",
+          "bytes": 809,
+          "sha256": "c20d7e79be89691a80e19514540345c604c9e58bafb0bdcd25bc8c1dad938a14"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/Runner.class",
+          "bytes": 2432,
+          "sha256": "df178b40b2d49f5eeaf0d8e4fa40a40292d9b2bb1b5ab2f10239b8551bd8f8a0"
+        }
+      ],
+      "success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "decompile": {
+        "label": "javac8-jadx-default-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-default/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runner_package_prefix": "defpackage"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile": {
+        "label": "javac8-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/classes",
+          "Runner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-run.stdout",
+          "bytes": 159,
+          "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sources": [
+        {
+          "path": "cases/javac8-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+          "bytes": 1545,
+          "sha256": "269e16dd0d50798a5b94c01fd6b15d96ca14ff68fa498bf761a839b9ac0d537f"
+        },
+        {
+          "path": "cases/javac8-jadx-none/Runner.java",
+          "bytes": 3643,
+          "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-none/classes/ReturnedIntArrayUpdates.class",
+          "bytes": 798,
+          "sha256": "15ccfededc1cecbc3944f6c58a6263beae5c1fa0d82ae329db137c60f62fa12b"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/Runner.class",
+          "bytes": 2410,
+          "sha256": "5f3895d9986c60f3567ce15fde52be5cc4b5998d868d9629311e395324553f5b"
+        }
+      ],
+      "success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "decompile": {
+        "label": "javac8-jadx-none-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "--rename-flags",
+          "none",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jadx-none/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runner_package_prefix": null
+    },
+    {
+      "label": "javac8-jarde",
+      "compile": {
+        "label": "javac8-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-jarde/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 1,
+        "stdout": {
+          "path": "streams/javac8-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-compile.stderr",
+          "bytes": 1148,
+          "sha256": "84053513c7bdc68278dc6e7df7cc5a87ba419ff9892fe98f899a9ab576d3c2db"
+        }
+      },
+      "runtime": null,
+      "sources": [
+        {
+          "path": "cases/javac8-jarde/ReturnedIntArrayUpdates.java",
+          "bytes": 8171,
+          "sha256": "65ca9a5809ca1a70a396eb114dd720e5bfb9c91f5257af50668606e72d1717cf"
+        },
+        {
+          "path": "cases/javac8-jarde/Runner.java",
+          "bytes": 3643,
+          "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+        }
+      ],
+      "classes": [],
+      "success": false,
+      "kind": "jarde",
+      "decompile": {
+        "label": "javac8-jarde-render",
+        "argv": [
+          "/private/tmp/jarde-nested-int-array-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class",
+          "--class",
+          "ReturnedIntArrayUpdates",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-render.stdout",
+          "bytes": 148623,
+          "sha256": "16fef10c394c9dcd1905b4b0191c0a5ae91a17b1dce1e99ed414d882083e3b94"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "physical_member_count": 11
+    },
+    {
+      "label": "javac23-original",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes",
+          "Runner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout",
+          "bytes": 159,
+          "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sources": [
+        {
+          "path": "ReturnedIntArrayUpdates.java",
+          "bytes": 1041,
+          "sha256": "073fb19298a16fadd84b3c5cdea58c768013312b9da4105f92b69d62f13f8951"
+        },
+        {
+          "path": "Runner.java",
+          "bytes": 3643,
+          "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/ReturnedIntArrayUpdates.class",
+          "bytes": 752,
+          "sha256": "5a7814b10195117112967f3db8eea0b322e70152544d0c32a5723ed9a59ca793"
+        },
+        {
+          "path": "cases/javac23-original/classes/Runner.class",
+          "bytes": 2401,
+          "sha256": "c522d910f83ecba47b4c912f5e32a226e428dc8a498555644fc0585d13e8e478"
+        }
+      ],
+      "success": true,
+      "kind": "original"
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile": {
+        "label": "javac23-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-run.stdout",
+          "bytes": 159,
+          "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sources": [
+        {
+          "path": "cases/javac23-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+          "bytes": 1546,
+          "sha256": "fe7e87ad28e6c820ac5d9e70389e3772004f6a6dd8fafdb7f481b4d617fda469"
+        },
+        {
+          "path": "cases/javac23-jadx-default/Runner.java",
+          "bytes": 3663,
+          "sha256": "ee6cbce44ed091f844836d5314b670d8cd7c8286a7524c57f2ca0ea200d5ef8e"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/ReturnedIntArrayUpdates.class",
+          "bytes": 809,
+          "sha256": "d5bf76d501b04b0177c6d8b1387ac49bd49eae330d725f0763cbb9c134d966cb"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/Runner.class",
+          "bytes": 2423,
+          "sha256": "2d6d54ff775552b2ad89d230eb492c32b91611322eab018182894f2b85bc1b89"
+        }
+      ],
+      "success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "decompile": {
+        "label": "javac23-jadx-default-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-default/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runner_package_prefix": "defpackage"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile": {
+        "label": "javac23-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/classes",
+          "Runner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-run.stdout",
+          "bytes": 159,
+          "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sources": [
+        {
+          "path": "cases/javac23-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+          "bytes": 1545,
+          "sha256": "269e16dd0d50798a5b94c01fd6b15d96ca14ff68fa498bf761a839b9ac0d537f"
+        },
+        {
+          "path": "cases/javac23-jadx-none/Runner.java",
+          "bytes": 3643,
+          "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-none/classes/ReturnedIntArrayUpdates.class",
+          "bytes": 798,
+          "sha256": "bf012f0026b4d0f3d8cfafae32bc8cdfd3c94a97387810d5bf9bb111fc1fb3bb"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/Runner.class",
+          "bytes": 2401,
+          "sha256": "c522d910f83ecba47b4c912f5e32a226e428dc8a498555644fc0585d13e8e478"
+        }
+      ],
+      "success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "decompile": {
+        "label": "javac23-jadx-none-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "--rename-flags",
+          "none",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jadx-none/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runner_package_prefix": null
+    },
+    {
+      "label": "javac23-jarde",
+      "compile": {
+        "label": "javac23-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/ReturnedIntArrayUpdates.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/Runner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 1,
+        "stdout": {
+          "path": "streams/javac23-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-compile.stderr",
+          "bytes": 1153,
+          "sha256": "3ea66f079e4f18f50c74a49e64e1ad183a1fa59fe5a9101bdef2df17fb175bdf"
+        }
+      },
+      "runtime": null,
+      "sources": [
+        {
+          "path": "cases/javac23-jarde/ReturnedIntArrayUpdates.java",
+          "bytes": 8171,
+          "sha256": "65ca9a5809ca1a70a396eb114dd720e5bfb9c91f5257af50668606e72d1717cf"
+        },
+        {
+          "path": "cases/javac23-jarde/Runner.java",
+          "bytes": 3643,
+          "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+        }
+      ],
+      "classes": [],
+      "success": false,
+      "kind": "jarde",
+      "decompile": {
+        "label": "javac23-jarde-render",
+        "argv": [
+          "/private/tmp/jarde-nested-int-array-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class",
+          "--class",
+          "ReturnedIntArrayUpdates",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-render.stdout",
+          "bytes": 148605,
+          "sha256": "2a00a6468d50b8389832f041bc9df637f390b301da892b81f769bbab6ea03572"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "physical_member_count": 11
+    }
+  ],
+  "files": [
+    {
+      "path": "ReturnedIntArrayUpdates.java",
+      "bytes": 1041,
+      "sha256": "073fb19298a16fadd84b3c5cdea58c768013312b9da4105f92b69d62f13f8951"
+    },
+    {
+      "path": "Runner.java",
+      "bytes": 3643,
+      "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+    },
+    {
+      "path": "cases/javac23-jadx-default/Runner.java",
+      "bytes": 3663,
+      "sha256": "ee6cbce44ed091f844836d5314b670d8cd7c8286a7524c57f2ca0ea200d5ef8e"
+    },
+    {
+      "path": "cases/javac23-jadx-default/classes/defpackage/ReturnedIntArrayUpdates.class",
+      "bytes": 809,
+      "sha256": "d5bf76d501b04b0177c6d8b1387ac49bd49eae330d725f0763cbb9c134d966cb"
+    },
+    {
+      "path": "cases/javac23-jadx-default/classes/defpackage/Runner.class",
+      "bytes": 2423,
+      "sha256": "2d6d54ff775552b2ad89d230eb492c32b91611322eab018182894f2b85bc1b89"
+    },
+    {
+      "path": "cases/javac23-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+      "bytes": 1546,
+      "sha256": "fe7e87ad28e6c820ac5d9e70389e3772004f6a6dd8fafdb7f481b4d617fda469"
+    },
+    {
+      "path": "cases/javac23-jadx-none/Runner.java",
+      "bytes": 3643,
+      "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+    },
+    {
+      "path": "cases/javac23-jadx-none/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 798,
+      "sha256": "bf012f0026b4d0f3d8cfafae32bc8cdfd3c94a97387810d5bf9bb111fc1fb3bb"
+    },
+    {
+      "path": "cases/javac23-jadx-none/classes/Runner.class",
+      "bytes": 2401,
+      "sha256": "c522d910f83ecba47b4c912f5e32a226e428dc8a498555644fc0585d13e8e478"
+    },
+    {
+      "path": "cases/javac23-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+      "bytes": 1545,
+      "sha256": "269e16dd0d50798a5b94c01fd6b15d96ca14ff68fa498bf761a839b9ac0d537f"
+    },
+    {
+      "path": "cases/javac23-jarde/ReturnedIntArrayUpdates.java",
+      "bytes": 8171,
+      "sha256": "65ca9a5809ca1a70a396eb114dd720e5bfb9c91f5257af50668606e72d1717cf"
+    },
+    {
+      "path": "cases/javac23-jarde/Runner.java",
+      "bytes": 3643,
+      "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+    },
+    {
+      "path": "cases/javac23-original/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "5a7814b10195117112967f3db8eea0b322e70152544d0c32a5723ed9a59ca793"
+    },
+    {
+      "path": "cases/javac23-original/classes/Runner.class",
+      "bytes": 2401,
+      "sha256": "c522d910f83ecba47b4c912f5e32a226e428dc8a498555644fc0585d13e8e478"
+    },
+    {
+      "path": "cases/javac8-jadx-default/Runner.java",
+      "bytes": 3663,
+      "sha256": "ee6cbce44ed091f844836d5314b670d8cd7c8286a7524c57f2ca0ea200d5ef8e"
+    },
+    {
+      "path": "cases/javac8-jadx-default/classes/defpackage/ReturnedIntArrayUpdates.class",
+      "bytes": 809,
+      "sha256": "c20d7e79be89691a80e19514540345c604c9e58bafb0bdcd25bc8c1dad938a14"
+    },
+    {
+      "path": "cases/javac8-jadx-default/classes/defpackage/Runner.class",
+      "bytes": 2432,
+      "sha256": "df178b40b2d49f5eeaf0d8e4fa40a40292d9b2bb1b5ab2f10239b8551bd8f8a0"
+    },
+    {
+      "path": "cases/javac8-jadx-default/jadx/sources/defpackage/ReturnedIntArrayUpdates.java",
+      "bytes": 1546,
+      "sha256": "fe7e87ad28e6c820ac5d9e70389e3772004f6a6dd8fafdb7f481b4d617fda469"
+    },
+    {
+      "path": "cases/javac8-jadx-none/Runner.java",
+      "bytes": 3643,
+      "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+    },
+    {
+      "path": "cases/javac8-jadx-none/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 798,
+      "sha256": "15ccfededc1cecbc3944f6c58a6263beae5c1fa0d82ae329db137c60f62fa12b"
+    },
+    {
+      "path": "cases/javac8-jadx-none/classes/Runner.class",
+      "bytes": 2410,
+      "sha256": "5f3895d9986c60f3567ce15fde52be5cc4b5998d868d9629311e395324553f5b"
+    },
+    {
+      "path": "cases/javac8-jadx-none/jadx/sources/ReturnedIntArrayUpdates.java",
+      "bytes": 1545,
+      "sha256": "269e16dd0d50798a5b94c01fd6b15d96ca14ff68fa498bf761a839b9ac0d537f"
+    },
+    {
+      "path": "cases/javac8-jarde/ReturnedIntArrayUpdates.java",
+      "bytes": 8171,
+      "sha256": "65ca9a5809ca1a70a396eb114dd720e5bfb9c91f5257af50668606e72d1717cf"
+    },
+    {
+      "path": "cases/javac8-jarde/Runner.java",
+      "bytes": 3643,
+      "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+    },
+    {
+      "path": "cases/javac8-original/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "0165fd2120ceee93e7cce4ccf77324ca2e20157d3f2c2b2ce18691cc3e52cf88"
+    },
+    {
+      "path": "cases/javac8-original/classes/Runner.class",
+      "bytes": 2410,
+      "sha256": "5f3895d9986c60f3567ce15fde52be5cc4b5998d868d9629311e395324553f5b"
+    },
+    {
+      "path": "expected.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    },
+    {
+      "path": "streams/jadx-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/jadx-version.stdout",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "path": "streams/javac23-jadx-default-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-default-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-default-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-default-decompile.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "streams/javac23-jadx-default-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-default-run.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    },
+    {
+      "path": "streams/javac23-jadx-none-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-none-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-none-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-none-decompile.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "streams/javac23-jadx-none-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jadx-none-run.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    },
+    {
+      "path": "streams/javac23-jarde-compile.stderr",
+      "bytes": 1153,
+      "sha256": "3ea66f079e4f18f50c74a49e64e1ad183a1fa59fe5a9101bdef2df17fb175bdf"
+    },
+    {
+      "path": "streams/javac23-jarde-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jarde-render.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-jarde-render.stdout",
+      "bytes": 148605,
+      "sha256": "2a00a6468d50b8389832f041bc9df637f390b301da892b81f769bbab6ea03572"
+    },
+    {
+      "path": "streams/javac23-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-javap.stdout",
+      "bytes": 6841,
+      "sha256": "dd1c34aa13c50f7dfc6d5f1aa0adb0cb25f969e88dd3897bf1d06d40b15d8404"
+    },
+    {
+      "path": "streams/javac23-original-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-original-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-original-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac23-original-run.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    },
+    {
+      "path": "streams/javac8-jadx-default-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-default-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-default-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-default-decompile.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "streams/javac8-jadx-default-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-default-run.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    },
+    {
+      "path": "streams/javac8-jadx-none-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-none-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-none-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-none-decompile.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "streams/javac8-jadx-none-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jadx-none-run.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    },
+    {
+      "path": "streams/javac8-jarde-compile.stderr",
+      "bytes": 1148,
+      "sha256": "84053513c7bdc68278dc6e7df7cc5a87ba419ff9892fe98f899a9ab576d3c2db"
+    },
+    {
+      "path": "streams/javac8-jarde-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jarde-render.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-jarde-render.stdout",
+      "bytes": 148623,
+      "sha256": "16fef10c394c9dcd1905b4b0191c0a5ae91a17b1dce1e99ed414d882083e3b94"
+    },
+    {
+      "path": "streams/javac8-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-javap.stdout",
+      "bytes": 6494,
+      "sha256": "d8a907c1c75c40d9da03f58d1ea638aa436a6fe56424dce02cad49dc6e81022f"
+    },
+    {
+      "path": "streams/javac8-original-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-original-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-original-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "streams/javac8-original-run.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    }
+  ]
+}

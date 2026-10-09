@@ -1,0 +1,11 @@
+{
+  "status": "baseline_verified",
+  "checks": 156,
+  "errors": [],
+  "manifest_sha256": "10a6ea368ba5304594909d0318d650b7ad7c580904d0897c2cf7ba13232db4a3",
+  "verifier_sha256": "b5b0e56d40f414647acedb07f60443d13571ba0245af9ea990ab4c29acc54768",
+  "original": "2/2",
+  "fresh_jadx": "4/4",
+  "current_jarde": "0/2 complete-source compile failures; no runtime",
+  "scope": "next-candidate baseline only; no implementation acceptance"
+}

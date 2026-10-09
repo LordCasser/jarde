@@ -1,0 +1,8 @@
+{
+  "all_exit_code": 2,
+  "scoped_exit_code": 0,
+  "staged_files": 165,
+  "scoped_files": 86,
+  "force_added_class_files": 24,
+  "excluded_only": "raw stdout/stderr streams and retained patches; original bytes preserved; no global Git exemptions"
+}

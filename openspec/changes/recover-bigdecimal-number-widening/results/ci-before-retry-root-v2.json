@@ -1,0 +1,11 @@
+{
+  "run": 37991578328,
+  "head": "8cd8c4f5fbfdb51d56c3725783e2d0666f8903ac",
+  "conclusion": "failure",
+  "stable_job": 114026830982,
+  "stable_conclusion": "success",
+  "raw_log_sha256": "9edd88a86d2602c118560498540fe97d1e0a6a5890df5454f9fa7f6aaf7b59e5",
+  "raw_bytes": 1168629,
+  "gzip_sha256": "00f200f920960c7627c2fbad4ddaa3151e8be3cf8b287fd570eef42e6a67e4ad",
+  "failed_first_download": "GH refused terminal escape sequences; --allow-escape-sequences then saved bytes without printing raw log"
+}

@@ -1,0 +1,3 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 0.36s
+     Running tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-e5d038dc501bfac8)

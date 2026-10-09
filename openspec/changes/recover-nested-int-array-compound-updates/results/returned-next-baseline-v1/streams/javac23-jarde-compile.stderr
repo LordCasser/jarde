@@ -1,0 +1,16 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/ReturnedIntArrayUpdates.java:31: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/ReturnedIntArrayUpdates.java:50: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/ReturnedIntArrayUpdates.java:67: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/ReturnedIntArrayUpdates.java:88: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-jarde/ReturnedIntArrayUpdates.java:141: 错误: 缺少返回语句
+    }
+    ^
+5 个错误

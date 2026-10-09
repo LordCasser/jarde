@@ -1,0 +1,109 @@
+{
+  "schema": "root-command-v2-disk-guard",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "p5_corpus_fingerprint",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 21474836480,
+    "poll_seconds": 2,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/run-root-gate-v1.py",
+    "bytes": 5660,
+    "sha256": "afe5ab94b34e449ba6e13be580d4116d22f939147882c83cb33c8dd2da250313"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 569793,
+      "sha256": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1624514,
+      "sha256": "18a69f648d12c60f16b989fff7922b3ca555ac8ec8f52d8da2550c0d34975c64"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_nested_int_array_compound_updates.rs",
+      "bytes": 15942,
+      "sha256": "14a40dcbaa50da8337142b2208481b6a71fdb6a81acec76edd9191b0cef42e16"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_lambda_primitive_array_capture.rs",
+      "bytes": 22399,
+      "sha256": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_constructed_reference_array_elements.rs",
+      "bytes": 29927,
+      "sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_boxed_number_widening.rs",
+      "bytes": 29476,
+      "sha256": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/.github/workflows/ci.yml",
+      "bytes": 17068,
+      "sha256": "204196749f3621da747576d52d8a2852dd1563e97830b1d43f12b3aba1566b75"
+    }
+  ],
+  "free_before": 28047798272,
+  "exit": 0,
+  "runner_exit": 0,
+  "elapsed_seconds": 2.0031995000026654,
+  "free_after": 28045131776,
+  "min_free": 28045131776,
+  "disk_stop_reason": null,
+  "stdout": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/root-fingerprint-verify-v2/stdout",
+    "bytes": 1071,
+    "sha256": "6ab47f2f2b62044e45e6a08551a86c126743a8c8fa65e546ecde4993b45942ca"
+  },
+  "stderr": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/root-fingerprint-verify-v2/stderr",
+    "bytes": 235,
+    "sha256": "7bb09de387c5b45d5bb3be73eb76fc5468514ea0fe9e2a83b001b5a8ab17de89"
+  }
+}

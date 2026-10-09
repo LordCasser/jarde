@@ -1,0 +1,76 @@
+{
+  "status": "accepted_in_superseding_composed_product",
+  "product_commit": "561de209531c021a9d8adb7c979bae5a57d6c3fb",
+  "run_id": 37994276707,
+  "ci_acceptance_sha256": "ffc8a7cf352bde1ee56b984d075566886164b348a66ee73b1c5197475f5c913b",
+  "raw_ci_json_sha256": "bc2088f1d595019b4d769e8573b0888fea3b6b166b3e4097b729e4a349c2958f",
+  "source_identity": {
+    "crates/jarde-java/src/init.rs": {
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "matches_historical_bigdecimal_source": true
+    },
+    "crates/jarde-java/src/report.rs": {
+      "sha256": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+      "matches_historical_bigdecimal_source": true
+    },
+    "crates/jarde-java/src/build.rs": {
+      "sha256": "18a69f648d12c60f16b989fff7922b3ca555ac8ec8f52d8da2550c0d34975c64",
+      "matches_historical_bigdecimal_source": false
+    },
+    "src/class_source.rs": {
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "matches_historical_bigdecimal_source": true
+    },
+    "Cargo.lock": {
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "matches_historical_bigdecimal_source": true
+    }
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-nested-int-array-cli-v1",
+    "sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+    "metadata_sha256": "d74dbb39559d8bcccc9d94ef75e883cfaace3456f407ff1911ed188e4b8d0480"
+  },
+  "bigdecimal_test_sha256": "781ecf4410e8933e5df029d6ce3d9c146e6a7daeaa402fbd6c042884b34fd1a1",
+  "fresh_candidate_replay": {
+    "success": "24/24",
+    "checks": 1226,
+    "commands": 102,
+    "files": 384,
+    "verifier_record_sha256": "43a80bbf315046ac2972319765022b6f62cb20e2dc2c7307db5204d352f97a8f",
+    "manifest_sha256": "fbe4172b2b5e1c0a8405385fe0a2fe1cf56f1fbe193436d4578a896e71b21e42"
+  },
+  "workspace_seed_runs": [
+    {
+      "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+      "seed": "5350648285461741569",
+      "test_result_records": 354,
+      "passed": 3348,
+      "failed": 0,
+      "ignored": 96
+    },
+    {
+      "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+      "seed": "5350648285461741570",
+      "test_result_records": 354,
+      "passed": 3348,
+      "failed": 0,
+      "ignored": 96
+    }
+  ],
+  "installed_jdk": {
+    "distribution": "Temurin",
+    "version": "25.0.4+7.0.LTS",
+    "confirmed_from_stable_log": true
+  },
+  "bigdecimal_ignored_test": {
+    "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+    "test_result_records": 1,
+    "passed": 2,
+    "failed": 0,
+    "ignored": 0
+  },
+  "old_runs_remain_failures": true,
+  "scope": "Compose prior local/semantic acceptance with the independently accepted exact 561 product CI and its frozen CLI replay. No acceptance of failed 6997/8cd CI; no fresh original/JADX execution claimed for legacy controls.",
+  "verifier_sha256": "cd66a61e650832533459eb95ea77a9a2a27cb2844944993b4e493cad08a81fb6"
+}

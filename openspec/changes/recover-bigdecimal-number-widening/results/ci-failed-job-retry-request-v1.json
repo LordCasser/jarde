@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "rerun",
+    "37991578328",
+    "--failed"
+  ],
+  "exit": 0,
+  "stdout": "",
+  "stderr": "",
+  "scope": "retry only DockerHub429 supply job; retain successful stable/MSRV/fuzz and original failed attempt"
+}

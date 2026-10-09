@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "--allow-escape-sequences",
+    "repos/LordCasser/jarde/actions/jobs/114036175322/logs"
+  ],
+  "exit_code": 0,
+  "job_id": 114036175322,
+  "raw_bytes": 1172292,
+  "raw_sha256": "9b70099c24c932aaea3616ad5a6a6d82d891e1894ad753ab25e72d5eb26f7160",
+  "gzip_bytes": 260843,
+  "gzip_sha256": "365363ada094623704365719fe02351cd4069e01805fbaece75b3b903e948559",
+  "scope": "Full original stable job bytes, no trimming or partition rewrite."
+}

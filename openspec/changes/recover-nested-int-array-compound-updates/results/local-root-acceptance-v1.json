@@ -1,0 +1,55 @@
+{
+  "status": "local_acceptance_passed_ci_pending",
+  "product_commit": "561de209531c021a9d8adb7c979bae5a57d6c3fb",
+  "ci_run": 37994276707,
+  "candidate_metadata_sha256": "d74dbb39559d8bcccc9d94ef75e883cfaace3456f407ff1911ed188e4b8d0480",
+  "candidate_semantic_legs": "4/4",
+  "legacy_semantic_legs": "24/24",
+  "independent_checks": {
+    "candidate": 474,
+    "legacy": 1226,
+    "negative": 64
+  },
+  "final_focused": "14 passed, 0 failed, 2 ignored; includes new negative and public budget/cancel tests",
+  "fingerprint": "official Rust 5 passed / 1 regenerator ignored; prior Python update matched official classification and all bytes",
+  "p5": "5 passed / 1 ignored; strict pins unchanged",
+  "runs": {
+    "root-final-boundaries-v2": {
+      "result_sha256": "51482692a3d565fe5de4cb8392da7ed41d655e507ccf5def55976f9b02c4c8f0",
+      "exit": 0,
+      "min_free": 28037853184
+    },
+    "root-fingerprint-verify-v2": {
+      "result_sha256": "62946b31364cce5f094893dd005d7ed7d1c8195c40c811541de001d8cc3d4f31",
+      "exit": 0,
+      "min_free": 28045131776
+    },
+    "root-p5-strict-v1": {
+      "result_sha256": "82764b4267ac541f63eedb1fb00fb7ecef516f37c5b19cbd350b7759c18e055a",
+      "exit": 0,
+      "min_free": 28020887552
+    },
+    "root-java-lib-v1": {
+      "result_sha256": "9f420c342c6681fee6ab6de64259ede1fb1590a38bc774c92d642037e317e0c7",
+      "exit": 0,
+      "min_free": 29408759808
+    },
+    "root-reader-new-pin-v1": {
+      "result_sha256": "ca2a21ba4712d50d3a8f824178e5605effab8b6d957f469ea6b7aab942e32cf6",
+      "exit": 0,
+      "min_free": 22130442240
+    },
+    "root-deny-workspace-v1": {
+      "result_sha256": "c44b71d5f681e03e164695251719cd6402143d2613a1cc470d3fb8e9dc7768e3",
+      "exit": 0,
+      "min_free": 22134616064
+    },
+    "root-deny-fuzz-v1": {
+      "result_sha256": "322f070b2a8f6a1273b6fe94f2da94b5b158138f1c88326c46fbea85eb391bdb",
+      "exit": 0,
+      "min_free": 23654907904
+    }
+  },
+  "scope": "public class-source late budget/cancel; no internal builder checkpoint pressure claim",
+  "remaining": "exact product CI all jobs/steps, two full fresh workspace seeds and explicit ignored Java tests"
+}

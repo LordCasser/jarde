@@ -1,0 +1,16 @@
+{
+  "run": 37994276707,
+  "head": "561de209531c021a9d8adb7c979bae5a57d6c3fb",
+  "supply_job": 114036174991,
+  "conclusion": "success",
+  "raw_bytes": 70783,
+  "raw_sha256": "942dc93c71aadd3ea500bde4e76138b786878bc3fb897f37ba131e0b80c21766",
+  "gzip_sha256": "0480c6d1262d7b5c43bb8b7fe46e0ac6a15c8dfb492454a4ad6a90dc07a1c137",
+  "http429_in_log": true,
+  "actual_cli_commands": [
+    "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check",
+    "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check"
+  ],
+  "version": "0.20.2",
+  "all_supply_steps_success": true
+}

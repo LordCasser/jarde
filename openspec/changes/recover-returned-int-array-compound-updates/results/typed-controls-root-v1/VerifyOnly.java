@@ -1,0 +1,1 @@
+public final class VerifyOnly { public static void main(String[] args) throws Exception { Class<?> c=Class.forName("ReturnedIntArrayUpdates"); for(java.lang.reflect.Method m:c.getDeclaredMethods()) if(m.getName().equals("scalar")) { Class<?>[] p=m.getParameterTypes(); System.out.println("ok:"+p[1].getName()+":"+p[2].getName()+":"+m.getReturnType().getName()); } } }

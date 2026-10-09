@@ -1,0 +1,226 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class
+  Last modified 2026-10-10; size 752 bytes
+  MD5 checksum 1ffb5f6513aaac62e5099e7919f4fdad
+public final class ReturnedIntArrayUpdates
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#30         // java/lang/Object."<init>":()V
+   #2 = Methodref          #7.#31         // ReturnedIntArrayUpdates.row:(I)I
+   #3 = Methodref          #7.#32         // ReturnedIntArrayUpdates.index:(I)I
+   #4 = Methodref          #7.#33         // ReturnedIntArrayUpdates.rhs:(I)I
+   #5 = Fieldref           #7.#34         // ReturnedIntArrayUpdates.trace:I
+   #6 = Methodref          #7.#35         // ReturnedIntArrayUpdates.swap:([[I)I
+   #7 = Class              #36            // ReturnedIntArrayUpdates
+   #8 = Class              #37            // java/lang/Object
+   #9 = Utf8               trace
+  #10 = Utf8               I
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Utf8               Code
+  #14 = Utf8               plain2
+  #15 = Utf8               ([[IIII)I
+  #16 = Utf8               plain3
+  #17 = Utf8               ([[[IIIII)I
+  #18 = Utf8               scalar
+  #19 = Utf8               ([III)I
+  #20 = Utf8               traced
+  #21 = Utf8               row
+  #22 = Utf8               (I)I
+  #23 = Utf8               index
+  #24 = Utf8               rhs
+  #25 = Utf8               swap
+  #26 = Utf8               ([[I)I
+  #27 = Utf8               replaceRow
+  #28 = Utf8               different
+  #29 = Utf8               ([[II)V
+  #30 = NameAndType        #11:#12        // "<init>":()V
+  #31 = NameAndType        #21:#22        // row:(I)I
+  #32 = NameAndType        #23:#22        // index:(I)I
+  #33 = NameAndType        #24:#22        // rhs:(I)I
+  #34 = NameAndType        #9:#10         // trace:I
+  #35 = NameAndType        #25:#26        // swap:([[I)I
+  #36 = Utf8               ReturnedIntArrayUpdates
+  #37 = Utf8               java/lang/Object
+{
+  static int trace;
+    descriptor: I
+    flags: ACC_STATIC
+
+  public ReturnedIntArrayUpdates();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int plain2(int[][], int, int, int);
+    descriptor: ([[IIII)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: iload_1
+         2: aaload
+         3: iload_2
+         4: dup2
+         5: iaload
+         6: iload_3
+         7: iadd
+         8: dup_x2
+         9: iastore
+        10: ireturn
+
+  public static int plain3(int[][][], int, int, int, int);
+    descriptor: ([[[IIIII)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=5, args_size=5
+         0: aload_0
+         1: iload_1
+         2: aaload
+         3: iload_2
+         4: aaload
+         5: iload_3
+         6: dup2
+         7: iaload
+         8: iload         4
+        10: iadd
+        11: dup_x2
+        12: iastore
+        13: ireturn
+
+  public static int scalar(int[], int, int);
+    descriptor: ([III)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: dup2
+         3: iaload
+         4: iload_2
+         5: iadd
+         6: dup_x2
+         7: iastore
+         8: ireturn
+
+  public static int traced(int[][], int, int, int);
+    descriptor: ([[IIII)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: iload_1
+         2: invokestatic  #2                  // Method row:(I)I
+         5: aaload
+         6: iload_2
+         7: invokestatic  #3                  // Method index:(I)I
+        10: dup2
+        11: iaload
+        12: iload_3
+        13: invokestatic  #4                  // Method rhs:(I)I
+        16: iadd
+        17: dup_x2
+        18: iastore
+        19: ireturn
+
+  static int row(int);
+    descriptor: (I)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #5                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_1
+         7: iadd
+         8: putstatic     #5                  // Field trace:I
+        11: iload_0
+        12: ireturn
+
+  static int index(int);
+    descriptor: (I)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #5                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #5                  // Field trace:I
+        11: iload_0
+        12: ireturn
+
+  static int rhs(int);
+    descriptor: (I)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #5                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_3
+         7: iadd
+         8: putstatic     #5                  // Field trace:I
+        11: iload_0
+        12: ireturn
+
+  public static int swap(int[][]);
+    descriptor: ([[I)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=6, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: iconst_1
+         3: newarray       int
+         5: dup
+         6: iconst_0
+         7: bipush        100
+         9: iastore
+        10: aastore
+        11: bipush        7
+        13: ireturn
+
+  public static int replaceRow(int[][]);
+    descriptor: ([[I)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: aaload
+         3: iconst_0
+         4: dup2
+         5: iaload
+         6: aload_0
+         7: invokestatic  #6                  // Method swap:([[I)I
+        10: iadd
+        11: dup_x2
+        12: iastore
+        13: ireturn
+
+  public static void different(int[][], int);
+    descriptor: ([[II)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=2
+         0: aload_0
+         1: iconst_0
+         2: aaload
+         3: iconst_0
+         4: aload_0
+         5: iconst_1
+         6: aaload
+         7: iconst_0
+         8: iaload
+         9: iload_1
+        10: iadd
+        11: iastore
+        12: return
+}
