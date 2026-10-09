@@ -2,10 +2,11 @@
 //!
 //! `factory` is the complete positive type-proof family: the array initializer's actual element
 //! is a typed call result. `direct` is a verifier-valid family with several now-recovered direct
-//! constructor/store methods plus deliberately incomplete boxed and array-child controls. The
-//! latter keep the complete class report from being treated as accepted; the direct-method
-//! positives are also covered as a full generated-source family by
-//! `p3_constructed_reference_array_elements.rs`.
+//! constructor/store methods plus deliberately incomplete array-child controls. The latter keep
+//! the complete class report from being treated as accepted. Earlier direct reference-element
+//! shapes have a separate seven-class generated-source integration fixture; the newly supported
+//! primitive-conversion wrapper arguments are pinned here and in the numeric conversion family
+//! test `p3_constructor_primitive_conversion_arguments.rs`.
 
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
@@ -235,6 +236,59 @@ struct DirectPresentedSite {
 
 const DIRECT_SITE_PRESENTATIONS: &[(&str, &[DirectPresentedSite])] = &[
     (
+        "boxedDirect",
+        &[
+            DirectPresentedSite {
+                class: "java/lang/Byte",
+                head: 7,
+                dup: 10,
+                constructor: 16,
+                argument: 15,
+                store: 19,
+            },
+            DirectPresentedSite {
+                class: "java/lang/Short",
+                head: 22,
+                dup: 25,
+                constructor: 31,
+                argument: 30,
+                store: 34,
+            },
+            DirectPresentedSite {
+                class: "java/lang/Integer",
+                head: 37,
+                dup: 40,
+                constructor: 45,
+                argument: 42,
+                store: 48,
+            },
+            DirectPresentedSite {
+                class: "java/lang/Long",
+                head: 51,
+                dup: 54,
+                constructor: 60,
+                argument: 59,
+                store: 63,
+            },
+            DirectPresentedSite {
+                class: "java/lang/Float",
+                head: 66,
+                dup: 69,
+                constructor: 75,
+                argument: 74,
+                store: 78,
+            },
+            DirectPresentedSite {
+                class: "java/lang/Double",
+                head: 81,
+                dup: 84,
+                constructor: 91,
+                argument: 90,
+                store: 94,
+            },
+        ],
+    ),
+    (
         "sequenceDirect",
         &[
             DirectPresentedSite {
@@ -341,23 +395,10 @@ const DIRECT_SITE_PRESENTATIONS: &[(&str, &[DirectPresentedSite])] = &[
     ),
 ];
 
-const DIRECT_SITE_REFUSALS: &[(&str, &[(&str, &str)])] = &[
-    (
-        "boxedDirect",
-        &[
-            ("java/lang/Byte", "jre_new_interleaved_effect"),
-            ("java/lang/Short", "jre_new_interleaved_effect"),
-            ("java/lang/Integer", "jre_new_shape"),
-            ("java/lang/Long", "jre_new_interleaved_effect"),
-            ("java/lang/Float", "jre_new_interleaved_effect"),
-            ("java/lang/Double", "jre_new_interleaved_effect"),
-        ],
-    ),
-    (
-        "ownGridDirect",
-        &[("DerivedA", "jre_new_shape"), ("DerivedB", "jre_new_shape")],
-    ),
-];
+const DIRECT_SITE_REFUSALS: &[(&str, &[(&str, &str)])] = &[(
+    "ownGridDirect",
+    &[("DerivedA", "jre_new_shape"), ("DerivedB", "jre_new_shape")],
+)];
 
 fn budget() -> Budget {
     task_budget(&[]).expect("the task defaults are bounded")
@@ -771,6 +812,38 @@ fn direct_new_family_pins_recovered_constructor_methods_and_remaining_controls()
             }
         }
 
+        let boxed = body(&report, "boxedDirect");
+        for (cast, call) in [
+            ("(byte) mark(1)", "new java.lang.Byte("),
+            ("(short) mark(2)", "new java.lang.Short("),
+            ("mark(3)", "new java.lang.Integer("),
+            ("(long) mark(4)", "new java.lang.Long("),
+            ("(float) mark(5)", "new java.lang.Float("),
+            ("(double) mark(6)", "new java.lang.Double("),
+        ] {
+            assert_eq!(
+                boxed.text.matches(cast).count(),
+                1,
+                "{}/boxedDirect must render `{cast}` once:\n{}",
+                leg.name,
+                boxed.text
+            );
+            assert_eq!(
+                boxed.text.matches(call).count(),
+                1,
+                "{}/boxedDirect must render `{call}` once:\n{}",
+                leg.name,
+                boxed.text
+            );
+        }
+        assert_eq!(
+            boxed.text.matches("mark(").count(),
+            6,
+            "{}/boxedDirect must invoke each side-effecting mark once:\n{}",
+            leg.name,
+            boxed.text
+        );
+
         for (method_name, expected_sites) in DIRECT_SITE_REFUSALS {
             let recovered = body(&report, method_name);
             let candidates: Vec<_> = recovered
@@ -859,10 +932,10 @@ fn direct_new_family_pins_recovered_constructor_methods_and_remaining_controls()
                 recovered.news
             );
         }
-        // The complete direct class still has boxed and grid refusal controls. The positive direct
-        // methods above are per-method evidence; the sibling seven-class integration checks the
-        // complete generated-source family and runtime semantics. Neither makes the remaining
-        // controls type-negative claims.
+        // The complete direct class still has array-child refusal controls. The positive direct
+        // methods above are per-method evidence; they do not make the entire class complete. The
+        // sibling seven-class integration checks the separate complete generated-source family
+        // and runtime semantics.
     }
 }
 

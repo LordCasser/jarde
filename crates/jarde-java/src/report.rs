@@ -9391,7 +9391,7 @@ fn recover_inner(
         Ok(arrays) => arrays,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let sites = init::sites_after_array_composition(
+    let sites = match init::sites_after_array_composition(
         ssa,
         &operations,
         &chains,
@@ -9402,7 +9402,11 @@ fn recover_inner(
         request.member_inner_targets,
         request.facts.method(),
         code,
-    );
+        budget,
+    ) {
+        Ok(sites) => sites,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
     let mut recovered: Recovered = match crate::region::recover(
         canonical,
         &view,

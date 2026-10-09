@@ -5075,7 +5075,10 @@ fn straight_finally_reuses_its_guard_verdict_with_a_tight_budget() {
     let full = recover_body(&payload, &facts, Some(&members), &mut full_budget);
     assert!(full.produced(), "{}", full.text);
     let steps = full_budget.usage().analysis_steps;
-    assert_eq!(steps, 52, "a second guard proof would consume this budget");
+    assert_eq!(
+        steps, 61,
+        "the ordinary Site census charges each SSA instruction"
+    );
     let mut tight_limits = limits();
     tight_limits.analysis_steps = steps;
     let mut tight_budget = Budget::new(tight_limits);

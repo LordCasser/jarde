@@ -1,0 +1,109 @@
+{
+  "schema": "p3-constructor-primitive-conversion-arguments-fixture-v1",
+  "source_manifest": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/manifest.json",
+  "source_manifest_sha256": "0afb246902e6a6b76c7ff17939313d22810dcc586eca63f2741f7e806aa5858d",
+  "legs": {
+    "javac8": {
+      "sources": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.java",
+          "bytes": 7811,
+          "sha256": "4e5aff3dced47b6493a3db64b8fe2998a0c9328fde22ce5c7fd745d1e03e2c1e",
+          "baseline_path": "original/javac8/sources/ConstructorPrimitiveConversionControls.java"
+        },
+        {
+          "name": "PrimitiveLongPair.java",
+          "bytes": 186,
+          "sha256": "904ecf774d469580f0afe716d82b1c12744fdee721274fe69e31f3507cb36e60",
+          "baseline_path": "original/javac8/sources/PrimitiveLongPair.java"
+        }
+      ],
+      "classes": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911",
+          "baseline_path": "original/javac8/classes/ConstructorPrimitiveConversionControls.class"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726",
+          "baseline_path": "original/javac8/classes/PrimitiveLongPair.class"
+        }
+      ],
+      "oracle": {
+        "exit": 0,
+        "stdout": {
+          "name": "original-main.stdout",
+          "bytes": 864,
+          "sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418",
+          "baseline_path": "logs/javac8-original-run.stdout"
+        },
+        "stderr": {
+          "name": "original-main.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "baseline_path": "logs/javac8-original-run.stderr"
+        },
+        "jdk_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "compiler_flags": [
+          "-source",
+          "8",
+          "-target",
+          "8"
+        ]
+      }
+    },
+    "javac23": {
+      "sources": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.java",
+          "bytes": 7811,
+          "sha256": "4e5aff3dced47b6493a3db64b8fe2998a0c9328fde22ce5c7fd745d1e03e2c1e",
+          "baseline_path": "original/javac23/sources/ConstructorPrimitiveConversionControls.java"
+        },
+        {
+          "name": "PrimitiveLongPair.java",
+          "bytes": 186,
+          "sha256": "904ecf774d469580f0afe716d82b1c12744fdee721274fe69e31f3507cb36e60",
+          "baseline_path": "original/javac23/sources/PrimitiveLongPair.java"
+        }
+      ],
+      "classes": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf",
+          "baseline_path": "original/javac23/classes/ConstructorPrimitiveConversionControls.class"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2",
+          "baseline_path": "original/javac23/classes/PrimitiveLongPair.class"
+        }
+      ],
+      "oracle": {
+        "exit": 0,
+        "stdout": {
+          "name": "original-main.stdout",
+          "bytes": 864,
+          "sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418",
+          "baseline_path": "logs/javac23-original-run.stdout"
+        },
+        "stderr": {
+          "name": "original-main.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "baseline_path": "logs/javac23-original-run.stderr"
+        },
+        "jdk_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "compiler_flags": [
+          "--release",
+          "8"
+        ]
+      }
+    }
+  }
+}

@@ -730,22 +730,56 @@ fn nested_constructor_composition_is_presented_once_and_boundary_controls_remain
         }
 
         let first = recovered_body(&boundary, "firstThenUnsupportedStructure");
-        assert_eq!(first.quality, Quality::Fallback, "{leg} first quality");
-        assert_eq!(first.representation, Representation::Mixed);
-        assert!(first.text.contains("@bytecode"));
+        assert_eq!(first.quality, Quality::Structured, "{leg} first quality");
+        assert_eq!(first.representation, Representation::Java);
+        assert!(
+            !first.text.contains("@bytecode") && !first.text.contains("jarde_refused_body"),
+            "{leg} both constructed elements now form complete Java source:\n{}",
+            first.text
+        );
         assert_eq!(first.news.len(), 2, "{leg} first allocation records");
-        assert!(first.news.iter().all(|record| !record.presented));
         assert_eq!(
-            first.news[0].refusal.as_ref().map(|r| r.code),
-            Some("jre_new_shape")
+            first
+                .news
+                .iter()
+                .map(|record| record.class.as_str())
+                .collect::<Vec<_>>(),
+            ["java/lang/StringBuilder", "java/lang/Long"],
+            "{leg} constructor records retain source order"
+        );
+        for record in &first.news {
+            assert!(
+                record.presented && record.refusal.is_none(),
+                "{leg} every element constructor is presented: {record:?}"
+            );
+            let dup = record.dup.expect("presented element has its dup");
+            let constructor = record
+                .constructor
+                .expect("presented element has its constructor");
+            for bci in [record.head, dup, constructor]
+                .into_iter()
+                .chain(record.arguments.iter().copied())
+            {
+                assert!(
+                    !first.source_map.of_bci(bci).is_empty(),
+                    "{leg} first source map omitted element BCI {bci}"
+                );
+            }
+        }
+        assert!(first.text.contains("new java.lang.Object[]{"));
+        assert!(first.text.contains("new java.lang.StringBuilder("));
+        assert!(first.text.contains("new java.lang.Long("));
+        assert!(first.text.contains("(long)"));
+        assert_eq!(
+            first.text.matches("mark(").count(),
+            1,
+            "{leg} first side effect executes once in the source"
         );
         assert_eq!(
-            first.news[1].refusal.as_ref().map(|r| r.code),
-            Some("jre_new_interleaved_effect")
+            first.text.matches("number(").count(),
+            1,
+            "{leg} second side effect executes once in the source"
         );
-        assert!(!first.text.contains("new java.lang.Object[]{"));
-        assert!(!first.text.contains("new java.lang.StringBuilder("));
-        assert!(!first.text.contains("new java.lang.Long("));
 
         for name in ["old", "repeated", "descending"] {
             let body = recovered_body(&boundary, name);

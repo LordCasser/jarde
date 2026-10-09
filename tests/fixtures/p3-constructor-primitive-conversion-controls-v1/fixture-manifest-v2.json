@@ -1,0 +1,167 @@
+{
+  "schema": "constructor-primitive-conversion-handler-fixture-v2",
+  "source": {
+    "path": "ConstructorPrimitiveHandlerControls.java",
+    "sha256": "f60f847edae91173e66900e2a17b1da5826be51a26243adfd36c91fdc8b5b454"
+  },
+  "build_manifest": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v2/manifest.json",
+  "build_manifest_sha256": "82d5b9153594229aada7ef1629e02baf3f40fe5d33f995984a296181612c2b15",
+  "legs": {
+    "javac8": {
+      "class_path": "javac8/classes/ConstructorPrimitiveHandlerControls.class",
+      "bytes": 583,
+      "sha256": "36fa34c45a14e6f1997143d05b373d75e912892152d21149dd0930556b7d4bd9",
+      "method_descriptor": "sameHandler(I)Ljava/lang/Long;",
+      "max_stack": 4,
+      "max_locals": 2,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 19,
+          "handler_pc": 20,
+          "catch_type": "Class java/lang/RuntimeException"
+        }
+      ],
+      "instructions": [
+        {
+          "bci": 0,
+          "instruction": "new           #6                  // class java/lang/Long"
+        },
+        {
+          "bci": 3,
+          "instruction": "dup"
+        },
+        {
+          "bci": 4,
+          "instruction": "iload_0"
+        },
+        {
+          "bci": 5,
+          "instruction": "invokestatic  #7                  // Method markInt:(I)I"
+        },
+        {
+          "bci": 8,
+          "instruction": "i2l"
+        },
+        {
+          "bci": 9,
+          "instruction": "invokespecial #8                  // Method java/lang/Long.\"<init>\":(J)V"
+        },
+        {
+          "bci": 12,
+          "instruction": "astore_1"
+        },
+        {
+          "bci": 13,
+          "instruction": "iload_0"
+        },
+        {
+          "bci": 14,
+          "instruction": "invokestatic  #7                  // Method markInt:(I)I"
+        },
+        {
+          "bci": 17,
+          "instruction": "pop"
+        },
+        {
+          "bci": 18,
+          "instruction": "aload_1"
+        },
+        {
+          "bci": 19,
+          "instruction": "areturn"
+        },
+        {
+          "bci": 20,
+          "instruction": "astore_1"
+        },
+        {
+          "bci": 21,
+          "instruction": "aconst_null"
+        },
+        {
+          "bci": 22,
+          "instruction": "areturn"
+        }
+      ]
+    },
+    "javac23": {
+      "class_path": "javac23/classes/ConstructorPrimitiveHandlerControls.class",
+      "bytes": 580,
+      "sha256": "122386687414e39babcb00cfbb6b8062f0bea7e128a65b6cc95047d7ecc264e4",
+      "method_descriptor": "sameHandler(I)Ljava/lang/Long;",
+      "max_stack": 4,
+      "max_locals": 2,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 19,
+          "handler_pc": 20,
+          "catch_type": "Class java/lang/RuntimeException"
+        }
+      ],
+      "instructions": [
+        {
+          "bci": 0,
+          "instruction": "new           #25                 // class java/lang/Long"
+        },
+        {
+          "bci": 3,
+          "instruction": "dup"
+        },
+        {
+          "bci": 4,
+          "instruction": "iload_0"
+        },
+        {
+          "bci": 5,
+          "instruction": "invokestatic  #27                 // Method markInt:(I)I"
+        },
+        {
+          "bci": 8,
+          "instruction": "i2l"
+        },
+        {
+          "bci": 9,
+          "instruction": "invokespecial #33                 // Method java/lang/Long.\"<init>\":(J)V"
+        },
+        {
+          "bci": 12,
+          "instruction": "astore_1"
+        },
+        {
+          "bci": 13,
+          "instruction": "iload_0"
+        },
+        {
+          "bci": 14,
+          "instruction": "invokestatic  #27                 // Method markInt:(I)I"
+        },
+        {
+          "bci": 17,
+          "instruction": "pop"
+        },
+        {
+          "bci": 18,
+          "instruction": "aload_1"
+        },
+        {
+          "bci": 19,
+          "instruction": "areturn"
+        },
+        {
+          "bci": 20,
+          "instruction": "astore_1"
+        },
+        {
+          "bci": 21,
+          "instruction": "aconst_null"
+        },
+        {
+          "bci": 22,
+          "instruction": "areturn"
+        }
+      ]
+    }
+  }
+}

@@ -3197,6 +3197,111 @@
       "path": "tests/fixtures/p3-constructed-reference-array-handler-v1/javac8/HandlerControls.class"
     },
     {
+      "blake3": "3ad9324013d201455231a72809a1e1584dc64a6794184d6c62308523456a6d45",
+      "bytes": 4108,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/fixture-manifest-v1.json"
+    },
+    {
+      "blake3": "2db56e8cb8f235bf0bc175e69d336399b8a6f898c67f13ef2c0eccac7f0fe9fc",
+      "bytes": 4696,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac23/classes/ConstructorPrimitiveConversionControls.class"
+    },
+    {
+      "blake3": "b29ebd3bf200b7aef1519338769047d221a293c49355b27328cff7346c428dce",
+      "bytes": 205,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac23/classes/PrimitiveLongPair.class"
+    },
+    {
+      "blake3": "8c4a14dbfa904bd5352196360df76e38d336d5d7702148557dadd038956ae21f",
+      "bytes": 7811,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac23/sources/ConstructorPrimitiveConversionControls.java"
+    },
+    {
+      "blake3": "5c22e2311b3825f179334f40ecc44af6be936fba1397334217f141aece23e26e",
+      "bytes": 186,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac23/sources/PrimitiveLongPair.java"
+    },
+    {
+      "blake3": "08374b2080ae14c5b90f8de7ddd6be9ce2cb5e0bdebc170315c7f893b5b25ef0",
+      "bytes": 4696,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/classes/ConstructorPrimitiveConversionControls.class"
+    },
+    {
+      "blake3": "5a081ab369e10824197d93ce03b96aa4a1ef315078d464672f3f5647e8b2e505",
+      "bytes": 205,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/classes/PrimitiveLongPair.class"
+    },
+    {
+      "blake3": "8c4a14dbfa904bd5352196360df76e38d336d5d7702148557dadd038956ae21f",
+      "bytes": 7811,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/sources/ConstructorPrimitiveConversionControls.java"
+    },
+    {
+      "blake3": "5c22e2311b3825f179334f40ecc44af6be936fba1397334217f141aece23e26e",
+      "bytes": 186,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/sources/PrimitiveLongPair.java"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac23/original-main.stderr"
+    },
+    {
+      "blake3": "14971c3adcf2f201fed193d304703de91fdfe79aab1fa97264c14439a2cb0a2f",
+      "bytes": 864,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac23/original-main.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac8/original-main.stderr"
+    },
+    {
+      "blake3": "14971c3adcf2f201fed193d304703de91fdfe79aab1fa97264c14439a2cb0a2f",
+      "bytes": 864,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac8/original-main.stdout"
+    },
+    {
+      "blake3": "67857271a32cf20804a1d490c6d1ec9387aeea4c8a20eef8a7d99de9860c3bd0",
+      "bytes": 441,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v1/ConstructorPrimitiveHandlerControls.java"
+    },
+    {
+      "blake3": "e7c198cfd3080457c34b07510e8df9f800ca4124af42c08418d05a6e038162ff",
+      "bytes": 4266,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v1/fixture-manifest-v2.json"
+    },
+    {
+      "blake3": "f672b7cac8f4c1cc33bab8bb0cf388698336e58f365915e63decccbc2a54fd12",
+      "bytes": 580,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v1/javac23/classes/ConstructorPrimitiveHandlerControls.class"
+    },
+    {
+      "blake3": "7e7e9f48630106fa94225b00c2ed07647cf0b0053531f7600823a328ec105462",
+      "bytes": 583,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v1/javac8/classes/ConstructorPrimitiveHandlerControls.class"
+    },
+    {
+      "blake3": "6c7c0dfeaeaeb1e6913371ebdce673baf171642eb4e5fa865fd771443c89feb6",
+      "bytes": 462,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v2/ConstructorPrimitiveHandlerControls.java"
+    },
+    {
+      "blake3": "771f2073f1d5f547888f36c59bb614331444569fec35087198df521c156eca7c",
+      "bytes": 6029,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v2/fixture-manifest-v1.json"
+    },
+    {
+      "blake3": "241e8f754826a6a7b93ce30726356977bb000aa776178a8716a739688cccf293",
+      "bytes": 662,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v2/javac23/classes/ConstructorPrimitiveHandlerControls.class"
+    },
+    {
+      "blake3": "c3cc61df6c64932572edd6c8bc21639e92fdfb3d2258df1de5628d3076129844",
+      "bytes": 665,
+      "path": "tests/fixtures/p3-constructor-primitive-conversion-controls-v2/javac8/classes/ConstructorPrimitiveHandlerControls.class"
+    },
+    {
       "blake3": "5d86b8fb0e6aeab5b229db3d0416c5738fd10697940b679ec201590bfe42dc93",
       "bytes": 1754,
       "path": "tests/fixtures/p3-corpus/Flags.java"
