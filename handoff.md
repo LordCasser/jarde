@@ -16,13 +16,15 @@ git worktree list
 
 ## 当前接续：BigDecimal→Number产品已实现，本地验收通过，确切CI待验收
 
+当前已推送产品 **6997c9f8b2515cb18c359fe55559a486fe47fff1**，[CI37989319644](https://github.com/LordCasser/jarde/actions/runs/37989319644)正在运行；已观察fmt/Clippy/MSRV/supply成功，但双seed与其它后续步骤未完，不能提前验收。
+
 当前产品仅在现有release-8 NUMBER_FAMILY补BigDecimal→Number准确row，不改concat、不新增pass。Luna实现，root验收；[本片](openspec/changes/recover-bigdecimal-number-widening/)任务 **5/7**。两ordinary生产结构测试、325 Java-lib、双真实JDK显式ignored执行（8次完整source重编/runtime）全部成功。
 
 新五源CLI `/private/tmp/jarde-bigdecimal-number-cli-v1` SHA **b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0**；当前source与metadata一致。完整原24腿本次fresh **24/24**，root独立 **1226checks/0errors**，102commands/384closedfiles，两真实JDK空CP/SP编译所有生成source、只运行新classes且-Xverify:all，匹配原exit/raw双流；original/JADX采用逐hash核对历史基线，非fresh执行。完整两BigDecimal、旧八家族/factory/direct/数值均过；准确Collection<?>[][]声明/成功Signature marker与物理BCI仍保持。不能把24控制腿称作71单元完成。
 
 reader census测量更新为(1067,4626,463,2711,8)，只新增4classes/10直线Code body；指纹仅增11条输入；P5严格pins不变。MSRV1.88、CI-exact Clippy、fmt、OpenSpec all strict、diff、finally两专项均过。原旧pin/指纹失败、首CLI20GiB停建exit-15及finally verifier v1误要求essential可选source-map的失败均保留。CLI v2成功；末次仅清本仓target，冻结CLI/raw证据保留。机器空间实时以df为准，20GiB守卫继续有效。
 
-下一步：当前产品提交推送后用results/verify-ci-product-v1.py核验**确切新产品**的四job、全部steps、两个fresh workspace seed及新增BigDecimal显式JDK执行。CI原JSON/完整gzip日志未落盘前，不勾3.2/3.3，不借45b前置CI；本地未重复全workspace双seed。验收入口：[verification-root](openspec/changes/recover-bigdecimal-number-widening/verification-root.md)、results/local-root-acceptance-v1.json、candidate-root-verification-v1.json。完成CI后再更新任务/账本/handoff并提交验收文档。
+下一步：用results/verify-ci-product-v1.py核验**确切新产品**的四job、全部steps、两个fresh workspace seed及新增BigDecimal显式JDK执行。CI原JSON/完整gzip日志未落盘前，不勾3.2/3.3，不借45b前置CI；本地未重复全workspace双seed。验收入口：[verification-root](openspec/changes/recover-bigdecimal-number-widening/verification-root.md)、results/local-root-acceptance-v1.json、candidate-root-verification-v1.json。完成CI后再更新任务/账本/handoff并提交验收文档。
 
 ## 71账本队列：避免重复已实现片
 

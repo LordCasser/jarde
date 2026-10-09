@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "scope": "raw",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "HEAD^",
+        "HEAD"
+      ],
+      "exit": 2,
+      "stdout_sha256": "51dfafb1926d1f16a4830b82ade8b35766a40ac499eeb79ed1923772ac17f5c2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "scope": "sources",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "HEAD^",
+        "HEAD",
+        "--",
+        ".",
+        ":(exclude)openspec/**/results/**/stdout"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "reason": "Cargo raw stdout ends in a blank line; preserve the exact immutable bytes and restrict source whitespace checks to source rather than trimming streams",
+  "no_product_change": true
+}

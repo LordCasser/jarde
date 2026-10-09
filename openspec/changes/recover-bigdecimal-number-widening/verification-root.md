@@ -42,3 +42,9 @@ local-gate-plan-v1的八项实际exit0：fingerprint verify、P5严格pins、fin
 root-clean-after-local-v1只清本仓target；冻结新旧CLI和所有raw证据保留。新workflow新增显式BigDecimal ignored比较步，默认无JDK的结构测试仍可运行。3.2/3.3等确切新CI全绿后才能完成，不借前产品45b的CI。
 
 下一条P02_multianewarray已由当前新CLI fresh确认：两原class真实运行stdout6\n；完整候选两真实JDK均compile1，helper fallback，不能沿用旧README“compile0/打印0”的行为说法。capture没有拒绝，失败在二维元素compound更新。新baseline仅定位问题，尚无JADX新对照/实现spec/实现；单独推进，不混入本片产品。
+
+## 发布与实际CI状态
+
+产品6997c9f8b2515cb18c359fe55559a486fe47fff1已推送main；CI37989319644正在执行。已观察fmt/Clippy、MSRV、supply chain成功，workspace双seed与其余steps未全部完成，不计确切CI验收，不勾3.2/3.3。
+
+提交后完整diff whitespace检查发现11个原始Cargo stdout的末尾空行；raw bytes必须保留，不能trim。root-committed-whitespace-v1记录全raw检查exit2和排除这些stdout的source检查exit0；所有真实失败保留。此前root-diff-check-v1是工作区源码检查，不能拿它冒称全新raw日志没有whitespace提示。无需修改产品或Git全局规则。
