@@ -1,0 +1,137 @@
+{
+  "schema": "root-command-v3-bounded-local-disk-guard",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "p3_nested_int_array_compound_updates",
+    "--locked",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 2147483648,
+    "poll_seconds": 2,
+    "target_cap_bytes": 1073741824,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/run-root-gate-v3.py",
+    "bytes": 7110,
+    "sha256": "d591543e06ff0110f334b71146a75a2ee7072e3799350170f1b00f2e86fc6e70"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 572473,
+      "sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1638598,
+      "sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "bytes": 52105,
+      "sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/emit.rs",
+      "bytes": 176228,
+      "sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/asserts.rs",
+      "bytes": 29034,
+      "sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+      "bytes": 45912,
+      "sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "bytes": 1864424,
+      "sha256": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_nested_int_array_compound_updates.rs",
+      "bytes": 30256,
+      "sha256": "7599c3655550eb6277d03488eb96303b3934eb8aab00e2a5a3fa008ba41ab209"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_lambda_primitive_array_capture.rs",
+      "bytes": 22399,
+      "sha256": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_constructed_reference_array_elements.rs",
+      "bytes": 29927,
+      "sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_boxed_number_widening.rs",
+      "bytes": 29476,
+      "sha256": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/.github/workflows/ci.yml",
+      "bytes": 17361,
+      "sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a"
+    }
+  ],
+  "free_before": 27684384768,
+  "target_bytes_before": 0,
+  "max_target_bytes": 322382089,
+  "exit": 101,
+  "runner_exit": 101,
+  "elapsed_seconds": 46.29371574999823,
+  "free_after": 27348762624,
+  "min_free": 27348762624,
+  "disk_stop_reason": null,
+  "stdout": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/root-focused-v5/stdout",
+    "bytes": 1167,
+    "sha256": "4cb8120123396913420e1698a4584d038ebac606a92854991c555134ed2af95f"
+  },
+  "stderr": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/root-focused-v5/stderr",
+    "bytes": 8101,
+    "sha256": "546e0fee926b99b6c6d0c5f14e3cb8ac31f68a6a65aef3044168e7b5b60d8b4c"
+  }
+}

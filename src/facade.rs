@@ -11581,6 +11581,11 @@ fn validate_initializer_expression(
             ExprKind::Local(name) => {
                 return Ok(Some(format!("RHS refers to unscoped local `{name}`")));
             }
+            ExprKind::ArrayAssign { .. } => {
+                return Ok(Some(
+                    "an array update has no static-initializer evaluation proof".to_owned(),
+                ));
+            }
             ExprKind::LocalAssign { .. } => {
                 return Ok(Some(
                     "RHS assigns a local whose initializer scope is unproved".to_owned(),

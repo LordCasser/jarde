@@ -1,0 +1,184 @@
+{
+  "historical_cli": "/private/tmp/jarde-nested-int-array-cli-v1",
+  "cli_sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+  "rows": [
+    {
+      "label": "v8-sum-extra-consumer",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/sum-extra-consumer.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e6b47a1dc47deee3e1e74791c6a9696c4cb2d2a83b70f3e281db58ef6e0a2d72",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "// @method scalar([III)I\n// @declaration a static method of `ReturnedIntArrayUpdates`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the instruction at BCI 2 is not part of the provable subset\n    // @bytecode 3\n    // the dependency chain from BCI 3 to final consumer 6 is not bounded\n    // @bytecode 6 3\n    // the instruction at BCI 6 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds\n    // @bytecode 7\n    // the instruction at BCI 7 is not part of the provable subset\n    // @bytecode 8\n    // the instruction at BCI 8 is not part of the provable subset\n    // @bytecode 9 3\n    // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes\n    // @bytecode 10 3\n    // the value at BCI 10 comes from an Other at BCI 8, which produces no expression this subset writes\n}\n",
+      "bcis": [
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "label": "v8-returned-copy-extra-consumer",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/returned-copy-extra-consumer.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "stdout_sha256": "7e76759243e33f006b8111d53808b36be1c67736fb1d39f7f271550d3b355f3d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "// @method scalar([III)I\n// @declaration a static method of `ReturnedIntArrayUpdates`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the instruction at BCI 2 is not part of the provable subset\n    // @bytecode 3\n    // the dependency chain from BCI 3 to final consumer 6 is not bounded\n    // @bytecode 6\n    // the instruction at BCI 6 is not part of the provable subset\n    // @bytecode 7 3\n    // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes\n    // @bytecode 8 3\n    // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds\n    // @bytecode 9\n    // the instruction at BCI 9 is not part of the provable subset\n    // @bytecode 10 3\n    // the copy at BCI 8 has no proved local assignment\n}\n",
+      "bcis": [
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "label": "v8-long-return",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/long-return.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "stdout_sha256": "743273a4fe4af5e0063424c81ca926316b2d3069796d9bf20372276f04bcb9d1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "// @method scalar([III)J\n// @declaration a static method of `ReturnedIntArrayUpdates`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the instruction at BCI 2 is not part of the provable subset\n    // @bytecode 3\n    // the dependency chain from BCI 3 to final consumer 6 is not bounded\n    // @bytecode 6\n    // the instruction at BCI 6 is not part of the provable subset\n    // @bytecode 7 3\n    // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes\n    // @bytecode 3 8\n    // the dependency chain from BCI 8 to final consumer 9 is not bounded\n    // @bytecode 9 8 3\n    // the value at BCI 9 was produced by a saved declaration this run could not commit\n}\n",
+      "bcis": [
+        2,
+        3,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "label": "v23-sum-extra-consumer",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/sum-extra-consumer.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e81de050109787623c1a205e429234c1f79d38d0d9cf9936592fb0fe36ae3b3a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "// @method scalar([III)I\n// @declaration a static method of `ReturnedIntArrayUpdates`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the instruction at BCI 2 is not part of the provable subset\n    // @bytecode 3\n    // the dependency chain from BCI 3 to final consumer 6 is not bounded\n    // @bytecode 6 3\n    // the instruction at BCI 6 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds\n    // @bytecode 7\n    // the instruction at BCI 7 is not part of the provable subset\n    // @bytecode 8\n    // the instruction at BCI 8 is not part of the provable subset\n    // @bytecode 9 3\n    // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes\n    // @bytecode 10 3\n    // the value at BCI 10 comes from an Other at BCI 8, which produces no expression this subset writes\n}\n",
+      "bcis": [
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "label": "v23-returned-copy-extra-consumer",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/returned-copy-extra-consumer.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "stdout_sha256": "597cbf91a95bb146b4dac8a52f02b829866aa93cebe8c85ba1ec1de727333765",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "// @method scalar([III)I\n// @declaration a static method of `ReturnedIntArrayUpdates`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the instruction at BCI 2 is not part of the provable subset\n    // @bytecode 3\n    // the dependency chain from BCI 3 to final consumer 6 is not bounded\n    // @bytecode 6\n    // the instruction at BCI 6 is not part of the provable subset\n    // @bytecode 7 3\n    // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes\n    // @bytecode 8 3\n    // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds\n    // @bytecode 9\n    // the instruction at BCI 9 is not part of the provable subset\n    // @bytecode 10 3\n    // the copy at BCI 8 has no proved local assignment\n}\n",
+      "bcis": [
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "label": "v23-long-return",
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/long-return.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "stdout_sha256": "42fdaa17aac70e1c367fdbe2e38a8154a340b2a6e00aedfd11af5e8e2d26624c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "// @method scalar([III)J\n// @declaration a static method of `ReturnedIntArrayUpdates`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the instruction at BCI 2 is not part of the provable subset\n    // @bytecode 3\n    // the dependency chain from BCI 3 to final consumer 6 is not bounded\n    // @bytecode 6\n    // the instruction at BCI 6 is not part of the provable subset\n    // @bytecode 7 3\n    // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes\n    // @bytecode 3 8\n    // the dependency chain from BCI 8 to final consumer 9 is not bounded\n    // @bytecode 9 8 3\n    // the value at BCI 9 was produced by a saved declaration this run could not commit\n}\n",
+      "bcis": [
+        2,
+        3,
+        6,
+        7,
+        8,
+        9
+      ]
+    }
+  ]
+}

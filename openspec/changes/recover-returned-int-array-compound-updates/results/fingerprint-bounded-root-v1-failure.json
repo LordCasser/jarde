@@ -1,0 +1,8 @@
+{
+  "exit_code": 1,
+  "assumed_added_count": 22,
+  "actual_added_count": 21,
+  "reason": "README.md is excluded by the existing official fingerprint scope; first assertion stopped before writing manifest.",
+  "manifest_modified": false,
+  "scope": "Original count assertion failure retained; classification and old rows were not changed."
+}

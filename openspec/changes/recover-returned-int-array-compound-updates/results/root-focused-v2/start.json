@@ -1,0 +1,93 @@
+{
+  "schema": "root-command-v2-disk-guard",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "p3_nested_int_array_compound_updates",
+    "--locked",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 21474836480,
+    "poll_seconds": 2,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/run-root-gate-v1.py",
+    "bytes": 5660,
+    "sha256": "afe5ab94b34e449ba6e13be580d4116d22f939147882c83cb33c8dd2da250313"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 572473,
+      "sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1637499,
+      "sha256": "3e77915ce16e92d4af14e39806e7441038fd771c8ccdd9676c1a8471ee6a8b5f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_nested_int_array_compound_updates.rs",
+      "bytes": 27346,
+      "sha256": "4ace3e9ac631235f01fd18e732b374667a461e7ae03636654f6cf52b985221e2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_lambda_primitive_array_capture.rs",
+      "bytes": 22399,
+      "sha256": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_constructed_reference_array_elements.rs",
+      "bytes": 29927,
+      "sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_boxed_number_widening.rs",
+      "bytes": 29476,
+      "sha256": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/.github/workflows/ci.yml",
+      "bytes": 17297,
+      "sha256": "4ff0a3256a353c04bcc57d6407ac83b3ebf7561290c6973c1188d3c0b2dfc5d2"
+    }
+  ],
+  "free_before": 22305955840
+}

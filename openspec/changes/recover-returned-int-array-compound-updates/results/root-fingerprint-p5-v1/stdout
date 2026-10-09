@@ -1,0 +1,22 @@
+
+running 6 tests
+test a_slow_consumer_changes_the_readings_and_not_the_shape ... ok
+test every_case_holds_the_shape_it_is_named_for ... ok
+test record_the_billing_table ... ignored, regenerates the pinned table; run with --ignored --nocapture after an intended shape change
+test the_corpus_is_rebuilt_from_the_committed_bytes_every_time ... ok
+test the_fixed_shape_bills_the_counts_the_corpus_pins ... ok
+test the_old_per_method_arms_keep_their_ledger_and_the_same_text ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.56s
+
+
+running 6 tests
+test corpus_files_match_the_recorded_fingerprint ... ok
+test every_acceptance_row_is_indexed_against_existing_corpus ... ok
+test every_dimension_is_carried_by_existing_corpus ... ok
+test regenerate_corpus_fingerprint ... ignored, writes tests/fixtures/corpus-fingerprint.json; run explicitly for an intended corpus change
+test the_indexed_rows_are_the_rows_the_acceptance_table_names ... ok
+test the_manifest_matches_its_rendered_classification ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.39s
+

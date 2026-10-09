@@ -1,0 +1,7 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Finished `test` profile [unoptimized] target(s) in 8.74s
+     Running unittests src/lib.rs (target/debug/deps/jarde_reader-62117177610dde59)
+     Running tests/class_annotation_facts.rs (target/debug/deps/class_annotation_facts-91a55fe8609916c9)
+     Running tests/member_annotation_facts.rs (target/debug/deps/member_annotation_facts-6d4ddf4b0404bab4)
+     Running tests/method_signature_proof.rs (target/debug/deps/method_signature_proof-f7727ceb7baf5adf)
+     Running tests/type_annotation_facts.rs (target/debug/deps/type_annotation_facts-cff81468872a14c3)

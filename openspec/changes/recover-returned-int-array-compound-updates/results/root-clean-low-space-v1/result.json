@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit_code": 0,
+  "free_before": 16613801984,
+  "free_after": 16945278976,
+  "scope": "Only this jarde target; preserved test artifact, all frozen CLIs, source and evidence kept."
+}

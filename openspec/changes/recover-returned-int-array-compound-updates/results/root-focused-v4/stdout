@@ -1,0 +1,13 @@
+
+running 8 tests
+test nested_int_array_boundaries_do_not_claim_unproved_compound_updates ... ok
+test nested_int_array_class_source_stops_do_not_claim_complete_members ... ok
+test nested_int_array_updates_are_structured_and_preserve_lvalue_boundaries ... ok
+test nested_int_array_updates_match_the_frozen_runner_oracle ... ignored, requires a real JDK to compile the complete generated class with the fixed Runner and verify behavior
+test returned_int_array_updates_are_structured_and_keep_store_return_origins ... ok
+test returned_int_array_updates_compile_and_execute_as_a_complete_class ... ignored, requires a real JDK to compile the complete generated class with the fixed Runner and verify behavior
+test returned_int_array_updates_public_budget_and_cancellation_do_not_publish_partial_claims ... ok
+test returned_int_array_updates_use_java_types_beyond_category_one_frames ... ok
+
+test result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.09s
+

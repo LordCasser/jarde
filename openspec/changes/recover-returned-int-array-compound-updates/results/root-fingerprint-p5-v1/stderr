@@ -1,0 +1,7 @@
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 20.87s
+     Running tests/p5_bulk_corpus.rs (target/debug/deps/p5_bulk_corpus-8f99d49740eb9b0b)
+     Running tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-e5d038dc501bfac8)

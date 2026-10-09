@@ -1,0 +1,119 @@
+{
+  "scope": "invalid dup2_x2 category/stack arity; JVM rejection and jarde no recovery; no target invocation",
+  "rows": [
+    {
+      "leg": "v8",
+      "source_sha256": "0165fd2120ceee93e7cce4ccf77324ca2e20157d3f2c2b2ce18691cc3e52cf88",
+      "mutated_sha256": "a5d8b2e4cbfe709b68d7387f988737d0d66d7274116092f75a0581aee086965f",
+      "offset": 461,
+      "from": 91,
+      "to": 94,
+      "jvm_argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac8-verifier:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/invalid-copy-category-root-v1/v8",
+        "VerifyOnly"
+      ],
+      "jvm_exit": 1,
+      "cli_argv": [
+        "/private/tmp/jarde-returned-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/invalid-copy-category-root-v1/v8/ReturnedIntArrayUpdates.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cli_exit": 4
+    },
+    {
+      "leg": "v23",
+      "source_sha256": "5a7814b10195117112967f3db8eea0b322e70152544d0c32a5723ed9a59ca793",
+      "mutated_sha256": "f31d55b0a4562ca5a8b8ce35715aed77e7254cbc7a25f6431d75f88df63f5d34",
+      "offset": 461,
+      "from": 91,
+      "to": 94,
+      "jvm_argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac23-verifier:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/invalid-copy-category-root-v1/v23",
+        "VerifyOnly"
+      ],
+      "jvm_exit": 1,
+      "cli_argv": [
+        "/private/tmp/jarde-returned-array-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/invalid-copy-category-root-v1/v23/ReturnedIntArrayUpdates.class",
+        "--class",
+        "ReturnedIntArrayUpdates",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cli_exit": 4
+    }
+  ],
+  "files": [
+    {
+      "path": "v23/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "f31d55b0a4562ca5a8b8ce35715aed77e7254cbc7a25f6431d75f88df63f5d34"
+    },
+    {
+      "path": "v23/jarde.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v23/jarde.stdout",
+      "bytes": 123918,
+      "sha256": "2d4f58ed3b917ba94e8dbea17897f4c5c02bb2d17cd4a755b153ba84acb9b509"
+    },
+    {
+      "path": "v23/verify.stderr",
+      "bytes": 586,
+      "sha256": "5cd70566a4552978602ff2a4b71684e1603ad99775448ad7983e5b5f65f9d573"
+    },
+    {
+      "path": "v23/verify.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v8/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "a5d8b2e4cbfe709b68d7387f988737d0d66d7274116092f75a0581aee086965f"
+    },
+    {
+      "path": "v8/jarde.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v8/jarde.stdout",
+      "bytes": 123942,
+      "sha256": "b3ed70e2ee09e4409567fd0908fb66abaf0d041137615172dd1b3bb955801457"
+    },
+    {
+      "path": "v8/verify.stderr",
+      "bytes": 514,
+      "sha256": "997ccc8a7dcb64591208ef60594d314f90f4c02b2621d156301f0b1bfe3201bc"
+    },
+    {
+      "path": "v8/verify.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

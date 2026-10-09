@@ -1,0 +1,47 @@
+{
+  "status": "verified_load_only_controls",
+  "checks": 53,
+  "manifest_sha256": "a25bd18a9eb96e832bc8f7456115386a7a3b99d71ebd7cf2d858f8002ce26f92",
+  "controls": 6,
+  "commands": 6,
+  "target_methods_invoked": false,
+  "canonical_copies": [
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/sum-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v8/sum-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "678fe9b867e33e1b5c4552671b30d5dfd0ef5dcf425f51856199f5054e253289",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/returned-copy-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v8/returned-copy-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "b03f0cc602ff78999c324caf9ce44c423fa7ccbd055bac1ddc1a44e2a9acd82d",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/long-return.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v8/long-return/ReturnedIntArrayUpdates.class",
+      "sha256": "67c412323f6cc015841cbfc6148086160322ab3d702671cd050f9a1b29ad200f",
+      "bytes": 753
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/sum-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v23/sum-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "dd17c24b682ceb6526f2598ccfb1b67afc1a2e4c503247938de14686141c6289",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/returned-copy-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v23/returned-copy-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "16cc15b51fec54305cabb781da718a4763b2daa4e8e389fb8f60e0fb70c544d8",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/long-return.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v23/long-return/ReturnedIntArrayUpdates.class",
+      "sha256": "9491a463cb76c2736d43bfef1dd13c71aa6163c1de429d9653eb956971d1ee1e",
+      "bytes": 753
+    }
+  ],
+  "scope": "Exact mutations/raw JVM loading verified; no Jarde/decompiler/runtime semantic acceptance claimed."
+}

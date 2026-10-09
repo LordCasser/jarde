@@ -1,0 +1,93 @@
+diff --git a/openspec/changes/recover-bigdecimal-number-widening/results/replay-candidate-root-v1.py b/openspec/changes/recover-bigdecimal-number-widening/results/replay-candidate-root-v1.py
+index 5658021df..ae97c4f32 100644
+--- a/openspec/changes/recover-bigdecimal-number-widening/results/replay-candidate-root-v1.py
++++ b/openspec/changes/recover-bigdecimal-number-widening/results/replay-candidate-root-v1.py
+@@ -41,6 +41,11 @@ REQUIRED_CANDIDATE_SOURCES = {
+     'crates/jarde-java/src/init.rs',
+     'crates/jarde-java/src/report.rs',
+     'crates/jarde-java/src/build.rs',
++    'crates/jarde-java/src/ast.rs',
++    'crates/jarde-java/src/emit.rs',
++    'crates/jarde-java/src/asserts.rs',
++    'crates/jarde-java/src/field.rs',
++    'src/facade.rs',
+     'src/class_source.rs',
+     'Cargo.lock',
+ }
+diff --git a/openspec/changes/recover-bigdecimal-number-widening/results/verify-candidate-root-v1.py b/openspec/changes/recover-bigdecimal-number-widening/results/verify-candidate-root-v1.py
+index 4cee207d3..818fd0d80 100644
+--- a/openspec/changes/recover-bigdecimal-number-widening/results/verify-candidate-root-v1.py
++++ b/openspec/changes/recover-bigdecimal-number-widening/results/verify-candidate-root-v1.py
+@@ -13,6 +13,11 @@ REQUIRED_SOURCES = {
+     'crates/jarde-java/src/init.rs',
+     'crates/jarde-java/src/report.rs',
+     'crates/jarde-java/src/build.rs',
++    'crates/jarde-java/src/ast.rs',
++    'crates/jarde-java/src/emit.rs',
++    'crates/jarde-java/src/asserts.rs',
++    'crates/jarde-java/src/field.rs',
++    'src/facade.rs',
+     'src/class_source.rs',
+     'Cargo.lock',
+ }
+@@ -227,7 +232,7 @@ def main():
+     check(Path(metadata_file['cli_path']).resolve() == Path(cli['path']).resolve()
+           and metadata_file['cli_sha256'] == cli['sha256'], 'metadata identifies frozen binary')
+     candidate_sources = cli['metadata']['candidate_sources']
+-    check(set(candidate_sources) == REQUIRED_SOURCES, 'exact five candidate source identities')
++    check(set(candidate_sources) == REQUIRED_SOURCES, 'exact ten candidate source identities')
+     for relative, digest in candidate_sources.items():
+         check(sha(ROOT / relative) == digest, 'current product ' + relative)
+     pending_reference = m['historical_evidence']['wildcard_original_signature_baseline']
+diff --git a/openspec/changes/recover-nested-int-array-compound-updates/results/replay-candidate-v2.py b/openspec/changes/recover-nested-int-array-compound-updates/results/replay-candidate-v2.py
+index dd598e325..2a20a2061 100644
+--- a/openspec/changes/recover-nested-int-array-compound-updates/results/replay-candidate-v2.py
++++ b/openspec/changes/recover-nested-int-array-compound-updates/results/replay-candidate-v2.py
+@@ -6,13 +6,15 @@ from pathlib import Path
+ 
+ ROOT=Path('/Users/lordcasser/workspace/projects/jarde')
+ RESULTS=ROOT/'openspec/changes/recover-nested-int-array-compound-updates/results'
+-OUT=RESULTS/'candidate-v2'
++OUT=ROOT/'openspec/changes/recover-returned-int-array-compound-updates/results/nested4-candidate-v1'
+ P02_ROOT=ROOT/'openspec/changes/recover-bigdecimal-number-widening/results/nested-array-update-baseline-v1'
+ P02_MANIFEST=P02_ROOT/'manifest.json'
+ NESTED_BASELINE=RESULTS/'controls-baseline-v1/manifest.json'
+ CONTROLS=RESULTS/'controls-v1/manifest.json'
+ REMOVED=('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','CLASSPATH')
+-PRODUCTS={'crates/jarde-java/src/init.rs','crates/jarde-java/src/report.rs','crates/jarde-java/src/build.rs','src/class_source.rs','Cargo.lock'}
++PRODUCTS={'crates/jarde-java/src/init.rs','crates/jarde-java/src/report.rs','crates/jarde-java/src/build.rs',
++ 'crates/jarde-java/src/ast.rs','crates/jarde-java/src/emit.rs','crates/jarde-java/src/asserts.rs',
++ 'crates/jarde-java/src/field.rs','src/facade.rs','src/class_source.rs','Cargo.lock'}
+ TESTS={'tests/p3_nested_int_array_compound_updates.rs','.github/workflows/ci.yml','tests/recover_lambda_primitive_array_capture.rs','tests/p3_constructed_reference_array_elements.rs','tests/recover_boxed_number_widening.rs'}
+ 
+ def sha(b): return hashlib.sha256(b).hexdigest()
+diff --git a/openspec/changes/recover-nested-int-array-compound-updates/results/verify-candidate-v6.py b/openspec/changes/recover-nested-int-array-compound-updates/results/verify-candidate-v6.py
+index 77493708a..c857fd286 100644
+--- a/openspec/changes/recover-nested-int-array-compound-updates/results/verify-candidate-v6.py
++++ b/openspec/changes/recover-nested-int-array-compound-updates/results/verify-candidate-v6.py
+@@ -5,12 +5,14 @@ from pathlib import Path
+ 
+ ROOT=Path('/Users/lordcasser/workspace/projects/jarde')
+ RESULTS=ROOT/'openspec/changes/recover-nested-int-array-compound-updates/results'
+-OUT=RESULTS/'candidate-v2'
++OUT=ROOT/'openspec/changes/recover-returned-int-array-compound-updates/results/nested4-candidate-v1'
+ P02_ROOT=ROOT/'openspec/changes/recover-bigdecimal-number-widening/results/nested-array-update-baseline-v1'
+ P02_MANIFEST=P02_ROOT/'manifest.json'
+ CONTROLS=RESULTS/'controls-v1/manifest.json'
+ NESTED_BASELINE=RESULTS/'controls-baseline-v1/manifest.json'
+-PRODUCTS={'crates/jarde-java/src/init.rs','crates/jarde-java/src/report.rs','crates/jarde-java/src/build.rs','src/class_source.rs','Cargo.lock'}
++PRODUCTS={'crates/jarde-java/src/init.rs','crates/jarde-java/src/report.rs','crates/jarde-java/src/build.rs',
++ 'crates/jarde-java/src/ast.rs','crates/jarde-java/src/emit.rs','crates/jarde-java/src/asserts.rs',
++ 'crates/jarde-java/src/field.rs','src/facade.rs','src/class_source.rs','Cargo.lock'}
+ TESTS={'tests/p3_nested_int_array_compound_updates.rs','tests/recover_lambda_primitive_array_capture.rs','tests/p3_constructed_reference_array_elements.rs','tests/recover_boxed_number_widening.rs','.github/workflows/ci.yml'}
+ P02_BCIS={0,1,2,3,4,5,6,7,10,11,12}
+ NESTED_METHODS={'<init>','plain2','plain3','scalar','traced','row','index','rhs','swap','replaceRow','different'}
+@@ -175,7 +177,7 @@ def verify():
+  for rel,h in {**meta['candidate_sources'],**meta['test_sources']}.items(): expect(sha(filebytes(ROOT/rel))==h,f'current metadata source {rel}',errors); checks+=1
+  report={'verifier_sha256':sha(filebytes(Path(__file__))),'schema':'nested-int-array-compound-candidate-verification-v6','status':'passed' if not errors else 'failed','checks':checks,'errors':errors,
+   'candidate_manifest_sha256':sha(filebytes(mpath)),'candidate_cli_sha256':cli['sha256'],'case_count':len(m['cases']),'successful_case_count':sum(c.get('candidate_success') is True for c in m['cases'])}
+- target=RESULTS/'candidate-v2-verification-v6.json'
++ target=ROOT/'openspec/changes/recover-returned-int-array-compound-updates/results/nested4-candidate-v1-verification-v1.json'
+  if target.exists(): raise SystemExit(f'refusing to overwrite {target}')
+  target.write_text(json.dumps(report,indent=2)+'\n')
+  print(json.dumps(report,indent=2)); return 0 if not errors else 1

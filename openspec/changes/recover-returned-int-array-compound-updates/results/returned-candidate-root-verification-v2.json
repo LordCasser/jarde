@@ -1,0 +1,12 @@
+{
+  "schema": "returned-int-array-compound-candidate-luna-verification-v1",
+  "status": "passed",
+  "checks": 425,
+  "errors": [],
+  "manifest_sha256": "bf3b84fb35dda528ae840047c6154bb5f9e41c797c86328b7027d814f05d7c79",
+  "verifier_sha256": "272a898aa77e875d68082ef5def8c0d2542398cd5219db71480faa1fd90f8511",
+  "candidate_cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+  "case_count": 2,
+  "successful_case_count": 2,
+  "historical_jadx_cases_reused": 4
+}

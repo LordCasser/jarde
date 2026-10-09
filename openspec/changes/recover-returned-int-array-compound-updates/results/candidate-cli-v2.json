@@ -1,0 +1,48 @@
+{
+  "cli_path": "/private/tmp/jarde-returned-array-cli-v2",
+  "cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "src/facade.rs": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "test_sources": {
+    "tests/p3_nested_int_array_compound_updates.rs": "6d8ac87aa8497c054a968203ca25c283125face5367cdfe4e1e88f84c6389d31",
+    ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+    "tests/recover_lambda_primitive_array_capture.rs": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5",
+    "tests/p3_constructed_reference_array_elements.rs": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2",
+    "tests/recover_boxed_number_widening.rs": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824"
+  },
+  "build_result_sha256": "df12d1d933c6abe5422c36746b51a128a4e88913a548aeec7d58eadff75b2d41",
+  "canonical_files": {
+    "tests/fixtures/returned-int-array-compound-updates/README.md": "fc629f21c6f907c24730a94cfe839eff812c8ee94e3caf9ed43766ec98252c21",
+    "tests/fixtures/returned-int-array-compound-updates/ReturnedIntArrayUpdates.java": "073fb19298a16fadd84b3c5cdea58c768013312b9da4105f92b69d62f13f8951",
+    "tests/fixtures/returned-int-array-compound-updates/Runner.java": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97",
+    "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/long-return.class": "9491a463cb76c2736d43bfef1dd13c71aa6163c1de429d9653eb956971d1ee1e",
+    "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/returned-copy-extra-consumer.class": "16cc15b51fec54305cabb781da718a4763b2daa4e8e389fb8f60e0fb70c544d8",
+    "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/sum-extra-consumer.class": "dd17c24b682ceb6526f2598ccfb1b67afc1a2e4c503247938de14686141c6289",
+    "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/long-return.class": "67c412323f6cc015841cbfc6148086160322ab3d702671cd050f9a1b29ad200f",
+    "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/returned-copy-extra-consumer.class": "b03f0cc602ff78999c324caf9ce44c423fa7ccbd055bac1ddc1a44e2a9acd82d",
+    "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/sum-extra-consumer.class": "678fe9b867e33e1b5c4552671b30d5dfd0ef5dcf425f51856199f5054e253289",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-index.class": "a68cd715adc67b38fb1041b56cb9f3205dbf13eb1927ce71c55dd2c97be6340c",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-rhs.class": "e935551506c087f1acde1a7d66a4febcec3064fce64d3ab617f20df2555835fc",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-index.class": "3379771d904476a632c59f5c952d4542fcc225354e3cbe186c35d7826b6d8da7",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-rhs.class": "25b22c283da8ed8936c81f90029291b2ec50d204ca8c18abeff46eaace80988a",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-index.class": "ced7e278f244d76d7864468f98efc6f04048a11472d617d766fbc0ddcd2691fd",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-rhs.class": "b61f284aaa4e48b7eb6cd025a4b3750a7398634ee62cae68a4221cf02e5eb58d",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-index.class": "7028ba14c0f5b33657d377dbf5afc9a962fd2cc3461d61d31556abc33f12cc9e",
+    "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-rhs.class": "7c0b8a0ef2b693b16e61924e0109c41eab2da9215093b16e8d003955927b94fc",
+    "tests/fixtures/returned-int-array-compound-updates/copy-manifest-v1.json": "8954dd94d11cad16025110e6aee05fec0fc494436e4f6f9a615c2462fbf9365c",
+    "tests/fixtures/returned-int-array-compound-updates/expected.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/returned-int-array-compound-updates/expected.stdout": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616",
+    "tests/fixtures/returned-int-array-compound-updates/v23/ReturnedIntArrayUpdates.class": "5a7814b10195117112967f3db8eea0b322e70152544d0c32a5723ed9a59ca793",
+    "tests/fixtures/returned-int-array-compound-updates/v8/ReturnedIntArrayUpdates.class": "0165fd2120ceee93e7cce4ccf77324ca2e20157d3f2c2b2ce18691cc3e52cf88"
+  }
+}

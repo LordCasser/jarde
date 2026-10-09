@@ -1,0 +1,10 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Finished `test` profile [unoptimized] target(s) in 6.02s
+     Running unittests src/lib.rs (target/debug/deps/jarde_reader-62117177610dde59)
+
+thread 'classfile::tests::repository_class_fixtures_validate_without_false_target_rejections' (15313895) panicked at crates/jarde-reader/src/classfile.rs:11869:9:
+assertion `left == right` failed: fixture population changed: re-measure these counts
+  left: (1087, 4830, 463, 2715, 8)
+ right: (1071, 4654, 463, 2715, 8)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p jarde-reader --lib`

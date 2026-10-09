@@ -1,0 +1,18 @@
+Exception in thread "main" java.lang.VerifyError: Operand stack underflow
+Exception Details:
+  Location:
+    ReturnedIntArrayUpdates.scalar([III)I @6: dup2_x2
+  Reason:
+    Attempt to pop empty stack.
+  Current Frame:
+    bci: @6
+    flags: { }
+    locals: { '[I', integer, integer }
+    stack: { '[I', integer, integer }
+  Bytecode:
+    0000000: 2a1b 5c2e 1c60 5e4f ac                 
+
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:462)
+	at java.base/java.lang.Class.forName(Class.java:453)
+	at VerifyOnly.main(Unknown Source)

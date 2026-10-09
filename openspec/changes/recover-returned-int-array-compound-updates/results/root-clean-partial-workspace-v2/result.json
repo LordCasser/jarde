@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit": 0,
+  "free_before": 21398990848,
+  "free_after": 25766166528,
+  "scope": "only current repository target after second full-workspace disk stop; frozen binaries/evidence kept",
+  "stderr_sha256": "ee38677b2fc8b4aa08cdb5497d8d91582315162d3bd43f2c8df83ff9c876bb25"
+}

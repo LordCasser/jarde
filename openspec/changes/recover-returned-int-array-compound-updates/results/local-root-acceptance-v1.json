@@ -1,0 +1,585 @@
+{
+  "status": "local_semantics_accepted_pending_exact_product_CI",
+  "candidate_cli": "/private/tmp/jarde-returned-array-cli-v2",
+  "candidate_cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+  "product_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "src/facade.rs": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "test_sources": {
+    "tests/p3_nested_int_array_compound_updates.rs": "6d8ac87aa8497c054a968203ca25c283125face5367cdfe4e1e88f84c6389d31",
+    ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+    "tests/recover_lambda_primitive_array_capture.rs": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5",
+    "tests/p3_constructed_reference_array_elements.rs": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2",
+    "tests/recover_boxed_number_widening.rs": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824"
+  },
+  "independent_verification": [
+    {
+      "file": "returned-candidate-root-verification-v2.json",
+      "record": {
+        "schema": "returned-int-array-compound-candidate-luna-verification-v1",
+        "status": "passed",
+        "checks": 425,
+        "errors": [],
+        "manifest_sha256": "bf3b84fb35dda528ae840047c6154bb5f9e41c797c86328b7027d814f05d7c79",
+        "verifier_sha256": "272a898aa77e875d68082ef5def8c0d2542398cd5219db71480faa1fd90f8511",
+        "candidate_cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+        "case_count": 2,
+        "successful_case_count": 2,
+        "historical_jadx_cases_reused": 4
+      }
+    },
+    {
+      "file": "nested4-candidate-v1-verification-v1.json",
+      "record": {
+        "verifier_sha256": "72ccc83b0530766323e2bc71b240def1b054c1a5f437b34972c377b38764b8ad",
+        "schema": "nested-int-array-compound-candidate-verification-v6",
+        "status": "passed",
+        "checks": 479,
+        "errors": [],
+        "candidate_manifest_sha256": "52c8836196f2c1ea02e6d6584a5772ca059cdefbe34e3af10173b8693b961c90",
+        "candidate_cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+        "case_count": 4,
+        "successful_case_count": 4
+      }
+    },
+    {
+      "file": "legacy24-root-verification-v1.json",
+      "record": {
+        "verification": "semantic_and_legacy24_array_passed",
+        "task_3_1_complete": true,
+        "remaining_refusal": null,
+        "checks": 1231,
+        "errors": [],
+        "manifest_sha256": "ae1c3fdf77bc68c605b0ec06d1962d39ef395328ba9406bda9ccf53287192e78",
+        "cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+        "files": 384,
+        "commands": 102,
+        "cases": [
+          {
+            "dataset": "fixture",
+            "family": "factory",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "fixture",
+            "family": "factory",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "fixture",
+            "family": "direct",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "fixture",
+            "family": "direct",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "ct-legacy",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "ct-legacy",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "boxed-number-six",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "boxed-number-six",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "string-builder-charsequence",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "string-builder-charsequence",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "arraylist-hashset-collection",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "arraylist-hashset-collection",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "exceptions-throwable",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "exceptions-throwable",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "nested-number-array",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "nested-number-array",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "same-jar-derived-base",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "same-jar-derived-base",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "ct-legacy-frozen",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "ct-legacy-frozen",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "baseline",
+            "family": "bigdecimal-control-corrected",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": {
+              "leg": "javac8",
+              "source_map_bcis": [
+                0,
+                1,
+                4,
+                5,
+                6,
+                9,
+                10,
+                12,
+                15,
+                16,
+                17,
+                20,
+                23,
+                24,
+                27,
+                28,
+                29,
+                32,
+                34,
+                37,
+                38,
+                39,
+                40,
+                43,
+                46,
+                49
+              ],
+              "physical_input": {
+                "method": "main([Ljava/lang/String;)V",
+                "required_bcis": [
+                  1,
+                  6,
+                  9,
+                  12,
+                  15,
+                  16,
+                  17,
+                  28,
+                  29,
+                  34,
+                  40,
+                  43,
+                  46
+                ],
+                "calls": {
+                  "12": [
+                    "java/math/BigDecimal",
+                    "<init>",
+                    "(Ljava/lang/String;)V"
+                  ],
+                  "29": [
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(I)Ljava/lang/StringBuilder;"
+                  ],
+                  "34": [
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+                  ],
+                  "40": [
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(Ljava/lang/Object;)Ljava/lang/StringBuilder;"
+                  ],
+                  "43": [
+                    "java/lang/StringBuilder",
+                    "toString",
+                    "()Ljava/lang/String;"
+                  ],
+                  "46": [
+                    "java/io/PrintStream",
+                    "println",
+                    "(Ljava/lang/String;)V"
+                  ]
+                },
+                "BigDecimal_new_bcis": [
+                  6
+                ],
+                "array_component_is_Number": true,
+                "StringBuilder_append_count": 3
+              },
+              "new_records": [
+                {
+                  "arguments": [
+                    10
+                  ],
+                  "class": "java/math/BigDecimal",
+                  "constructor": 12,
+                  "dup": 9,
+                  "head": 6,
+                  "presented": true,
+                  "refusal": null
+                },
+                {
+                  "arguments": [],
+                  "class": "java/lang/StringBuilder",
+                  "constructor": 24,
+                  "dup": 23,
+                  "head": 20,
+                  "presented": true,
+                  "refusal": null
+                }
+              ],
+              "body_sha256": "5050865b399c44584b12b9ee26b42bd2b4c8929e53c405a109f2505243f7f713"
+            }
+          },
+          {
+            "dataset": "baseline",
+            "family": "bigdecimal-control-corrected",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": {
+              "leg": "javac23",
+              "source_map_bcis": [
+                0,
+                1,
+                4,
+                5,
+                6,
+                9,
+                10,
+                12,
+                15,
+                16,
+                17,
+                20,
+                23,
+                24,
+                27,
+                28,
+                29,
+                32,
+                34,
+                37,
+                38,
+                39,
+                40,
+                43,
+                46,
+                49
+              ],
+              "physical_input": {
+                "method": "main([Ljava/lang/String;)V",
+                "required_bcis": [
+                  1,
+                  6,
+                  9,
+                  12,
+                  15,
+                  16,
+                  17,
+                  28,
+                  29,
+                  34,
+                  40,
+                  43,
+                  46
+                ],
+                "calls": {
+                  "12": [
+                    "java/math/BigDecimal",
+                    "<init>",
+                    "(Ljava/lang/String;)V"
+                  ],
+                  "29": [
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(I)Ljava/lang/StringBuilder;"
+                  ],
+                  "34": [
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+                  ],
+                  "40": [
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(Ljava/lang/Object;)Ljava/lang/StringBuilder;"
+                  ],
+                  "43": [
+                    "java/lang/StringBuilder",
+                    "toString",
+                    "()Ljava/lang/String;"
+                  ],
+                  "46": [
+                    "java/io/PrintStream",
+                    "println",
+                    "(Ljava/lang/String;)V"
+                  ]
+                },
+                "BigDecimal_new_bcis": [
+                  6
+                ],
+                "array_component_is_Number": true,
+                "StringBuilder_append_count": 3
+              },
+              "new_records": [
+                {
+                  "arguments": [
+                    10
+                  ],
+                  "class": "java/math/BigDecimal",
+                  "constructor": 12,
+                  "dup": 9,
+                  "head": 6,
+                  "presented": true,
+                  "refusal": null
+                },
+                {
+                  "arguments": [],
+                  "class": "java/lang/StringBuilder",
+                  "constructor": 24,
+                  "dup": 23,
+                  "head": 20,
+                  "presented": true,
+                  "refusal": null
+                }
+              ],
+              "body_sha256": "5050865b399c44584b12b9ee26b42bd2b4c8929e53c405a109f2505243f7f713"
+            }
+          },
+          {
+            "dataset": "numeric",
+            "family": "constructor-primitive-conversion",
+            "leg": "javac23",
+            "success": true,
+            "bigdecimal": null
+          },
+          {
+            "dataset": "numeric",
+            "family": "constructor-primitive-conversion",
+            "leg": "javac8",
+            "success": true,
+            "bigdecimal": null
+          }
+        ],
+        "collection_grid_direct_signature_checks": [
+          {
+            "leg": "javac8",
+            "input_signature": "()[[Ljava/util/Collection<*>;",
+            "generated_declaration": "public static java.util.Collection<?>[][] collectionGridDirect()",
+            "source_declaration_occurrences": 1,
+            "member_markers": [
+              "// jarde: generic Signature `()[[Ljava/util/Collection<*>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof; same-class call binding proved"
+            ],
+            "body_sha256": "5143602c34da8470de09bd3097d092e4fdc15572b646f7a815870b9bbb21933a",
+            "body_raw_type_fragments": [
+              "new java.util.Collection[][]",
+              "new java.util.ArrayList[]{listValue(mark(1))}",
+              "new java.util.HashSet[]{setValue(mark(2))}"
+            ],
+            "physical_bcis": {
+              "allocations": [
+                [
+                  1,
+                  "[Ljava/util/Collection;"
+                ],
+                [
+                  7,
+                  "java/util/ArrayList"
+                ],
+                [
+                  24,
+                  "java/util/HashSet"
+                ]
+              ],
+              "stores": [
+                19,
+                20,
+                36,
+                37
+              ],
+              "producers": [
+                [
+                  13,
+                  "mark"
+                ],
+                [
+                  16,
+                  "listValue"
+                ],
+                [
+                  30,
+                  "mark"
+                ],
+                [
+                  33,
+                  "setValue"
+                ]
+              ]
+            }
+          },
+          {
+            "leg": "javac23",
+            "input_signature": "()[[Ljava/util/Collection<*>;",
+            "generated_declaration": "public static java.util.Collection<?>[][] collectionGridDirect()",
+            "source_declaration_occurrences": 1,
+            "member_markers": [
+              "// jarde: generic Signature `()[[Ljava/util/Collection<*>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof; same-class call binding proved"
+            ],
+            "body_sha256": "5143602c34da8470de09bd3097d092e4fdc15572b646f7a815870b9bbb21933a",
+            "body_raw_type_fragments": [
+              "new java.util.Collection[][]",
+              "new java.util.ArrayList[]{listValue(mark(1))}",
+              "new java.util.HashSet[]{setValue(mark(2))}"
+            ],
+            "physical_bcis": {
+              "allocations": [
+                [
+                  1,
+                  "[Ljava/util/Collection;"
+                ],
+                [
+                  7,
+                  "java/util/ArrayList"
+                ],
+                [
+                  24,
+                  "java/util/HashSet"
+                ]
+              ],
+              "stores": [
+                19,
+                20,
+                36,
+                37
+              ],
+              "producers": [
+                [
+                  13,
+                  "mark"
+                ],
+                [
+                  16,
+                  "listValue"
+                ],
+                [
+                  30,
+                  "mark"
+                ],
+                [
+                  33,
+                  "setValue"
+                ]
+              ]
+            }
+          }
+        ],
+        "verifier_sha256": "672f1af525f008d8c9c45df7f3fee2600e63f56e8c1bfca27cbcbfc268925d28",
+        "classfile_parser": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/prepare-child-jvm-controls-v1.py",
+          "sha256": "c02abceb328f451ec93a45d752dbeb94947615df32a2ca45a307b6b71574d103"
+        },
+        "original_and_jadx_execution": "historical verified baseline; not freshly executed",
+        "mutant_execution": false
+      }
+    }
+  ],
+  "original_and_jadx": "historical hash-bound original2/2 and JADX4/4 for new; old baseline rows also historical; only candidate full source freshly rendered/compiled/executed",
+  "pending": [
+    "exact new-product CI four jobs/all necessary steps",
+    "workspace two fresh fixed seeds",
+    "MSRV",
+    "CI exact Clippy",
+    "JDK25 ignored execution",
+    "fuzz/supply"
+  ],
+  "local_workspace_seed1": "disk guard SIGTERM before tests, not success",
+  "local_msrv": "preflight not launched, not success"
+}

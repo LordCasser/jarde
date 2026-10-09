@@ -7666,7 +7666,13 @@ pub(crate) fn build(
             block_of.insert(instruction.bci(), block.block().clone());
         }
     }
-    let compounds = CompoundAssignments::prove(ssa, operations, inputs.fields, budget)?;
+    let compounds = CompoundAssignments::prove(
+        ssa,
+        operations,
+        inputs.fields,
+        inputs.return_type.as_ref(),
+        budget,
+    )?;
     let unit_field_updates = UnitFieldUpdates::prove(
         ssa,
         operations,
@@ -8446,6 +8452,10 @@ fn published_local_assignments(
                     }
                     pending.push(Node::Expression(value));
                 }
+                ExprKind::ArrayAssign { target, value, .. } => {
+                    pending.push(Node::Expression(target));
+                    pending.push(Node::Expression(value));
+                }
                 ExprKind::Call { receiver, args, .. } => {
                     pending.extend(receiver.iter().map(|value| Node::Expression(value)));
                     pending.extend(args.iter().map(Node::Expression));
@@ -9146,6 +9156,23 @@ struct CompoundAssignments {
     copies: BTreeSet<u32>,
     reads: BTreeSet<u32>,
     inline_values: BTreeSet<u32>,
+    returned: BTreeMap<u32, ReturnedArrayUpdate>,
+    returned_owned: BTreeSet<u32>,
+}
+
+/// One array `+=` whose `dup_x2` stores the result and leaves its only other copy for `ireturn`.
+#[derive(Clone)]
+struct ReturnedArrayUpdate {
+    array: ValueId,
+    index: ValueId,
+    rhs: ValueId,
+    duplicate: u32,
+    read: u32,
+    add: u32,
+    returned_duplicate: u32,
+    store: u32,
+    returns: u32,
+    dependencies: BTreeSet<u32>,
 }
 
 /// The copies of one body whose consumers are **field instructions**
@@ -13788,21 +13815,84 @@ impl CompoundAssignments {
         ssa: &SsaTable,
         operations: &Operations,
         fields: &field::Plan,
+        return_type: Option<&Type>,
         budget: &mut Budget,
     ) -> Result<Self, StopReason> {
         let mut plan = Self::default();
         for block in ssa.blocks() {
-            for instruction in block.instructions() {
+            let instructions = block.instructions();
+            for (position, instruction) in instructions.iter().enumerate() {
                 let at = instruction.bci();
                 poll(budget, Some(at))?;
                 charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+                if return_type == Some(&Type::Int)
+                    && instruction.opcode() == 0xac
+                    && matches!(operations.get(at), Some(Operation::Return))
+                    && let Some(start) = position.checked_sub(3)
+                    && let [add, duplicate, store] = &instructions[start..position]
+                    && add.opcode() == 0x60
+                    && duplicate.opcode() == 0x5b
+                    && store.opcode() == 0x4f
+                    && let Some((
+                        CompoundUpdate::Array {
+                            array,
+                            index,
+                            rhs,
+                            duplicate: source_duplicate,
+                            read,
+                            add: add_bci,
+                        },
+                        rhs_dependencies,
+                    )) =
+                        prove_array_update(ssa, operations, fields, block, store, Some(at), budget)?
+                    && let Some(returned_duplicate) = stack_operands(store)
+                        .first()
+                        .and_then(|(_, value)| definition_in_block(ssa, *value, block.block()))
+                {
+                    charge(
+                        budget,
+                        CountedBudgetDimension::IrItems,
+                        u64::try_from(rhs_dependencies.len().saturating_mul(2).saturating_add(5))
+                            .unwrap_or(u64::MAX),
+                        Some(at),
+                    )?;
+                    let update = ReturnedArrayUpdate {
+                        array,
+                        index,
+                        rhs,
+                        duplicate: source_duplicate,
+                        read,
+                        add: add_bci,
+                        returned_duplicate,
+                        store: store.bci(),
+                        returns: at,
+                        dependencies: rhs_dependencies.clone(),
+                    };
+                    plan.returned_owned.extend(rhs_dependencies);
+                    plan.returned_owned.extend([
+                        source_duplicate,
+                        read,
+                        add_bci,
+                        returned_duplicate,
+                        store.bci(),
+                    ]);
+                    plan.returned.insert(at, update);
+                }
                 let update = match operations.get(at) {
                     Some(Operation::Field {
                         access: FieldAccess::Write,
                         ..
                     }) => prove_field_update(ssa, operations, fields, block, instruction, budget)?,
                     Some(Operation::ArrayStore { .. }) if instruction.opcode() == 0x4f => {
-                        prove_array_update(ssa, operations, fields, block, instruction, budget)?
+                        prove_array_update(
+                            ssa,
+                            operations,
+                            fields,
+                            block,
+                            instruction,
+                            None,
+                            budget,
+                        )?
                     }
                     _ => None,
                 };
@@ -14033,6 +14123,7 @@ fn prove_array_update(
     fields: &field::Plan,
     block: &jarde_jvm::method_ir::SsaBlock,
     store: &SsaInstruction,
+    return_bci: Option<u32>,
     budget: &mut Budget,
 ) -> Result<Option<(CompoundUpdate, BTreeSet<u32>)>, StopReason> {
     let at = store.bci();
@@ -14048,7 +14139,27 @@ fn prove_array_update(
     let [(_, array_store), (_, index_store), (_, sum)] = store_operands.as_slice() else {
         return Ok(None);
     };
-    let (array_store, index_store, sum) = (*array_store, *index_store, *sum);
+    let (array_store, index_store, stored_sum) = (*array_store, *index_store, *sum);
+    let mut sum = stored_sum;
+    let returned_duplicate_bci = if return_bci.is_some() {
+        let Some(duplicate_bci) = definition_in_block(ssa, array_store, block.block()) else {
+            return Ok(None);
+        };
+        let Some(duplicate) = instruction_in_block(block, duplicate_bci) else {
+            return Ok(None);
+        };
+        let duplicate_inputs = stack_operands(duplicate);
+        let [(_, _), (_, _), (_, sum_input)] = duplicate_inputs.as_slice() else {
+            return Ok(None);
+        };
+        if duplicate.opcode() != 0x5b {
+            return Ok(None);
+        }
+        sum = *sum_input;
+        Some(duplicate_bci)
+    } else {
+        None
+    };
     // The dup2 store-copy is not a type source: aaload leaves its row reference Unknown in the
     // verifier frame, and the copied ValueId keeps that conservative type. Prove int[] from the
     // original array value below; array_of_value follows the aaload source and lowers [[I by one
@@ -14089,10 +14200,7 @@ fn prove_array_update(
     let Some(duplicate_bci) = definition_in_block(ssa, array_read, block.block()) else {
         return Ok(None);
     };
-    if definition_in_block(ssa, index_read, block.block()) != Some(duplicate_bci)
-        || definition_in_block(ssa, array_store, block.block()) != Some(duplicate_bci)
-        || definition_in_block(ssa, index_store, block.block()) != Some(duplicate_bci)
-    {
+    if definition_in_block(ssa, index_read, block.block()) != Some(duplicate_bci) {
         return Ok(None);
     }
     let Some(duplicate) = instruction_in_block(block, duplicate_bci) else {
@@ -14111,14 +14219,16 @@ fn prove_array_update(
     }
     let copies = stack_outputs(duplicate);
     if copies.len() != 4
+        || copies
+            .iter()
+            .enumerate()
+            .any(|(depth, (actual, _))| *actual != depth as u32)
         || copies[0].1 == copies[1].1
         || copies[0].1 == copies[2].1
         || copies[0].1 == copies[3].1
         || copies[1].1 == copies[2].1
         || copies[1].1 == copies[3].1
         || copies[2].1 == copies[3].1
-        || array_store != copies[0].1
-        || index_store != copies[1].1
         || array_read != copies[2].1
         || index_read != copies[3].1
     {
@@ -14128,18 +14238,152 @@ fn prove_array_update(
         return Ok(None);
     };
     if old_read != old
-        || !single_use_at(ssa, array, block.block(), duplicate_bci)
-        || !single_use_at(ssa, index, block.block(), duplicate_bci)
-        || !single_use_at(ssa, copies[0].1, block.block(), at)
-        || !single_use_at(ssa, copies[1].1, block.block(), at)
-        || !single_use_at(ssa, copies[2].1, block.block(), read_bci)
-        || !single_use_at(ssa, copies[3].1, block.block(), read_bci)
-        || !single_use_at(ssa, old, block.block(), add_bci)
-        || !single_use_at(ssa, rhs, block.block(), add_bci)
-        || !single_use_at(ssa, sum, block.block(), at)
+        || !compound_single_use(
+            ssa,
+            array,
+            block.block(),
+            duplicate_bci,
+            return_bci.is_some(),
+            budget,
+        )?
+        || !compound_single_use(
+            ssa,
+            index,
+            block.block(),
+            duplicate_bci,
+            return_bci.is_some(),
+            budget,
+        )?
+        || !compound_single_use(
+            ssa,
+            copies[2].1,
+            block.block(),
+            read_bci,
+            return_bci.is_some(),
+            budget,
+        )?
+        || !compound_single_use(
+            ssa,
+            copies[3].1,
+            block.block(),
+            read_bci,
+            return_bci.is_some(),
+            budget,
+        )?
+        || !compound_single_use(
+            ssa,
+            old,
+            block.block(),
+            add_bci,
+            return_bci.is_some(),
+            budget,
+        )?
+        || !compound_single_use(
+            ssa,
+            rhs,
+            block.block(),
+            add_bci,
+            return_bci.is_some(),
+            budget,
+        )?
     {
         return Ok(None);
     }
+    let returned_duplicate = if let Some(return_bci) = return_bci {
+        let Some(duplicate_bci) = definition_in_block(ssa, array_store, block.block()) else {
+            return Ok(None);
+        };
+        if Some(duplicate_bci) != returned_duplicate_bci
+            || definition_in_block(ssa, index_store, block.block()) != Some(duplicate_bci)
+        {
+            return Ok(None);
+        }
+        let Some(duplicate) = instruction_in_block(block, duplicate_bci) else {
+            return Ok(None);
+        };
+        if duplicate.opcode() != 0x5b {
+            return Ok(None);
+        }
+        let duplicate_inputs = stack_operands(duplicate);
+        let [(_, row_copy), (_, index_copy), (_, sum_input)] = duplicate_inputs.as_slice() else {
+            return Ok(None);
+        };
+        let duplicate_outputs = stack_outputs(duplicate);
+        if duplicate.opcode() != 0x5b
+            || duplicate_outputs.len() != 4
+            || duplicate_outputs
+                .iter()
+                .enumerate()
+                .any(|(depth, (actual, _))| *actual != depth as u32)
+            || duplicate_outputs.iter().enumerate().any(|(i, output)| {
+                duplicate_outputs[i + 1..]
+                    .iter()
+                    .any(|other| output.1 == other.1)
+            })
+            || *row_copy != copies[0].1
+            || *index_copy != copies[1].1
+            || *sum_input != sum
+            || array_store != duplicate_outputs[1].1
+            || index_store != duplicate_outputs[2].1
+            || stored_sum != duplicate_outputs[3].1
+        {
+            return Ok(None);
+        }
+        let Some(return_instruction) = instruction_in_block(block, return_bci) else {
+            return Ok(None);
+        };
+        let return_value = duplicate_outputs[0].1;
+        if return_instruction.opcode() != 0xac
+            || !matches!(operations.get(return_bci), Some(Operation::Return))
+            || stack_operands(return_instruction).as_slice() != [(Slot::Stack(0), return_value)]
+            || !compound_single_use(ssa, copies[0].1, block.block(), duplicate_bci, true, budget)?
+            || !compound_single_use(ssa, copies[1].1, block.block(), duplicate_bci, true, budget)?
+            || !compound_single_use(
+                ssa,
+                duplicate_outputs[0].1,
+                block.block(),
+                return_bci,
+                true,
+                budget,
+            )?
+            || !compound_single_use(ssa, duplicate_outputs[1].1, block.block(), at, true, budget)?
+            || !compound_single_use(ssa, duplicate_outputs[2].1, block.block(), at, true, budget)?
+            || !compound_single_use(ssa, duplicate_outputs[3].1, block.block(), at, true, budget)?
+            || !compound_single_use(ssa, sum, block.block(), duplicate_bci, true, budget)?
+            || !matches!(ssa.value(array).ty(), Value::Ref(_))
+            || ssa.value(index).ty() != &Value::Int
+            || ssa.value(*sum_input).ty() != &Value::Int
+        {
+            return Ok(None);
+        }
+        Some(duplicate_bci)
+    } else {
+        if definition_in_block(ssa, array_store, block.block()) != Some(duplicate_bci)
+            || definition_in_block(ssa, index_store, block.block()) != Some(duplicate_bci)
+            || array_store != copies[0].1
+            || index_store != copies[1].1
+            || !compound_single_use(
+                ssa,
+                copies[0].1,
+                block.block(),
+                at,
+                return_bci.is_some(),
+                budget,
+            )?
+            || !compound_single_use(
+                ssa,
+                copies[1].1,
+                block.block(),
+                at,
+                return_bci.is_some(),
+                budget,
+            )?
+            || !compound_single_use(ssa, sum, block.block(), at, return_bci.is_some(), budget)?
+        {
+            return Ok(None);
+        }
+        None
+    };
     let Some(duplicate_pos) = position_in_block(block, duplicate_bci) else {
         return Ok(None);
     };
@@ -14152,7 +14396,23 @@ fn prove_array_update(
     let Some(store_pos) = position_in_block(block, at) else {
         return Ok(None);
     };
-    if read_pos != duplicate_pos + 1 || !(read_pos < add_pos && add_pos + 1 == store_pos) {
+    if read_pos != duplicate_pos + 1 || !(read_pos < add_pos) {
+        return Ok(None);
+    }
+    if let Some(returned_duplicate) = returned_duplicate {
+        let Some(returned_pos) = position_in_block(block, returned_duplicate) else {
+            return Ok(None);
+        };
+        let Some(return_pos) = position_in_block(block, return_bci.expect("returned shape")) else {
+            return Ok(None);
+        };
+        if add_pos + 1 != returned_pos
+            || returned_pos + 1 != store_pos
+            || store_pos + 1 != return_pos
+        {
+            return Ok(None);
+        }
+    } else if add_pos + 1 != store_pos {
         return Ok(None);
     }
     let mut array_dependencies = BTreeSet::new();
@@ -14218,6 +14478,22 @@ fn prove_array_update(
     {
         return Ok(None);
     }
+    let mut dependencies = rhs_dependencies;
+    if return_bci.is_some() {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(
+                array_dependencies
+                    .len()
+                    .saturating_add(index_dependencies.len()),
+            )
+            .unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        dependencies.extend(array_dependencies);
+        dependencies.extend(index_dependencies);
+    }
     Ok(Some((
         CompoundUpdate::Array {
             array,
@@ -14227,7 +14503,7 @@ fn prove_array_update(
             read: read_bci,
             add: add_bci,
         },
-        rhs_dependencies,
+        dependencies,
     )))
 }
 
@@ -14571,6 +14847,21 @@ fn one_stack_output(instruction: &SsaInstruction) -> Option<(u32, ValueId)> {
     match stack_outputs(instruction).as_slice() {
         [output] => Some(*output),
         _ => None,
+    }
+}
+
+fn compound_single_use(
+    ssa: &SsaTable,
+    value: ValueId,
+    block: &CanonicalBlockId,
+    consumer: u32,
+    meter: bool,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    if meter {
+        single_use_at_with_budget(ssa, value, block, consumer, budget)
+    } else {
+        Ok(single_use_at(ssa, value, block, consumer))
     }
 }
 
@@ -22339,6 +22630,9 @@ impl Builder<'_> {
     fn instruction(&mut self, instruction: &SsaInstruction) -> Result<(), StopReason> {
         poll(self.budget, Some(instruction.bci()))?;
         let at = instruction.bci();
+        if self.compounds.returned_owned.contains(&at) {
+            return Ok(());
+        }
         if self
             .shared_finally
             .as_ref()
@@ -22673,6 +22967,24 @@ impl Builder<'_> {
                         Err(reason) => {
                             let bcis = self.postfix_quote(&update);
                             return self.fallback(bcis, &reason, at);
+                        }
+                    };
+                    return self.push(Stmt::new(
+                        StmtKind::Return { value: Some(value) },
+                        OriginSet::new(Origin::direct(at)),
+                    ));
+                }
+                if let Some(update) = self.compounds.returned.get(&at) {
+                    charge(
+                        self.budget, CountedBudgetDimension::IrItems,
+                        u64::try_from(update.dependencies.len()).unwrap_or(u64::MAX), Some(at),
+                    )?;
+                    let update = update.clone();
+                    let value = match self.returned_array_expression(&update, at) {
+                        Ok(value) => value,
+                        Err(reason) => {
+                            let quote = self.returned_array_quote(&update)?;
+                            return self.fallback(quote, &reason, at);
                         }
                     };
                     return self.push(Stmt::new(
@@ -23665,6 +23977,91 @@ impl Builder<'_> {
         )
         .presenting(Type::Int);
         Ok(self.adapt_return(expression, at)?)
+    }
+
+    fn returned_array_expression(
+        &mut self,
+        update: &ReturnedArrayUpdate,
+        at: u32,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let array = self
+            .render_value(update.array, at, 0)?
+            .derived_from(update.duplicate);
+        let index = self
+            .render_value(update.index, at, 0)?
+            .derived_from(update.duplicate);
+        let Some(index_type) = index.presented.as_ref() else {
+            return Err(
+                "the returned int array update index has no Java primitive type evidence".into(),
+            );
+        };
+        if !primitive_conversion_source_matches(&Type::Int, index_type) {
+            return Err(format!("the returned int array update index is presented as `{}` rather than an int-compatible Java primitive", index_type.spell()).into());
+        }
+        let target = Expr::direct(
+            ExprKind::Index {
+                array: Box::new(array),
+                index: Box::new(index),
+            },
+            update.read,
+        )
+        .presenting(Type::Int);
+        let value = self.render_value(update.rhs, at, 0)?;
+        let Some(value_type) = value.presented.as_ref() else {
+            return Err(
+                "the returned int array update right side has no Java primitive type evidence"
+                    .into(),
+            );
+        };
+        if !primitive_conversion_source_matches(&Type::Int, value_type) {
+            return Err(format!("the returned int array update right side is presented as `{}` rather than an int-compatible Java primitive", value_type.spell()).into());
+        }
+        let origin = [
+            update.duplicate,
+            update.read,
+            update.add,
+            update.returned_duplicate,
+        ]
+        .into_iter()
+        .fold(
+            OriginSet::new(Origin::direct(update.store)),
+            |origin, bci| origin.plus_derived(Origin::derived(bci)),
+        );
+        let expression = Expr::new(
+            ExprKind::ArrayAssign {
+                target: Box::new(target),
+                op: AssignOp::Add,
+                value: Box::new(value),
+            },
+            origin,
+        )
+        .presenting(Type::Int);
+        Ok(self.adapt_return(expression, at)?)
+    }
+
+    fn returned_array_quote(
+        &mut self,
+        update: &ReturnedArrayUpdate,
+    ) -> Result<Vec<u32>, StopReason> {
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(update.dependencies.len().saturating_add(6)).unwrap_or(u64::MAX),
+            Some(update.returns),
+        )?;
+        Ok(update
+            .dependencies
+            .iter()
+            .copied()
+            .chain([
+                update.duplicate,
+                update.read,
+                update.add,
+                update.returned_duplicate,
+                update.store,
+                update.returns,
+            ])
+            .collect())
     }
 
     /// If rendering fails after ownership was proved, one refusal names the entire suppressed
@@ -31410,6 +31807,10 @@ fn stated_by_expression(expr: &Expr, names: &mut Vec<String>, bcis: &mut Vec<u32
         ExprKind::Lambda { body, .. } => stated_by_expression(body, names, bcis),
         ExprKind::MethodReference { qualifier, .. } => {
             stated_by_expression(qualifier, names, bcis);
+        }
+        ExprKind::ArrayAssign { target, value, .. } => {
+            stated_by_expression(target, names, bcis);
+            stated_by_expression(value, names, bcis);
         }
         ExprKind::Field { receiver, .. }
         | ExprKind::ArrayLength { array: receiver }

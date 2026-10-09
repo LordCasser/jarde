@@ -1,0 +1,1012 @@
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -105,6 +105,9 @@
+ 
+       - name: Run the nested int array full-class comparisons
+         run: cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored
++
++      - name: Run the returned int array full-class comparison
++        run: cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class
+ 
+       - name: Run public API example
+         run: |
+--- a/crates/jarde-java/src/asserts.rs
++++ b/crates/jarde-java/src/asserts.rs
+@@ -612,6 +612,10 @@
+             | ExprKind::QualifiedThis { .. }
+             | ExprKind::Super { .. } => {}
+             ExprKind::LocalAssign { value, .. } => push(value),
++            ExprKind::ArrayAssign { target, value, .. } => {
++                push(target);
++                push(value);
++            }
+             ExprKind::InstanceOf { value, .. } => push(value),
+             ExprKind::Call { receiver, args, .. } => {
+                 if let Some(receiver) = receiver {
+--- a/crates/jarde-java/src/ast.rs
++++ b/crates/jarde-java/src/ast.rs
+@@ -180,6 +180,15 @@
+         value: Box<Expr>,
+         ty: Type,
+     },
++    /// A proved value-producing `int` array compound assignment such as `a[i] += rhs`.
++    ///
++    /// This node is built only for an update whose store and `ireturn` share a closed bytecode
++    /// proof; ordinary array writes remain statements.
++    ArrayAssign {
++        target: Box<Expr>,
++        op: AssignOp,
++        value: Box<Expr>,
++    },
+     /// An `int`-shaped literal.
+     Integer(i64),
+     /// A class-source-only name for an exact same-class integer ConstantValue.
+@@ -549,6 +558,7 @@
+ fn presented_of(kind: &ExprKind) -> Option<Type> {
+     match kind {
+         ExprKind::LocalAssign { ty, .. } => Some(ty.clone()),
++        ExprKind::ArrayAssign { target, .. } => target.presented.clone(),
+         ExprKind::Integer(_) | ExprKind::IntegerConstantName { .. } => Some(Type::Int),
+         ExprKind::Long(_) => Some(Type::Long),
+         // The leaf's own bits state its type: a float literal is a float, a double literal a
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -7666,7 +7666,13 @@
+             block_of.insert(instruction.bci(), block.block().clone());
+         }
+     }
+-    let compounds = CompoundAssignments::prove(ssa, operations, inputs.fields, budget)?;
++    let compounds = CompoundAssignments::prove(
++        ssa,
++        operations,
++        inputs.fields,
++        inputs.return_type.as_ref(),
++        budget,
++    )?;
+     let unit_field_updates = UnitFieldUpdates::prove(
+         ssa,
+         operations,
+@@ -8444,6 +8450,10 @@
+                     for origin in expr.origin.derived() {
+                         *copies.entry(origin.bci()).or_default() += 1;
+                     }
++                    pending.push(Node::Expression(value));
++                }
++                ExprKind::ArrayAssign { target, value, .. } => {
++                    pending.push(Node::Expression(target));
+                     pending.push(Node::Expression(value));
+                 }
+                 ExprKind::Call { receiver, args, .. } => {
+@@ -9146,6 +9156,23 @@
+     copies: BTreeSet<u32>,
+     reads: BTreeSet<u32>,
+     inline_values: BTreeSet<u32>,
++    returned: BTreeMap<u32, ReturnedArrayUpdate>,
++    returned_owned: BTreeSet<u32>,
++}
++
++/// One array `+=` whose `dup_x2` stores the result and leaves its only other copy for `ireturn`.
++#[derive(Clone)]
++struct ReturnedArrayUpdate {
++    array: ValueId,
++    index: ValueId,
++    rhs: ValueId,
++    duplicate: u32,
++    read: u32,
++    add: u32,
++    returned_duplicate: u32,
++    store: u32,
++    returns: u32,
++    dependencies: BTreeSet<u32>,
+ }
+ 
+ /// The copies of one body whose consumers are **field instructions**
+@@ -13788,21 +13815,59 @@
+         ssa: &SsaTable,
+         operations: &Operations,
+         fields: &field::Plan,
++        return_type: Option<&Type>,
+         budget: &mut Budget,
+     ) -> Result<Self, StopReason> {
+         let mut plan = Self::default();
+         for block in ssa.blocks() {
+-            for instruction in block.instructions() {
++            let instructions = block.instructions();
++            for (position, instruction) in instructions.iter().enumerate() {
+                 let at = instruction.bci();
+                 poll(budget, Some(at))?;
+                 charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
++                if return_type == Some(&Type::Int)
++                    && instruction.opcode() == 0xac
++                    && matches!(operations.get(at), Some(Operation::Return))
++                    && let Some(start) = position.checked_sub(3)
++                    && let [add, duplicate, store] = &instructions[start..position]
++                    && add.opcode() == 0x60
++                    && duplicate.opcode() == 0x5b
++                    && store.opcode() == 0x4f
++                    && let Some((CompoundUpdate::Array { array, index, rhs, duplicate: source_duplicate, read, add: add_bci }, rhs_dependencies)) =
++                        prove_array_update(ssa, operations, fields, block, store, Some(at), budget)?
++                    && let Some(returned_duplicate) = stack_operands(store)
++                        .first()
++                        .and_then(|(_, value)| definition_in_block(ssa, *value, block.block()))
++                {
++                    let update = ReturnedArrayUpdate {
++                        array,
++                        index,
++                        rhs,
++                        duplicate: source_duplicate,
++                        read,
++                        add: add_bci,
++                        returned_duplicate,
++                        store: store.bci(),
++                        returns: at,
++                        dependencies: rhs_dependencies.clone(),
++                    };
++                    plan.returned_owned.extend(rhs_dependencies);
++                    plan.returned_owned.extend([
++                        source_duplicate,
++                        read,
++                        add_bci,
++                        returned_duplicate,
++                        store.bci(),
++                    ]);
++                    plan.returned.insert(at, update);
++                }
+                 let update = match operations.get(at) {
+                     Some(Operation::Field {
+                         access: FieldAccess::Write,
+                         ..
+                     }) => prove_field_update(ssa, operations, fields, block, instruction, budget)?,
+                     Some(Operation::ArrayStore { .. }) if instruction.opcode() == 0x4f => {
+-                        prove_array_update(ssa, operations, fields, block, instruction, budget)?
++                        prove_array_update(ssa, operations, fields, block, instruction, None, budget)?
+                     }
+                     _ => None,
+                 };
+@@ -14033,6 +14098,7 @@
+     fields: &field::Plan,
+     block: &jarde_jvm::method_ir::SsaBlock,
+     store: &SsaInstruction,
++    return_bci: Option<u32>,
+     budget: &mut Budget,
+ ) -> Result<Option<(CompoundUpdate, BTreeSet<u32>)>, StopReason> {
+     let at = store.bci();
+@@ -14045,10 +14111,32 @@
+         return Ok(None);
+     }
+     let store_operands = stack_operands(store);
+-    let [(_, array_store), (_, index_store), (_, sum)] = store_operands.as_slice() else {
++    let [(Slot::Stack(2), array_store), (Slot::Stack(1), index_store), (Slot::Stack(0), sum)] = store_operands.as_slice() else {
+         return Ok(None);
+     };
+-    let (array_store, index_store, sum) = (*array_store, *index_store, *sum);
++    let (array_store, index_store, stored_sum) = (*array_store, *index_store, *sum);
++    let mut sum = stored_sum;
++    let returned_duplicate_bci = if return_bci.is_some() {
++        let Some(duplicate_bci) = definition_in_block(ssa, array_store, block.block()) else {
++            return Ok(None);
++        };
++        let Some(duplicate) = instruction_in_block(block, duplicate_bci) else {
++            return Ok(None);
++        };
++        let duplicate_inputs = stack_operands(duplicate);
++        let [(Slot::Stack(2), _), (Slot::Stack(1), _), (Slot::Stack(0), sum_input)] = duplicate_inputs.as_slice() else {
++            return Ok(None);
++        };
++        if duplicate.opcode() != 0x5b
++            || !matches!(operations.get(duplicate_bci), Some(Operation::Duplicate))
++        {
++            return Ok(None);
++        }
++        sum = *sum_input;
++        Some(duplicate_bci)
++    } else {
++        None
++    };
+     // The dup2 store-copy is not a type source: aaload leaves its row reference Unknown in the
+     // verifier frame, and the copied ValueId keeps that conservative type. Prove int[] from the
+     // original array value below; array_of_value follows the aaload source and lowers [[I by one
+@@ -14082,17 +14170,14 @@
+         return Ok(None);
+     }
+     let read_operands = stack_operands(read);
+-    let [(_, array_read), (_, index_read)] = read_operands.as_slice() else {
++    let [(Slot::Stack(1), array_read), (Slot::Stack(0), index_read)] = read_operands.as_slice() else {
+         return Ok(None);
+     };
+     let (array_read, index_read) = (*array_read, *index_read);
+     let Some(duplicate_bci) = definition_in_block(ssa, array_read, block.block()) else {
+         return Ok(None);
+     };
+-    if definition_in_block(ssa, index_read, block.block()) != Some(duplicate_bci)
+-        || definition_in_block(ssa, array_store, block.block()) != Some(duplicate_bci)
+-        || definition_in_block(ssa, index_store, block.block()) != Some(duplicate_bci)
+-    {
++    if definition_in_block(ssa, index_read, block.block()) != Some(duplicate_bci) {
+         return Ok(None);
+     }
+     let Some(duplicate) = instruction_in_block(block, duplicate_bci) else {
+@@ -14102,7 +14187,7 @@
+         return Ok(None);
+     }
+     let duplicate_operands = stack_operands(duplicate);
+-    let [(_, array), (_, index)] = duplicate_operands.as_slice() else {
++    let [(Slot::Stack(1), array), (Slot::Stack(0), index)] = duplicate_operands.as_slice() else {
+         return Ok(None);
+     };
+     let (array, index) = (*array, *index);
+@@ -14111,14 +14196,13 @@
+     }
+     let copies = stack_outputs(duplicate);
+     if copies.len() != 4
++        || copies.iter().enumerate().any(|(depth, (actual, _))| *actual != depth as u32)
+         || copies[0].1 == copies[1].1
+         || copies[0].1 == copies[2].1
+         || copies[0].1 == copies[3].1
+         || copies[1].1 == copies[2].1
+         || copies[1].1 == copies[3].1
+         || copies[2].1 == copies[3].1
+-        || array_store != copies[0].1
+-        || index_store != copies[1].1
+         || array_read != copies[2].1
+         || index_read != copies[3].1
+     {
+@@ -14128,18 +14212,85 @@
+         return Ok(None);
+     };
+     if old_read != old
+-        || !single_use_at(ssa, array, block.block(), duplicate_bci)
+-        || !single_use_at(ssa, index, block.block(), duplicate_bci)
+-        || !single_use_at(ssa, copies[0].1, block.block(), at)
+-        || !single_use_at(ssa, copies[1].1, block.block(), at)
+-        || !single_use_at(ssa, copies[2].1, block.block(), read_bci)
+-        || !single_use_at(ssa, copies[3].1, block.block(), read_bci)
+-        || !single_use_at(ssa, old, block.block(), add_bci)
+-        || !single_use_at(ssa, rhs, block.block(), add_bci)
+-        || !single_use_at(ssa, sum, block.block(), at)
++        || !compound_single_use(ssa, array, block.block(), duplicate_bci, return_bci.is_some(), budget)?
++        || !compound_single_use(ssa, index, block.block(), duplicate_bci, return_bci.is_some(), budget)?
++        || !compound_single_use(ssa, copies[2].1, block.block(), read_bci, return_bci.is_some(), budget)?
++        || !compound_single_use(ssa, copies[3].1, block.block(), read_bci, return_bci.is_some(), budget)?
++        || !compound_single_use(ssa, old, block.block(), add_bci, return_bci.is_some(), budget)?
++        || !compound_single_use(ssa, rhs, block.block(), add_bci, return_bci.is_some(), budget)?
+     {
+         return Ok(None);
+     }
++    let returned_duplicate = if let Some(return_bci) = return_bci {
++        let Some(duplicate_bci) = definition_in_block(ssa, array_store, block.block()) else {
++            return Ok(None);
++        };
++        if Some(duplicate_bci) != returned_duplicate_bci
++            || definition_in_block(ssa, index_store, block.block()) != Some(duplicate_bci)
++        {
++            return Ok(None);
++        }
++        let Some(duplicate) = instruction_in_block(block, duplicate_bci) else {
++            return Ok(None);
++        };
++        if duplicate.opcode() != 0x5b {
++            return Ok(None);
++        }
++        let duplicate_inputs = stack_operands(duplicate);
++        let [(Slot::Stack(2), row_copy), (Slot::Stack(1), index_copy), (Slot::Stack(0), sum_input)] = duplicate_inputs.as_slice() else {
++            return Ok(None);
++        };
++        let duplicate_outputs = stack_outputs(duplicate);
++        if duplicate.opcode() != 0x5b
++            || !matches!(operations.get(duplicate_bci), Some(Operation::Duplicate))
++            || duplicate_outputs.len() != 4
++            || duplicate_outputs.iter().enumerate().any(|(depth, (actual, _))| *actual != depth as u32)
++            || duplicate_outputs.iter().enumerate().any(|(i, output)| {
++                duplicate_outputs[i + 1..].iter().any(|other| output.1 == other.1)
++            })
++            || *row_copy != copies[0].1
++            || *index_copy != copies[1].1
++            || *sum_input != sum
++            || array_store != duplicate_outputs[1].1
++            || index_store != duplicate_outputs[2].1
++            || stored_sum != duplicate_outputs[3].1
++        {
++            return Ok(None);
++        }
++        let Some(return_instruction) = instruction_in_block(block, return_bci) else {
++            return Ok(None);
++        };
++        let return_value = duplicate_outputs[0].1;
++        if return_instruction.opcode() != 0xac
++            || !matches!(operations.get(return_bci), Some(Operation::Return))
++            || stack_operands(return_instruction).as_slice() != [(Slot::Stack(0), return_value)]
++            || !compound_single_use(ssa, copies[0].1, block.block(), duplicate_bci, true, budget)?
++            || !compound_single_use(ssa, copies[1].1, block.block(), duplicate_bci, true, budget)?
++            || !compound_single_use(ssa, duplicate_outputs[0].1, block.block(), return_bci, true, budget)?
++            || !compound_single_use(ssa, duplicate_outputs[1].1, block.block(), at, true, budget)?
++            || !compound_single_use(ssa, duplicate_outputs[2].1, block.block(), at, true, budget)?
++            || !compound_single_use(ssa, duplicate_outputs[3].1, block.block(), at, true, budget)?
++            || !compound_single_use(ssa, sum, block.block(), duplicate_bci, true, budget)?
++            || !matches!(ssa.value(array).ty(), jarde_jvm::frame::Value::Ref(_))
++            || ssa.value(index).ty() != &jarde_jvm::frame::Value::Int
++            || ssa.value(sum_input).ty() != &jarde_jvm::frame::Value::Int
++        {
++            return Ok(None);
++        }
++        Some(duplicate_bci)
++    } else {
++        if definition_in_block(ssa, array_store, block.block()) != Some(duplicate_bci)
++            || definition_in_block(ssa, index_store, block.block()) != Some(duplicate_bci)
++            || array_store != copies[0].1
++            || index_store != copies[1].1
++            || !compound_single_use(ssa, copies[0].1, block.block(), at, return_bci.is_some(), budget)?
++            || !compound_single_use(ssa, copies[1].1, block.block(), at, return_bci.is_some(), budget)?
++            || !compound_single_use(ssa, sum, block.block(), at, return_bci.is_some(), budget)?
++        {
++            return Ok(None);
++        }
++        None
++    };
+     let Some(duplicate_pos) = position_in_block(block, duplicate_bci) else {
+         return Ok(None);
+     };
+@@ -14152,7 +14303,20 @@
+     let Some(store_pos) = position_in_block(block, at) else {
+         return Ok(None);
+     };
+-    if read_pos != duplicate_pos + 1 || !(read_pos < add_pos && add_pos + 1 == store_pos) {
++    if read_pos != duplicate_pos + 1 || !(read_pos < add_pos) {
++        return Ok(None);
++    }
++    if let Some(returned_duplicate) = returned_duplicate {
++        let Some(returned_pos) = position_in_block(block, returned_duplicate) else {
++            return Ok(None);
++        };
++        let Some(return_pos) = position_in_block(block, return_bci.expect("returned shape")) else {
++            return Ok(None);
++        };
++        if add_pos + 1 != returned_pos || returned_pos + 1 != store_pos || store_pos + 1 != return_pos {
++            return Ok(None);
++        }
++    } else if add_pos + 1 != store_pos {
+         return Ok(None);
+     }
+     let mut array_dependencies = BTreeSet::new();
+@@ -14218,6 +14382,11 @@
+     {
+         return Ok(None);
+     }
++    let mut dependencies = rhs_dependencies;
++    if return_bci.is_some() {
++        dependencies.extend(array_dependencies);
++        dependencies.extend(index_dependencies);
++    }
+     Ok(Some((
+         CompoundUpdate::Array {
+             array,
+@@ -14227,7 +14396,7 @@
+             read: read_bci,
+             add: add_bci,
+         },
+-        rhs_dependencies,
++        dependencies,
+     )))
+ }
+ 
+@@ -14571,6 +14740,22 @@
+     match stack_outputs(instruction).as_slice() {
+         [output] => Some(*output),
+         _ => None,
++    }
++}
++
++
++fn compound_single_use(
++    ssa: &SsaTable,
++    value: ValueId,
++    block: &CanonicalBlockId,
++    consumer: u32,
++    meter: bool,
++    budget: &mut Budget,
++) -> Result<bool, StopReason> {
++    if meter {
++        single_use_at_with_budget(ssa, value, block, consumer, budget)
++    } else {
++        Ok(single_use_at(ssa, value, block, consumer))
+     }
+ }
+ 
+@@ -22339,6 +22524,9 @@
+     fn instruction(&mut self, instruction: &SsaInstruction) -> Result<(), StopReason> {
+         poll(self.budget, Some(instruction.bci()))?;
+         let at = instruction.bci();
++        if self.compounds.returned_owned.contains(&at) {
++            return Ok(());
++        }
+         if self
+             .shared_finally
+             .as_ref()
+@@ -22680,6 +22868,16 @@
+                         OriginSet::new(Origin::direct(at)),
+                     ));
+                 }
++                if let Some(update) = self.compounds.returned.get(&at).cloned() {
++                    let value = match self.returned_array_expression(&update, at) {
++                        Ok(value) => value,
++                        Err(reason) => return self.fallback(self.returned_array_quote(&update), &reason, at),
++                    };
++                    return self.push(Stmt::new(
++                        StmtKind::Return { value: Some(value) },
++                        OriginSet::new(Origin::direct(at)),
++                    ));
++                }
+                 if let Some(bcis) = self.postfix.refusal_at(at) {
+                     let bcis = bcis.to_vec();
+                     return self.fallback(
+@@ -23665,6 +23863,71 @@
+         )
+         .presenting(Type::Int);
+         Ok(self.adapt_return(expression, at)?)
++    }
++
++    fn returned_array_expression(
++        &mut self,
++        update: &ReturnedArrayUpdate,
++        at: u32,
++    ) -> Result<Expr, ValueRenderFailure> {
++        let array = self
++            .render_value(update.array, at, 0)?
++            .derived_from(update.duplicate);
++        let index = self
++            .render_value(update.index, at, 0)?
++            .derived_from(update.duplicate);
++        let Some(index_type) = index.presented.as_ref() else {
++            return Err("the returned int array update index has no Java primitive type evidence".into());
++        };
++        if !primitive_conversion_source_matches(&Type::Int, index_type) {
++            return Err(format!("the returned int array update index is presented as `{}` rather than an int-compatible Java primitive", index_type.spell()).into());
++        }
++        let target = Expr::direct(
++            ExprKind::Index {
++                array: Box::new(array),
++                index: Box::new(index),
++            },
++            update.read,
++        )
++        .presenting(Type::Int);
++        let value = self.render_value(update.rhs, at, 0)?;
++        let Some(value_type) = value.presented.as_ref() else {
++            return Err("the returned int array update right side has no Java primitive type evidence".into());
++        };
++        if !primitive_conversion_source_matches(&Type::Int, value_type) {
++            return Err(format!("the returned int array update right side is presented as `{}` rather than an int-compatible Java primitive", value_type.spell()).into());
++        }
++        let origin = [update.duplicate, update.read, update.add, update.returned_duplicate]
++            .into_iter()
++            .fold(OriginSet::new(Origin::direct(update.store)), |origin, bci| {
++                origin.plus_derived(Origin::derived(bci))
++            });
++        let expression = Expr::new(
++            ExprKind::ArrayAssign {
++                target: Box::new(target),
++                op: AssignOp::Add,
++                value: Box::new(value),
++            },
++            origin,
++        )
++        .presenting(Type::Int);
++        Ok(self.adapt_return(expression, at)?)
++    }
++
++    fn returned_array_quote(&self, update: &ReturnedArrayUpdate) -> Vec<u32> {
++        update
++            .dependencies
++            .iter()
++            .copied()
++            .chain([
++                update.duplicate,
++                update.read,
++                update.add,
++                update.returned_duplicate,
++                update.store,
++                update.returns,
++            ])
++            .collect()
+     }
+ 
+     /// If rendering fails after ownership was proved, one refusal names the entire suppressed
+@@ -31411,6 +31674,10 @@
+         ExprKind::MethodReference { qualifier, .. } => {
+             stated_by_expression(qualifier, names, bcis);
+         }
++        ExprKind::ArrayAssign { target, value, .. } => {
++            stated_by_expression(target, names, bcis);
++            stated_by_expression(value, names, bcis);
++        }
+         ExprKind::Field { receiver, .. }
+         | ExprKind::ArrayLength { array: receiver }
+         | ExprKind::PostfixUpdate {
+--- a/crates/jarde-java/src/emit.rs
++++ b/crates/jarde-java/src/emit.rs
+@@ -1169,6 +1169,13 @@
+                 emitter.put(" = ", at)?;
+                 emitter.expr(value)
+             }
++            ExprKind::ArrayAssign { target, op, value } => {
++                emitter.operand(target, PRIMARY)?;
++                emitter.put(" ", at)?;
++                emitter.put(op.spell(), at)?;
++                emitter.put(" ", at)?;
++                emitter.expr(value)
++            }
+             ExprKind::Integer(value) => emitter.put(&value.to_string(), at),
+             ExprKind::IntegerConstantName { name, .. } => emitter.put(name, at),
+             ExprKind::Boolean(value) => emitter.put(if *value { "true" } else { "false" }, at),
+@@ -1719,7 +1726,7 @@
+ /// below the conditional operator and is printed as the sole right-hand assignment expression.
+ fn expression_binding(kind: &ExprKind) -> u8 {
+     match kind {
+-        ExprKind::Lambda { .. } | ExprKind::LocalAssign { .. } => 0,
++        ExprKind::Lambda { .. } | ExprKind::LocalAssign { .. } | ExprKind::ArrayAssign { .. } => 0,
+         ExprKind::PostfixUpdate { .. } => POSTFIX,
+         ExprKind::Conditional { .. } => CONDITIONAL,
+         ExprKind::Binary { op, .. } => binary_binding(*op),
+--- a/crates/jarde-java/src/field.rs
++++ b/crates/jarde-java/src/field.rs
+@@ -430,6 +430,10 @@
+                         record(at, FieldAccess::Write, name);
+                     }
+                     pending.push(Node::Expr(target));
++                }
++                ExprKind::ArrayAssign { target, value, .. } => {
++                    pending.push(Node::Expr(target));
++                    pending.push(Node::Expr(value));
+                 }
+                 ExprKind::Call { receiver, args, .. } => {
+                     if let Some(receiver) = receiver {
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -583,6 +583,7 @@
+             | ExprKind::Cast { value, .. }
+             | ExprKind::Not { value }
+             | ExprKind::Neg { value } => pending.push(Node::Expr(value)),
++            ExprKind::ArrayAssign { target, value, .. } => { pending.push(Node::Expr(target)); pending.push(Node::Expr(value)); }
+             ExprKind::Call { receiver, args, .. } => {
+                 pending.extend(args.iter().map(Node::Expr));
+                 pending.extend(receiver.iter().map(|value| Node::Expr(value)));
+@@ -1820,6 +1821,7 @@
+         use ExprKind as E;
+         match &expression.kind {
+             E::LocalAssign { value, .. } => expressions.push(value),
++            E::ArrayAssign { target, value, .. } => { expressions.push(target); expressions.push(value); }
+             E::Call { receiver, args, .. } => {
+                 expressions.extend(receiver.iter().map(|receiver| &**receiver));
+                 expressions.extend(args);
+@@ -2380,6 +2382,11 @@
+                 producer,
+                 result,
+             ),
++            ExprKind::ArrayAssign { target, value, .. } => {
++                let consumer = Consumer::Other(expression.origin.primary().bci());
++                visit_expression(source, target, consumer.clone(), producer, result);
++                visit_expression(source, value, consumer, producer, result);
++            }
+             ExprKind::Cast { value, .. } => {
+                 let transparent_consumer = match &consumer {
+                     Consumer::CallArgument(Some(key), argument_index) => {
+@@ -4370,6 +4377,7 @@
+                 findings.declares.push(name.clone());
+                 expressions.push(value);
+             }
++            E::ArrayAssign { target, value, .. } => { expressions.push(target); expressions.push(value); }
+             E::Call { receiver, args, .. } => {
+                 expressions.extend(receiver.iter().map(|receiver| &**receiver));
+                 expressions.extend(args);
+@@ -4758,6 +4766,10 @@
+         | ExprKind::Not { value }
+         | ExprKind::Neg { value } => {
+             project_captured_expr(value, expected, anchor, matched, budget)?
++        }
++        ExprKind::ArrayAssign { target, value, .. } => {
++            project_captured_expr(target, expected, anchor, matched, budget)?;
++            project_captured_expr(value, expected, anchor, matched, budget)?;
+         }
+         ExprKind::Call { receiver, args, .. } => {
+             receiver
+@@ -5989,6 +6001,7 @@
+         // Writes, control flow and a nested lambda's own sites are the shapes the rename branch
+         // keeps physical; `super` names a member the lambda's scope cannot reach.
+         ExprKind::LocalAssign { .. }
++        | ExprKind::ArrayAssign { .. }
+         | ExprKind::PostfixUpdate { .. }
+         | ExprKind::Conditional { .. }
+         | ExprKind::Lambda { .. }
+@@ -6315,6 +6328,7 @@
+             names.insert(name.clone());
+             collect_free_locals(value, names);
+         }
++        ExprKind::ArrayAssign { target, value, .. } => { collect_free_locals(target, names); collect_free_locals(value, names); }
+         ExprKind::InstanceOf { value, .. } => collect_free_locals(value, names),
+         ExprKind::Call { receiver, args, .. } => {
+             if let Some(receiver) = receiver {
+@@ -6432,6 +6446,7 @@
+         ExprKind::LocalAssign { value, .. } => {
+             count_parameter_reads(value, bindings, counts);
+         }
++        ExprKind::ArrayAssign { target, value, .. } => { count_parameter_reads(target, bindings, counts); count_parameter_reads(value, bindings, counts); }
+         ExprKind::InstanceOf { value, .. } => count_parameter_reads(value, bindings, counts),
+         ExprKind::Call { receiver, args, .. } => {
+             if let Some(receiver) = receiver {
+@@ -6839,6 +6854,7 @@
+         | ExprKind::QualifiedThis { .. }
+         | ExprKind::Super { .. } => {}
+         ExprKind::LocalAssign { value, .. } => for_each_expression(value, visit),
++        ExprKind::ArrayAssign { target, value, .. } => { for_each_expression(target, visit); for_each_expression(value, visit); }
+         ExprKind::InstanceOf { value, .. } => for_each_expression(value, visit),
+         ExprKind::Call { receiver, args, .. } => {
+             if let Some(receiver) = receiver {
+@@ -7036,6 +7052,7 @@
+         | ExprKind::QualifiedThis { .. }
+         | ExprKind::Super { .. } => {}
+         ExprKind::LocalAssign { value, .. } => for_each_expression_mut(value, visit),
++        ExprKind::ArrayAssign { target, value, .. } => { for_each_expression_mut(target, visit); for_each_expression_mut(value, visit); }
+         ExprKind::InstanceOf { value, .. } => for_each_expression_mut(value, visit),
+         ExprKind::Call { receiver, args, .. } => {
+             if let Some(receiver) = receiver {
+@@ -8670,6 +8687,7 @@
+         | ExprKind::Cast { value, .. }
+         | ExprKind::Not { value }
+         | ExprKind::Neg { value } => collect_expression_anchors(value, anchors),
++        ExprKind::ArrayAssign { target, value, .. } => { collect_expression_anchors(target, anchors); collect_expression_anchors(value, anchors); }
+         ExprKind::Call { receiver, args, .. } => {
+             if let Some(receiver) = receiver {
+                 collect_expression_anchors(receiver, anchors);
+@@ -11175,6 +11193,9 @@
+         count = count.saturating_add(1);
+         use ExprKind as K;
+         match &expression.kind {
++            K::ArrayAssign { target, value, .. } => {
++                expressions.extend([target.as_ref(), value.as_ref()]);
++            }
+             K::LocalAssign { value, .. }
+             | K::InstanceOf { value, .. }
+             | K::PostfixUpdate { target: value, .. }
+@@ -11657,6 +11678,11 @@
+         } => {
+             visit_class_initializer_field_reads(qualifier, fields, budget, reads, complete)?;
+         }
++        ExprKind::ArrayAssign { target, value, .. } => {
++            *complete = false;
++            visit_class_initializer_field_reads(target, fields, budget, reads, complete)?;
++            visit_class_initializer_field_reads(value, fields, budget, reads, complete)?;
++        }
+         ExprKind::Index { array, index } => {
+             visit_class_initializer_field_reads(array, fields, budget, reads, complete)?;
+             visit_class_initializer_field_reads(index, fields, budget, reads, complete)?;
+@@ -11784,6 +11810,10 @@
+             target: qualifier, ..
+         } => {
+             charge_expression_tree_at_depth(qualifier, budget, depth + 1)?;
++        }
++        ExprKind::ArrayAssign { target, value, .. } => {
++            charge_expression_tree_at_depth(target, budget, depth + 1)?;
++            charge_expression_tree_at_depth(value, budget, depth + 1)?;
+         }
+         ExprKind::Field { receiver, .. } => {
+             charge_expression_tree_at_depth(receiver, budget, depth + 1)?;
+--- a/tests/p3_nested_int_array_compound_updates.rs
++++ b/tests/p3_nested_int_array_compound_updates.rs
+@@ -11,6 +11,68 @@
+ const RUNNER: &str = include_str!("fixtures/nested-int-array-compound-updates/Runner.java");
+ const EXPECTED_STDOUT: &[u8] = b"ok:plain2:35\nok:plain3:14\nok:scalar:14\nok:traced:123:15\nok:outer-null:1\nok:outer-oob:1\nok:null-row:12\nok:inner-oob:12\nok:replace-row:17:100:7\nok:different:11\n";
+ const EXPECTED_STDERR: &[u8] = b"";
++const RETURNED_RUNNER: &str = include_str!("fixtures/returned-int-array-compound-updates/Runner.java");
++const RETURNED_EXPECTED_STDOUT: &[u8] = b"ok:plain2:35\nok:plain3:14\nok:scalar:14\nok:traced:123:15\nok:outer-null:1\nok:outer-oob:1\nok:null-row:12\nok:inner-oob:12\nok:replace-row:17:100:17\nok:different:11\n";
++const RETURNED_LEGS: &[(&str, &[u8])] = &[
++    (
++        "v8",
++        include_bytes!("fixtures/returned-int-array-compound-updates/v8/ReturnedIntArrayUpdates.class"),
++    ),
++    (
++        "v23",
++        include_bytes!("fixtures/returned-int-array-compound-updates/v23/ReturnedIntArrayUpdates.class"),
++    ),
++];
++const TYPED_CONTROL_LEGS: &[(&str, &str, &[u8], bool)] = &[
++    (
++        "v8/boolean-index",
++        "boolean-index",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v8/boolean-index.class"),
++        false,
++    ),
++    (
++        "v8/boolean-rhs",
++        "boolean-rhs",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v8/boolean-rhs.class"),
++        false,
++    ),
++    (
++        "v8/char-index",
++        "char-index",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v8/char-index.class"),
++        true,
++    ),
++    (
++        "v8/char-rhs",
++        "char-rhs",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v8/char-rhs.class"),
++        true,
++    ),
++    (
++        "v23/boolean-index",
++        "boolean-index",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v23/boolean-index.class"),
++        false,
++    ),
++    (
++        "v23/boolean-rhs",
++        "boolean-rhs",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v23/boolean-rhs.class"),
++        false,
++    ),
++    (
++        "v23/char-index",
++        "char-index",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v23/char-index.class"),
++        true,
++    ),
++    (
++        "v23/char-rhs",
++        "char-rhs",
++        include_bytes!("fixtures/returned-int-array-compound-updates/controls/v23/char-rhs.class"),
++        true,
++    ),
++];
+ const LEGS: &[(&str, &[u8])] = &[
+     (
+         "v8",
+@@ -204,7 +266,7 @@
+         .unwrap_or_else(|| PathBuf::from("java"))
+ }
+ 
+-fn compile_sources(dir: &Path) -> Output {
++fn compile_sources(dir: &Path, source_name: &str) -> Output {
+     let empty = dir.join("empty-classpath-sourcepath");
+     let classes = dir.join("classes");
+     fs::create_dir_all(&empty).expect("empty classpath/sourcepath exists");
+@@ -228,7 +290,7 @@
+         .arg(&empty)
+         .arg("-d")
+         .arg(&classes)
+-        .arg(dir.join("NestedIntUpdates.java"))
++        .arg(dir.join(source_name))
+         .arg(dir.join("Runner.java"))
+         .current_dir(dir)
+         .output()
+@@ -294,11 +356,19 @@
+                     physical.outcome
+                 )
+             };
+-            assert!(
+-                !physical.text.contains(" += "),
+-                "{leg}/{name}: the dup_x2 return / row-Phi boundary is not this proven compound update:\n{}",
+-                physical.text
+-            );
++            if name == "returned" {
++                assert!(
++                    physical.text.contains("return ") && physical.text.contains(" += "),
++                    "{leg}/returned is the proved int array update returned as its new value:\n{}",
++                    physical.text
++                );
++            } else {
++                assert!(
++                    !physical.text.contains(" += "),
++                    "{leg}/merged remains outside the returned update proof:\n{}",
++                    physical.text
++                );
++            }
+             for bci in bcis {
+                 assert!(
+                     !recovery
+@@ -341,6 +411,163 @@
+             !recovery.source_map.direct_of_bci(22).is_empty(),
+             "{leg}/merged: the final update consumer stays directly anchored: {:?}",
+             recovery.source_map.segments()
++        );
++    }
++}
++
++#[test]
++fn returned_int_array_updates_are_structured_and_keep_store_return_origins() {
++    for (leg, class_bytes) in RETURNED_LEGS {
++        let report = class_source_named(class_bytes, "ReturnedIntArrayUpdates");
++        assert_eq!(report.methods.len(), 11, "{leg}: retain all physical members");
++        assert!(!report.text.contains("@bytecode"), "{leg}: {}", report.text);
++        for name in [
++            "<init>", "plain2", "plain3", "scalar", "traced", "row", "index", "rhs",
++            "swap", "replaceRow", "different",
++        ] {
++            let method = body(&report, name);
++            assert_eq!(method.quality, Quality::Structured, "{leg}/{name}");
++            assert_eq!(method.representation, Representation::Java, "{leg}/{name}");
++            assert!(!method.text.contains("@bytecode"), "{leg}/{name}: {}", method.text);
++        }
++        for name in ["plain2", "plain3", "scalar", "traced", "replaceRow"] {
++            let method = body(&report, name);
++            assert!(
++                method.text.contains("return ") && method.text.contains(" += "),
++                "{leg}/{name} writes and returns the same compound expression:\n{}",
++                method.text
++            );
++        }
++        let traced = body(&report, "traced");
++        for (call, expected_count) in [("row(", 1), ("index(", 1), ("rhs(", 1)] {
++            assert_eq!(traced.text.matches(call).count(), expected_count, "{leg}/traced");
++        }
++        let replace_row = body(&report, "replaceRow");
++        assert_eq!(replace_row.text.matches("swap(").count(), 1, "{leg}/replaceRow");
++        let different = body(&report, "different");
++        assert!(!different.text.contains(" += "), "{leg}/different: {}", different.text);
++
++        for (name, store, returns, derived) in [
++            ("plain2", 9, 10, &[4u32, 5, 7, 8][..]),
++            ("plain3", 12, 13, &[6u32, 7, 10, 11][..]),
++            ("scalar", 7, 8, &[2u32, 3, 5, 6][..]),
++            ("traced", 18, 19, &[10u32, 11, 16, 17][..]),
++            ("replaceRow", 12, 13, &[4u32, 5, 10, 11][..]),
++        ] {
++            let method = body(&report, name);
++            for bci in [store, returns] {
++                assert!(
++                    !method.source_map.direct_of_bci(bci).is_empty(),
++                    "{leg}/{name}: store/return BCI {bci} is directly anchored: {:?}",
++                    method.source_map.segments()
++                );
++            }
++            for bci in derived {
++                assert!(
++                    !method.source_map.derived_of_bci(*bci).is_empty(),
++                    "{leg}/{name}: copy/read/add BCI {bci} is retained: {:?}",
++                    method.source_map.segments()
++                );
++            }
++        }
++    }
++}
++
++#[test]
++fn returned_int_array_updates_use_java_types_beyond_category_one_frames() {
++    for (leg, variant, class_bytes, accepted) in TYPED_CONTROL_LEGS {
++        let report = class_source_named(class_bytes, "ReturnedIntArrayUpdates");
++        let scalar = body(&report, "scalar");
++        if *accepted {
++            assert!(
++                scalar.text.contains("return ") && scalar.text.contains(" += "),
++                "{leg}/{variant}: char is int-compatible in this Java position:\n{}",
++                scalar.text
++            );
++        } else {
++            assert!(
++                !scalar.text.contains(" += "),
++                "{leg}/{variant}: boolean cannot be an array index or compound RHS:\n{}",
++                scalar.text
++            );
++            assert!(
++                scalar.text.contains("@bytecode"),
++                "{leg}/{variant}: the unsupported typed expression stays quoted:\n{}",
++                scalar.text
++            );
++        }
++    }
++}
++
++#[test]
++fn returned_int_array_updates_public_budget_and_cancellation_do_not_publish_partial_claims() {
++    for (leg, class_bytes) in RETURNED_LEGS {
++        let (snapshot, request) = opened_class_source(class_bytes, "ReturnedIntArrayUpdates");
++        let complete = class_source_named(class_bytes, "ReturnedIntArrayUpdates");
++        let mut limits = complete.limits.clone();
++        limits.analysis_steps = complete
++            .usage
++            .analysis_steps
++            .checked_sub(1)
++            .expect("the complete returned-array request used analysis steps");
++        let mut budget = Budget::new(limits);
++        let bounded = Engine::new()
++            .class_source_with_evidence(
++                slice::from_ref(&snapshot),
++                &request,
++                &RecoveryEvidenceRequest::all(),
++                &mut budget,
++            )
++            .expect("the public budget-stopped request answers");
++        match bounded {
++            OperationOutcome::Incomplete(candidates) => assert!(matches!(
++                candidates.execution,
++                ExecutionReport::Partial {
++                    reason: TerminationReason::BudgetExceeded {
++                        dimension: BudgetDimension::AnalysisSteps
++                    },
++                    ..
++                }
++            )),
++            OperationOutcome::Performed(report) => {
++                assert!(matches!(
++                    report.execution,
++                    ExecutionReport::Partial {
++                        reason: TerminationReason::BudgetExceeded {
++                            dimension: BudgetDimension::AnalysisSteps
++                        },
++                        ..
++                    }
++                ));
++                for method in &report.methods {
++                    if let ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome
++                        && !matches!(body.execution, ExecutionReport::Complete { .. })
++                    {
++                        assert!(
++                            !(body.text.contains("return ") && body.text.contains(" += ")),
++                            "{leg}: a stopped returned proof cannot publish a partial update:\n{}",
++                            body.text
++                        );
++                    }
++                }
++            }
++            other => panic!("{leg}: unexpected budget-stopped result: {other:?}"),
++        }
++
++        let mut cancelled = task_budget(&[]).expect("task defaults are bounded");
++        cancelled.cancellation_token().cancel();
++        let answer = Engine::new()
++            .class_source_with_evidence(
++                slice::from_ref(&snapshot),
++                &request,
++                &RecoveryEvidenceRequest::all(),
++                &mut cancelled,
++            )
++            .expect("the pre-cancelled public request answers");
++        assert!(
++            matches!(answer, OperationOutcome::Incomplete(candidates)
++                if matches!(candidates.execution, ExecutionReport::Cancelled { .. })),
++            "{leg}: cancellation returns no class-source artifact"
+         );
+     }
+ }
+@@ -437,7 +664,7 @@
+             .expect("complete generated source is written");
+         fs::write(scratch.path().join("Runner.java"), RUNNER)
+             .expect("fixed external Runner source is written");
+-        let compile = compile_sources(scratch.path());
++        let compile = compile_sources(scratch.path(), "NestedIntUpdates.java");
+         assert!(
+             compile.status.success(),
+             "{leg} complete generated sources did not compile:\n{}\n{}",
+@@ -461,3 +688,32 @@
+         );
+     }
+ }
++
++#[test]
++#[ignore = "requires a real JDK to compile the complete generated class with the fixed Runner and verify behavior"]
++fn returned_int_array_updates_compile_and_execute_as_a_complete_class() {
++    for (leg, class_bytes) in RETURNED_LEGS {
++        let report = class_source_named(class_bytes, "ReturnedIntArrayUpdates");
++        let scratch = Scratch::new(&format!("returned-{leg}"));
++        fs::write(scratch.path().join("ReturnedIntArrayUpdates.java"), &report.text)
++            .expect("complete returned-array source is written");
++        fs::write(scratch.path().join("Runner.java"), RETURNED_RUNNER)
++            .expect("fixed complete-class runner is written");
++        let compile = compile_sources(scratch.path(), "ReturnedIntArrayUpdates.java");
++        assert!(
++            compile.status.success(),
++            "{leg} complete generated class did not compile:\n{}\n{}",
++            String::from_utf8_lossy(&compile.stdout),
++            String::from_utf8_lossy(&compile.stderr)
++        );
++        let run = run_verified(&scratch.path().join("classes"));
++        assert!(
++            run.status.success(),
++            "{leg} verified complete-class execution failed:\n{}\n{}",
++            String::from_utf8_lossy(&run.stdout),
++            String::from_utf8_lossy(&run.stderr)
++        );
++        assert_eq!(run.stdout, RETURNED_EXPECTED_STDOUT, "{leg} stdout differs from oracle");
++        assert_eq!(run.stderr, EXPECTED_STDERR, "{leg} stderr differs from oracle");
++    }
++}

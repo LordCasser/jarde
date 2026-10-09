@@ -1169,6 +1169,13 @@ impl<'a> Emitter<'a> {
                 emitter.put(" = ", at)?;
                 emitter.expr(value)
             }
+            ExprKind::ArrayAssign { target, op, value } => {
+                emitter.operand(target, PRIMARY)?;
+                emitter.put(" ", at)?;
+                emitter.put(op.spell(), at)?;
+                emitter.put(" ", at)?;
+                emitter.expr(value)
+            }
             ExprKind::Integer(value) => emitter.put(&value.to_string(), at),
             ExprKind::IntegerConstantName { name, .. } => emitter.put(name, at),
             ExprKind::Boolean(value) => emitter.put(if *value { "true" } else { "false" }, at),
@@ -1719,7 +1726,7 @@ const CONDITIONAL: u8 = 1;
 /// below the conditional operator and is printed as the sole right-hand assignment expression.
 fn expression_binding(kind: &ExprKind) -> u8 {
     match kind {
-        ExprKind::Lambda { .. } | ExprKind::LocalAssign { .. } => 0,
+        ExprKind::Lambda { .. } | ExprKind::LocalAssign { .. } | ExprKind::ArrayAssign { .. } => 0,
         ExprKind::PostfixUpdate { .. } => POSTFIX,
         ExprKind::Conditional { .. } => CONDITIONAL,
         ExprKind::Binary { op, .. } => binary_binding(*op),

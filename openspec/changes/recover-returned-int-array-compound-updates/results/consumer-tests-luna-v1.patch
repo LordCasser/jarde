@@ -1,0 +1,87 @@
+--- a/tests/p3_nested_int_array_compound_updates.rs
++++ b/tests/p3_nested_int_array_compound_updates.rs
+@@ -86,6 +86,44 @@
+         "char-rhs",
+         include_bytes!("fixtures/returned-int-array-compound-updates/controls/v23/char-rhs.class"),
+         true,
++    ),
++];
++const CONSUMER_CONTROL_LEGS: &[(&str, &str, &[u8], &[u32])] = &[
++    (
++        "v8",
++        "sum-extra-consumer",
++        include_bytes!("fixtures/returned-int-array-compound-updates/consumer-controls/v8/sum-extra-consumer.class"),
++        &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
++    ),
++    (
++        "v8",
++        "returned-copy-extra-consumer",
++        include_bytes!("fixtures/returned-int-array-compound-updates/consumer-controls/v8/returned-copy-extra-consumer.class"),
++        &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
++    ),
++    (
++        "v8",
++        "long-return",
++        include_bytes!("fixtures/returned-int-array-compound-updates/consumer-controls/v8/long-return.class"),
++        &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
++    ),
++    (
++        "v23",
++        "sum-extra-consumer",
++        include_bytes!("fixtures/returned-int-array-compound-updates/consumer-controls/v23/sum-extra-consumer.class"),
++        &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
++    ),
++    (
++        "v23",
++        "returned-copy-extra-consumer",
++        include_bytes!("fixtures/returned-int-array-compound-updates/consumer-controls/v23/returned-copy-extra-consumer.class"),
++        &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
++    ),
++    (
++        "v23",
++        "long-return",
++        include_bytes!("fixtures/returned-int-array-compound-updates/consumer-controls/v23/long-return.class"),
++        &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+     ),
+ ];
+ const LEGS: &[(&str, &[u8])] = &[
+@@ -538,6 +576,39 @@
+                 scalar.text.contains("@bytecode"),
+                 "{leg}/{variant}: the unsupported typed expression stays quoted:\n{}",
+                 scalar.text
++            );
++        }
++    }
++}
++
++#[test]
++fn returned_int_array_updates_reject_extra_consumers_and_non_int_returns() {
++    for (leg, variant, class_bytes, bcis) in CONSUMER_CONTROL_LEGS {
++        let report = class_source_named(class_bytes, "ReturnedIntArrayUpdates");
++        let scalar = body(&report, "scalar");
++        if *variant == "long-return" {
++            let method = report
++                .methods
++                .iter()
++                .find(|method| method.item.name.raw().0 == b"scalar")
++                .expect("long-return control retains its scalar method");
++            assert_eq!(method.item.descriptor.raw().0, b"([III)J");
++        }
++        assert!(
++            !scalar.text.lines().any(|line| line.contains("return ") && line.contains(" += ")),
++            "{leg}/{variant}: unsupported consumer/return shape cannot publish returned +=:\n{}",
++            scalar.text
++        );
++        assert!(
++            scalar.text.contains("@bytecode"),
++            "{leg}/{variant}: unsupported scalar shape stays explicitly quoted:\n{}",
++            scalar.text
++        );
++        for bci in *bcis {
++            assert!(
++                !scalar.source_map.of_bci(*bci).is_empty(),
++                "{leg}/{variant}: scalar bytecode BCI {bci} remains represented: {:?}",
++                scalar.source_map.segments()
+             );
+         }
+     }

@@ -1,0 +1,25 @@
+{
+  "reason": "Luna changed four unapproved historical scripts while adapting copies. Root preserved diff and restored exact HEAD; only four new current-change scripts may advance. Product sources unaffected.",
+  "rows": [
+    {
+      "path": "openspec/changes/recover-bigdecimal-number-widening/results/replay-candidate-root-v1.py",
+      "agent_changed_sha256": "8626fe4f66ced1e2a1ce36492932531265eb46af98b749ed48eec5649a32d3f3",
+      "restored_HEAD_sha256": "010436a5d412946e25dbde6c4287f632ca1d7a3c972ea0b6d5ba4e3dcb558e99"
+    },
+    {
+      "path": "openspec/changes/recover-bigdecimal-number-widening/results/verify-candidate-root-v1.py",
+      "agent_changed_sha256": "eb27c148ccfec719246d21ef05c657ce00c1b71d8db997c4b1c1e894a6c37ae3",
+      "restored_HEAD_sha256": "ca786aeeb9d70a4364c31c7412d61e11fc890b4f42dcabe128520443b5f50011"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/replay-candidate-v2.py",
+      "agent_changed_sha256": "72b84baf6c70093630a9052a10e178c13f8f535fd2ffdcf453735b0b32901edc",
+      "restored_HEAD_sha256": "dbeef1830786abe9b3e6d48f4ef39b48684aab525bb32a5e0d7cf645abdfeae9"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/verify-candidate-v6.py",
+      "agent_changed_sha256": "10d6c643ce13783fea0d3296b7436df5742b6988c376b743922e31d1ee37c7a6",
+      "restored_HEAD_sha256": "3a75104ecddc730de3b3afe42fb009005e356b8f29fbfb75f5ff26fecbf6795d"
+    }
+  ]
+}

@@ -32,6 +32,10 @@ JADX实测输出保存行引用、下标和sum为局部变量，再写回和retu
 
 把已运行的ReturnedIntArrayUpdates完整source、两编译器class和固定Runner/oracle移为canonical fixture，不能重写被测方法再称是同一输入。加ordinary结构/来源和ignored全类重编运行；明确升级旧NestedIntBoundaries.returned，merged仍是独立未证明row-Phi。补真实额外消费/错误复制/非int控制，复用已有对抗IR控制，不扩支持域来凑通过。
 
+### 基于实测的局部构建磁盘约束
+
+全仓双seed/全workspace门禁仍使用20GiB空闲停止线。定向nested/returned测试与CLI同类冷构建已实测占用约309MiB；局部命令允许在本仓target累计不超过1GiB、机器剩余不少于2GiB的双重守卫下执行。每2秒检查，只终止自己的进程组，不清其它项目，也不将其用于全workspace。明确记录每次实际阈值、target峰值和停止状态；不修改任何正确性测试或验收标准。
+
 ## Risks / Trade-offs
 
 - 新Expr遗漏递归/命名/类型匹配会造成错误来源或不完整Java；先读全部相关walker，编译器穷尽检查和完整类对照一起验收。

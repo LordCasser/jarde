@@ -583,6 +583,10 @@ fn same_class_field_receiver_sites(
             | ExprKind::Cast { value, .. }
             | ExprKind::Not { value }
             | ExprKind::Neg { value } => pending.push(Node::Expr(value)),
+            ExprKind::ArrayAssign { target, value, .. } => {
+                pending.push(Node::Expr(target));
+                pending.push(Node::Expr(value));
+            }
             ExprKind::Call { receiver, args, .. } => {
                 pending.extend(args.iter().map(Node::Expr));
                 pending.extend(receiver.iter().map(|value| Node::Expr(value)));
@@ -1820,6 +1824,10 @@ fn allocation_expression<'a>(
         use ExprKind as E;
         match &expression.kind {
             E::LocalAssign { value, .. } => expressions.push(value),
+            E::ArrayAssign { target, value, .. } => {
+                expressions.push(target);
+                expressions.push(value);
+            }
             E::Call { receiver, args, .. } => {
                 expressions.extend(receiver.iter().map(|receiver| &**receiver));
                 expressions.extend(args);
@@ -2380,6 +2388,11 @@ pub fn class_source_invoke_result_uses(
                 producer,
                 result,
             ),
+            ExprKind::ArrayAssign { target, value, .. } => {
+                let consumer = Consumer::Other(expression.origin.primary().bci());
+                visit_expression(source, target, consumer.clone(), producer, result);
+                visit_expression(source, value, consumer, producer, result);
+            }
             ExprKind::Cast { value, .. } => {
                 let transparent_consumer = match &consumer {
                     Consumer::CallArgument(Some(key), argument_index) => {
@@ -4370,6 +4383,10 @@ fn instance_block_findings(
                 findings.declares.push(name.clone());
                 expressions.push(value);
             }
+            E::ArrayAssign { target, value, .. } => {
+                expressions.push(target);
+                expressions.push(value);
+            }
             E::Call { receiver, args, .. } => {
                 expressions.extend(receiver.iter().map(|receiver| &**receiver));
                 expressions.extend(args);
@@ -4758,6 +4775,10 @@ fn project_captured_expr(
         | ExprKind::Not { value }
         | ExprKind::Neg { value } => {
             project_captured_expr(value, expected, anchor, matched, budget)?
+        }
+        ExprKind::ArrayAssign { target, value, .. } => {
+            project_captured_expr(target, expected, anchor, matched, budget)?;
+            project_captured_expr(value, expected, anchor, matched, budget)?;
         }
         ExprKind::Call { receiver, args, .. } => {
             receiver
@@ -5989,6 +6010,7 @@ fn substitute_lambda_donor(
         // Writes, control flow and a nested lambda's own sites are the shapes the rename branch
         // keeps physical; `super` names a member the lambda's scope cannot reach.
         ExprKind::LocalAssign { .. }
+        | ExprKind::ArrayAssign { .. }
         | ExprKind::PostfixUpdate { .. }
         | ExprKind::Conditional { .. }
         | ExprKind::Lambda { .. }
@@ -6315,6 +6337,10 @@ fn collect_free_locals(
             names.insert(name.clone());
             collect_free_locals(value, names);
         }
+        ExprKind::ArrayAssign { target, value, .. } => {
+            collect_free_locals(target, names);
+            collect_free_locals(value, names);
+        }
         ExprKind::InstanceOf { value, .. } => collect_free_locals(value, names),
         ExprKind::Call { receiver, args, .. } => {
             if let Some(receiver) = receiver {
@@ -6430,6 +6456,10 @@ fn count_parameter_reads(
         | ExprKind::QualifiedThis { .. }
         | ExprKind::Super { .. } => {}
         ExprKind::LocalAssign { value, .. } => {
+            count_parameter_reads(value, bindings, counts);
+        }
+        ExprKind::ArrayAssign { target, value, .. } => {
+            count_parameter_reads(target, bindings, counts);
             count_parameter_reads(value, bindings, counts);
         }
         ExprKind::InstanceOf { value, .. } => count_parameter_reads(value, bindings, counts),
@@ -6839,6 +6869,10 @@ fn for_each_expression<'a>(
         | ExprKind::QualifiedThis { .. }
         | ExprKind::Super { .. } => {}
         ExprKind::LocalAssign { value, .. } => for_each_expression(value, visit),
+        ExprKind::ArrayAssign { target, value, .. } => {
+            for_each_expression(target, visit);
+            for_each_expression(value, visit);
+        }
         ExprKind::InstanceOf { value, .. } => for_each_expression(value, visit),
         ExprKind::Call { receiver, args, .. } => {
             if let Some(receiver) = receiver {
@@ -7036,6 +7070,10 @@ fn for_each_expression_mut(
         | ExprKind::QualifiedThis { .. }
         | ExprKind::Super { .. } => {}
         ExprKind::LocalAssign { value, .. } => for_each_expression_mut(value, visit),
+        ExprKind::ArrayAssign { target, value, .. } => {
+            for_each_expression_mut(target, visit);
+            for_each_expression_mut(value, visit);
+        }
         ExprKind::InstanceOf { value, .. } => for_each_expression_mut(value, visit),
         ExprKind::Call { receiver, args, .. } => {
             if let Some(receiver) = receiver {
@@ -8489,6 +8527,10 @@ fn collect_array_return_anchors(
             };
         }
         match &expression.kind {
+            ArrayAssign { target, value, .. } => {
+                child!(target);
+                child!(value);
+            }
             LocalAssign { value, .. }
             | InstanceOf { value, .. }
             | Field {
@@ -8670,6 +8712,10 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
         | ExprKind::Cast { value, .. }
         | ExprKind::Not { value }
         | ExprKind::Neg { value } => collect_expression_anchors(value, anchors),
+        ExprKind::ArrayAssign { target, value, .. } => {
+            collect_expression_anchors(target, anchors);
+            collect_expression_anchors(value, anchors);
+        }
         ExprKind::Call { receiver, args, .. } => {
             if let Some(receiver) = receiver {
                 collect_expression_anchors(receiver, anchors);
@@ -11175,6 +11221,9 @@ fn program_node_count(program: &build::Program) -> u64 {
         count = count.saturating_add(1);
         use ExprKind as K;
         match &expression.kind {
+            K::ArrayAssign { target, value, .. } => {
+                expressions.extend([target.as_ref(), value.as_ref()]);
+            }
             K::LocalAssign { value, .. }
             | K::InstanceOf { value, .. }
             | K::PostfixUpdate { target: value, .. }
@@ -11657,6 +11706,11 @@ fn visit_class_initializer_field_reads(
         } => {
             visit_class_initializer_field_reads(qualifier, fields, budget, reads, complete)?;
         }
+        ExprKind::ArrayAssign { target, value, .. } => {
+            *complete = false;
+            visit_class_initializer_field_reads(target, fields, budget, reads, complete)?;
+            visit_class_initializer_field_reads(value, fields, budget, reads, complete)?;
+        }
         ExprKind::Index { array, index } => {
             visit_class_initializer_field_reads(array, fields, budget, reads, complete)?;
             visit_class_initializer_field_reads(index, fields, budget, reads, complete)?;
@@ -11784,6 +11838,10 @@ fn charge_expression_tree_at_depth(
             target: qualifier, ..
         } => {
             charge_expression_tree_at_depth(qualifier, budget, depth + 1)?;
+        }
+        ExprKind::ArrayAssign { target, value, .. } => {
+            charge_expression_tree_at_depth(target, budget, depth + 1)?;
+            charge_expression_tree_at_depth(value, budget, depth + 1)?;
         }
         ExprKind::Field { receiver, .. } => {
             charge_expression_tree_at_depth(receiver, budget, depth + 1)?;

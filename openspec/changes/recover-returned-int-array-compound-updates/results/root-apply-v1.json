@@ -1,0 +1,7 @@
+{
+  "patch_sha256": "13c4aa858adf316be2170154f03bd6e880da6cda3799d58b5eb7fbed0f1bb74f",
+  "canonical_copies": 13,
+  "root_fix": "Remove descending Slot pattern checks: stack_operands sorts ascending; retain exact ValueId order/consumer checks. Dereference sum_input for ssa.value.",
+  "prior_product_ci": "561de209531c021a9d8adb7c979bae5a57d6c3fb accepted run37994276707",
+  "scope": "Applied implementation, not yet compiled or accepted."
+}

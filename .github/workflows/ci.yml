@@ -104,7 +104,10 @@ jobs:
         run: cargo test --test p3_bigdecimal_number_widening --locked -- --ignored
 
       - name: Run the nested int array full-class comparisons
-        run: cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored
+        run: cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle
+
+      - name: Run the returned int array full-class comparison
+        run: cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class
 
       - name: Run public API example
         run: |

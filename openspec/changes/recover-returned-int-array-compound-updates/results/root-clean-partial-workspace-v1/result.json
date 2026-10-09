@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit": 0,
+  "free_before": 20533174272,
+  "free_after": 22043791360,
+  "scope": "only this repository target; frozen CLIs/test artifact and all raw evidence retained",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "0fb69c861d6ed5bf01099c7afec31f4e981de1827d8d27e0632c62b77c1a7354"
+}
