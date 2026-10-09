@@ -1,0 +1,86 @@
+{
+  "schema": "root-command-v2-disk-guard",
+  "argv": [
+    "python3",
+    "openspec/changes/recover-bigdecimal-number-widening/results/replay-candidate-root-v1.py",
+    "/private/tmp/jarde-bigdecimal-number-cli-v1",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-cli-v1.json",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-root-v1"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 21474836480,
+    "poll_seconds": 2,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/run-root-gate-v1.py",
+    "bytes": 5577,
+    "sha256": "6330bce0bd6fa6028392a08d44d27524d4242b2fda6f2f18e823aacfbdd54b97"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 569793,
+      "sha256": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1624234,
+      "sha256": "c7832e612de5f56a84ae3858dd2ee90f0d7b8fb814965997a21d6f4972dbc765"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_heterogeneous_array_initializers.rs",
+      "bytes": 58141,
+      "sha256": "c98ee57fb1e9b4b2408ae88a124a1b40b4ef2366f63cb76a03badc88fa96aea8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/ordinary_generic_projection.rs",
+      "bytes": 23906,
+      "sha256": "9269190285c9017bce7943a88600579ad570c3f22ab6c64ebab7eae2a6f71596"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_bigdecimal_number_widening.rs",
+      "bytes": 12544,
+      "sha256": "781ecf4410e8933e5df029d6ce3d9c146e6a7daeaa402fbd6c042884b34fd1a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/.github/workflows/ci.yml",
+      "bytes": 16899,
+      "sha256": "cba5a50e7f98aaec8de80aecef044ae74b234f58a362c75e5ce50ec5bb631c46"
+    }
+  ],
+  "free_before": 22161285120
+}

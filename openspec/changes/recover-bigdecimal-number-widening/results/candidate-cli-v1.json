@@ -1,0 +1,19 @@
+{
+  "cli_path": "/private/tmp/jarde-bigdecimal-number-cli-v1",
+  "cli_sha256": "b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+    "crates/jarde-java/src/build.rs": "c7832e612de5f56a84ae3858dd2ee90f0d7b8fb814965997a21d6f4972dbc765",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "base_commit": "c58158297ffc76c2351e62055703446b63ba4a5c",
+  "build_result_sha256": "86c5502ce425cc2d8bfbcfa6630b7ef7bd5f48d7735a096bfb01e205217bece6",
+  "production_note": "one exact release-8 BigDecimal to Number row; ordinary StringBuilder chain unchanged",
+  "test_sources": {
+    "tests/p3_bigdecimal_number_widening.rs": "781ecf4410e8933e5df029d6ce3d9c146e6a7daeaa402fbd6c042884b34fd1a1",
+    ".github/workflows/ci.yml": "cba5a50e7f98aaec8de80aecef044ae74b234f58a362c75e5ce50ec5bb631c46"
+  },
+  "freeze_attempt_note": "Initial copy of non-existent target/debug/jarde raised FileNotFoundError before any mutation; package binary name verified from Cargo manifest and actual target/debug/jarde-cli then frozen."
+}

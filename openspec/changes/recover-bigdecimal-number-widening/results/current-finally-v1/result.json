@@ -1,0 +1,905 @@
+{
+  "schema": "probe-current-finally-v1",
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-bigdecimal-number-cli-v1",
+    "bytes": 36408064,
+    "sha256": "b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0"
+  },
+  "metadata": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-cli-v1.json",
+    "bytes": 1395,
+    "sha256": "ee84dd0a2e5b670d24323cd66431bedcf8a7fc1904157e202a11049e3daec98d"
+  },
+  "metadata_candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+    "crates/jarde-java/src/build.rs": "c7832e612de5f56a84ae3858dd2ee90f0d7b8fb814965997a21d6f4972dbc765",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "current_relevant_sources": {
+    "crates/jarde-java/src/guard.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/guard.rs",
+      "bytes": 699034,
+      "sha256": "4b3d614bb003f0316088226b4f90e5c2483bacf31d300c4851718ec63bbf3e56"
+    },
+    "crates/jarde-java/src/region.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 577454,
+      "sha256": "8d0353eb31fb07832d0bb14953c928f1e426098f4a55bec908eb85a6bb542e77"
+    },
+    "crates/jarde-java/src/build.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1624234,
+      "sha256": "c7832e612de5f56a84ae3858dd2ee90f0d7b8fb814965997a21d6f4972dbc765"
+    },
+    "crates/jarde-java/tests/p3_patterns.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_patterns.rs",
+      "bytes": 246966,
+      "sha256": "1521ca44efd190104d8d3f0d8bfcee64c3d15b344ca06062c94f3c28e4c800b8"
+    },
+    "src/class_source.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    "Cargo.lock": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    }
+  },
+  "frozen_inputs": {
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class",
+      "bytes": 787,
+      "sha256": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.java",
+      "bytes": 815,
+      "sha256": "aad35f55d6aa8b7f44ca65c328217b9aa772535843090824871bc9d4c36d283c"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanupRunner.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanupRunner.java",
+      "bytes": 967,
+      "sha256": "437f0e4922089beaf4e6aa67615a0a5c7446ce66b6fc056c8cd600baee5ecf18"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/jadx.java.txt": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/jadx.java.txt",
+      "bytes": 969,
+      "sha256": "6128c0bd5dc523fa4a4fe41d55898a9dda7888b967cb1e1aec1232599ac08ce1"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class",
+      "bytes": 787,
+      "sha256": "c5407d3f29b135818f003e24b218b5e4b7348d261665f0c71605471a7492935e"
+    }
+  },
+  "historical_baseline_summary": {
+    "class_sha256": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6",
+    "class_bytes": 787,
+    "code_attributes": 5,
+    "cli_sha256": "8806d9aa06ad3b5fbcfe347144d09765dfbf3c9e172ee374eddf9313df893a44",
+    "source_compile_status": 0,
+    "source_run_status": 0,
+    "jadx_compile_status": 0,
+    "jadx_run_matches_source": false,
+    "jarde_cli_status": 0,
+    "jarde_references": 2,
+    "jarde_compile_status": 1,
+    "jarde_run_matches_source": null
+  },
+  "jdks": {
+    "javac8": {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      }
+    },
+    "javac23": {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      }
+    }
+  },
+  "commands": [
+    {
+      "label": "original-javac8-runner-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8/classes",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/original-javac8-runner-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/original-javac8-runner-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "original-javac8-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8/classes",
+        "ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/original-javac8-run.stdout",
+        "bytes": 292,
+        "sha256": "434f7dd551328c37918f1538271a512bd4093051d2233d68c1c5ac0004e3f987"
+      },
+      "stderr": {
+        "path": "raw/original-javac8-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "original-javac23-runner-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23/classes",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/original-javac23-runner-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/original-javac23-runner-compile.stderr",
+        "bytes": 243,
+        "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "original-javac23-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23/classes",
+        "ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/original-javac23-run.stdout",
+        "bytes": 292,
+        "sha256": "434f7dd551328c37918f1538271a512bd4093051d2233d68c1c5ac0004e3f987"
+      },
+      "stderr": {
+        "path": "raw/original-javac23-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-render-all",
+      "argv": [
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class",
+        "--class",
+        "ImplicitCleanup",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-render-all.stdout",
+        "bytes": 71802,
+        "sha256": "99cfb099cec8ffdc2fd3529bfd7575e9fbb9c1722685bde0b652712595156658"
+      },
+      "stderr": {
+        "path": "raw/candidate-render-all.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-render-essential",
+      "argv": [
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class",
+        "--class",
+        "ImplicitCleanup",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "essential",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-render-essential.stdout",
+        "bytes": 37769,
+        "sha256": "e13c1d96514b1c305b8e1a60e86ad801cb2309ea4ca7231201b74621d198150d"
+      },
+      "stderr": {
+        "path": "raw/candidate-render-essential.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-all-javac8-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/ImplicitCleanup.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-all-javac8-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/candidate-all-javac8-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-all-javac8-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac8/classes",
+        "ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-all-javac8-run.stdout",
+        "bytes": 292,
+        "sha256": "434f7dd551328c37918f1538271a512bd4093051d2233d68c1c5ac0004e3f987"
+      },
+      "stderr": {
+        "path": "raw/candidate-all-javac8-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-all-javac23-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/ImplicitCleanup.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-all-javac23-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/candidate-all-javac23-compile.stderr",
+        "bytes": 243,
+        "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-all-javac23-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac23/classes",
+        "ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/all/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-all-javac23-run.stdout",
+        "bytes": 292,
+        "sha256": "434f7dd551328c37918f1538271a512bd4093051d2233d68c1c5ac0004e3f987"
+      },
+      "stderr": {
+        "path": "raw/candidate-all-javac23-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-essential-javac8-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/ImplicitCleanup.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-essential-javac8-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/candidate-essential-javac8-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-essential-javac8-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac8/classes",
+        "ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-essential-javac8-run.stdout",
+        "bytes": 292,
+        "sha256": "434f7dd551328c37918f1538271a512bd4093051d2233d68c1c5ac0004e3f987"
+      },
+      "stderr": {
+        "path": "raw/candidate-essential-javac8-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-essential-javac23-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/ImplicitCleanup.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-essential-javac23-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/candidate-essential-javac23-compile.stderr",
+        "bytes": 243,
+        "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-essential-javac23-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac23/classes",
+        "ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/candidate/essential/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-essential-javac23-run.stdout",
+        "bytes": 292,
+        "sha256": "434f7dd551328c37918f1538271a512bd4093051d2233d68c1c5ac0004e3f987"
+      },
+      "stderr": {
+        "path": "raw/candidate-essential-javac23-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "jadx-historical-javac8-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8/ImplicitCleanup.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/jadx-historical-javac8-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/jadx-historical-javac8-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "jadx-historical-javac8-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8/classes",
+        "defpackage.ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac8",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/jadx-historical-javac8-run.stdout",
+        "bytes": 293,
+        "sha256": "535a220d6a782bc811592688e1b8279ce4324b4a6ee70dcdb2a84fe211d754db"
+      },
+      "stderr": {
+        "path": "raw/jadx-historical-javac8-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "jadx-historical-javac23-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23/ImplicitCleanup.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23/ImplicitCleanupRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/jadx-historical-javac23-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "raw/jadx-historical-javac23-compile.stderr",
+        "bytes": 243,
+        "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "jadx-historical-javac23-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23/classes",
+        "defpackage.ImplicitCleanupRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/jadx-historical/javac23",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/jadx-historical-javac23-run.stdout",
+        "bytes": 293,
+        "sha256": "535a220d6a782bc811592688e1b8279ce4324b4a6ee70dcdb2a84fe211d754db"
+      },
+      "stderr": {
+        "path": "raw/jadx-historical-javac23-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    },
+    {
+      "label": "candidate-widened-report-only",
+      "argv": [
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class",
+        "--class",
+        "ImplicitCleanup",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "launch_error": null,
+      "stdout": {
+        "path": "raw/candidate-widened-report-only.stdout",
+        "bytes": 67280,
+        "sha256": "814722e8b64550434a710e2e9ca9968c18870236bb66c4e986369582fd6d5a34"
+      },
+      "stderr": {
+        "path": "raw/candidate-widened-report-only.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "environment": {
+        "removed_jvm_option_variables": {
+          "JAVA_TOOL_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false
+        }
+      }
+    }
+  ],
+  "replay": {
+    "original-javac8": {
+      "class_copied_without_recompile": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac8/classes/ImplicitCleanup.class",
+        "bytes": 787,
+        "sha256": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6"
+      },
+      "class_matches_frozen": true,
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    "original-javac23": {
+      "class_copied_without_recompile": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/current-finally-v1/original/javac23/classes/ImplicitCleanup.class",
+        "bytes": 787,
+        "sha256": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6"
+      },
+      "class_matches_frozen": true,
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    "render-all": {
+      "exit": 0,
+      "full_class_text_extracted": true,
+      "source_sha256": "f109a468f0d6892e20a30a4f4774039f5a82812cfe8e78ac0777e6351494e586",
+      "source_bytes": 2528
+    },
+    "render-essential": {
+      "exit": 0,
+      "full_class_text_extracted": true,
+      "source_sha256": "f109a468f0d6892e20a30a4f4774039f5a82812cfe8e78ac0777e6351494e586",
+      "source_bytes": 2528
+    },
+    "candidate-all-javac8": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "matches_original_exit": true,
+      "matches_original_stdout": true,
+      "matches_original_stderr": true
+    },
+    "candidate-all-javac23": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "matches_original_exit": true,
+      "matches_original_stdout": true,
+      "matches_original_stderr": true
+    },
+    "candidate-essential-javac8": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "matches_original_exit": true,
+      "matches_original_stdout": true,
+      "matches_original_stderr": true
+    },
+    "candidate-essential-javac23": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "matches_original_exit": true,
+      "matches_original_stdout": true,
+      "matches_original_stderr": true
+    },
+    "jadx-historical-javac8": {
+      "compile_exit": 0,
+      "source_kind": "historical frozen JADX output",
+      "run_exit": 0,
+      "matches_original_exit": true,
+      "matches_original_stdout": false,
+      "matches_original_stderr": true
+    },
+    "jadx-historical-javac23": {
+      "compile_exit": 0,
+      "source_kind": "historical frozen JADX output",
+      "run_exit": 0,
+      "matches_original_exit": true,
+      "matches_original_stdout": false,
+      "matches_original_stderr": true
+    },
+    "widened-report-only": {
+      "exit": 0,
+      "full_class_text_extracted": true,
+      "contains_bytecode_reference": true,
+      "contains_finally_clause": false,
+      "executed": false
+    }
+  },
+  "fresh_jadx": false,
+  "note": "JADX source is frozen historical output; it is recompiled and run, not freshly extracted.",
+  "completed": true,
+  "source_hashes_after": {
+    "crates/jarde-java/src/guard.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/guard.rs",
+      "bytes": 699034,
+      "sha256": "4b3d614bb003f0316088226b4f90e5c2483bacf31d300c4851718ec63bbf3e56"
+    },
+    "crates/jarde-java/src/region.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 577454,
+      "sha256": "8d0353eb31fb07832d0bb14953c928f1e426098f4a55bec908eb85a6bb542e77"
+    },
+    "crates/jarde-java/src/build.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1624234,
+      "sha256": "c7832e612de5f56a84ae3858dd2ee90f0d7b8fb814965997a21d6f4972dbc765"
+    },
+    "crates/jarde-java/tests/p3_patterns.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_patterns.rs",
+      "bytes": 246966,
+      "sha256": "1521ca44efd190104d8d3f0d8bfcee64c3d15b344ca06062c94f3c28e4c800b8"
+    },
+    "src/class_source.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    "Cargo.lock": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    }
+  },
+  "current_sources_unchanged_during_probe": true
+}

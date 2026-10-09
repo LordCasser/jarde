@@ -1,0 +1,7 @@
+
+running 2 tests
+test straight_finally_reuses_its_guard_verdict_with_a_tight_budget ... ok
+test structured_finally_keeps_the_saved_return_inside_its_branch ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 81 filtered out; finished in 0.01s
+

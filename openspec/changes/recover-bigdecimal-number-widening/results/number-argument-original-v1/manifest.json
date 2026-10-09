@@ -1,0 +1,225 @@
+{
+  "schema": "bigdecimal-number-argument-original-v1",
+  "legs": [
+    {
+      "leg": "javac8",
+      "source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/bigdecimal-number-widening/NumberArgument.java",
+        "bytes": 234,
+        "sha256": "70e4b521e7845825f62c7f37be54b9973e742ddbb7c0117d4c90870f0454ced8"
+      },
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "bytes": 152128,
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "bytes": 152096,
+          "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "bytes": 152128,
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+        }
+      },
+      "commands": [
+        {
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/empty",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/empty",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/classes",
+            "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/bigdecimal-number-widening/NumberArgument.java"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/compile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/classes/NumberArgument.class"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/javap.stdout",
+            "bytes": 3572,
+            "sha256": "608c92fcd7fd2df084ba74aca20bfeb4eb4c443df2aa2387bb4c3961d22c4ac7"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/javap.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/classes",
+            "NumberArgument"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/run.stdout",
+            "bytes": 5,
+            "sha256": "bdc8e36eacc9b8f335b6d93061082ceba7dcd7bbbf40d0f739ee59f224cb8825"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/run.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "original_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac8/classes/NumberArgument.class",
+        "bytes": 497,
+        "sha256": "6c424bfdf36362d95bbc8af07b2c2513758434a5458e417a498f9069955bf79f"
+      },
+      "fixture_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/bigdecimal-number-widening/javac8/NumberArgument.class",
+        "bytes": 497,
+        "sha256": "6c424bfdf36362d95bbc8af07b2c2513758434a5458e417a498f9069955bf79f"
+      }
+    },
+    {
+      "leg": "javac23",
+      "source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/bigdecimal-number-widening/NumberArgument.java",
+        "bytes": 234,
+        "sha256": "70e4b521e7845825f62c7f37be54b9973e742ddbb7c0117d4c90870f0454ced8"
+      },
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "bytes": 69872,
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "bytes": 69952,
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "bytes": 69872,
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      },
+      "commands": [
+        {
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/empty",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/empty",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/classes",
+            "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/bigdecimal-number-widening/NumberArgument.java"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/compile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/classes/NumberArgument.class"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/javap.stdout",
+            "bytes": 3828,
+            "sha256": "87d1bffff93b4560ab1bae46b0153f3ad77afa0d712eebcd46a9a4e02c73879b"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/javap.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/classes",
+            "NumberArgument"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/run.stdout",
+            "bytes": 5,
+            "sha256": "bdc8e36eacc9b8f335b6d93061082ceba7dcd7bbbf40d0f739ee59f224cb8825"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/run.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "original_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/javac23/classes/NumberArgument.class",
+        "bytes": 497,
+        "sha256": "4f066c9b1a592c47c272926db767cf7f8ad9daf11e884c13c430237ce6169f82"
+      },
+      "fixture_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/bigdecimal-number-widening/javac23/NumberArgument.class",
+        "bytes": 497,
+        "sha256": "4f066c9b1a592c47c272926db767cf7f8ad9daf11e884c13c430237ce6169f82"
+      }
+    }
+  ],
+  "env_removed": [
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS",
+    "CLASSPATH"
+  ]
+}

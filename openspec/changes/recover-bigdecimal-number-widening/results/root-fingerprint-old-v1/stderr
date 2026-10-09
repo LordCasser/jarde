@@ -1,0 +1,25 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 26.74s
+     Running tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-e5d038dc501bfac8)
+
+thread 'corpus_files_match_the_recorded_fingerprint' (14587472) panicked at tests/p5_corpus_fingerprint.rs:827:5:
+the corpus moved under the fingerprint (11 file(s)):
+unlisted: tests/fixtures/bigdecimal-number-widening/NumberArgument.java (234, blake3 533c380395b9b20c43bf37c7e69833b570bfb417ab949ec5acd472d95077ca0d) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/javac23/Main.class (677, blake3 14bd835dc7db366226926442632a5330b061343487446298244452ae4575fd01) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/javac23/Main.java (215, blake3 7d612131de230ee857058f54512da16990d3b63562513019b84fdf4aa8a928ee) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/javac23/NumberArgument.class (497, blake3 4688d7271274b6103d2bfc93b96883266d8f56d55af421b7a743f08cfa3a05e6) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/javac8/Main.class (677, blake3 ba8ce0a2759cc73c363bdda27c3d3c79341b54c470a77683098744e2403e4606) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/javac8/Main.java (215, blake3 7d612131de230ee857058f54512da16990d3b63562513019b84fdf4aa8a928ee) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/javac8/NumberArgument.class (497, blake3 66c93bae6620020f2c72443724a72511e7fccc95cd60c2f0315100f87f56a051) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/oracle/original-main.stderr (0, blake3 af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/oracle/original-main.stdout (7, blake3 1b06853c0fd2336263d501f3e86fee0455a39f44f67477139b492f596c9d8d3c) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stderr (0, blake3 af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262) is in the corpus but not in the manifest
+unlisted: tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stdout (5, blake3 3a333b3f174527e876aa08efdbe873aeb626d01f9b8f9110dbb93b76c23add6f) is in the corpus but not in the manifest
+
+If the change is intended, rerun `cargo test --test p5_corpus_fingerprint --locked -- --ignored regenerate_corpus_fingerprint` and review the diff. If it is not, the corpus is the thing to fix — do not re-record to make this pass.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `--test p5_corpus_fingerprint`

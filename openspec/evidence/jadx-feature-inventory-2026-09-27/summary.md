@@ -253,3 +253,9 @@ EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下�
 子数组协变7/7、reifiable wildcard数组返回6/6；产品45b4848c推送main，确切CI37981309004四job/48steps全部success，fresh双seed各352test-result记录/3343passed/0failed/93ignored，含真JDK25 oracle/Java完整执行/MSRV/Clippy/supply chain/fuzz。五源冻结CLI及原始JSON/完整日志身份经root独立核对，见两片verification-root。全部六类direct正文与Collection<?>[][]声明同时闭合；fresh24腿22成功，BigDecimal两失败仍保留。此前WIP、Signature pending及真实失败记录属于历史阶段，不替代当前验收。
 
 下一[BigDecimal→Number窄片](../../changes/recover-bigdecimal-number-widening/)规划4/4、strict有效、前置/基线2/7，产品未实施。root补入真实Corretto8 BigDecimal header后的四条完整Main诊断，两真实JDK空CP/SP重编及runtime均匹配历史原流；原两个Main-only输入仍失败。已有普通StringBuilder链完整，concat优化warning不等于正文失败，因此仅补准确release-8关系，不新增concat机制。71分母及EM18部分已测分类保持；后续CF16/DT26候选仍须fresh复测，不能以只读队列审计直接实施。
+
+### 2026-10-10 BigDecimal最小事实片：本地验收通过，确切CI待验收
+
+recover-bigdecimal-number-widening现5/7任务，只新增release-8准确BigDecimal→Number行，完整24控制腿由22/24增至24/24，root独立1226checks/0errors；生产与双真实JDK全类比较、本地严格门禁均通过。新产品确切CI双seed/四job尚未验收，不能提前计为全片完成。
+
+CF16 ImplicitCleanup现有实现经当前CLI完整双JDK/all和essential四腿16路径fresh核验通过；DT26原生int[] capture已恢复。排除旧shortlist的重复实施方向，准确待分析的近邻是二维数组lambda helper复合元素更新：当前两真实JDK完整候选均compile1/helper fallback，capture本身成功。细节与证据在新片verification-root/current-finally-queue-root-v1/nested-array-update-baseline-v1。未freshJADX/未立新实现spec，不变更71分母或EM18/CF16/DT26全单元分类。

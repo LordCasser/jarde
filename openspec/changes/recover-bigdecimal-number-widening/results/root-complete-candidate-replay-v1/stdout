@@ -1,0 +1,7 @@
+{
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-root-v1/manifest.json",
+  "runner_sha256": "010436a5d412946e25dbde6c4287f632ca1d7a3c972ea0b6d5ba4e3dcb558e99",
+  "cli_sha256": "b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0",
+  "legs": 24,
+  "candidate_successes": 24
+}

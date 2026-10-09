@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "reason": "own CLI build terminated by 20 GiB disk guard; clear only this repository target",
+  "exit": 0,
+  "free_before": 21277675520,
+  "free_after": 21731254272,
+  "elapsed_seconds": 0.07816733399522491,
+  "target_exists_after": false,
+  "streams": [
+    {
+      "path": "openspec/changes/recover-bigdecimal-number-widening/results/root-clean-disk-stop-v1/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-bigdecimal-number-widening/results/root-clean-disk-stop-v1/stderr",
+      "bytes": 39,
+      "sha256": "3712b9230191cc592799b25159fe7e34b34883875ab1a006ef25adb4c2f9cff3"
+    }
+  ]
+}

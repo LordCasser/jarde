@@ -1,0 +1,7 @@
+# 71账本下一项：先排除已实现片
+
+旧shortlist将CF16 ImplicitCleanup与DT26 int[] lambda capture当作优先实现，但当前源和真实回放已否定这两项缺口。当前finally完整类四腿16路径匹配，原异常对象身份与cleanup覆盖优先级正确；保存JADX输出仍有重复cleanup。DT26原生int[] capture已有独立change与生产测试完成，不能重复立项。
+
+另一个近邻P02_multianewarray的capture也已经成功；历史拒绝在lambda helper的二维元素复合更新（BCI2/4 producer与5→11依赖），需要当前冻结CLI完整类fresh确认。存在现成prove_array_update/IndexAssign和嵌套index表示，先从同一行对象ValueId与读/加/写求值次序闭包分析，不预设新增机制。历史文档的0/6与保存helper拒绝文本不一致，应以新完整产物对照为准。暂未fresh验证，不是已确认的新实施任务。
+
+CF16仍需补证structured子Region停止/回滚边界，不能从checkbox、通用guard证书预算或现有正例推断已闭合。此记录不修改71分类，不把本片或24腿宣称整体JADX追平。

@@ -1,0 +1,123 @@
+{
+  "schema": "probe-current-finally-v1",
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-bigdecimal-number-cli-v1",
+    "bytes": 36408064,
+    "sha256": "b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0"
+  },
+  "metadata": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-cli-v1.json",
+    "bytes": 1395,
+    "sha256": "ee84dd0a2e5b670d24323cd66431bedcf8a7fc1904157e202a11049e3daec98d"
+  },
+  "metadata_candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+    "crates/jarde-java/src/build.rs": "c7832e612de5f56a84ae3858dd2ee90f0d7b8fb814965997a21d6f4972dbc765",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "current_relevant_sources": {
+    "crates/jarde-java/src/guard.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/guard.rs",
+      "bytes": 699034,
+      "sha256": "4b3d614bb003f0316088226b4f90e5c2483bacf31d300c4851718ec63bbf3e56"
+    },
+    "crates/jarde-java/src/region.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 577454,
+      "sha256": "8d0353eb31fb07832d0bb14953c928f1e426098f4a55bec908eb85a6bb542e77"
+    },
+    "crates/jarde-java/src/build.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1624234,
+      "sha256": "c7832e612de5f56a84ae3858dd2ee90f0d7b8fb814965997a21d6f4972dbc765"
+    },
+    "crates/jarde-java/tests/p3_patterns.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_patterns.rs",
+      "bytes": 246966,
+      "sha256": "1521ca44efd190104d8d3f0d8bfcee64c3d15b344ca06062c94f3c28e4c800b8"
+    },
+    "src/class_source.rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    "Cargo.lock": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    }
+  },
+  "frozen_inputs": {
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class",
+      "bytes": 787,
+      "sha256": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.java",
+      "bytes": 815,
+      "sha256": "aad35f55d6aa8b7f44ca65c328217b9aa772535843090824871bc9d4c36d283c"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanupRunner.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanupRunner.java",
+      "bytes": 967,
+      "sha256": "437f0e4922089beaf4e6aa67615a0a5c7446ce66b6fc056c8cd600baee5ecf18"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/jadx.java.txt": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/jadx.java.txt",
+      "bytes": 969,
+      "sha256": "6128c0bd5dc523fa4a4fe41d55898a9dda7888b967cb1e1aec1232599ac08ce1"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class",
+      "bytes": 787,
+      "sha256": "c5407d3f29b135818f003e24b218b5e4b7348d261665f0c71605471a7492935e"
+    }
+  },
+  "historical_baseline_summary": {
+    "class_sha256": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6",
+    "class_bytes": 787,
+    "code_attributes": 5,
+    "cli_sha256": "8806d9aa06ad3b5fbcfe347144d09765dfbf3c9e172ee374eddf9313df893a44",
+    "source_compile_status": 0,
+    "source_run_status": 0,
+    "jadx_compile_status": 0,
+    "jadx_run_matches_source": false,
+    "jarde_cli_status": 0,
+    "jarde_references": 2,
+    "jarde_compile_status": 1,
+    "jarde_run_matches_source": null
+  },
+  "jdks": {
+    "javac8": {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      }
+    },
+    "javac23": {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      }
+    }
+  },
+  "commands": [],
+  "replay": {},
+  "fresh_jadx": false,
+  "note": "JADX source is frozen historical output; it is recompiled and run, not freshly extracted."
+}

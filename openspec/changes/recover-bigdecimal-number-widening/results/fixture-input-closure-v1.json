@@ -1,0 +1,77 @@
+{
+  "files": [
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/NumberArgument.java",
+      "bytes": 234,
+      "sha256": "70e4b521e7845825f62c7f37be54b9973e742ddbb7c0117d4c90870f0454ced8"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/javac23/Main.class",
+      "bytes": 677,
+      "sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/javac23/Main.java",
+      "bytes": 215,
+      "sha256": "a03a516b64e5cd356c97e0b4f582cfe905bed3812b6b33f4d5efcecc41971f34"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/javac23/NumberArgument.class",
+      "bytes": 497,
+      "sha256": "4f066c9b1a592c47c272926db767cf7f8ad9daf11e884c13c430237ce6169f82"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/javac8/Main.class",
+      "bytes": 677,
+      "sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/javac8/Main.java",
+      "bytes": 215,
+      "sha256": "a03a516b64e5cd356c97e0b4f582cfe905bed3812b6b33f4d5efcecc41971f34"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/javac8/NumberArgument.class",
+      "bytes": 497,
+      "sha256": "6c424bfdf36362d95bbc8af07b2c2513758434a5458e417a498f9069955bf79f"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-main.stdout",
+      "bytes": 7,
+      "sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stdout",
+      "bytes": 5,
+      "sha256": "bdc8e36eacc9b8f335b6d93061082ceba7dcd7bbbf40d0f739ee59f224cb8825"
+    }
+  ],
+  "main_provenance": [
+    {
+      "leg": "javac8",
+      "baseline_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/bigdecimal-historical-provenance-v1/raw/javac8/input.jar",
+      "jar_sha256": "f42437404bb92d5f4680992482828871951b2ce395a61f6f000a06226f79d0dc",
+      "fixture_class_sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997",
+      "copied_class_bytes_exact": true
+    },
+    {
+      "leg": "javac23",
+      "baseline_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/bigdecimal-historical-provenance-v1/raw/javac23/input.jar",
+      "jar_sha256": "f71d44a7315890d40ac5b28aafd55ffc739ab76b8590715b260a41bc5e696607",
+      "fixture_class_sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87",
+      "copied_class_bytes_exact": true
+    }
+  ],
+  "number_argument_original_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/number-argument-original-v1/manifest.json",
+  "execution_compares_raw_streams": true
+}

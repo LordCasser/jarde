@@ -1,0 +1,291 @@
+{
+  "status": "local_acceptance_passed_exact_product_ci_pending",
+  "checks": [
+    {
+      "label": "root-focused-integration-v1",
+      "result_sha256": "7e71a1d77b9e18c0a2a4f5f3cc0c75110fa5df1bcf8b8ea20d992a6c977c3d9e",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_bigdecimal_number_widening",
+        "--locked"
+      ],
+      "elapsed_seconds": 46.16526570900169
+    },
+    {
+      "label": "root-java8-execution-v1",
+      "result_sha256": "fe38e681488e51f0aa4b063ef41c3068e5527222a8584a3c275d644475d800d1",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_bigdecimal_number_widening",
+        "--locked",
+        "--",
+        "--ignored"
+      ],
+      "elapsed_seconds": 2.012264207995031
+    },
+    {
+      "label": "root-java23-execution-v1",
+      "result_sha256": "845cf0b0206c8f6a671bdfadd3a1a577125aa4f7f44f94e3e9a6b9ead64c9368",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_bigdecimal_number_widening",
+        "--locked",
+        "--",
+        "--ignored"
+      ],
+      "elapsed_seconds": 2.009248957998352
+    },
+    {
+      "label": "root-all-java-lib-v1",
+      "result_sha256": "b0a14c4f7ed7184a9c00ca9f913680e83cdec8f7062854596023a865a9680bfd",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked"
+      ],
+      "elapsed_seconds": 26.11403179100307
+    },
+    {
+      "label": "root-candidate-cli-build-v2",
+      "result_sha256": "86c5502ce425cc2d8bfbcfa6630b7ef7bd5f48d7735a096bfb01e205217bece6",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "elapsed_seconds": 42.1276019999932
+    },
+    {
+      "label": "root-complete-candidate-replay-v1",
+      "result_sha256": "6396bd137c3120e968733cb4bb6d1a48bab93ef6770784c3b48b9ba6c08bb86b",
+      "argv": [
+        "python3",
+        "openspec/changes/recover-bigdecimal-number-widening/results/replay-candidate-root-v1.py",
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-cli-v1.json",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-root-v1"
+      ],
+      "elapsed_seconds": 12.051504292001482
+    },
+    {
+      "label": "root-independent-candidate-verification-v1",
+      "result_sha256": "7b03f407add54b4b11503a118a8d03ea8a0823e530c8ccb3bea0aa13bf4f6ea1",
+      "argv": [
+        "python3",
+        "openspec/changes/recover-bigdecimal-number-widening/results/verify-candidate-root-v1.py",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-root-v1",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/candidate-root-verification-v1.json"
+      ],
+      "elapsed_seconds": 2.0090463749947958
+    },
+    {
+      "label": "root-reader-census-v2",
+      "result_sha256": "d5de8ebb7b42859c575d387b972bf56b559d05ed37051b0048024db6e41518e9",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "repository_class_fixtures_validate_without_false_target_rejections",
+        "--",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 8.038059083002736
+    },
+    {
+      "label": "root-fingerprint-verify-v1",
+      "result_sha256": "9d36a79b4b128d2bad72a95272b2ce8eae61e4916c80075a1ee9f15795c4b28a",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 2.012804458005121
+    },
+    {
+      "label": "root-p5-strict-v1",
+      "result_sha256": "4007335af5f5d3521c24fdb1901a989e8fc0ab0e5662bfde8c2519a8a507cd54",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "p5_bulk_corpus",
+        "--",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 4.023104249994503
+    },
+    {
+      "label": "root-finally-focused-v1",
+      "result_sha256": "85965d1089120f89d7add30f34db45f9bbeb717d116a129a9935032c78102859",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_patterns",
+        "finally",
+        "--",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 20.06321495800512
+    },
+    {
+      "label": "root-msrv-v1",
+      "result_sha256": "da908ac2837d594c0a4ccb0ca477860d33349ca20383178b7bd7f4e0bab676b3",
+      "argv": [
+        "rustup",
+        "run",
+        "1.88.0",
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "elapsed_seconds": 66.19245183299063
+    },
+    {
+      "label": "root-ci-exact-clippy-v1",
+      "result_sha256": "be1a5f0408f2f1461caeaa339a487692e0acd264fc8b62ae2c9dc4c2032efe92",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "elapsed_seconds": 70.22174970799824
+    },
+    {
+      "label": "root-fmt-check-v1",
+      "result_sha256": "e8a0c6bc0067dc59936aa927248b0769c386596ecff83012482e48cc6a0cd132",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "elapsed_seconds": 4.012737791999825
+    },
+    {
+      "label": "root-openspec-all-strict-v1",
+      "result_sha256": "7cbe46b4e47ee0ccaeabbe91f6fbba4049f43f096bd783506bc3cf69068dccb0",
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "elapsed_seconds": 2.013415833003819
+    },
+    {
+      "label": "root-diff-check-v1",
+      "result_sha256": "5ceb3d92db6f64f7103b5a812655a17110fa13f27d2481823f8b16db2960ead3",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "elapsed_seconds": 2.004434083995875
+    },
+    {
+      "label": "root-clean-after-local-v1",
+      "result_sha256": "024f0895c268ce7204509df0f3a7fe3247918f3e3176169c76fbdb0c07df2663",
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "elapsed_seconds": 2.0125353339972207
+    }
+  ],
+  "matrix_success": "24/24",
+  "independent_checks": 1226,
+  "scope": "not full local workspace double-seed execution; exact product CI is still required",
+  "target_exists_after": false,
+  "free_bytes": 31282569216
+}

@@ -1,0 +1,4 @@
+normal:return=2:trace=29
+try-throws:throw=java.lang.IllegalArgumentException:try=true:cleanup=false:trace=19
+cleanup-over-return:throw=java.lang.IllegalStateException:try=false:cleanup=true:trace=299
+cleanup-over-try-throw:throw=java.lang.IllegalStateException:try=false:cleanup=true:trace=19

@@ -14,21 +14,25 @@ git worktree list
 
 最新已验收产品为 **45b4848c558f4f5d317720535cea32fe431288bf**，已推送main；[CI37981309004](https://github.com/LordCasser/jarde/actions/runs/37981309004)四job/48steps全部success。两个fresh全workspace seed各352test-result记录、3343passed/0failed/93ignored；真JDK25 oracle、显式Java执行、MSRV、Clippy、supply chain/fuzz及OpenSpec全部通过。五源产品blob与冻结CLI相同，原JSON/完整gzip日志/root验收入口见[wildcard返回验收](openspec/changes/recover-reifiable-wildcard-array-return-signatures/verification-root.md)。随后验收文档/下一片规划提交没有产品变化；不把后续docs-only头部的CI冒称已绿。
 
-## 当前接续：BigDecimal→Number 最小事实片
+## 当前接续：BigDecimal→Number产品已实现，本地验收通过，确切CI待验收
 
-两数组补片已完成：[子数组协变](openspec/changes/recover-covariant-child-array-initializers/verification-root.md) **7/7**、[可具体化 wildcard 数组返回](openspec/changes/recover-reifiable-wildcard-array-return-signatures/verification-root.md) **6/6**。结构ownership与准确store赋值分层接通，完整同次ArrayCreation证据支持原Collection<?>[][]声明，没有新增pass/type service。
+当前产品仅在现有release-8 NUMBER_FAMILY补BigDecimal→Number准确row，不改concat、不新增pass。Luna实现，root验收；[本片](openspec/changes/recover-bigdecimal-number-widening/)任务 **5/7**。两ordinary生产结构测试、325 Java-lib、双真实JDK显式ignored执行（8次完整source重编/runtime）全部成功。
 
-五源CLI `/private/tmp/jarde-wildcard-array-return-cli-v1` SHA196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761，fresh24腿22成功：旧18矩阵16/18、完整六类factory2/2、direct2/2、数值2/2，BigDecimal两已知失败保留。root独立1166checks同时验收完整成员、全部生成源、两真实JDK隔离重编/runtime双流、Collection<?>[][]声明与物理Signature/来源/次数。成功证据marker保留且拒绝消失；original/JADX采用逐hash核验的历史基线，未fresh执行。历史四源CLI1116checks只semantic/Signature pending，不能替代本次验收。
+新五源CLI `/private/tmp/jarde-bigdecimal-number-cli-v1` SHA **b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0**；当前source与metadata一致。完整原24腿本次fresh **24/24**，root独立 **1226checks/0errors**，102commands/384closedfiles，两真实JDK空CP/SP编译所有生成source、只运行新classes且-Xverify:all，匹配原exit/raw双流；original/JADX采用逐hash核对历史基线，非fresh执行。完整两BigDecimal、旧八家族/factory/direct/数值均过；准确Collection<?>[][]声明/成功Signature marker与物理BCI仍保持。不能把24控制腿称作71单元完成。
 
-325 Java-lib、16 facade focused、5数组完整集成及11项本地严格门禁通过，P5 pins/指纹未变化。全workspace双seed与真JDK25由上述确切产品CI补齐，不冒称本地全仓重跑。本仓target已实际清5926files/845.2MiB，不再存在；冻结CLI和历史可恢复压缩均保留。机器空间一度因外部活动降到约19GiB，等待CI期间未启动Cargo；收尾时实际恢复到约30GiB。20GiB停建线不变，本项目没有待清target，不碰其他项目target。
+reader census测量更新为(1067,4626,463,2711,8)，只新增4classes/10直线Code body；指纹仅增11条输入；P5严格pins不变。MSRV1.88、CI-exact Clippy、fmt、OpenSpec all strict、diff、finally两专项均过。原旧pin/指纹失败、首CLI20GiB停建exit-15及finally verifier v1误要求essential可选source-map的失败均保留。CLI v2成功；末次仅清本仓target，冻结CLI/raw证据保留。机器空间实时以df为准，20GiB守卫继续有效。
 
-下一[recover-bigdecimal-number-widening](openspec/changes/recover-bigdecimal-number-widening/)规划 **4/4**、strict通过、任务 **2/7**（前置CI/准确基线），**产品未实施**。当前普通Main-only两BigDecimal腿构造已通过，但aastore15缺BigDecimal→Number事实。root六条显式header诊断在Main字节完全不变情况下，仅提供真实Corretto8 BigDecimal.class即恢复完整Main；四条正例在真实JDK8/23空CP/SP重编、新类-Xverify:all运行/raw双流一致，两个无header负基线仍失败。完整普通StringBuilder调用链已正确保留，concat优化warning不等于正文失败；下一片只补release-8精确类型pair，不改concat白名单。
+下一步：当前产品提交推送后用results/verify-ci-product-v1.py核验**确切新产品**的四job、全部steps、两个fresh workspace seed及新增BigDecimal显式JDK执行。CI原JSON/完整gzip日志未落盘前，不勾3.2/3.3，不借45b前置CI；本地未重复全workspace双seed。验收入口：[verification-root](openspec/changes/recover-bigdecimal-number-widening/verification-root.md)、results/local-root-acceptance-v1.json、candidate-root-verification-v1.json。完成CI后再更新任务/账本/handoff并提交验收文档。
 
-入口：[proposal](openspec/changes/recover-bigdecimal-number-widening/proposal.md)、[design](openspec/changes/recover-bigdecimal-number-widening/design.md)、[tasks](openspec/changes/recover-bigdecimal-number-widening/tasks.md)。现有Luna待按apply限定实现2.1/2.2，root负责所有Cargo/Git/冻结CLI/24腿完整对照/确切CI/验收。实际header与原始两输入及历史JADX身份、完整诊断/执行均在前片results/bigdecimal-selected-headers*和新片results/release8-header-root-v1.json。v1静态concat方向被真实v2诊断及执行收窄，两版历史保留；不能凭v1另造机制。
+## 71账本队列：避免重复已实现片
 
-[71单元后续队列审计](openspec/changes/recover-bigdecimal-number-widening/results/next-ledger-priority-audit-v1.md)仅建议EM18收尾后复测CF16非直线finally与DT26数组元素lambda捕获；尚未fresh确认或授权为新实现片，不重复已完成窄片。71计数/EM18部分已测分类保持。
+CF16 ImplicitCleanup已经恢复：当前CLI完整类all/essential文本相同，双真实JDK四腿16路径全部匹配原行为；原cleanup-over-return trace29，历史JADX输出本次双JDK重编仍trace299。all保留17个来源BCI，essential CLI按请求不携带可选map；widened保持引用且不执行。current-finally-v1与独立v2证据在本片results。尚不能从语义正例推断structured子Region停止/回滚全部边界任务已完，但不要重复实现其主体。
 
-本地前次全仓首lib/seed1曾被20GiB guard停止exit-15，不计成功；历史root清target818.3MiB并可恢复压缩17个CLI节省932116990bytes，restore入口见child results/historical-cli-compression-v1.json。平坦Signature真实generic arity仍是[共享债务](openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/flat-signature-arity-debt-v1.md)，未复现非法元数控制不当作已拒绝，不混入当前片。
+DT26原生int[] capture也已由旧片恢复。准确下一缺口是P02_multianewarray中lambda helper的二维数组元素compound更新，capture本身成功。当前新CLI两真实编译器原class均stdout6\n，候选完整类两JDK均compile1/helper fallback；不是旧README所写的compile0/打印0。新baseline在results/nested-array-update-baseline-v1，尚未freshJADX、未立新实现spec。先核对现有prove_array_update/array_of_value/IndexAssign的准确行对象ValueId、dup2复制及求值次序闭包，再判断是否需机制。71/EM18部分分类不变。
+
+两数组补片已完成：[子数组协变](openspec/changes/recover-covariant-child-array-initializers/verification-root.md)7/7、[wildcard数组返回](openspec/changes/recover-reifiable-wildcard-array-return-signatures/verification-root.md)6/6。前产品45b的确切CI已验收，raw证据保留。平坦Signature真实generic arity是独立债务，不混入本片。17旧CLI可恢复gzip记录在child results/historical-cli-compression-v1.json，旧失败和所有冻结输入保留。
+
+下文是已完成窄片与历史边界，若旧阶段状态与上述最新入口冲突，以本节为准。
 
 ## 已完成：构造参数数值转换
 

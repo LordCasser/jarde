@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/verify-current-finally-v1.py", line 35, in <module>
+    check(bcis<=observed,'protected/cleanup/return source '+mode)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/verify-current-finally-v1.py", line 10, in check
+    assert ok,label
+           ^^
+AssertionError: protected/cleanup/return source essential

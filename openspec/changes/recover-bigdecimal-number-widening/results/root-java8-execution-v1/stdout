@@ -1,0 +1,7 @@
+
+running 2 tests
+test bigdecimal_number_argument_generated_source_matches_frozen_runtime ... ok
+test main_only_bigdecimal_generated_source_matches_frozen_original_runtime ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.10s
+

@@ -1,0 +1,9 @@
+
+running 4 tests
+test bigdecimal_argument_is_recovered_at_the_actual_number_descriptor_call ... ok
+test bigdecimal_number_argument_generated_source_matches_frozen_runtime ... ignored, requires the frozen Java 23 toolchain to compile and verify generated source
+test main_only_bigdecimal_array_is_recovered_from_both_frozen_javac_legs ... ok
+test main_only_bigdecimal_generated_source_matches_frozen_original_runtime ... ignored, requires the frozen Java 23 toolchain to compile and verify generated source
+
+test result: ok. 2 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

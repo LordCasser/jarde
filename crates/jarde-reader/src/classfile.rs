@@ -12221,7 +12221,9 @@ mod tests {
             // The constructor primitive-conversion slice adds eight canonical classes across
             // two complete positives and two handler-control versions on both compiler legs:
             // 84 Code bodies and four handlers, with no branch or subroutine records.
-            (1063, 4616, 463, 2711, 8),
+            // BigDecimal widening adds the Main and NumberArgument classfiles for both
+            // compiler legs: four classes and ten straight-line bodies; no new control flow.
+            (1067, 4626, 463, 2711, 8),
             "fixture population changed: re-measure these counts"
         );
     }

@@ -977,6 +977,61 @@
       "path": "tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class"
     },
     {
+      "blake3": "533c380395b9b20c43bf37c7e69833b570bfb417ab949ec5acd472d95077ca0d",
+      "bytes": 234,
+      "path": "tests/fixtures/bigdecimal-number-widening/NumberArgument.java"
+    },
+    {
+      "blake3": "14bd835dc7db366226926442632a5330b061343487446298244452ae4575fd01",
+      "bytes": 677,
+      "path": "tests/fixtures/bigdecimal-number-widening/javac23/Main.class"
+    },
+    {
+      "blake3": "7d612131de230ee857058f54512da16990d3b63562513019b84fdf4aa8a928ee",
+      "bytes": 215,
+      "path": "tests/fixtures/bigdecimal-number-widening/javac23/Main.java"
+    },
+    {
+      "blake3": "4688d7271274b6103d2bfc93b96883266d8f56d55af421b7a743f08cfa3a05e6",
+      "bytes": 497,
+      "path": "tests/fixtures/bigdecimal-number-widening/javac23/NumberArgument.class"
+    },
+    {
+      "blake3": "ba8ce0a2759cc73c363bdda27c3d3c79341b54c470a77683098744e2403e4606",
+      "bytes": 677,
+      "path": "tests/fixtures/bigdecimal-number-widening/javac8/Main.class"
+    },
+    {
+      "blake3": "7d612131de230ee857058f54512da16990d3b63562513019b84fdf4aa8a928ee",
+      "bytes": 215,
+      "path": "tests/fixtures/bigdecimal-number-widening/javac8/Main.java"
+    },
+    {
+      "blake3": "66c93bae6620020f2c72443724a72511e7fccc95cd60c2f0315100f87f56a051",
+      "bytes": 497,
+      "path": "tests/fixtures/bigdecimal-number-widening/javac8/NumberArgument.class"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-main.stderr"
+    },
+    {
+      "blake3": "1b06853c0fd2336263d501f3e86fee0455a39f44f67477139b492f596c9d8d3c",
+      "bytes": 7,
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-main.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stderr"
+    },
+    {
+      "blake3": "3a333b3f174527e876aa08efdbe873aeb626d01f9b8f9110dbb93b76c23add6f",
+      "bytes": 5,
+      "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stdout"
+    },
+    {
       "blake3": "19a3c93c93b45b775ba983810383fca13db5aa3cc1e2f5d698d5322b4a3ca90e",
       "bytes": 448,
       "path": "tests/fixtures/cf04-nested-int/cf04/Negative.class"

@@ -1,0 +1,8 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/nested-array-update-baseline-v1/javac23/source/P02_multianewarray.java:49: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 P02_multianewarray
+注: /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-bigdecimal-number-widening/results/nested-array-update-baseline-v1/javac23/source/P02_multianewarray.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+1 个错误
