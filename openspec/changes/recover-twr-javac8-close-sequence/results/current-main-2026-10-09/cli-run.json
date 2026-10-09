@@ -1,0 +1,44 @@
+{
+  "cli": "/private/tmp/jarde-generic-calls-candidate-v9-cli",
+  "cli_sha256": "5bb2fcfdcf958839f0b1e060a2e55114510c6115cb225ec3279d7d7adf95e006",
+  "rows": [
+    {
+      "leg": "real-javac8",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v9-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/real-javac8-TR/TR.class",
+        "--class",
+        "TR",
+        "--policy",
+        "single-class",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "input_sha256": "7e4831366bb775adf65924b597ffbc1ba0bd136a6bd8e0d0a2baf8eb899fcda1",
+      "stdout_sha256": "61de8ad387c54b510a6dfd70dc1044d1ec8733108c3ce2e2afa5aa4ebb278ec4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "leg": "javac23",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v9-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/javac23-TR/TR.class",
+        "--class",
+        "TR",
+        "--policy",
+        "single-class",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "input_sha256": "1401152b546f9dd1528fc9683882ac9334b04944dba01a79ffb6892c6025660d",
+      "stdout_sha256": "7b19fcc3e6d9cf6f09eddd7ad144fd9e2094a594206b714d9877766754f724b6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

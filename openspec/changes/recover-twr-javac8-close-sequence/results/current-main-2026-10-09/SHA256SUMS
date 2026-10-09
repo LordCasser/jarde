@@ -1,0 +1,14 @@
+3f07824656cba1ca5b2943a9a53de0bf8ec26ffd0a202c4353fb58fd0ea49523  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/cli-run.json
+5feebcda60748d488d37f0716612633b1ef53623c448b279c7bffe5c89678c52  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/fullclass-run.json
+1f1cddc125cb18bdb0cbbc8290b5af63f05b9e390551083f80e753699baf4a06  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/javac23-TR.java
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/javac23.java.stderr
+c6549941f86f2515e355c6e3b133b2d6ada637f75a00b86a424637a600e333a0  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/javac23.java.stdout
+4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/javac23.javac.stderr
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/javac23.javac.stdout
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/javac23.stderr
+7b19fcc3e6d9cf6f09eddd7ad144fd9e2094a594206b714d9877766754f724b6  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/javac23.stdout.json
+bf9622927275d34924533186527adf800bfbc4bdd8840dd5bd3a9baecbda8f33  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/real-javac8-TR.java
+280f97b45932914a66db38b7005deff446a4b5b1d3b625c3b192e6edff1b713a  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/real-javac8.javac.stderr
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/real-javac8.javac.stdout
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/real-javac8.stderr
+61de8ad387c54b510a6dfd70dc1044d1ec8733108c3ce2e2afa5aa4ebb278ec4  openspec/changes/recover-twr-javac8-close-sequence/results/current-main-2026-10-09/real-javac8.stdout.json

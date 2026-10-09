@@ -1,0 +1,57 @@
+{
+  "source_unchanged": true,
+  "original_jar_on_recompile_or_runtime_classpath": false,
+  "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+  "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+  "rows": [
+    {
+      "leg": "real-javac8",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-classpath",
+        "/private/tmp/jarde-twr-current-root-20261009/real-javac8/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-twr-current-root-20261009/real-javac8/empty",
+        "-d",
+        "/private/tmp/jarde-twr-current-root-20261009/real-javac8/classes",
+        "/private/tmp/jarde-twr-current-root-20261009/real-javac8/TR.java"
+      ],
+      "exit": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "280f97b45932914a66db38b7005deff446a4b5b1d3b625c3b192e6edff1b713a"
+    },
+    {
+      "leg": "javac23",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-classpath",
+        "/private/tmp/jarde-twr-current-root-20261009/javac23/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-twr-current-root-20261009/javac23/empty",
+        "-d",
+        "/private/tmp/jarde-twr-current-root-20261009/javac23/classes",
+        "/private/tmp/jarde-twr-current-root-20261009/javac23/TR.java"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "leg": "javac23",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-classpath",
+        "/private/tmp/jarde-twr-current-root-20261009/javac23/classes",
+        "TR"
+      ],
+      "exit": 0,
+      "stdout_sha256": "c6549941f86f2515e355c6e3b133b2d6ada637f75a00b86a424637a600e333a0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
