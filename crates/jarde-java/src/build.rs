@@ -29903,15 +29903,12 @@ fn java_lang_throwable_widens(presented: &str, required: &str) -> bool {
 /// six names the `COMPARABLE` and `SERIALIZABLE` tables already carry, transcribed from the same
 /// release-8 `rt.jar` (the six headers' own `extends java.lang.Number` clause, the lines
 /// `openspec/evidence/java-syntax-2026-10-05/widening-row-sources/javap-headers.txt` already
-/// holds). Its rows are the whole `java.lang` direct set — a reflective walk of every `rt.jar`
-/// entry (`openspec/changes/recover-boxed-number-widening/results/probe/number-universe.out`)
-/// finds exactly these six direct subclasses of `java.lang.Number` and no `java.lang` class that
-/// reaches `Number` through another class. Unlike the `java.util` tree, whose `List -> Collection`
-/// and `Collection -> Iterable` rows make its walk load-bearing, these six rows have no interior
-/// for a walk to follow: the row lookup is the whole answer. The subclasses the same check names
-/// outside `java.lang` (`java.math.BigDecimal`/`BigInteger`,
-/// `java.util.concurrent.atomic.AtomicInteger`/`AtomicLong`/`Striped64`) state no row: the closed
-/// set is the boxed six, and a pair no row states keeps its refusal.
+/// holds). The release-8 direct-child check
+/// (`openspec/changes/recover-boxed-number-widening/results/probe/number-universe.out`) found
+/// exactly those six direct `java.lang` subclasses, with no intermediate `java.lang` class. This
+/// table additionally carries the separately verified `BigDecimal -> Number` header edge from
+/// `release8-header-root-v1.json`. `BigInteger` and the `java.util.concurrent.atomic` subclasses
+/// state no row; a pair no row states keeps its refusal.
 fn platform_interface_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
     // `java.lang.CharSequence`'s implementers: `String`, `StringBuffer` and `StringBuilder`
     // declare the interface in their own headers, and so does `java.nio.CharBuffer`. The closed
@@ -29954,13 +29951,12 @@ fn platform_interface_argument_widens(java_release: u16, presented: &str, requir
         ("java.lang.Character", "java.io.Serializable"),
         ("java.lang.Boolean", "java.io.Serializable"),
     ];
-    // `java.lang.Number`'s `java.lang` subclasses, the boxed-number change's rows: each of the six
-    // numeric classes declares `extends java.lang.Number` in its own header (the release-8 `rt.jar`
-    // lines `openspec/evidence/java-syntax-2026-10-05/widening-row-sources/javap-headers.txt`
-    // already carries for the `Comparable`/`Serializable` rows). The reflective universe check
-    // cited on this function states the closed set: six direct `java.lang` subclasses, no `java.lang`
-    // class reaching `Number` through another, and the `java.math`/`java.util.concurrent.atomic`
-    // subclasses outside it that keep their refusal.
+    // `java.lang.Number`'s direct children pinned here: the six boxed numbers and BigDecimal. The
+    // six boxed headers and the Corretto 8 `java.math.BigDecimal` header each state
+    // `extends java.lang.Number`; the latter is pinned by
+    // `openspec/changes/recover-bigdecimal-number-widening/results/release8-header-root-v1.json`
+    // (rt.jar SHA-256 `b27515a608ee447566b688e2bbb2257b1f0d8eceb96c307b87eb28d90a6630f4`).
+    // BigInteger and the `java.util.concurrent.atomic` family remain outside this closed set.
     const NUMBER_FAMILY: &[(&str, &str)] = &[
         ("java.lang.Byte", "java.lang.Number"),
         ("java.lang.Short", "java.lang.Number"),
@@ -29968,6 +29964,7 @@ fn platform_interface_argument_widens(java_release: u16, presented: &str, requir
         ("java.lang.Long", "java.lang.Number"),
         ("java.lang.Float", "java.lang.Number"),
         ("java.lang.Double", "java.lang.Number"),
+        ("java.math.BigDecimal", "java.lang.Number"),
     ];
     // The enum family's collection type: `java.util.EnumSet` extends `java.util.AbstractSet`, and
     // the javadoc's implemented-interface list reaches `Set`, `Collection` and `Iterable` — the
@@ -33967,10 +33964,9 @@ mod tests {
     }
 
     #[test]
-    fn the_boxed_number_rows_reach_exactly_their_pairs() {
-        // One positive per row of the boxed-number family (`NUMBER_FAMILY`), release 8 the only
-        // release it states: the six `java.lang` classes whose own headers declare
-        // `extends java.lang.Number`, the whole direct set the reflective universe check found.
+    fn the_number_rows_reach_exactly_their_pairs() {
+        // One positive per row of `NUMBER_FAMILY`, release 8 the only release it states: the six
+        // boxed-number headers and the independently pinned Corretto 8 BigDecimal header.
         for (presented, required) in [
             ("java.lang.Byte", "java.lang.Number"),
             ("java.lang.Short", "java.lang.Number"),
@@ -33978,6 +33974,7 @@ mod tests {
             ("java.lang.Long", "java.lang.Number"),
             ("java.lang.Float", "java.lang.Number"),
             ("java.lang.Double", "java.lang.Number"),
+            ("java.math.BigDecimal", "java.lang.Number"),
         ] {
             assert!(
                 platform_interface_argument_widens(8, presented, required),
@@ -33985,22 +33982,19 @@ mod tests {
             );
         }
 
-        // The refusals the closed set exists for: every release other than 8, the types that are
-        // not `Number` subclasses at all (`Boolean`, `Character`, `String`, `Object`), the
-        // subclasses outside the `java.lang` six the universe check names
-        // (`java.math.BigDecimal`/`BigInteger`, the `java.util.concurrent.atomic` family, the
-        // `LongAdder` that reaches `Number` through `Striped64`), the pair `Number`'s own header
-        // does not state (`Number` to `Serializable` — the table states the six subclasses), the
-        // downward and unrelated directions, and the primitive, array and generic shapes no row
-        // spells.
+        // The refusals the closed set exists for: every release other than 8, unlisted Number
+        // children (`BigInteger`, the `java.util.concurrent.atomic` family and `LongAdder`), an
+        // unlisted target, reverse/downward directions, and primitive, array and generic shapes
+        // no row spells. BigDecimal's presence states only its one pinned direct pair.
         for (release, presented, required) in [
             (7, "java.lang.Integer", "java.lang.Number"),
             (9, "java.lang.Integer", "java.lang.Number"),
+            (7, "java.math.BigDecimal", "java.lang.Number"),
+            (9, "java.math.BigDecimal", "java.lang.Number"),
             (8, "java.lang.Boolean", "java.lang.Number"),
             (8, "java.lang.Character", "java.lang.Number"),
             (8, "java.lang.String", "java.lang.Number"),
             (8, "java.lang.Object", "java.lang.Number"),
-            (8, "java.math.BigDecimal", "java.lang.Number"),
             (8, "java.math.BigInteger", "java.lang.Number"),
             (
                 8,
@@ -34018,9 +34012,12 @@ mod tests {
                 "java.lang.Number",
             ),
             (8, "java.lang.Number", "java.lang.Integer"),
+            (8, "java.lang.Number", "java.math.BigDecimal"),
             (8, "java.lang.Number", "java.lang.Comparable"),
             (8, "java.lang.Number", "java.io.Serializable"),
             (8, "java.lang.Number", "java.lang.Object"),
+            (8, "java.math.BigDecimal", "java.lang.Comparable"),
+            (8, "java.math.BigDecimal", "java.io.Serializable"),
             (8, "java.lang.Integer[]", "java.lang.Number[]"),
             (8, "int", "java.lang.Number"),
             (8, "java.lang.Integer", "int"),
