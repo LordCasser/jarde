@@ -103,6 +103,9 @@ jobs:
       - name: Run the BigDecimal Number full-class comparisons
         run: cargo test --test p3_bigdecimal_number_widening --locked -- --ignored
 
+      - name: Run the nested int array full-class comparisons
+        run: cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored
+
       - name: Run public API example
         run: |
           cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class
@@ -229,18 +232,17 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.1
+
+      - name: Install stable Rust for cargo-deny
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-deny 0.20.2
+        run: cargo install cargo-deny --version 0.20.2 --locked
+
       - name: Check root workspace advisories, licenses, bans, and sources
-        uses: EmbarkStudios/cargo-deny-action@v2.1.1
-        with:
-          command: check
-          arguments: --all-features --workspace --locked --config ./deny.toml
-          manifest-path: ./Cargo.toml
+        run: cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check
       - name: Check fuzz workspace advisories, licenses, bans, and sources
-        uses: EmbarkStudios/cargo-deny-action@v2.1.1
-        with:
-          command: check
-          arguments: --all-features --workspace --locked --config ./deny.toml
-          manifest-path: ./fuzz/Cargo.toml
+        run: cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check
 
   fuzz-smoke:
     name: fuzz smoke

@@ -382,10 +382,10 @@ fn the_reference_capture_and_the_rest_of_the_class_are_unchanged() {
     }
 }
 
-// 3. `multianewarray` capture is out of this change's scope and measurably untouched: the whole
-//    presentation is identical before and after, in both legs.
+// 3. The historical capture snapshots remain frozen; nested update recovery changes only the
+//    helper body and preserves the already proved capture and other members in both legs.
 #[test]
-fn the_multianewarray_capture_keeps_its_recorded_status() {
+fn the_multianewarray_capture_preserves_its_members_while_the_nested_helper_recovers() {
     for leg in LEGS {
         let report = source_of(&multianewarray_jar(leg), "P02_multianewarray");
         let before = evidence(
@@ -393,11 +393,17 @@ fn the_multianewarray_capture_keeps_its_recorded_status() {
             &format!("P02_multianewarray-{leg}.baseline.txt"),
         );
         let after = evidence("fixed", &format!("P02_multianewarray-{leg}.fixed.txt"));
-        assert_eq!(report.text, after, "the {leg} multianewarray rendering");
         assert_eq!(
             before, after,
-            "the {leg} multianewarray rendering changed with this slice"
+            "the {leg} historical baseline/fixed snapshots remain unchanged"
         );
+        for name in ["<init>", "sum", "main"] {
+            assert_eq!(
+                member_of_rendering(&report.text, name),
+                member_of_rendering(&after, name),
+                "the {leg} `{name}` region stays unchanged by nested helper recovery"
+            );
+        }
         // Its capture site was never refused: `multianewarray` names its class in the pool, so the
         // frame stated `[[I` and the three-way check had real evidence to compare.
         assert!(
@@ -411,17 +417,44 @@ fn the_multianewarray_capture_keeps_its_recorded_status() {
                 && sum.contains("lambda$sum$0$jarde(local1, (java.lang.Integer) p0)"),
             "the {leg} `int[][]` capture is presented inline and was before too:\n{sum}"
         );
-        // What it does not recover is the two-dimensional compound assignment **inside the
-        // companion body** — DT-26's existing expression domain, not the capture gate.
+        // Nested compound recovery changes only the helper: the prior fixed snapshot remains the
+        // historical record, while its lambda body now owns the original row/index copies.
         let companion = member_of_rendering(&report.text, "lambda$sum$0");
-        assert!(
-            quotes(&companion) > 0,
-            "the {leg} companion body keeps its recorded quotes:\n{companion}"
+        assert_eq!(
+            quotes(&companion),
+            0,
+            "{leg} helper has no bytecode quote:\n{companion}"
         );
+        assert!(
+            companion.contains("arg0[0][0] += arg1.intValue();"),
+            "{leg} helper preserves the nested int compound update:\n{companion}"
+        );
+        let helper = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"lambda$sum$0")
+            .expect("the P02 companion helper is present");
+        let helper_body = match &helper.outcome {
+            ClassSourceOutcome::Recovered { report, .. } => report,
+            other => panic!("{leg} helper has no complete recovery record: {other:?}"),
+        };
+        assert_eq!(
+            helper_body.quality,
+            Quality::Structured,
+            "{leg}: {helper_body:?}"
+        );
+        assert_eq!(helper_body.representation, Representation::Java, "{leg}");
+        for bci in [0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12] {
+            assert!(
+                !helper_body.source_map.of_bci(bci).is_empty(),
+                "{leg} helper source map omitted physical BCI {bci}: {:?}",
+                helper_body.source_map.segments()
+            );
+        }
         assert_eq!(
             quotes(&report.text),
-            quotes(&companion),
-            "the {leg} class's only quotes are the companion body's:\n{}",
+            0,
+            "the {leg} complete class has no bytecode quotes:\n{}",
             report.text
         );
     }

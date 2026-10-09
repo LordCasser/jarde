@@ -12223,7 +12223,10 @@ mod tests {
             // 84 Code bodies and four handlers, with no branch or subroutine records.
             // BigDecimal widening adds the Main and NumberArgument classfiles for both
             // compiler legs: four classes and ten straight-line bodies; no new control flow.
-            (1067, 4626, 463, 2711, 8),
+            // Nested int updates add four canonical classes: 22 straight-line control bodies
+            // and six boundary bodies, including four branch records from the two row-Phi
+            // methods. No handler or subroutine is introduced.
+            (1071, 4654, 463, 2715, 8),
             "fixture population changed: re-measure these counts"
         );
     }
