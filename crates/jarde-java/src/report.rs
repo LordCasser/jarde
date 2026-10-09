@@ -5146,6 +5146,13 @@ pub enum GenericReturnValue {
         copy_bci: u32,
         constructor_bci: u32,
     },
+    /// A complete single-return array creation proved from this body's AST, Code and SSA.
+    /// `array_type` is the actual Java spelling of the erased array type, not a descriptor.
+    ArrayCreation {
+        array_type: String,
+        allocation_bci: u32,
+        return_bci: u32,
+    },
     /// Exact same-run direct LambdaMetafactory return, including its physical site.
     TypedFunctional {
         target: TypedFunctionalTarget,
@@ -7789,6 +7796,11 @@ fn generic_return_candidate(
     let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {
         return Ok(None);
     };
+    if matches!(value.kind, ExprKind::NewArray { .. }) {
+        return generic_array_creation_return_candidate(
+            program, value, ssa, operations, request, budget,
+        );
+    }
     if let Some(target) = request.typed_functional_target {
         let instructions = code.instructions.as_slice();
         let bound = instructions.len() == 3;
@@ -8233,6 +8245,414 @@ fn generic_return_candidate(
         _ => return Ok(None),
     };
     Ok(Some(GenericReturnCandidate { parameters, value }))
+}
+
+/// Prove the exact single-return array creation handed to class-source Signature projection.
+///
+/// This is deliberately a candidate over the already committed AST: the builder's array plan has
+/// proved the initializer and its stores, while this function proves that this complete physical
+/// method returns that root allocation and that no physical instruction fell outside the AST.
+fn generic_array_creation_return_candidate(
+    program: &build::Program,
+    expression: &Expr,
+    ssa: &SsaTable,
+    operations: &Operations,
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+) -> Result<Option<GenericReturnCandidate>, StopReason> {
+    let Some(code) = request.ir.code() else {
+        return Ok(None);
+    };
+    let parameter_types = request.facts.method().parameter_types();
+    if !parameter_types.is_empty()
+        || request.typed_functional_target.is_some()
+        || program.ragged
+        || program.statements != 1
+        || program.stmts.len() != 1
+        || code.stopped_at.is_some()
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+        || ssa.blocks().len() != 1
+        || !ssa.phis().is_empty()
+        || ssa.blocks()[0].instructions().len() != code.instructions.len()
+        || ssa.effects().instructions().len() != code.instructions.len()
+    {
+        return Ok(None);
+    }
+    let ExprKind::NewArray {
+        element,
+        lengths,
+        initializers: Some(_),
+        total_dimensions,
+    } = &expression.kind
+    else {
+        return Ok(None);
+    };
+    if !lengths.is_empty() || *total_dimensions == 0 {
+        return Ok(None);
+    }
+    let StmtKind::Return {
+        value: Some(returned),
+    } = &program.stmts[0].kind
+    else {
+        return Ok(None);
+    };
+    if !std::ptr::eq(returned, expression) {
+        return Ok(None);
+    }
+    let Some(return_instruction) = code.instructions.last() else {
+        return Ok(None);
+    };
+    let allocation_bci = expression.origin.primary().bci();
+    let return_bci = return_instruction.bci;
+    crate::stop::poll(budget, Some(allocation_bci))?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::from(*total_dimensions),
+        Some(allocation_bci),
+    )?;
+    let array_type = format!(
+        "{}{}",
+        element.spell(),
+        "[]".repeat(usize::from(*total_dimensions))
+    );
+    let actual_array_type = Type::Reference(array_type.clone());
+    if expression.presented.as_ref() != Some(&actual_array_type)
+        || build::return_type(request.facts.method().descriptor()).as_ref()
+            != Some(&actual_array_type)
+        || expression.origin.primary().provenance() != crate::source_map::Provenance::Direct
+        || program.stmts[0].origin.primary().bci() != return_bci
+        || program.stmts[0].origin.primary().provenance() != crate::source_map::Provenance::Direct
+        || return_instruction.opcode != 0xb0
+    {
+        return Ok(None);
+    }
+
+    // An expression origin is only useful for a physical-closure claim if collecting it is
+    // controlled by this same run's budget. Count nodes and anchors while walking; do not first
+    // build an unmetered anchor tree and charge it afterward.
+    let mut anchors = std::collections::BTreeSet::new();
+    collect_array_return_anchors(
+        &program.stmts[0].origin,
+        expression,
+        &mut anchors,
+        budget,
+        0,
+    )?;
+
+    let mut operations_iter = operations.iter();
+    let mut allocation_instruction = None;
+    let mut return_ssa = None;
+    for ((ssa_instruction, effect), raw) in ssa.blocks()[0]
+        .instructions()
+        .iter()
+        .zip(ssa.effects().instructions())
+        .zip(&code.instructions)
+    {
+        crate::stop::poll(budget, Some(raw.bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(raw.bci),
+        )?;
+        let Some((operation_bci, operation)) = operations_iter.next() else {
+            return Ok(None);
+        };
+        if *operation_bci != raw.bci
+            || ssa_instruction.bci() != raw.bci
+            || ssa_instruction.opcode() != raw.opcode
+            || effect.bci() != raw.bci
+            || effect.opcode() != raw.opcode
+            || !effect.handlers().is_empty()
+        {
+            return Ok(None);
+        }
+        if raw.opcode != 0x00 && !anchors.contains(&raw.bci) {
+            return Ok(None);
+        }
+        if raw.bci == allocation_bci {
+            let Operation::NewArray {
+                element: decoded_element,
+                dimensions,
+                total_dimensions: decoded_total_dimensions,
+            } = operation
+            else {
+                return Ok(None);
+            };
+            if decoded_element != element
+                || *dimensions != 1
+                || decoded_total_dimensions != total_dimensions
+            {
+                return Ok(None);
+            }
+            allocation_instruction = Some(ssa_instruction);
+        }
+        if raw.bci == return_bci {
+            if !matches!(operation, Operation::Return) {
+                return Ok(None);
+            }
+            return_ssa = Some(ssa_instruction);
+        } else if matches!(operation, Operation::Return) {
+            return Ok(None);
+        }
+    }
+    if operations_iter.next().is_some() {
+        return Ok(None);
+    }
+    let (Some(allocation_instruction), Some(return_ssa)) = (allocation_instruction, return_ssa)
+    else {
+        return Ok(None);
+    };
+    if return_ssa.bci() != return_bci
+        || return_ssa.opcode() != 0xb0
+        || !return_ssa.writes().is_empty()
+        || !matches!(return_ssa.reads(), [(Slot::Stack(_), _)])
+    {
+        return Ok(None);
+    }
+    let [(Slot::Stack(_), returned_value)] = return_ssa.reads() else {
+        return Ok(None);
+    };
+    if !ssa_value_flows_from_array_allocation(
+        ssa,
+        *returned_value,
+        return_bci,
+        allocation_bci,
+        allocation_instruction,
+        budget,
+    )? {
+        return Ok(None);
+    }
+    crate::stop::poll(budget, Some(return_bci))?;
+    Ok(Some(GenericReturnCandidate {
+        parameters: Vec::new(),
+        value: GenericReturnValue::ArrayCreation {
+            array_type,
+            allocation_bci,
+            return_bci,
+        },
+    }))
+}
+
+/// Meter the complete expression tree while retaining every origin used by the physical closure.
+fn collect_array_return_anchors(
+    statement_origin: &OriginSet,
+    expression: &Expr,
+    anchors: &mut std::collections::BTreeSet<u32>,
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<(), StopReason> {
+    fn add_origins(
+        origin: &OriginSet,
+        anchors: &mut std::collections::BTreeSet<u32>,
+        budget: &mut Budget,
+    ) -> Result<(), StopReason> {
+        for anchor in std::iter::once(origin.primary()).chain(origin.derived()) {
+            crate::stop::poll(budget, Some(anchor.bci()))?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                Some(anchor.bci()),
+            )?;
+            anchors.insert(anchor.bci());
+        }
+        Ok(())
+    }
+    fn visit(
+        expression: &Expr,
+        anchors: &mut std::collections::BTreeSet<u32>,
+        budget: &mut Budget,
+        depth: usize,
+    ) -> Result<(), StopReason> {
+        use ExprKind::*;
+        let at = expression.origin.primary().bci();
+        if depth > build::MAX_VALUE_DEPTH {
+            return Err(StopReason::Interrupted {
+                code: crate::stop::RECURSION_BOUND_CODE,
+                at: Some(at),
+            });
+        }
+        crate::stop::poll(budget, Some(at))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(at),
+        )?;
+        add_origins(&expression.origin, anchors, budget)?;
+        macro_rules! child {
+            ($value:expr) => {
+                visit($value, anchors, budget, depth + 1)?
+            };
+        }
+        match &expression.kind {
+            LocalAssign { value, .. }
+            | InstanceOf { value, .. }
+            | Field {
+                receiver: value, ..
+            }
+            | PostfixUpdate { target: value, .. }
+            | ArrayLength { array: value }
+            | Cast { value, .. }
+            | Not { value }
+            | Neg { value } => child!(value),
+            Call { receiver, args, .. } => {
+                if let Some(receiver) = receiver {
+                    child!(receiver);
+                }
+                for argument in args {
+                    child!(argument);
+                }
+            }
+            New {
+                qualifier, args, ..
+            } => {
+                if let Some(qualifier) = qualifier {
+                    child!(qualifier);
+                }
+                for argument in args {
+                    child!(argument);
+                }
+            }
+            Lambda { body, .. } => child!(body),
+            MethodReference { qualifier, .. } => child!(qualifier),
+            Index { array, index }
+            | Binary {
+                left: array,
+                right: index,
+                ..
+            } => {
+                child!(array);
+                child!(index);
+            }
+            NewArray {
+                lengths,
+                initializers,
+                ..
+            } => {
+                for length in lengths {
+                    child!(length);
+                }
+                if let Some(initializers) = initializers {
+                    for initializer in initializers {
+                        child!(initializer);
+                    }
+                }
+            }
+            Conditional {
+                test,
+                when_true,
+                when_false,
+            } => {
+                child!(test);
+                child!(when_true);
+                child!(when_false);
+            }
+            Concat { parts } => {
+                for part in parts {
+                    child!(&part.value);
+                }
+            }
+            Local(_)
+            | Integer(_)
+            | IntegerConstantName { .. }
+            | Boolean(_)
+            | Long(_)
+            | Float(_)
+            | Double(_)
+            | Str(_)
+            | Null
+            | ClassLiteral { .. }
+            | Path(_)
+            | QualifiedThis { .. }
+            | Super { .. } => {}
+        }
+        Ok(())
+    }
+
+    add_origins(statement_origin, anchors, budget)?;
+    visit(expression, anchors, budget, depth)
+}
+
+/// Follow only SSA values copied by `dup` from the areturn input to this root allocation.
+fn ssa_value_flows_from_array_allocation(
+    ssa: &SsaTable,
+    mut value: jarde_jvm::method_ir::ValueId,
+    return_bci: u32,
+    allocation_bci: u32,
+    allocation_instruction: &jarde_jvm::method_ir::SsaInstruction,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut consumer_bci = return_bci;
+    let mut later_bci = return_bci;
+    let mut instructions = ssa.blocks()[0].instructions().iter().rev();
+    loop {
+        crate::stop::poll(budget, Some(consumer_bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(consumer_bci),
+        )?;
+        let current = ssa.value(value);
+        if current.uses().len() != 1 || current.uses()[0].bci() != Some(consumer_bci) {
+            return Ok(false);
+        }
+        let Definition::Instruction { bci, .. } = current.def() else {
+            return Ok(false);
+        };
+        if *bci == allocation_bci {
+            return Ok(allocation_instruction.bci() == allocation_bci
+                && matches!(allocation_instruction.writes(), [(Slot::Stack(_), written)] if written == &value));
+        }
+        if *bci >= later_bci {
+            return Ok(false);
+        }
+        let instruction = loop {
+            let Some(instruction) = instructions.next() else {
+                return Ok(false);
+            };
+            crate::stop::poll(budget, Some(instruction.bci()))?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() == *bci {
+                break instruction;
+            }
+            if instruction.bci() < *bci {
+                return Ok(false);
+            }
+        };
+        if instruction.opcode() != 0x59
+            || !matches!(instruction.reads(), [(Slot::Stack(_), _)])
+            || instruction.writes().len() != 2
+            || instruction
+                .writes()
+                .iter()
+                .any(|(slot, _)| !matches!(slot, Slot::Stack(_)))
+            || !instruction
+                .writes()
+                .iter()
+                .any(|(slot, written)| matches!(slot, Slot::Stack(_)) && *written == value)
+        {
+            return Ok(false);
+        }
+        let [(Slot::Stack(_), source)] = instruction.reads() else {
+            return Ok(false);
+        };
+        if ssa.value(*source).ty() != current.ty() {
+            return Ok(false);
+        }
+        later_bci = *bci;
+        consumer_bci = *bci;
+        value = *source;
+    }
 }
 
 /// Retain every bytecode origin represented by one complete return expression. The member-return
@@ -13795,6 +14215,322 @@ mod raw_receiver_site_budget_tests {
             StopReason::Cancelled {
                 at: Some(WRITE_BCI)
             }
+        );
+    }
+}
+
+#[cfg(test)]
+mod generic_array_return_candidate_tests {
+    use super::*;
+    use crate::ast::{Expr, ExprKind, StmtKind, Type};
+    use jarde_jvm::engine::analyze_method_ir;
+    use jarde_jvm::environment::ResolutionEnvironment;
+    use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+    use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+    use jarde_reader::budget::{Budget, CancellationToken, Limits};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant,
+    };
+    use jarde_reader::view::{
+        DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+        MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+        RuntimeView,
+    };
+
+    const JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class"
+    );
+    const JAVAC23: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class"
+    );
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 10,
+            method_bodies: 10,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 16,
+            dependency_depth: 8,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn root_array_expression(program: &mut build::Program) -> &mut Expr {
+        let StmtKind::Return {
+            value: Some(expression),
+        } = &mut program.stmts[0].kind
+        else {
+            panic!("the fixture's complete array method returns a value");
+        };
+        expression
+    }
+
+    #[test]
+    fn collection_grid_array_return_is_closed_and_uses_the_exact_allocation_value() {
+        for (class_bytes, snapshot_name) in [
+            (JAVAC8, "collection-grid-javac8"),
+            (JAVAC23, "collection-grid-javac23"),
+        ] {
+            let mut setup_budget = Budget::new(limits());
+            let snapshot = ArtifactSnapshot::open(
+                ArtifactInput::bytes(class_bytes.to_vec()),
+                &mut setup_budget,
+            )
+            .expect("the frozen fixture class opens");
+            let domain = LoadDomain {
+                loader: LoaderId("app".to_owned()),
+                parent_loader: None,
+                delegation: DelegationPolicy::ParentFirst,
+                roots: vec![LoadRoot::StandaloneClass {
+                    snapshot: snapshot.id().clone(),
+                }],
+                module_mode: ModuleMode::ClassPath,
+                external_override: RuntimeUncertainty::None,
+                runtime_transformation: RuntimeUncertainty::None,
+            };
+            let method = PhysicalMethodId {
+                owner: PhysicalDefinitionId {
+                    location: PhysicalClassLocation::StandaloneRoot {
+                        snapshot: snapshot.id().clone(),
+                    },
+                    class_bytes: ClassBytesId {
+                        digest: Digest(blake3::hash(class_bytes).to_hex().to_string()),
+                        length: u64::try_from(class_bytes.len()).expect("fixture length fits"),
+                    },
+                    variant: PhysicalVariant::Base,
+                },
+                name: JvmBytes(b"collectionGridDirect".to_vec()),
+                descriptor: JvmBytes(b"()[[Ljava/util/Collection;".to_vec()),
+            };
+            let analysis = analyze_method_ir(
+                &[snapshot.clone()],
+                &MethodAnalysisRequest {
+                    environment: ResolutionEnvironment {
+                        runtime: RuntimeView {
+                            physical: PhysicalView {
+                                snapshot: snapshot.id().clone(),
+                                scope: PhysicalScope::SnapshotAll,
+                            },
+                            profile: RuntimeProfile {
+                                java_release: 8,
+                                multi_release: MultiReleasePolicy::Disabled,
+                                layout: LayoutMode::Generic,
+                            },
+                            load_domain: domain.clone(),
+                        },
+                        domains: vec![domain],
+                        providers: Vec::new(),
+                    },
+                    method,
+                    stages: AnalysisStage::ALL.to_vec(),
+                },
+                &mut setup_budget,
+            )
+            .expect("the frozen method analyzes");
+            let facts = crate::facts::RecoveryFacts::new(
+                crate::facts::MethodFacts::new(
+                    "collectionGridDirect",
+                    "()[[Ljava/util/Collection;",
+                    0,
+                )
+                .with_access_flags(0x0009)
+                .with_declaring_class(crate::facts::DeclaringClass::new("Main", 0x0021)),
+            );
+            let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+            let mut recovery_budget = Budget::new(limits());
+            let recovered = recover_for_class_source_with_anonymous_ast(
+                &request,
+                &mut recovery_budget,
+                true,
+                false,
+                true,
+                false,
+                false,
+            );
+            let expected = GenericReturnCandidate {
+                parameters: Vec::new(),
+                value: GenericReturnValue::ArrayCreation {
+                    array_type: "java.util.Collection[][]".to_owned(),
+                    allocation_bci: 1,
+                    return_bci: 38,
+                },
+            };
+            assert_eq!(
+                recovered.generic_return,
+                Some(expected.clone()),
+                "{snapshot_name}"
+            );
+            let program = recovered
+                .ast
+                .expect("class-source recovery retains the same-run AST")
+                .projection
+                .program
+                .clone();
+            let code = request.ir.code().expect("the method has Code");
+            let ssa = request.ir.ssa().expect("the method has SSA");
+            let operations = Operations::of(code, request.ir.constant_pool());
+            let expression = match &program.stmts[0].kind {
+                StmtKind::Return {
+                    value: Some(expression),
+                } => expression,
+                _ => panic!("the fixture has one array return"),
+            };
+            let mut candidate_budget = Budget::new(limits());
+            assert_eq!(
+                generic_array_creation_return_candidate(
+                    &program,
+                    expression,
+                    ssa,
+                    &operations,
+                    &request,
+                    &mut candidate_budget,
+                )
+                .expect("the same-run candidate completes"),
+                Some(expected),
+                "{snapshot_name}"
+            );
+
+            let mut missing_initializer = program.clone();
+            if let ExprKind::NewArray { initializers, .. } =
+                &mut root_array_expression(&mut missing_initializer).kind
+            {
+                *initializers = None;
+            } else {
+                unreachable!("the positive is a NewArray expression");
+            }
+            assert_array_candidate_refuses(&missing_initializer, ssa, &operations, &request);
+
+            let mut wrong_type = program.clone();
+            root_array_expression(&mut wrong_type).presented =
+                Some(Type::Reference("java.lang.Object[][]".to_owned()));
+            assert_array_candidate_refuses(&wrong_type, ssa, &operations, &request);
+
+            let mut wrong_origin = program.clone();
+            wrong_origin.stmts[0].origin = OriginSet::new(crate::source_map::Origin::direct(37));
+            assert_array_candidate_refuses(&wrong_origin, ssa, &operations, &request);
+
+            let mut omitted_physical_effect = program.clone();
+            root_array_expression(&mut omitted_physical_effect).origin =
+                OriginSet::new(crate::source_map::Origin::direct(1));
+            assert_array_candidate_refuses(&omitted_physical_effect, ssa, &operations, &request);
+
+            let mut ragged = program.clone();
+            ragged.ragged = true;
+            assert_array_candidate_refuses(&ragged, ssa, &operations, &request);
+
+            let mut multiple_statements = program.clone();
+            multiple_statements.stmts.push(program.stmts[0].clone());
+            multiple_statements.statements += 1;
+            assert_array_candidate_refuses(&multiple_statements, ssa, &operations, &request);
+
+            let mut anchor_budget = Budget::new(limits());
+            let mut anchors = std::collections::BTreeSet::new();
+            collect_array_return_anchors(
+                &program.stmts[0].origin,
+                expression,
+                &mut anchors,
+                &mut anchor_budget,
+                0,
+            )
+            .expect("the real array expression anchor census completes");
+            let code_items = u64::try_from(code.instructions.len()).expect("code count fits");
+            let flow_prefix = anchor_budget
+                .usage()
+                .ir_items
+                .saturating_add(3) // rank 2 and the first SSA flow value
+                .saturating_add(code_items)
+                .saturating_add(1); // the first reverse-lookup item, the areturn
+            let mut lookup_limits = limits();
+            lookup_limits.ir_items = flow_prefix;
+            let mut lookup_stopped = Budget::new(lookup_limits);
+            assert!(matches!(
+                generic_array_creation_return_candidate(
+                    &program,
+                    expression,
+                    ssa,
+                    &operations,
+                    &request,
+                    &mut lookup_stopped,
+                ),
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    at: Some(37),
+                    ..
+                })
+            ));
+
+            let mut exhausted_limits = limits();
+            exhausted_limits.ir_items = 0;
+            let mut exhausted = Budget::new(exhausted_limits);
+            assert!(matches!(
+                generic_array_creation_return_candidate(
+                    &program,
+                    expression,
+                    ssa,
+                    &operations,
+                    &request,
+                    &mut exhausted,
+                ),
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    at: Some(1),
+                    ..
+                })
+            ));
+
+            let token = CancellationToken::new();
+            token.cancel();
+            let mut cancelled = Budget::with_cancellation_token(limits(), token);
+            assert_eq!(
+                generic_array_creation_return_candidate(
+                    &program,
+                    expression,
+                    ssa,
+                    &operations,
+                    &request,
+                    &mut cancelled,
+                ),
+                Err(StopReason::Cancelled { at: Some(1) })
+            );
+        }
+    }
+
+    fn assert_array_candidate_refuses(
+        program: &build::Program,
+        ssa: &SsaTable,
+        operations: &Operations,
+        request: &RecoveryRequest<'_>,
+    ) {
+        let StmtKind::Return {
+            value: Some(expression),
+        } = &program.stmts[0].kind
+        else {
+            panic!("mutated fixture remains a single return");
+        };
+        assert_eq!(
+            generic_array_creation_return_candidate(
+                program,
+                expression,
+                ssa,
+                operations,
+                request,
+                &mut Budget::new(limits()),
+            )
+            .expect("a negative shape is an ordinary candidate refusal"),
+            None
         );
     }
 }

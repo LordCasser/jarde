@@ -1,14 +1,29 @@
 //! EM-18 heterogeneous reference-array initializer proof and constructor-composition boundary.
 //!
 //! `factory` is the complete positive type-proof family: the array initializer's actual element
-//! is a typed call result. `direct` is a verifier-valid family with several now-recovered direct
-//! constructor/store methods plus deliberately incomplete array-child controls. The latter keep
-//! the complete class report from being treated as accepted. Earlier direct reference-element
+//! is a typed call result. `direct` is a verifier-valid family with recovered constructor/store
+//! methods and nested covariant child-array initializers. Code-derived negative controls stay
+//! separate and are never executed. Earlier direct reference-element
 //! shapes have a separate seven-class generated-source integration fixture; the newly supported
 //! primitive-conversion wrapper arguments are pinned here and in the numeric conversion family
 //! test `p3_constructor_primitive_conversion_arguments.rs`.
 
 use jarde::*;
+use jarde_java::DeclaringClass;
+use jarde_java::pass::JAVA_8;
+use jarde_jvm::engine::analyze_method_ir;
+use jarde_jvm::environment::ResolutionEnvironment;
+use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+use jarde_reader::budget::Budget;
+use jarde_reader::classfile::{CpEntryKind, class_facts, method_code_facts};
+use jarde_reader::model::{
+    ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
+    PhysicalVariant,
+};
+use jarde_reader::view::{
+    DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode, MultiReleasePolicy,
+    PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty, RuntimeView,
+};
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
 use std::fs;
 use std::io::{Cursor, Write};
@@ -393,12 +408,63 @@ const DIRECT_SITE_PRESENTATIONS: &[(&str, &[DirectPresentedSite])] = &[
             },
         ],
     ),
+    (
+        "ownGridDirect",
+        &[
+            DirectPresentedSite {
+                class: "DerivedA",
+                head: 12,
+                dup: 15,
+                constructor: 20,
+                argument: 17,
+                store: 23,
+            },
+            DirectPresentedSite {
+                class: "DerivedB",
+                head: 33,
+                dup: 36,
+                constructor: 41,
+                argument: 38,
+                store: 44,
+            },
+        ],
+    ),
 ];
 
-const DIRECT_SITE_REFUSALS: &[(&str, &[(&str, &str)])] = &[(
-    "ownGridDirect",
-    &[("DerivedA", "jre_new_shape"), ("DerivedB", "jre_new_shape")],
-)];
+const DIRECT_GRID_FACTS: &[(&str, &[u32], &[u32], &[u32], &[&str])] = &[
+    (
+        "numberGridDirect",
+        &[1, 7, 24],
+        &[19, 20, 37, 38],
+        &[13, 16, 30, 33, 34],
+        &[
+            "new java.lang.Number[][]",
+            "new java.lang.Integer[]",
+            "new java.lang.Long[]",
+            "(long) mark(2)",
+        ],
+    ),
+    (
+        "collectionGridDirect",
+        &[1, 7, 24],
+        &[19, 20, 36, 37],
+        &[13, 16, 30, 33],
+        &[
+            "new java.util.Collection[][]",
+            "new java.util.ArrayList[]",
+            "new java.util.HashSet[]",
+            "listValue(",
+            "setValue(",
+        ],
+    ),
+    (
+        "ownGridDirect",
+        &[1, 7, 28],
+        &[23, 24, 44, 45],
+        &[12, 15, 17, 20, 33, 36, 38, 41],
+        &["new Base[][]", "new DerivedA[]", "new DerivedB[]"],
+    ),
+];
 
 fn budget() -> Budget {
     task_budget(&[]).expect("the task defaults are bounded")
@@ -478,6 +544,314 @@ fn class_source(snapshot: &artifact::ArtifactSnapshot, class: &str) -> ClassSour
         OperationOutcome::Performed(report) => report,
         other => panic!("{class} class source did not complete: {other:?}"),
     }
+}
+
+struct OwnGridCodeLayout {
+    code_start: usize,
+    code_length: usize,
+    code_length_offset: usize,
+    attribute_length_offset: usize,
+    attribute_content_length: usize,
+    max_stack: u16,
+}
+
+fn own_grid_code_layout(class: &[u8]) -> OwnGridCodeLayout {
+    let mut read_budget = budget();
+    let facts = class_facts(class, &mut read_budget).expect("direct Main class facts");
+    let method = facts
+        .methods
+        .iter()
+        .find(|method| {
+            method.name.raw().0 == b"ownGridDirect" && method.descriptor.raw().0 == b"()[[LBase;"
+        })
+        .expect("ownGridDirect descriptor anchor");
+    let code_attributes: Vec<_> = method
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0 == b"Code")
+        .collect();
+    let [code_attribute] = code_attributes.as_slice() else {
+        panic!("ownGridDirect has exactly one Code attribute");
+    };
+    let mut code_budget = budget();
+    let code =
+        method_code_facts(class, method, &mut code_budget).expect("ownGridDirect code facts");
+    let content_start =
+        usize::try_from(code_attribute.content_span.start).expect("Code content offset fits usize");
+    assert_eq!(
+        usize::try_from(code.code_span.start).expect("bytecode offset fits usize"),
+        content_start + 8,
+        "the Code header precedes its first opcode"
+    );
+    assert_eq!(
+        code.code_span.length, 47,
+        "frozen ownGridDirect Code length"
+    );
+    let code_start = content_start + 8;
+    let code_length_offset = content_start + 4;
+    let attribute_length_offset =
+        usize::try_from(code_attribute.span.start).expect("attribute offset fits usize") + 2;
+    let code_length = read_u32(class, code_length_offset) as usize;
+    assert_eq!(code_length, code.code_span.length as usize);
+    let code_end = code_start + code_length;
+    assert_eq!(
+        read_u16(class, code_end),
+        0,
+        "ownGridDirect has no handlers"
+    );
+    assert_eq!(
+        read_u16(class, code_end + 2),
+        0,
+        "ownGridDirect has no Code subattributes"
+    );
+    assert_eq!(
+        code_end + 4,
+        content_start + usize::try_from(code_attribute.content_span.length).unwrap(),
+        "Code content ends after its terminal counts"
+    );
+    let max_stack = read_u16(class, content_start);
+    assert_eq!(max_stack, 9, "frozen direct class max_stack");
+    OwnGridCodeLayout {
+        code_start,
+        code_length,
+        code_length_offset,
+        attribute_length_offset,
+        attribute_content_length: usize::try_from(code_attribute.content_span.length)
+            .expect("Code content length fits usize"),
+        max_stack,
+    }
+}
+
+fn own_grid_constant(class: &[u8], wanted: impl Fn(&CpEntryKind) -> bool) -> u16 {
+    let mut read_budget = budget();
+    class_facts(class, &mut read_budget)
+        .expect("direct Main class facts")
+        .constant_pool
+        .iter()
+        .find(|entry| wanted(&entry.kind))
+        .expect("ownGridDirect references the required constant")
+        .index
+}
+
+fn read_u16(bytes: &[u8], at: usize) -> u16 {
+    u16::from_be_bytes(bytes[at..at + 2].try_into().expect("u2 is in range"))
+}
+
+fn read_u32(bytes: &[u8], at: usize) -> u32 {
+    u32::from_be_bytes(bytes[at..at + 4].try_into().expect("u4 is in range"))
+}
+
+fn write_u16(bytes: &mut [u8], at: usize, value: u16) {
+    bytes[at..at + 2].copy_from_slice(&value.to_be_bytes());
+}
+
+fn write_u32(bytes: &mut [u8], at: usize, value: u32) {
+    bytes[at..at + 4].copy_from_slice(&value.to_be_bytes());
+}
+
+fn own_grid_code_variant(class: &[u8], kind: OwnGridVariant) -> Vec<u8> {
+    let layout = own_grid_code_layout(class);
+    let mut code = class[layout.code_start..layout.code_start + layout.code_length].to_vec();
+    match kind {
+        OwnGridVariant::Reordered => {
+            assert_eq!(
+                (code[5], code[26]),
+                (0x03, 0x04),
+                "parent indices are 0 then 1"
+            );
+            code[5] = 0x04;
+            code[26] = 0x03;
+        }
+        OwnGridVariant::ExtraReader => {
+            assert_eq!(code[23], 0x53, "child element store is at BCI 23");
+            code.splice(24..24, [0x59, 0x57]);
+        }
+        OwnGridVariant::InterleavedEffect => {
+            assert_eq!(code[23], 0x53, "child element store is at BCI 23");
+            let method = own_grid_constant(class, |entry| {
+                matches!(entry, CpEntryKind::MethodRef { owner, name, descriptor, .. }
+                    if owner.0 == b"Main" && name.0 == b"mark" && descriptor.0 == b"(I)I")
+            });
+            let mut effect = vec![0x04, 0xb8];
+            effect.extend_from_slice(&method.to_be_bytes());
+            effect.push(0x57);
+            assert_eq!(effect.len(), 5, "iconst_1; invokestatic; pop is five bytes");
+            code.splice(24..24, effect);
+        }
+        OwnGridVariant::ObjectChild => {
+            assert_eq!(code[7], 0xbd, "DerivedA child uses anewarray at BCI 7");
+            let object = own_grid_constant(
+                class,
+                |entry| matches!(entry, CpEntryKind::Class { name, .. } if name.0 == b"java/lang/Object"),
+            );
+            write_u16(&mut code, 8, object);
+        }
+    }
+
+    let mut variant = class.to_vec();
+    let code_end = layout.code_start + layout.code_length;
+    variant.splice(layout.code_start..code_end, code.iter().copied());
+    let code_length = u32::try_from(code.len()).expect("patched Code length fits u4");
+    write_u32(&mut variant, layout.code_length_offset, code_length);
+    let content_length = layout
+        .attribute_content_length
+        .checked_sub(layout.code_length)
+        .and_then(|length| length.checked_add(code.len()))
+        .expect("patched Code attribute length fits usize");
+    let old_attribute_length = read_u32(class, layout.attribute_length_offset);
+    assert_eq!(
+        old_attribute_length as usize,
+        layout.attribute_content_length
+    );
+    write_u32(
+        &mut variant,
+        layout.attribute_length_offset,
+        u32::try_from(content_length).expect("Code attribute length fits u4"),
+    );
+    assert_eq!(
+        variant.len(),
+        class.len() - layout.code_length + code.len(),
+        "only ownGridDirect Code bytes and its length fields change"
+    );
+    if matches!(
+        kind,
+        OwnGridVariant::ExtraReader | OwnGridVariant::InterleavedEffect
+    ) {
+        assert!(
+            layout.max_stack >= 4,
+            "the existing stack bound covers the insertion"
+        );
+    }
+    let expected_delta = match kind {
+        OwnGridVariant::Reordered | OwnGridVariant::ObjectChild => 0,
+        OwnGridVariant::ExtraReader => 2,
+        OwnGridVariant::InterleavedEffect => 5,
+    };
+    assert_eq!(
+        code.len(),
+        47 + expected_delta,
+        "the patched control has its expected exact Code length"
+    );
+    variant
+}
+
+#[derive(Clone, Copy)]
+enum OwnGridVariant {
+    Reordered,
+    ExtraReader,
+    InterleavedEffect,
+    ObjectChild,
+}
+
+fn recovered_direct_grid_body(
+    files: &[(&str, &[u8])],
+    variant: Option<OwnGridVariant>,
+) -> RecoveryReport {
+    let patched_main = variant.map(|kind| {
+        own_grid_code_variant(
+            files
+                .iter()
+                .find(|(name, _)| *name == "Main.class")
+                .expect("Main.class")
+                .1,
+            kind,
+        )
+    });
+    let selected: Vec<_> = files
+        .iter()
+        .map(|(name, bytes)| {
+            if *name == "Main.class" {
+                (*name, patched_main.as_deref().unwrap_or(*bytes))
+            } else {
+                (*name, *bytes)
+            }
+        })
+        .collect();
+    let jar = archive(&selected);
+    let (snapshot, _) = opened(&jar, "Main");
+    let report = class_source(&snapshot, "Main");
+    body(&report, "ownGridDirect").clone()
+}
+
+fn method_only_own_grid(class: &[u8]) -> RecoveryReport {
+    let mut open_budget = budget();
+    let snapshot = Engine::new()
+        .open(ArtifactInput::bytes(class.to_vec()), &mut open_budget)
+        .expect("standalone Main opens");
+    let facts = class_facts(class, &mut open_budget).expect("standalone Main facts");
+    let header = facts
+        .methods
+        .iter()
+        .find(|method| {
+            method.name.raw().0 == b"ownGridDirect" && method.descriptor.raw().0 == b"()[[LBase;"
+        })
+        .expect("ownGridDirect method-only anchor");
+    let definition = PhysicalDefinitionId {
+        location: PhysicalClassLocation::StandaloneRoot {
+            snapshot: snapshot.id().clone(),
+        },
+        class_bytes: ClassBytesId {
+            digest: Digest(blake3::hash(class).to_hex().to_string()),
+            length: u64::try_from(class.len()).expect("class length fits u64"),
+        },
+        variant: PhysicalVariant::Base,
+    };
+    let domain = LoadDomain {
+        loader: LoaderId("app".to_owned()),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots: vec![LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        }],
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
+    };
+    let method = PhysicalMethodId {
+        owner: definition,
+        name: JvmBytes(b"ownGridDirect".to_vec()),
+        descriptor: JvmBytes(b"()[[LBase;".to_vec()),
+    };
+    let request = MethodAnalysisRequest {
+        environment: ResolutionEnvironment {
+            runtime: RuntimeView {
+                physical: PhysicalView {
+                    snapshot: snapshot.id().clone(),
+                    scope: PhysicalScope::SnapshotAll,
+                },
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                load_domain: domain.clone(),
+            },
+            domains: vec![domain],
+            providers: Vec::new(),
+        },
+        method,
+        stages: AnalysisStage::ALL.to_vec(),
+    };
+    let mut analysis_budget = budget();
+    let analysis = analyze_method_ir(
+        std::slice::from_ref(&snapshot),
+        &request,
+        &mut analysis_budget,
+    )
+    .expect("method-only SSA analysis completes");
+    let recovery_facts = RecoveryFacts::new(
+        MethodFacts::new("ownGridDirect".to_owned(), "()[[LBase;".to_owned(), 0)
+            .with_access_flags(header.access_flags)
+            .with_declaring_class(DeclaringClass::new(
+                String::from_utf8_lossy(&facts.this_class.raw().0).into_owned(),
+                facts.access_flags,
+            )),
+    );
+    recover(
+        &RecoveryRequest::new(analysis.ir(), &recovery_facts, JAVA_8)
+            .with_evidence(RecoveryEvidenceRequest::essential()),
+        &mut analysis_budget,
+    )
 }
 
 fn method<'a>(report: &'a ClassSourceReport, name: &str) -> &'a ClassSourceMethod {
@@ -719,8 +1093,33 @@ fn direct_new_family_pins_recovered_constructor_methods_and_remaining_controls()
         let (snapshot, _) = opened(&jar, "Main");
         let report = class_source(&snapshot, "Main");
         assert!(
-            report.text.contains("@bytecode"),
-            "{}/Main remains an incomplete class-source report even though several methods recover",
+            !report.text.contains("@bytecode") && !report.text.contains("jarde_refused_body"),
+            "{}/Main must be complete after all direct grids recover:\n{}",
+            leg.name,
+            report.text
+        );
+        let collection_declaration = method(&report, "collectionGridDirect")
+            .declaration
+            .as_deref();
+        assert_eq!(
+            collection_declaration,
+            Some("public static java.util.Collection<?>[][] collectionGridDirect()"),
+            "{}/collectionGridDirect must project the source Signature without changing its body",
+            leg.name
+        );
+        assert!(
+            !method(&report, "collectionGridDirect")
+                .text
+                .contains("generic Signature projection refused"),
+            "{}/collectionGridDirect retained a Signature refusal:\n{}",
+            leg.name,
+            method(&report, "collectionGridDirect").text
+        );
+        assert!(
+            body(&report, "collectionGridDirect")
+                .text
+                .contains("new java.util.Collection[][]"),
+            "{}/collectionGridDirect must keep the raw array creation text",
             leg.name
         );
         let original = Scratch::new(&format!("direct-{}-oracle", leg.name));
@@ -844,98 +1243,201 @@ fn direct_new_family_pins_recovered_constructor_methods_and_remaining_controls()
             boxed.text
         );
 
-        for (method_name, expected_sites) in DIRECT_SITE_REFUSALS {
-            let recovered = body(&report, method_name);
-            let candidates: Vec<_> = recovered
-                .news
-                .iter()
-                .filter(|site| {
-                    expected_sites
-                        .iter()
-                        .any(|(class, _)| *class == site.class.as_str())
-                })
-                .collect();
-            assert_eq!(
-                candidates.len(),
-                expected_sites.len(),
-                "{}/{method_name} did not retain every constructor site: {:?}",
-                leg.name,
-                recovered.news
-            );
-            for (candidate, (expected_class, expected_code)) in
-                candidates.into_iter().zip(*expected_sites)
-            {
-                assert_eq!(
-                    candidate.class.as_str(),
-                    *expected_class,
-                    "{}/{method_name}: {candidate:?}",
-                    leg.name
-                );
-                assert!(
-                    !candidate.presented,
-                    "{}/{method_name} unexpectedly composed direct new into aastore: {candidate:?}",
-                    leg.name
-                );
-                let refusal = candidate
-                    .refusal
-                    .as_ref()
-                    .expect("unpresented new site keeps its actual refusal");
-                assert_eq!(
-                    refusal.code, *expected_code,
-                    "{}/{method_name}: {refusal:?}",
-                    leg.name
-                );
-                if *expected_code == "jre_new_shape" {
-                    assert!(
-                        refusal
-                            .message
-                            .contains("only by instructions this build quotes"),
-                        "{}/{method_name} lost the actual sole-aastore-reader reason: {refusal:?}",
-                        leg.name
-                    );
-                } else {
-                    assert!(
-                        refusal.message.contains("PrimitiveConversion")
-                            && refusal.message.contains("between the allocation's copy"),
-                        "{}/{method_name} lost the actual interleaved conversion reason: {refusal:?}",
-                        leg.name
-                    );
-                }
-                assert!(
-                    refusal.message.contains("BCI"),
-                    "refusal message must identify the actual bytecode site: {refusal:?}"
-                );
-            }
-            assert!(
-                recovered.quality == Quality::Fallback || recovered.text.contains("@bytecode"),
-                "{}/{method_name} should remain an explicit incomplete composition control",
-                leg.name
-            );
-        }
-        for method_name in ["numberGridDirect", "collectionGridDirect"] {
+        for (method_name, allocations, stores, producers, fragments) in DIRECT_GRID_FACTS {
             let recovered = body(&report, method_name);
             assert_eq!(
                 recovered.quality,
-                Quality::Fallback,
-                "{}/{method_name} must remain an incomplete array-child composition control",
-                leg.name
-            );
-            assert!(
-                recovered.text.contains("@bytecode"),
-                "{}/{method_name} must retain its explicit physical fallback",
-                leg.name
-            );
-            assert!(
-                recovered.news.is_empty(),
-                "{}/{method_name} contains no object-constructor `new` site; array allocation is tracked separately: {:?}",
+                Quality::Structured,
+                "{}/{method_name} quality: {:?}",
                 leg.name,
-                recovered.news
+                recovered
+            );
+            assert_eq!(
+                recovered.representation,
+                Representation::Java,
+                "{}/{method_name} representation",
+                leg.name
+            );
+            assert!(
+                !recovered.text.contains("@bytecode")
+                    && !recovered.text.contains("jarde_refused_body"),
+                "{}/{method_name} retained a refusal:\n{}",
+                leg.name,
+                recovered.text
+            );
+            assert!(
+                fragments
+                    .iter()
+                    .all(|fragment| recovered.text.contains(fragment)),
+                "{}/{method_name} lost an expected typed initializer fragment:\n{}",
+                leg.name,
+                recovered.text
+            );
+            assert_eq!(
+                recovered.text.matches("mark(").count(),
+                2,
+                "{}/{method_name} must evaluate each marked child element once:\n{}",
+                leg.name,
+                recovered.text
+            );
+            for bci in allocations
+                .iter()
+                .chain(stores.iter())
+                .chain(producers.iter())
+            {
+                assert!(
+                    !recovered.source_map.of_bci(*bci).is_empty(),
+                    "{}/{method_name} omitted allocation/store/constructor/conversion source BCI {bci}: {:?}",
+                    leg.name,
+                    recovered.source_map.segments()
+                );
+            }
+        }
+        for name in ["numberGridDirect", "collectionGridDirect"] {
+            assert!(
+                body(&report, name).news.is_empty(),
+                "{}/{name} has no object-constructor records: {:?}",
+                leg.name,
+                body(&report, name).news
             );
         }
-        // The complete direct class still has array-child refusal controls. The positive direct
-        // methods above are per-method evidence; they do not make the entire class complete. The
-        // sibling seven-class integration checks the separate complete generated-source family
-        // and runtime semantics.
+
+        // Compile all six complete direct-family source outputs in an empty source/class path and
+        // compare a verifier run with the frozen original. This is the complete-family contract,
+        // not just three locally structured method bodies.
+        let recovered_dir = original.path().join("recovered");
+        fs::create_dir_all(&recovered_dir).expect("recovered source directory exists");
+        for class in class_names() {
+            if class == "Main" {
+                fs::write(recovered_dir.join("Main.java"), &report.text)
+                    .expect("complete Main source is saved");
+            } else {
+                let companion = class_source(&snapshot, class);
+                assert!(
+                    !companion.text.contains("@bytecode")
+                        && !companion.text.contains("jarde_refused_body"),
+                    "{}/{class} must be a complete family source:\n{}",
+                    leg.name,
+                    companion.text
+                );
+                fs::write(recovered_dir.join(format!("{class}.java")), companion.text)
+                    .expect("complete companion source is saved");
+            }
+        }
+        let compile = compile_complete(
+            &recovered_dir,
+            &[
+                "Main.java",
+                "Base.java",
+                "Mid.java",
+                "DerivedA.java",
+                "DerivedB.java",
+                "LocalInterface.java",
+            ],
+        );
+        assert!(
+            compile.status.success(),
+            "direct {} complete family did not compile:\n{}\n{}",
+            leg.name,
+            String::from_utf8_lossy(&compile.stdout),
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let recovered_run = run_verified(&recovered_dir.join("classes"), "Main");
+        assert!(
+            recovered_run.status.success(),
+            "direct {} recovered family failed -Xverify:all:\n{}\n{}",
+            leg.name,
+            String::from_utf8_lossy(&recovered_run.stdout),
+            String::from_utf8_lossy(&recovered_run.stderr)
+        );
+        assert_eq!(recovered_run.status.code(), oracle.status.code());
+        assert_eq!(recovered_run.stdout, oracle.stdout, "{} stdout", leg.name);
+        assert_eq!(recovered_run.stderr, oracle.stderr, "{} stderr", leg.name);
+    }
+}
+
+#[test]
+fn direct_child_array_controls_keep_order_reader_effect_and_type_boundaries() {
+    for leg in LEGS.iter().filter(|leg| leg.family == "direct") {
+        for (variant, label) in [
+            (OwnGridVariant::Reordered, "reordered parent indices"),
+            (OwnGridVariant::ExtraReader, "extra child-array reader"),
+            (
+                OwnGridVariant::InterleavedEffect,
+                "interleaved child-parent effect",
+            ),
+        ] {
+            let body = recovered_direct_grid_body(leg.files, Some(variant));
+            assert_eq!(
+                body.quality,
+                Quality::Fallback,
+                "{}/{label} must reject the complete ownGridDirect body:\n{}",
+                leg.name,
+                body.text
+            );
+            assert!(
+                body.text.contains("@bytecode") && !body.text.contains("new Base[][]"),
+                "{}/{label} must not publish a partial nested initializer:\n{}",
+                leg.name,
+                body.text
+            );
+        }
+
+        let object_array = recovered_direct_grid_body(leg.files, Some(OwnGridVariant::ObjectChild));
+        assert_eq!(
+            object_array.quality,
+            Quality::Fallback,
+            "{}/Object[] child must fail Java type presentation:\n{}",
+            leg.name,
+            object_array.text
+        );
+        assert!(
+            object_array.text.contains("java.lang.Object[]")
+                && object_array.text.contains("Base[]")
+                && object_array.text.contains("@bytecode")
+                && !object_array.text.contains("new Base[][]"),
+            "{}/Object[] child must preserve the actual incompatible type pair:\n{}",
+            leg.name,
+            object_array.text
+        );
+
+        // Missing Mid removes the selected DerivedA -> Base path. Other direct/platform facts
+        // remain available, while the complete own-grid body cannot borrow a different route.
+        let files: Vec<_> = leg
+            .files
+            .iter()
+            .copied()
+            .filter(|(name, _)| *name != "Mid.class")
+            .collect();
+        assert_eq!(files.len(), 5);
+        let jar = archive(&files);
+        let (snapshot, _) = opened(&jar, "Main");
+        let report = class_source(&snapshot, "Main");
+        let missing_mid = body(&report, "ownGridDirect");
+        assert_eq!(missing_mid.quality, Quality::Fallback);
+        assert!(
+            missing_mid.text.contains("@bytecode") && !missing_mid.text.contains("new Base[][]"),
+            "{}/missing Mid cannot present the own-grid body:\n{}",
+            leg.name,
+            missing_mid.text
+        );
+
+        // Method-only recovery has no selected snapshot hierarchy facts. Even though the input
+        // class carries the caller bytecode, it cannot infer DerivedA -> Base from its name.
+        let method_only = method_only_own_grid(
+            leg.files
+                .iter()
+                .find(|(name, _)| *name == "Main.class")
+                .expect("Main class")
+                .1,
+        );
+        assert_eq!(method_only.quality, Quality::Fallback);
+        assert!(
+            method_only.text.contains("@bytecode") && !method_only.text.contains("new Base[][]"),
+            "{}/method-only recovery cannot infer the hierarchy:\n{}",
+            leg.name,
+            method_only.text
+        );
     }
 }
 

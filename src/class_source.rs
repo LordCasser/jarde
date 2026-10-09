@@ -7557,6 +7557,24 @@ fn ordinary_parameterized_declaration(
                     (parsed.parameters.is_empty() && result.as_deref() == Some(expected))
                         .then_some(Vec::new())
                 }
+                GenericReturnValue::ArrayCreation { array_type, .. }
+                    if parsed.type_parameters.is_empty()
+                        && parsed.parameters.is_empty()
+                        && signature.parameters.is_empty()
+                        && parsed.throws.is_empty()
+                        && attributes.throws_raw.is_empty()
+                        && throws.is_empty()
+                        && candidate.parameters.is_empty()
+                        && wildcard_array_return_matches(
+                            array_type,
+                            parsed.result.as_ref(),
+                            signature.returns.as_deref(),
+                            budget,
+                        )? =>
+                {
+                    Some(Vec::new())
+                }
+                GenericReturnValue::ArrayCreation { .. } => None,
             }
         }
         .ok_or_else(|| {
@@ -7649,6 +7667,66 @@ fn ordinary_parameterized_declaration(
         arguments.join(", "),
         throws_clause(&throws),
     ))
+}
+
+/// Accept only `T<?>[][]...` when the same-run creation and reader-spelled physical return name
+/// state the same array shape. Erasure validity itself is established by the reader before this
+/// declaration projection is called; this gate narrows that proof to one unbounded wildcard leaf.
+fn wildcard_array_return_matches(
+    actual_array_type: &str,
+    signature_result: Option<&SignatureType>,
+    physical_return_type: Option<&str>,
+    budget: &mut Budget,
+) -> Result<bool> {
+    let Some(physical_return_type) = physical_return_type else {
+        return Ok(false);
+    };
+    if actual_array_type != physical_return_type {
+        return Ok(false);
+    }
+
+    let mut physical_leaf = actual_array_type;
+    let mut physical_rank = 0usize;
+    while let Some(leaf) = physical_leaf.strip_suffix("[]") {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        physical_leaf = leaf;
+        physical_rank = physical_rank.saturating_add(1);
+    }
+    if physical_rank == 0 || physical_leaf.is_empty() {
+        return Ok(false);
+    }
+
+    let Some(mut signature_leaf) = signature_result else {
+        return Ok(false);
+    };
+    let mut signature_rank = 0usize;
+    while let SignatureType::Array(component) = signature_leaf {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        signature_leaf = component;
+        signature_rank = signature_rank.saturating_add(1);
+    }
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    let SignatureType::Class(class) = signature_leaf else {
+        return Ok(false);
+    };
+    let [segment] = class.segments.as_slice() else {
+        return Ok(false);
+    };
+    if segment.arguments.is_empty() {
+        return Ok(false);
+    }
+    let mut all_unbounded = true;
+    for argument in &segment.arguments {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        all_unbounded &= matches!(argument, TypeArgument::Any);
+    }
+    Ok(all_unbounded
+        && signature_rank == physical_rank
+        && simple_generic_class_name(&segment.binary_name)? == physical_leaf)
 }
 
 /// The first narrow empty-body parameter projection: one static `List` wildcard whose bound has
@@ -8677,6 +8755,7 @@ fn generic_method_declaration(
         }
         GenericReturnValue::MemberCreation { .. } => false,
         GenericReturnValue::StaticMemberCreation { .. } => false,
+        GenericReturnValue::ArrayCreation { .. } => false,
         GenericReturnValue::TypedFunctional { .. } => false,
     };
     if !return_proved {
@@ -14432,6 +14511,10 @@ mod tests {
     use super::*;
     use jarde_java::report::GenericConstructorFieldWrite;
 
+    const ARRAY_RETURN_CLASS: &[u8] = include_bytes!(
+        "../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class"
+    );
+
     const MEMBER_ANNOTATION_TARGET: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
     );
@@ -14569,6 +14652,141 @@ mod tests {
             dependency_depth: u64::MAX,
             elapsed_millis: u64::MAX,
         }
+    }
+
+    fn array_return_projection_probe()
+    -> (ClassSourceMethod, MemberAttributes, GenericReturnCandidate) {
+        let mut setup_budget = Budget::new(unlimited_annotation_test_limits());
+        let snapshot = jarde_reader::artifact::ArtifactSnapshot::open(
+            jarde_reader::artifact::ArtifactInput::bytes(ARRAY_RETURN_CLASS.to_vec()),
+            &mut setup_budget,
+        )
+        .expect("the direct-array class opens");
+        let domain = jarde_reader::view::LoadDomain {
+            loader: jarde_reader::view::LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: jarde_reader::view::DelegationPolicy::ParentFirst,
+            roots: vec![jarde_reader::view::LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: jarde_reader::view::ModuleMode::ClassPath,
+            external_override: jarde_reader::view::RuntimeUncertainty::None,
+            runtime_transformation: jarde_reader::view::RuntimeUncertainty::None,
+        };
+        let method = PhysicalMethodId {
+            owner: jarde_reader::model::PhysicalDefinitionId {
+                location: jarde_reader::model::PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: jarde_reader::model::ClassBytesId {
+                    digest: jarde_reader::model::Digest(
+                        blake3::hash(ARRAY_RETURN_CLASS).to_hex().to_string(),
+                    ),
+                    length: u64::try_from(ARRAY_RETURN_CLASS.len()).expect("fixture length fits"),
+                },
+                variant: jarde_reader::model::PhysicalVariant::Base,
+            },
+            name: jarde_reader::model::JvmBytes(b"collectionGridDirect".to_vec()),
+            descriptor: jarde_reader::model::JvmBytes(b"()[[Ljava/util/Collection;".to_vec()),
+        };
+        let analysis = jarde_jvm::engine::analyze_method_ir(
+            std::slice::from_ref(&snapshot),
+            &jarde_jvm::ir::MethodAnalysisRequest {
+                environment: jarde_jvm::environment::ResolutionEnvironment {
+                    runtime: jarde_reader::view::RuntimeView {
+                        physical: jarde_reader::view::PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: jarde_reader::view::PhysicalScope::SnapshotAll,
+                        },
+                        profile: jarde_reader::view::RuntimeProfile {
+                            java_release: 8,
+                            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                            layout: jarde_reader::view::LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method: method.clone(),
+                stages: jarde_jvm::ir::AnalysisStage::ALL.to_vec(),
+            },
+            &mut setup_budget,
+        )
+        .expect("the physical array method analyzes");
+        let recovery_facts = jarde_java::RecoveryFacts::new(
+            jarde_java::MethodFacts::new("collectionGridDirect", "()[[Ljava/util/Collection;", 0)
+                .with_access_flags(0x0009)
+                .with_declaring_class(jarde_java::DeclaringClass::new("Main", 0x0021)),
+        );
+        let request = jarde_java::RecoveryRequest::new(
+            analysis.ir(),
+            &recovery_facts,
+            jarde_java::pass::JAVA_8,
+        );
+        let mut recovery_budget = Budget::new(unlimited_annotation_test_limits());
+        let recovered = jarde_java::report::recover_for_class_source(
+            &request,
+            &mut recovery_budget,
+            true,
+            false,
+        );
+        let candidate = recovered
+            .generic_return
+            .clone()
+            .expect("the frozen complete body supplies an array candidate");
+        assert!(matches!(
+            candidate.value,
+            GenericReturnValue::ArrayCreation { .. }
+        ));
+        let jvm_string = |value: &[u8]| {
+            let text = std::str::from_utf8(value).expect("probe strings are ASCII");
+            serde_json::from_value(serde_json::json!({
+                "raw": value,
+                "utf16": value.iter().map(|byte| u16::from(*byte)).collect::<Vec<_>>(),
+                "escaped": text,
+            }))
+            .expect("valid probe JVM string")
+        };
+        let descriptor_bytes = method.descriptor.0.clone();
+        let item = MethodItem {
+            index: 0,
+            identity: method,
+            name: jvm_string(b"collectionGridDirect"),
+            descriptor: jvm_string(&descriptor_bytes),
+            access_flags: 0x0009,
+            body: crate::facade::MemberBodyEvidence::CodeAttribute {
+                content_span: jarde_reader::model::ByteSpan::new(0, 0),
+            },
+        };
+        let spelled = Spelled {
+            declaration: Some(
+                "public static java.util.Collection[][] collectionGridDirect()".to_owned(),
+            ),
+            marker: None,
+            annotations: MemberAnnotationUses::default(),
+            parameter_annotations: ParameterAnnotationUses::default(),
+            type_annotations: TypeAnnotationUses::default(),
+        };
+        let run_facts = ClassSourceRunFacts {
+            execution: recovered.report.execution.clone(),
+            diagnostics: u64::try_from(recovered.report.diagnostics.len())
+                .expect("diagnostic count fits"),
+        };
+        let record = ClassSourceMethod::recovered(
+            item,
+            spelled,
+            Box::new(recovered.report),
+            run_facts,
+            Some(candidate.clone()),
+        );
+        let attributes = MemberAttributes {
+            default: None,
+            throws: Vec::new(),
+            throws_raw: Vec::new(),
+            parameters: None,
+        };
+        (record, attributes, candidate)
     }
 
     fn generic_void_probe() -> (
@@ -15259,6 +15477,213 @@ mod tests {
             .is_none(),
             "an invented name for a wide slot cannot alias a source parameter"
         );
+    }
+
+    #[test]
+    fn wildcard_array_return_projection_requires_the_same_reifiable_array_shape() {
+        let physical = "java.util.Collection[][]";
+        for (signature, physical, expected) in [
+            (
+                b"()[[Ljava/util/Collection<*>;".as_slice(),
+                "java.util.Collection[][]",
+                true,
+            ),
+            (
+                b"()[Ljava/util/Map<**>;".as_slice(),
+                "java.util.Map[]",
+                true,
+            ),
+            (
+                b"()[[Ljava/util/Collection<Ljava/lang/String;>;".as_slice(),
+                "java.util.Collection[][]",
+                false,
+            ),
+            (
+                b"()[[Ljava/util/Collection<+Ljava/lang/Number;>;".as_slice(),
+                "java.util.Collection[][]",
+                false,
+            ),
+            (
+                b"()[[Ljava/util/Collection<-Ljava/lang/String;>;".as_slice(),
+                "java.util.Collection[][]",
+                false,
+            ),
+            (b"()TT;".as_slice(), "java.util.Collection[][]", false),
+            (
+                b"()[Ljava/util/Collection<*>;".as_slice(),
+                "java.util.Collection[][]",
+                false,
+            ),
+            (
+                b"()[[Ljava/util/List<*>;".as_slice(),
+                "java.util.Collection[][]",
+                false,
+            ),
+            (b"()V".as_slice(), "java.util.Collection[][]", false),
+        ] {
+            let mut budget = Budget::new(unlimited_annotation_test_limits());
+            let parsed = parse_method_signature(signature, &mut budget).unwrap();
+            assert_eq!(
+                wildcard_array_return_matches(
+                    physical,
+                    parsed.result.as_ref(),
+                    Some(physical),
+                    &mut budget,
+                )
+                .unwrap(),
+                expected,
+                "Signature shape {signature:?}"
+            );
+        }
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let parsed = parse_method_signature(b"()[[Ljava/util/Collection<*>;", &mut budget).unwrap();
+        assert!(
+            !wildcard_array_return_matches(
+                "java.util.Collection[]",
+                parsed.result.as_ref(),
+                Some(physical),
+                &mut budget,
+            )
+            .unwrap(),
+            "the same-run array spelling must equal the physical descriptor spelling"
+        );
+    }
+
+    #[test]
+    fn ordinary_parameterized_declaration_requires_array_candidate_and_unbounded_wildcards() {
+        let (record, attributes, candidate) = array_return_projection_probe();
+        let physical_descriptor = record.item.descriptor.raw().0.as_slice();
+        for (signature, erasure_matches, accepted) in [
+            (b"()[[Ljava/util/Collection<*>;".as_slice(), true, true),
+            (
+                b"()[[Ljava/util/Collection<Ljava/lang/Object;>;".as_slice(),
+                true,
+                false,
+            ),
+            (
+                b"()[[Ljava/util/Collection<+Ljava/lang/Object;>;".as_slice(),
+                true,
+                false,
+            ),
+            (
+                b"()[[Ljava/util/Collection<-Ljava/lang/Object;>;".as_slice(),
+                true,
+                false,
+            ),
+            (b"<T:Ljava/util/Collection;>()[[TT;".as_slice(), true, false),
+            (b"()[Ljava/util/Collection<*>;".as_slice(), false, false),
+            (b"()[[Ljava/util/List<*>;".as_slice(), false, false),
+        ] {
+            let mut budget = Budget::new(unlimited_annotation_test_limits());
+            let parsed = parse_method_signature(signature, &mut budget).unwrap();
+            if erasure_matches {
+                prove_method_signature_erasure_with_class_scope(
+                    &parsed,
+                    physical_descriptor,
+                    &[],
+                    &[],
+                    &mut budget,
+                )
+                .expect("same-erasure Signature control is reader-valid");
+            }
+            let projected = ordinary_parameterized_declaration(
+                &record,
+                None,
+                &attributes,
+                &parsed,
+                Some(&candidate),
+                0x0021,
+                b"Main",
+                Some(b"java/lang/Object"),
+                &[],
+                &[],
+                false,
+                &mut budget,
+            );
+            if accepted {
+                assert_eq!(
+                    projected.unwrap(),
+                    "public static java.util.Collection<?>[][] collectionGridDirect()"
+                );
+            } else {
+                assert!(
+                    projected.is_err(),
+                    "ordinary declaration path accepted Signature {signature:?}"
+                );
+            }
+        }
+
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let parsed = parse_method_signature(b"()[[Ljava/util/Collection<*>;", &mut budget).unwrap();
+        let missing = ordinary_parameterized_declaration(
+            &record,
+            None,
+            &attributes,
+            &parsed,
+            None,
+            0x0021,
+            b"Main",
+            Some(b"java/lang/Object"),
+            &[],
+            &[],
+            false,
+            &mut budget,
+        );
+        assert!(
+            missing.is_err(),
+            "the real declaration path requires its same-run candidate"
+        );
+    }
+
+    #[test]
+    fn wildcard_array_declaration_gate_propagates_budget_and_cancellation() {
+        let parsed = parse_method_signature(
+            b"()[[Ljava/util/Collection<*>;",
+            &mut Budget::new(unlimited_annotation_test_limits()),
+        )
+        .unwrap();
+        let cancelled = jarde_reader::budget::CancellationToken::new();
+        cancelled.cancel();
+        let mut cancelled_budget =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), cancelled);
+        assert!(matches!(
+            wildcard_array_return_matches(
+                "java.util.Collection[][]",
+                parsed.result.as_ref(),
+                Some("java.util.Collection[][]"),
+                &mut cancelled_budget,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
+
+        let mut limits = unlimited_annotation_test_limits();
+        limits.analysis_steps = 0;
+        let mut exhausted = Budget::new(limits);
+        assert!(matches!(
+            wildcard_array_return_matches(
+                "java.util.Collection[][]",
+                parsed.result.as_ref(),
+                Some("java.util.Collection[][]"),
+                &mut exhausted,
+            ),
+            Err(Error::BudgetExceeded { .. })
+        ));
+
+        let mut limits = unlimited_annotation_test_limits();
+        limits.analysis_steps = 5;
+        let mut exhausted_during_arguments = Budget::new(limits);
+        assert!(matches!(
+            wildcard_array_return_matches(
+                "java.util.Collection[][]",
+                parsed.result.as_ref(),
+                Some("java.util.Collection[][]"),
+                &mut exhausted_during_arguments,
+            ),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
     }
 
     #[test]

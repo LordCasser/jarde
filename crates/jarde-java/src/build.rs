@@ -13229,19 +13229,7 @@ fn prove_array_initializer(
                 child.sources.len() as u64,
                 Some(*child_at),
             )?;
-            let child_type = match operations.get(*child_at) {
-                Some(Operation::NewArray {
-                    element,
-                    total_dimensions,
-                    ..
-                }) => Type::Reference(format!(
-                    "{}{}",
-                    element.spell(),
-                    "[]".repeat(usize::from(*total_dimensions))
-                )),
-                _ => return Ok(None),
-            };
-            if component != child_type
+            if !matches!(operations.get(*child_at), Some(Operation::NewArray { .. }))
                 || child.sources.iter().any(|bci| {
                     *bci != store.bci()
                         && !position_in_block(block, *bci)
@@ -32207,6 +32195,695 @@ mod tests {
                     is_static: false,
                 },
             ],
+        }
+    }
+
+    fn child_array_test_budget() -> Budget {
+        Budget::new(jarde_reader::budget::Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        })
+    }
+
+    fn analyze_own_grid(
+        class: &[u8],
+        java_release: u16,
+    ) -> (
+        jarde_jvm::method_ir::MethodIrAnalysis,
+        jarde_reader::model::PhysicalMethodId,
+    ) {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        let mut budget = child_array_test_budget();
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+            .expect("direct fixture class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: u64::try_from(class.len()).expect("class length fits u64"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let method = PhysicalMethodId {
+            owner: definition.clone(),
+            name: JvmBytes(b"ownGridDirect".to_vec()),
+            descriptor: JvmBytes(b"()[[LBase;".to_vec()),
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method: method.clone(),
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        (
+            analyze_method_ir(&[snapshot], &request, &mut budget)
+                .expect("ownGridDirect SSA analysis completes"),
+            method,
+        )
+    }
+
+    fn prove_own_grid(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+        java_release: u16,
+        budget: &mut Budget,
+    ) -> Result<ArrayInitializers, crate::stop::StopReason> {
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("SSA");
+        let code = ir.code().expect("method code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let chains = crate::concat::Plan::empty();
+        let method = crate::facts::MethodFacts::new("ownGridDirect", "()[[LBase;", 0);
+        let composition = crate::init::ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release,
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &field::Plan::empty(),
+            Some(&composition),
+            budget,
+        )
+    }
+
+    fn build_own_grid(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+        physical_method: &jarde_reader::model::PhysicalMethodId,
+        java_release: u16,
+        widenings: &[crate::report::ProvedSnapshotHierarchyWidening],
+        budget: &mut Budget,
+        cancel_before_build: bool,
+    ) -> Result<Program, crate::stop::StopReason> {
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("canonical CFG");
+        let ssa = ir.ssa().expect("SSA");
+        let code = ir.code().expect("method code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let fields = field::Plan::empty();
+        let chains = crate::concat::Plan::empty();
+        let method = crate::facts::MethodFacts::new("ownGridDirect", "()[[LBase;", 0);
+        let mut arrays = ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &fields,
+            Some(&crate::init::ArrayCompositionContext {
+                chains: &chains,
+                reserved: chains.owned(),
+                java_release,
+                member_targets: &[],
+                method: &method,
+                code,
+            }),
+            budget,
+        )?;
+        let sites = crate::init::sites_after_array_composition(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &mut arrays,
+            java_release,
+            &[],
+            &method,
+            code,
+            budget,
+        )?;
+        let regions = vec![crate::region::Region::Straight {
+            blocks: canonical
+                .blocks()
+                .iter()
+                .map(|block| block.id().clone())
+                .collect(),
+        }];
+        let names = crate::names::NameTable::build(0, 0, &[]);
+        let reuse = crate::reuse::Plan::default();
+        let parameter_types = BTreeMap::new();
+        let prologues = crate::init::Prologues::none();
+        let enums = crate::enumswitch::Plan::empty();
+        if cancel_before_build {
+            budget.cancellation_token().cancel();
+        }
+        build(
+            canonical,
+            ssa,
+            &operations,
+            Inputs {
+                code,
+                pool: ir.constant_pool(),
+                bootstrap: ir.bootstrap_methods(),
+                profile: crate::pass::JAVA_8.clone(),
+                parameters: 0,
+                has_receiver: false,
+                parameter_types: &parameter_types,
+                return_type: return_type("()[[LBase;"),
+                method_access_flags: Some(0x0009),
+                debug_locals: &[],
+                names: &names,
+                reuse: &reuse,
+                chains: &chains,
+                field_copies: &FieldCopies::default(),
+                members: None,
+                member_inner_targets: &[],
+                typed_functional_target: None,
+                interface_super_calls: &[],
+                reference_overload_calls: &[],
+                snapshot_hierarchy_widenings: widenings,
+                captured_outer_reads: &[],
+                outer_super_calls: &[],
+                nested_class_members: &[],
+                pool_spelled_members: false,
+                physical_method: Some(physical_method),
+                declaring_class: Some("Main"),
+                direct_super_class: ir.direct_super_class(),
+                direct_interfaces: ir.direct_interfaces(),
+                class_methods: ir.class_methods(),
+                class_fields: ir.class_fields(),
+                bridge: None,
+                sites: &sites,
+                prologues: &prologues,
+                fields: &fields,
+                array_initializers: arrays,
+                enums: &enums,
+                allow_array_constructor_method_references: false,
+            },
+            &regions,
+            budget,
+        )
+    }
+
+    fn own_grid_code_variant(
+        class: &[u8],
+        mutate: impl FnOnce(&mut Vec<u8>, &[jarde_reader::classfile::CpEntryFacts]) -> Vec<u8>,
+    ) -> Vec<u8> {
+        use jarde_reader::classfile::{class_facts, method_code_facts};
+
+        let mut budget = child_array_test_budget();
+        let facts = class_facts(class, &mut budget).expect("direct fixture class facts");
+        let method = facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0 == b"ownGridDirect"
+                    && method.descriptor.raw().0 == b"()[[LBase;"
+            })
+            .expect("ownGridDirect declaration");
+        let code_attribute = method
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code")
+            .expect("ownGridDirect Code attribute");
+        let code = method_code_facts(class, method, &mut budget).expect("ownGridDirect Code");
+        let code_start = usize::try_from(code.code_span.start).expect("Code offset fits usize");
+        let code_end = code_start + usize::try_from(code.code_span.length).expect("Code length");
+        let content_start = usize::try_from(code_attribute.content_span.start)
+            .expect("Code attribute content offset");
+        let content_end = content_start
+            + usize::try_from(code_attribute.content_span.length).expect("Code attr length");
+        let exception_count = u16::from_be_bytes(
+            class[code_end..code_end + 2]
+                .try_into()
+                .expect("exception table count"),
+        );
+        let attribute_count = u16::from_be_bytes(
+            class[code_end + 2..code_end + 4]
+                .try_into()
+                .expect("Code nested attribute count"),
+        );
+        assert_eq!(exception_count, 0, "ownGridDirect has no handlers");
+        assert_eq!(attribute_count, 0, "ownGridDirect has no nested Code attrs");
+        assert_eq!(
+            code_end + 4,
+            content_end,
+            "Code body ends at its two counts"
+        );
+
+        let mut bytes = class[code_start..code_end].to_vec();
+        let original_code_length = code_end - code_start;
+        let replacement = mutate(&mut bytes, &facts.constant_pool);
+        let delta = i64::try_from(replacement.len()).expect("replacement length")
+            - i64::try_from(original_code_length).expect("old code length");
+        let mut variant = class.to_vec();
+        variant.splice(code_start..code_end, replacement.iter().copied());
+        let content_length = i64::try_from(code_attribute.content_span.length)
+            .expect("Code content length")
+            .checked_add(delta)
+            .expect("adjusted Code content length");
+        let content_length = u32::try_from(content_length).expect("Code content length fits u4");
+        variant[content_start + 4..content_start + 8].copy_from_slice(
+            &u32::try_from(replacement.len())
+                .expect("code length fits u4")
+                .to_be_bytes(),
+        );
+        let attribute_start = usize::try_from(code_attribute.span.start).expect("Code attr offset");
+        variant[attribute_start + 2..attribute_start + 6]
+            .copy_from_slice(&content_length.to_be_bytes());
+        variant
+    }
+
+    fn own_grid_index_reordered(class: &[u8]) -> Vec<u8> {
+        own_grid_code_variant(class, |code, _| {
+            assert_eq!(code.len(), 47);
+            assert_eq!((code[5], code[26]), (0x03, 0x04));
+            code[5] = 0x04;
+            code[26] = 0x03;
+            code.clone()
+        })
+    }
+
+    fn own_grid_extra_reader(class: &[u8]) -> Vec<u8> {
+        own_grid_code_variant(class, |code, _| {
+            assert_eq!(code[23], 0x53, "first child element store is aastore");
+            let mut replacement = code[..24].to_vec();
+            replacement.extend([0x59, 0x57]); // dup; pop, preserving the retained child array.
+            replacement.extend_from_slice(&code[24..]);
+            replacement
+        })
+    }
+
+    fn own_grid_interleaved_effect(class: &[u8]) -> Vec<u8> {
+        own_grid_code_variant(class, |code, _| {
+            assert_eq!(code[17], 0xb8, "BCI 17 is the existing Main.mark call");
+            assert_eq!(code[23], 0x53, "first child element store is aastore");
+            let mut replacement = code[..24].to_vec();
+            replacement.extend([0x04, 0xb8, code[18], code[19], 0x57]);
+            replacement.extend_from_slice(&code[24..]);
+            replacement
+        })
+    }
+
+    fn own_grid_object_child(class: &[u8]) -> Vec<u8> {
+        own_grid_code_variant(class, |code, pool| {
+            assert_eq!(code[7], 0xbd, "BCI 7 is the child anewarray");
+            let object = pool
+                .iter()
+                .find(|entry| {
+                    matches!(
+                        &entry.kind,
+                        jarde_reader::classfile::CpEntryKind::Class { name, .. }
+                            if name.0 == b"java/lang/Object"
+                    )
+                })
+                .expect("the companion observer gives this class an Object class entry")
+                .index;
+            code[8..10].copy_from_slice(&object.to_be_bytes());
+            code.clone()
+        })
+    }
+
+    fn assert_own_grid_structure(arrays: &ArrayInitializers, ssa: &SsaTable) {
+        assert_eq!(
+            arrays.allocations.len(),
+            3,
+            "parent and both child arrays commit"
+        );
+        assert_eq!(
+            arrays.allocations.keys().copied().collect::<Vec<_>>(),
+            vec![1, 7, 28],
+            "the only committed arrays are the exact parent and children"
+        );
+        let parent = arrays.at_allocation(1).expect("outer Base[][] candidate");
+        assert_eq!(parent.consumer, 46);
+        assert_eq!(parent.children, vec![7, 28]);
+        assert_eq!(parent.elements.len(), 2);
+        for (allocation, store) in [(7, 24), (28, 45)] {
+            let child = arrays
+                .at_allocation(allocation)
+                .expect("child array candidate");
+            assert_eq!(child.consumer, store, "child has its exact parent aastore");
+        }
+        assert_eq!(
+            arrays.pending_sites.len(),
+            2,
+            "both object constructors transfer once"
+        );
+        assert!(arrays.pending_sites.contains_key(&12));
+        assert!(arrays.pending_sites.contains_key(&33));
+
+        let mut ownership = BTreeSet::new();
+        for node in arrays.allocations.values() {
+            for bci in &node.owned {
+                assert!(
+                    ownership.insert(*bci),
+                    "array ownership is disjoint at BCI {bci}"
+                );
+            }
+        }
+        for (head, site) in &arrays.pending_sites {
+            assert_eq!(*head, site.head);
+            for bci in &site.owned {
+                assert!(
+                    ownership.insert(*bci),
+                    "site/array ownership is disjoint at BCI {bci}"
+                );
+            }
+        }
+        for (store, value) in [
+            (24, arrays.at_allocation(7).unwrap().final_value),
+            (45, arrays.at_allocation(28).unwrap().final_value),
+        ] {
+            let instruction = ssa.blocks()[0]
+                .instructions()
+                .iter()
+                .find(|instruction| instruction.bci() == store)
+                .expect("parent aastore instruction");
+            assert_eq!(
+                stack_operands(instruction).get(2).map(|(_, value)| *value),
+                Some(value)
+            );
+        }
+        assert_eq!(
+            parent.elements,
+            vec![
+                (arrays.at_allocation(7).unwrap().final_value, 24),
+                (arrays.at_allocation(28).unwrap().final_value, 45),
+            ]
+        );
+        for (allocation, store, site_head) in [(7, 23, 12), (28, 44, 33)] {
+            let child = arrays.at_allocation(allocation).expect("child array");
+            assert_eq!(child.element_sites, vec![Some(site_head)]);
+            let element_store = ssa.blocks()[0]
+                .instructions()
+                .iter()
+                .find(|instruction| instruction.bci() == store)
+                .expect("child element aastore");
+            let stored_object = stack_operands(element_store)[2].1;
+            assert_eq!(
+                arrays.pending_sites[&site_head].finished_value,
+                Some(stored_object)
+            );
+            assert_eq!(child.elements[0].0, stored_object);
+        }
+    }
+
+    #[test]
+    fn direct_child_array_chain_is_structural_and_commits_only_as_a_whole() {
+        const JAVAC8: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class"
+        );
+        const JAVAC23: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class"
+        );
+
+        for (release, original) in [(8, JAVAC8), (23, JAVAC23)] {
+            let (analysis, _) = analyze_own_grid(original, release);
+            let ssa = analysis.ir().ssa().expect("SSA");
+            let mut budget = child_array_test_budget();
+            let arrays = prove_own_grid(&analysis, release, &mut budget)
+                .expect("complete parent/child and construction proof");
+            assert_own_grid_structure(&arrays, ssa);
+
+            // All three byte-valid structural controls are rejected before a candidate or pending
+            // construction Site can be committed. The duplicate produces distinct SSA outputs;
+            // the old child ValueId has one reader (the unsupported dup), not two reader records.
+            for variant in [
+                own_grid_index_reordered(original),
+                own_grid_extra_reader(original),
+                own_grid_interleaved_effect(original),
+            ] {
+                let (analysis, _) = analyze_own_grid(&variant, release);
+                let mut budget = child_array_test_budget();
+                let arrays = prove_own_grid(&analysis, release, &mut budget)
+                    .expect("negative structural controls are bounded refusals");
+                assert!(
+                    arrays.allocations.is_empty(),
+                    "no partial array chain commits"
+                );
+                assert!(
+                    arrays.pending_sites.is_empty(),
+                    "no construction Site half-commits"
+                );
+            }
+
+            // Object[] is a verifier-legal child value for an aastore into Base[][], but it is not
+            // Java-assignable to Base[]. Structure remains closed here; Builder's exact store/type
+            // presentation check is independently exercised by the integration test.
+            let variant = own_grid_object_child(original);
+            let (analysis, _) = analyze_own_grid(&variant, release);
+            let ssa = analysis.ir().ssa().expect("Object child SSA");
+            let mut budget = child_array_test_budget();
+            let arrays = prove_own_grid(&analysis, release, &mut budget)
+                .expect("Object[] child has a closed structural chain");
+            assert_own_grid_structure(&arrays, ssa);
+            assert!(matches!(
+                Operations::of(analysis.ir().code().expect("Code"), analysis.ir().constant_pool())
+                    .get(7),
+                Some(Operation::NewArray {
+                    element: Type::Reference(name),
+                    ..
+                }) if name == "java.lang.Object"
+            ));
+
+            // Stop in the actual second child-array element scan: the effects census, later
+            // instructions, allocation and length-use proof are funded, so its first `dup` at
+            // BCI 31 is the next IrItems charge. This is distinct from the constructor's argument
+            // verifier, whose first AnalysisSteps charge is BCI 37.
+            let (analysis, _) = analyze_own_grid(original, release);
+            let ssa = analysis.ir().ssa().expect("SSA");
+            let block = ssa.blocks()[0].instructions();
+            let before_child_dup = u64::try_from(ssa.effects().instructions().len())
+                .expect("effect count fits u64")
+                + u64::try_from(
+                    block
+                        .iter()
+                        .filter(|instruction| instruction.bci() > 28)
+                        .count(),
+                )
+                .expect("later instruction count fits u64")
+                + 3; // BCI 28 census + length single-use position + its one reader.
+            let mut limits = child_array_test_budget().limits().clone();
+            limits.ir_items = before_child_dup;
+            let mut child_limited = Budget::new(limits);
+            assert!(matches!(
+                prove_own_grid(&analysis, release, &mut child_limited),
+                Err(crate::stop::StopReason::Budget {
+                    dimension: CountedBudgetDimension::IrItems,
+                    at: Some(31),
+                    ..
+                })
+            ));
+
+            // The separate constructor argument budget control proves its own boundary; it must
+            // not be described as charging each child-array instruction.
+            let mut limits = child_array_test_budget().limits().clone();
+            limits.analysis_steps = 0;
+            let mut limited = Budget::new(limits);
+            assert!(matches!(
+                prove_own_grid(&analysis, release, &mut limited),
+                Err(crate::stop::StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(37),
+                    ..
+                })
+            ));
+            let mut cancelled = child_array_test_budget();
+            cancelled.cancellation_token().cancel();
+            let first_effect = ssa
+                .effects()
+                .instructions()
+                .first()
+                .expect("the array method has effects")
+                .bci();
+            assert!(matches!(
+                prove_own_grid(&analysis, release, &mut cancelled),
+                Err(crate::stop::StopReason::Cancelled { at: Some(at) })
+                    if at == first_effect
+            ));
+        }
+    }
+
+    #[test]
+    fn direct_child_array_builder_uses_exact_store_type_proofs_and_stops_atomically() {
+        const JAVAC8: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class"
+        );
+        const JAVAC23: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class"
+        );
+        let exact_widenings = [
+            crate::report::ProvedSnapshotHierarchyWidening {
+                bci: 24,
+                source: "DerivedA[]".to_owned(),
+                target: "Base[]".to_owned(),
+            },
+            crate::report::ProvedSnapshotHierarchyWidening {
+                bci: 45,
+                source: "DerivedB[]".to_owned(),
+                target: "Base[]".to_owned(),
+            },
+        ];
+
+        for (release, original) in [(8, JAVAC8), (23, JAVAC23)] {
+            let (analysis, physical_method) = analyze_own_grid(original, release);
+            let mut budget = child_array_test_budget();
+            let program = build_own_grid(
+                &analysis,
+                &physical_method,
+                release,
+                &exact_widenings,
+                &mut budget,
+                false,
+            )
+            .expect("the exact child-store type facts build the complete body");
+            assert!(
+                !program.ragged,
+                "both exact Derived[] to Base[] stores present"
+            );
+            assert_eq!(
+                program.statements, 1,
+                "the complete return is one statement"
+            );
+            let complete_ir_items = budget
+                .usage()
+                .counted_usage(CountedBudgetDimension::IrItems);
+
+            let missing_or_mismatched_types = [
+                ("missing snapshot widening", Vec::new()),
+                (
+                    "wrong source type at the right store",
+                    vec![
+                        crate::report::ProvedSnapshotHierarchyWidening {
+                            bci: 24,
+                            source: "DerivedB[]".to_owned(),
+                            target: "Base[]".to_owned(),
+                        },
+                        exact_widenings[1].clone(),
+                    ],
+                ),
+                (
+                    "wrong target type at the right store",
+                    vec![
+                        crate::report::ProvedSnapshotHierarchyWidening {
+                            bci: 24,
+                            source: "DerivedA[]".to_owned(),
+                            target: "LocalInterface[]".to_owned(),
+                        },
+                        exact_widenings[1].clone(),
+                    ],
+                ),
+            ];
+            for (case, widenings) in missing_or_mismatched_types {
+                let mut budget = child_array_test_budget();
+                let program = build_own_grid(
+                    &analysis,
+                    &physical_method,
+                    release,
+                    &widenings,
+                    &mut budget,
+                    false,
+                )
+                .expect("missing or mismatched type facts are presentation refusals");
+                assert!(program.ragged, "{case} cannot justify store BCI 24");
+            }
+
+            let mut wrong_store = exact_widenings.clone();
+            wrong_store[0].bci = 23;
+            let mut budget = child_array_test_budget();
+            let program = build_own_grid(
+                &analysis,
+                &physical_method,
+                release,
+                &wrong_store,
+                &mut budget,
+                false,
+            )
+            .expect("a mismatched store proof is a presentation refusal");
+            assert!(
+                program.ragged,
+                "a proof at BCI 23 cannot justify store BCI 24"
+            );
+
+            let mut limits = child_array_test_budget().limits().clone();
+            limits.ir_items = complete_ir_items - 1;
+            let mut limited = Budget::new(limits);
+            assert!(matches!(
+                build_own_grid(
+                    &analysis,
+                    &physical_method,
+                    release,
+                    &exact_widenings,
+                    &mut limited,
+                    false,
+                ),
+                Err(crate::stop::StopReason::Budget {
+                    dimension: CountedBudgetDimension::IrItems,
+                    at: Some(46),
+                    ..
+                })
+            ));
+
+            let mut cancelled = child_array_test_budget();
+            assert!(matches!(
+                build_own_grid(
+                    &analysis,
+                    &physical_method,
+                    release,
+                    &exact_widenings,
+                    &mut cancelled,
+                    true,
+                ),
+                Err(crate::stop::StopReason::Cancelled { at: None })
+            ));
         }
     }
 

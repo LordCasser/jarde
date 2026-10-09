@@ -239,3 +239,11 @@ EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下�
 数值转换片现已7/7，产品a738a8941及属性文档修正8f624ea64推送main；确切8f624的CI37968418985四job/48steps全部success，包含双seed和真JDK25 oracle。冻结CLI/产品blob和原始CI JSON经root核对，见该片verification-root。旧失败、原始流与各实际分母保留；未来产品不能借这次CI。
 
 下一[recover-covariant-child-array-initializers](../../changes/recover-covariant-child-array-initializers/verification-root.md)规划4/4、任务2/7（前置CI/身份及历史完整六类基线），产品未实施。root历史基线2503checks/0errors；有效/无效JVM加载控制已实测且不执行目标方法，不算恢复成功。BigDecimal类型闭表与完整方法的拼接/字段拒绝另记，不混入子数组片。EM18仍部分已测，71单元分母及整单元分类不变。
+
+## EM-18 子数组协变与可具体化 wildcard 返回补片 — 2026-10-10
+
+[child片](../../changes/recover-covariant-child-array-initializers/verification-root.md)当前5/7，[wildcard数组返回片](../../changes/recover-reifiable-wildcard-array-return-signatures/verification-root.md)当前4/6；产品组合代码尚WIP，确切CI未验收。结构候选解除child component相等早拒，保留ValueId/sole store/interval/effect/depth及数组与Site原子提交；Java赋值仍复用准确store BCI事实。完整数组返回仅补同次Program/SSA候选和既有Signature投影，不加pass/type service，新增增长循环共享预算。
+
+五源冻结CLI实际fresh24腿22成功：旧18矩阵16/18、完整六类factory2/2、direct2/2、数值2/2；BigDecimal两失败保留。direct两真实JDK全部生成源码空CP/SP重编、只新classes-Xverify:all运行/raw双流匹配；原Collection<?>[][]完整声明恢复，raw初始化保持。root独立1166checks/0errors，同次成员/Signature/真实来源与次数全部核验；original/JADX是逐hash历史基线，不宣称fresh。此前四源回放仅语义通过、Signature pending的1116checks保留，不能混作本片成功。
+
+325 Java-lib、16 facade focused、5完整数组集成、MSRV及CI-exact Clippy实际通过；其余严格门禁/确切CI待收尾。平坦Signature真实generic arity缺事实另记债务，非当前已拒绝边界。EM18仍部分已测，71分母及整单元分类不变。

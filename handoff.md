@@ -14,9 +14,17 @@ git worktree list
 
 最新已验收产品为 **a738a8941**（构造参数转换），及属性文档修正 **8f624ea64cd9d8e73810cc3a2384c773fa7f87bd**，均已推送main；[CI37968418985](https://github.com/LordCasser/jarde/actions/runs/37968418985)四job、48steps全部success，包含双seed、真JDK25 oracle、完整Java对照、MSRV、supply chain与fuzz。源码blob及冻结CLI核验入口为[数值片root验收](openspec/changes/recover-constructor-primitive-conversion-arguments/verification-root.md)。未来产品WIP不能借这次CI。
 
-## 当前接续：子数组协变初始化器
+## 当前接续：两数组补片等待确切 CI
 
-[recover-covariant-child-array-initializers](openspec/changes/recover-covariant-child-array-initializers/verification-root.md)规划4/4、任务 **2/7**：前置确切CI身份与历史六类完整基线已验收，本片产品未实施。root历史基线2503checks/0errors；两真实JDK的五有效类加载控制和一个无效返回自检均通过，未调用目标方法，不计恢复成功。继续前读该片proposal/design/specs/tasks及focused-control-map；先解除child ownership类型相等早截断，Builder仍使用准确store BCI/source/target事实。Luna限定实现、root串行测试/完整六类双JDK对照与验收。
+[子数组协变](openspec/changes/recover-covariant-child-array-initializers/verification-root.md)5/7、[可具体化 wildcard 数组返回](openspec/changes/recover-reifiable-wildcard-array-return-signatures/verification-root.md)4/6，规划均4/4。结构ownership与准确store赋值分层接通；完整同次ArrayCreation证据支持原Collection<?>[][]声明，没有新增pass/type service。
+
+五源CLI `/private/tmp/jarde-wildcard-array-return-cli-v1` SHA196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761，fresh24腿22成功：旧18矩阵16/18、完整六类factory2/2、direct2/2、数值2/2，BigDecimal两已知失败保留。root独立1166checks同时验收完整成员、全部生成源、两真实JDK隔离重编/runtime双流、Collection<?>[][]声明与物理Signature/来源/次数，成功证据marker保留且拒绝消失。两片3.1均完成；original/JADX采用逐hash核验的历史基线，未fresh执行。前四源CLI的1116checks只semantic/Signature pending仍保留，不能替代本次验收。
+
+325 Java-lib、16 facade focused、5数组完整集成及本次11项本地严格门禁实际通过，P5 pins/指纹未变化；3.2/3.3仍等待当前组合代码确切CI双seed和真JDK25。当前产品尚WIP，不借上片CI。详见泛型片results/root-local-acceptance-v1.json。
+
+本地前次全仓首lib/seed1曾被20GiB guard停止exit-15，不计成功；已清本仓target818.3MiB并可恢复压缩17个历史CLI节省932116990bytes，restore入口见child results/historical-cli-compression-v1.json。本次重新生成target，确切CI后再清；20GiB线保持，不碰其他项目target。
+
+平坦Signature真实generic arity尚未证明，单列[共享债务](openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/flat-signature-arity-debt-v1.md)，不把未复现非法元数控制当已拒绝，也不混入本片。
 
 ## 已完成：构造参数数值转换
 
@@ -24,7 +32,7 @@ git worktree list
 
 普通constructor只接纳真实argument_dependencies内的PrimitiveConversion，复用已有15opcode/Cast、源类别与descriptor；新路径触发既有逐指令+唯一consumer handler ordinal闭包。ordinary生产census/verifier透传本次Budget，Result/Stop直接到停止报告，不发表局部Sites。不新增pass/AST/type table或conversion折叠。receiver-tail收尾扫描的既有漏计另记[债务](openspec/changes/recover-constructor-primitive-conversion-arguments/results/receiver-tail-budget-debt-v1.md)，不能宣称整个census完全计费。
 
-冻结CLI `/private/tmp/jarde-constructor-primitive-conversions-cli-v1` SHA **3e4b615e0131d041ecc47c72c0131a3bbd0f5fc9042d8f91b2aa21f26baf6a95**；当前生产init/build/report/Cargo.lock与它匹配。完整两个顶层类、全部原始成员、27目标方法/32构造点，两真实JDK隔离全部source重编并-Xverify:all运行，原始exit/stdout/stderr **2/2一致**。root独立核验221checks/0errors。JADX none/default四腿虽compile/run0，却删除long→float/double→long舍入链，语义0/4；本片保留每层Cast，以原程序为oracle。
+冻结CLI `/private/tmp/jarde-constructor-primitive-conversions-cli-v1` SHA **3e4b615e0131d041ecc47c72c0131a3bbd0f5fc9042d8f91b2aa21f26baf6a95**；前片验收时生产init/build/report/Cargo.lock与它匹配；当前child片build.rs已变化，不能借该CLI身份。完整两个顶层类、全部原始成员、27目标方法/32构造点，两真实JDK隔离全部source重编并-Xverify:all运行，原始exit/stdout/stderr **2/2一致**。root独立核验221checks/0errors。JADX none/default四腿虽compile/run0，却删除long→float/double→long舍入链，语义0/4；本片保留每层Cast，以原程序为oracle。
 
 legacy全部22腿保持18/22成功：旧18矩阵16/18，旧完整六类factory2/2，旧完整六类direct仍0/2，BigDecimal两腿仍失败。boxedDirect五wrapper及Integer已恢复，direct剩余numberGridDirect/collectionGridDirect/ownGridDirect三个子数组场景未恢复。没有删除失败成员或借原class编译。该回放核对旧冻结原流hash，不宣称本次重跑原程序。
 
@@ -44,7 +52,7 @@ Reader实际census1063/4616/463/2711/8，新增8classes/84bodies/4handlers；P5�
 
 前置[异构数组类型片](openspec/changes/recover-heterogeneous-array-init/verification-root.md)代码29dcd5e89、CI37926854875全部成功；[引用槽生命周期片](openspec/changes/split-proved-reference-slot-lifetimes/verification-root.md)代码4fba93438、CI37915062977全部成功。完整LG/finalize、同名LVT变体、TWR真实javac8两资源仍各自保留边界，不能把窄片验收当整个单元完成。
 
-数值片之后，优先按已登记的[child-array协变架构审计](openspec/changes/recover-heterogeneous-array-init/results/child-array-covariant-architecture-audit.md)提出独立change：ownGrid的精确component==child_type在候选阶段先断链；reader/value identity及ownership闭合与Javaassignability呈现须分层，后者复用准确store BCI平台/Runtime snapshot事实。类型未证时完整正文fallback，保留真实来源。该片已提出为[recover-covariant-child-array-initializers](openspec/changes/recover-covariant-child-array-initializers/)，规划4/4、任务2/7，历史基线root独立2503checks/0errors，1.1/1.2已完成。产品尚未实施；不能把设计审计当成功结果。BigDecimal平台事实另片处理。下一片具体验收与当前代码依据见[只读规划](openspec/changes/recover-constructor-primitive-conversion-arguments/results/next-child-array-covariance-plan-v1.md)。collectionGrid的Signature refusal尚未证明是独立根因，先解除子数组正文失败再完整复测。
+数值片之后，优先按已登记的[child-array协变架构审计](openspec/changes/recover-heterogeneous-array-init/results/child-array-covariant-architecture-audit.md)提出独立change：ownGrid的精确component==child_type在候选阶段先断链；reader/value identity及ownership闭合与Javaassignability呈现须分层，后者复用准确store BCI平台/Runtime snapshot事实。类型未证时完整正文fallback，保留真实来源。该片已提出为[recover-covariant-child-array-initializers](openspec/changes/recover-covariant-child-array-initializers/)，规划4/4、任务2/7，历史基线root独立2503checks/0errors，1.1/1.2已完成。当前已进入限定实现、focused4/7已验收，完整回放/门禁/CI未完；不能把设计审计当成功结果。BigDecimal平台事实另片处理。下一片具体验收与当前代码依据见[只读规划](openspec/changes/recover-constructor-primitive-conversion-arguments/results/next-child-array-covariance-plan-v1.md)。此前规划时collectionGrid的Signature根因未明；实际子数组完整回放已定位独立NewArray泛型返回候选缺口，当前独立片进展见上节。
 
 [71单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)的71是验收单元数，612是JADX测试文件数，均不是成功率。EM18仍部分已测，分母及全单元分类不变。
 
@@ -52,7 +60,7 @@ Reader实际census1063/4616/463/2711/8，新增8classes/84bodies/4handlers；P5�
 
 只有main/origin/main，无剩余分支占用。14个辅助worktree均detached、干净、main祖先、无target，保留受Codex保护的副本；没有遗留工作等待合并。最新实际审计见数值片results/worktree-audit-after-local-acceptance-v2.json，主仓仅本轮清理/只读审计/下一片规划证据。
 
-只由root串行执行Cargo/Git/rustfmt；一次一个Cargo，运行期间冻结产品/测试/canonical fixture。使用CARGO_BUILD_JOBS=1、CARGO_INCREMENTAL=0、RUST_TEST_THREADS=1，debug信息关闭但assertions开启；**20GiB为停建线**，不碰其它项目target。构造组合片中途清13.2GiB、最终清814.8MiB；本轮最终门禁后的cargo clean已实际删除7681文件、894.1MiB，主仓target当前不存在；fuzz及14辅助树此前已无target，实时空间以df为准。
+只由root串行执行Cargo/Git/rustfmt；一次一个Cargo，运行期间冻结产品/测试/canonical fixture。使用CARGO_BUILD_JOBS=1、CARGO_INCREMENTAL=0、RUST_TEST_THREADS=1，debug信息关闭但assertions开启；**20GiB为停建线**，不碰其它项目target。构造组合片中途清13.2GiB、最终清814.8MiB；本轮最终门禁后的cargo clean已实际删除7681文件、894.1MiB，该次清理后主仓target不存在；当前新增泛型片门禁已重新生成本仓target，最终验收后再次清理。fuzz及14辅助树此前已无target，实时空间以df为准。
 
 全部生成source必须参与空classpath/sourcepath重编，runtime仅用其新编译classes并-Xverify:all；原始exit/stdout/stderr逐字核对，结构事实、正文质量和执行成功分别计证据。不得借原class/helper、剥离失败成员或修剪原始日志。保留所有历史失败、完整输入和冻结CLI。
 
