@@ -29878,6 +29878,32 @@ fn written_type(
     value_type(ssa.value(value).ty())
 }
 
+/// A reference type a local write states directly enough to distinguish one source lifetime
+/// from another. `written_type` deliberately spells an unknown reference as `Object` for ordinary
+/// declarations; that fallback is useful to the emitter, but it is not evidence for a lifetime
+/// boundary. Unknown frames count here only when an array creation or a direct reference constant
+/// supplies the exact type through the same channels `written_type` already uses.
+pub(crate) fn reference_lifetime_type(
+    ssa: &SsaTable,
+    operations: &Operations,
+    value: ValueId,
+) -> Option<Type> {
+    let frame_type = ssa.value(value).ty();
+    let exact = match frame_type {
+        Value::Ref(RefType::Named { .. }) => true,
+        Value::Ref(RefType::Unknown) => {
+            array_of_value(ssa, operations, value, 0).is_some()
+                || constant_of_value(ssa, operations, value, 0).is_some()
+        }
+        Value::Null => false,
+        _ => return None,
+    };
+    exact
+        .then(|| written_type(ssa, operations, value).ok().flatten())
+        .flatten()
+        .filter(|ty| matches!(ty, Type::Reference(_)))
+}
+
 /// The type one captured operand is stated as, for the three-way capture check of
 /// [`crate::lambda::plan`].
 ///

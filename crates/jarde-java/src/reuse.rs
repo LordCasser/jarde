@@ -48,6 +48,7 @@ use jarde_reader::budget::{Budget, CountedBudgetDimension};
 
 use crate::ast::Type;
 use crate::decode::Operations;
+use crate::facts::Operation;
 use crate::names::{DebugLocal, LocalVariable, SlotEvidence};
 use crate::region::Region;
 use crate::stop::{StopReason, charge, poll};
@@ -152,6 +153,21 @@ pub(crate) fn plan(
             continue;
         }
         if let Some((segments, split)) = array_retype_split(
+            ssa,
+            canonical,
+            operations,
+            slot,
+            parameters,
+            slot_records,
+            accesses.get(&slot),
+            resources,
+            budget,
+        )? {
+            plan.evidence[index] = SlotEvidence::Split(vec![None; segments]);
+            plan.splits.insert(slot, split);
+            continue;
+        }
+        if let Some((segments, split)) = reference_retype_split(
             ssa,
             canonical,
             operations,
@@ -665,17 +681,378 @@ fn array_retype_split(
         };
         definitions.push((write.bci, write.value, shape));
     }
+    let Some(split) = owned_definition_split(ssa, accesses, definitions, None, budget)? else {
+        return Ok(None);
+    };
+    Ok(Some((split.ranges.len(), split)))
+}
+
+/// Split reference lifetimes whose exact source types differ, reusing the same definition owner
+/// proof as array retyping. This narrower extension requires a complete normal CFG and no LVT:
+/// the debug-table path continues to own every recorded source name.
+#[allow(clippy::too_many_arguments)]
+fn reference_retype_split(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    slot: u16,
+    parameters: u16,
+    records: &[&DebugLocal],
+    accesses: Option<&Accesses>,
+    resources: &BTreeSet<u16>,
+    budget: &mut Budget,
+) -> Result<Option<(usize, Split)>, StopReason> {
+    if slot < parameters
+        || resources.contains(&slot)
+        || !records.is_empty()
+        || !canonical.unreachable().is_empty()
+    {
+        return Ok(None);
+    }
+    let Some(accesses) = accesses else {
+        return Ok(None);
+    };
+    if accesses.reads.is_empty() || accesses.writes.len() < 2 {
+        return Ok(None);
+    }
+    for block in ssa.blocks() {
+        poll(budget, Some(block.block().bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(block.block().bci()),
+        )?;
+        if block.block().is_clone() {
+            return Ok(None);
+        }
+    }
+    let mut definitions = Vec::with_capacity(accesses.writes.len());
+    let mut distinct_type = false;
+    for write in &accesses.writes {
+        poll(budget, Some(write.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(write.bci),
+        )?;
+        let Some(ty) = crate::build::reference_lifetime_type(ssa, operations, write.value) else {
+            return Ok(None);
+        };
+        if definitions
+            .first()
+            .is_some_and(|(_, _, first_type)| first_type != &ty)
+        {
+            distinct_type = true;
+        }
+        definitions.push((write.bci, write.value, ty));
+    }
+    if !distinct_type {
+        return Ok(None);
+    }
+    if !reference_values_stay_before_boundaries(ssa, operations, &definitions, budget)? {
+        return Ok(None);
+    }
+    owned_definition_split(ssa, accesses, definitions, Some(canonical), budget)
+        .map(|split| split.map(|split| (split.ranges.len(), split)))
+}
+
+/// A local read can move an older reference onto the operand stack, where a later local write
+/// cannot kill it. Follow only operations whose decoded meaning preserves that same reference:
+/// local load/store, dup, and checkcast. Ordinary computations and calls create values with their
+/// own meaning and are not treated as aliases of their inputs.
+fn reference_values_stay_before_boundaries(
+    ssa: &SsaTable,
+    operations: &Operations,
+    definitions: &[(u32, ValueId, Type)],
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    for index in 0..definitions.len().saturating_sub(1) {
+        let (write_bci, value, _) = &definitions[index];
+        let boundary = definitions[index + 1].0;
+        poll(budget, Some(*write_bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(*write_bci),
+        )?;
+        let Some(value) = representative(ssa, *value) else {
+            return Ok(false);
+        };
+        let mut pending = vec![value];
+        let mut visited = BTreeSet::new();
+        while let Some(value) = pending.pop() {
+            poll(budget, Some(*write_bci))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(*write_bci),
+            )?;
+            let Some(value) = representative(ssa, value) else {
+                return Ok(false);
+            };
+            if !visited.insert(value) {
+                continue;
+            }
+            for use_ in ssa.value(value).uses() {
+                let at = use_.bci().unwrap_or_else(|| use_.block().bci());
+                poll(budget, Some(at))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+                if at >= boundary {
+                    return Ok(false);
+                }
+                if use_.bci().is_none() {
+                    let Some(forwarded) = trivial_phi_outputs(ssa, use_.block(), value, budget)?
+                    else {
+                        return Ok(false);
+                    };
+                    pending.extend(forwarded);
+                    continue;
+                }
+                let Some(instruction) = instruction_at_use(ssa, use_.block(), at, budget)? else {
+                    return Ok(false);
+                };
+                if unsupported_stack_copy_uses_source(ssa, operations, instruction, value, budget)?
+                {
+                    return Ok(false);
+                }
+                let Some(forwarded) =
+                    reference_forwarded_values(ssa, operations, instruction, value, budget)?
+                else {
+                    continue;
+                };
+                if forwarded.is_empty() {
+                    return Ok(false);
+                }
+                pending.extend(forwarded);
+            }
+        }
+    }
+    Ok(true)
+}
+
+fn trivial_phi_outputs(
+    ssa: &SsaTable,
+    block: &CanonicalBlockId,
+    source: ValueId,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ValueId>>, StopReason> {
+    let mut outputs = Vec::new();
+    for phi in ssa.phis() {
+        poll(budget, Some(block.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(block.bci()),
+        )?;
+        if phi.block() != block {
+            continue;
+        }
+        let Some(output) = representative(ssa, phi.value()) else {
+            return Ok(None);
+        };
+        let mut contains_source = false;
+        let mut all_same = true;
+        for input in phi.inputs() {
+            poll(budget, Some(block.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+            let input = match input {
+                jarde_jvm::method_ir::PhiInput::Value(value) => {
+                    let Some(value) = representative(ssa, *value) else {
+                        return Ok(None);
+                    };
+                    value
+                }
+                jarde_jvm::method_ir::PhiInput::Itself => output,
+            };
+            contains_source |= input == source;
+            all_same &= input == source;
+        }
+        if contains_source {
+            if !all_same || ssa.value(phi.value()).replaced_by().is_none() {
+                return Ok(None);
+            }
+            outputs.push(output);
+        }
+    }
+    if outputs.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(outputs))
+    }
+}
+
+fn instruction_at_use<'a>(
+    ssa: &'a SsaTable,
+    block_id: &CanonicalBlockId,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<&'a jarde_jvm::method_ir::SsaInstruction>, StopReason> {
+    let Some(block) = ssa.block(block_id) else {
+        return Ok(None);
+    };
+    poll(budget, Some(block_id.bci()))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(block_id.bci()),
+    )?;
+    for instruction in block.instructions() {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(instruction.bci()),
+        )?;
+        if instruction.bci() == bci {
+            return Ok(Some(instruction));
+        }
+    }
+    Ok(None)
+}
+
+fn unsupported_stack_copy_uses_source(
+    ssa: &SsaTable,
+    operations: &Operations,
+    instruction: &jarde_jvm::method_ir::SsaInstruction,
+    source: ValueId,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    if !matches!(operations.get(instruction.bci()), Some(Operation::Other))
+        || !(0x5a..=0x5f).contains(&instruction.opcode())
+    {
+        return Ok(false);
+    }
+    for (slot, value) in instruction.reads() {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(instruction.bci()),
+        )?;
+        if matches!(slot, Slot::Stack(_)) && representative(ssa, *value) == Some(source) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn reference_forwarded_values(
+    ssa: &SsaTable,
+    operations: &Operations,
+    instruction: &jarde_jvm::method_ir::SsaInstruction,
+    source: ValueId,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ValueId>>, StopReason> {
+    let Some(operation) = operations.get(instruction.bci()) else {
+        return Ok(None);
+    };
+    let reads = instruction.reads();
+    let writes = instruction.writes();
+    let has_source_read = |slot: Slot, budget: &mut Budget| -> Result<bool, StopReason> {
+        for (read_slot, value) in reads {
+            poll(budget, Some(instruction.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if *read_slot == slot && representative(ssa, *value) == Some(source) {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    };
+    let has_source_stack_read = |budget: &mut Budget| -> Result<bool, StopReason> {
+        for (read_slot, value) in reads {
+            poll(budget, Some(instruction.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if matches!(read_slot, Slot::Stack(_)) && representative(ssa, *value) == Some(source) {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    };
+    let output_slots = match operation {
+        Operation::Load { slot } if has_source_read(Slot::Local(*slot), budget)? => {
+            Some((None, true))
+        }
+        Operation::Store { slot } if has_source_stack_read(budget)? => {
+            Some((Some(Slot::Local(*slot)), false))
+        }
+        Operation::Duplicate if has_source_stack_read(budget)? => Some((None, true)),
+        Operation::CheckCast { .. } if has_source_stack_read(budget)? => Some((None, true)),
+        _ => None,
+    };
+    let Some((required_slot, stack_outputs)) = output_slots else {
+        return Ok(None);
+    };
+    let mut forwarded = Vec::new();
+    for (slot, value) in writes {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(instruction.bci()),
+        )?;
+        let selected = required_slot.map_or_else(
+            || stack_outputs && matches!(slot, Slot::Stack(_)),
+            |required| *slot == required,
+        );
+        if selected
+            && matches!(ssa.value(*value).ty(), Value::Ref(_))
+            && matches!(
+                ssa.value(*value).def(),
+                jarde_jvm::method_ir::Definition::Instruction { bci, .. }
+                    if *bci == instruction.bci()
+            )
+        {
+            if let Some(value) = representative(ssa, *value) {
+                forwarded.push(value);
+            } else {
+                return Ok(None);
+            }
+        }
+    }
+    Ok(Some(forwarded))
+}
+
+/// Assign each read to the unique slot definition whose SSA value it reads. Both array retyping
+/// and ordinary reference retyping use this one owner/liveness implementation; only the latter
+/// supplies the normal-CFG proof required before the identities may be published.
+fn owned_definition_split<T: Eq>(
+    ssa: &SsaTable,
+    accesses: &Accesses,
+    mut definitions: Vec<(u32, ValueId, T)>,
+    canonical: Option<&CanonicalCfg>,
+    budget: &mut Budget,
+) -> Result<Option<Split>, StopReason> {
     definitions.sort_by_key(|(bci, _, _)| *bci);
     if definitions
         .windows(2)
         .any(|window| window[0].0 == window[1].0)
-    {
-        // One instruction writing the slot twice is no store order to present.
-        return Ok(None);
-    }
-    if definitions
-        .windows(2)
-        .all(|window| window[0].2 == window[1].2)
+        || definitions
+            .windows(2)
+            .all(|window| window[0].2 == window[1].2)
     {
         return Ok(None);
     }
@@ -737,6 +1114,11 @@ fn array_retype_split(
             _ => {}
         }
     }
+    if let Some(canonical) = canonical
+        && !normal_flow_stays_after_boundaries(ssa, canonical, accesses, &by_bci, budget)?
+    {
+        return Ok(None);
+    }
     let mut ranges = Vec::with_capacity(definitions.len());
     let mut start = 0;
     for (bci, _, _) in &definitions[1..] {
@@ -744,7 +1126,83 @@ fn array_retype_split(
         start = *bci;
     }
     ranges.push((start, u32::MAX));
-    Ok(Some((definitions.len(), Split { by_bci, ranges })))
+    Ok(Some(Split { by_bci, ranges }))
+}
+
+/// Every later-segment access must remain outside all earlier-segment blocks on every normal
+/// path. Starting at outgoing edges makes an ordered pair of accesses in one block legal, while a
+/// real edge cycle back to that block is still found. Any exceptional/call-context edge refuses.
+fn normal_flow_stays_after_boundaries(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    accesses: &Accesses,
+    by_bci: &BTreeMap<u32, u16>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut edges: BTreeMap<CanonicalBlockId, Vec<CanonicalBlockId>> = BTreeMap::new();
+    for edge in canonical.edges() {
+        poll(budget, Some(edge.from().bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(edge.from().bci()),
+        )?;
+        if edge.kind() != CanonicalEdgeKind::Normal {
+            return Ok(false);
+        }
+        edges
+            .entry(edge.from().clone())
+            .or_default()
+            .push(edge.to().clone());
+    }
+    let max_segment = by_bci.values().copied().max().unwrap_or(0);
+    for boundary in 1..=max_segment {
+        let mut earlier_blocks = BTreeSet::new();
+        let mut later_blocks = BTreeSet::new();
+        for access in accesses.reads.iter().chain(&accesses.writes) {
+            let at = Some(access.bci);
+            poll(budget, at)?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+            let Some(block) = ssa
+                .blocks()
+                .get(access.block)
+                .map(|block| block.block().clone())
+            else {
+                return Ok(false);
+            };
+            match by_bci.get(&access.bci) {
+                Some(part) if *part < boundary => {
+                    earlier_blocks.insert(block);
+                }
+                Some(_) => {
+                    later_blocks.insert(block);
+                }
+                None => return Ok(false),
+            }
+        }
+        let mut pending = Vec::new();
+        for block in later_blocks {
+            pending.extend(edges.get(&block).into_iter().flatten().cloned());
+        }
+        let mut visited = BTreeSet::new();
+        while let Some(block) = pending.pop() {
+            poll(budget, Some(block.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+            if earlier_blocks.contains(&block) {
+                return Ok(false);
+            }
+            if visited.insert(block.clone()) {
+                pending.extend(edges.get(&block).into_iter().flatten().cloned());
+            }
+        }
+    }
+    Ok(true)
 }
 
 /// The accesses of one local slot.
