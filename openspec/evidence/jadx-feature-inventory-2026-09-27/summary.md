@@ -192,3 +192,10 @@ raw receiver实现已提交推送main c5d21640，实际CI run 37831218407四个j
 旧片回放：23字段族双腿46输入有44完整编译/行为，SCGB既有两拒绝保留；字段完整API26/44。80构造全部行为一致、完整API36/80；raw64全部行为一致，字段/方法/类API60/52/60，旧片已接受API无回退。44控制逐输入/完整源/Probe核对：循环依赖、未知incoming、handle/继承/varargs、raw alias重绑定及多use仍可靠拒绝；pure bridge与合法条件单invoke是正控制。不能把拒绝或仅行为一致计为泛型API恢复。
 
 这一里程碑只更新 DT-15/DT-18 相关局部证据，71单元计数及“部分已测/待扩验”的总体口径不变。getter对字段发布的反向依赖、容器/wildcard、任意alias/phi、继承/跨类泛型、this/super委派及完整成员类TestGeneric8另片处理。共享Signature读取/缓存和物理事实复制计费债务单独登记，不混入当前语法实现。最新本地门禁、提交、远端真JDK25 CI与清理状态以根handoff和本片root验收为准。
+
+
+### 2026-10-09 同类泛型调用主线交接
+
+本片任务9/9，MSRV收尾CLI9源码完整对照与CLI8一致：324次冻结输入请求的完整source/report/exit核验（仅elapsed_millis差异），另18个永久重建字段输入的class哈希与旧记录一致、完整源码等价，并补做原/baseline/JADX/候选完整编译和行为/API。共342条实际class-source请求、334个输入row，分母与既有144/46/80/64 protocol保持原义。实现提交276a1c31的实际CI37889792696四job成功，两个seed各3304passed/0failed/93ignored及真JDK25 oracle。详见本片verification-root与handoff。
+
+71单元数和各行总状态保持不变；本片完成不等于整个generic单元或全部JADX追平。字段旧临时ZIP字节身份未建立，class证据和失败历史如实保存；后续冻结输入必须永久归档。getter反向依赖、容器/wildcard、alias/phi、继承/跨类与this/super委派仍需单独OpenSpec。

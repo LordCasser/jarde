@@ -14,4 +14,4 @@
 
 - [x] 3.1 对冻结全部四腿运行候选完整源码重编、-Xverify:all、行为/异常/调用目标与结构化泛型反射；root独立核对CLI/源码/输入/Probe hash、实际stderr和失败控制，不借原jar、不删成员；逐族填写结果而非将CLI 0当成功，验收 GC-01～GC-10。
 - [x] 3.2 回放既有23字段族、80构造输入、64raw receiver输入，保持各自完整编译/行为/已验收反射范围；完成 fmt、CI白名单同口径clippy、两固定seed、显式ignored P3/functional-constructor/bound-receiver与strict OpenSpec；保留首轮失败及修正日志，验收 GC-09～GC-10。
-- [ ] 3.3 root审阅最终架构与边界，更新本片verification/handoff和71单元局部账本，提交推送main并确认最新HEAD实际CI四job成功含真JDK25；核对工作区/分支占用、清理共享Cargo并记录磁盘；不得提前勾选交付或宣称整个generic单元追平。
+- [x] 3.3 root审阅最终架构与边界，更新本片verification/handoff和71单元局部账本，提交推送main并确认最新HEAD实际CI四job成功含真JDK25；核对工作区/分支占用、清理共享Cargo并记录磁盘；不得提前勾选交付或宣称整个generic单元追平。
