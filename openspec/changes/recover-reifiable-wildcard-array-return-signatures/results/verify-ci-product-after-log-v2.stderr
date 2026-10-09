@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/verify-ci-product-v1.py", line 76, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/verify-ci-product-v1.py", line 55, in main
+    assert "cargo test --workspace --all-targets --all-features --locked" in text
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,876 @@
+{
+  "purpose": "diagnostic render with actual selected snapshot headers; no compile/runtime/whole-program acceptance",
+  "cli_sha256": "196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761",
+  "rt_jar": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/jre/lib/rt.jar",
+  "rt_sha256": "b27515a608ee447566b688e2bbb2257b1f0d8eceb96c307b87eb28d90a6630f4",
+  "records": [
+    {
+      "leg": "javac8",
+      "variant": "original-only",
+      "argv": [
+        "/private/tmp/jarde-wildcard-array-return-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-original-only.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "original_jar_sha256": "f42437404bb92d5f4680992482828871951b2ce395a61f6f000a06226f79d0dc",
+      "jar": "javac8-original-only.jar",
+      "jar_sha256": "02b96fb8ec84ff78a99389a8b94a97d64f6022bfffeeea6d84093f6c8ed76a4d",
+      "main_class_sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997",
+      "selected_headers": {},
+      "stdout": "javac8-original-only.stdout",
+      "stdout_sha256": "0a2f54dcccc79f65f62e4877a42b272245adc63e9ec09a5e75d8b65ee0071862",
+      "stderr": "javac8-original-only.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 781,
+          "archive_entries": 9,
+          "attribute_bytes": 273,
+          "class_bytes": 1354,
+          "class_headers": 1,
+          "code_bytes": 55,
+          "dependency_depth": 0,
+          "elapsed_millis": 9,
+          "entry_bytes": 677,
+          "input_bytes": 786,
+          "ir_edges": 27,
+          "ir_items": 1001,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 863,
+          "read_bytes": 390,
+          "result_items": 12
+        }
+      },
+      "quality": "fallback",
+      "representation": "mixed",
+      "main_text": "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `Main`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 16 1 0 4 5 6 9 10 12 15\n        // the array initializer element at BCI 16 is presented as `java.math.BigDecimal`, while the array component is `java.lang.Number`; this `aastore` has no compatible reference fact for a Java initializer\n        // @bytecode 17 20 23 24 27 28 29 32 34 37 38 39 40 43 46\n        // the statement at BCI 46 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)\n        return;\n    }\n",
+      "diagnostics": [
+        {
+          "code": "jre_recovery_produced",
+          "message": "1 region(s), 3 statement(s), 3 segment(s), 685 byte(s) written from 1 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_concat_interleaved_effect",
+          "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_concat_chains",
+          "message": "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_new_sites",
+          "message": "2 construction candidate(s) read under new@1: 2 presented as `new`, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_not_emitted",
+          "message": "the field access at BCI 17 passed field identity proof, but no matching Java field operation was emitted by the final body",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "news": [
+        {
+          "arguments": [
+            10
+          ],
+          "class": "java/math/BigDecimal",
+          "constructor": 12,
+          "dup": 9,
+          "head": 6,
+          "presented": true,
+          "refusal": null
+        },
+        {
+          "arguments": [],
+          "class": "java/lang/StringBuilder",
+          "constructor": 24,
+          "dup": 23,
+          "head": 20,
+          "presented": true,
+          "refusal": null
+        }
+      ],
+      "concats": [
+        {
+          "appends": [],
+          "class": "java/lang/StringBuilder",
+          "head": 20,
+          "presented": false,
+          "refusal": {
+            "code": "jre_concat_interleaved_effect",
+            "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+            "requirement": "a test block whose every instruction is part of a value expression",
+            "rule": {
+              "rule": "concat",
+              "version": "1"
+            }
+          },
+          "tail": null
+        }
+      ],
+      "runtime_coverage": {
+        "scanned": [],
+        "skipped": [],
+        "state": "not_requested",
+        "uninterpreted_extensions": []
+      }
+    },
+    {
+      "leg": "javac8",
+      "variant": "BigDecimal-only",
+      "argv": [
+        "/private/tmp/jarde-wildcard-array-return-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-only.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "original_jar_sha256": "f42437404bb92d5f4680992482828871951b2ce395a61f6f000a06226f79d0dc",
+      "jar": "javac8-BigDecimal-only.jar",
+      "jar_sha256": "012dd9353a7f763858be29448c73ab75f8f7e9d57b4df30cf14ece5a656cfd3b",
+      "main_class_sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997",
+      "selected_headers": {
+        "java/math/BigDecimal.class": "3a2a2aad71f1f3c888b9c550e27a40be9cf41a80e4f72506700848ec8dc31c08"
+      },
+      "stdout": "javac8-BigDecimal-only.stdout",
+      "stdout_sha256": "ef01fe05baab0cdea4fe9e756ecf98b7ea44fd605e287e16f778fc8ba20ab463",
+      "stderr": "javac8-BigDecimal-only.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 804,
+          "archive_entries": 19,
+          "attribute_bytes": 66115,
+          "class_bytes": 99238,
+          "class_headers": 2,
+          "code_bytes": 55,
+          "dependency_depth": 1,
+          "elapsed_millis": 9,
+          "entry_bytes": 98561,
+          "input_bytes": 26374,
+          "ir_edges": 27,
+          "ir_items": 1039,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 618,
+          "read_bytes": 51310,
+          "result_items": 405
+        }
+      },
+      "quality": "structured",
+      "representation": "java",
+      "main_text": "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `Main`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.Number[] local1 = new java.lang.Number[]{new java.math.BigDecimal(\"1.25\")};\n        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(local1.length).append(\":\").append((java.lang.Object) local1[0]).toString());\n        return;\n    }\n",
+      "diagnostics": [
+        {
+          "code": "jre_recovery_produced",
+          "message": "1 region(s), 3 statement(s), 22 segment(s), 440 byte(s) written from 1 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_concat_interleaved_effect",
+          "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_concat_chains",
+          "message": "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_new_sites",
+          "message": "2 construction candidate(s) read under new@1: 2 presented as `new`, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "news": [
+        {
+          "arguments": [
+            10
+          ],
+          "class": "java/math/BigDecimal",
+          "constructor": 12,
+          "dup": 9,
+          "head": 6,
+          "presented": true,
+          "refusal": null
+        },
+        {
+          "arguments": [],
+          "class": "java/lang/StringBuilder",
+          "constructor": 24,
+          "dup": 23,
+          "head": 20,
+          "presented": true,
+          "refusal": null
+        }
+      ],
+      "concats": [
+        {
+          "appends": [],
+          "class": "java/lang/StringBuilder",
+          "head": 20,
+          "presented": false,
+          "refusal": {
+            "code": "jre_concat_interleaved_effect",
+            "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+            "requirement": "a test block whose every instruction is part of a value expression",
+            "rule": {
+              "rule": "concat",
+              "version": "1"
+            }
+          },
+          "tail": null
+        }
+      ],
+      "runtime_coverage": {
+        "scanned": [],
+        "skipped": [],
+        "state": "not_requested",
+        "uninterpreted_extensions": []
+      }
+    },
+    {
+      "leg": "javac8",
+      "variant": "BigDecimal-and-Number",
+      "argv": [
+        "/private/tmp/jarde-wildcard-array-return-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-and-Number.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "original_jar_sha256": "f42437404bb92d5f4680992482828871951b2ce395a61f6f000a06226f79d0dc",
+      "jar": "javac8-BigDecimal-and-Number.jar",
+      "jar_sha256": "8dfe369117544168a5184429ca32e8d9874b9f696db92b03b7b0a76c6a3cca7a",
+      "main_class_sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997",
+      "selected_headers": {
+        "java/math/BigDecimal.class": "3a2a2aad71f1f3c888b9c550e27a40be9cf41a80e4f72506700848ec8dc31c08",
+        "java/lang/Number.class": "fcd410a44ef259d973ebc682f4d86d30940560081fb3b168eb2cd3ede692ad0b"
+      },
+      "stdout": "javac8-BigDecimal-and-Number.stdout",
+      "stdout_sha256": "734aa522356ed6fd1f51244c3e7c7d0cbe626985e64d6eef0de0879ebcdae593",
+      "stderr": "javac8-BigDecimal-and-Number.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 804,
+          "archive_entries": 21,
+          "attribute_bytes": 66115,
+          "class_bytes": 99238,
+          "class_headers": 2,
+          "code_bytes": 55,
+          "dependency_depth": 1,
+          "elapsed_millis": 9,
+          "entry_bytes": 98561,
+          "input_bytes": 26832,
+          "ir_edges": 27,
+          "ir_items": 1039,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 618,
+          "read_bytes": 51310,
+          "result_items": 407
+        }
+      },
+      "quality": "structured",
+      "representation": "java",
+      "main_text": "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `Main`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.Number[] local1 = new java.lang.Number[]{new java.math.BigDecimal(\"1.25\")};\n        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(local1.length).append(\":\").append((java.lang.Object) local1[0]).toString());\n        return;\n    }\n",
+      "diagnostics": [
+        {
+          "code": "jre_recovery_produced",
+          "message": "1 region(s), 3 statement(s), 22 segment(s), 440 byte(s) written from 1 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_concat_interleaved_effect",
+          "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_concat_chains",
+          "message": "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_new_sites",
+          "message": "2 construction candidate(s) read under new@1: 2 presented as `new`, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "news": [
+        {
+          "arguments": [
+            10
+          ],
+          "class": "java/math/BigDecimal",
+          "constructor": 12,
+          "dup": 9,
+          "head": 6,
+          "presented": true,
+          "refusal": null
+        },
+        {
+          "arguments": [],
+          "class": "java/lang/StringBuilder",
+          "constructor": 24,
+          "dup": 23,
+          "head": 20,
+          "presented": true,
+          "refusal": null
+        }
+      ],
+      "concats": [
+        {
+          "appends": [],
+          "class": "java/lang/StringBuilder",
+          "head": 20,
+          "presented": false,
+          "refusal": {
+            "code": "jre_concat_interleaved_effect",
+            "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+            "requirement": "a test block whose every instruction is part of a value expression",
+            "rule": {
+              "rule": "concat",
+              "version": "1"
+            }
+          },
+          "tail": null
+        }
+      ],
+      "runtime_coverage": {
+        "scanned": [],
+        "skipped": [],
+        "state": "not_requested",
+        "uninterpreted_extensions": []
+      }
+    },
+    {
+      "leg": "javac23",
+      "variant": "original-only",
+      "argv": [
+        "/private/tmp/jarde-wildcard-array-return-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-original-only.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "original_jar_sha256": "f71d44a7315890d40ac5b28aafd55ffc739ab76b8590715b260a41bc5e696607",
+      "jar": "javac23-original-only.jar",
+      "jar_sha256": "9d1188ad0fa1bf6d93bb0ee6573e0947c85806a5b8dc9486cea8174163f33ec2",
+      "main_class_sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87",
+      "selected_headers": {},
+      "stdout": "javac23-original-only.stdout",
+      "stdout_sha256": "efb8d8027fd946311aa426e61622022b4f49eb375dd7b114886474d1c88b09c8",
+      "stderr": "javac23-original-only.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 781,
+          "archive_entries": 9,
+          "attribute_bytes": 273,
+          "class_bytes": 1354,
+          "class_headers": 1,
+          "code_bytes": 55,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 677,
+          "input_bytes": 785,
+          "ir_edges": 27,
+          "ir_items": 1001,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 863,
+          "read_bytes": 388,
+          "result_items": 12
+        }
+      },
+      "quality": "fallback",
+      "representation": "mixed",
+      "main_text": "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `Main`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 16 1 0 4 5 6 9 10 12 15\n        // the array initializer element at BCI 16 is presented as `java.math.BigDecimal`, while the array component is `java.lang.Number`; this `aastore` has no compatible reference fact for a Java initializer\n        // @bytecode 17 20 23 24 27 28 29 32 34 37 38 39 40 43 46\n        // the statement at BCI 46 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)\n        return;\n    }\n",
+      "diagnostics": [
+        {
+          "code": "jre_recovery_produced",
+          "message": "1 region(s), 3 statement(s), 3 segment(s), 685 byte(s) written from 1 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_concat_interleaved_effect",
+          "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_concat_chains",
+          "message": "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_new_sites",
+          "message": "2 construction candidate(s) read under new@1: 2 presented as `new`, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_not_emitted",
+          "message": "the field access at BCI 17 passed field identity proof, but no matching Java field operation was emitted by the final body",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "news": [
+        {
+          "arguments": [
+            10
+          ],
+          "class": "java/math/BigDecimal",
+          "constructor": 12,
+          "dup": 9,
+          "head": 6,
+          "presented": true,
+          "refusal": null
+        },
+        {
+          "arguments": [],
+          "class": "java/lang/StringBuilder",
+          "constructor": 24,
+          "dup": 23,
+          "head": 20,
+          "presented": true,
+          "refusal": null
+        }
+      ],
+      "concats": [
+        {
+          "appends": [],
+          "class": "java/lang/StringBuilder",
+          "head": 20,
+          "presented": false,
+          "refusal": {
+            "code": "jre_concat_interleaved_effect",
+            "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+            "requirement": "a test block whose every instruction is part of a value expression",
+            "rule": {
+              "rule": "concat",
+              "version": "1"
+            }
+          },
+          "tail": null
+        }
+      ],
+      "runtime_coverage": {
+        "scanned": [],
+        "skipped": [],
+        "state": "not_requested",
+        "uninterpreted_extensions": []
+      }
+    },
+    {
+      "leg": "javac23",
+      "variant": "BigDecimal-only",
+      "argv": [
+        "/private/tmp/jarde-wildcard-array-return-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-only.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "original_jar_sha256": "f71d44a7315890d40ac5b28aafd55ffc739ab76b8590715b260a41bc5e696607",
+      "jar": "javac23-BigDecimal-only.jar",
+      "jar_sha256": "dce091410b50d96a12c3fb4de70d90b8c37b129f8fa8a4ed5e5f51d7690a0ee3",
+      "main_class_sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87",
+      "selected_headers": {
+        "java/math/BigDecimal.class": "3a2a2aad71f1f3c888b9c550e27a40be9cf41a80e4f72506700848ec8dc31c08"
+      },
+      "stdout": "javac23-BigDecimal-only.stdout",
+      "stdout_sha256": "0c0d5a572329cf968ee88e24d1587322f77954bc7e700732f6c2c6433536c5f4",
+      "stderr": "javac23-BigDecimal-only.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 804,
+          "archive_entries": 19,
+          "attribute_bytes": 66115,
+          "class_bytes": 99238,
+          "class_headers": 2,
+          "code_bytes": 55,
+          "dependency_depth": 1,
+          "elapsed_millis": 9,
+          "entry_bytes": 98561,
+          "input_bytes": 26373,
+          "ir_edges": 27,
+          "ir_items": 1039,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 618,
+          "read_bytes": 51308,
+          "result_items": 405
+        }
+      },
+      "quality": "structured",
+      "representation": "java",
+      "main_text": "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `Main`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.Number[] local1 = new java.lang.Number[]{new java.math.BigDecimal(\"1.25\")};\n        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(local1.length).append(\":\").append((java.lang.Object) local1[0]).toString());\n        return;\n    }\n",
+      "diagnostics": [
+        {
+          "code": "jre_recovery_produced",
+          "message": "1 region(s), 3 statement(s), 22 segment(s), 440 byte(s) written from 1 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_concat_interleaved_effect",
+          "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_concat_chains",
+          "message": "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_new_sites",
+          "message": "2 construction candidate(s) read under new@1: 2 presented as `new`, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "news": [
+        {
+          "arguments": [
+            10
+          ],
+          "class": "java/math/BigDecimal",
+          "constructor": 12,
+          "dup": 9,
+          "head": 6,
+          "presented": true,
+          "refusal": null
+        },
+        {
+          "arguments": [],
+          "class": "java/lang/StringBuilder",
+          "constructor": 24,
+          "dup": 23,
+          "head": 20,
+          "presented": true,
+          "refusal": null
+        }
+      ],
+      "concats": [
+        {
+          "appends": [],
+          "class": "java/lang/StringBuilder",
+          "head": 20,
+          "presented": false,
+          "refusal": {
+            "code": "jre_concat_interleaved_effect",
+            "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+            "requirement": "a test block whose every instruction is part of a value expression",
+            "rule": {
+              "rule": "concat",
+              "version": "1"
+            }
+          },
+          "tail": null
+        }
+      ],
+      "runtime_coverage": {
+        "scanned": [],
+        "skipped": [],
+        "state": "not_requested",
+        "uninterpreted_extensions": []
+      }
+    },
+    {
+      "leg": "javac23",
+      "variant": "BigDecimal-and-Number",
+      "argv": [
+        "/private/tmp/jarde-wildcard-array-return-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-and-Number.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "original_jar_sha256": "f71d44a7315890d40ac5b28aafd55ffc739ab76b8590715b260a41bc5e696607",
+      "jar": "javac23-BigDecimal-and-Number.jar",
+      "jar_sha256": "6a084bf7f28d1a77d9e1c1e08812a35a59c3a02c810acf14e1709a5d25b7307d",
+      "main_class_sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87",
+      "selected_headers": {
+        "java/math/BigDecimal.class": "3a2a2aad71f1f3c888b9c550e27a40be9cf41a80e4f72506700848ec8dc31c08",
+        "java/lang/Number.class": "fcd410a44ef259d973ebc682f4d86d30940560081fb3b168eb2cd3ede692ad0b"
+      },
+      "stdout": "javac23-BigDecimal-and-Number.stdout",
+      "stdout_sha256": "19c8ca3d03a25d2694922835aab4db4d57a1e48de12c3f9d7f8069330c9eebdc",
+      "stderr": "javac23-BigDecimal-and-Number.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 804,
+          "archive_entries": 21,
+          "attribute_bytes": 66115,
+          "class_bytes": 99238,
+          "class_headers": 2,
+          "code_bytes": 55,
+          "dependency_depth": 1,
+          "elapsed_millis": 9,
+          "entry_bytes": 98561,
+          "input_bytes": 26831,
+          "ir_edges": 27,
+          "ir_items": 1039,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 618,
+          "read_bytes": 51308,
+          "result_items": 407
+        }
+      },
+      "quality": "structured",
+      "representation": "java",
+      "main_text": "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `Main`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.Number[] local1 = new java.lang.Number[]{new java.math.BigDecimal(\"1.25\")};\n        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(local1.length).append(\":\").append((java.lang.Object) local1[0]).toString());\n        return;\n    }\n",
+      "diagnostics": [
+        {
+          "code": "jre_recovery_produced",
+          "message": "1 region(s), 3 statement(s), 22 segment(s), 440 byte(s) written from 1 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_concat_interleaved_effect",
+          "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_concat_chains",
+          "message": "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_new_sites",
+          "message": "2 construction candidate(s) read under new@1: 2 presented as `new`, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "news": [
+        {
+          "arguments": [
+            10
+          ],
+          "class": "java/math/BigDecimal",
+          "constructor": 12,
+          "dup": 9,
+          "head": 6,
+          "presented": true,
+          "refusal": null
+        },
+        {
+          "arguments": [],
+          "class": "java/lang/StringBuilder",
+          "constructor": 24,
+          "dup": 23,
+          "head": 20,
+          "presented": true,
+          "refusal": null
+        }
+      ],
+      "concats": [
+        {
+          "appends": [],
+          "class": "java/lang/StringBuilder",
+          "head": 20,
+          "presented": false,
+          "refusal": {
+            "code": "jre_concat_interleaved_effect",
+            "message": "the concatenation at BCI 20 was not presented: the instruction at BCI 28 is an ArrayLength between the chain's own instructions, and presenting the concatenation would write the `append` calls around it: the effect at BCI 28 would run in a different order or a different number of times",
+            "requirement": "a test block whose every instruction is part of a value expression",
+            "rule": {
+              "rule": "concat",
+              "version": "1"
+            }
+          },
+          "tail": null
+        }
+      ],
+      "runtime_coverage": {
+        "scanned": [],
+        "skipped": [],
+        "state": "not_requested",
+        "uninterpreted_extensions": []
+      }
+    }
+  ]
+}

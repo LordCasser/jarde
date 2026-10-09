@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict"
+  ],
+  "exit": 0,
+  "started_at": "2026-10-09T20:20:53.440105+00:00",
+  "ended_at": "2026-10-09T20:20:53.974496+00:00",
+  "stdout_sha256": "bfd4a5895b32a52e86f416f34589c7bdda4a155b02ddad68c3c6cd4ec8b96f0f",
+  "stderr_sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+}

@@ -1,5 +1,7 @@
 # Root 验收 — covariant child-array initializers
 
+当前组合产品45b4848c及确切CI37981309004已经root验收，child7/7、wildcard返回6/6。下面按阶段保留历史状态；最新确切身份与全仓结果见文末。
+
 规划4/4、任务2/7，1.1确切前片CI及1.2历史基线身份核验完成；CI37968418985实际四job/48steps全部success，前置身份原始JSON和root记录见前片results/ci-code-sha-v1.json及ci-code-sha-root-verification-v1.json。doccommit92e12704a已推送且工作区确认干净后派发Luna限定实现，当前build.rs/集成测试WIP，尚未运行本片门禁，任务仍2/7。
 
 ## Frozen Historical Baseline
@@ -45,3 +47,17 @@ root独立verify-candidate-root-v1在collectionGrid marker非空处真实失败�
 root CI-exact Clippy与MSRV1.88实际全部通过，但仅针对四源子数组版本，不借给后续generic版本。fresh partitioned workspace v1首lib/seed1被20GiB保护中止exit-15，任何目标的完整双seed不能报通过；过程/部分输出保留。root实际cargo clean5945files/818.3MiB，target不存在；17个较早Mach-O frozen CLI可恢复gzip归档并逐字验证，saved_bytes932116990，保留近期五个CLI。归档manifest及restore方式见results/historical-cli-compression-v1.json，不删除失败/证据。外部活动持续用盘，当前本仓已无编译残留，不降低20GiB线；后续组合代码全仓双seed由确切新CI覆盖，明确不是本地成功。
 
 独立泛型片五源CLI fresh24腿22成功，1166checks/0errors已同时闭合完整direct语义和Collection<?>[][]声明，child3.1回验完成；成功证据marker保留而拒绝消失。确切组合代码全仓CI及3.2/3.3仍待，详见../recover-reifiable-wildcard-array-return-signatures/verification-root.md。
+
+## 确切组合产品 CI 与最终验收
+
+产品main/origin/main `45b4848c558f4f5d317720535cea32fe431288bf` 的[CI37981309004](https://github.com/LordCasser/jarde/actions/runs/37981309004)四job/48steps全部success。root独立核对五源Git blob/当前文件/冻结CLI SHA完全一致；原始CI JSON、lossless gzip完整stable日志及验收分别保存为wildcard片results/ci-run-v1.json、ci-stable-job-v1.log.gz、ci-product-root-acceptance-v1.json。原始日志SHA `30681d522fa00a4181f75928507a89938612a3503a9aee7b05d3a81190ab087b`。
+
+两个不同seed `5350648285461741569`/`5350648285461741570` 均fresh执行完整 `cargo test --workspace --all-targets --all-features --locked`，各352个test-result记录、3343passed/0failed/93ignored。真Temurin25.0.4+7 oracle、显式P3 Java执行、functional constructor完整类对照、MSRV1.88、fmt/Clippy、依赖边界、OpenSpec strict、supply chain/fuzz及tracked tree不变检查实际全部成功。双seed是确切产品远端CI覆盖，不冒称本机重新跑完全仓。
+
+首次独立CI verifier在日志下载尚未完成时FileNotFound失败；下载完成后v1按gh step标签分区再次失败，因为此runner日志全部标作UNKNOWN STEP。v2改用精确Run workspace命令组边界与互异seed，另核对原始job JSON全部已完成step；实际verify-ci-product-v3 exit0。保留两个真实失败及脚本，不改产品来迎合验收。
+
+此前本地11严格门禁/P5 pins/fingerprint/reader census与真实双JDK24腿/1166独立checks全部已有成功记录。当前child3.2/3.3、wildcard3.2/3.3完成；两片分别7/7与6/6。root clean实际5926files/845.2MiB，target不存在，冻结CLI保留。14辅助树detached/clean/main ancestors，无剩余分支工作；本轮不新增worktree。
+
+完整普通回放仍22/24，BigDecimal两已知失败不被删除。等待CI期间的显式BigDecimal header诊断四正例完整Main隔离重编/runtime原始双流一致，两个Main-only负基线仍失败；该诊断没有改当前产品或替代24腿分母。下一独立recover-bigdecimal-number-widening规划4/4/strict通过，前置与基线2/7，产品未实施；concat优化拒绝不等于正文失败，普通显式StringBuilder链已能闭合，无需本片新增concat机制。
+
+71单元/EM18整单元分类保持不变。后续验收文档提交只修改证据/任务/规划，产品与冻结CLI身份不变；不把它的另一次CI冒称已经成功，也不递归等待同代码的文档CI来替代此确切产品验收。

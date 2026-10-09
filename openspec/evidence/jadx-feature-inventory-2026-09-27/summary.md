@@ -247,3 +247,9 @@ EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下�
 五源冻结CLI实际fresh24腿22成功：旧18矩阵16/18、完整六类factory2/2、direct2/2、数值2/2；BigDecimal两失败保留。direct两真实JDK全部生成源码空CP/SP重编、只新classes-Xverify:all运行/raw双流匹配；原Collection<?>[][]完整声明恢复，raw初始化保持。root独立1166checks/0errors，同次成员/Signature/真实来源与次数全部核验；original/JADX是逐hash历史基线，不宣称fresh。此前四源回放仅语义通过、Signature pending的1116checks保留，不能混作本片成功。
 
 325 Java-lib、16 facade focused、5完整数组集成、MSRV及CI-exact Clippy实际通过；其余严格门禁/确切CI待收尾。平坦Signature真实generic arity缺事实另记债务，非当前已拒绝边界。EM18仍部分已测，71分母及整单元分类不变。
+
+## EM-18 两数组补片确切产品验收 — 2026-10-10
+
+子数组协变7/7、reifiable wildcard数组返回6/6；产品45b4848c推送main，确切CI37981309004四job/48steps全部success，fresh双seed各352test-result记录/3343passed/0failed/93ignored，含真JDK25 oracle/Java完整执行/MSRV/Clippy/supply chain/fuzz。五源冻结CLI及原始JSON/完整日志身份经root独立核对，见两片verification-root。全部六类direct正文与Collection<?>[][]声明同时闭合；fresh24腿22成功，BigDecimal两失败仍保留。此前WIP、Signature pending及真实失败记录属于历史阶段，不替代当前验收。
+
+下一[BigDecimal→Number窄片](../../changes/recover-bigdecimal-number-widening/)规划4/4、strict有效、前置/基线2/7，产品未实施。root补入真实Corretto8 BigDecimal header后的四条完整Main诊断，两真实JDK空CP/SP重编及runtime均匹配历史原流；原两个Main-only输入仍失败。已有普通StringBuilder链完整，concat优化warning不等于正文失败，因此仅补准确release-8关系，不新增concat机制。71分母及EM18部分已测分类保持；后续CF16/DT26候选仍须fresh复测，不能以只读队列审计直接实施。

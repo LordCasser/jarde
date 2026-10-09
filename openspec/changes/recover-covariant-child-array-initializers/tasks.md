@@ -11,5 +11,5 @@
 ## 3. Root完整验收
 
 - [x] 3.1 root冻结candidate CLI，direct六类全部生成源在两真实JDK空CP/SP重编、-Xverify:all运行，实际exit/stdout/stderr2/2匹配；不剥离成员，核验三个grid正文及每层allocation/store/constructor来源、调用次数/次序，collection若仍有独立Signature问题凭完整新报告登记且本项不提前勾选；旧factory2/2、18矩阵16/18、数值完整家族2/2与BigDecimal已知失败边界保持。
-- [ ] 3.2 root完成双seed全部workspace目标覆盖、MSRV1.88、fmt、CI-exact Clippy、显式Java对照、P5严格pins/指纹/reader census与OpenSpec strict/diff；仅按已解释的实际正文/outcome及计费变化更新严格pins，不放宽门槛，原始失败/argv/streams/hash全部保留，root串行Cargo及20GiB停建线遵守。
-- [ ] 3.3 root对抗验收，更新71单元EM18边界及handoff，提交推送并确认本片代码SHA实际CI全成功；清本项目编译残留并保留冻结CLI，不把本窄片成功宣称整单元完成。
+- [x] 3.2 root完成双seed全部workspace目标覆盖、MSRV1.88、fmt、CI-exact Clippy、显式Java对照、P5严格pins/指纹/reader census与OpenSpec strict/diff；仅按已解释的实际正文/outcome及计费变化更新严格pins，不放宽门槛，原始失败/argv/streams/hash全部保留，root串行Cargo及20GiB停建线遵守。
+- [x] 3.3 root对抗验收，更新71单元EM18边界及handoff，提交推送并确认本片代码SHA实际CI全成功；清本项目编译残留并保留冻结CLI，不把本窄片成功宣称整单元完成。

@@ -1,0 +1,13 @@
+{
+  "rt_jar": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/jre/lib/rt.jar",
+  "rt_jar_sha256": "b27515a608ee447566b688e2bbb2257b1f0d8eceb96c307b87eb28d90a6630f4",
+  "entry": "java/math/BigDecimal.class",
+  "class_sha256": "3a2a2aad71f1f3c888b9c550e27a40be9cf41a80e4f72506700848ec8dc31c08",
+  "major_version": 52,
+  "flags": 33,
+  "this_class": "java/math/BigDecimal",
+  "super_class": "java/lang/Number",
+  "parser": "openspec/changes/recover-covariant-child-array-initializers/results/prepare-child-jvm-controls-v1.py",
+  "parser_sha256": "c02abceb328f451ec93a45d752dbeb94947615df32a2ca45a307b6b71574d103",
+  "scope": "physical header only, no target execution or hierarchy inference"
+}

@@ -1,0 +1,337 @@
+{
+  "purpose": "root diagnostic acceptance: selected header facts close real type gap, ordinary builder chain already preserves full Main behavior; original-only ordinary jars remain failed",
+  "checks": [
+    {
+      "leg": "javac8",
+      "variant": "original-only",
+      "matches_actual_original_raw_streams": false,
+      "complete_Main_members": 2,
+      "runtime_classes_only_generated_Main": true,
+      "input_Main_bytes_unchanged": true
+    },
+    {
+      "leg": "javac8",
+      "variant": "BigDecimal-only",
+      "matches_actual_original_raw_streams": true,
+      "complete_Main_members": 2,
+      "runtime_classes_only_generated_Main": true,
+      "input_Main_bytes_unchanged": true
+    },
+    {
+      "leg": "javac8",
+      "variant": "BigDecimal-and-Number",
+      "matches_actual_original_raw_streams": true,
+      "complete_Main_members": 2,
+      "runtime_classes_only_generated_Main": true,
+      "input_Main_bytes_unchanged": true
+    },
+    {
+      "leg": "javac23",
+      "variant": "original-only",
+      "matches_actual_original_raw_streams": false,
+      "complete_Main_members": 2,
+      "runtime_classes_only_generated_Main": true,
+      "input_Main_bytes_unchanged": true
+    },
+    {
+      "leg": "javac23",
+      "variant": "BigDecimal-only",
+      "matches_actual_original_raw_streams": true,
+      "complete_Main_members": 2,
+      "runtime_classes_only_generated_Main": true,
+      "input_Main_bytes_unchanged": true
+    },
+    {
+      "leg": "javac23",
+      "variant": "BigDecimal-and-Number",
+      "matches_actual_original_raw_streams": true,
+      "complete_Main_members": 2,
+      "runtime_classes_only_generated_Main": true,
+      "input_Main_bytes_unchanged": true
+    }
+  ],
+  "files": [
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-and-Number.jar",
+      "bytes": 26831,
+      "sha256": "6a084bf7f28d1a77d9e1c1e08812a35a59c3a02c810acf14e1709a5d25b7307d"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-and-Number.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-and-Number.stdout",
+      "bytes": 39198,
+      "sha256": "19c8ca3d03a25d2694922835aab4db4d57a1e48de12c3f9d7f8069330c9eebdc"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-only.jar",
+      "bytes": 26373,
+      "sha256": "dce091410b50d96a12c3fb4de70d90b8c37b129f8fa8a4ed5e5f51d7690a0ee3"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-BigDecimal-only.stdout",
+      "bytes": 39198,
+      "sha256": "0c0d5a572329cf968ee88e24d1587322f77954bc7e700732f6c2c6433536c5f4"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-original-only.jar",
+      "bytes": 785,
+      "sha256": "9d1188ad0fa1bf6d93bb0ee6573e0947c85806a5b8dc9486cea8174163f33ec2"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-original-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac23-original-only.stdout",
+      "bytes": 36000,
+      "sha256": "efb8d8027fd946311aa426e61622022b4f49eb375dd7b114886474d1c88b09c8"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-and-Number.jar",
+      "bytes": 26832,
+      "sha256": "8dfe369117544168a5184429ca32e8d9874b9f696db92b03b7b0a76c6a3cca7a"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-and-Number.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-and-Number.stdout",
+      "bytes": 39198,
+      "sha256": "734aa522356ed6fd1f51244c3e7c7d0cbe626985e64d6eef0de0879ebcdae593"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-only.jar",
+      "bytes": 26374,
+      "sha256": "012dd9353a7f763858be29448c73ab75f8f7e9d57b4df30cf14ece5a656cfd3b"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-BigDecimal-only.stdout",
+      "bytes": 39198,
+      "sha256": "ef01fe05baab0cdea4fe9e756ecf98b7ea44fd605e287e16f778fc8ba20ab463"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-original-only.jar",
+      "bytes": 786,
+      "sha256": "02b96fb8ec84ff78a99389a8b94a97d64f6022bfffeeea6d84093f6c8ed76a4d"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-original-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/javac8-original-only.stdout",
+      "bytes": 36000,
+      "sha256": "0a2f54dcccc79f65f62e4877a42b272245adc63e9ec09a5e75d8b65ee0071862"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-v1/manifest.json",
+      "bytes": 35624,
+      "sha256": "d5c1fd65a29c0c48670c1915fc1a0b9a83d81afa7d5dc493564566c64476d3e5"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number/Main.java",
+      "bytes": 1153,
+      "sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number/classes/Main.class",
+      "bytes": 677,
+      "sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number-compile.stderr",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number-run.stdout",
+      "bytes": 7,
+      "sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only/Main.java",
+      "bytes": 1153,
+      "sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only/classes/Main.class",
+      "bytes": 677,
+      "sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only-compile.stderr",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only-run.stdout",
+      "bytes": 7,
+      "sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only/Main.java",
+      "bytes": 1406,
+      "sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only/classes/Main.class",
+      "bytes": 178,
+      "sha256": "322375ce75bf15f2edfcc1ab7e0a4b3e8f3f8d54e9aeaead0be5c392ab17488f"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only-compile.stderr",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only-run.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number/Main.java",
+      "bytes": 1153,
+      "sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number/classes/Main.class",
+      "bytes": 677,
+      "sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number-run.stdout",
+      "bytes": 7,
+      "sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only/Main.java",
+      "bytes": 1153,
+      "sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only/classes/Main.class",
+      "bytes": 677,
+      "sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only-run.stdout",
+      "bytes": 7,
+      "sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only/Main.java",
+      "bytes": 1406,
+      "sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only/classes/Main.class",
+      "bytes": 178,
+      "sha256": "cfb14fa5cd6fdf9820608a42505c43e1185039a5a15ba5529177f2cb2fb4eac6"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only-run.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/manifest.json",
+      "bytes": 19623,
+      "sha256": "3cba0828f963450e571713cbd9bb0c8cfce861572619124cb06d183d447cb919"
+    }
+  ],
+  "original_and_JADX": "verified historical baseline, not fresh rerun",
+  "product_modified": false
+}

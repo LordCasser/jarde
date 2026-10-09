@@ -1,0 +1,30 @@
+{
+  "commit": "45b4848c558f4f5d317720535cea32fe431288bf",
+  "source_identity_matches": true,
+  "sources": {
+    "crates/jarde-java/src/init.rs": {
+      "git_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "git_blob": "480fe9903177ccc56fe21e38581372301d5f8101"
+    },
+    "crates/jarde-java/src/report.rs": {
+      "git_sha256": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+      "git_blob": "110f3bfcebb58fcb248c86fd940fbd97b5d78c88"
+    },
+    "crates/jarde-java/src/build.rs": {
+      "git_sha256": "ca0147bf5dc0d545380efc7822a19836bedb2cd8317d3da8ba69a33cddeb5103",
+      "git_blob": "c4f6e59511f888e49f7af295675ed06d475f60b8"
+    },
+    "src/class_source.rs": {
+      "git_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "git_blob": "23cfb6038d97783dd4871b3f3a80e8a3352364ec"
+    },
+    "Cargo.lock": {
+      "git_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "git_blob": "18f9c535f6be3d8b0446e2703c4ceab081fd24ed"
+    }
+  },
+  "cli_path": "/private/tmp/jarde-wildcard-array-return-cli-v1",
+  "cli_sha256": "196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761",
+  "ci_run": 37981309004,
+  "ci_status": "in_progress; not yet accepted"
+}

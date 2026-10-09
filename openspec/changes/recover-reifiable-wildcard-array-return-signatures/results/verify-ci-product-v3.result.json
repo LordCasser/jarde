@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "python3",
+    "openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/verify-ci-product-v2.py"
+  ],
+  "started_at": "2026-10-09T20:19:05.030346+00:00",
+  "ended_at": "2026-10-09T20:19:05.179790+00:00",
+  "exit": 0
+}

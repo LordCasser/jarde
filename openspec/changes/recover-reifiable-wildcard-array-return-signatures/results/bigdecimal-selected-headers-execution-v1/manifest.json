@@ -1,0 +1,316 @@
+{
+  "purpose": "complete requested Main replay only, platform headers are input facts and not compilation/runtime classes",
+  "input_manifest_sha256": "d5c1fd65a29c0c48670c1915fc1a0b9a83d81afa7d5dc493564566c64476d3e5",
+  "environment_removed": {
+    "JAVA_TOOL_OPTIONS": false,
+    "_JAVA_OPTIONS": false,
+    "JDK_JAVA_OPTIONS": false,
+    "CLASSPATH": false
+  },
+  "cases": [
+    {
+      "leg": "javac8",
+      "variant": "original-only",
+      "source_sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e",
+      "generated_main_sha256": "cfb14fa5cd6fdf9820608a42505c43e1185039a5a15ba5529177f2cb2fb4eac6",
+      "semantic_match": false,
+      "expected_stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "leg": "javac8",
+      "variant": "BigDecimal-only",
+      "source_sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446",
+      "generated_main_sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997",
+      "semantic_match": true,
+      "expected_stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "leg": "javac8",
+      "variant": "BigDecimal-and-Number",
+      "source_sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446",
+      "generated_main_sha256": "7c302ba965d6f94528b3be6d634477bb62eb8078408c12a460d1075730571997",
+      "semantic_match": true,
+      "expected_stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "leg": "javac23",
+      "variant": "original-only",
+      "source_sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e",
+      "generated_main_sha256": "322375ce75bf15f2edfcc1ab7e0a4b3e8f3f8d54e9aeaead0be5c392ab17488f",
+      "semantic_match": false,
+      "expected_stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "leg": "javac23",
+      "variant": "BigDecimal-only",
+      "source_sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446",
+      "generated_main_sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87",
+      "semantic_match": true,
+      "expected_stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "leg": "javac23",
+      "variant": "BigDecimal-and-Number",
+      "source_sha256": "f68ba76e86298d4868df7914eb1e1034a78b2264e2eb5755a63ca041f6c0d446",
+      "generated_main_sha256": "e4bf655f328f116957186fd9a244ad0e11cc27f8fa3c6684c3b63c11ab19dc87",
+      "semantic_match": true,
+      "expected_stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8-original-only-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only",
+      "exit": 0,
+      "stdout": "javac8-original-only-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac8-original-only-compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-original-only-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-original-only",
+      "exit": 0,
+      "stdout": "javac8-original-only-run.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac8-original-only-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-BigDecimal-only-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only",
+      "exit": 0,
+      "stdout": "javac8-BigDecimal-only-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac8-BigDecimal-only-compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-BigDecimal-only-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-only",
+      "exit": 0,
+      "stdout": "javac8-BigDecimal-only-run.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "javac8-BigDecimal-only-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-BigDecimal-and-Number-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number",
+      "exit": 0,
+      "stdout": "javac8-BigDecimal-and-Number-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac8-BigDecimal-and-Number-compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-BigDecimal-and-Number-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac8-BigDecimal-and-Number",
+      "exit": 0,
+      "stdout": "javac8-BigDecimal-and-Number-run.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "javac8-BigDecimal-and-Number-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-original-only-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only",
+      "exit": 0,
+      "stdout": "javac23-original-only-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac23-original-only-compile.stderr",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "javac23-original-only-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-original-only",
+      "exit": 0,
+      "stdout": "javac23-original-only-run.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac23-original-only-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-BigDecimal-only-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only",
+      "exit": 0,
+      "stdout": "javac23-BigDecimal-only-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac23-BigDecimal-only-compile.stderr",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "javac23-BigDecimal-only-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-only",
+      "exit": 0,
+      "stdout": "javac23-BigDecimal-only-run.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "javac23-BigDecimal-only-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-BigDecimal-and-Number-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number",
+      "exit": 0,
+      "stdout": "javac23-BigDecimal-and-Number-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "javac23-BigDecimal-and-Number-compile.stderr",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "javac23-BigDecimal-and-Number-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/bigdecimal-selected-headers-execution-v1/javac23-BigDecimal-and-Number",
+      "exit": 0,
+      "stdout": "javac23-BigDecimal-and-Number-run.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "javac23-BigDecimal-and-Number-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "semantic_passes": 4,
+  "total_cases": 6
+}

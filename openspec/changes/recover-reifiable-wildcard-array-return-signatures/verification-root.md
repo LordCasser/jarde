@@ -1,6 +1,6 @@
 # Root 验收记录
 
-当前是组合代码 WIP，尚未提交推送或通过本次确切代码 CI。
+当前两片组合产品45b4848c558f4f5d317720535cea32fe431288bf已提交推送main，并通过确切CI37981309004四job/48steps。child7/7、wildcard返回6/6；下文保留各阶段实际失败与当时状态。
 
 ## 候选 focused
 
@@ -29,3 +29,17 @@ legacy22腿20/22：18矩阵16/18、factory2/2、direct2/2；新增数值两腿2/
 root-local-acceptance-v1.json核对11门禁各实际exit0、准确argv、双流hash、当前五源+两集成测试身份不变：fmt、MSRV1.88、CI-exact Clippy、P5严格pins5pass/1ignored、fingerprint5pass/1ignored、reader census1pass、显式P3 Java3pass、functional constructor完整class1pass、两片OpenSpec strict与diff。既有严格pins/指纹无需变更。当地不是JDK25，不宣称本地执行JDK25 oracle。
 
 全workspace双seed由当前组合代码确切CI验收，3.2/3.3仍未完成；前片本地全仓首次seed1被20GiB guard停止，不冒称成功，不借旧CI。所有raw失败和执行记录保留。main是唯一分支，14辅助worktree均detached/clean/main ancestor/无target，实际审计results/worktree-audit-before-commit-v1.json。
+
+## 确切组合产品 CI 与最终验收
+
+产品main/origin/main `45b4848c558f4f5d317720535cea32fe431288bf` 的[CI37981309004](https://github.com/LordCasser/jarde/actions/runs/37981309004)四job/48steps全部success。root独立核对五源Git blob/当前文件/冻结CLI SHA完全一致；原始CI JSON、lossless gzip完整stable日志及验收分别保存为wildcard片results/ci-run-v1.json、ci-stable-job-v1.log.gz、ci-product-root-acceptance-v1.json。原始日志SHA `30681d522fa00a4181f75928507a89938612a3503a9aee7b05d3a81190ab087b`。
+
+两个不同seed `5350648285461741569`/`5350648285461741570` 均fresh执行完整 `cargo test --workspace --all-targets --all-features --locked`，各352个test-result记录、3343passed/0failed/93ignored。真Temurin25.0.4+7 oracle、显式P3 Java执行、functional constructor完整类对照、MSRV1.88、fmt/Clippy、依赖边界、OpenSpec strict、supply chain/fuzz及tracked tree不变检查实际全部成功。双seed是确切产品远端CI覆盖，不冒称本机重新跑完全仓。
+
+首次独立CI verifier在日志下载尚未完成时FileNotFound失败；下载完成后v1按gh step标签分区再次失败，因为此runner日志全部标作UNKNOWN STEP。v2改用精确Run workspace命令组边界与互异seed，另核对原始job JSON全部已完成step；实际verify-ci-product-v3 exit0。保留两个真实失败及脚本，不改产品来迎合验收。
+
+此前本地11严格门禁/P5 pins/fingerprint/reader census与真实双JDK24腿/1166独立checks全部已有成功记录。当前child3.2/3.3、wildcard3.2/3.3完成；两片分别7/7与6/6。root clean实际5926files/845.2MiB，target不存在，冻结CLI保留。14辅助树detached/clean/main ancestors，无剩余分支工作；本轮不新增worktree。
+
+完整普通回放仍22/24，BigDecimal两已知失败不被删除。等待CI期间的显式BigDecimal header诊断四正例完整Main隔离重编/runtime原始双流一致，两个Main-only负基线仍失败；该诊断没有改当前产品或替代24腿分母。下一独立recover-bigdecimal-number-widening规划4/4/strict通过，前置与基线2/7，产品未实施；concat优化拒绝不等于正文失败，普通显式StringBuilder链已能闭合，无需本片新增concat机制。
+
+71单元/EM18整单元分类保持不变。后续验收文档提交只修改证据/任务/规划，产品与冻结CLI身份不变；不把它的另一次CI冒称已经成功，也不递归等待同代码的文档CI来替代此确切产品验收。
