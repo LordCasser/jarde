@@ -11,5 +11,5 @@
 ## 3. Root完整验收
 
 - [x] 3.1 root冻结五源新CLI，实际回放原24腿全源码空CP/SP编译、runtime仅新classes且-Xverify:all；完整两BigDecimal与原exit/raw双流逐字一致，root独立核验真实成员/来源/调用次数及顺序，旧factory/direct/数值/八矩阵家族不回退；24/24仅实际成功后报告，original/JADX复用需hash核对说明。
-- [ ] 3.2 root完成fmt/MSRV1.88/CI-exact Clippy、P5严格pins/指纹/reader census、显式Java/OpenSpec strict/diff及确切产品双seed全workspace；实际计费变化先解释，不放宽门槛，root串行Cargo、20GiB停线和全部raw失败保留。
-- [ ] 3.3 root对抗验收、更新71账本与handoff，提交推送并确认确切本片产品CI四job全成功后完成任务；清本仓target并保留冻结CLI，不将窄片或24腿当整EM18/JADX追平。
+- [x] 3.2 root完成fmt/MSRV1.88/CI-exact Clippy、P5严格pins/指纹/reader census、显式Java/OpenSpec strict/diff及确切产品双seed全workspace；实际计费变化先解释，不放宽门槛，root串行Cargo、20GiB停线和全部raw失败保留。
+- [x] 3.3 root对抗验收、更新71账本与handoff，提交推送并确认确切本片产品CI四job全成功后完成任务；清本仓target并保留冻结CLI，不将窄片或24腿当整EM18/JADX追平。

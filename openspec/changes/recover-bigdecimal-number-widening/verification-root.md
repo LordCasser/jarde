@@ -1,6 +1,6 @@
-# Root验收：BigDecimal→Number（进行中）
+# Root验收：BigDecimal→Number（已完成）
 
-产品只在现有release-8 NUMBER_FAMILY增加准确BigDecimal→Number行；原release gate、六装箱行与表外拒绝保留，concat规则未改。Luna只写实现与测试，以下命令均由root实际执行。当前任务5/7；完整24腿已验收，严格门禁及确切本片CI未全部完成。
+产品只在现有release-8 NUMBER_FAMILY增加准确BigDecimal→Number行；原release gate、六装箱行与表外拒绝保留，concat规则未改。Luna只写实现与测试，以下命令均由root实际执行。当前任务7/7；最终组合产品验收见文末，历史失败与阶段记录保留。
 
 ## 已执行
 
@@ -60,3 +60,15 @@ Luna提供两个旧test更新，root应用/rustfmt并fresh20checks/0errors确认
 修正旧测试的8cd8c4f5fbfdb51d56c3725783e2d0666f8903ac确切CI37991578328第一轮workspace成功，第二轮仍在运行；supply job114026830943在checkout前构建Docker action时DockerHub429失败，没有执行advisory政策检查。原REST日志在results/ci-supply-build-failure-v3；failed v2下载因run未结束而拒绝，原失败保留。当前nested片改用固定cargo-deny0.20.2官方独立CLI，root/fuzz本机原配置四项检查皆ok，但新产品确切CI仍待验收。BigDecimal3.2/3.3继续未勾；旧8cd run完整结束后可以只重跑失败任务单独验收，不把它借给新nested产品。
 
 旧陈旧断言修正两test的root focused实际5ordinary通过/1ignored，结果在results/root-ci-stale-boundary-focused-v1；先前19GiB未跑说明属于历史。当前新nested片已经变更build.rs，因此该BigDecimal历史CLI仅绑定当时blob，不再代表当前工作区。新CLI旧24完整回归24/24、独立1226checks，详见[下一片root验收](../recover-nested-int-array-compound-updates/verification-root.md)。
+
+## 修正CI终态与唯一失败重试
+
+8cd8c4f产品CI37991578328完整终态见ci-run-v2.json：stable两fresh workspace seed及全部显式Java步骤、MSRV/fuzz成功，supply唯一DockerHub429。完整stable原始gzip日志已保存，raw SHA 9edd88a86d2602c118560498540fe97d1e0a6a5890df5454f9fa7f6aaf7b59e5。root仅重试失败任务，重试supply job114037719329仍在checkout前HTTP429失败；ci-run-v3.json与ci-supply-retry-v1.log.gz保留，不继续反复重试。旧run不能计CI全绿，3.2/3.3仍未勾。
+
+当前561de209531c021a9d8adb7c979bae5a57d6c3fb组合产品CI37994276707已经实际通过新独立CLI supply、MSRV及fuzz，第一轮workspace成功、第二轮运行中。待其完整终态验收后，应以确切561组合身份、新CLI完整24/24及独立1226checks建立继承验收，不将旧failed run称为success。
+
+## 最终组合产品继承验收，7/7
+
+当前561de209531c021a9d8adb7c979bae5a57d6c3fb组合产品CI37994276707实际全绿，四job/51steps全success，两个fresh全workspace seed各3348passed/0failed/96ignored，真JDK25显式BigDecimal2pass及其它必要门禁全部通过。root实际运行verify-superseding-product-v1.py，superseding-product-root-acceptance-v1.json接受准确561产品/新CLI/新24腿身份，核对原BigDecimal准确事实行所在init.rs与report/class_source/lock未变，build.rs仅作为后续nested产品身份重新验收。原本片两个生产/Java测试字节仍相同；新CLI24/24、独立1226checks/0errors包含准确BigDecimal物理来源与所有旧控制。
+
+此验收属于**561组合产品**，不把6997/8cd旧CI及Docker重试失败称作成功。旧失败JSON、完整原始流和旧CLI全部保留。3.2/3.3已完成，7/7；root只清本仓target，冻结CLI/raw保留。71分母和EM18整单元部分分类不变。
