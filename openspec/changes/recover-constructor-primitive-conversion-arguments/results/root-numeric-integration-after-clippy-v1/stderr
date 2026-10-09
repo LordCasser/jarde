@@ -1,0 +1,3 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 1.77s
+     Running tests/p3_constructor_primitive_conversion_arguments.rs (target/debug/deps/p3_constructor_primitive_conversion_arguments-55bbf97afefca9f1)

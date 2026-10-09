@@ -1,0 +1,10 @@
+{
+  "observation": "Root shell environment observed during partitioned run; not a retroactive full child-process environment capture",
+  "values": {
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "CARGO_TARGET_DIR": null,
+    "RUSTC_WORKSPACE_WRAPPER": null,
+    "RUSTC_WRAPPER": null,
+    "RUSTFLAGS": null
+  }
+}

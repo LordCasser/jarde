@@ -1,0 +1,13 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 3.86s
+     Running tests/p3_loop_test_values.rs (target/debug/deps/p3_loop_test_values-65fb08ddc7afb568)
+     Running tests/p3_loop_transfers.rs (target/debug/deps/p3_loop_transfers-bd948191b48972d7)
+     Running tests/p3_loop_try_handler_entry.rs (target/debug/deps/p3_loop_try_handler_entry-6cdd6e80ba61f140)
+     Running tests/p3_meeting.rs (target/debug/deps/p3_meeting-7aaa4ba1e8b31402)
+     Running tests/p3_method_ir.rs (target/debug/deps/p3_method_ir-697d1edaecb1c1a8)
+     Running tests/p3_mixed_short_circuit_argument.rs (target/debug/deps/p3_mixed_short_circuit_argument-9c9863d998cf655b)
+     Running tests/p3_mixed_short_circuit_array.rs (target/debug/deps/p3_mixed_short_circuit_array-6204c7b2e93ca2e8)
+     Running tests/p3_mixed_short_circuit_field.rs (target/debug/deps/p3_mixed_short_circuit_field-6b82889a43b0347b)
+     Running tests/p3_loop_exit_gateways.rs (target/debug/deps/p3_loop_exit_gateways-e2a9f7febd49f935)
+     Running tests/p3_loop_terminal_return.rs (target/debug/deps/p3_loop_terminal_return-2186d534c6e7a78c)

@@ -1,0 +1,106 @@
+
+running 4 tests
+test em06_projects_only_the_complete_static_chain ... ok
+test incomplete_or_unsafe_static_groups_remain_in_clinit ... ok
+test ordinary_class_without_clinit_has_no_initializer_group ... ok
+test output_stop_and_cancellation_do_not_commit_a_prefix ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+
+
+running 2 tests
+test the_dispatch_fixture_keeps_the_capture_write_before_the_constructor_call ... ok
+test user_class_super_fixtures_return_to_the_compiler_s_byte_order ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+
+running 5 tests
+test a_class_source_request_materializes_its_class_once_and_prepares_it_once ... ok
+test a_consumer_release_drops_the_prepared_facts_handle_back_to_its_baseline ... ok
+test a_member_only_read_decodes_no_body_and_builds_no_record ... ok
+test a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit ... ok
+test one_requested_body_decodes_one_body_and_runs_no_recovery ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 8 tests
+test a_legal_empty_range_is_a_complete_empty_selection ... ok
+test a_range_over_a_body_with_no_code_is_refused_as_a_missing_table ... ok
+test a_selected_category_that_stopped_states_its_prefix ... ok
+test a_selection_this_entry_cannot_answer_is_refused_with_its_own_code ... ok
+test closing_the_rule_records_keeps_the_refusals_and_the_explanation ... ok
+test the_driver_range_selects_the_records_it_intersects ... ok
+test the_ordinary_entry_and_the_stated_essential_selection_answer_the_same_report ... ok
+test the_same_request_under_either_selection_presents_the_same_body ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 9 tests
+test a_cancelled_request_leaves_nothing_retained ... ok
+test a_recovery_run_without_same_class_callees_reads_once_and_prepares_nothing ... ok
+test a_request_with_a_missing_dependency_reads_no_class ... ok
+test a_store_never_makes_the_next_storeless_request_cheaper ... ok
+test a_view_decodes_every_requested_body_against_one_preparation ... ok
+test a_view_that_decodes_no_body_prepares_nothing ... ok
+test an_ambiguous_name_prepares_nothing_and_keeps_every_candidate ... ok
+test both_binding_paths_prepare_the_read_they_selected_once ... ok
+test the_four_store_states_do_the_same_work_and_no_request_is_free ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 13 tests
+test a_binding_of_another_schema_is_a_mismatch ... ok
+test a_binding_states_the_member_record_the_read_established ... ok
+test a_changed_rule_set_is_a_mismatch ... ok
+test a_duplicated_member_record_binds_nothing ... ok
+test a_run_without_an_artifact_compares_nothing ... ok
+test a_text_that_is_not_this_artifact_is_a_mismatch_and_never_a_missing_answer ... ok
+test a_tight_budget_stops_the_rebuild_where_it_really_stops ... ok
+test an_expectation_without_a_selection_is_refused ... ok
+test one_class_stored_twice_is_two_artifacts ... ok
+test the_binding_holds_no_payload_of_the_run ... ok
+test the_evidence_is_rebuilt_after_every_temporary_of_the_first_request_is_dropped ... ok
+test the_sequence_keeps_the_artifact_and_bounds_every_residency ... ok
+test two_definitions_of_one_name_are_two_artifacts ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 1 test
+test the_ledger_names_only_records_this_repository_has ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test child_a_stop_at_every_stage_releases_what_it_held ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_deep_expressions_terminate_normally ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_the_abandon_sequence_leaves_no_work_behind ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_the_cache_and_a_slow_consumer_stay_bounded ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test every_gate_runs_to_a_normal_exit_in_its_own_process ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test a_repeated_request_states_the_same_report ... ok
+test every_fixture_names_the_record_it_came_from ... ok
+test every_selection_presents_the_same_answer ... ok
+test the_essential_and_the_full_selection_compile_the_same_program ... ignored, needs a JDK on PATH: it compiles the recovered text with `javac --release 8` and runs it with `java`. `cargo test` therefore stays green without a compiler; run it with `-- --ignored` on a machine that has one
+test the_local_delivery_is_the_full_one_projected_onto_its_range ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+
+running 4 tests
+test the_capture_companion_presents_the_capture_write_after_the_constructor_call ... ok
+test the_companions_keep_their_presentation_and_the_host_presents_the_double_brace_form ... ok
+test the_recompiled_family_compiles_and_runs_as_the_original_classes ... ok
+test the_super_argument_probes_keep_the_current_refusal_and_the_byte_order ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s
+

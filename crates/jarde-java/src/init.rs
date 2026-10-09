@@ -492,6 +492,7 @@ pub(crate) fn sites(
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
 ) -> Sites {
+    let mut meter = VerifyMeter::unmetered();
     sites_with_pending_array_composition(
         ssa,
         operations,
@@ -504,7 +505,9 @@ pub(crate) fn sites(
         member_targets,
         method,
         code,
+        &mut meter,
     )
+    .expect("an unmetered site census cannot stop")
 }
 
 /// The report pipeline's one handoff from the array candidate proof. Sites are moved out exactly
@@ -520,8 +523,12 @@ pub(crate) fn sites_after_array_composition(
     member_targets: &[ProvedMemberInnerTarget],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
-) -> Sites {
+    budget: &mut Budget,
+) -> Result<Sites, crate::stop::StopReason> {
     let pending_sites = arrays.take_pending_sites();
+    let mut meter = VerifyMeter {
+        budget: Some(budget),
+    };
     sites_with_pending_array_composition(
         ssa,
         operations,
@@ -534,6 +541,7 @@ pub(crate) fn sites_after_array_composition(
         member_targets,
         method,
         code,
+        &mut meter,
     )
 }
 
@@ -550,7 +558,8 @@ fn sites_with_pending_array_composition(
     member_targets: &[ProvedMemberInnerTarget],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
-) -> Sites {
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Sites, crate::stop::StopReason> {
     let array_facts = arrays.child_facts();
     let facts = ConstructionFacts {
         ssa,
@@ -564,15 +573,12 @@ fn sites_with_pending_array_composition(
         method: Some(method),
         code,
     };
-    let blocks: Vec<&[SsaInstruction]> = ssa
-        .blocks()
-        .iter()
-        .map(|block| block.instructions())
-        .collect();
     let mut plan = Sites::empty();
-    for block in &blocks {
+    for ssa_block in ssa.blocks() {
+        let block = ssa_block.instructions();
         for (index, instruction) in block.iter().enumerate() {
             let head = instruction.bci();
+            meter.charge(CountedBudgetDimension::AnalysisSteps, Some(head))?;
             let Some(Operation::Allocate { ty }) = operations.get(head) else {
                 continue;
             };
@@ -593,7 +599,7 @@ fn sites_with_pending_array_composition(
                 continue;
             }
             let ty = ty.clone();
-            match verify(head, index, block, ty.clone(), &facts, 0, None) {
+            match verify_metered(head, index, block, ty.clone(), &facts, 0, None, meter) {
                 Ok(site) => {
                     plan.allocation_candidates[candidate_index].verified = true;
                     for bci in &site.owned {
@@ -601,11 +607,12 @@ fn sites_with_pending_array_composition(
                     }
                     plan.sites.push(site);
                 }
-                Err(refusal) => plan.refusals.push(Refused {
+                Err(VerifyFailure::Refusal(refusal)) => plan.refusals.push(Refused {
                     head,
                     class: ty,
                     refusal,
                 }),
+                Err(VerifyFailure::Stop(stop)) => return Err(stop),
             }
         }
     }
@@ -625,7 +632,7 @@ fn sites_with_pending_array_composition(
         plan.receiver_tails.push(tail);
     }
     plan.receiver_tails.sort_by_key(|tail| tail.site);
-    plan
+    Ok(plan)
 }
 
 /// Every driver BCI one construction site states: the allocation, its copy, the constructor and
@@ -649,6 +656,7 @@ fn site_positions(site: &Site) -> Vec<u32> {
 /// recursively inside another one's argument run. The scan below steps over a nested
 /// `new; dup; …; invokespecial` run only while `depth + 1` stays under
 /// [`MAX_NESTED_CONSTRUCTION_LAYERS`].
+#[cfg(test)]
 fn verify(
     head: u32,
     index: usize,
@@ -892,6 +900,7 @@ fn verify_metered(
     }
     let mut embedded_concat = false;
     let mut embedded_dynamic = false;
+    let mut embedded_primitive_conversion = false;
     let mut embedded_array = BTreeSet::new();
     let mut inline_arrays = BTreeSet::new();
     let arguments = if let Some(member) = &member {
@@ -1047,6 +1056,11 @@ fn verify_metered(
                     // value materialized earlier and later loaded from a local is not re-created
                     // by the `new` expression and does not widen its handler boundary.
                     embedded_dynamic = true;
+                }
+                Some(Operation::PrimitiveConversion { .. })
+                    if argument_dependencies.contains(&instruction.bci()) =>
+                {
+                    embedded_primitive_conversion = true;
                 }
                 Some(Operation::Invoke(_)) => {
                     return Err(Refusal::unmet(
@@ -1211,6 +1225,7 @@ fn verify_metered(
     }
     if embedded_concat
         || embedded_dynamic
+        || embedded_primitive_conversion
         || !embedded_array.is_empty()
         || !inline_arrays.is_empty()
         || !nested_expression.is_empty()
@@ -1267,6 +1282,11 @@ fn verify_metered(
                 )
             } else if !inline_arrays.is_empty() {
                 ("jre_new_inline_array_exception_boundary", "inline array")
+            } else if embedded_primitive_conversion {
+                (
+                    "jre_new_primitive_conversion_exception_boundary",
+                    "primitive conversion",
+                )
             } else {
                 ("jre_new_nested_exception_boundary", "nested construction")
             };
@@ -3186,6 +3206,18 @@ mod tests {
     const FUNCTIONAL_CONSTRUCTORS_JAVAC23: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8/FunctionalConstructors.class"
     );
+    const PRIMITIVE_CONVERSION_CONTROLS_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/classes/ConstructorPrimitiveConversionControls.class"
+    );
+    const PRIMITIVE_CONVERSION_CONTROLS_JAVAC23: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac23/classes/ConstructorPrimitiveConversionControls.class"
+    );
+    const PRIMITIVE_HANDLER_CONTROLS_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-constructor-primitive-conversion-controls-v1/javac8/classes/ConstructorPrimitiveHandlerControls.class"
+    );
+    const PRIMITIVE_HANDLER_CONTROLS_JAVAC23: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-constructor-primitive-conversion-controls-v1/javac23/classes/ConstructorPrimitiveHandlerControls.class"
+    );
 
     fn inline_char_sites(
         name: &str,
@@ -3398,6 +3430,465 @@ mod tests {
                 assert!(site.expression.contains(&dynamic), "{leg} {name}");
                 assert!(plan.refusals().next().is_none(), "{leg} {name}");
             }
+        }
+    }
+
+    #[test]
+    fn ordinary_constructor_conversion_uses_the_shared_census_budget() {
+        for (class, leg) in [
+            (PRIMITIVE_CONVERSION_CONTROLS_JAVAC8, "javac 8"),
+            (
+                PRIMITIVE_CONVERSION_CONTROLS_JAVAC23,
+                "javac 23 --release 8",
+            ),
+        ] {
+            let name = "wrapperByte";
+            let descriptor = "(I)Ljava/lang/Byte;";
+            let (analysis, _) = analyzed_caller(class, name, descriptor);
+            let ir = analysis.ir();
+            let ssa = ir.ssa().expect("ssa");
+            let code = ir.code().expect("code");
+            let operations = Operations::of(code, ir.constant_pool());
+            let fields = field::Plan::empty();
+            let chains = crate::concat::Plan::empty();
+            let method = crate::facts::MethodFacts::new(name, descriptor, 0);
+
+            let mut arrays = crate::build::ArrayInitializers::default();
+            let plan = sites_after_array_composition(
+                ssa,
+                &operations,
+                &chains,
+                chains.owned(),
+                &fields,
+                &mut arrays,
+                8,
+                &[],
+                &method,
+                code,
+                &mut proof_budget(),
+            )
+            .unwrap_or_else(|stop| panic!("{leg}: conversion census completes: {stop:?}"));
+            let site = plan
+                .site_at_head(0)
+                .unwrap_or_else(|| panic!("{leg}: Byte construction is a Site"));
+            let conversion = site
+                .arguments
+                .iter()
+                .copied()
+                .find(|bci| {
+                    matches!(
+                        operations.get(*bci),
+                        Some(Operation::PrimitiveConversion {
+                            source: crate::Type::Int,
+                            target: crate::Type::Byte
+                        })
+                    )
+                })
+                .unwrap_or_else(|| panic!("{leg}: physical Byte argument is its i2b result"));
+            assert!(site.expression.contains(&conversion), "{leg}");
+            assert!(plan.refusals().next().is_none(), "{leg}");
+
+            // The production census charges the physical ordinary-construction walk itself.
+            // Its Result cannot expose a partially filled Sites plan when that walk stops.
+            let mut arrays = crate::build::ArrayInitializers::default();
+            let mut limits = proof_budget().limits().clone();
+            limits.analysis_steps = 1;
+            let mut limited = Budget::new(limits);
+            assert!(matches!(
+                sites_after_array_composition(
+                    ssa,
+                    &operations,
+                    &chains,
+                    chains.owned(),
+                    &fields,
+                    &mut arrays,
+                    8,
+                    &[],
+                    &method,
+                    code,
+                    &mut limited,
+                ),
+                Err(crate::stop::StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(4),
+                    ..
+                })
+            ));
+
+            let mut arrays = crate::build::ArrayInitializers::default();
+            let mut cancelled = proof_budget();
+            cancelled.cancellation_token().cancel();
+            assert!(matches!(
+                sites_after_array_composition(
+                    ssa,
+                    &operations,
+                    &chains,
+                    chains.owned(),
+                    &fields,
+                    &mut arrays,
+                    8,
+                    &[],
+                    &method,
+                    code,
+                    &mut cancelled,
+                ),
+                Err(crate::stop::StopReason::Cancelled { at: Some(0) })
+            ));
+        }
+    }
+
+    #[test]
+    fn constructor_wrapper_casts_and_stored_local_reuse_keep_their_value_chains() {
+        for (class, leg) in [
+            (PRIMITIVE_CONVERSION_CONTROLS_JAVAC8, "javac 8"),
+            (
+                PRIMITIVE_CONVERSION_CONTROLS_JAVAC23,
+                "javac 23 --release 8",
+            ),
+        ] {
+            for (name, descriptor, source, target) in [
+                (
+                    "wrapperByte",
+                    "(I)Ljava/lang/Byte;",
+                    crate::Type::Int,
+                    crate::Type::Byte,
+                ),
+                (
+                    "wrapperShort",
+                    "(I)Ljava/lang/Short;",
+                    crate::Type::Int,
+                    crate::Type::Short,
+                ),
+                (
+                    "wrapperLong",
+                    "(I)Ljava/lang/Long;",
+                    crate::Type::Int,
+                    crate::Type::Long,
+                ),
+                (
+                    "wrapperFloat",
+                    "(J)Ljava/lang/Float;",
+                    crate::Type::Long,
+                    crate::Type::Float,
+                ),
+                (
+                    "wrapperDouble",
+                    "(F)Ljava/lang/Double;",
+                    crate::Type::Float,
+                    crate::Type::Double,
+                ),
+                (
+                    "ordinaryReturnNew",
+                    "(I)Ljava/lang/Long;",
+                    crate::Type::Int,
+                    crate::Type::Long,
+                ),
+            ] {
+                let plan = sites_of(class, name, descriptor);
+                let site = plan
+                    .site_at_head(0)
+                    .unwrap_or_else(|| panic!("{leg}/{name}: exact constructor argument cast"));
+                assert_eq!(site.arguments.len(), 1, "{leg}/{name}");
+                let (analysis, _) = analyzed_caller(class, name, descriptor);
+                let ir = analysis.ir();
+                let operations = Operations::of(ir.code().expect("code"), ir.constant_pool());
+                assert!(
+                    matches!(
+                        operations.get(site.arguments[0]),
+                        Some(Operation::PrimitiveConversion { source: actual_source, target: actual_target })
+                            if actual_source == &source && actual_target == &target
+                    ),
+                    "{leg}/{name}: argument anchor is the exact decoded conversion"
+                );
+                assert!(plan.refusals().next().is_none(), "{leg}/{name}");
+            }
+
+            let stored = sites_of(class, "storedLocalReuse", "(I)LPrimitiveLongPair;");
+            let site = stored
+                .site_at_head(7)
+                .unwrap_or_else(|| panic!("{leg}: local-backed arguments are still a Site"));
+            assert_eq!(site.arguments, [12, 14], "{leg}: two converted arguments");
+            let (analysis, _) =
+                analyzed_caller(class, "storedLocalReuse", "(I)LPrimitiveLongPair;");
+            let ir = analysis.ir();
+            let operations = Operations::of(ir.code().expect("code"), ir.constant_pool());
+            assert!(
+                matches!(operations.get(3), Some(Operation::Invoke(call)) if call.name() == "markInt")
+            );
+            assert!(matches!(
+                operations.get(6),
+                Some(Operation::Store { slot: 1 })
+            ));
+            assert!(matches!(
+                operations.get(11),
+                Some(Operation::Load { slot: 1 })
+            ));
+            assert!(matches!(
+                operations.get(13),
+                Some(Operation::Load { slot: 1 })
+            ));
+            assert!(matches!(
+                operations.get(12),
+                Some(Operation::PrimitiveConversion {
+                    source: crate::Type::Int,
+                    target: crate::Type::Long
+                })
+            ));
+            assert!(matches!(
+                operations.get(14),
+                Some(Operation::PrimitiveConversion {
+                    source: crate::Type::Int,
+                    target: crate::Type::Long
+                })
+            ));
+
+            let contrast = sites_of(class, "integerContrast", "(I)Ljava/lang/Integer;");
+            assert!(
+                contrast.site_at_head(0).is_some(),
+                "{leg}: no-conversion control"
+            );
+            assert!(contrast.refusals().next().is_none(), "{leg}");
+        }
+    }
+
+    #[test]
+    fn actual_dup2_reader_and_two_ssa_outputs_remain_a_statement_free_refusal() {
+        let variant = primitive_pair_extra_dup2_variant(PRIMITIVE_CONVERSION_CONTROLS_JAVAC8);
+        let name = "storedLocalReuse";
+        let descriptor = "(I)LPrimitiveLongPair;";
+        let (analysis, _) = analyzed_caller(&variant, name, descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .any(|instruction| instruction.opcode() == 0x5c)
+            })
+            .expect("the patched straight-line method has dup2")
+            .instructions();
+        let duplicate = block
+            .iter()
+            .find(|instruction| instruction.opcode() == 0x5c)
+            .expect("dup2 instruction");
+        assert_ne!(
+            operations.get(duplicate.bci()),
+            Some(&Operation::Duplicate),
+            "the regular dup fact must not stand in for dup2"
+        );
+        assert!(
+            block.iter().any(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::Invoke(call))
+                        if call.owner() == "PrimitiveLongPair"
+                            && call.name() == "<init>"
+                            && call.descriptor() == "(JJ)V"
+                )
+            }),
+            "the constructor remains the real Pair(JJ)V target"
+        );
+        assert!(block.iter().any(|instruction| matches!(
+            operations.get(instruction.bci()),
+            Some(Operation::PrimitiveConversion {
+                source: crate::Type::Long,
+                target: crate::Type::Float
+            })
+        )));
+        assert!(block.iter().any(|instruction| matches!(
+            operations.get(instruction.bci()),
+            Some(Operation::PrimitiveConversion {
+                source: crate::Type::Float,
+                target: crate::Type::Long
+            })
+        )));
+        let reads: Vec<(Slot, ValueId)> = duplicate
+            .reads()
+            .iter()
+            .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some((*slot, *value)))
+            .collect();
+        let writes: Vec<(Slot, ValueId)> = duplicate
+            .writes()
+            .iter()
+            .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some((*slot, *value)))
+            .collect();
+        assert_eq!(
+            reads.len(),
+            1,
+            "dup2 reads the actual category-2 value once"
+        );
+        assert_eq!(writes.len(), 2, "dup2 writes the two actual stack copies");
+        assert_ne!(
+            writes[0].1, writes[1].1,
+            "the SSA outputs are distinct values"
+        );
+        assert!(writes.iter().all(|(_, value)| *value != reads[0].1));
+
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let arrays = crate::build::ArrayInitializers::default();
+        let plan = sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &arrays,
+            8,
+            &[],
+            &crate::facts::MethodFacts::new(name, descriptor, 0),
+            code,
+        );
+        assert!(
+            plan.site_at_head(7).is_none(),
+            "dup2 is not admitted as a value alias"
+        );
+        let refusal = plan
+            .refusals
+            .iter()
+            .find(|refusal| refusal.head == 7)
+            .expect("the allocation keeps its refusal");
+        assert_eq!(refusal.refusal.code(), "jre_new_interleaved_effect");
+        assert_eq!(
+            refusal.refusal.requirement(),
+            Some(Precondition::StatementFree),
+            "the second physical copy remains an exact statement-free refusal"
+        );
+        assert!(
+            refusal
+                .refusal
+                .message()
+                .contains(&format!("BCI {}", duplicate.bci()))
+        );
+    }
+
+    #[test]
+    fn ordinary_constructor_does_not_admit_an_unrelated_conversion() {
+        let variant = primitive_unrelated_conversion_variant(PRIMITIVE_CONVERSION_CONTROLS_JAVAC8);
+        let name = "wrapperByte";
+        let descriptor = "(I)Ljava/lang/Byte;";
+        let (analysis, _) = analyzed_caller(&variant, name, descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        assert!(matches!(
+            operations.get(5),
+            Some(Operation::PrimitiveConversion {
+                source: crate::Type::Int,
+                target: crate::Type::Long
+            })
+        ));
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let arrays = crate::build::ArrayInitializers::default();
+        let plan = sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &arrays,
+            8,
+            &[],
+            &crate::facts::MethodFacts::new(name, descriptor, 0),
+            code,
+        );
+        assert!(plan.site_at_head(0).is_none());
+        let refusal = plan
+            .refusals
+            .iter()
+            .find(|refusal| refusal.head == 0)
+            .expect("unrelated operation keeps the quote");
+        assert_eq!(refusal.refusal.code(), "jre_new_interleaved_effect");
+        assert_eq!(
+            refusal.refusal.requirement(),
+            Some(Precondition::StatementFree)
+        );
+        assert!(refusal.refusal.message().contains("BCI 5"));
+    }
+
+    #[test]
+    fn primitive_conversion_reuses_exact_handler_coverage_for_constructor_and_consumer() {
+        for (class, leg) in [
+            (PRIMITIVE_HANDLER_CONTROLS_JAVAC8, "javac 8"),
+            (PRIMITIVE_HANDLER_CONTROLS_JAVAC23, "javac 23 --release 8"),
+        ] {
+            let name = "sameHandler";
+            let descriptor = "(I)Ljava/lang/Long;";
+            let plan = sites_of(class, name, descriptor);
+            let site = plan
+                .site_at_head(0)
+                .unwrap_or_else(|| panic!("{leg}: matching allocation-through-astore handlers"));
+            assert_eq!(site.constructor, 9, "{leg}");
+            assert!(plan.refusals().next().is_none(), "{leg}");
+
+            let mut budget = proof_budget();
+            let facts = jarde_reader::classfile::class_facts(class, &mut budget)
+                .expect("handler fixture facts");
+            let method = facts
+                .methods
+                .iter()
+                .find(|method| {
+                    method.name.raw().0.as_slice() == name.as_bytes()
+                        && method.descriptor.raw().0.as_slice() == descriptor.as_bytes()
+                })
+                .expect("exact handler method");
+            let code = jarde_reader::classfile::method_code_facts(class, method, &mut budget)
+                .expect("handler method code facts");
+            assert_eq!(code.exception_handlers.len(), 1, "{leg}");
+            assert_eq!(
+                (
+                    code.exception_handlers[0].start_bci,
+                    code.exception_handlers[0].end_bci,
+                ),
+                (0, 19),
+                "the original table covers through the sole astore consumer"
+            );
+            let start = usize::try_from(code.code_span.start).expect("Code start fits usize");
+            let code_end =
+                start + usize::try_from(code.code_span.length).expect("Code length fits usize");
+            let exception_entry = code_end + 2;
+            let mut different_coverage = class.to_vec();
+            write_u16_at(&mut different_coverage, exception_entry, 8);
+
+            let (analysis, _) = analyzed_caller(&different_coverage, name, descriptor);
+            let ir = analysis.ir();
+            let ssa = ir.ssa().expect("patched handler SSA");
+            let method_code = ir.code().expect("patched method code");
+            assert_eq!(method_code.exception_handlers[0].start_bci, 8);
+            let operations = Operations::of(method_code, ir.constant_pool());
+            let chains = crate::concat::Plan::empty();
+            let fields = field::Plan::empty();
+            let arrays = crate::build::ArrayInitializers::default();
+            let crossed = sites(
+                ssa,
+                &operations,
+                &chains,
+                chains.owned(),
+                &fields,
+                &arrays,
+                8,
+                &[],
+                &crate::facts::MethodFacts::new(name, descriptor, 0),
+                method_code,
+            );
+            assert!(crossed.site_at_head(0).is_none(), "{leg}");
+            let refusal = crossed
+                .refusals
+                .iter()
+                .find(|refusal| refusal.head == 0)
+                .expect("handler mismatch stays quoted");
+            assert_eq!(
+                refusal.refusal.code(),
+                "jre_new_primitive_conversion_exception_boundary",
+                "{leg}: conversion alone activated the existing boundary proof"
+            );
         }
     }
 
@@ -3657,6 +4148,164 @@ mod tests {
         bytes[offset..offset + 2].copy_from_slice(&value.to_be_bytes());
     }
 
+    fn primitive_unrelated_conversion_variant(class: &[u8]) -> Vec<u8> {
+        let mut budget = proof_budget();
+        let facts = jarde_reader::classfile::class_facts(class, &mut budget)
+            .expect("primitive conversion control class facts");
+        let method = facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0.as_slice() == b"wrapperByte"
+                    && method.descriptor.raw().0.as_slice() == b"(I)Ljava/lang/Byte;"
+            })
+            .expect("wrapperByte method");
+        let code_attribute = method
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0.as_slice() == b"Code")
+            .expect("wrapperByte Code attribute");
+        let attribute_length_offset = usize::try_from(code_attribute.content_span.start)
+            .expect("Code content offset fits usize")
+            .checked_sub(4)
+            .expect("Code attribute length precedes content");
+        let code = jarde_reader::classfile::method_code_facts(class, method, &mut budget)
+            .expect("wrapperByte method code facts");
+        assert!(code.exception_handlers.is_empty());
+        assert!(
+            code.control_flow_targets()
+                .expect("straight-line control-flow facts")
+                .is_empty()
+        );
+        assert!(
+            code.max_stack >= 4,
+            "the neutral sequence peaks at four slots"
+        );
+        assert_eq!(code.instructions[0].bci, 0);
+        assert_eq!(code.instructions[0].opcode, 0xbb, "new Byte");
+        assert_eq!(code.instructions[1].bci, 3);
+        assert_eq!(code.instructions[1].opcode, 0x59, "dup");
+        let start = usize::try_from(code.code_span.start).expect("Code start fits usize");
+        let attribute_length_offset_expected = start - 12;
+        assert_eq!(attribute_length_offset, attribute_length_offset_expected);
+        let code_end =
+            start + usize::try_from(code.code_span.length).expect("Code length fits usize");
+        assert_eq!(read_u16_at(class, code_end), 0, "no exception table");
+        assert_eq!(read_u16_at(class, code_end + 2), 0, "no Code subattributes");
+
+        let mut variant = class.to_vec();
+        let insert_at = start + 4;
+        // A stack-neutral int-to-long conversion between `new; dup` and the actual argument run.
+        variant.splice(insert_at..insert_at, [0x03, 0x85, 0x58]);
+        write_u32_at(
+            &mut variant,
+            start - 4,
+            u32::try_from(code.code_span.length + 3).expect("patched Code length fits u32"),
+        );
+        write_u32_at(
+            &mut variant,
+            attribute_length_offset,
+            read_u32_at(class, attribute_length_offset) + 3,
+        );
+        variant
+    }
+
+    fn primitive_pair_extra_dup2_variant(class: &[u8]) -> Vec<u8> {
+        let mut budget = proof_budget();
+        let facts = jarde_reader::classfile::class_facts(class, &mut budget)
+            .expect("primitive conversion control class facts");
+        let method = facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0.as_slice() == b"storedLocalReuse"
+                    && method.descriptor.raw().0.as_slice() == b"(I)LPrimitiveLongPair;"
+            })
+            .expect("the existing method returns the actual Pair(JJ) owner");
+        let code_attribute = method
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0.as_slice() == b"Code")
+            .expect("storedLocalReuse Code attribute");
+        let attribute_length_offset = usize::try_from(code_attribute.content_span.start)
+            .expect("Code content offset fits usize")
+            .checked_sub(4)
+            .expect("Code attribute length precedes content");
+        let code = jarde_reader::classfile::method_code_facts(class, method, &mut budget)
+            .expect("storedLocalReuse method code facts");
+        assert!(code.exception_handlers.is_empty());
+        assert!(
+            code.control_flow_targets()
+                .expect("straight-line control-flow facts")
+                .is_empty()
+        );
+        assert!(
+            code.max_stack >= 6,
+            "the unmodified constructor needs six slots"
+        );
+
+        let first_i2l = code
+            .instructions
+            .iter()
+            .position(|instruction| instruction.opcode == 0x85)
+            .expect("first i2l conversion");
+        let second_load = &code.instructions[first_i2l + 1];
+        let second_i2l = &code.instructions[first_i2l + 2];
+        assert_eq!(second_load.opcode, 0x1b, "the second source is iload_1");
+        assert_eq!(
+            second_i2l.opcode, 0x85,
+            "the second source is converted to long"
+        );
+        assert_eq!(
+            usize::try_from(second_i2l.bci).expect("BCI fits usize"),
+            usize::try_from(second_load.bci).expect("BCI fits usize") + 1
+        );
+
+        let start = usize::try_from(code.code_span.start).expect("Code start fits usize");
+        assert_eq!(attribute_length_offset, start - 12);
+        let code_end =
+            start + usize::try_from(code.code_span.length).expect("Code length fits usize");
+        assert_eq!(read_u16_at(class, code_end), 0, "no exception table");
+        assert_eq!(
+            read_u16_at(class, code_end + 2),
+            0,
+            "the Code attribute has no nested offset-bearing attributes"
+        );
+
+        let mut variant = class.to_vec();
+        let replace_start = start + usize::try_from(second_load.bci).expect("BCI fits usize");
+        let replace_end = start + usize::try_from(second_i2l.bci).expect("BCI fits usize") + 1;
+        assert_eq!(replace_end - replace_start, 2);
+        // Replace the second local-derived argument with a category-2 duplicate whose converted
+        // copy is also passed to the existing `(JJ)V` constructor. The source return and descriptor
+        // stay unchanged; the inserted dup2 is a genuine one-read/two-value instruction.
+        variant.splice(replace_start..replace_end, [0x5c, 0x89, 0x8c]);
+        write_u32_at(
+            &mut variant,
+            start - 4,
+            u32::try_from(code.code_span.length + 1).expect("patched Code length fits u32"),
+        );
+        write_u32_at(
+            &mut variant,
+            attribute_length_offset,
+            read_u32_at(class, attribute_length_offset) + 1,
+        );
+        assert_eq!(
+            read_u32_at(&variant, start - 4),
+            u32::try_from(code.code_span.length + 1).expect("patched Code length fits u32")
+        );
+        assert_eq!(
+            read_u32_at(&variant, attribute_length_offset),
+            read_u32_at(class, attribute_length_offset) + 1
+        );
+        assert_eq!(
+            read_u16_at(&variant, start - 8),
+            code.max_stack,
+            "the actual existing max_stack already covers the dup2 peak"
+        );
+        variant
+    }
+
     fn sequence_index_variant(class: &[u8], descending: bool) -> Vec<u8> {
         let (code, _) = sequence_code_facts(class);
         let start = usize::try_from(code.code_span.start).expect("Code start fits usize");
@@ -3728,6 +4377,82 @@ mod tests {
             read_u32_at(class, attribute_length_offset) + 2,
         );
         bytes
+    }
+
+    fn boundary_unrelated_conversion_variant(class: &[u8], duplicate_bci: u32) -> Vec<u8> {
+        let mut budget = proof_budget();
+        let facts = jarde_reader::classfile::class_facts(class, &mut budget)
+            .expect("boundary fixture class facts");
+        let method = facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0.as_slice() == b"firstThenUnsupportedStructure"
+                    && method.descriptor.raw().0.as_slice() == b"()[Ljava/lang/Object;"
+            })
+            .expect("exact boundary method");
+        let code_attribute = method
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0.as_slice() == b"Code")
+            .expect("boundary Code attribute");
+        let attribute_length_offset = usize::try_from(code_attribute.content_span.start)
+            .expect("Code content offset fits usize")
+            .checked_sub(4)
+            .expect("Code attribute length precedes content");
+        let code = jarde_reader::classfile::method_code_facts(class, method, &mut budget)
+            .expect("boundary method code facts");
+        assert!(
+            code.exception_handlers.is_empty(),
+            "no handler offsets need repair"
+        );
+        assert!(
+            code.control_flow_targets()
+                .expect("straight-line control-flow facts")
+                .is_empty(),
+            "no branch offsets need repair"
+        );
+        assert!(
+            code.max_stack >= 7,
+            "the inserted sequence peaks at seven slots"
+        );
+        let duplicate = code
+            .instructions
+            .iter()
+            .find(|instruction| instruction.bci == duplicate_bci)
+            .expect("the selected Long dup BCI");
+        assert_eq!(duplicate.opcode, 0x59);
+        let start = usize::try_from(code.code_span.start).expect("Code start fits usize");
+        assert_eq!(attribute_length_offset, start - 12);
+        let code_end =
+            start + usize::try_from(code.code_span.length).expect("Code length fits usize");
+        assert_eq!(read_u16_at(class, code_end), 0, "no exception table");
+        assert_eq!(read_u16_at(class, code_end + 2), 0, "no Code subattributes");
+
+        let mut variant = class.to_vec();
+        let insert_at = start + usize::try_from(duplicate_bci).expect("BCI fits usize") + 1;
+        variant.splice(insert_at..insert_at, [0x03, 0x85, 0x58]);
+        let new_code_length = code.code_span.length + 3;
+        write_u32_at(
+            &mut variant,
+            start - 4,
+            u32::try_from(new_code_length).expect("patched Code length fits u32"),
+        );
+        write_u32_at(
+            &mut variant,
+            attribute_length_offset,
+            read_u32_at(class, attribute_length_offset) + 3,
+        );
+        assert_eq!(
+            read_u32_at(&variant, start - 4),
+            u32::try_from(new_code_length).expect("patched Code length fits u32")
+        );
+        assert_eq!(
+            read_u32_at(&variant, attribute_length_offset),
+            read_u32_at(class, attribute_length_offset) + 3
+        );
+        assert_eq!(read_u16_at(&variant, start - 8), code.max_stack);
+        variant
     }
 
     fn sequence_first_store_is_proved(class: &[u8]) -> bool {
@@ -3972,7 +4697,9 @@ mod tests {
             &[],
             &method,
             code,
-        );
+            &mut budget,
+        )
+        .expect("site census completes");
         let constructed: Vec<&Site> = sites
             .allocation_candidates()
             .iter()
@@ -4026,7 +4753,9 @@ mod tests {
             &[],
             &method,
             code,
-        );
+            &mut budget,
+        )
+        .expect("site census completes");
         let collection_sites: Vec<&Site> = sites
             .allocation_candidates()
             .iter()
@@ -4323,7 +5052,7 @@ mod tests {
     }
 
     #[test]
-    fn second_unsupported_element_leaves_no_array_or_site_commit() {
+    fn array_argument_conversion_is_accepted_but_unrelated_conversion_aborts_the_candidate() {
         const BOUNDARY: &[u8] = include_bytes!(
             "../../../tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/BoundaryControls.class"
         );
@@ -4377,9 +5106,23 @@ mod tests {
                     })
                 )
             })
-            .expect("second element's unsupported int-to-long conversion")
+            .expect("second element's supported int-to-long argument conversion")
             .bci();
         assert!(allocation < first_store && first_store < conversion);
+        let second_new = block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::Allocate { ty }) if ty == "java/lang/Long"
+                )
+            })
+            .expect("second element Long allocation");
+        let duplicate = block
+            .iter()
+            .find(|instruction| instruction.bci() == second_new.bci() + 3)
+            .expect("Long allocation's following dup");
+        assert_eq!(duplicate.opcode(), 0x59);
         let long_constructor = block
             .iter()
             .find(|instruction| {
@@ -4415,9 +5158,107 @@ mod tests {
             Some(&context),
             &mut budget,
         )
-        .expect("unsupported structure is a refusal, not a budget stop");
-        assert!(!arrays.has_candidate_at(allocation));
-        assert!(arrays.take_pending_sites().is_empty());
+        .expect("the complete array initializer proves");
+        assert!(arrays.has_candidate_at(allocation));
+        let pending = arrays.take_pending_sites();
+        assert_eq!(pending.len(), 2, "both constructed array elements transfer");
+        let long_site = pending
+            .values()
+            .find(|site| site.class == "java/lang/Long")
+            .expect("the second element is an independently committed Long Site");
+        assert!(long_site.arguments.contains(&conversion));
+
+        let variant = boundary_unrelated_conversion_variant(BOUNDARY, duplicate.bci());
+        let (analysis, _) = analyzed_caller(&variant, "firstThenUnsupportedStructure", descriptor);
+        let ir = analysis.ir();
+        let patched_ssa = ir.ssa().expect("patched SSA");
+        let patched_code = ir.code().expect("patched method code");
+        assert!(patched_code.exception_handlers.is_empty());
+        let patched_operations = Operations::of(patched_code, ir.constant_pool());
+        let unrelated_conversion = duplicate.bci() + 2;
+        assert!(matches!(
+            patched_operations.get(unrelated_conversion),
+            Some(Operation::PrimitiveConversion {
+                source: crate::Type::Int,
+                target: crate::Type::Long
+            })
+        ));
+        let patched_allocation = patched_ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| {
+                matches!(
+                    patched_operations.get(instruction.bci()),
+                    Some(Operation::NewArray { .. })
+                )
+            })
+            .expect("same array allocation after the inserted neutral sequence")
+            .bci();
+        let patched_block = patched_ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block.instructions().iter().any(|instruction| {
+                    matches!(
+                        patched_operations.get(instruction.bci()),
+                        Some(Operation::ArrayStore { .. })
+                    )
+                })
+            })
+            .expect("patched array-store block")
+            .instructions();
+        assert!(patched_block.iter().any(|instruction| {
+            instruction.bci() == duplicate.bci() + 1 && instruction.opcode() == 0x03
+        }));
+        assert!(patched_block.iter().any(|instruction| {
+            instruction.bci() == duplicate.bci() + 3 && instruction.opcode() == 0x58
+        }));
+        let patched_long_constructor = patched_block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    patched_operations.get(instruction.bci()),
+                    Some(Operation::Invoke(call))
+                        if call.owner() == "java/lang/Long" && call.name() == "<init>"
+                )
+            })
+            .expect("patched second-element Long constructor");
+        let patched_long_operands = crate::build::stack_operands(patched_long_constructor);
+        let [_, (_, long_argument)] = patched_long_operands.as_slice() else {
+            panic!("Long(J) constructor has receiver and one physical argument");
+        };
+        let mut meter = VerifyMeter::unmetered();
+        let dependencies = value_dependency_bcis_metered(
+            patched_ssa,
+            patched_block,
+            std::iter::once(*long_argument),
+            &mut meter,
+        )
+        .expect("the physical Long argument dependency closes");
+        assert!(
+            !dependencies.contains(&unrelated_conversion),
+            "the inserted conversion's result is discarded and is not the Long argument"
+        );
+        let patched_context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method,
+            code: patched_code,
+        };
+        let mut patched_budget = proof_budget();
+        let mut patched_arrays = crate::build::ArrayInitializers::prove_with_composition(
+            patched_ssa,
+            &patched_operations,
+            &fields,
+            Some(&patched_context),
+            &mut patched_budget,
+        )
+        .expect("the unrelated conversion is a structural refusal, not a stop");
+        assert!(!patched_arrays.has_candidate_at(patched_allocation));
+        assert!(patched_arrays.take_pending_sites().is_empty());
     }
 
     #[test]

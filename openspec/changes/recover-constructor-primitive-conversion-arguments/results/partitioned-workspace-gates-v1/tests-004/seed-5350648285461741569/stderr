@@ -1,0 +1,13 @@
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 6.63s
+     Running tests/generic_method_budget.rs (target/debug/deps/generic_method_budget-521d425c31beeda4)
+     Running tests/generic_method_projection.rs (target/debug/deps/generic_method_projection-91ecf8b09416d52a)
+     Running tests/generic_outer_member_family.rs (target/debug/deps/generic_outer_member_family-13d870801742c78d)
+     Running tests/generic_static_member_family.rs (target/debug/deps/generic_static_member_family-b4c67fbd45619115)
+     Running tests/generic_throws_projection.rs (target/debug/deps/generic_throws_projection-dad1453aaf984e54)
+     Running tests/historical_classfile_corpus.rs (target/debug/deps/historical_classfile_corpus-39431f31655ca01a)
+     Running tests/inner_class_static_mixed_folding.rs (target/debug/deps/inner_class_static_mixed_folding-8e5e670e3644ee78)
+     Running tests/interface_initializer_projection.rs (target/debug/deps/interface_initializer_projection-cbfe71f537d4aca9)
+     Running tests/interface_initializer_proof.rs (target/debug/deps/interface_initializer_proof-317d96a280d0fa4a)
+     Running tests/json_cli.rs (target/debug/deps/json_cli-5b8c186dc888b159)

@@ -220,6 +220,16 @@ EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下�
 
 [compose-constructed-reference-array-elements](../../changes/compose-constructed-reference-array-elements/verification-root.md) 在现有array/constructor证明内准确组合store BCI与completed ValueId，保留arrays→sites顺序，局部共同提交ownership及唯一new记录，无新pass/AST。原18完整冻结输入由前片8/18增至16/18；新增七类完整family两真实JDK2/2，旧factory2/2保持，旧direct完整六类仍0/2（五wrapper primitive转换及nested covariance等边界不删成员）。BigDecimal两腿compile0但拒绝正文/双流不符仍不计成功；EM18仍部分已测，71分母及全单元分类不变。
 
-本片本地两seed各351targets/3328passed/0failed/93ignored及全门禁通过，8/8任务，已提交推送main代码5a6264de1b3481e1cdbef4fd30361940bfac33cf；确切CI37947791151四job/48steps全部success（原JSON/逐源码hash核对见该片root验收）。首全仓发现公共interval检查遗漏、恢复三分支共同postlude后原postfix负例通过，真实失败永久保留。下一[recover-constructor-primitive-conversion-arguments](../../changes/recover-constructor-primitive-conversion-arguments/)规划4/4、2/7任务（基线/前置完成，产品尚未实施），复用已有15opcode/Cast并启用现有handler闭包；ordinary Site入口必须透传本次Budget/Stop补齐必要漏计，新scope不扩成员/statement、一般alias及数值折叠。
+本片本地两seed各351targets/3328passed/0failed/93ignored及全门禁通过，8/8任务，已提交推送main代码5a6264de1b3481e1cdbef4fd30361940bfac33cf；确切CI37947791151四job/48steps全部success（原JSON/逐源码hash核对见该片root验收）。首全仓发现公共interval检查遗漏、恢复三分支共同postlude后原postfix负例通过，真实失败永久保留。后续[recover-constructor-primitive-conversion-arguments](../../changes/recover-constructor-primitive-conversion-arguments/)在此前冻结时为规划4/4、任务2/7，其当前实测进展见下文，不借前片CI验收新产品。
+
+## EM-18 Constructor Primitive Conversion Slice — 2026-10-10
+
+[数值转换root验收](../../changes/recover-constructor-primitive-conversion-arguments/verification-root.md)当前6/7任务：复用已有15opcode/Cast接通ordinary constructor实际参数依赖，保留每层舍入，启用已有handler ordinal闭包，并将普通census/verifier接入同一次Budget/Stop。冻结完整两类、全部成员的两真实JDK重编/验证运行均与原始exit/stdout/stderr一致，2/2语义通过；root独立核验221checks/0errors。JADX none/default四腿删除long经float/double往返转换，compile/run0但语义0/4，以原程序为oracle。
+
+旧22腿仍18/22成功，包含旧18矩阵16/18、完整六类factory2/2；完整六类direct仍0/2。boxedDirect已恢复，numberGridDirect/collectionGridDirect/ownGridDirect待独立子数组片；BigDecimal两腿仍失败。Boolean mutant仅分析、完整正文拒绝；handler正例两JDK完整source编译，无runtime主张。reader/P5实际pins与指纹已复验，全仓双seed/MSRV/Clippy及确切代码CI尚待完成，当前主线有WIP。
+
+下一[子数组协变规划](../../changes/recover-constructor-primitive-conversion-arguments/results/next-child-array-covariance-plan-v1.md)分离ownership/ValueId闭合与Java assignability呈现，复用现有精确store BCI及snapshot hierarchy事实，不预设新机制。collectionGrid的Signature refusal目前未证明是独立问题，先解除正文失败再整类复测。既有receiver-tail收尾漏计另记债务，不混入数值转换片。EM18仍部分已测，71分母及全单元分类不变。
 
 数值转换片完整两类两真实JDK基线已证：原程序2/2，旧Jarde拒绝且compile失败0/2；JADX none/default四腿compile/run0但删除long→float→long及long→double→long中间转换、舍入值错误，语义0/4。保留全部成员与原始双流，不为制造JADX成功缩小分母；Jarde以原程序和逐层转换语义为oracle。child-array协变已有独立架构审计，结构identity/ownership与Javaassignability呈现分层，不混入数值片。
+
+数值片本地门禁已完成：352 metadata目标双seed各3336passed/0failed/93ignored，213目标复用身份不变的两seed成功记录、139目标重新执行；MSRV1.88、CI-exact Clippy、fmt、显式Java对照、P5/指纹/OpenSpec strict/diff通过。当前代码提交及确切CI待验收，不借前片CI，也不将分区续跑冒称两次fresh全仓命令。

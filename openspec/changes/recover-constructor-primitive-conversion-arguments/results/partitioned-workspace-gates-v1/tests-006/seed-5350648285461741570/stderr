@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.09s
+     Running tests/navigation.rs (target/debug/deps/navigation-929ba9bb6fa6a700)
+     Running tests/nested_class_literal_values.rs (target/debug/deps/nested_class_literal_values-be47a2bf21e65f41)
+     Running tests/nested_generic_header_projection.rs (target/debug/deps/nested_generic_header_projection-1e8c36fb4155c35d)
+     Running tests/nested_type_source_spelling.rs (target/debug/deps/nested_type_source_spelling-4f78d819a77e63c8)
+     Running tests/ordinary_generic_projection.rs (target/debug/deps/ordinary_generic_projection-f760f6074a7d91c5)
+     Running tests/p1_active_facts.rs (target/debug/deps/p1_active_facts-2e3324276829d5a2)
+     Running tests/p1_artifact_tree.rs (target/debug/deps/p1_artifact_tree-e53975da638f93e3)
+     Running tests/nested_ctor_argument_sites.rs (target/debug/deps/nested_ctor_argument_sites-cee8cb481179fde0)
+     Running tests/nested_monitor_regions.rs (target/debug/deps/nested_monitor_regions-0ae5cec72378a4c5)
+     Running tests/owner_candidates.rs (target/debug/deps/owner_candidates-37f0d29c116be9b5)

@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_instance_receiver.rs (target/debug/deps/p3_instance_receiver-9b0d7c27e68498e4)
+     Running tests/p3_instanceof.rs (target/debug/deps/p3_instanceof-0a56b198a2d0a1ca)
+     Running tests/p3_integer_boolean_return_boundaries.rs (target/debug/deps/p3_integer_boolean_return_boundaries-0ab9dcb8c7f23705)
+     Running tests/p3_integer_boolean_return_contract.rs (target/debug/deps/p3_integer_boolean_return_contract-9a30cab27cfb7289)
+     Running tests/p3_integer_boolean_returns.rs (target/debug/deps/p3_integer_boolean_returns-bedb00b9e52c9b31)
+     Running tests/p3_invocation_arguments.rs (target/debug/deps/p3_invocation_arguments-136fd798a31a8038)
+     Running tests/p3_isolation.rs (target/debug/deps/p3_isolation-28a65ab8326db54a)
+     Running tests/p3_iterable_foreach.rs (target/debug/deps/p3_iterable_foreach-91708d21a0bc3364)
+     Running tests/p3_intermediate_join.rs (target/debug/deps/p3_intermediate_join-f78da38b54661fbd)
+     Running tests/p3_java_recovery.rs (target/debug/deps/p3_java_recovery-47c0228fe02253e0)

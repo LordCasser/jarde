@@ -1,0 +1,399 @@
+{
+  "schema": "constructor-primitive-conversion-handler-controls-build-v3",
+  "runner_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/run.py",
+  "runner_sha256": "762cab61a5739c3d1c32e9ab9354b8b15e174341962eb3858816888db8110f65",
+  "baseline_manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/manifest.json",
+  "baseline_manifest_sha256": "0afb246902e6a6b76c7ff17939313d22810dcc586eca63f2741f7e806aa5858d",
+  "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/ConstructorPrimitiveHandlerControls.java",
+  "source_bytes": 465,
+  "source_sha256": "2d7fe6e75c68814602dadcc702fb712774eb49220c923f8b2efd80912c6076e4",
+  "source": "public class ConstructorPrimitiveHandlerControls {\n    static int markInt(int value) {\n        System.out.print(\"handler:\");\n        System.out.println(value);\n        return value;\n    }\n\n    static Long sameHandler(int value) {\n        Long result = null;\n        try {\n            result = new Long((long) markInt(value));\n            markInt(value);\n        } catch (RuntimeException failure) {\n            return null;\n        }\n        return result;\n    }\n}\n",
+  "class_name": "ConstructorPrimitiveHandlerControls",
+  "class_descriptor": "LConstructorPrimitiveHandlerControls;",
+  "target_method": "sameHandler",
+  "target_descriptor": "sameHandler(I)Ljava/lang/Long;",
+  "legs": {
+    "javac8": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "compiler_flags_from_baseline_manifest": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ],
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+        }
+      },
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac8/empty-classpath-sourcepath",
+      "compile": {
+        "label": "compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac8/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac8/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac8/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/ConstructorPrimitiveHandlerControls.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac8",
+        "exit": 0,
+        "stdout": "javac8-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "javac8-compile.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "class_file": {
+        "path": "javac8/classes/ConstructorPrimitiveHandlerControls.class",
+        "bytes": 602,
+        "sha256": "04e099ac29ecf802bc0f939f5d29338cff0ba9db34bd17c60073cafb4f20e5c3"
+      },
+      "javap": {
+        "label": "javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "-v",
+          "-p",
+          "-c",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac8/classes",
+          "ConstructorPrimitiveHandlerControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac8",
+        "exit": 0,
+        "stdout": "javac8-javap.stdout",
+        "stdout_bytes": 4782,
+        "stdout_sha256": "1315c2aeed922b45e2ec794df5a9a2075d6ed28847ecf4aad1dd10fbb5c42ea6",
+        "stderr": "javac8-javap.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sameHandler": {
+        "descriptor": "sameHandler(I)Ljava/lang/Long;",
+        "code_header": {
+          "max_stack": 4,
+          "max_locals": 3,
+          "args_size": 1
+        },
+        "exception_table": [
+          {
+            "start_pc": 2,
+            "end_pc": 20,
+            "handler_pc": 23,
+            "catch_type": "Class java/lang/RuntimeException"
+          }
+        ],
+        "instructions": [
+          {
+            "bci": 0,
+            "instruction": "aconst_null"
+          },
+          {
+            "bci": 1,
+            "instruction": "astore_1"
+          },
+          {
+            "bci": 2,
+            "instruction": "new           #6                  // class java/lang/Long"
+          },
+          {
+            "bci": 5,
+            "instruction": "dup"
+          },
+          {
+            "bci": 6,
+            "instruction": "iload_0"
+          },
+          {
+            "bci": 7,
+            "instruction": "invokestatic  #7                  // Method markInt:(I)I"
+          },
+          {
+            "bci": 10,
+            "instruction": "i2l"
+          },
+          {
+            "bci": 11,
+            "instruction": "invokespecial #8                  // Method java/lang/Long.\"<init>\":(J)V"
+          },
+          {
+            "bci": 14,
+            "instruction": "astore_1"
+          },
+          {
+            "bci": 15,
+            "instruction": "iload_0"
+          },
+          {
+            "bci": 16,
+            "instruction": "invokestatic  #7                  // Method markInt:(I)I"
+          },
+          {
+            "bci": 19,
+            "instruction": "pop"
+          },
+          {
+            "bci": 20,
+            "instruction": "goto          26"
+          },
+          {
+            "bci": 23,
+            "instruction": "astore_2"
+          },
+          {
+            "bci": 24,
+            "instruction": "aconst_null"
+          },
+          {
+            "bci": 25,
+            "instruction": "areturn"
+          },
+          {
+            "bci": 26,
+            "instruction": "aload_1"
+          },
+          {
+            "bci": 27,
+            "instruction": "areturn"
+          }
+        ],
+        "javap_method_text_sha256": "fc167eb7e5b5449f149de5ea54a20f598677c0a48de92aad9ff689b9455b1828"
+      }
+    },
+    "javac23": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "compiler_flags_from_baseline_manifest": [
+        "--release",
+        "8"
+      ],
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      },
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac23/empty-classpath-sourcepath",
+      "compile": {
+        "label": "compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac23/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac23/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac23/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/ConstructorPrimitiveHandlerControls.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac23",
+        "exit": 0,
+        "stdout": "javac23-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "javac23-compile.stderr",
+        "stderr_bytes": 243,
+        "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "class_file": {
+        "path": "javac23/classes/ConstructorPrimitiveHandlerControls.class",
+        "bytes": 596,
+        "sha256": "e7f5577f5f85c659f872a8279f429a95ddfffdd569937233dbc2e6e388081c0e"
+      },
+      "javap": {
+        "label": "javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "-v",
+          "-p",
+          "-c",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac23/classes",
+          "ConstructorPrimitiveHandlerControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/javac23",
+        "exit": 0,
+        "stdout": "javac23-javap.stdout",
+        "stdout_bytes": 4927,
+        "stdout_sha256": "d2e7a57ea620241915121da63a233039cd6e857c2b041047889bbe521f93d2b3",
+        "stderr": "javac23-javap.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sameHandler": {
+        "descriptor": "sameHandler(I)Ljava/lang/Long;",
+        "code_header": {
+          "max_stack": 4,
+          "max_locals": 3,
+          "args_size": 1
+        },
+        "exception_table": [
+          {
+            "start_pc": 2,
+            "end_pc": 20,
+            "handler_pc": 23,
+            "catch_type": "Class java/lang/RuntimeException"
+          }
+        ],
+        "instructions": [
+          {
+            "bci": 0,
+            "instruction": "aconst_null"
+          },
+          {
+            "bci": 1,
+            "instruction": "astore_1"
+          },
+          {
+            "bci": 2,
+            "instruction": "new           #25                 // class java/lang/Long"
+          },
+          {
+            "bci": 5,
+            "instruction": "dup"
+          },
+          {
+            "bci": 6,
+            "instruction": "iload_0"
+          },
+          {
+            "bci": 7,
+            "instruction": "invokestatic  #27                 // Method markInt:(I)I"
+          },
+          {
+            "bci": 10,
+            "instruction": "i2l"
+          },
+          {
+            "bci": 11,
+            "instruction": "invokespecial #33                 // Method java/lang/Long.\"<init>\":(J)V"
+          },
+          {
+            "bci": 14,
+            "instruction": "astore_1"
+          },
+          {
+            "bci": 15,
+            "instruction": "iload_0"
+          },
+          {
+            "bci": 16,
+            "instruction": "invokestatic  #27                 // Method markInt:(I)I"
+          },
+          {
+            "bci": 19,
+            "instruction": "pop"
+          },
+          {
+            "bci": 20,
+            "instruction": "goto          26"
+          },
+          {
+            "bci": 23,
+            "instruction": "astore_2"
+          },
+          {
+            "bci": 24,
+            "instruction": "aconst_null"
+          },
+          {
+            "bci": 25,
+            "instruction": "areturn"
+          },
+          {
+            "bci": 26,
+            "instruction": "aload_1"
+          },
+          {
+            "bci": 27,
+            "instruction": "areturn"
+          }
+        ],
+        "javap_method_text_sha256": "6a698d93e75a732e2d23d01018d17a1ed5b8af66528d3d31c8729f92f1c7448d"
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "ConstructorPrimitiveHandlerControls.java",
+      "bytes": 465,
+      "sha256": "2d7fe6e75c68814602dadcc702fb712774eb49220c923f8b2efd80912c6076e4"
+    },
+    {
+      "path": "javac23/classes/ConstructorPrimitiveHandlerControls.class",
+      "bytes": 596,
+      "sha256": "e7f5577f5f85c659f872a8279f429a95ddfffdd569937233dbc2e6e388081c0e"
+    },
+    {
+      "path": "javac23-compile.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "javac23-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac23-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac23-javap.stdout",
+      "bytes": 4927,
+      "sha256": "d2e7a57ea620241915121da63a233039cd6e857c2b041047889bbe521f93d2b3"
+    },
+    {
+      "path": "javac8/classes/ConstructorPrimitiveHandlerControls.class",
+      "bytes": 602,
+      "sha256": "04e099ac29ecf802bc0f939f5d29338cff0ba9db34bd17c60073cafb4f20e5c3"
+    },
+    {
+      "path": "javac8-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8-javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8-javap.stdout",
+      "bytes": 4782,
+      "sha256": "1315c2aeed922b45e2ec794df5a9a2075d6ed28847ecf4aad1dd10fbb5c42ea6"
+    },
+    {
+      "path": "run.py",
+      "bytes": 6891,
+      "sha256": "762cab61a5739c3d1c32e9ab9354b8b15e174341962eb3858816888db8110f65"
+    }
+  ]
+}

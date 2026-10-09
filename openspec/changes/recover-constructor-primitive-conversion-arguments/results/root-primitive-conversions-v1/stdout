@@ -1,0 +1,9 @@
+
+running 4 tests
+test all_fixture_methods_are_structured_with_sources ... ok
+test conversion_recovery_budget_stops_and_cancellation_publish_no_partial_cast_body ... ok
+test essential_and_all_share_one_conversion_body ... ok
+test recovered_complete_class_matches_frozen_original ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s
+

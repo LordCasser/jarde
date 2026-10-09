@@ -629,6 +629,10 @@ impl Billing {
 // eligible-slot clone/type/owner/normal-CFG scans; source, outcomes and other
 // counted dimensions stand. Actual record_the_billing_table and failed old pins
 // are preserved in that change's results, rather than skipping the proof charges.
+// 2026-10-10 recover-constructor-primitive-conversion-arguments: ordinary verifier scans now
+// share and charge the caller's Budget instead of running with None. IrItems/AnalysisSteps
+// deltas for flat/nested/two-origins/many/damaged/deep are +24/+24/+24/+106/+24/+0 and
+// +141/+226/+123/+1175/+123/+194 respectively; the arm deltas are +202/+1982, their sums.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -648,8 +652,8 @@ impl Billing {
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
-        ir_items: 2473,
-        analysis_steps: 1360,
+        ir_items: 2497,
+        analysis_steps: 1501,
         result_items: 37,
         output_bytes: 3657,
     };
@@ -672,8 +676,8 @@ impl Billing {
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
-        ir_items: 4298,
-        analysis_steps: 2093,
+        ir_items: 4322,
+        analysis_steps: 2319,
         result_items: 64,
         output_bytes: 5628,
     };
@@ -694,8 +698,8 @@ impl Billing {
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
-        ir_items: 2058,
-        analysis_steps: 1121,
+        ir_items: 2082,
+        analysis_steps: 1244,
         result_items: 43,
         output_bytes: 2638,
     };
@@ -778,8 +782,8 @@ impl Billing {
         // `Guarded` holds the two shapes that are asked (the two-copy `fin`/`catchFinally`
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
-        ir_items: 21278,
-        analysis_steps: 10609,
+        ir_items: 21384,
+        analysis_steps: 11784,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -796,8 +800,8 @@ impl Billing {
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
-        ir_items: 2058,
-        analysis_steps: 1121,
+        ir_items: 2082,
+        analysis_steps: 1244,
         result_items: 35,
         output_bytes: 2638,
     };
@@ -813,7 +817,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 7,
         ir_items: 3213,
-        analysis_steps: 1172,
+        analysis_steps: 1366,
         result_items: 18,
         output_bytes: 1723,
     };
@@ -863,8 +867,8 @@ impl Billing {
         // field-copy proof's own scan of every body, charged to `IrItems`, and no other dimension.
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
-        ir_items: 35378,
-        analysis_steps: 17476,
+        ir_items: 35580,
+        analysis_steps: 19458,
         result_items: 1378,
         output_bytes: 39617,
     };
@@ -902,8 +906,8 @@ impl Billing {
         // and retention still touches only the read dimensions.
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
-        ir_items: 35378,
-        analysis_steps: 17476,
+        ir_items: 35580,
+        analysis_steps: 19458,
         result_items: 26,
         output_bytes: 39617,
     };

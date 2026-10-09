@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.10s
+     Running tests/em22_boolean_xor.rs (target/debug/deps/em22_boolean_xor-534219b9bb6eda56)
+     Running tests/em23_field_unit_updates.rs (target/debug/deps/em23_field_unit_updates-bdb627a040adcc45)
+     Running tests/engine.rs (target/debug/deps/engine-3b04fef87e32fd31)
+     Running tests/enum_string_field_name.rs (target/debug/deps/enum_string_field_name-6d13d64fdbdae941)
+     Running tests/field_generic_projection.rs (target/debug/deps/field_generic_projection-6527e677b1e7bf39)
+     Running tests/fixture_behavior_guards.rs (target/debug/deps/fixture_behavior_guards-3f26e7b5fe67660b)
+     Running tests/generic_body_throws_projection.rs (target/debug/deps/generic_body_throws_projection-64a1b3ebda8a53d3)
+     Running tests/generic_constructor_projection.rs (target/debug/deps/generic_constructor_projection-8e0044ab9736b8c3)
+     Running tests/export_cli.rs (target/debug/deps/export_cli-08a1e1d3eb91d9bf)
+     Running tests/em27_inline_char_array.rs (target/debug/deps/em27_inline_char_array-64b91315b366acdb)

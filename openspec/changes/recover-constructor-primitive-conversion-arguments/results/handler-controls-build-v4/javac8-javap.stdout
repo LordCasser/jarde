@@ -1,0 +1,109 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v4/javac8/classes/ConstructorPrimitiveHandlerControls.class
+  Last modified 2026-10-10; size 665 bytes
+  MD5 checksum 2b11341bd14b43c0238602ea54bec029
+public class ConstructorPrimitiveHandlerControls
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #12.#24        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #25.#26        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #27            // handler:
+   #4 = Methodref          #28.#29        // java/io/PrintStream.print:(Ljava/lang/String;)V
+   #5 = Methodref          #28.#30        // java/io/PrintStream.println:(I)V
+   #6 = Class              #31            // java/lang/Long
+   #7 = Methodref          #11.#32        // ConstructorPrimitiveHandlerControls.markInt:(I)I
+   #8 = Methodref          #6.#33         // java/lang/Long."<init>":(J)V
+   #9 = Methodref          #11.#34        // ConstructorPrimitiveHandlerControls.identity:(Ljava/lang/Long;)Ljava/lang/Long;
+  #10 = Class              #35            // java/lang/RuntimeException
+  #11 = Class              #36            // ConstructorPrimitiveHandlerControls
+  #12 = Class              #37            // java/lang/Object
+  #13 = Utf8               <init>
+  #14 = Utf8               ()V
+  #15 = Utf8               Code
+  #16 = Utf8               markInt
+  #17 = Utf8               (I)I
+  #18 = Utf8               identity
+  #19 = Utf8               (Ljava/lang/Long;)Ljava/lang/Long;
+  #20 = Utf8               sameHandler
+  #21 = Utf8               (I)Ljava/lang/Long;
+  #22 = Utf8               StackMapTable
+  #23 = Class              #35            // java/lang/RuntimeException
+  #24 = NameAndType        #13:#14        // "<init>":()V
+  #25 = Class              #38            // java/lang/System
+  #26 = NameAndType        #39:#40        // out:Ljava/io/PrintStream;
+  #27 = Utf8               handler:
+  #28 = Class              #41            // java/io/PrintStream
+  #29 = NameAndType        #42:#43        // print:(Ljava/lang/String;)V
+  #30 = NameAndType        #44:#45        // println:(I)V
+  #31 = Utf8               java/lang/Long
+  #32 = NameAndType        #16:#17        // markInt:(I)I
+  #33 = NameAndType        #13:#46        // "<init>":(J)V
+  #34 = NameAndType        #18:#19        // identity:(Ljava/lang/Long;)Ljava/lang/Long;
+  #35 = Utf8               java/lang/RuntimeException
+  #36 = Utf8               ConstructorPrimitiveHandlerControls
+  #37 = Utf8               java/lang/Object
+  #38 = Utf8               java/lang/System
+  #39 = Utf8               out
+  #40 = Utf8               Ljava/io/PrintStream;
+  #41 = Utf8               java/io/PrintStream
+  #42 = Utf8               print
+  #43 = Utf8               (Ljava/lang/String;)V
+  #44 = Utf8               println
+  #45 = Utf8               (I)V
+  #46 = Utf8               (J)V
+{
+  public ConstructorPrimitiveHandlerControls();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static int markInt(int);
+    descriptor: (I)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #3                  // String handler:
+         5: invokevirtual #4                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+         8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: iload_0
+        12: invokevirtual #5                  // Method java/io/PrintStream.println:(I)V
+        15: iload_0
+        16: ireturn
+
+  static java.lang.Long identity(java.lang.Long);
+    descriptor: (Ljava/lang/Long;)Ljava/lang/Long;
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: areturn
+
+  static java.lang.Long sameHandler(int);
+    descriptor: (I)Ljava/lang/Long;
+    flags: ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=1
+         0: new           #6                  // class java/lang/Long
+         3: dup
+         4: iload_0
+         5: invokestatic  #7                  // Method markInt:(I)I
+         8: i2l
+         9: invokespecial #8                  // Method java/lang/Long."<init>":(J)V
+        12: invokestatic  #9                  // Method identity:(Ljava/lang/Long;)Ljava/lang/Long;
+        15: areturn
+        16: astore_1
+        17: aconst_null
+        18: areturn
+      Exception table:
+         from    to  target type
+             0    15    16   Class java/lang/RuntimeException
+      StackMapTable: number_of_entries = 1
+        frame_type = 80 /* same_locals_1_stack_item */
+          stack = [ class java/lang/RuntimeException ]
+}

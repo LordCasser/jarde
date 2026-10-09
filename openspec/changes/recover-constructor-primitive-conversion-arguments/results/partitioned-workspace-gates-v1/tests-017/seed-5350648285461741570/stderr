@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_labeled_loop_tail.rs (target/debug/deps/p3_labeled_loop_tail-f8688e5bf5dc990e)
+     Running tests/p3_lambda_adaptation.rs (target/debug/deps/p3_lambda_adaptation-a3f56f541799d175)
+     Running tests/p3_local_postfix_array_elements.rs (target/debug/deps/p3_local_postfix_array_elements-22bab201d86cb654)
+     Running tests/p3_local_rewrite.rs (target/debug/deps/p3_local_rewrite-31e5a34676a7fbbc)
+     Running tests/p3_long_field_assignment_result.rs (target/debug/deps/p3_long_field_assignment_result-e145834eea07b2cf)
+     Running tests/p3_loop_arm_join.rs (target/debug/deps/p3_loop_arm_join-fa9eb5ba1f42d8ba)
+     Running tests/p3_loop_boolean_do.rs (target/debug/deps/p3_loop_boolean_do-df8c515d9cdcc5a6)
+     Running tests/p3_loop_boolean_exit.rs (target/debug/deps/p3_loop_boolean_exit-f15b0bd076ad2aad)
+     Running tests/p3_local_null_conditional_finally.rs (target/debug/deps/p3_local_null_conditional_finally-b7b4c7c8047f059a)
+     Running tests/p3_loop_body_double_jumps.rs (target/debug/deps/p3_loop_body_double_jumps-fd9518b249328317)

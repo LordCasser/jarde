@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_constructed_reference_array_elements.rs (target/debug/deps/p3_constructed_reference_array_elements-a2aa48b123eb686b)
+     Running tests/p3_constructor_primitive_conversion_arguments.rs (target/debug/deps/p3_constructor_primitive_conversion_arguments-55bbf97afefca9f1)
+     Running tests/p3_content.rs (target/debug/deps/p3_content-c1f13b779dac3f04)
+     Running tests/p3_crossing_array_read_values.rs (target/debug/deps/p3_crossing_array_read_values-1243fe066e646d8c)
+     Running tests/p3_declaration_handoff.rs (target/debug/deps/p3_declaration_handoff-d3a74fbcfea3995a)
+     Running tests/p3_declarations.rs (target/debug/deps/p3_declarations-1691ecf2e3bb4446)
+     Running tests/p3_deferred_value_order.rs (target/debug/deps/p3_deferred_value_order-755c8081d70ce207)
+     Running tests/p3_edge_settlement.rs (target/debug/deps/p3_edge_settlement-a2daeda86297ee9a)
+     Running tests/p3_conditional_values.rs (target/debug/deps/p3_conditional_values-bf96a26d4c0bda68)
+     Running tests/p3_do_while_return.rs (target/debug/deps/p3_do_while_return-ef23a23d04890998)

@@ -1,0 +1,894 @@
+{
+  "schema": "numeric-candidate-independent-root-v1",
+  "runner_sha256": "0cc0f07b03d1481b0f1926cd07edcee6d6ba1ca97eb1b73008dbf2fd252f1ec4",
+  "candidate_manifest_sha256": "1b6c1f6f44920d7e849d26576687bfefc76409c66599ca0daa592c5a733cfa71",
+  "checks": [
+    {
+      "label": "frozen CLI",
+      "ok": true
+    },
+    {
+      "label": "current product identity crates/jarde-java/src/init.rs",
+      "ok": true
+    },
+    {
+      "label": "current product identity crates/jarde-java/src/report.rs",
+      "ok": true
+    },
+    {
+      "label": "current product identity crates/jarde-java/src/build.rs",
+      "ok": true
+    },
+    {
+      "label": "current product identity Cargo.lock",
+      "ok": true
+    },
+    {
+      "label": "baseline identity",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac23/classes/ConstructorPrimitiveConversionControls.class",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac23/classes/PrimitiveLongPair.class",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac23/sources/ConstructorPrimitiveConversionControls.java",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac23/sources/PrimitiveLongPair.java",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac8/classes/ConstructorPrimitiveConversionControls.class",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac8/classes/PrimitiveLongPair.class",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac8/sources/ConstructorPrimitiveConversionControls.java",
+      "ok": true
+    },
+    {
+      "label": "recorded file generated/javac8/sources/PrimitiveLongPair.java",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-compile-candidate-sources.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-compile-candidate-sources.stdout",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-render-ConstructorPrimitiveConversionControls.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-render-ConstructorPrimitiveConversionControls.stdout",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-render-PrimitiveLongPair.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-render-PrimitiveLongPair.stdout",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-run-candidate-classes.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac23-run-candidate-classes.stdout",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-compile-candidate-sources.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-compile-candidate-sources.stdout",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-render-ConstructorPrimitiveConversionControls.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-render-ConstructorPrimitiveConversionControls.stdout",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-render-PrimitiveLongPair.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-render-PrimitiveLongPair.stdout",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-run-candidate-classes.stderr",
+      "ok": true
+    },
+    {
+      "label": "recorded file logs/javac8-run-candidate-classes.stdout",
+      "ok": true
+    },
+    {
+      "label": "closed result files",
+      "ok": true
+    },
+    {
+      "label": "javac8-render-ConstructorPrimitiveConversionControls stdout",
+      "ok": true
+    },
+    {
+      "label": "javac8-render-ConstructorPrimitiveConversionControls stderr",
+      "ok": true
+    },
+    {
+      "label": "javac8-render-PrimitiveLongPair stdout",
+      "ok": true
+    },
+    {
+      "label": "javac8-render-PrimitiveLongPair stderr",
+      "ok": true
+    },
+    {
+      "label": "javac8-compile-candidate-sources stdout",
+      "ok": true
+    },
+    {
+      "label": "javac8-compile-candidate-sources stderr",
+      "ok": true
+    },
+    {
+      "label": "javac8-run-candidate-classes stdout",
+      "ok": true
+    },
+    {
+      "label": "javac8-run-candidate-classes stderr",
+      "ok": true
+    },
+    {
+      "label": "javac23-render-ConstructorPrimitiveConversionControls stdout",
+      "ok": true
+    },
+    {
+      "label": "javac23-render-ConstructorPrimitiveConversionControls stderr",
+      "ok": true
+    },
+    {
+      "label": "javac23-render-PrimitiveLongPair stdout",
+      "ok": true
+    },
+    {
+      "label": "javac23-render-PrimitiveLongPair stderr",
+      "ok": true
+    },
+    {
+      "label": "javac23-compile-candidate-sources stdout",
+      "ok": true
+    },
+    {
+      "label": "javac23-compile-candidate-sources stderr",
+      "ok": true
+    },
+    {
+      "label": "javac23-run-candidate-classes stdout",
+      "ok": true
+    },
+    {
+      "label": "javac23-run-candidate-classes stderr",
+      "ok": true
+    },
+    {
+      "label": "javac8 empty CP/SP",
+      "ok": true
+    },
+    {
+      "label": "javac8 complete source closure",
+      "ok": true
+    },
+    {
+      "label": "javac8 private class closure",
+      "ok": true
+    },
+    {
+      "label": "javac8 JDK identity",
+      "ok": true
+    },
+    {
+      "label": "javac8 all-source compile argv",
+      "ok": true
+    },
+    {
+      "label": "javac8 compile flags",
+      "ok": true
+    },
+    {
+      "label": "javac8 isolated compiler",
+      "ok": true
+    },
+    {
+      "label": "javac8 private verified runtime argv",
+      "ok": true
+    },
+    {
+      "label": "javac8 exact exit",
+      "ok": true
+    },
+    {
+      "label": "javac8 original raw stdout",
+      "ok": true
+    },
+    {
+      "label": "javac8 original raw stderr",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls physical class identity",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls complete members",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls exact source text",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls whole source without refusal",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[60, 105, 110, 105, 116, 62] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 66, 121, 116, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 83, 104, 111, 114, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[105, 110, 116, 101, 103, 101, 114, 67, 111, 110, 116, 114, 97, 115, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[98, 111, 120, 101, 100, 65, 114, 114, 97, 121] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 7",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 24",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 41",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 57",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 74",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 91",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[111, 114, 100, 105, 110, 97, 114, 121, 82, 101, 116, 117, 114, 110, 78, 101, 119] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[115, 116, 111, 114, 101, 100, 76, 111, 99, 97, 108, 82, 101, 117, 115, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 7",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 66, 121, 116, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 67, 104, 97, 114, 97, 99, 116, 101, 114] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 83, 104, 111, 114, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 84, 111, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 84, 111, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 84, 111, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[102, 108, 111, 97, 116, 84, 111, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[102, 108, 111, 97, 116, 84, 111, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[102, 108, 111, 97, 116, 84, 111, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 84, 111, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 84, 111, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 84, 111, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 86, 105, 97, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 86, 105, 97, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 86, 105, 97, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[115, 104, 111, 119] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8/ConstructorPrimitiveConversionControls/[109, 97, 105, 110] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8/PrimitiveLongPair physical class identity",
+      "ok": true
+    },
+    {
+      "label": "javac8/PrimitiveLongPair complete members",
+      "ok": true
+    },
+    {
+      "label": "javac8/PrimitiveLongPair exact source text",
+      "ok": true
+    },
+    {
+      "label": "javac8/PrimitiveLongPair whole source without refusal",
+      "ok": true
+    },
+    {
+      "label": "javac8/PrimitiveLongPair/[60, 105, 110, 105, 116, 62] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac8 exactly 32 unique physical sites",
+      "ok": true
+    },
+    {
+      "label": "javac23 empty CP/SP",
+      "ok": true
+    },
+    {
+      "label": "javac23 complete source closure",
+      "ok": true
+    },
+    {
+      "label": "javac23 private class closure",
+      "ok": true
+    },
+    {
+      "label": "javac23 JDK identity",
+      "ok": true
+    },
+    {
+      "label": "javac23 all-source compile argv",
+      "ok": true
+    },
+    {
+      "label": "javac23 compile flags",
+      "ok": true
+    },
+    {
+      "label": "javac23 isolated compiler",
+      "ok": true
+    },
+    {
+      "label": "javac23 private verified runtime argv",
+      "ok": true
+    },
+    {
+      "label": "javac23 exact exit",
+      "ok": true
+    },
+    {
+      "label": "javac23 original raw stdout",
+      "ok": true
+    },
+    {
+      "label": "javac23 original raw stderr",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls physical class identity",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls complete members",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls exact source text",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls whole source without refusal",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[60, 105, 110, 105, 116, 62] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[109, 97, 114, 107, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 66, 121, 116, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 83, 104, 111, 114, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[119, 114, 97, 112, 112, 101, 114, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[105, 110, 116, 101, 103, 101, 114, 67, 111, 110, 116, 114, 97, 115, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[98, 111, 120, 101, 100, 65, 114, 114, 97, 121] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 7",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 24",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 41",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 57",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 74",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 91",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[111, 114, 100, 105, 110, 97, 114, 121, 82, 101, 116, 117, 114, 110, 78, 101, 119] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[115, 116, 111, 114, 101, 100, 76, 111, 99, 97, 108, 82, 101, 117, 115, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 7",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 66, 121, 116, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 67, 104, 97, 114, 97, 99, 116, 101, 114] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[105, 110, 116, 84, 111, 83, 104, 111, 114, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 84, 111, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 84, 111, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 84, 111, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[102, 108, 111, 97, 116, 84, 111, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[102, 108, 111, 97, 116, 84, 111, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[102, 108, 111, 97, 116, 84, 111, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 84, 111, 73, 110, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 84, 111, 76, 111, 110, 103] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 84, 111, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 86, 105, 97, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[108, 111, 110, 103, 86, 105, 97, 68, 111, 117, 98, 108, 101] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[100, 111, 117, 98, 108, 101, 86, 105, 97, 70, 108, 111, 97, 116] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 closed site 0",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[115, 104, 111, 119] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23/ConstructorPrimitiveConversionControls/[109, 97, 105, 110] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23/PrimitiveLongPair physical class identity",
+      "ok": true
+    },
+    {
+      "label": "javac23/PrimitiveLongPair complete members",
+      "ok": true
+    },
+    {
+      "label": "javac23/PrimitiveLongPair exact source text",
+      "ok": true
+    },
+    {
+      "label": "javac23/PrimitiveLongPair whole source without refusal",
+      "ok": true
+    },
+    {
+      "label": "javac23/PrimitiveLongPair/[60, 105, 110, 105, 116, 62] complete body",
+      "ok": true
+    },
+    {
+      "label": "javac23 exactly 32 unique physical sites",
+      "ok": true
+    }
+  ],
+  "check_count": 221,
+  "errors": [],
+  "accepted": true
+}

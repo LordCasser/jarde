@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p4_runtime_matrix.rs (target/debug/deps/p4_runtime_matrix-ef8b7323849501a5)
+     Running tests/p4_x2_states.rs (target/debug/deps/p4_x2_states-a37cadf90a15efda)
+     Running tests/p4_x3_patterns.rs (target/debug/deps/p4_x3_patterns-e293d07947119723)
+     Running tests/p5_benchmark.rs (target/debug/deps/p5_benchmark-852a317db42ac88e)
+     Running tests/p5_bulk_corpus.rs (target/debug/deps/p5_bulk_corpus-8fe1ba312bbf8438)
+     Running tests/p5_container_lookup.rs (target/debug/deps/p5_container_lookup-cfbca5de35f34008)
+     Running tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-d8e7032a39457cfc)
+     Running tests/p5_definition_read_reuse.rs (target/debug/deps/p5_definition_read_reuse-7865707e1a1fcef5)
+     Running tests/p5_facts_cache.rs (target/debug/deps/p5_facts_cache-c50f115f0253ddeb)
+     Running tests/p5_optimize_workloads.rs (target/debug/deps/p5_optimize_workloads-37343c8dbb578de3)

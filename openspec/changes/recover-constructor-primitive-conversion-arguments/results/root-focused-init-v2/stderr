@@ -1,0 +1,8 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 12.85s
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+
+thread 'init::tests::second_unsupported_element_leaves_no_array_or_site_commit' (12444015) panicked at crates/jarde-java/src/init.rs:5072:9:
+assertion failed: !arrays.has_candidate_at(allocation)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p jarde-java --lib`

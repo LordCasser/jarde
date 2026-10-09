@@ -1,0 +1,112 @@
+
+running 6 tests
+test a_catch_type_of_zero_becomes_neither_a_catch_nor_a_finally ... ok
+test a_multi_catch_handler_that_proves_no_statement_keeps_its_header_and_quotes_its_body ... ok
+test a_named_row_with_nothing_before_it_is_a_catch_not_a_resource_header ... ok
+test a_store_before_the_protected_range_is_not_a_resource_header ... ok
+test two_rows_that_share_one_handler_are_one_multi_catch_clause ... ok
+test two_rows_with_two_handlers_are_two_clauses_in_table_order ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 5 tests
+test a_budget_stop_and_precancellation_publish_no_partial_boundary_return ... ok
+test finally_copy_with_catch_all_is_not_admitted_by_the_return_rule ... ok
+test method_and_explicit_monitors_do_not_use_the_boundary_return_exception ... ok
+test only_one_value_return_after_the_named_range_is_admitted ... ok
+test plain_multicatch_range_end_return_is_presented_once ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+
+running 8 tests
+test converted_negated_operand_keeps_conversion_and_bytecode_origins ... ok
+test four_direct_numeric_negations_are_recovered ... ok
+test jdk_execution_matches_the_original_for_numeric_boundaries_and_effects ... ignored, runs javac/java for the controlled fixture; run with --ignored
+test narrow_parameters_are_unary_promoted_to_int ... ok
+test negation_and_its_consumer_keep_distinct_source_origins ... ok
+test negation_emission_still_honors_the_output_budget ... ok
+test negation_is_preserved_through_local_and_call_consumers ... ok
+test negation_keeps_nested_and_binary_grouping ... ok
+
+test result: ok. 7 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+test a_varargs_members_last_parameter_is_written_with_the_dots ... ok
+test an_array_parameter_of_a_member_without_the_flag_keeps_its_brackets ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+test complete_java8_class_preserves_all_thirteen_observations ... ok
+test low_budget_and_cancellation_do_not_publish_half_folds ... ok
+test only_array_first_wrappers_project ... ok
+test wrapped_read_origins_and_essential_all_bodies_agree ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.73s
+
+
+running 4 tests
+test a_preview_marker_is_reported_without_becoming_dialect_support ... ok
+test attribute_rules_are_bound_to_a_release_and_a_location ... ok
+test every_registered_release_is_readable_and_the_ceiling_is_where_it_claims_to_be ... ok
+test preview_and_unregistered_releases_keep_a_readable_structure_and_claim_nothing ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+test a_flag_is_answered_by_name_and_never_inferred_from_a_bit ... ok
+test a_refused_placement_is_a_row_and_not_a_fact ... ok
+test an_illegal_class_file_is_read_and_its_planes_stay_separate ... ok
+test every_entry_replays_its_fixture_digest_and_planes ... ok
+test the_fixed_replay_list_is_each_goldens_own_list ... ok
+test the_legal_controls_state_no_violation ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 18 tests
+test a_bootstrap_handle_that_names_nothing_is_never_resolved ... ok
+test a_class_whose_invokedynamic_sites_are_not_concat_reports_no_concat_fact ... ok
+test a_construct_no_pass_judges_gets_no_output_level_verdict ... ok
+test a_cycle_is_recorded_as_facts_instead_of_being_followed ... ok
+test a_dynamic_entry_naming_an_undeclared_bootstrap_entry_is_diagnosed ... ok
+test a_java8_class_has_no_output_level_conflict ... ok
+test a_real_concat_site_is_a_reader_fact_and_joins_to_the_bci_of_its_instruction ... ok
+test a_real_record_class_reports_components_with_their_origins ... ok
+test a_real_sealed_class_reports_its_permitted_subclasses ... ok
+test a_record_attribute_below_its_release_is_diagnosed_and_its_content_is_not_read ... ok
+test a_shared_subgraph_is_expanded_once_and_each_entry_point_keeps_its_own_path ... ok
+test an_indy_site_whose_handle_is_not_a_member_gets_no_concat_fact ... ok
+test java8_conflicts_with_record_sealed_and_concat_and_keeps_their_origins ... ok
+test the_depth_budget_stops_the_walk_at_the_level_it_names ... ok
+test the_edge_budget_stops_the_walk_and_the_read_still_reports_its_prefix ... ok
+test the_header_plane_still_evaluates_no_output_level_and_applies_no_attribute_rule ... ok
+test the_node_and_step_budgets_stop_the_walk_at_the_dimension_they_name ... ok
+test the_placement_of_every_registered_attribute_names_its_release ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test a_budget_refusal_is_a_stop_with_the_range_it_read ... ok
+test a_framework_resource_rule_answers_with_its_rule_version_source_range_and_coverage ... ok
+test an_unregistered_configuration_is_unsupported_and_never_an_empty_answer ... ok
+test nothing_is_executed_and_a_claim_that_names_an_absent_class_is_only_a_name ... ok
+test the_plugin_plane_leaves_the_structural_planes_own_answer_untouched ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test void_loop_test2_budget_and_cancellation_discard_partial_output ... ok
+test void_loop_test2_has_one_finally_one_close_and_all_bci_origins ... ok
+test void_loop_test2_owner_bcis_are_the_physical_statement_span ... ok
+test void_loop_test2_verifier_valid_neighbors_refuse_finally ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

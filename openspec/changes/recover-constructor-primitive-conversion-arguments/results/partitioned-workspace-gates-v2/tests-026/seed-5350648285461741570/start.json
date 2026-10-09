@@ -1,0 +1,77 @@
+{
+  "schema": "root-command-v2-disk-guard",
+  "argv": [
+    "cargo",
+    "test",
+    "--workspace",
+    "--all-features",
+    "--locked",
+    "--test",
+    "p3_try_local",
+    "--test",
+    "p3_two_exit_return",
+    "--test",
+    "p3_twr_catch",
+    "--test",
+    "p3_twr_discarded_call",
+    "--test",
+    "p3_twr_enclosing_catch",
+    "--test",
+    "p3_twr_enclosing_catch_call",
+    "--test",
+    "p3_twr_lead_sequence",
+    "--test",
+    "p3_twr_return_tail",
+    "--test",
+    "p3_twr_saved_return_typing",
+    "--test",
+    "p3_type_qualifier"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols",
+    "PROPTEST_RNG_SEED": "5350648285461741570"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 21474836480,
+    "poll_seconds": 2,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/run-root-gate-v2.py",
+    "bytes": 5359,
+    "sha256": "28b62534380035fb0c5ae6dccddf4ff953c0ebc9dfcc6240b86a09dc85241ff0"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 543220,
+      "sha256": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_constructor_primitive_conversion_arguments.rs",
+      "bytes": 44428,
+      "sha256": "a4679014354fedc570e0b4fa94ce2b555db488dd2aee51d39e002410785239cb"
+    }
+  ],
+  "free_before": 23588708352
+}

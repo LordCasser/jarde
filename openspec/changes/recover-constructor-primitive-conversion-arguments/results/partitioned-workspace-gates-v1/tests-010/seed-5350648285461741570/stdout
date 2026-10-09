@@ -1,0 +1,110 @@
+
+running 11 tests
+test a_body_whose_decode_stopped_keeps_its_call_graph_unresolved ... ok
+test a_legacy_opcode_in_the_modern_dialect_is_a_violation_not_a_limitation ... ok
+test a_live_call_site_behind_a_mid_block_jsr_is_still_refused ... ok
+test a_return_address_the_bytes_do_not_prove_stops_the_stage_before_it_completes ... ok
+test a_version_the_format_allows_still_analyzes_however_old_it_is ... ok
+test a_version_the_format_does_not_allow_is_refused_where_the_dialect_is_decided ... ok
+test the_call_context_walk_stops_on_its_own_step_budget ... ok
+test the_historical_jsr_finally_completes_the_call_context_pass ... ok
+test the_modern_dialect_pays_nothing_for_its_empty_context_set ... ok
+test the_p1_query_coordinates_are_unchanged_by_a_call_context_run ... ok
+test the_same_call_context_request_publishes_the_same_report ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test a_cancelled_request_publishes_no_names ... ok
+test a_phi_that_takes_its_own_value_as_an_operand_is_still_legal ... ok
+test a_step_budget_that_ends_the_ssa_phase_keeps_the_last_valid_phase ... ok
+test the_names_of_a_body_are_billed_and_charged_deterministically ... ok
+test the_ssa_phase_names_a_real_body_and_completes_the_pipeline ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test a_bytecode_index_a_clone_repeats_still_names_the_member_it_is_in ... ok
+test a_call_to_another_classs_same_named_member_is_not_read_from_this_class ... ok
+test the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are_read ... ok
+test the_driver_and_its_same_class_callees_share_one_read_and_one_preparation ... ok
+test the_two_original_edges_survive_a_recovery_run_field_by_field ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test a_local_alias_receiver_is_presented_from_the_frames_slot_type ... ok
+test a_parameter_receiver_is_unchanged ... ok
+test a_this_receiver_is_unchanged ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 8 tests
+test a_default_is_written_wherever_the_attribute_appears_and_only_as_far_as_it_spells ... ok
+test a_member_whose_attribute_does_not_read_is_refused_beside_the_members_that_do ... ok
+test an_annotation_members_default_is_written_from_its_own_attribute ... ok
+test an_unspellable_float_descendant_refuses_the_whole_array_default ... ok
+test declaration_headers_keep_ordinary_and_noncanonical_superinterfaces ... ok
+test floating_defaults_keep_raw_bits_in_java_constant_expressions ... ok
+test nested_defaults_keep_attribute_identity_and_request_stop_semantics ... ok
+test the_class_an_enum_default_names_declares_no_annotation_default ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 1 test
+test selected_anonymous_class_stays_a_separate_class_source_declaration ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 11 tests
+test a_boolean_element_read_is_evidence_only_where_the_array_is_proven_boolean ... ok
+test a_complete_initializer_chain_is_written_at_its_consumer ... ok
+test a_local_receives_the_proved_initializer_before_it_is_read ... ok
+test a_multi_dimensional_creation_is_one_creation_with_the_lengths_its_operand_states ... ok
+test a_narrow_element_read_adds_no_conversion_the_bytecode_did_not_perform ... ok
+test a_nested_read_reindexes_the_subscript_it_read ... ok
+test a_reference_creation_takes_its_element_from_the_pool_class ... ok
+test an_array_creation_its_subscripts_and_its_local_are_written ... ok
+test an_element_read_of_a_parameter_array_is_the_subscript ... ok
+test an_element_write_is_the_subscript_assignment ... ok
+test the_length_of_an_array_is_a_suffix_over_it ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 6 tests
+test complete_java8_classes_keep_supplier_and_element_execution_order ... ok
+test low_work_budget_and_cancellation_publish_no_partial_array_loop ... ok
+test primitive_and_reference_arrays_project_but_unsafe_shapes_do_not ... ok
+test projected_origins_and_body_are_identical_under_essential_and_all_evidence ... ok
+test reused_array_and_int_slot_recompile_with_and_without_debug_names ... ok
+test same_slot_later_local_declaration_survives_array_projection ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.09s
+
+
+running 4 tests
+test a_method_without_array_allocations_keeps_its_tight_ir_budget ... ok
+test a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path ... ok
+test an_exhausted_output_budget_does_not_publish_a_partial_class ... ok
+test complete_initializer_chains_have_stable_bodies_and_claim_every_source ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 6 tests
+test a_join_that_merges_two_definitions_keeps_one_variable_verbatim ... ok
+test a_loop_that_merges_two_definitions_keeps_one_variable_verbatim ... ok
+test the_dynamic_dimension_control_keeps_its_text_verbatim ... ok
+test the_retyped_slot_presents_one_declaration_per_definition_and_recompiles ... ok
+test the_same_element_shape_keeps_one_variable_verbatim ... ok
+test the_three_type_alternation_presents_three_declarations_and_recompiles ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.35s
+

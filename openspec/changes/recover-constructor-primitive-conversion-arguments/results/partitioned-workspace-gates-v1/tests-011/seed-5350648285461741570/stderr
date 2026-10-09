@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_array_types.rs (target/debug/deps/p3_array_types-b63cc19614d8dc4e)
+     Running tests/p3_arraylength_loop_condition.rs (target/debug/deps/p3_arraylength_loop_condition-964a4ee07d5977e8)
+     Running tests/p3_bitwise.rs (target/debug/deps/p3_bitwise-b3e68447dbe3fd48)
+     Running tests/p3_boolean_array_initializers.rs (target/debug/deps/p3_boolean_array_initializers-3f625639dccfb309)
+     Running tests/p3_boolean_array_store_contract.rs (target/debug/deps/p3_boolean_array_store_contract-4900ed2671a2c498)
+     Running tests/p3_boolean_array_stores.rs (target/debug/deps/p3_boolean_array_stores-68c15bbdf106247a)
+     Running tests/p3_boolean_contexts.rs (target/debug/deps/p3_boolean_contexts-1add7230b806ae23)
+     Running tests/p3_boolean_field_stores.rs (target/debug/deps/p3_boolean_field_stores-5755b16abd618e1c)
+     Running tests/p3_boolean_short_circuit_return.rs (target/debug/deps/p3_boolean_short_circuit_return-48a5a8221a19d914)
+     Running tests/p3_boolean_array_initializer_contract.rs (target/debug/deps/p3_boolean_array_initializer_contract-bb471486c5433ae4)

@@ -1,0 +1,94 @@
+
+running 2 tests
+test constructed_reference_array_elements_recover_as_one_complete_same_snapshot_family ... ok
+test nested_constructor_composition_is_presented_once_and_boundary_controls_remain_honest ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.54s
+
+
+running 3 tests
+test boolean_parameter_keeps_the_structural_new_site_but_refuses_its_constructor_body ... ok
+test complete_constructor_conversion_families_keep_casts_sites_and_runtime_behavior ... ok
+test same_handler_constructor_argument_is_a_complete_source_and_site_positive ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.41s
+
+
+running 4 tests
+test a_committed_statement_makes_the_artifact_contain_statements ... ok
+test a_stopped_run_reports_not_produced ... ok
+test explanation_only_means_no_emitted_statement ... ok
+test the_hand_built_shapes_classify_from_their_structure ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test a_budget_starved_variant_run_states_no_recovery ... ok
+test f2_recovers_and_the_unprotected_control_stays_verbatim ... ok
+test the_nested_try_boundary_stays_where_the_region_layer_left_it ... ok
+test the_refused_shapes_keep_their_refusals ... ok
+test the_variant_family_recovers_and_runs_like_the_original ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.64s
+
+
+running 10 tests
+test a_body_that_still_has_fallbacks_keeps_its_quality ... ok
+test a_mangled_class_name_is_displayed_and_moves_nothing_but_the_display ... ok
+test a_stopped_run_publishes_no_declaration_and_no_class_facts ... ok
+test an_ordinary_member_charges_the_same_reads_and_bytes_as_before_the_handoff ... ok
+test the_class_facts_are_taken_from_the_read_that_was_already_there ... ok
+test the_payload_states_the_declaring_class_facts_the_same_header_read_holds ... ok
+test the_prepared_callee_read_needs_no_second_class_read ... ok
+test the_prepared_driver_read_consumes_the_class_the_caller_already_read ... ok
+test the_public_entry_decides_every_member_form_from_the_runs_own_class_facts ... ok
+test two_definitions_of_the_same_internal_name_keep_their_own_class_facts ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+test a_field_whose_constant_value_cannot_be_read_is_never_spelled_without_it ... ok
+test a_fields_initializer_is_the_constant_its_own_attribute_states ... ok
+test a_members_throws_clause_is_its_own_exceptions_attribute ... ok
+test an_interface_member_is_default_exactly_when_the_class_and_the_member_say_so ... ok
+test the_package_line_is_the_package_the_classs_own_name_states ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 3 tests
+test deferred_value_sources_keep_producer_mark_consumer_bcis_and_default_text ... ok
+test deferred_values_keep_real_producer_order_and_structural_controls ... ok
+test recovered_deferred_value_order_matches_patched_class_runtime ... ignored, requires JDK: compile Engine::class_source output and execute the patched class oracle
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 4 tests
+test a_nested_statement_whose_range_begins_inside_its_block_is_written ... ok
+test a_range_that_begins_inside_a_block_whose_instruction_throws_settles_it ... ok
+test a_row_nothing_in_its_range_can_throw_does_not_quote_the_block ... ok
+test a_row_whose_range_holds_no_throwing_instruction_is_still_the_bodys_statement ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+test a_conditional_value_cannot_publish_partial_text_on_budget_or_cancellation ... ok
+test proved_values_are_one_lazy_typed_expression_in_each_supported_position ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 6 tests
+test a_quote_a_stripped_body_cannot_compile_through_keeps_its_partial_presentation ... ok
+test closure_budget_and_cancellation_publish_no_partial_source ... ok
+test double_return_body_owns_both_leaves ... ok
+test the_do_while_false_return_bodies_recover ... ok
+test the_throw_face_of_the_quote_closes_the_whole_method ... ok
+test the_variant_negatives_keep_their_registered_refusals ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

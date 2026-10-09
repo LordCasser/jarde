@@ -1,0 +1,14 @@
+[
+  {
+    "leg": "javac8",
+    "class_sha256": "04e099ac29ecf802bc0f939f5d29338cff0ba9db34bd17c60073cafb4f20e5c3",
+    "jar_path": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/root-inputs/javac8.jar",
+    "jar_sha256": "e3042b9da534b201e22b2a4bddc57012ae02af71fcc828a45fafccd676cad94a"
+  },
+  {
+    "leg": "javac23",
+    "class_sha256": "e7f5577f5f85c659f872a8279f429a95ddfffdd569937233dbc2e6e388081c0e",
+    "jar_path": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v3/root-inputs/javac23.jar",
+    "jar_sha256": "a7146a274d773dbfa8f44f5301cdb37768c53805f5cfa21d3fee9c91086b29db"
+  }
+]

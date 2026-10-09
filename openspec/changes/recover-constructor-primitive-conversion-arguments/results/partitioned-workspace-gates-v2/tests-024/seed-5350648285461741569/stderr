@@ -1,0 +1,13 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 3.96s
+     Running tests/p3_shift_negative_boundaries.rs (target/debug/deps/p3_shift_negative_boundaries-1e489f7eedf4b92e)
+     Running tests/p3_short_circuit_exception_chain.rs (target/debug/deps/p3_short_circuit_exception_chain-6007378a68d1182b)
+     Running tests/p3_short_circuit_exception_edge.rs (target/debug/deps/p3_short_circuit_exception_edge-d67c386d3508995c)
+     Running tests/p3_short_circuit_transfer_gateway.rs (target/debug/deps/p3_short_circuit_transfer_gateway-8a65bed4968e207a)
+     Running tests/p3_snapshot_hierarchy_widening.rs (target/debug/deps/p3_snapshot_hierarchy_widening-0c77b1fef4fcdeff)
+     Running tests/p3_special_dispatch.rs (target/debug/deps/p3_special_dispatch-d258545c7b0911ce)
+     Running tests/p3_special_refusal.rs (target/debug/deps/p3_special_refusal-cfc4845182964418)
+     Running tests/p3_stated_rows.rs (target/debug/deps/p3_stated_rows-81a16ecfcfeb19cd)
+     Running tests/p3_static_call.rs (target/debug/deps/p3_static_call-f6959e204c2a456a)
+     Running tests/p3_short_circuit_chain_controls.rs (target/debug/deps/p3_short_circuit_chain_controls-707e4c3b85a9f40c)

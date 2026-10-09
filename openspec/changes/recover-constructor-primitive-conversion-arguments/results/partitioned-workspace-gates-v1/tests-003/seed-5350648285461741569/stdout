@@ -1,0 +1,103 @@
+
+running 3 tests
+test a_result_boolean_context_does_not_promote_an_unproved_int_xor_operand ... ok
+test budget_and_cancellation_do_not_publish_a_partially_built_xor_expression ... ok
+test proved_boolean_xor_literals_keep_type_effect_and_origin_facts ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.73s
+
+
+running 3 tests
+test a_returned_old_value_stays_an_expression_and_budget_or_cancellation_stops_atomically ... ok
+test owner_descriptor_volatile_receiver_and_effect_boundaries_do_not_use_this_slice ... ok
+test same_class_int_unit_updates_are_single_source_mapped_postfix_statements ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+
+running 9 tests
+test empty_zip_enumeration_reports_the_open_snapshot ... ok
+test handler_budget_partial_has_precise_coverage ... ok
+test materialization_failure_is_err_and_body_partial_is_preserved ... ok
+test method_request_decodes_and_charges_only_the_selected_body ... ok
+test one_budget_accumulates_open_and_header_and_preserves_atomic_stage_failure ... ok
+test public_engine_entrypoints_honor_precancelled_requests_at_their_stage_boundary ... ok
+test standalone_engine_reports_owned_source_and_usage ... ok
+test target_and_header_body_boundaries_are_preserved ... ok
+test zip_duplicate_origins_and_validation_are_preserved ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test the_labeled_projection_recompiles_and_runs_as_the_original ... ok
+test the_labeled_string_argument_fixture_projects_the_proved_field_name ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.92s
+
+
+running 3 tests
+test field_signature_refusals_keep_descriptor_for_mismatch_unbound_and_body_use ... ok
+test standalone_field_signatures_recompile_and_match_reflection_and_caller_types ... ok
+test type_use_annotations_and_stopped_requests_do_not_publish_field_candidates ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.10s
+
+
+running 13 tests
+test anonymous_member_base_keeps_the_qualified_receiver_refusal ... ok
+test anonymous_member_base_presents_the_member_base_constructor_order ... ok
+test anonymous_member_base_runs_and_its_text_stays_uncompilable ... ignored, needs a JDK on PATH: it runs the frozen classes and asks `javac` whether the recovered text compiles (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test anonymous_top_level_pins_the_childs_capture_write_before_the_super_call ... ok
+test anonymous_top_level_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test enum_arity_pins_the_zero_one_and_four_constant_headers ... ok
+test enum_arity_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test lambda_body_inline_pins_the_forwarding_arrow_and_the_refused_main ... ok
+test lambda_body_inline_runs_and_its_text_stays_uncompilable ... ignored, needs a JDK on PATH: it runs the frozen classes and asks `javac` whether the recovered text compiles (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test package_info_basic_pins_the_package_annotation_before_the_package_line ... ok
+test package_info_basic_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test short_circuit_left_false_pins_the_single_short_circuit_write ... ok
+test short_circuit_left_false_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+
+test result: ok. 7 passed; 0 failed; 6 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 3 tests
+test body_budget_stop_and_cancellation_do_not_publish_a_generic_throws_clause ... ok
+test body_effects_and_object_method_names_keep_physical_throws ... ok
+test empty_body_class_throws_projection_compiles_and_runs_for_both_debug_variants ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.74s
+
+
+running 4 tests
+test body_budget_and_cancellation_never_publish_a_partial_constructor_header ... ok
+test generic_constructor_projects_atomically_for_debug_and_no_debug_classes ... ok
+test same_class_constructor_binding_and_adjacent_generic_method_are_independent ... ok
+test unproved_constructor_body_keeps_its_physical_parameter ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.65s
+
+
+running 11 tests
+test a_counted_dimension_override_is_accepted_and_stops_the_run_at_that_dimension ... ok
+test a_roots_document_declares_the_same_roots_as_repeated_root_arguments ... ok
+test a_small_allowance_keeps_a_readable_prefix_and_never_confirms_completeness ... ok
+test a_whole_package_reaches_its_final_under_the_commands_own_defaults ... ok
+test a_zero_or_unknown_dimension_is_refused_before_anything_is_read ... ok
+test an_existing_output_is_refused_and_left_exactly_as_it_was ... ok
+test an_incomplete_traversal_reaches_a_final_and_exits_four ... ok
+test auto_and_one_worker_finish_in_one_process_and_the_header_reports_the_configuration ... ok
+test every_record_of_the_stream_is_the_library_value_of_the_same_run ... ok
+test one_account_bounds_the_library_and_the_stream_at_every_job_setting ... ok
+test zero_and_nonnumeric_jobs_are_usage_errors_that_create_no_file ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.26s
+
+
+running 2 tests
+test direct_string_char_array_has_explicit_new_and_all_source_anchors ... ok
+test output_budget_and_cancellation_publish_no_partial_string_constructor ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

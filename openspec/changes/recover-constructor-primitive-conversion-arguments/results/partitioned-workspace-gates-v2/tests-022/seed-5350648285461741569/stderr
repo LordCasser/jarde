@@ -1,0 +1,13 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 4.00s
+     Running tests/p3_prepared_input.rs (target/debug/deps/p3_prepared_input-f88244a6792e1a7c)
+     Running tests/p3_primitive_conversions.rs (target/debug/deps/p3_primitive_conversions-b27578b26599340f)
+     Running tests/p3_product_vocabulary.rs (target/debug/deps/p3_product_vocabulary-d737d5cd1b70a626)
+     Running tests/p3_proved_varargs_calls.rs (target/debug/deps/p3_proved_varargs_calls-b72881b2db198dfc)
+     Running tests/p3_recovery_entry.rs (target/debug/deps/p3_recovery_entry-61bcb4c81b79fd21)
+     Running tests/p3_reference_cast.rs (target/debug/deps/p3_reference_cast-6e8f8417baae0b3c)
+     Running tests/p3_reference_slot_lifetimes.rs (target/debug/deps/p3_reference_slot_lifetimes-c1aab2c4b280e4ab)
+     Running tests/p3_region_fallback_origins.rs (target/debug/deps/p3_region_fallback_origins-fedaeaa098c28cdb)
+     Running tests/p3_region_owner_overlap.rs (target/debug/deps/p3_region_owner_overlap-5a17cfa2415e2f01)
+     Running tests/p3_proved_boolean_conditional_returns.rs (target/debug/deps/p3_proved_boolean_conditional_returns-9203ebb710a172c8)

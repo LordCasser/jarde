@@ -1,0 +1,138 @@
+
+running 20 tests
+test a_budget_stop_keeps_the_confirmed_prefix ... ok
+test a_cancelled_listing_publishes_the_prefix_it_read ... ok
+test a_candidate_listing_reads_no_header_and_keeps_containment ... ok
+test a_chosen_identity_does_not_depend_on_traversal_order ... ok
+test a_damaged_candidate_ends_the_confirmed_scan_with_a_reliable_prefix ... ok
+test a_damaged_member_does_not_erase_the_class ... ok
+test a_listed_member_in_an_archive_reads_the_same_physical_definition ... ok
+test a_listed_method_is_directly_usable_as_a_request_target ... ok
+test a_path_that_disagrees_with_the_declared_name_keeps_both ... ok
+test a_standalone_class_lists_its_own_root_and_refuses_a_tree_scope ... ok
+test a_tree_root_that_is_not_this_snapshot_is_refused ... ok
+test an_abstract_or_native_member_carries_no_fabricated_body ... ok
+test an_identity_that_does_not_match_its_bytes_is_refused ... ok
+test duplicate_definitions_are_all_returned_and_a_chosen_identity_is_unique ... ok
+test navigation_reads_headers_only ... ok
+test navigation_reports_round_trip_through_their_json_shape ... ok
+test no_match_is_an_empty_answer_and_not_a_failure ... ok
+test overloads_are_answered_with_every_candidate_until_a_descriptor_is_given ... ok
+test the_same_class_at_two_origins_stays_two_items ... ok
+test two_spellings_of_one_name_bind_the_same_definition ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 10 tests
+test a_literal_dollar_top_level_name_stays_pool_spelled_and_runs ... ok
+test a_refused_fold_reruns_the_structural_reader_and_the_family_stays_loud ... ok
+test a_standalone_read_refuses_structural_reads_over_its_own_pool_spelled_member ... ok
+test array_class_literals_of_a_member_admit_and_the_folded_family_runs_like_the_original ... ok
+test deep_chain_structural_reads_refuse_but_the_name_form_recovers ... ok
+test local_class_literals_stay_out_of_the_provable_subset ... ok
+test nested_class_literals_recover_and_the_folded_family_runs_like_the_original ... ok
+test reflected_annotation_reads_recover_and_the_family_project_runs_like_the_original ... ok
+test reflected_compound_annotation_reads_recover_and_run_like_the_original ... ok
+test top_level_class_literals_keep_their_five_forms_and_run_like_the_original ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.44s
+
+
+running 6 tests
+test budget_stop_keeps_the_physical_nested_header ... ok
+test folded_family_carries_the_nested_generic_header_and_scope ... ok
+test join_failure_row_keeps_the_refusal_chain ... ok
+test owner_local_of_the_child_type_keeps_the_fold_open_and_the_unit_projected ... ok
+test separated_nested_generic_units_project_the_header_and_member_scope ... ok
+test top_level_generic_header_and_plain_fold_shapes_are_unchanged ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.92s
+
+
+running 6 tests
+test a_refused_fold_keeps_the_pool_spelling_of_the_member ... ok
+test cross_class_nested_references_spell_dotted_in_every_position ... ok
+test nested_enum_references_spell_as_source_and_the_family_recompiles ... ok
+test packaged_deep_chains_spell_dotted_and_self_nested_keeps_the_pool_name ... ok
+test static_nested_class_and_interface_positions_spell_dotted ... ok
+test synthetic_anonymous_names_stay_verbatim ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.97s
+
+
+running 14 tests
+test bounded_class_variable_on_bodyless_interface_preserves_reflection ... ok
+test budget_and_cancellation_never_publish_a_partial_parameterized_header ... ok
+test class_variable_and_unproved_body_keep_their_separate_evidence ... ok
+test class_variable_direct_return_preserves_generic_caller_and_reflection ... ok
+test class_variable_header_is_atomic_across_evidence_and_budget ... ok
+test evidence_selection_preserves_source_and_independent_method_reports ... ok
+test frozen_identity_shapes_and_raw_control_project_together ... ok
+test interface_bodyless_method_keeps_its_generic_return ... ok
+test ordinary_wildcards_instance_and_bodyless_members_are_complete ... ok
+test parameter_reassignment_cannot_use_the_identity_body_proof ... ok
+test parameterized_parent_does_not_publish_an_unproved_class_variable_header ... ok
+test same_class_overload_caller_proves_the_target_projection ... ok
+test type_use_annotation_is_a_whole_declaration_refusal ... ok
+test varargs_exception_and_method_annotation_keep_their_positions ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.14s
+
+
+running 7 tests
+test a_class_crossing_its_ceiling_is_refused_before_it_is_materialized ... ok
+test a_container_is_read_again_only_after_its_last_consumer_let_go ... ok
+test a_directory_record_that_understates_its_class_stops_the_read_at_the_ceiling ... ok
+test a_scope_walk_reads_the_container_once_whatever_its_store_is_doing ... ok
+test one_preparation_produces_one_pool_for_every_method_of_its_class ... ok
+test the_bulk_operation_bills_the_container_once_in_every_store_configuration ... ok
+test the_jvm_consumers_share_the_prepared_bundle_instead_of_copying_it ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 14 tests
+test boot_and_war_library_names_require_exact_prefix_case_direct_path_and_lowercase_jar ... ok
+test boot_tree_is_explicit_and_nested_entry_is_replayable_without_intermediate_output ... ok
+test budget_and_precancellation_return_non_complete_reliable_prefixes ... ok
+test child_enumeration_failure_keeps_failed_report_parent_provenance_and_valid_sibling ... ok
+test depth_limit_skips_each_candidate_at_its_parent_ordinal ... ok
+test duplicate_nested_entries_derive_distinct_child_and_inner_identities ... ok
+test forged_nested_origins_and_metadata_are_rejected ... ok
+test local_error_then_entry_bytes_budget_reports_the_actual_terminal_budget ... ok
+test malformed_and_unsupported_children_do_not_erase_valid_siblings ... ok
+test nested_depth_is_a_high_water_mark_and_preserves_siblings ... ok
+test nested_replay_preserves_depth_entry_count_and_cancellation_errors_without_result_items ... ok
+test prefix_result_item_exhaustion_skips_all_remaining_root_candidates ... ok
+test result_item_exhaustion_before_second_child_report_keeps_pending_coverage_and_provenance ... ok
+test war_and_ordinary_nested_layout_are_physical_evidence_only ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test an_unknown_constructor_argument_bootstrap_keeps_the_whole_method_quoted ... ok
+test every_frozen_construction_presentation_is_byte_identical ... ok
+test functional_constructor_arguments_render_as_complete_method_bodies_on_both_legs ... ok
+test the_patrol_anchors_present_the_whole_nested_chain ... ok
+test the_variant_constructions_present_and_the_negatives_stay_quoted ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 4 tests
+test the_frozen_variants_present_and_the_three_level_form_stays_refused ... ok
+test the_patrols_t4_sync_presents_both_blocks_and_the_loop_between_them ... ok
+test the_single_exit_and_two_arm_monitor_texts_are_byte_identical ... ok
+test the_unpaired_and_missing_exit_negatives_keep_their_refusals ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+test owner_filter_finds_class_members_and_bootstrap_handles_with_coordinates ... ok
+test owner_filter_keeps_item_limit_and_budget_coverage_stops ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized] target(s) in 0.10s
+     Running tests/same_class_generic_binding.rs (target/debug/deps/same_class_generic_binding-0c59d3764b82ba58)
+     Running tests/same_class_generic_call_consumers.rs (target/debug/deps/same_class_generic_call_consumers-1f090bd8124754a2)
+     Running tests/static_method_local_generic_throws.rs (target/debug/deps/static_method_local_generic_throws-5d6d62c1c1a4523f)
+     Running tests/task_operations.rs (target/debug/deps/task_operations-9886457eddef0ccf)
+     Running tests/task_cli.rs (target/debug/deps/task_cli-84366b4d21d5a705)
+     Running tests/twr_direct_finally.rs (target/debug/deps/twr_direct_finally-f50e254bfeda796c)
+     Running tests/twr_inner_finally.rs (target/debug/deps/twr_inner_finally-bff807eaea549a15)
+     Running tests/varargs_ctor_argument_sites.rs (target/debug/deps/varargs_ctor_argument_sites-7eb2dba2e98bf894)
+     Running tests/type_annotation_facts.rs (target/debug/deps/type_annotation_facts-e540b228d92a8ee6)

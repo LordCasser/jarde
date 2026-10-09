@@ -1,0 +1,181 @@
+{
+  "schema": "constructor-primitive-conversion-handler-fixture-v1",
+  "source": {
+    "path": "ConstructorPrimitiveHandlerControls.java",
+    "bytes": 462,
+    "sha256": "53000bbd49a3c0aa42fb36ddf469146ee3e4771d814424a86dbeffd46f37b6a6"
+  },
+  "source_identity": "Exact source copy from handler-controls-build-v4; classfiles copied without recompilation.",
+  "build_manifest": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/handler-controls-build-v4/manifest.json",
+  "build_manifest_sha256": "9653173eef3a90bed1a066cecd8443a465222783008b4773eadf5723bd762b6f",
+  "root_cli_probes": {
+    "javac8": {
+      "result_path": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/root-handler-v4-render-javac8/result.json",
+      "exit": 0,
+      "stdout_sha256": "f3ecf46ee67fc49e21b6501d077d70d29e12cb2dd95f3a0caee377e8ba3f3a7f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cli_path": "/private/tmp/jarde-constructor-primitive-conversions-cli-v1",
+      "rendered_class_sha256": "c3cc61df6c64932572edd6c8bc21639e92fdfb3d2258df1de5628d3076129844",
+      "claim": "javac8 complete Structured/Java, no markers, identity consumer BCI 12 mapped"
+    },
+    "javac23": {
+      "result_path": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/root-handler-v4-render-javac23/result.json",
+      "exit": 0,
+      "stdout_sha256": "662a3984848e83d8bd4af0645aa629ccc09506c7c557f6e9cd3ccf8baed29a2c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cli_path": "/private/tmp/jarde-constructor-primitive-conversions-cli-v1",
+      "rendered_class_sha256": "241e8f754826a6a7b93ce30726356977bb000aa776178a8716a739688cccf293",
+      "claim": "render exit 0; full generated-source compile pending at fixture freeze"
+    }
+  },
+  "target_method": "sameHandler",
+  "method_descriptor": "sameHandler(I)Ljava/lang/Long;",
+  "same_handler_semantics": {
+    "sole_consumer": "identity(Long) invocation",
+    "consumer_bci": 12,
+    "protected_range_half_open": [
+      0,
+      15
+    ],
+    "return_bci": 15
+  },
+  "legs": {
+    "javac8": {
+      "class_path": "javac8/classes/ConstructorPrimitiveHandlerControls.class",
+      "bytes": 665,
+      "sha256": "db75343bfc91bf069c4b250cd9148e025139519d30b71c2422f1771b61a2b9db",
+      "compiler_flags": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ],
+      "method_descriptor": "sameHandler(I)Ljava/lang/Long;",
+      "max_stack": 4,
+      "max_locals": 2,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 15,
+          "handler_pc": 16,
+          "catch_type": "Class java/lang/RuntimeException"
+        }
+      ],
+      "instructions": [
+        {
+          "bci": 0,
+          "instruction": "new           #6                  // class java/lang/Long"
+        },
+        {
+          "bci": 3,
+          "instruction": "dup"
+        },
+        {
+          "bci": 4,
+          "instruction": "iload_0"
+        },
+        {
+          "bci": 5,
+          "instruction": "invokestatic  #7                  // Method markInt:(I)I"
+        },
+        {
+          "bci": 8,
+          "instruction": "i2l"
+        },
+        {
+          "bci": 9,
+          "instruction": "invokespecial #8                  // Method java/lang/Long.\"<init>\":(J)V"
+        },
+        {
+          "bci": 12,
+          "instruction": "invokestatic  #9                  // Method identity:(Ljava/lang/Long;)Ljava/lang/Long;"
+        },
+        {
+          "bci": 15,
+          "instruction": "areturn"
+        },
+        {
+          "bci": 16,
+          "instruction": "astore_1"
+        },
+        {
+          "bci": 17,
+          "instruction": "aconst_null"
+        },
+        {
+          "bci": 18,
+          "instruction": "areturn"
+        }
+      ],
+      "javap_method_text_sha256": "91c547921ec5a9b911e5a53b6b6cb03ce1f61e92eb1c434934b2ac7138aa8f03"
+    },
+    "javac23": {
+      "class_path": "javac23/classes/ConstructorPrimitiveHandlerControls.class",
+      "bytes": 662,
+      "sha256": "79ea03a471021f5ff8045931afad9a7675ab0e728be72d800e5c1d3da2981632",
+      "compiler_flags": [
+        "--release",
+        "8"
+      ],
+      "method_descriptor": "sameHandler(I)Ljava/lang/Long;",
+      "max_stack": 4,
+      "max_locals": 2,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 15,
+          "handler_pc": 16,
+          "catch_type": "Class java/lang/RuntimeException"
+        }
+      ],
+      "instructions": [
+        {
+          "bci": 0,
+          "instruction": "new           #25                 // class java/lang/Long"
+        },
+        {
+          "bci": 3,
+          "instruction": "dup"
+        },
+        {
+          "bci": 4,
+          "instruction": "iload_0"
+        },
+        {
+          "bci": 5,
+          "instruction": "invokestatic  #27                 // Method markInt:(I)I"
+        },
+        {
+          "bci": 8,
+          "instruction": "i2l"
+        },
+        {
+          "bci": 9,
+          "instruction": "invokespecial #33                 // Method java/lang/Long.\"<init>\":(J)V"
+        },
+        {
+          "bci": 12,
+          "instruction": "invokestatic  #36                 // Method identity:(Ljava/lang/Long;)Ljava/lang/Long;"
+        },
+        {
+          "bci": 15,
+          "instruction": "areturn"
+        },
+        {
+          "bci": 16,
+          "instruction": "astore_1"
+        },
+        {
+          "bci": 17,
+          "instruction": "aconst_null"
+        },
+        {
+          "bci": 18,
+          "instruction": "areturn"
+        }
+      ],
+      "javap_method_text_sha256": "67cfd7c5808a9e0375b8e1a010c65478029a59f1012ca67480c35188bc7326a0"
+    }
+  },
+  "history_note": "Earlier v1/v2/v3 handler controls remain archived in change results; scope refusals are not positive conversion results. The initializer exception-table source proof remains in its separate v1 fixture/test."
+}

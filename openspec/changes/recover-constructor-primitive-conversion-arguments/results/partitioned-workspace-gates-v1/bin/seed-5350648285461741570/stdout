@@ -1,0 +1,10 @@
+
+running 5 tests
+test export::tests::a_later_output_budget_does_not_replace_another_first_stop ... ok
+test export::tests::a_secondary_cancellation_does_not_replace_the_first_ir_items_budget_stop ... ok
+test export::tests::an_external_cancellation_remains_the_report_reason ... ok
+test export::tests::an_output_io_failure_remains_primary ... ok
+test export::tests::the_matching_delivery_output_budget_keeps_its_numeric_details ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

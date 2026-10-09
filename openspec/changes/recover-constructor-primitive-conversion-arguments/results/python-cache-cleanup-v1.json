@@ -1,0 +1,11 @@
+{
+  "scope": "only this change results/__pycache__; disposable Python import bytecode",
+  "removed": [
+    {
+      "path": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/__pycache__/run-partitioned-workspace-gates-v1.cpython-314.pyc",
+      "bytes": 23938,
+      "sha256": "650c551aeb9717855127647fa00b360f09db7c1ecf0d3a54b9b893fda10ac82a"
+    }
+  ],
+  "exists_after": false
+}

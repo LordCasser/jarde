@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_required_conversions.rs (target/debug/deps/p3_required_conversions-3258a7689ac04872)
+     Running tests/p3_scope.rs (target/debug/deps/p3_scope-c1ec2856de6a6190)
+     Running tests/p3_scv_concat_consumers.rs (target/debug/deps/p3_scv_concat_consumers-bfd69ac7e7538c12)
+     Running tests/p3_shared_catchall_finally.rs (target/debug/deps/p3_shared_catchall_finally-a7f7adad954d38db)
+     Running tests/p3_shared_latch_nested_loops.rs (target/debug/deps/p3_shared_latch_nested_loops-ef0e8687ef5f678e)
+     Running tests/p3_shift_expressions.rs (target/debug/deps/p3_shift_expressions-532c74874cfd786d)
+     Running tests/p3_repeq_boolean_arguments.rs (target/debug/deps/p3_repeq_boolean_arguments-751e65f9e475ed66)
+     Running tests/p3_segmented_null_lead_finally.rs (target/debug/deps/p3_segmented_null_lead_finally-55679eaab0f63258)
+     Running tests/p3_shared_join_finally.rs (target/debug/deps/p3_shared_join_finally-46f5a78bf49bc23a)
+     Running tests/p3_shared_tail.rs (target/debug/deps/p3_shared_tail-86cf6e7003b5bb47)

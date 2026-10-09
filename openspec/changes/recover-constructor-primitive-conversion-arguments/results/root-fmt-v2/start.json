@@ -1,0 +1,39 @@
+{
+  "schema": "root-command-v1",
+  "argv": [
+    "cargo",
+    "fmt",
+    "--all"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/run-root-gate-v1.py",
+    "bytes": 2513,
+    "sha256": "4ee3c2dbe4b2b9d9e8c7016c29b3e19a51d49cc1449feedd93419cdc6f3303c5"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 258568,
+      "sha256": "998b2a995dd92610d1518728e0a8284972d9a2d367979a446dc6a2ed658e67f4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 543220,
+      "sha256": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_constructor_primitive_conversion_arguments.rs",
+      "bytes": 26802,
+      "sha256": "fa6b48812b53dd5c60014203c75b71577c518737c49c44bfbe1b5f3f362518e0"
+    }
+  ],
+  "free_before": 32243163136
+}

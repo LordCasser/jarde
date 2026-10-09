@@ -1,0 +1,103 @@
+
+running 4 tests
+test the_parameterized_root_fixture_projects_the_capture_parameter_form ... ok
+test the_parameterized_root_projection_does_not_need_debug_information ... ok
+test the_parameterized_root_projection_recompiles_and_runs_as_the_original ... ok
+test the_parameterized_root_refusals_keep_their_physical_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s
+
+
+running 6 tests
+test non_javac_return_descriptors_keep_their_refusals ... ok
+test the_gate_keeps_the_one_layer_and_spelling_boundaries ... ok
+test the_interface_path_keeps_refusing_child_self_invocations ... ok
+test the_parameterized_supertype_return_contrast_positive_projects_and_runs ... ok
+test the_supertype_return_anchor_projects_the_interface_declaration ... ok
+test the_supertype_return_anchor_recompiles_and_runs_as_the_original ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.80s
+
+
+running 7 tests
+test a1_family_presents_assert_statements_and_hides_every_synthetic_layer ... ok
+test a1_family_recompiles_and_prints_the_original_output_in_both_assertion_states ... ok
+test class_without_asserts_stages_no_projection ... ok
+test extra_statement_inside_the_guard_keeps_the_physical_presentation ... ok
+test guards_that_do_not_all_fold_keep_the_whole_class_physical ... ok
+test message_side_effects_keep_their_evaluation_order ... ok
+test wrong_owner_switch_keeps_the_physical_presentation ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.83s
+
+
+running 7 tests
+test a_pool_of_one_result_still_cannot_starve_the_earliest_class ... ok
+test a_result_weighs_what_it_owns_and_not_the_length_it_writes ... ok
+test a_shared_pool_lets_the_classes_behind_the_front_work_ahead ... ok
+test a_slow_first_class_does_not_starve_the_later_ones_or_the_order ... ok
+test a_window_that_only_funds_the_reservations_is_one_result_per_class ... ok
+test one_result_larger_than_the_ceiling_stops_that_method_only ... ok
+test the_shared_pool_is_the_declared_window_outside_the_reservations ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s
+
+
+running 7 tests
+test a_cancellation_between_classes_ends_the_traversal_and_the_class_in_flight ... ok
+test a_cancellation_mid_run_keeps_the_prefix_and_bills_the_holes ... ok
+test a_cancellation_wakes_a_producer_waiting_for_room_in_the_shared_pool ... ok
+test a_cancellation_while_the_window_is_full_wakes_every_waiter ... ok
+test a_cancelled_request_publishes_nothing_and_dispatches_nothing ... ok
+test a_consumer_that_fails_is_infrastructure ... ok
+test a_consumer_that_stops_the_stream_keeps_its_prefix ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+
+running 3 tests
+test a_refused_permit_stops_the_stream_at_the_one_total_and_names_the_delivery_owner ... ok
+test one_declaration_bounds_the_librarys_own_presentation_too ... ok
+test the_terminal_record_pays_for_itself_before_the_call_returns ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+test a_container_a_class_task_is_still_using_is_never_parsed_again ... ok
+test a_run_holds_a_container_only_until_the_class_task_reading_it_ends ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.07s
+
+
+running 6 tests
+test a_partial_tree_is_the_libraries_own_prefix ... ok
+test cli_enumeration_then_recovery_binds_a_war_class_and_names_its_physical_path ... ok
+test ordinary_enumeration_still_does_not_recurse_and_the_tree_operation_does ... ok
+test the_operation_declares_no_roots_and_echoes_the_opened_snapshot ... ok
+test the_same_mechanism_binds_a_boot_inf_classes_sample ... ok
+test the_tree_operation_returns_the_library_report_unchanged ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+
+running 5 tests
+test allocation_candidates_include_new_expressions_reserved_by_concat ... ok
+test frozen_anonymous_interface_return_bci_matches_its_allocation_scan ... ok
+test same_method_double_site_scan_preserves_both_bcis_without_rule_details ... ok
+test same_run_new_sidecar_preserves_order_and_ignores_rule_details_selection ... ok
+test unresolved_new_constant_pool_entry_cannot_yield_a_complete_scan ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 6 tests
+test built_in_array_marker_interfaces_are_legal_invocation_targets ... ok
+test default_and_all_evidence_emit_the_same_successful_body_and_stop_before_partial_output ... ok
+test list_argument_keeps_the_iterable_call_once_with_both_origins ... ok
+test local_upcast_keeps_the_object_array_overload_and_effectful_argument_once ... ok
+test object_component_upcasts_keep_the_invocation_parameter_type ... ok
+test unknown_user_array_supertypes_keep_the_complete_fallback ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

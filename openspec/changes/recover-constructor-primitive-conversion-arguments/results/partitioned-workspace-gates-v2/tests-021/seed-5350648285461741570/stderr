@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.06s
+     Running tests/p3_parameter_slots.rs (target/debug/deps/p3_parameter_slots-e0e754a0f552a773)
+     Running tests/p3_partial_array_allocation.rs (target/debug/deps/p3_partial_array_allocation-93e8d11c65fcfe72)
+     Running tests/p3_platform_collection_widening.rs (target/debug/deps/p3_platform_collection_widening-2af43689d2608cfc)
+     Running tests/p3_popped_static_qualifier.rs (target/debug/deps/p3_popped_static_qualifier-5becdebf922f6c43)
+     Running tests/p3_postfix_handler_boundary.rs (target/debug/deps/p3_postfix_handler_boundary-761d97394bf732c3)
+     Running tests/p3_postfix_lvalue_values.rs (target/debug/deps/p3_postfix_lvalue_values-a94b2ea3299ab80e)
+     Running tests/p3_precise_rethrow.rs (target/debug/deps/p3_precise_rethrow-989cacea7a04e68a)
+     Running tests/p3_prefix_survival.rs (target/debug/deps/p3_prefix_survival-d08410048d4b1f1d)
+     Running tests/p3_patterns.rs (target/debug/deps/p3_patterns-583a9704ce50880c)
+     Running tests/p3_preceded_catches.rs (target/debug/deps/p3_preceded_catches-26985eb8eea53e73)

@@ -1,0 +1,8 @@
+
+running 3 tests
+test boolean_parameter_keeps_the_structural_new_site_but_refuses_its_constructor_body ... ok
+test complete_constructor_conversion_families_keep_casts_sites_and_runtime_behavior ... ok
+test same_handler_constructor_argument_is_a_complete_source_and_site_positive ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.58s
+

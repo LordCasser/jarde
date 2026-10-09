@@ -1,0 +1,240 @@
+
+running 34 tests
+test a_bootstrap_member_argument_stays_undecided ... ok
+test a_cancelled_request_scans_nothing_and_never_claims_an_answer ... ok
+test a_candidate_that_resolves_to_another_declaration_is_not_an_item ... ok
+test a_class_symbol_declaration_keeps_the_unavailable_state ... ok
+test a_damaged_class_candidate_is_a_scan_level_stop ... ok
+test a_default_conflict_is_unresolved_and_keeps_its_use_site ... ok
+test a_duplicate_declaration_is_unresolved ... ok
+test a_kind_mismatch_is_unresolved ... ok
+test a_metadata_fact_whos_member_kind_is_unstated_stays_undecided ... ok
+test a_method_handle_load_stays_undecided ... ok
+test a_missing_owner_is_unresolved_and_keeps_its_use_site ... ok
+test a_published_diagnostic_costs_a_result_item ... ok
+test a_refused_diagnostic_charge_stops_the_report_at_the_prefix ... ok
+test a_refused_header_read_that_stops_the_resolution_keeps_the_reliable_prefix ... ok
+test a_rejected_environment_never_reaches_the_candidates ... ok
+test a_resolution_stop_outranks_an_assembly_stop ... ok
+test a_result_item_budget_that_cannot_fund_the_scan_stops_without_claiming_an_answer ... ok
+test a_search_diagnostic_enters_the_report_and_is_charged ... ok
+test a_sibling_name_on_the_same_owner_is_not_a_candidate ... ok
+test a_signature_polymorphic_call_site_is_a_candidate_at_its_own_descriptor ... ok
+test a_signature_polymorphic_invoke_exact_call_site_is_a_candidate_too ... ok
+test a_static_instruction_on_an_instance_field_is_reported_without_the_kind_rule ... ok
+test a_stop_that_hits_the_same_candidate_twice_is_reported_once ... ok
+test a_sub_call_site_resolves_to_the_base_declaration ... ok
+test an_ambiguous_owner_is_unresolved_and_keeps_its_use_site ... ok
+test an_array_owner_is_unresolved ... ok
+test an_artifact_tree_scope_validates_its_root_container ... ok
+test an_ordinary_declaration_matches_by_name_and_descriptor_not_by_name ... ok
+test an_unconsumed_pool_entry_is_not_a_candidate ... ok
+test field_accesses_resolve_through_the_declaring_class ... ok
+test max_items_truncates_the_items_without_turning_the_execution_partial ... ok
+test publishing_the_report_stops_at_the_budget_and_keeps_its_prefix ... ok
+test the_loader_of_a_declaration_is_part_of_its_identity ... ok
+test the_same_names_under_two_loaders_resolve_under_the_requested_environment ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 33 tests
+test a_class_header_stop_keeps_the_candidates_already_found ... ok
+test a_closure_diagnostic_is_charged_like_every_other_resolution_result ... ok
+test a_cyclic_hierarchy_in_the_range_leaves_the_plane_open ... ok
+test a_declaration_of_another_kind_is_not_a_candidate ... ok
+test a_declared_loader_outside_the_chain_is_an_unknown_loader_fact ... ok
+test a_dependency_depth_stop_keeps_the_prefix_and_the_positions_it_declared ... ok
+test a_field_declaration_enumerates_the_classes_that_declare_the_same_field ... ok
+test a_missing_supertype_branch_is_the_candidates_own_dependency_fact ... ok
+test a_pre_cancelled_request_never_starts_the_range ... ok
+test a_range_over_a_foreign_tree_root_is_refused_as_an_input_mismatch ... ok
+test a_range_position_no_position_provides_is_undecided ... ok
+test a_range_position_that_resolves_outside_the_range_is_undecided ... ok
+test a_range_whose_listing_cannot_be_paid_for_is_a_truncated_range ... ok
+test a_refused_closure_diagnostic_keeps_the_entries_before_it ... ok
+test a_request_without_a_range_publishes_no_dispatch_at_all ... ok
+test a_result_items_stop_keeps_the_candidates_already_published ... ok
+test a_result_items_stop_publishes_no_skipped_range ... ok
+test a_rule_diagnostic_costs_one_result_item_before_the_range_runs ... ok
+test a_runtime_transformation_moves_only_the_open_world_flag ... ok
+test a_single_known_candidate_is_never_published_as_a_unique_target ... ok
+test a_standalone_class_root_can_be_the_whole_range ... ok
+test a_tree_range_over_a_class_snapshot_is_a_failed_range_not_an_empty_one ... ok
+test a_truncated_listing_keeps_the_positions_it_declared_but_never_examined ... ok
+test an_ambiguous_range_position_is_undecided_not_excluded ... ok
+test an_artifact_tree_range_covers_the_containers_its_positions_reach ... ok
+test an_external_root_is_refused_before_the_range_is_enumerated ... ok
+test an_ordered_root_is_evidence_only_past_the_first_position ... ok
+test every_implementation_in_the_range_is_one_known_candidate ... ok
+test every_rule_diagnostic_of_one_request_is_charged_and_published ... ok
+test the_candidate_rule_is_structural_and_screens_no_member_flag ... ok
+test the_range_enumerates_each_name_once ... ok
+test the_range_reads_headers_only_and_never_a_method_body ... ok
+test the_subtype_test_compares_ancestor_nodes_not_owner_names ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+test every_published_sequence_is_in_its_own_order ... ok
+test one_method_analysis_attempts_one_body_however_many_the_class_declares ... ok
+test the_same_method_analysis_repeats_field_by_field ... ok
+test the_x0_pool_probe_constructs_no_ir_and_decodes_no_body ... ok
+test the_x1_consumer_scan_constructs_no_ir ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 16 tests
+test a_cancelled_request_publishes_no_frame_table ... ok
+test a_constructor_completes_because_its_constructor_call_converts_the_this ... ok
+test a_covered_throw_site_product_is_billed_with_its_size ... ok
+test a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declared_field ... ok
+test a_range_containing_the_block_start_is_still_analyzed ... ok
+test a_range_starting_inside_a_block_still_hands_its_handler_an_input ... ok
+test an_exception_input_follows_the_state_its_throw_site_settles_on ... ok
+test an_exception_input_into_an_already_processed_block_settles_with_it ... ok
+test an_exhausted_item_budget_inside_the_names_phase_publishes_no_names ... ok
+test an_exhausted_item_budget_publishes_no_frame_table ... ok
+test an_uncovered_throw_site_is_not_retained ... ok
+test an_uninitialized_value_used_as_a_reference_stays_the_boundary_of_this_build ... ok
+test the_frame_phase_completes_a_body_without_any_debug_table ... ok
+test the_two_records_of_one_handler_are_read_in_the_order_that_shows_a_fold ... ok
+test two_records_naming_one_handler_still_hand_it_both_inputs ... ok
+test two_throw_sites_of_one_block_still_merge_their_own_states ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 9 tests
+test every_category_of_the_fixed_list_is_carried_by_a_named_entry ... ok
+test every_stopped_entry_across_the_goldens_explains_itself ... ok
+test the_exception_entries_complete_with_the_handler_inputs_settled ... ok
+test the_historical_corpus_replays_from_45_to_52 ... ok
+test the_input_side_premises_of_the_entries_hold ... ok
+test the_legacy_clone_entry_bills_two_call_sites ... ok
+test the_resource_boundary_entries_stop_where_their_budget_says ... ok
+test the_stopped_inputs_stay_published_and_explained ... ok
+test the_wide_and_switch_entry_completes ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+
+running 53 tests
+test a_caller_definition_of_another_snapshot_passes_when_its_loader_selects_it ... ok
+test a_caller_definition_the_declared_loader_does_not_bind_is_a_stop ... ok
+test a_class_inherits_a_default_method_through_its_superclass_interfaces ... ok
+test a_class_inherits_a_default_method_through_the_interface_step ... ok
+test a_class_reference_needs_a_class_owner ... ok
+test a_constructor_resolves_through_invoke_special_only ... ok
+test a_cyclic_superclass_chain_stops_with_a_warning ... ok
+test a_declaration_of_the_owner_itself_costs_no_dependency_depth ... ok
+test a_delegated_root_that_declares_itself_as_its_supertype_is_a_cycle ... ok
+test a_duplicate_declaration_in_one_class_is_ambiguous ... ok
+test a_field_reference_is_not_held_to_the_static_rules ... ok
+test a_member_of_the_owner_resolves_to_its_own_declaration ... ok
+test a_member_resolution_reads_no_code_byte_of_a_class_that_has_a_body ... ok
+test a_member_search_stops_at_its_dependency_depth ... ok
+test a_member_search_stops_at_its_header_budget ... ok
+test a_missing_member_keeps_the_reference_and_fabricates_nothing ... ok
+test a_missing_supertype_leaves_its_branch_unread ... ok
+test a_named_static_interface_declaration_still_resolves_and_still_breaks_the_kind_rule ... ok
+test a_pre_cancelled_member_request_reports_cancelled_and_reads_nothing ... ok
+test a_private_interface_declaration_is_ignored_by_the_superinterface_step ... ok
+test a_root_name_reached_again_under_another_loader_is_another_node ... ok
+test a_search_that_takes_both_kinds_of_edge_publishes_both_reasons ... ok
+test a_signature_polymorphic_method_resolves_by_name_only ... ok
+test a_single_default_method_resolves_through_the_interface_step ... ok
+test a_static_interface_declaration_is_ignored_by_the_superinterface_step ... ok
+test a_static_method_resolves_for_a_static_reference ... ok
+test a_static_method_with_an_instance_reference_is_an_incompatible_change ... ok
+test a_subinterface_default_overrides_its_parent ... ok
+test a_supertype_that_cannot_be_told_apart_leaves_its_branch_unread ... ok
+test an_abstract_method_resolves_and_warns ... ok
+test an_abstract_only_interface_resolves_with_a_warning ... ok
+test an_ambiguous_owner_class_publishes_its_candidates ... ok
+test an_array_owner_is_unsupported ... ok
+test an_entry_that_declares_another_name_is_refused_at_its_own_candidate ... ok
+test an_inconsistent_caller_definition_is_a_stop_and_never_a_wrong_check ... ok
+test an_inherited_member_resolves_to_the_declaring_class ... ok
+test an_instance_method_with_a_static_reference_is_an_incompatible_change ... ok
+test an_interface_field_is_found_before_a_superclass_field ... ok
+test an_interface_reference_needs_an_interface_owner ... ok
+test an_interface_super_call_resolves_through_invoke_special ... ok
+test an_invokedynamic_reference_is_not_held_to_the_invocation_kind_rules ... ok
+test an_unknown_caller_class_leaves_the_access_rules_unchecked ... ok
+test an_unreadable_caller_hierarchy_leaves_the_access_rules_unchecked ... ok
+test every_fixture_class_resolves_as_a_class_symbol ... ok
+test one_request_searches_one_name_in_two_loaders_and_keeps_them_apart ... ok
+test review_parent_defined_owner_resolves_its_base_from_the_parent_loader ... ok
+test the_access_matrix_follows_jvms_5_4_4 ... ok
+test the_default_package_is_a_run_time_package_of_its_own ... ok
+test the_first_declared_direct_superinterface_wins ... ok
+test the_owner_state_is_inherited_when_the_owner_does_not_resolve ... ok
+test the_same_package_in_another_loader_is_a_different_runtime_package ... ok
+test two_declarations_in_one_interface_are_ambiguous ... ok
+test two_default_methods_are_a_default_conflict ... ok
+
+test result: ok. 53 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 4 tests
+test an_empty_stage_set_is_rejected_and_publishes_nothing ... ok
+test every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes ... ok
+test the_request_shape_checks_keep_their_precedence_over_the_pass_table ... ok
+test the_schedule_is_the_phase_prefix_whatever_order_the_request_names ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 17 tests
+test a_candidate_that_declares_another_name_is_refused_at_its_own_origin ... ok
+test a_changed_prefix_is_a_new_environment_that_reuses_no_verdict ... ok
+test a_damaged_candidate_stops_the_search_at_its_own_position ... ok
+test a_nested_library_and_the_application_directory_are_two_positions ... ok
+test a_prefix_binds_a_war_class_without_a_directory_entry ... ok
+test a_prefixed_position_binds_the_driver_method_through_the_same_root ... ok
+test a_root_that_names_the_other_physical_shape_is_refused_where_it_is_read ... ok
+test an_empty_prefix_and_a_layout_node_alone_bind_nothing ... ok
+test an_illegal_prefix_is_an_environment_problem_and_never_guessed_around ... ok
+test an_incomplete_directory_is_a_refusal_not_a_missing_verdict ... ok
+test declaration_order_decides_between_two_prefixed_positions ... ok
+test delegation_policy_moves_the_prefixed_positions_it_declares ... ok
+test duplicate_entries_at_one_position_stay_ambiguous_with_their_own_origins ... ok
+test raw_name_bytes_are_matched_exactly_and_not_normalized ... ok
+test raw_non_utf8_and_multibyte_bytes_are_not_transcoded ... ok
+test the_root_model_round_trips_and_refuses_the_old_and_unknown_spellings ... ok
+test the_same_bytes_at_two_origins_are_two_definitions ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test the_generated_bodies_answer_deterministically ... ok
+test the_generated_corpus_keeps_the_stage_invariants_in_both_directions ... ok
+test the_generated_illegal_shapes_stop_where_the_prefix_says ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 16 tests
+test a_byte_equal_duplicate_is_ambiguous_not_ordinal ... ok
+test a_cancelled_lookup_is_cancelled_and_names_no_state ... ok
+test a_class_header_budget_stop_stays_a_budget_stop ... ok
+test a_damaged_candidate_fails_at_its_origin_without_falling_back ... ok
+test a_dispatch_request_over_a_class_symbol_names_the_missing_member_declaration ... ok
+test a_failed_read_attempt_is_charged_and_has_no_fallback ... ok
+test a_listing_that_stops_early_never_reads_as_missing ... ok
+test a_rejected_environment_never_selects_a_definition ... ok
+test a_standalone_class_root_is_matched_through_its_own_name ... ok
+test an_artifact_tree_root_searches_its_own_container_only ... ok
+test parent_first_selects_the_ancestor_and_child_first_the_caller ... ok
+test reading_failures_and_cancellations_never_occupy_a_semantic_state ... ok
+test several_candidates_at_one_position_are_ambiguous ... ok
+test the_first_declared_root_that_holds_the_name_wins ... ok
+test the_same_bytes_at_two_origins_are_not_merged ... ok
+test unreadable_and_unprovided_roots_are_problems_not_positions ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

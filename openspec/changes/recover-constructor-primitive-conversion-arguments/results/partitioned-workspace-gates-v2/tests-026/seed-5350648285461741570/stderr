@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.09s
+     Running tests/p3_try_local.rs (target/debug/deps/p3_try_local-bc826e0f861c70f2)
+     Running tests/p3_two_exit_return.rs (target/debug/deps/p3_two_exit_return-1924b2b7ee2ba1fb)
+     Running tests/p3_twr_catch.rs (target/debug/deps/p3_twr_catch-7971f5251f4495f5)
+     Running tests/p3_twr_discarded_call.rs (target/debug/deps/p3_twr_discarded_call-e113e4c23c46140c)
+     Running tests/p3_twr_enclosing_catch.rs (target/debug/deps/p3_twr_enclosing_catch-530435aa600b84bb)
+     Running tests/p3_twr_enclosing_catch_call.rs (target/debug/deps/p3_twr_enclosing_catch_call-86ccc470fa95baef)
+     Running tests/p3_twr_lead_sequence.rs (target/debug/deps/p3_twr_lead_sequence-a1fd4583365f38f0)
+     Running tests/p3_twr_return_tail.rs (target/debug/deps/p3_twr_return_tail-7b9e1ee1c57e11ff)
+     Running tests/p3_twr_saved_return_typing.rs (target/debug/deps/p3_twr_saved_return_typing-65c33fbeb07b6b45)
+     Running tests/p3_type_qualifier.rs (target/debug/deps/p3_type_qualifier-df50561f88f8692c)

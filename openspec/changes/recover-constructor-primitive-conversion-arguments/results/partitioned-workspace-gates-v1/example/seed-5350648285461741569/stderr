@@ -1,0 +1,9 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 1.28s
+     Running unittests examples/bulk_scope_sweep.rs (target/debug/examples/bulk_scope_sweep-63fd4c86bafb30d2)
+     Running unittests examples/class_source_file.rs (target/debug/examples/class_source_file-4eab36b421cfd416)
+     Running unittests examples/demand_workloads.rs (target/debug/examples/demand_workloads-18ee420d9f788a14)
+     Running unittests examples/inspect_class_header.rs (target/debug/examples/inspect_class_header-1aece6d1df1e512c)
+     Running unittests examples/navigate_artifact.rs (target/debug/examples/navigate_artifact-2a0099573d6c92c1)
+     Running unittests examples/resolve_and_analyze.rs (target/debug/examples/resolve_and_analyze-f00a872d4d5a1a3e)
+     Running unittests examples/task_operations.rs (target/debug/examples/task_operations-670a566b1da67236)

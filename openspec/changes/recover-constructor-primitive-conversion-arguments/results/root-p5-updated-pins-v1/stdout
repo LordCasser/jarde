@@ -1,0 +1,33 @@
+
+running 6 tests
+test a_slow_consumer_changes_the_readings_and_not_the_shape ... slow consumer (readings only): serial elapsed_millis=43 process call elapsed_millis=42; two workers with a 1 ms consumer elapsed_millis=174 process call elapsed_millis=173
+ok
+test every_case_holds_the_shape_it_is_named_for ... ok
+test record_the_billing_table ... ignored, regenerates the pinned table; run with --ignored --nocapture after an intended shape change
+test the_corpus_is_rebuilt_from_the_committed_bytes_every_time ... ok
+test the_fixed_shape_bills_the_counts_the_corpus_pins ... --- counted dimensions at the pinned shape (counts, not timings) ---
+flat-mixed                 archive_entries=8 entry_bytes=1813 class_bytes=1813 class_headers=0 method_bodies=17 ir_items=2497 analysis_steps=1501 result_items=37 output_bytes=3657 classes(seen=4 prepared=4 refused=0) methods(declared=18 delivered=18)
+nested-mixed               archive_entries=25 entry_bytes=8061 class_bytes=2381 class_headers=0 method_bodies=26 ir_items=4322 analysis_steps=2319 result_items=64 output_bytes=5628 classes(seen=5 prepared=5 refused=0) methods(declared=27 delivered=27)
+two-origins-one-identity   archive_entries=43 entry_bytes=7522 class_bytes=2686 class_headers=4 method_bodies=12 ir_items=2082 analysis_steps=1244 result_items=43 output_bytes=2638 classes(seen=3 prepared=3 refused=0) methods(declared=16 delivered=16)
+many-method-class          archive_entries=6 entry_bytes=7683 class_bytes=7683 class_headers=0 method_bodies=107 ir_items=21384 analysis_steps=11784 result_items=122 output_bytes=23333 classes(seen=3 prepared=3 refused=0) methods(declared=107 delivered=107)
+damaged-tail               archive_entries=17 entry_bytes=1881 class_bytes=1019 class_headers=0 method_bodies=12 ir_items=2082 analysis_steps=1244 result_items=35 output_bytes=2638 classes(seen=3 prepared=2 refused=1) methods(declared=12 delivered=12)
+deep-expression            archive_entries=4 entry_bytes=753 class_bytes=753 class_headers=0 method_bodies=7 ir_items=3213 analysis_steps=1366 result_items=18 output_bytes=1723 classes(seen=2 prepared=2 refused=0) methods(declared=7 delivered=7)
+--- wall-clock readings of those runs (readings, not counts) ---
+flat-mixed                 operation elapsed_millis=4 process call elapsed_millis=4
+nested-mixed               operation elapsed_millis=7 process call elapsed_millis=7
+two-origins-one-identity   operation elapsed_millis=4 process call elapsed_millis=4
+many-method-class          operation elapsed_millis=35 process call elapsed_millis=35
+damaged-tail               operation elapsed_millis=3 process call elapsed_millis=3
+deep-expression            operation elapsed_millis=4 process call elapsed_millis=3
+ok
+test the_old_per_method_arms_keep_their_ledger_and_the_same_text ... --- the two old arms' ledgers over the whole corpus (counts, not timings) ---
+direct  requests=187 input_bytes=0 archive_entries=1915 entry_bytes=365912 read_bytes=346379 class_bytes=327895 attribute_bytes=179852 code_bytes=2237 result_items=1378 output_bytes=39617 class_headers=191 method_bodies=181 ir_items=35580 ir_edges=2537 analysis_steps=19458 normalization_clones=0
+shared  requests=187 input_bytes=0 archive_entries=57 entry_bytes=18680 read_bytes=16476 class_bytes=10817 attribute_bytes=12220 code_bytes=2237 result_items=26 output_bytes=39617 class_headers=191 method_bodies=181 ir_items=35580 ir_edges=2537 analysis_steps=19458 normalization_clones=0
+store   10 entries / 10 containers / 19 definition reads (14771 bytes), 51706 retained bytes of 1024 entries / 16777216 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+reuse   container 398/408 hits, directories parsed 10, nested materialized 4 (2473 bytes); definition reads 168/187 hits (19 stored)
+--- wall-clock readings of the two arms (readings, not counts) ---
+the two arms' 374 requests — one per arm per member — took 214 ms together, on this machine at this moment; no assertion reads this number, and the counts above cannot be read as it
+ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.56s
+

@@ -1,0 +1,11 @@
+
+running 1 test
+test boolean_parameter_keeps_the_structural_new_site_but_refuses_its_constructor_body ... FAILED
+
+failures:
+
+failures:
+    boolean_parameter_keeps_the_structural_new_site_but_refuses_its_constructor_body
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.03s
+

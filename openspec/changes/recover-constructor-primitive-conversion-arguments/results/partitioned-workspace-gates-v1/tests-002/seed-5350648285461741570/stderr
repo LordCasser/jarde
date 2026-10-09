@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/class_static_initializer_projection.rs (target/debug/deps/class_static_initializer_projection-cd7c64ed27d818c9)
+     Running tests/ctor_reorder_dispatch_guard.rs (target/debug/deps/ctor_reorder_dispatch_guard-79b64e48463b37ad)
+     Running tests/d0_demand_counts.rs (target/debug/deps/d0_demand_counts-1ec34ffd494955d5)
+     Running tests/d1_evidence_selection.rs (target/debug/deps/d1_evidence_selection-1b0bf3e29c140e9f)
+     Running tests/d2_prepared_handoff.rs (target/debug/deps/d2_prepared_handoff-dcc11c5c6f656b50)
+     Running tests/d3_artifact_binding.rs (target/debug/deps/d3_artifact_binding-854c4fb25afa7922)
+     Running tests/d5_acceptance_ledger.rs (target/debug/deps/d5_acceptance_ledger-587015bd4b6426ba)
+     Running tests/d5_process_release.rs (target/debug/deps/d5_process_release-3a183c7150f4df31)
+     Running tests/d5_semantic_comparison.rs (target/debug/deps/d5_semantic_comparison-09c0b2cb8cd063d3)
+     Running tests/double_brace_capture.rs (target/debug/deps/double_brace_capture-93ee158150370e4c)

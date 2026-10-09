@@ -1,0 +1,42 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 2.32s
+     Running tests/p3_constructed_reference_array_elements.rs (target/debug/deps/p3_constructed_reference_array_elements-5b6845b6de275dbf)
+     Running tests/p3_constructor_primitive_conversion_arguments.rs (target/debug/deps/p3_constructor_primitive_conversion_arguments-958bc7d284f2000a)
+
+thread 'boolean_parameter_keeps_the_structural_new_site_but_refuses_its_constructor_body' (12479629) panicked at tests/p3_constructor_primitive_conversion_arguments.rs:1231:13:
+javac8 refused wrapperByte has no source-map anchor for structural BCI 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'same_handler_constructor_argument_is_a_complete_source_and_site_positive' (12479770) panicked at tests/p3_constructor_primitive_conversion_arguments.rs:893:5:
+ConstructorPrimitiveHandlerControls has a class-level refusal marker:
+// jarde: presentation of `ConstructorPrimitiveHandlerControls` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ConstructorPrimitiveHandlerControls extends java.lang.Object {
+    public ConstructorPrimitiveHandlerControls() {
+        // @method <init>()V
+        // @declaration a constructor of `ConstructorPrimitiveHandlerControls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int markInt(int arg0) {
+        // @method markInt(I)I
+        // @declaration a static method of `ConstructorPrimitiveHandlerControls`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.print("handler:");
+        java.lang.System.out.println(arg0);
+        return arg0;
+    }
+
+    static java.lang.Long sameHandler(int arg0) {
+        // jarde: not recovered: the recovery run for `sameHandler(I)Ljava/lang/Long;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method sameHandler(I)Ljava/lang/Long;
+        // @declaration a static method of `ConstructorPrimitiveHandlerControls`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 20
+        // local 1 escapes catch parameter scope at region [0, 1]; its catch header cannot declare a method-visible local
+    }
+}
+
+error: test failed, to rerun pass `--test p3_constructor_primitive_conversion_arguments`

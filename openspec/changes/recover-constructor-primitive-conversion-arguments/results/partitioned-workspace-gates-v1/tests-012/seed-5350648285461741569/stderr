@@ -1,0 +1,13 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 3.83s
+     Running tests/p3_catch_after_field_assignment.rs (target/debug/deps/p3_catch_after_field_assignment-40c202928da3c3d8)
+     Running tests/p3_caught_value_argument_typing.rs (target/debug/deps/p3_caught_value_argument_typing-58d623e8bb9147c7)
+     Running tests/p3_chained_store.rs (target/debug/deps/p3_chained_store-3ec348e47d0bd0a6)
+     Running tests/p3_char_switch.rs (target/debug/deps/p3_char_switch-513191776dcbe1f1)
+     Running tests/p3_class_literals.rs (target/debug/deps/p3_class_literals-b271d66e8fd1ecb7)
+     Running tests/p3_compound_lvalue_updates.rs (target/debug/deps/p3_compound_lvalue_updates-726827bd33d035ea)
+     Running tests/p3_concat_char.rs (target/debug/deps/p3_concat_char-a1b60328f71b2c04)
+     Running tests/p3_concat_conversion.rs (target/debug/deps/p3_concat_conversion-86081cc1062c7529)
+     Running tests/p3_carried_conditional_arguments.rs (target/debug/deps/p3_carried_conditional_arguments-9566c354dc9b7800)
+     Running tests/p3_conditional_field_writes.rs (target/debug/deps/p3_conditional_field_writes-1d19a67c75e9e7d7)

@@ -1,0 +1,14 @@
+{
+  "cli_path": "/private/tmp/jarde-constructor-primitive-conversions-cli-v1",
+  "cli_sha256": "3e4b615e0131d041ecc47c72c0131a3bbd0f5fc9042d8f91b2aa21f26baf6a95",
+  "source_commit_base": "f9c6f56d69d8dc3d37da4584003af8e3c83b3453",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2",
+    "crates/jarde-java/src/build.rs": "88fcd020ac4bf8acc8a0787a3c99cd5694f7dab2f281aae9b2b354daf7aa9c70",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "build_result": "root-cli-build-v2/result.json",
+  "build_result_sha256": "809c35414b1a124276b2521cc7643c37773e76d2177d5d4df6570ad1c5fb89cc",
+  "status": "候选CLI已冻结，数值完整正例host integration通过；剩余门禁/精确CI待验收"
+}

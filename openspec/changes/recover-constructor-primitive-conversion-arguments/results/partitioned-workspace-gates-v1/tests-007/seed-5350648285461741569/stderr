@@ -1,0 +1,12 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 6.53s
+     Running tests/p1_budget_ledger.rs (target/debug/deps/p1_budget_ledger-1e35672f170fe536)
+     Running tests/p1_multi_release.rs (target/debug/deps/p1_multi_release-b93ffa0f656c5add)
+     Running tests/p1_prepared_class.rs (target/debug/deps/p1_prepared_class-414bd977b9d1d0d1)
+     Running tests/p1_query_api.rs (target/debug/deps/p1_query_api-36fab39da83d2871)
+     Running tests/p1_query_bounds.rs (target/debug/deps/p1_query_bounds-882659c8499fe1a4)
+     Running tests/p1_query_demand.rs (target/debug/deps/p1_query_demand-fd3aa6e537f7c7f9)
+     Running tests/p1_query_model.rs (target/debug/deps/p1_query_model-afc045ac85dab44e)
+     Running tests/p1_query_planes.rs (target/debug/deps/p1_query_planes-2343562fe55e7ac8)
+     Running tests/p1_query_positions.rs (target/debug/deps/p1_query_positions-5c940073c808bc2c)
+     Running tests/p1_reader_facts.rs (target/debug/deps/p1_reader_facts-70e6d32d0bd0d08b)

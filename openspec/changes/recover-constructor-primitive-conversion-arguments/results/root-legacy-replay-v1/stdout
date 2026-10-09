@@ -1,0 +1,8 @@
+{
+  "manifest": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/legacy-regressions-root-v1/manifest.json",
+  "runner_sha256": "6807c31e4d64d863332a6f7eda3fd72fd3ab13f51b23abdf2ed77bbaf4c9425f",
+  "cli_path": "/private/tmp/jarde-constructor-primitive-conversions-cli-v1",
+  "cli_sha256": "3e4b615e0131d041ecc47c72c0131a3bbd0f5fc9042d8f91b2aa21f26baf6a95",
+  "case_count": 22,
+  "candidate_success_count": 18
+}

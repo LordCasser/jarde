@@ -1,0 +1,12 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 4.63s
+     Running tests/p2_return_address.rs (target/debug/deps/p2_return_address-23cf23c0828dcff6)
+     Running tests/p2_ssa.rs (target/debug/deps/p2_ssa-d4e4b352f88fa378)
+     Running tests/p3_accessor_edges.rs (target/debug/deps/p3_accessor_edges-13b62025c86c47f0)
+     Running tests/p3_alias_field.rs (target/debug/deps/p3_alias_field-bd05aed32d2096f3)
+     Running tests/p3_annotation_default.rs (target/debug/deps/p3_annotation_default-bec6ebd4c0f517bc)
+     Running tests/p3_anonymous_class_facts.rs (target/debug/deps/p3_anonymous_class_facts-5444fdcf1da27347)
+     Running tests/p3_array_access.rs (target/debug/deps/p3_array_access-209901cced8ae908)
+     Running tests/p3_array_foreach.rs (target/debug/deps/p3_array_foreach-19211c957fc12fc9)
+     Running tests/p3_array_initializers.rs (target/debug/deps/p3_array_initializers-5dfccda887483562)
+     Running tests/p3_array_slot_retype_locals.rs (target/debug/deps/p3_array_slot_retype_locals-420ddfd5dae17523)

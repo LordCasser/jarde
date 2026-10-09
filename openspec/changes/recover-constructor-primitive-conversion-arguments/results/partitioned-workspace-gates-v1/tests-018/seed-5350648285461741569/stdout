@@ -1,0 +1,92 @@
+
+running 4 tests
+test a_field_condition_survives_beside_an_increment_test_in_the_same_method ... ok
+test a_store_in_a_loop_test_remains_refused ... ok
+test an_iinc_in_a_loop_test_is_presented_in_place ... ok
+test an_iterator_call_consumed_by_the_loop_branch_stays_in_the_condition ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+test a_nested_if_remains_in_the_loop_body_after_a_nested_region_returns ... ok
+test a_switch_capturing_a_loop_break_keeps_the_loop_target_and_body_update ... ok
+test an_outer_continue_runs_the_proved_for_update_and_skips_the_body_tail ... ok
+test nested_breaks_stay_in_the_taken_arm_and_outer_break_keeps_its_loop_target ... ok
+test the_for_header_and_continue_keep_their_bytecode_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 6 tests
+test a_handler_with_incompatible_table_range_is_refused ... ok
+test a_preinitialized_local_keeps_its_computed_try_update_and_post_loop_read ... ok
+test an_unproved_computed_write_refuses_its_cross_region_read ... ok
+test budget_and_cancellation_publish_no_partial_loop ... ok
+test catch_rejoins_inside_its_enclosing_loop ... ok
+test every_row_sharing_a_handler_must_belong_to_the_loop ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 6 tests
+test a_char_return_spells_the_code_unit_its_constant_stands_for ... ok
+test a_discarded_call_result_is_the_calls_own_statement ... ok
+test a_popped_evaluation_is_the_static_calls_qualifier ... ok
+test a_position_performs_its_own_widening ... ok
+test no_shape_of_the_rule_claims_a_pop2 ... ok
+test real_primitive_conversions_are_spelled_from_their_instructions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 4 tests
+test a_cancelled_request_hands_over_no_table_and_keeps_its_cancellation ... ok
+test a_request_that_publishes_only_the_graph_hands_over_only_that_table ... ok
+test the_handoff_seam_exposes_no_mutable_or_publicly_stored_table ... ok
+test the_payload_carries_the_tables_of_one_real_run ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+test exhausted_budget_and_cancellation_do_not_publish_a_partial_sink ... ok
+test mixed_argument_complete_class_matches_all_eight_jvm_paths ... ok
+test mixed_argument_has_one_structured_sink_call_and_complete_sources ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s
+
+
+running 4 tests
+test boolean_array_store_owns_all_three_operands_and_sources ... ok
+test budget_and_cancellation_do_not_publish_a_partial_array_assignment ... ok
+test java8_rebuild_preserves_all_twenty_four_paths ... ok
+test verifier_valid_near_misses_keep_the_array_candidate_quoted ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.11s
+
+
+running 2 tests
+test mixed_field_complete_class_matches_all_sixteen_jvm_paths ... ok
+test mixed_field_methods_have_one_structured_write_and_complete_sources ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+
+
+running 3 tests
+test cf08_gateway_budget_and_cancellation_publish_no_partial_source ... ok
+test cf08_two_gateways_have_one_loop_owner_and_complete_sources ... ok
+test cf08_unproved_gateways_keep_physical_quotes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test cf07_candidate_budget_and_cancellation_publish_no_partial_source ... ok
+test cf07_computed_terminal_returns_recover ... ok
+test cf07_loop_return_leaf_has_one_owner_and_source ... ok
+test cf07_nonterminal_break_does_not_become_a_terminal_return ... ok
+test cf07_unproved_terminal_candidates_keep_source_and_quote ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

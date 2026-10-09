@@ -1,0 +1,110 @@
+
+running 5 tests
+test the_break_label_tail_and_the_mixed_tail_keep_their_statements ... ok
+test the_continue_label_tail_presents_its_trailing_call_without_a_quote ... ok
+test the_recovered_classes_compile_and_run_the_original_paths ... ok
+test the_unlabeled_control_keeps_its_exact_text_and_l1_changes_only_the_label ... ok
+test two_nested_labeled_loops_spell_loop_and_loop2 ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.33s
+
+
+running 12 tests
+test adaptation_budget_stops_without_publishing_a_partial_body ... ok
+test all_fixture_methods_are_structured ... ok
+test bound_null_control_keeps_its_creation_time_refusal ... ok
+test bound_null_refusal_does_not_swallow_an_internal_plan_budget_stop ... ok
+test captured_adapter_budget_stops_inside_nested_value_rendering ... ok
+test captured_lambda_adaptation_keeps_the_site_and_real_capture_producer_origins ... ok
+test essential_and_all_have_the_same_text_but_only_all_has_source_origins ... ok
+test one_adapted_method_keeps_the_real_site_origin_and_evidence_independent_body ... ok
+test precancelled_adaptation_does_not_publish_a_partial_body ... ok
+test recovered_captured_lambda_matches_original_runtime_with_bound_null_control ... ignored, requires JDK: compile and execute original and recovered captured-lambda classes
+test recovered_complete_class_matches_original_order_exceptions_and_calls ... ignored, requires JDK: compile and execute the original and recovered complete classes
+test recovered_text_keeps_dynamic_checks_receiver_order_and_controls ... ok
+
+test result: ok. 10 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 5 tests
+test complete_class_matches_five_verified_jvm_rows ... ignored, requires a JDK for complete Java 8 class comparison
+test local_postfix_is_one_ordered_element_with_complete_sources ... ok
+test low_budget_and_pre_cancellation_do_not_commit_a_partial_postfix ... ok
+test patched_controls_remain_verifier_valid_and_distinguishable ... ignored, requires a JDK to verify the patched control classes
+test plus_two_and_other_slot_are_not_local_postfix_values ... ok
+
+test result: ok. 3 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 7 tests
+test a_branch_on_a_superseded_load_tests_the_postfix_expression ... ok
+test a_mixed_artifacts_quotes_are_mapped_whole_and_its_scan_stays_complete ... ok
+test a_slot_written_and_read_again_is_still_written_with_the_slot_name ... ok
+test a_store_of_a_superseded_load_writes_the_postfix_expression ... ok
+test a_value_loaded_before_a_loop_is_still_named_after_the_body_rewrote_the_slot ... ok
+test a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name ... ok
+test the_producer_behind_a_cast_that_this_slice_cannot_present_stays_in_the_answer ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test output_budget_and_cancellation_publish_no_partial_pair ... ok
+test owner_width_extra_consumers_and_handlers_do_not_project_the_pair ... ok
+test the_two_category2_consumers_become_one_field_write_and_one_return ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+test a_second_loop_entry_or_different_exit_keeps_the_method_quoted ... ok
+test budget_and_cancellation_do_not_publish_a_partial_loop_arm ... ok
+test extra_loop_transfers_do_not_claim_the_inner_join_tail ... ok
+test loop_arm_joins_before_the_outer_arm_tail_once ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 8 tests
+test a_continue_edge_that_enters_the_latch_chain_by_a_second_route_is_quoted ... ok
+test a_mixed_latch_chain_is_not_presented_as_one_short_circuit_condition ... ok
+test a_proved_break_skips_the_side_effecting_latch_call ... ok
+test a_switch_break_inside_do_while_is_not_emitted_as_an_unmarked_loop_break ... ok
+test an_effect_between_latch_tests_is_not_moved_into_or_out_of_the_condition ... ok
+test body_continue_and_break_edges_recover_with_original_trace_and_sources ... ok
+test compound_do_while_tests_keep_the_shared_body_prefix_and_have_execution_parity ... ok
+test do_while_transfer_recovery_obeys_budget_and_cancellation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.28s
+
+
+running 3 tests
+test an_independent_effect_between_header_tests_is_never_folded_into_the_condition ... ok
+test proved_header_test_chains_become_short_circuit_loop_conditions ... ok
+test recovered_loop_exit_matches_the_java8_class_for_terminating_and_continuing_inputs ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.86s
+
+
+running 6 tests
+test local_null_test_has_one_finally_one_null_guarded_close_and_all_origins ... ok
+test negative_cleanup_slot_or_body_range_refuses ... ok
+test negative_copy_grammar_addition_refuses ... ok
+test negative_inverted_or_disagreeing_copies_refuse ... ok
+test negative_lead_is_not_a_null_initialisation_refuses ... ok
+test negative_saved_or_rethrow_identity_rewrite_refuses ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 7 tests
+test break_and_return_channel_recovers_the_return_arm ... ok
+test composite_labelled_families_recover_completely ... ok
+test double_jump_budget_and_cancellation_publish_no_partial_source ... ok
+test jump_transfer_blocks_have_one_owner_and_complete_sources ... ok
+test single_jump_matrix_is_unchanged_text ... ok
+test three_jump_body_keeps_its_registered_refusal ... ok
+test two_jump_loop_bodies_present_both_edges ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

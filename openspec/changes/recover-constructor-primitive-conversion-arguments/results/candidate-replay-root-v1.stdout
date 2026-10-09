@@ -1,0 +1,3290 @@
+{
+  "manifest": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/candidate-root-v1/manifest.json",
+  "runner_sha256": "c028334f44893e590cc4cfea8166a9f1bd4ca449aca0c9d3aab5c9466bb08711",
+  "cli_path": "/private/tmp/jarde-constructor-primitive-conversions-cli-v1",
+  "cli_sha256": "3e4b615e0131d041ecc47c72c0131a3bbd0f5fc9042d8f91b2aa21f26baf6a95",
+  "baseline_manifest_sha256": "0afb246902e6a6b76c7ff17939313d22810dcc586eca63f2741f7e806aa5858d",
+  "cases": [
+    {
+      "leg": "javac8",
+      "source_set_complete": true,
+      "all_source_member_body_markers_clear": true,
+      "target_checks": {
+        "target_methods_expected": 27,
+        "target_methods": [
+          {
+            "method": "wrapperByte",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Byte"
+            ],
+            "actual_new_classes": [
+              "java/lang/Byte"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "6340b3f4b6896c3118da551f5366ada0704e5a1b1a70e49e9971ba1ffc567c18",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "byte",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "bbd86e5370837f4dce99a923dbd127beb66f63ed1487d8cdcfa0f1fd9f95c109",
+            "ok": true
+          },
+          {
+            "method": "wrapperShort",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Short"
+            ],
+            "actual_new_classes": [
+              "java/lang/Short"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "74f3ae795f72d3427c315de5cb7f9aff15d85c24bb189f17f1390dc3003d013e",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "short",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "2c8eedc0b8dd812205174b6fb1e7cde69f901f3825a4ea3cc1c7ec7eab852ef6",
+            "ok": true
+          },
+          {
+            "method": "wrapperLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "f6adf1ad7b76676a1b0f4118da1b0e602b5131fce5381faa5a6aac404d53c6ee",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "e436d971ed12825d0e8f424280aa24183705dd287e69ee3eeb8206b8de5ab8ef",
+            "ok": true
+          },
+          {
+            "method": "wrapperFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "38beb764c8c548c0bae97e9b7eb6f4d27493ad5368e439c75f326d7aca1fdf2d",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "73f6038a5e8b0fdbe5ac34e1a16b5434f0f8e5ca00b0f225f5393fe8efc7461c",
+            "ok": true
+          },
+          {
+            "method": "wrapperDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "9d775830a804790424fd3074f8234be5790da8cb1109efa4ed5b022ffddb5914",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "ff0bbff40d56365107f8af7b2ee9fdee1d34194a973146bbae6a56409a9397b8",
+            "ok": true
+          },
+          {
+            "method": "integerContrast",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "5ec0c291fa54bc325eb425059f0d7859db5f66aaf0340e713af26da3ca77d4b6",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              13
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              13
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "70bf767832be9d0f40b003cf8e22d453ad732ca0a49ad3646fd120ad84cfda9a",
+            "ok": true
+          },
+          {
+            "method": "boxedArray",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Byte",
+              "java/lang/Short",
+              "java/lang/Integer",
+              "java/lang/Long",
+              "java/lang/Float",
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Byte",
+              "java/lang/Short",
+              "java/lang/Integer",
+              "java/lang/Long",
+              "java/lang/Float",
+              "java/lang/Double"
+            ],
+            "presented": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "refusals": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "new_count": 6,
+            "source_map_sha256": "4023ebec9509b0c979d34d09ac97037a6dd2b9cca9b64d1ee0c2225953891e84",
+            "source_map_primary_bcis": [
+              2,
+              11,
+              13,
+              14,
+              17,
+              18,
+              28,
+              30,
+              31,
+              34,
+              35,
+              45,
+              47,
+              48,
+              51,
+              61,
+              63,
+              64,
+              67,
+              68,
+              78,
+              80,
+              81,
+              84,
+              85,
+              95,
+              97,
+              98,
+              101,
+              102,
+              106
+            ],
+            "source_map_all_bcis": [
+              0,
+              2,
+              5,
+              6,
+              7,
+              10,
+              11,
+              13,
+              14,
+              17,
+              18,
+              21,
+              22,
+              23,
+              24,
+              27,
+              28,
+              30,
+              31,
+              34,
+              35,
+              38,
+              39,
+              40,
+              41,
+              44,
+              45,
+              47,
+              48,
+              51,
+              54,
+              55,
+              56,
+              57,
+              60,
+              61,
+              63,
+              64,
+              67,
+              68,
+              71,
+              72,
+              73,
+              74,
+              77,
+              78,
+              80,
+              81,
+              84,
+              85,
+              88,
+              89,
+              90,
+              91,
+              94,
+              95,
+              97,
+              98,
+              101,
+              102,
+              105,
+              106
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "byte",
+                "bci": 17,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "short",
+                "bci": 34,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "long",
+                "bci": 67,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "float",
+                "bci": 84,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "double",
+                "bci": 101,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 6,
+            "body_text_sha256": "38a83012b0ae5ffd1c1810fbde75c4e2b18f4fd9d760a07a0546d63f850c3b92",
+            "ok": true
+          },
+          {
+            "method": "ordinaryReturnNew",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "25d971505ef014ce2ce4a1a8c1d83d3d40742c0eda34a475a6b64de1c5931252",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "b7d34447a26a6a05decf6bfe0583d7004e646e2aa213c35e41312050e83d7b56",
+            "ok": true
+          },
+          {
+            "method": "storedLocalReuse",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "PrimitiveLongPair"
+            ],
+            "actual_new_classes": [
+              "PrimitiveLongPair"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "334f24617930007f37f4df6f7a4412b452718d260405a1ed1c2cc3dab91df50a",
+            "source_map_primary_bcis": [
+              0,
+              2,
+              3,
+              6,
+              11,
+              12,
+              13,
+              14,
+              15,
+              18
+            ],
+            "source_map_all_bcis": [
+              0,
+              2,
+              3,
+              6,
+              7,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              18
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 12,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "long",
+                "bci": 14,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "31e3312898c925d72cb9b5ff260c4ac7cf7df9b0b68e34321fb67b9808674afb",
+            "ok": true
+          },
+          {
+            "method": "intToLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "3c776e0c6795b709322b0e6d44cd1f8efc7e9628f6bc5bd5be2b152cfc5d4f6f",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "2d9ea1b9409e248dad6f2503e0058fabd285e7b4d228baf4806946d9b6446546",
+            "ok": true
+          },
+          {
+            "method": "intToFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "3668e00dc35aaf09b18d206ef623bb75983d9ab83689d21d85a0bf079d970a28",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "0f2920a3ba9fc89335408e930e1562d41652c2fd994ee7d3e09cab62e596de9a",
+            "ok": true
+          },
+          {
+            "method": "intToDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "eacf7668b55b6e725801fdd2ea4a45050d215c17089d18e1fa91fb10a7ac96b8",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "257caf83d1da95f823e0966b0d51f2ccec416357e8bfd6effe5406cc2b794a98",
+            "ok": true
+          },
+          {
+            "method": "intToByte",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Byte"
+            ],
+            "actual_new_classes": [
+              "java/lang/Byte"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "b99f90e2667347403221d0c261773171681e62291081eb8c0e1726f5513c2a08",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "byte",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "2e2a37934588fff06d02ec8c31eadc0632075826a33d6748c4d0d506cf7f7e49",
+            "ok": true
+          },
+          {
+            "method": "intToCharacter",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Character"
+            ],
+            "actual_new_classes": [
+              "java/lang/Character"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "66427de14614636c9169b051253757254c84c92c88a8ce9735903f2fab0e28a4",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "char",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "f50f7c67b94ec79369cf2e993aa4306d0a482eeab7f9d7e051f8803e7e1dee3e",
+            "ok": true
+          },
+          {
+            "method": "intToShort",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Short"
+            ],
+            "actual_new_classes": [
+              "java/lang/Short"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "55fa6ef53df03cd52ab3119848aa0974aa9f877b3f61ec9ce7d09cf5ab0fb590",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "short",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "66761c14a72ae3745d5197da6d14b0748f98fb07a5c2d9ca72f5e4bf4045a53a",
+            "ok": true
+          },
+          {
+            "method": "longToInt",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "d127d383cc48a366a1b8758f18a9c3f5b5bc1cc184a8257a12d113f5ff1c7bae",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "int",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "3e061d3e3a96beb551d164ee6aee1c233483109374ed3f3bbc44e7192ebae152",
+            "ok": true
+          },
+          {
+            "method": "longToFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "2c99b7586e5b8676c6b26d617722e0981ce69dcda2d4609cf3fa46668a28ea93",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "b32538c3ef6b62467d8dda70d52cad9d1e51e1fa506bd4d0c588348617dabc28",
+            "ok": true
+          },
+          {
+            "method": "longToDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "afee3c5437083b0b49144829bcc6c595d4cf53d504ee2a7c662c4cb08b2cd6d3",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "553ee9daf9a26e2ee9564363db9136f9c5b11a257d77a89dfadbc065a8abffd0",
+            "ok": true
+          },
+          {
+            "method": "floatToInt",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "c607f6a1f0b378be3ac79b69296ba3d10bd43333fda57a135b2f020a84ff2f61",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "int",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "499f3799ecf94c8cb96132dd0b0c54124f9bd01c92d2f8c1d07aa817e0158de9",
+            "ok": true
+          },
+          {
+            "method": "floatToLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "01fbecf965ef9be2e4379dd2c2059a6c39b4e418cbb9c525c460acb257a018ab",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "485b8acf86ef4f37632ef92ce761a1697d7650a73138912a2bd7007f27a284b1",
+            "ok": true
+          },
+          {
+            "method": "floatToDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "6994febef431acffc2cc85afefa67deef80e13dbe13355ca517be55c8520781e",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "caf72be57cac648c1283e7cc7c118cbffdd195d657e77c20b976199a32ca64ff",
+            "ok": true
+          },
+          {
+            "method": "doubleToInt",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "96fe14b1610c82e242083064830462a36aceb05529dce88806f59b06ea1570e0",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "int",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "d86de829a08cc7d97d90c801ac214d93e4744480c243379bdc86c211c049bf49",
+            "ok": true
+          },
+          {
+            "method": "doubleToLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "c5ca19095a375368db71965218908d6f10c535796440e9cbc9fe34b72f5fd0aa",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "7fa9b0159d6d36f651e597bafd9df08b9f18ac90bc689f3aeb49f2802ef01c1a",
+            "ok": true
+          },
+          {
+            "method": "doubleToFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "b5209ec69a283e02142659a43eba723b49bfcd05ac4b48d81cfd1fe5cec932c6",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "da0da10c925935ca3a8717bd1bc6fc2ffc57a396b86321216ffea1733300572a",
+            "ok": true
+          },
+          {
+            "method": "longViaFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "d217cd42dccec678926dec725994af60d9318446e23c2750c7a45e9bf7b2fb9b",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 11,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "ca80a5c7e08d4981ad5f6ed29c23c70604b90cc5345333891782b53b0e51cec5",
+            "ok": true
+          },
+          {
+            "method": "longViaDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "10664b4b1a0d8d527cb8f7a3cb9de4ceb4c4055698e3505e9c9ee4c5b0b92b1b",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 11,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "49d7b5f2ff68f9c3b386ded660b81ec276cdac19c760565679ec7d23d6887db0",
+            "ok": true
+          },
+          {
+            "method": "doubleViaFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "d0bdb34aa903c263be6e40385595544d5a0d99a2ad4723fa7e072613b7d30b1a",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 11,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "561bccd9d98fd9797f56f8c7b3b0e9f7c57e97399a817a0b2a013c8190173423",
+            "ok": true
+          }
+        ],
+        "new_record_count": 32,
+        "new_record_site_identities_unique": true,
+        "stored_local_producer_occurs_once": true,
+        "all_target_bodies_ok": true,
+        "array_class": "java/lang/Number",
+        "array_store_bcis": [
+          21,
+          38,
+          54,
+          71,
+          88,
+          105
+        ],
+        "array_store_bcis_mapped": true
+      },
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_ok": true,
+      "rawstreams_match_original": true,
+      "exit_match_original": true,
+      "accepted": true
+    },
+    {
+      "leg": "javac23",
+      "source_set_complete": true,
+      "all_source_member_body_markers_clear": true,
+      "target_checks": {
+        "target_methods_expected": 27,
+        "target_methods": [
+          {
+            "method": "wrapperByte",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Byte"
+            ],
+            "actual_new_classes": [
+              "java/lang/Byte"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "28b2244a3960c45da5fc95e3fd9892e589d2cd1802ea1b74829348b545968406",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "byte",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "bbd86e5370837f4dce99a923dbd127beb66f63ed1487d8cdcfa0f1fd9f95c109",
+            "ok": true
+          },
+          {
+            "method": "wrapperShort",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Short"
+            ],
+            "actual_new_classes": [
+              "java/lang/Short"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "2bbb72fd4bf124debb072f8dfc141e75ada7f570c77d8d0fd4d46d9cf1671d4e",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "short",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "2c8eedc0b8dd812205174b6fb1e7cde69f901f3825a4ea3cc1c7ec7eab852ef6",
+            "ok": true
+          },
+          {
+            "method": "wrapperLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "d3db4dbed746f31e03ce102f717198edbc71728bf883d954d76796f79ae51729",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "e436d971ed12825d0e8f424280aa24183705dd287e69ee3eeb8206b8de5ab8ef",
+            "ok": true
+          },
+          {
+            "method": "wrapperFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "0ce55ccee510e3053bfe98eb746c8436fef7e484167f685629264b1f66e0b52b",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "73f6038a5e8b0fdbe5ac34e1a16b5434f0f8e5ca00b0f225f5393fe8efc7461c",
+            "ok": true
+          },
+          {
+            "method": "wrapperDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "cf93416371e623572099a46c7d8f16e11f7e9bfd618eb86dd47c69eeaf86f7d6",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "ff0bbff40d56365107f8af7b2ee9fdee1d34194a973146bbae6a56409a9397b8",
+            "ok": true
+          },
+          {
+            "method": "integerContrast",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "10d375c501147697ff19eb8a782e94fb64c6ed7c03e75daadf456dcb3fe91b35",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              13
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              13
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "70bf767832be9d0f40b003cf8e22d453ad732ca0a49ad3646fd120ad84cfda9a",
+            "ok": true
+          },
+          {
+            "method": "boxedArray",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Byte",
+              "java/lang/Short",
+              "java/lang/Integer",
+              "java/lang/Long",
+              "java/lang/Float",
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Byte",
+              "java/lang/Short",
+              "java/lang/Integer",
+              "java/lang/Long",
+              "java/lang/Float",
+              "java/lang/Double"
+            ],
+            "presented": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "refusals": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "new_count": 6,
+            "source_map_sha256": "836d401dd8bf992c0d51001e20c1c5759307cbac340d6584ae06bd2f19c6cc5f",
+            "source_map_primary_bcis": [
+              2,
+              11,
+              13,
+              14,
+              17,
+              18,
+              28,
+              30,
+              31,
+              34,
+              35,
+              45,
+              47,
+              48,
+              51,
+              61,
+              63,
+              64,
+              67,
+              68,
+              78,
+              80,
+              81,
+              84,
+              85,
+              95,
+              97,
+              98,
+              101,
+              102,
+              106
+            ],
+            "source_map_all_bcis": [
+              0,
+              2,
+              5,
+              6,
+              7,
+              10,
+              11,
+              13,
+              14,
+              17,
+              18,
+              21,
+              22,
+              23,
+              24,
+              27,
+              28,
+              30,
+              31,
+              34,
+              35,
+              38,
+              39,
+              40,
+              41,
+              44,
+              45,
+              47,
+              48,
+              51,
+              54,
+              55,
+              56,
+              57,
+              60,
+              61,
+              63,
+              64,
+              67,
+              68,
+              71,
+              72,
+              73,
+              74,
+              77,
+              78,
+              80,
+              81,
+              84,
+              85,
+              88,
+              89,
+              90,
+              91,
+              94,
+              95,
+              97,
+              98,
+              101,
+              102,
+              105,
+              106
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "byte",
+                "bci": 17,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "short",
+                "bci": 34,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "long",
+                "bci": 67,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "float",
+                "bci": 84,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "double",
+                "bci": 101,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 6,
+            "body_text_sha256": "38a83012b0ae5ffd1c1810fbde75c4e2b18f4fd9d760a07a0546d63f850c3b92",
+            "ok": true
+          },
+          {
+            "method": "ordinaryReturnNew",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "6d9ec1af7781fde2053468acccc6b5701efb0659345f71c6e64ef61f30c795df",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "b7d34447a26a6a05decf6bfe0583d7004e646e2aa213c35e41312050e83d7b56",
+            "ok": true
+          },
+          {
+            "method": "storedLocalReuse",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "PrimitiveLongPair"
+            ],
+            "actual_new_classes": [
+              "PrimitiveLongPair"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "0b06f94fea7f773bf76bb84ce0d1ca4d55119de4af483ac5d30d17ed5cd63d8e",
+            "source_map_primary_bcis": [
+              0,
+              2,
+              3,
+              6,
+              11,
+              12,
+              13,
+              14,
+              15,
+              18
+            ],
+            "source_map_all_bcis": [
+              0,
+              2,
+              3,
+              6,
+              7,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              18
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 12,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "long",
+                "bci": 14,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "31e3312898c925d72cb9b5ff260c4ac7cf7df9b0b68e34321fb67b9808674afb",
+            "ok": true
+          },
+          {
+            "method": "intToLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "0bea0c2c3518791b2c3caac29da6a52c9b2fc50433968bac6ce539f3619da832",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "2d9ea1b9409e248dad6f2503e0058fabd285e7b4d228baf4806946d9b6446546",
+            "ok": true
+          },
+          {
+            "method": "intToFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "663912875ff1b2102fa674f3fe302c1218871d150e49c12ef6b4aa93746f58a8",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "0f2920a3ba9fc89335408e930e1562d41652c2fd994ee7d3e09cab62e596de9a",
+            "ok": true
+          },
+          {
+            "method": "intToDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "c520db9dc22a2206fca2a6129f9aad7237cdf00e6284e95a991e6df5eeac0266",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "257caf83d1da95f823e0966b0d51f2ccec416357e8bfd6effe5406cc2b794a98",
+            "ok": true
+          },
+          {
+            "method": "intToByte",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Byte"
+            ],
+            "actual_new_classes": [
+              "java/lang/Byte"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "d28b841a29576bbc429ed835ca11960d8dfc1e0c836fb17d1abd04c31aa77b95",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "byte",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "2e2a37934588fff06d02ec8c31eadc0632075826a33d6748c4d0d506cf7f7e49",
+            "ok": true
+          },
+          {
+            "method": "intToCharacter",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Character"
+            ],
+            "actual_new_classes": [
+              "java/lang/Character"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "c591d62fb73eb1b5e353f2bc7e6018aaf7d783cc8f44bcaa0486309a5c24a000",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "char",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "f50f7c67b94ec79369cf2e993aa4306d0a482eeab7f9d7e051f8803e7e1dee3e",
+            "ok": true
+          },
+          {
+            "method": "intToShort",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Short"
+            ],
+            "actual_new_classes": [
+              "java/lang/Short"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "fe83d0bb04fec14c2824eefbb89fd73d9e5d67d6bec33882f796723e25ba7469",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "short",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markInt",
+            "call_count": 1,
+            "body_text_sha256": "66761c14a72ae3745d5197da6d14b0748f98fb07a5c2d9ca72f5e4bf4045a53a",
+            "ok": true
+          },
+          {
+            "method": "longToInt",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "107258bb71357717ad0e5e8a017d80b90eb1fc1feb5ce5c086b6b30ebf3250af",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "int",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "3e061d3e3a96beb551d164ee6aee1c233483109374ed3f3bbc44e7192ebae152",
+            "ok": true
+          },
+          {
+            "method": "longToFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "b6649db38225de03a82e7178aec7b47f9393b86a5a168ba2f94c4b0ea07d143d",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "b32538c3ef6b62467d8dda70d52cad9d1e51e1fa506bd4d0c588348617dabc28",
+            "ok": true
+          },
+          {
+            "method": "longToDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "59e201b7fe0ab3b9af2256b52c397bd4bc023bdb43e73eb58285af864cd3e023",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "553ee9daf9a26e2ee9564363db9136f9c5b11a257d77a89dfadbc065a8abffd0",
+            "ok": true
+          },
+          {
+            "method": "floatToInt",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "c7de130d3662fe1db7c083751955fb98e4a4d57dc0c25843ee689b36571e3c9c",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "int",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "499f3799ecf94c8cb96132dd0b0c54124f9bd01c92d2f8c1d07aa817e0158de9",
+            "ok": true
+          },
+          {
+            "method": "floatToLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "48ad388fcad0849d6f8cf8bfb9ee16587d62dc5b535b24441404307c2c7fd2fa",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "485b8acf86ef4f37632ef92ce761a1697d7650a73138912a2bd7007f27a284b1",
+            "ok": true
+          },
+          {
+            "method": "floatToDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "74b390950e3b3e26e0c6cf0dc684231fb98f8f0d4ac414f66a5db5b798380f3e",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markFloat",
+            "call_count": 1,
+            "body_text_sha256": "caf72be57cac648c1283e7cc7c118cbffdd195d657e77c20b976199a32ca64ff",
+            "ok": true
+          },
+          {
+            "method": "doubleToInt",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Integer"
+            ],
+            "actual_new_classes": [
+              "java/lang/Integer"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "151f488333b3401ef26aa035b2c3cb147185f610bfc5adba03fd4c372a5631d1",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "int",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "d86de829a08cc7d97d90c801ac214d93e4744480c243379bdc86c211c049bf49",
+            "ok": true
+          },
+          {
+            "method": "doubleToLong",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "d56fbf6d24aa8079b1956fe106fcb787c1ab3f713d9533b7e835003d9c9d8246",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "7fa9b0159d6d36f651e597bafd9df08b9f18ac90bc689f3aeb49f2802ef01c1a",
+            "ok": true
+          },
+          {
+            "method": "doubleToFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Float"
+            ],
+            "actual_new_classes": [
+              "java/lang/Float"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "80e5bfea23e1aea5e8cf5a2fc3fb564b27ad1e749416ea152b42b9b54093fb31",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              14
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "da0da10c925935ca3a8717bd1bc6fc2ffc57a396b86321216ffea1733300572a",
+            "ok": true
+          },
+          {
+            "method": "longViaFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "684efb1a7bce082a846dbaaa8c2f588803f22d7371d495566681c4407ef57774",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 11,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "ca80a5c7e08d4981ad5f6ed29c23c70604b90cc5345333891782b53b0e51cec5",
+            "ok": true
+          },
+          {
+            "method": "longViaDouble",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Long"
+            ],
+            "actual_new_classes": [
+              "java/lang/Long"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "25f61dcc380defd64d99e7297d05e081b7fc8678898caaa785f2765684439f0e",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "long",
+                "bci": 11,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "double",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markLong",
+            "call_count": 1,
+            "body_text_sha256": "49d7b5f2ff68f9c3b386ded660b81ec276cdac19c760565679ec7d23d6887db0",
+            "ok": true
+          },
+          {
+            "method": "doubleViaFloat",
+            "present": true,
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "expected_new_classes": [
+              "java/lang/Double"
+            ],
+            "actual_new_classes": [
+              "java/lang/Double"
+            ],
+            "presented": [
+              true
+            ],
+            "refusals": [
+              null
+            ],
+            "new_count": 1,
+            "source_map_sha256": "cf7450213f5728ded12a16545236b03f232d04d5b8a3feb573c4e9b20d7963af",
+            "source_map_primary_bcis": [
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "source_map_all_bcis": [
+              0,
+              3,
+              4,
+              6,
+              7,
+              10,
+              11,
+              12,
+              15
+            ],
+            "site_map_ok": true,
+            "cast_evidence": [
+              {
+                "primitive": "double",
+                "bci": 11,
+                "text_present": true,
+                "mapped": true
+              },
+              {
+                "primitive": "float",
+                "bci": 10,
+                "text_present": true,
+                "mapped": true
+              }
+            ],
+            "cast_order_ok": true,
+            "extra_bcis_ok": true,
+            "call_name": "markDouble",
+            "call_count": 1,
+            "body_text_sha256": "561bccd9d98fd9797f56f8c7b3b0e9f7c57e97399a817a0b2a013c8190173423",
+            "ok": true
+          }
+        ],
+        "new_record_count": 32,
+        "new_record_site_identities_unique": true,
+        "stored_local_producer_occurs_once": true,
+        "all_target_bodies_ok": true,
+        "array_class": "java/lang/Number",
+        "array_store_bcis": [
+          21,
+          38,
+          54,
+          71,
+          88,
+          105
+        ],
+        "array_store_bcis_mapped": true
+      },
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_ok": true,
+      "rawstreams_match_original": true,
+      "exit_match_original": true,
+      "accepted": true
+    }
+  ],
+  "accepted_cases": 2
+}

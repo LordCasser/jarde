@@ -1,0 +1,248 @@
+{
+  "scope": "Final local gates; exact new code CI remains pending",
+  "gate_results": [
+    {
+      "label": "root-final-fmt-v1",
+      "result_sha256": "209acfd22f6b9b051924fac8e9ece26f8bb5bada693c1489eeaa891c7d93e6e9",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-openspec-strict-v2",
+      "result_sha256": "33950461739e8afa565146ec5386096ab70a3dfd25044ebfe301361044c866f2",
+      "argv": [
+        "openspec",
+        "validate",
+        "recover-constructor-primitive-conversion-arguments",
+        "--strict"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-diff-check-v2",
+      "result_sha256": "40da51efacf67e6513c4c7220e68faf5a9cf52c7cba7a62daed4b5ebccc4cd1e",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-ci-exact-clippy-v2",
+      "result_sha256": "0be8765c84018d4b0218cac6ffd53057f2e50a4843ed99365fba22b18307cc67",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-msrv-v2",
+      "result_sha256": "3e832132154e032a643479ae8d4dfda29e0614fc10c74abfd90facfedb33c432",
+      "argv": [
+        "rustup",
+        "run",
+        "1.88.0",
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-java-execution-comparison-v1",
+      "result_sha256": "81abc7dce4afcc72dc1bbd165e9591d02be6ba6cd04c641c4f9e9c55a99e4b53",
+      "argv": [
+        "env",
+        "PATH=/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.local/bin:/Users/lordcasser/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/Wireshark.app/Contents/MacOS:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/Users/lordcasser/.codex/tmp/arg0/codex-arg0Gu94RU:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/lordcasser/.local/bin:/Users/lordcasser/.jenv/shims:/Users/lordcasser/.jenv/bin:/Users/lordcasser/.pyenv/shims:/Users/lordcasser/Library/npm-global/bin:/Users/lordcasser/.pyenv/versions/3.12.12/bin:/Users/lordcasser/Applications/jb-tools:/Users/lordcasser/go/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/nix/var/nix/profiles/default/bin:/Users/lordcasser/.grok/bin:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/openjdk@17/bin:/Users/lordcasser/.cargo/bin:/Users/lordcasser/.orbstack/bin:/Users/lordcasser/.lmstudio/bin:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/lordcasser/Library/Application Support/JetBrains/Toolbox/scripts:/Applications/\u6781\u7a7a\u95f4.app/Contents/Resources/app.asar.unpacked/bin/platform-tools:/Users/lordcasser/.lmstudio/bin",
+        "cargo",
+        "test",
+        "--test",
+        "p3_execution_comparison",
+        "--locked",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-functional-constructor-execution-v1",
+      "result_sha256": "89f91b2ab699d5e500bc75a5cfd9b2d85da118c06bfff5f95fbc41fec9d50284",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-cli",
+        "--test",
+        "json_cli",
+        "--locked",
+        "--",
+        "--ignored",
+        "--exact",
+        "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-primitive-conversions-v1",
+      "result_sha256": "bc231070e591e0802293a16dfdeb2a2c897186750b59e675ab4aeb4a6a0076bc",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "p3_primitive_conversions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-p5-updated-pins-v1",
+      "result_sha256": "0fabce66e45aa5583b4bf11c127a62c7fd80166835d1354e7d673957e09c2c5a",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "p5_bulk_corpus",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-fingerprint-verify-v1",
+      "result_sha256": "76dfdbaf5fd2ef3664deed8d50e9f790f9f17287ca14bbc9895e7f8828c0e61d",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "root-reader-census-v2",
+      "result_sha256": "ed4336d2065c1180dd9ac2c3b3cadd44558065606c7e331663724a79c059b6ba",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "repository_class_fixtures_validate_without_false_target_rejections",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0
+    }
+  ],
+  "candidate_cli_sha256": "3e4b615e0131d041ecc47c72c0131a3bbd0f5fc9042d8f91b2aa21f26baf6a95",
+  "candidate_sources_match": true,
+  "workspace_verification_sha256": "8dc50f950a5c1643f4587a7705aa7885f6780c679f0551d0cce23a52a80e0eb9",
+  "workspace_per_seed": {
+    "5350648285461741569": {
+      "result_rows": 352,
+      "passed": 3336,
+      "failed": 0,
+      "ignored": 93,
+      "measured": 0,
+      "filtered_out": 0,
+      "partition_count": 37,
+      "metadata_target_result_rows_expected": 352,
+      "compile_only_example_targets": 7
+    },
+    "5350648285461741570": {
+      "result_rows": 352,
+      "passed": 3336,
+      "failed": 0,
+      "ignored": 93,
+      "measured": 0,
+      "filtered_out": 0,
+      "partition_count": 37,
+      "metadata_target_result_rows_expected": 352,
+      "compile_only_example_targets": 7
+    }
+  },
+  "historical_failures_preserved": true
+}

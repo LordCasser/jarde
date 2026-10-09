@@ -1,0 +1,13 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 4.29s
+     Running tests/p3_eval_context.rs (target/debug/deps/p3_eval_context-1e51f5afb5e3a480)
+     Running tests/p3_exception_scope.rs (target/debug/deps/p3_exception_scope-902a0302b2f4eee2)
+     Running tests/p3_execution_comparison.rs (target/debug/deps/p3_execution_comparison-ae24c0adeafa4724)
+     Running tests/p3_field_increment.rs (target/debug/deps/p3_field_increment-6df0d74aeb6f2478)
+     Running tests/p3_field_presentations.rs (target/debug/deps/p3_field_presentations-f16007611ed31391)
+     Running tests/p3_final_static.rs (target/debug/deps/p3_final_static-7cdc7379f3074481)
+     Running tests/p3_finally_straight.rs (target/debug/deps/p3_finally_straight-0110463e7e13c28b)
+     Running tests/p3_effectful_exits.rs (target/debug/deps/p3_effectful_exits-b3fe90ae07453178)
+     Running tests/p3_exception_only_catchall.rs (target/debug/deps/p3_exception_only_catchall-d1583263f5ec9e9b)
+     Running tests/p3_flag_conditional_finally.rs (target/debug/deps/p3_flag_conditional_finally-b3c38476b80ac294)

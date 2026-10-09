@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_floating_constants.rs (target/debug/deps/p3_floating_constants-0bc488df2d818bd4)
+     Running tests/p3_for_add_store.rs (target/debug/deps/p3_for_add_store-3a078137ff8f0dbf)
+     Running tests/p3_for_latch.rs (target/debug/deps/p3_for_latch-4177f3d8977d43fa)
+     Running tests/p3_forward_join.rs (target/debug/deps/p3_forward_join-09bd2ed719614712)
+     Running tests/p3_guard.rs (target/debug/deps/p3_guard-43b9d47bfc9aa526)
+     Running tests/p3_handler_store.rs (target/debug/deps/p3_handler_store-f681e69b5d73d41f)
+     Running tests/p3_heterogeneous_array_initializers.rs (target/debug/deps/p3_heterogeneous_array_initializers-e2fb9f0ad182cbad)
+     Running tests/p3_hoisted_boolean.rs (target/debug/deps/p3_hoisted_boolean-d31f5c65901361dc)
+     Running tests/p3_immediate_functional_receivers.rs (target/debug/deps/p3_immediate_functional_receivers-c12a21943430ff26)
+     Running tests/p3_inner_assignment.rs (target/debug/deps/p3_inner_assignment-a91758ef8e73ff89)

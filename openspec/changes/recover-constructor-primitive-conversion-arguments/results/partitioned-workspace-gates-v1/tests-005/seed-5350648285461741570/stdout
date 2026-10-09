@@ -1,0 +1,108 @@
+
+running 1 test
+test jdk25_instruction_boundaries_match_public_bytecode_inspection ... ignored, requires JDK 25 Class-File API oracle
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+test a_class_without_companions_takes_no_projection_markers ... ok
+test a_curried_lambda_renames_its_outer_companion_and_inlines_the_inner ... ok
+test a_multi_use_companion_keeps_its_physical_presentation ... ok
+test companion_bodies_inline_across_the_variant_matrix ... ok
+test conditional_and_block_companions_rename_instead_of_inlining ... ok
+test the_frozen_y1_class_recompiles_with_every_companion_projected ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.94s
+
+
+running 4 tests
+test class_child_and_array_and_enum_projection_roots_fold_too ... ok
+test folded_lambda_root_second_round_does_not_degrade ... ok
+test projection_free_root_serializes_and_folds_exactly_as_before ... ok
+test y1_lambda_root_folds_with_both_presentations_and_reproduces_the_baseline ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.95s
+
+
+running 8 tests
+test budget_and_cancellation_stop_the_whole_fold_atomically ... ok
+test cross_class_presenter_and_missing_child_keep_the_flattened_presentations ... ok
+test grandchild_stays_outside_the_fold_and_keeps_its_own_presentation ... ok
+test interface_call_owner_anchors_the_fold_and_an_unnamed_segment_still_refuses ... ok
+test interface_child_and_sibling_inheritance_fold_with_source_spellings ... ok
+test multi_child_family_folds_five_declarations_and_reproduces_the_baseline ... ok
+test non_static_member_child_never_enters_the_static_fold ... ok
+test single_child_family_folds_when_the_narrow_certificate_refuses ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.55s
+
+
+running 4 tests
+test external_capture_field_reference_refuses_projection_and_keeps_physical_family ... ok
+test external_enclosing_constructor_reference_refuses_projection_and_keeps_physical_family ... ok
+test family_projects_when_no_external_consumer_is_present ... ok
+test stopped_external_census_keeps_physical_family_and_refuses_projection ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s
+
+
+running 20 tests
+test capture_analysis_stop_keeps_completed_physical_child ... ok
+test child_body_stop_keeps_root_and_child_physical_coverage ... ok
+test declaration_only_static_abstract_member_projects_once_with_physical_anchors ... ok
+test declaration_pair_near_misses_never_publish_half_a_root ... ok
+test declaration_pair_projects_both_physical_members_and_origins_once ... ok
+test disagreeing_child_relation_cannot_authorize_package_private_call ... ok
+test family_call_rerender_restores_effect_and_null_exception_order ... ok
+test family_derived_ranges_keep_exact_source_and_physical_owners ... ok
+test family_output_budget_refusal_keeps_both_physical_texts ... ok
+test member_call_without_early_null_check_retains_physical_source ... ok
+test missing_or_duplicate_selected_child_refuses_family_without_losing_root ... ok
+test outer_super_method_bridge_projects_with_physical_origin ... ok
+test outer_super_overload_requires_direct_source_parameter_and_complete_subclass_chain ... ok
+test projected_stage1_compiles_and_matches_original_and_jadx_java8_behavior ... ok
+test projection_budget_stop_keeps_capture_calls_and_both_physical_reports ... ok
+test qualified_member_call_preserves_internal_and_preceding_effect_positions ... ok
+test selected_family_keeps_two_physical_reports_under_one_budget ... ok
+test static_member_incomplete_targets_never_publish_partial_nested_source ... ok
+test static_member_projects_as_nested_and_keeps_dollar_top_level_independent ... ok
+test two_member_allocations_in_one_caller_get_distinct_source_ranges ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.04s
+
+
+running 3 tests
+test proved_member_path_spells_local_declaration_without_changing_body_map ... ok
+test standalone_method_recovery_does_not_inherit_family_source_aliases ... ok
+test stopped_class_source_does_not_publish_partial_member_spelling ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+
+running 2 tests
+test exact_capture_keeps_other_and_child_origins_in_both_evidence_modes ... ok
+test stale_method_bci_and_field_facts_refuse_without_publishing_source ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 7 tests
+test cancellation_before_parameter_annotation_read_publishes_no_facts ... ok
+test invisible_parameter_annotations_keep_wide_and_varargs_positions ... ok
+test no_annotation_shells_do_not_read_attribute_content ... ok
+test parameter_annotation_attribute_budget_refusal_publishes_no_facts ... ok
+test parameter_attribute_requires_its_exact_declared_end ... ok
+test parameter_count_mismatch_is_preserved_as_the_u1_the_attribute_declares ... ok
+test visible_parameter_annotation_groups_keep_the_attribute_u1_and_descriptor_order ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test frozen_method_attributes_prove_the_simple_generic_declaration ... ok
+test frozen_negative_classfiles_split_erasure_scope_and_later_projection_proofs ... ok
+test ordinary_exceptions_survive_an_absent_generic_throws_suffix ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,102 @@
+
+running 5 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_condition_positions_write_the_postfix_expression_on_both_legs ... ok
+test the_control_chain_stays_byte_identical_on_both_legs ... ok
+test the_negatives_keep_their_refusals_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+
+running 5 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_healthy_shapes_stay_byte_identical_on_both_legs ... ok
+test the_negatives_keep_their_refusals_on_both_legs ... ok
+test the_phase_a_positions_write_the_postfix_expression_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+
+running 3 tests
+test a_receiver_no_allocation_proves_keeps_its_creation_time_refusal ... ok
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_bound_receiver_of_a_proved_allocation_is_adapted ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 8 tests
+test an_exhausted_source_budget_cannot_publish_a_partial_branch_read_recovery ... ok
+test the_boundaries_do_not_compile_and_the_controls_verify ... ignored, runs the JVM; needs the installed JDK
+test the_branch_condition_positions_recover_on_both_legs ... ok
+test the_branch_reads_fixture_compiles_and_answers_like_the_original ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+test the_consumer_whitelist_stays_narrow ... ok
+test the_loop_and_crossing_positions_keep_their_refusals_on_both_legs ... ok
+test the_patrol_anchor_compiles_and_answers_like_the_original ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+test the_patrol_anchor_recovers_at_the_branch_condition_position ... ok
+
+test result: ok. 5 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 9 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_discriminator_shapes_render_whole_without_the_boundary ... ok
+test the_frozen_composite_renders_whole ... ok
+test the_frozen_counterexample_keeps_the_interleaved_refusal ... ok
+test the_frozen_discriminator_recovers_its_two_shapes ... ok
+test the_negatives_keep_their_refusals_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+test the_statement_position_counterexample_keeps_the_interleaved_refusal ... ok
+test the_statement_position_shapes_recover_on_both_legs ... ok
+
+test result: ok. 8 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+
+running 4 tests
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_broken_text_is_gone_on_both_legs ... ok
+test the_parent_commit_texts_are_the_broken_forms_this_change_removes ... ok
+test the_refusals_and_the_instance_field_control_survive ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+
+running 1 test
+test capture_constructors_are_presented_prologue_first_and_the_family_recompiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s
+
+
+running 4 tests
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_completion_stage_position_is_presented ... ok
+test the_temporal_family_positions_are_presented ... ok
+test the_types_outside_the_closed_rows_still_refuse ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+test a_letter_name_is_spelled_and_a_punctuation_name_keeps_its_alias ... ok
+test the_anchor_round_trips_through_both_javac_legs ... ok
+test the_ascii_presentations_are_byte_for_byte_the_pre_change_ones ... ok
+test the_cjk_declarations_are_presented_as_the_pool_states_them ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.28s
+
+
+running 9 tests
+test a_descriptor_outside_the_closed_table_keeps_its_refusal ... ok
+test every_broken_structure_keeps_its_refusal_while_the_table_still_generalizes ... ok
+test the_boolean_precedent_renders_byte_identical_to_its_frozen_record ... ok
+test the_control_family_with_other_names_and_both_reference_arms_recovers ... ok
+test the_frozen_baseline_of_the_same_anchor_refused_eight_of_nine ... ok
+test the_instance_long_assignment_sister_renders_byte_identical ... ok
+test the_nine_write_accessor_types_all_recover ... ok
+test the_recovered_wa_text_recompiles_and_prints_the_original_line ... ok
+test the_static_field_accessor_shape_of_real_javac_8_keeps_its_refusal ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s
+

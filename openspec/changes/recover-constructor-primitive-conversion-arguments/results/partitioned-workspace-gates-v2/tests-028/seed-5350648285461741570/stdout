@@ -1,0 +1,182 @@
+
+running 13 tests
+test a_manifest_condition_that_hides_versioned_entries_is_diagnosed ... ok
+test a_matrix_that_reports_an_error_never_claims_verification ... ok
+test a_module_path_domain_reports_the_policy_verdict_and_claims_no_order ... ok
+test a_name_in_two_war_roots_reports_both_origins_and_the_order_the_declaration_gives ... ok
+test a_nonconformant_selection_is_an_error_and_keeps_the_predecessor_diagnostic ... ok
+test a_tree_scope_shares_the_re_reads_of_nested_containers_too ... ok
+test agreement_without_a_proven_interval_is_never_merged ... ok
+test an_unsupplied_parent_makes_the_order_unknown ... ok
+test one_scan_serves_three_profiles_and_costs_a_third_of_the_scans ... ok
+test profiles_inside_one_stable_interval_merge_with_the_proof_they_share ... ok
+test the_matrix_never_claims_verification ... ok
+test the_request_rejects_what_it_cannot_answer_honestly ... ok
+test three_profiles_select_different_entries_and_keep_every_physical_entry ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+test a_default_that_overrides_another_is_not_a_conflict ... ok
+test a_loader_outside_the_chain_keeps_the_range_open_world ... ok
+test a_missing_dependency_is_stated_by_name_and_never_as_the_negative_answer ... ok
+test a_range_position_resolved_outside_the_range_is_unsearched_not_excluded ... ok
+test a_symbolic_owner_resolves_to_the_declaration_and_a_range_extends_it_to_its_candidates ... ok
+test an_open_world_range_publishes_its_candidates_and_the_class_it_could_not_read ... ok
+test the_states_of_one_request_belong_to_the_one_view_it_names ... ok
+test two_unrelated_defaults_are_incompatible_class_change ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 10 tests
+test a_budget_stop_is_reported_and_never_guessed ... ok
+test a_constant_target_is_inferred_with_all_five_elements ... ok
+test a_dynamic_input_is_unknown_and_never_a_guess ... ok
+test a_service_interface_outside_the_snapshot_is_still_an_inference ... ok
+test a_stored_constant_propagates_within_one_body ... ok
+test a_target_outside_the_snapshot_is_inferred_and_named ... ok
+test an_item_limit_makes_the_answer_a_prefix ... ok
+test the_declared_patterns_cross_the_facade ... ok
+test the_member_and_service_patterns_name_what_the_site_asks_for ... ok
+test the_overload_decides_the_conclusion ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 20 tests
+test a_cancelled_direct_run_is_never_published_as_complete ... ok
+test a_cancelled_request_does_not_reach_a_later_one_over_the_same_bytes ... ok
+test a_candidate_may_be_enabled_only_while_its_differential_is_equivalent ... ok
+test every_benefit_claim_needs_a_second_runnable_path ... ok
+test every_boundary_corpus_publishes_the_same_result_with_and_without_the_cache ... ok
+test no_ordinary_entry_reaches_the_bulk_module_or_recover_all ... ok
+test p5_repeated_direct_baseline ... ignored, repeated benchmark: run with `cargo test --test p5_benchmark --locked -- --ignored --nocapture p5_repeated_direct_baseline`
+test repeated_direct_runs_publish_the_same_result_fingerprint ... ok
+test the_benchmark_subjects_are_the_bytes_the_corpus_fingerprint_fixes ... ok
+test the_benefit_rule_refuses_a_claim_the_matrix_cannot_back ... ok
+test the_built_layer_carries_the_dimensions_the_record_binds_to_it ... ok
+test the_cache_path_publishes_the_same_result_and_reports_what_it_saved ... ok
+test the_direct_row_fingerprints_are_printed_for_a_cross_process_comparison ... ok
+test the_enablement_rule_refuses_a_candidate_whose_paths_differ ... ok
+test the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler ... ok
+test the_local_and_the_full_range_runs_are_compared_field_by_field ... ok
+test the_published_order_is_a_function_of_the_input_alone ... ok
+test the_recorded_key_dimensions_are_the_ones_the_decision_names ... ok
+test the_reference_path_publishes_no_pool_candidate_as_an_item ... ok
+test the_result_fingerprint_ignores_the_wall_clock_and_nothing_else ... ok
+
+test result: ok. 19 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.73s
+
+
+running 6 tests
+test a_slow_consumer_changes_the_readings_and_not_the_shape ... ok
+test every_case_holds_the_shape_it_is_named_for ... ok
+test record_the_billing_table ... ignored, regenerates the pinned table; run with --ignored --nocapture after an intended shape change
+test the_corpus_is_rebuilt_from_the_committed_bytes_every_time ... ok
+test the_fixed_shape_bills_the_counts_the_corpus_pins ... ok
+test the_old_per_method_arms_keep_their_ledger_and_the_same_text ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+
+running 30 tests
+test a_cancelled_or_damaged_container_is_not_published ... ok
+test a_capacity_refusal_does_not_rescan_the_request ... ok
+test a_changed_content_chain_or_declaration_misses ... ok
+test a_damaged_sibling_does_not_stop_a_local_result_and_the_tree_still_reports_it ... ok
+test a_forged_container_origin_is_refused ... ok
+test a_large_flat_jar_does_not_add_sibling_materializations ... ok
+test a_local_lookup_reads_only_its_container_and_its_ancestors ... ok
+test a_precancelled_warm_request_is_still_cancelled ... ok
+test a_second_request_reuses_the_container_it_does_not_rebuild ... ok
+test a_two_level_chain_reaches_every_ancestor_once ... ok
+test a_verified_deflated_backing_saves_work_without_granting_a_budget ... ok
+test a_warm_container_obeys_the_current_depth_limit ... ok
+test a_warm_read_obeys_the_current_output_limit ... ok
+test a_warm_selected_entry_read_neither_scan_again_nor_replays_a_charge ... ok
+test an_already_terminated_budget_is_not_restarted ... ok
+test an_expired_warm_request_stays_expired ... ok
+test an_incomplete_directory_is_never_a_missing_verdict ... ok
+test clearing_the_store_releases_the_products ... ok
+test container_lookup_timings ... ignored
+test duplicate_physical_entries_keep_their_ordinals_direct_and_warm ... ok
+test explicit_tree_enumeration_still_reports_every_container ... ok
+test identically_warmed_repeats_publish_the_same_full_report ... ok
+test identically_warmed_resolutions_publish_the_same_full_report ... ok
+test only_a_complete_container_is_published ... ok
+test the_capacity_starved_row_answers_the_same_question ... ok
+test the_entry_and_byte_bounds_are_both_enforced ... ok
+test the_fixture_shapes_are_pinned_by_digest ... ok
+test the_four_paths_agree_on_the_semantic_fingerprint ... ok
+test the_whole_tree_reference_and_the_local_lookup_differ_by_the_siblings ... ok
+test two_methods_of_one_snapshot_reuse_one_container ... ok
+
+test result: ok. 29 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+
+running 6 tests
+test corpus_files_match_the_recorded_fingerprint ... ok
+test every_acceptance_row_is_indexed_against_existing_corpus ... ok
+test every_dimension_is_carried_by_existing_corpus ... ok
+test regenerate_corpus_fingerprint ... ignored, writes tests/fixtures/corpus-fingerprint.json; run explicitly for an intended corpus change
+test the_indexed_rows_are_the_rows_the_acceptance_table_names ... ok
+test the_manifest_matches_its_rendered_classification ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+
+running 11 tests
+test a_read_that_stopped_is_never_retained_and_a_read_that_finished_is ... ok
+test a_retained_read_answers_for_its_own_definition_and_for_no_other ... ok
+test a_tight_budget_stops_truthfully_with_and_without_a_hit ... ok
+test every_fallback_reads_the_definition_itself ... ok
+test one_process_reads_one_tier_of_the_capacity_ladder ... ok
+test one_store_answers_across_entry_points_and_not_across_snapshots ... ok
+test the_capacity_ladder_keeps_the_answer_and_states_what_it_refused ... ok
+test the_direct_path_and_the_reuse_path_publish_one_answer_and_one_workload ... ok
+test the_name_search_reads_its_candidates_itself ... ok
+test the_offered_bytes_are_the_entrys_own_bytes ... ok
+test two_snapshots_of_one_class_do_not_answer_for_each_other ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 13 tests
+test a_discarded_entry_falls_back_under_the_same_budget ... ok
+test a_hit_still_bills_what_it_publishes ... ok
+test a_provider_added_later_is_answered_by_a_fresh_search ... ok
+test a_raw_layer_entry_survives_the_profile_and_the_recovery_above_it ... ok
+test a_stopped_read_stores_nothing_and_a_cancelled_request_is_never_answered ... ok
+test a_strict_request_is_never_answered_with_a_forensic_read ... ok
+test content_is_shared_and_two_origins_are_never_merged ... ok
+test one_store_serves_two_snapshots_without_answering_either_with_the_other ... ok
+test the_cache_removes_repeated_parses_and_changes_nothing_else ... ok
+test the_cached_facts_are_the_facts_the_direct_path_produces ... ok
+test the_capacity_is_a_bound_and_a_refusal_is_not_a_hit ... ok
+test the_default_path_consults_no_cache ... ok
+test the_key_binds_content_policy_and_declaration ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 15 tests
+test a_page_that_stops_before_a_damaged_suffix_states_what_it_covered ... ok
+test measure_workload ... ignored, measurement: build it, then run this binary with --exact measure_workload --ignored --nocapture
+test the_capacity_refusal_changes_retention_and_not_the_result ... ok
+test the_domain_reports_carry_no_phase_timing ... ok
+test the_fixture_is_the_pinned_bytes ... ok
+test the_instrumentation_changes_no_domain_report ... ok
+test the_pages_cover_the_scan_and_the_page_size_changes_no_item ... ok
+test the_probe_counts_every_delivered_record_and_window_call ... ok
+test the_stage_ledger_keeps_phases_disjoint_and_nested_stages_out_of_the_total ... ok
+test the_stopped_export_delivers_its_confirmed_prefix_and_stops ... ok
+test the_three_sink_modes_publish_the_same_result ... ok
+test the_two_delivery_shapes_answer_the_same_bodies ... ok
+test the_worker_sequence_publishes_one_result ... ok
+test the_workload_vocabulary_is_the_one_task_1_2_fixes ... ok
+test the_zero_capacity_store_retains_nothing_and_changes_no_result ... ok
+
+test result: ok. 14 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.43s
+

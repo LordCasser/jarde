@@ -1,0 +1,14 @@
+[
+  {
+    "leg": "javac8",
+    "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/root-handler-v4-compile-inputs/javac8/ConstructorPrimitiveHandlerControls.java",
+    "source_sha256": "2dacc30f781640a74d2e615411380022d3802c920db46d84f6d4e904e9039f73",
+    "input_report_sha256": "f3ecf46ee67fc49e21b6501d077d70d29e12cb2dd95f3a0caee377e8ba3f3a7f"
+  },
+  {
+    "leg": "javac23",
+    "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/root-handler-v4-compile-inputs/javac23/ConstructorPrimitiveHandlerControls.java",
+    "source_sha256": "2dacc30f781640a74d2e615411380022d3802c920db46d84f6d4e904e9039f73",
+    "input_report_sha256": "662a3984848e83d8bd4af0645aa629ccc09506c7c557f6e9cd3ccf8baed29a2c"
+  }
+]

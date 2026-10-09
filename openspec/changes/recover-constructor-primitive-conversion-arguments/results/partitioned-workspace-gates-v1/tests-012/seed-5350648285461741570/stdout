@@ -1,0 +1,82 @@
+
+running 2 tests
+test a_complete_field_assignment_precedes_the_named_catch ... ok
+test a_range_beginning_inside_the_field_assignment_is_not_a_plain_catch ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+test the_no_reuse_controls_text_is_unchanged ... ok
+test the_slot_reusing_handlers_argument_presents_the_rows_own_type ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+test a_dup_in_front_of_two_local_stores_is_written_as_one_value ... ok
+test an_array_initializer_copy_is_owned_by_its_separate_rule ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test a_char_selector_writes_character_keys_and_an_int_selector_stays_decimal ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test a_low_class_source_budget_and_cancellation_follow_the_existing_stop_contract ... ok
+test all_class_literals_are_recovered_once_with_their_real_constant_pool_origins ... ok
+test class_literal_name_resolution_refuses_known_type_collisions_but_keeps_local_names ... ok
+test frozen_fixture_covers_the_original_class_pool_and_red_boundary ... ok
+test original_jadx_and_jarde_whole_classes_compile_and_have_equal_runtime_results ... ignored, requires javac and java on PATH
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+test compound_recovery_keeps_output_evidence_and_cancellation_stops ... ok
+test lvalue_prefix_gaps_refuse_compound_claims_and_keep_the_complete_chain ... ok
+test mismatched_and_shared_lvalue_copies_are_refused_with_their_source_anchors ... ok
+test same_block_field_and_int_array_updates_are_single_evaluation_source_mapped_statements ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+
+running 1 test
+test a_character_part_is_a_string_operand_of_the_chain ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 10 tests
+test a_boolean_part_is_spelled_by_its_append_descriptor ... ok
+test a_boolean_part_whose_value_is_not_a_boolean_is_refused ... ok
+test a_chain_that_starts_with_parts_needing_conversion_starts_in_a_string_context ... ok
+test a_deep_chain_is_presented_instead_of_aborting ... ok
+test a_deep_chain_under_a_short_output_bound_stops_without_an_artifact ... ok
+test a_part_that_is_itself_an_addition_keeps_its_own_group ... ok
+test each_part_carries_its_append_and_the_string_context_carries_the_chain ... ok
+test null_and_object_parts_keep_their_conversion ... ok
+test the_generated_chain_is_deterministic_and_its_shape_is_the_one_recorded ... ok
+test the_two_controls_gain_nothing ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.86s
+
+
+running 4 tests
+test carried_pair_budget_and_cancellation_publish_nothing ... ok
+test carried_values_in_static_and_instance_calls_keep_argument_order ... ok
+test invalid_type_extra_argument_and_non_prologue_refuse_atomically ... ok
+test two_constructor_arguments_are_ordered_and_source_complete ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 1 test
+test proved_integer_conditionals_keep_jvm_boolean_field_store_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

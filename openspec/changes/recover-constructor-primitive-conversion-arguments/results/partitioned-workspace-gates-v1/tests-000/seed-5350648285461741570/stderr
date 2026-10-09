@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/anonymous_parameterized_root.rs (target/debug/deps/anonymous_parameterized_root-6d487ea0cfbc1c43)
+     Running tests/anonymous_supertype_return.rs (target/debug/deps/anonymous_supertype_return-399d5ea8c930a05d)
+     Running tests/assert_statement_sugar.rs (target/debug/deps/assert_statement_sugar-c3c32eb7c97254c6)
+     Running tests/bulk_recovery_backpressure.rs (target/debug/deps/bulk_recovery_backpressure-609326f58cd47ed1)
+     Running tests/bulk_recovery_cancel.rs (target/debug/deps/bulk_recovery_cancel-114319aae62efffd)
+     Running tests/bulk_recovery_delivery.rs (target/debug/deps/bulk_recovery_delivery-9cc810756ff63e5b)
+     Running tests/bulk_recovery_handover.rs (target/debug/deps/bulk_recovery_handover-da17b0fe3e5ef762)
+     Running tests/artifact_tree_cli.rs (target/debug/deps/artifact_tree_cli-f692704583808299)
+     Running tests/anonymous_allocation_candidates.rs (target/debug/deps/anonymous_allocation_candidates-b80b4ae396de3685)
+     Running tests/array_invocation_widening.rs (target/debug/deps/array_invocation_widening-f574f8f617d77fa6)

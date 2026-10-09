@@ -12218,7 +12218,10 @@ mod tests {
             // bodies, two handlers and ten branch targets: 14 complete-family classes,
             // four nested/boundary control classes and two handler control classes. It adds no
             // subroutine.
-            (1055, 4532, 459, 2711, 8),
+            // The constructor primitive-conversion slice adds eight canonical classes across
+            // two complete positives and two handler-control versions on both compiler legs:
+            // 84 Code bodies and four handlers, with no branch or subroutine records.
+            (1063, 4616, 463, 2711, 8),
             "fixture population changed: re-measure these counts"
         );
     }

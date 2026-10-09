@@ -1,0 +1,99 @@
+
+running 6 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_anchors_write_their_presentations_on_both_legs ... ok
+test the_frozen_anchor_recovers_whole_class ... ok
+test the_negatives_keep_their_refusals_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+test the_same_type_shapes_are_unchanged_on_both_legs ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+
+running 4 tests
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_boxed_number_positions_are_presented ... ok
+test the_number_subclasses_outside_the_closed_rows_still_refuse ... ok
+test the_patrol_anchor_presents_its_boxed_argument ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 5 tests
+test the_branching_guard_body_presents_whole_on_every_leg ... ok
+test the_negatives_keep_their_refusals ... ok
+test the_order_and_exception_drivers_answer_what_the_original_answers ... ignored, needs both JDKs: it strips the class-source comment lines, compiles the text with `javac --release 8` **and** the real javac 8 and runs both under `-Xverify:all` (see the module doc)
+test the_order_leg_presents_the_same_shapes_over_its_recording_lock ... ok
+test the_probe_shapes_beyond_the_filings_note_present ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_field_copy_anchors_write_their_presentations_on_both_legs ... ok
+test the_negatives_keep_their_refusals_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+
+running 5 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_conditional_rhs_anchors_write_their_presentations_on_both_legs ... ok
+test the_frozen_anchor_recovers_whole_class ... ok
+test the_negatives_keep_their_refusals_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 8 tests
+test a_subtype_value_is_not_proven_compatible_and_widens_too ... ok
+test an_unproven_component_keeps_its_presentation ... ok
+test an_unproven_component_text_stays_uncompilable ... ignored, needs both JDKs: the merged local's own rendering debt keeps the text uncompilable (see the module doc)
+test the_patrols_class_answers_what_its_class_answers ... ignored, needs both JDKs: it strips the class-source comment lines, compiles the text with `javac --release 8` **and** the real javac 8 and runs both under `-Xverify:all` (see the module doc)
+test the_patrols_two_covariant_stores_widen_their_access_receiver ... ok
+test the_store_driver_answers_what_its_class_answers ... ignored, needs both JDKs: it strips the class-source comment lines, compiles the text with `javac --release 8` **and** the real javac 8 and runs both under `-Xverify:all` (see the module doc)
+test the_store_driver_keeps_its_controls_and_its_negatives ... ok
+test the_subtype_store_answers_what_its_class_answers ... ignored, needs both JDKs: it strips the class-source comment lines, compiles the text with `javac --release 8` **and** the real javac 8 and runs both under `-Xverify:all` (see the module doc)
+
+test result: ok. 4 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 4 tests
+test the_controls_recompiled_text_compiles_and_runs_as_the_original_classes ... ok
+test the_fixture_directory_is_the_one_this_file_reads ... ok
+test the_single_use_control_presents_the_double_brace_form_at_its_allocation_point ... ok
+test the_three_negatives_keep_the_presentation_they_had ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.17s
+
+
+running 4 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_dup_store_anchors_write_the_eliminated_and_split_forms_on_both_legs ... ok
+test the_loop_test_presents_and_the_short_circuit_chain_keeps_its_refusal ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 5 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_chain_without_a_cut_keeps_its_own_presentation_on_both_legs ... ok
+test the_inline_conditional_anchors_write_the_source_form_on_both_legs ... ok
+test the_negatives_keep_their_split_refusals_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+
+running 4 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_boundary_and_the_negatives_keep_their_refusals_on_both_legs ... ok
+test the_instance_chain_anchors_write_their_presentations_on_both_legs ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.06s
+

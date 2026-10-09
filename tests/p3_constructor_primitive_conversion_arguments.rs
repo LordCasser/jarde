@@ -1,0 +1,1322 @@
+//! Complete two-class Java 8 controls for constructor-argument primitive conversions.
+//!
+//! The original classfiles and exact stdout/stderr oracles are copied from the frozen CLI2
+//! baseline. Candidate source is always the complete two-class class-source result; the host JDK
+//! compile/run below is an integration check, not a substitute for the recorded Corretto 8 and
+//! OpenJDK 23 replays.
+
+use jarde::*;
+use jarde_jvm::engine::analyze_method_ir;
+use jarde_jvm::method_ir::{Definition, Slot};
+use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+use std::fs;
+use std::io::{Cursor, Write};
+use std::path::{Path, PathBuf};
+use std::process::{Command, Output};
+use std::slice;
+use std::sync::atomic::{AtomicU64, Ordering};
+
+const STORE: u16 = 0;
+static NEXT: AtomicU64 = AtomicU64::new(0);
+const MAIN: &str = "ConstructorPrimitiveConversionControls";
+const PAIR: &str = "PrimitiveLongPair";
+const SOURCE_NAMES: [&str; 2] = [
+    "ConstructorPrimitiveConversionControls.java",
+    "PrimitiveLongPair.java",
+];
+const CLASS_NAMES: [&str; 2] = [MAIN, PAIR];
+
+const JAVAC8_CLASSES: &[(&str, &[u8])] = &[
+    (
+        "ConstructorPrimitiveConversionControls.class",
+        include_bytes!(
+            "fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/classes/ConstructorPrimitiveConversionControls.class"
+        ),
+    ),
+    (
+        "PrimitiveLongPair.class",
+        include_bytes!(
+            "fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/classes/PrimitiveLongPair.class"
+        ),
+    ),
+];
+const JAVAC23_CLASSES: &[(&str, &[u8])] = &[
+    (
+        "ConstructorPrimitiveConversionControls.class",
+        include_bytes!(
+            "fixtures/p3-constructor-primitive-conversion-arguments-v1/javac23/classes/ConstructorPrimitiveConversionControls.class"
+        ),
+    ),
+    (
+        "PrimitiveLongPair.class",
+        include_bytes!(
+            "fixtures/p3-constructor-primitive-conversion-arguments-v1/javac23/classes/PrimitiveLongPair.class"
+        ),
+    ),
+];
+const JAVAC8_STDOUT: &[u8] = include_bytes!(
+    "fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac8/original-main.stdout"
+);
+const JAVAC8_STDERR: &[u8] = include_bytes!(
+    "fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac8/original-main.stderr"
+);
+const JAVAC23_STDOUT: &[u8] = include_bytes!(
+    "fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac23/original-main.stdout"
+);
+const JAVAC23_STDERR: &[u8] = include_bytes!(
+    "fixtures/p3-constructor-primitive-conversion-arguments-v1/oracle/javac23/original-main.stderr"
+);
+
+const HANDLER_JAVAC8: &[(&str, &[u8])] = &[(
+    "ConstructorPrimitiveHandlerControls.class",
+    include_bytes!(
+        "fixtures/p3-constructor-primitive-conversion-controls-v2/javac8/classes/ConstructorPrimitiveHandlerControls.class"
+    ),
+)];
+const HANDLER_JAVAC23: &[(&str, &[u8])] = &[(
+    "ConstructorPrimitiveHandlerControls.class",
+    include_bytes!(
+        "fixtures/p3-constructor-primitive-conversion-controls-v2/javac23/classes/ConstructorPrimitiveHandlerControls.class"
+    ),
+)];
+
+struct Scratch(PathBuf);
+
+impl Scratch {
+    fn new(label: &str) -> Self {
+        let nonce = NEXT.fetch_add(1, Ordering::Relaxed);
+        let path = std::env::temp_dir().join(format!(
+            "jarde-p3-constructor-primitive-conversion-{}-{}-{nonce}",
+            std::process::id(),
+            label,
+        ));
+        fs::create_dir_all(&path).expect("private test scratch directory is created");
+        Self(path)
+    }
+
+    fn path(&self) -> &Path {
+        &self.0
+    }
+}
+
+impl Drop for Scratch {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.0);
+    }
+}
+
+struct SiteTarget {
+    method: &'static str,
+    classes: &'static [&'static str],
+    argument_counts: &'static [usize],
+    casts: &'static [(&'static str, u32)],
+    call: &'static str,
+    call_count: usize,
+    extra_bcis: &'static [u32],
+}
+
+const TARGETS: &[SiteTarget] = &[
+    SiteTarget {
+        method: "wrapperByte",
+        classes: &["java/lang/Byte"],
+        argument_counts: &[1],
+        casts: &[("byte", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "wrapperShort",
+        classes: &["java/lang/Short"],
+        argument_counts: &[1],
+        casts: &[("short", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "wrapperLong",
+        classes: &["java/lang/Long"],
+        argument_counts: &[1],
+        casts: &[("long", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "wrapperFloat",
+        classes: &["java/lang/Float"],
+        argument_counts: &[1],
+        casts: &[("float", 10)],
+        call: "markLong",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "wrapperDouble",
+        classes: &["java/lang/Double"],
+        argument_counts: &[1],
+        casts: &[("double", 10)],
+        call: "markFloat",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "integerContrast",
+        classes: &["java/lang/Integer"],
+        argument_counts: &[1],
+        casts: &[],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "boxedArray",
+        classes: &[
+            "java/lang/Byte",
+            "java/lang/Short",
+            "java/lang/Integer",
+            "java/lang/Long",
+            "java/lang/Float",
+            "java/lang/Double",
+        ],
+        argument_counts: &[1, 1, 1, 1, 1, 1],
+        casts: &[
+            ("byte", 17),
+            ("short", 34),
+            ("long", 67),
+            ("float", 84),
+            ("double", 101),
+        ],
+        call: "markInt",
+        call_count: 6,
+        extra_bcis: &[21, 38, 54, 71, 88, 105],
+    },
+    SiteTarget {
+        method: "ordinaryReturnNew",
+        classes: &["java/lang/Long"],
+        argument_counts: &[1],
+        casts: &[("long", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "storedLocalReuse",
+        classes: &["PrimitiveLongPair"],
+        argument_counts: &[2],
+        casts: &[("long", 12), ("long", 14)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[6],
+    },
+    SiteTarget {
+        method: "intToLong",
+        classes: &["java/lang/Long"],
+        argument_counts: &[1],
+        casts: &[("long", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "intToFloat",
+        classes: &["java/lang/Float"],
+        argument_counts: &[1],
+        casts: &[("float", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "intToDouble",
+        classes: &["java/lang/Double"],
+        argument_counts: &[1],
+        casts: &[("double", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "intToByte",
+        classes: &["java/lang/Byte"],
+        argument_counts: &[1],
+        casts: &[("byte", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "intToCharacter",
+        classes: &["java/lang/Character"],
+        argument_counts: &[1],
+        casts: &[("char", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "intToShort",
+        classes: &["java/lang/Short"],
+        argument_counts: &[1],
+        casts: &[("short", 10)],
+        call: "markInt",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "longToInt",
+        classes: &["java/lang/Integer"],
+        argument_counts: &[1],
+        casts: &[("int", 10)],
+        call: "markLong",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "longToFloat",
+        classes: &["java/lang/Float"],
+        argument_counts: &[1],
+        casts: &[("float", 10)],
+        call: "markLong",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "longToDouble",
+        classes: &["java/lang/Double"],
+        argument_counts: &[1],
+        casts: &[("double", 10)],
+        call: "markLong",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "floatToInt",
+        classes: &["java/lang/Integer"],
+        argument_counts: &[1],
+        casts: &[("int", 10)],
+        call: "markFloat",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "floatToLong",
+        classes: &["java/lang/Long"],
+        argument_counts: &[1],
+        casts: &[("long", 10)],
+        call: "markFloat",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "floatToDouble",
+        classes: &["java/lang/Double"],
+        argument_counts: &[1],
+        casts: &[("double", 10)],
+        call: "markFloat",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "doubleToInt",
+        classes: &["java/lang/Integer"],
+        argument_counts: &[1],
+        casts: &[("int", 10)],
+        call: "markDouble",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "doubleToLong",
+        classes: &["java/lang/Long"],
+        argument_counts: &[1],
+        casts: &[("long", 10)],
+        call: "markDouble",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "doubleToFloat",
+        classes: &["java/lang/Float"],
+        argument_counts: &[1],
+        casts: &[("float", 10)],
+        call: "markDouble",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "longViaFloat",
+        classes: &["java/lang/Long"],
+        argument_counts: &[1],
+        casts: &[("long", 11), ("float", 10)],
+        call: "markLong",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "longViaDouble",
+        classes: &["java/lang/Long"],
+        argument_counts: &[1],
+        casts: &[("long", 11), ("double", 10)],
+        call: "markLong",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+    SiteTarget {
+        method: "doubleViaFloat",
+        classes: &["java/lang/Double"],
+        argument_counts: &[1],
+        casts: &[("double", 11), ("float", 10)],
+        call: "markDouble",
+        call_count: 1,
+        extra_bcis: &[],
+    },
+];
+
+fn budget() -> Budget {
+    task_budget(&[]).expect("bounded task budget")
+}
+
+fn archive(files: &[(&str, &[u8])]) -> Vec<u8> {
+    let mut output = Cursor::new(Vec::new());
+    {
+        let mut writer = ZipArchiveWriter::new(&mut output);
+        for (name, bytes) in files {
+            let (mut entry, config) = writer
+                .new_file(EntryPath::verbatim(name.as_bytes().to_vec()))
+                .compression_method(CompressionMethod::new(STORE))
+                .start()
+                .expect("class entry starts");
+            let mut stream = config.wrap(&mut entry);
+            stream.write_all(bytes).expect("class bytes are written");
+            let (_, descriptor) = stream.finish().expect("class entry closes");
+            entry.finish(descriptor).expect("class entry completes");
+        }
+        writer.finish().expect("complete class archive closes");
+    }
+    output.into_inner()
+}
+
+fn request(snapshot: &artifact::ArtifactSnapshot, class: &str) -> ClassSourceRequest {
+    ClassSourceRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal(class),
+        },
+        environment: EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    }
+}
+
+fn class_source(snapshot: &artifact::ArtifactSnapshot, class: &str) -> ClassSourceReport {
+    match Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(snapshot),
+            &request(snapshot, class),
+            &RecoveryEvidenceRequest::all(),
+            &mut budget(),
+        )
+        .expect("class-source request is valid")
+    {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("{class} class-source run did not complete: {other:?}"),
+    }
+}
+
+fn method<'a>(report: &'a ClassSourceReport, name: &str) -> &'a ClassSourceMethod {
+    report
+        .methods
+        .iter()
+        .find(|member| member.item.name.raw().0 == name.as_bytes())
+        .unwrap_or_else(|| panic!("missing method {name}"))
+}
+
+fn recovered<'a>(report: &'a ClassSourceReport, name: &str) -> &'a RecoveryReport {
+    match &method(report, name).outcome {
+        ClassSourceOutcome::Recovered { report, .. } => report,
+        other => panic!("{name} did not run recovery: {other:?}"),
+    }
+}
+
+/// Derive the Boolean control from the frozen class facts. Its wrapper body keeps the original
+/// `new`/`dup` and Byte constructor pool entries, but loads the Boolean parameter directly before
+/// `i2b`, so that conversion's SSA input is the Boolean slot rather than `markInt`'s integer result.
+fn boolean_wrapper_variant(class: &[u8]) -> Vec<u8> {
+    let mut read_budget = budget();
+    let facts = class_facts(class, &mut read_budget).expect("the original class facts read");
+    let wrapper = facts
+        .methods
+        .iter()
+        .filter(|method| method.name.raw().0 == b"wrapperByte")
+        .collect::<Vec<_>>();
+    assert_eq!(wrapper.len(), 1, "the original wrapperByte is unique");
+    assert_eq!(
+        wrapper[0].descriptor.raw().0,
+        b"(I)Ljava/lang/Byte;",
+        "the frozen wrapperByte has its original integer descriptor"
+    );
+    let mark_int = facts
+        .methods
+        .iter()
+        .find(|method| method.name.raw().0 == b"markInt")
+        .expect("the original markInt declaration exists")
+        .descriptor
+        .raw()
+        .0
+        .to_vec();
+    let descriptor_utf8 = facts
+        .constant_pool
+        .iter()
+        .filter(|entry| {
+            matches!(
+                &entry.kind,
+                CpEntryKind::Utf8 { bytes } if bytes.0.as_slice() == b"(I)Ljava/lang/Byte;"
+            )
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        descriptor_utf8.len(),
+        1,
+        "the wrapperByte descriptor has one exact UTF8 entry"
+    );
+    let descriptor_entry = descriptor_utf8[0];
+    assert_eq!(
+        descriptor_entry.span.length,
+        3 + b"(I)Ljava/lang/Byte;".len() as u64
+    );
+    let descriptor_byte =
+        usize::try_from(descriptor_entry.span.start).expect("the descriptor offset fits usize") + 4; // CONSTANT_Utf8 header, then `(`, then the original `I`.
+
+    let byte_constructor = facts
+        .constant_pool
+        .iter()
+        .find(|entry| {
+            matches!(
+                &entry.kind,
+                CpEntryKind::MethodRef { owner, name, descriptor, .. }
+                    if owner.0 == b"java/lang/Byte"
+                        && name.0 == b"<init>"
+                        && descriptor.0 == b"(B)V"
+            )
+        })
+        .expect("the original constant pool names Byte.<init>(B)V")
+        .index;
+    let byte_class = facts
+        .constant_pool
+        .iter()
+        .find(|entry| {
+            matches!(
+                &entry.kind,
+                CpEntryKind::Class { name, .. } if name.0 == b"java/lang/Byte"
+            )
+        })
+        .expect("the original constant pool names java/lang/Byte")
+        .index;
+    let code_attributes = wrapper[0]
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0 == b"Code")
+        .collect::<Vec<_>>();
+    assert_eq!(
+        code_attributes.len(),
+        1,
+        "wrapperByte has one Code attribute"
+    );
+    let code_attribute = code_attributes[0];
+    let content_start =
+        usize::try_from(code_attribute.content_span.start).expect("Code content offset fits usize");
+    let content_end = content_start
+        + usize::try_from(code_attribute.content_span.length)
+            .expect("Code content length fits usize");
+    assert_eq!(
+        usize::try_from(code_attribute.span.start).expect("Code attribute offset fits usize") + 6,
+        content_start,
+        "Code content follows the attribute name and length"
+    );
+    let original_code_length = u32::from_be_bytes(
+        class[content_start + 4..content_start + 8]
+            .try_into()
+            .expect("Code header has a u4 code length"),
+    ) as usize;
+    let old_code_start = content_start + 8;
+    let old_code_end = old_code_start + original_code_length;
+    assert_eq!(
+        old_code_end + 4,
+        content_end,
+        "Code has only its terminal counts"
+    );
+    let handler_count = u16::from_be_bytes(
+        class[old_code_end..old_code_end + 2]
+            .try_into()
+            .expect("Code exception table count is u2"),
+    );
+    let subattribute_count = u16::from_be_bytes(
+        class[old_code_end + 2..old_code_end + 4]
+            .try_into()
+            .expect("Code subattribute count is u2"),
+    );
+    assert_eq!(handler_count, 0, "the wrapperByte control has no handlers");
+    assert_eq!(
+        subattribute_count, 0,
+        "the wrapperByte control has no Code subattributes"
+    );
+
+    // new Byte; dup; iload_0; i2b; invokespecial Byte.<init>(B)V; areturn.
+    // Stack: [uninit], [uninit, uninit], [uninit, uninit, boolean],
+    // [uninit, uninit, int], [Byte].
+    let new_code = [
+        0xbb,
+        (byte_class >> 8) as u8,
+        byte_class as u8,
+        0x59,
+        0x1a,
+        0x91,
+        0xb7,
+        (byte_constructor >> 8) as u8,
+        byte_constructor as u8,
+        0xb0,
+    ];
+    let new_attribute_length = code_attribute
+        .content_span
+        .length
+        .checked_sub(original_code_length as u64)
+        .and_then(|length| length.checked_add(new_code.len() as u64))
+        .expect("replacing Code bytes leaves a representable attribute length");
+    let mut variant = class.to_vec();
+    assert_eq!(variant[descriptor_byte], b'I');
+    variant[descriptor_byte] = b'Z';
+    variant.splice(old_code_start..old_code_end, new_code);
+    let new_code_length = u32::try_from(new_code.len()).expect("replacement Code length fits u4");
+    variant[content_start + 4..content_start + 8].copy_from_slice(&new_code_length.to_be_bytes());
+    let code_attribute_start =
+        usize::try_from(code_attribute.span.start).expect("Code attribute offset fits usize");
+    let new_attribute_length =
+        u32::try_from(new_attribute_length).expect("replacement Code attribute length fits u4");
+    variant[code_attribute_start + 2..code_attribute_start + 6]
+        .copy_from_slice(&new_attribute_length.to_be_bytes());
+    assert_eq!(
+        variant.len(),
+        class.len() - original_code_length + new_code.len(),
+        "the variant changes only the descriptor and Code byte range length"
+    );
+
+    let mut patched_budget = budget();
+    let patched = class_facts(&variant, &mut patched_budget).expect("the patched class facts read");
+    let patched_wrapper = patched
+        .methods
+        .iter()
+        .filter(|method| method.name.raw().0 == b"wrapperByte")
+        .collect::<Vec<_>>();
+    assert_eq!(patched_wrapper.len(), 1);
+    assert_eq!(
+        patched_wrapper[0].descriptor.raw().0,
+        b"(Z)Ljava/lang/Byte;"
+    );
+    assert_eq!(
+        patched
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"markInt")
+            .expect("patched markInt declaration remains")
+            .descriptor
+            .raw()
+            .0,
+        mark_int.as_slice(),
+        "patching wrapperByte leaves the markInt descriptor byte-for-byte unchanged"
+    );
+    let patched_code_attributes = patched_wrapper[0]
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0 == b"Code")
+        .collect::<Vec<_>>();
+    assert_eq!(
+        patched_code_attributes.len(),
+        1,
+        "the patched method keeps its Code attribute"
+    );
+    assert_eq!(
+        patched_code_attributes[0].content_span.length,
+        new_attribute_length as u64
+    );
+    let patched_descriptor_entries = patched
+        .constant_pool
+        .iter()
+        .filter(|entry| {
+            matches!(
+                &entry.kind,
+                CpEntryKind::Utf8 { bytes } if bytes.0.as_slice() == b"(Z)Ljava/lang/Byte;"
+            )
+        })
+        .count();
+    assert_eq!(patched_descriptor_entries, 1);
+    variant
+}
+
+/// Run the patched method through the public SSA entry point, independently of class-source
+/// recovery. This confirms the descriptor mutation is still a structurally readable method body.
+fn assert_boolean_variant_reaches_ssa(class: &[u8]) {
+    let mut open_budget = budget();
+    let snapshot = Engine::new()
+        .open(ArtifactInput::bytes(class.to_vec()), &mut open_budget)
+        .expect("patched standalone class opens");
+    let definition = PhysicalDefinitionId {
+        location: PhysicalClassLocation::StandaloneRoot {
+            snapshot: snapshot.id().clone(),
+        },
+        class_bytes: ClassBytesId {
+            digest: Digest(blake3::hash(class).to_hex().to_string()),
+            length: u64::try_from(class.len()).expect("class length fits u64"),
+        },
+        variant: PhysicalVariant::Base,
+    };
+    let method = PhysicalMethodId {
+        owner: definition,
+        name: JvmBytes(b"wrapperByte".to_vec()),
+        descriptor: JvmBytes(b"(Z)Ljava/lang/Byte;".to_vec()),
+    };
+    let domain = LoadDomain {
+        loader: LoaderId("app".to_owned()),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots: vec![LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        }],
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
+    };
+    let request = MethodAnalysisRequest {
+        environment: ResolutionEnvironment {
+            runtime: RuntimeView {
+                physical: PhysicalView {
+                    snapshot: snapshot.id().clone(),
+                    scope: PhysicalScope::SnapshotAll,
+                },
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                load_domain: domain.clone(),
+            },
+            domains: vec![domain],
+            providers: Vec::new(),
+        },
+        method: method.clone(),
+        stages: vec![AnalysisStage::Ssa],
+    };
+    let mut analysis_budget = budget();
+    let analysis = analyze_method_ir(slice::from_ref(&snapshot), &request, &mut analysis_budget)
+        .expect("the patched wrapperByte request is legal");
+    assert_eq!(analysis.report().method, method);
+    let ssa = analysis
+        .ir()
+        .ssa()
+        .expect("patched wrapperByte has real SSA");
+    let instructions = ssa
+        .blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .collect::<Vec<_>>();
+    let load = instructions
+        .iter()
+        .find(|instruction| instruction.bci() == 4)
+        .expect("iload_0 is present at BCI 4");
+    let conversion = instructions
+        .iter()
+        .find(|instruction| instruction.bci() == 5)
+        .expect("i2b is present at BCI 5");
+    assert_eq!(load.opcode(), 0x1a);
+    assert_eq!(load.reads().len(), 1);
+    let local_zero = load.reads()[0].1;
+    assert!(matches!(
+        ssa.value(local_zero).def(),
+        Definition::Entry {
+            slot: Slot::Local(0),
+            ..
+        }
+    ));
+    assert_eq!(conversion.opcode(), 0x91);
+    assert_eq!(conversion.reads().len(), 1);
+    let conversion_input = conversion.reads()[0].1;
+    assert!(matches!(
+        ssa.value(conversion_input).def(),
+        Definition::Instruction { bci: 4, .. }
+    ));
+}
+
+fn save_classes(files: &[(&str, &[u8])], destination: &Path) {
+    fs::create_dir_all(destination).expect("isolated original class directory exists");
+    for (name, bytes) in files {
+        fs::write(destination.join(name), bytes).expect("frozen original class is copied");
+    }
+}
+
+fn javac_tool() -> PathBuf {
+    std::env::var_os("JARDE_JAVAC23")
+        .map(PathBuf::from)
+        .filter(|path| path.is_file())
+        .unwrap_or_else(|| PathBuf::from("javac"))
+}
+
+fn java_tool() -> PathBuf {
+    std::env::var_os("JARDE_JAVA23")
+        .map(PathBuf::from)
+        .filter(|path| path.is_file())
+        .unwrap_or_else(|| PathBuf::from("java"))
+}
+
+fn compile_complete(
+    source_dir: &Path,
+    classes: &Path,
+    empty: &Path,
+    source_names: &[&str],
+) -> Output {
+    fs::create_dir_all(classes).expect("candidate classes directory exists");
+    let mut command = Command::new(javac_tool());
+    command
+        .args([
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-classpath",
+        ])
+        .arg(empty)
+        .arg("-sourcepath")
+        .arg(empty)
+        .arg("-d")
+        .arg(classes);
+    for name in source_names {
+        command.arg(source_dir.join(*name));
+    }
+    command
+        .current_dir(source_dir)
+        .output()
+        .expect("host javac is available")
+}
+
+fn run_verified(classes: &Path) -> Output {
+    Command::new(java_tool())
+        .arg("-Xverify:all")
+        .arg("-cp")
+        .arg(classes)
+        .arg(MAIN)
+        .output()
+        .expect("host java is available")
+}
+
+fn compile_and_compare(
+    leg: &str,
+    files: &[(&str, &[u8])],
+    reports: &[ClassSourceReport],
+    oracle_stdout: &[u8],
+    oracle_stderr: &[u8],
+) {
+    let scratch = Scratch::new(leg);
+    let root = scratch.path();
+    let source_dir = root.join("candidate-sources");
+    let candidate_classes = root.join("candidate-classes");
+    let original_classes = root.join("original-classes");
+    let empty = root.join("empty-classpath-sourcepath");
+    fs::create_dir_all(&source_dir).expect("candidate source directory exists");
+    fs::create_dir_all(&empty).expect("empty paths exist");
+    for (class, report) in CLASS_NAMES.iter().zip(reports) {
+        fs::write(source_dir.join(format!("{class}.java")), &report.text)
+            .expect("complete report source is written");
+    }
+    save_classes(files, &original_classes);
+
+    let compile = compile_complete(&source_dir, &candidate_classes, &empty, &SOURCE_NAMES);
+    assert!(
+        compile.status.success(),
+        "{leg} complete two-source candidate compile failed:\n{}\n{}",
+        String::from_utf8_lossy(&compile.stdout),
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let original = run_verified(&original_classes);
+    assert!(
+        original.status.success(),
+        "{leg} frozen original runtime failed:\n{}\n{}",
+        String::from_utf8_lossy(&original.stdout),
+        String::from_utf8_lossy(&original.stderr)
+    );
+    assert_eq!(
+        original.stdout, oracle_stdout,
+        "{leg} original stdout oracle"
+    );
+    assert_eq!(
+        original.stderr, oracle_stderr,
+        "{leg} original stderr oracle"
+    );
+
+    let candidate = run_verified(&candidate_classes);
+    assert!(
+        candidate.status.success(),
+        "{leg} candidate runtime failed:\n{}\n{}",
+        String::from_utf8_lossy(&candidate.stdout),
+        String::from_utf8_lossy(&candidate.stderr)
+    );
+    assert_eq!(
+        candidate.status.code(),
+        original.status.code(),
+        "{leg} exit code"
+    );
+    assert_eq!(candidate.stdout, original.stdout, "{leg} candidate stdout");
+    assert_eq!(candidate.stderr, original.stderr, "{leg} candidate stderr");
+    assert_eq!(
+        candidate.stdout, oracle_stdout,
+        "{leg} candidate stdout oracle"
+    );
+    assert_eq!(
+        candidate.stderr, oracle_stderr,
+        "{leg} candidate stderr oracle"
+    );
+}
+
+fn assert_complete_class(report: &ClassSourceReport, expected_class: &str) {
+    assert_eq!(
+        report.declaration.as_ref().map(|decl| decl.name.as_str()),
+        Some(expected_class)
+    );
+    assert!(
+        !report.text.contains("@bytecode") && !report.text.contains("jarde_refused_body"),
+        "{expected_class} has a class-level refusal marker:\n{}",
+        report.text
+    );
+    for member in &report.methods {
+        assert!(
+            !member.text.contains("@bytecode") && !member.text.contains("jarde_refused_body"),
+            "{expected_class} member {:?} has a refusal marker:\n{}",
+            member.item.name.raw(),
+            member.text
+        );
+    }
+}
+
+fn assert_all_constructor_targets(report: &ClassSourceReport) {
+    let mut total_sites = 0usize;
+    let mut site_ids = Vec::new();
+    for target in TARGETS {
+        let body = recovered(report, target.method);
+        assert_eq!(
+            body.quality,
+            Quality::Structured,
+            "{} quality",
+            target.method
+        );
+        assert_eq!(
+            body.representation,
+            Representation::Java,
+            "{} representation",
+            target.method
+        );
+        assert!(
+            !body.text.contains("@bytecode") && !body.text.contains("jarde_refused_body"),
+            "{} body has a refusal marker:\n{}",
+            target.method,
+            body.text
+        );
+        assert_eq!(
+            body.news.len(),
+            target.classes.len(),
+            "{} NewRecord count",
+            target.method
+        );
+        let classes = body
+            .news
+            .iter()
+            .map(|record| record.class.as_str())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            classes.as_slice(),
+            target.classes,
+            "{} physical allocation sequence",
+            target.method
+        );
+        assert_eq!(target.argument_counts.len(), body.news.len());
+        let mut heads = Vec::new();
+        for (record, expected_args) in body.news.iter().zip(target.argument_counts) {
+            assert!(
+                record.presented,
+                "{} new@{} was refused: {:?}",
+                target.method, record.head, record.refusal
+            );
+            assert_eq!(
+                record.refusal, None,
+                "{} new@{} refusal",
+                target.method, record.head
+            );
+            assert!(
+                record.dup.is_some(),
+                "{} new@{} has no dup",
+                target.method,
+                record.head
+            );
+            assert!(
+                record.constructor.is_some(),
+                "{} new@{} has no constructor",
+                target.method,
+                record.head
+            );
+            assert_eq!(
+                record.arguments.len(),
+                *expected_args,
+                "{} new@{} argument count",
+                target.method,
+                record.head
+            );
+            let dup = record.dup.expect("asserted dup");
+            let constructor = record.constructor.expect("asserted constructor");
+            for bci in [record.head, dup, constructor]
+                .into_iter()
+                .chain(record.arguments.iter().copied())
+            {
+                assert!(
+                    !body.source_map.of_bci(bci).is_empty(),
+                    "{} omitted physical site BCI {bci}: {:?}",
+                    target.method,
+                    body.source_map.segments()
+                );
+            }
+            heads.push(record.head);
+            site_ids.push((target.method, record.head));
+        }
+        heads.sort_unstable();
+        heads.dedup();
+        assert_eq!(
+            heads.len(),
+            body.news.len(),
+            "{} has duplicate allocation heads",
+            target.method
+        );
+        total_sites += body.news.len();
+        for (primitive, bci) in target.casts {
+            let cast = format!("({primitive})");
+            assert!(
+                body.text.contains(&cast),
+                "{} lost cast {cast}:\n{}",
+                target.method,
+                body.text
+            );
+            assert!(
+                !body.source_map.of_bci(*bci).is_empty(),
+                "{} cast {cast} at BCI {bci} has no source map",
+                target.method
+            );
+        }
+        for pair in target.casts.windows(2) {
+            let first = body
+                .text
+                .find(&format!("({})", pair[0].0))
+                .expect("first cast exists");
+            let second = body.text[first + 1..]
+                .find(&format!("({})", pair[1].0))
+                .map(|offset| first + 1 + offset)
+                .expect("following cast exists");
+            assert!(
+                first < second,
+                "{} reordered casts {:?}:\n{}",
+                target.method,
+                pair,
+                body.text
+            );
+        }
+        for bci in target.extra_bcis {
+            assert!(
+                !body.source_map.of_bci(*bci).is_empty(),
+                "{} omitted additional store/local BCI {bci}",
+                target.method
+            );
+        }
+        let call_count = body.text.matches(&format!("{}(", target.call)).count();
+        assert_eq!(
+            call_count, target.call_count,
+            "{} side-effect call count",
+            target.method
+        );
+    }
+    site_ids.sort_unstable();
+    site_ids.dedup();
+    assert_eq!(
+        total_sites, 32,
+        "target methods must account for all 32 constructor sites"
+    );
+    assert_eq!(
+        site_ids.len(),
+        32,
+        "constructor physical sites must be unique"
+    );
+    let mut all_report_sites = Vec::new();
+    for member in &report.methods {
+        if let ClassSourceOutcome::Recovered { report: body, .. } = &member.outcome {
+            let name = String::from_utf8_lossy(&member.item.name.raw().0).into_owned();
+            all_report_sites.extend(body.news.iter().map(|record| (name.clone(), record.head)));
+        }
+    }
+    assert_eq!(
+        all_report_sites.len(),
+        32,
+        "complete class report must contain 32 new-site records"
+    );
+    all_report_sites.sort_unstable();
+    all_report_sites.dedup();
+    assert_eq!(
+        all_report_sites.len(),
+        32,
+        "complete class report must contain exactly 32 unique physical construction sites"
+    );
+    let stored = recovered(report, "storedLocalReuse");
+    assert_eq!(
+        stored.text.matches("markInt(").count(),
+        1,
+        "stored local producer must execute once:\n{}",
+        stored.text
+    );
+}
+
+#[test]
+fn complete_constructor_conversion_families_keep_casts_sites_and_runtime_behavior() {
+    for (leg, files, stdout, stderr) in [
+        ("javac8", JAVAC8_CLASSES, JAVAC8_STDOUT, JAVAC8_STDERR),
+        ("javac23", JAVAC23_CLASSES, JAVAC23_STDOUT, JAVAC23_STDERR),
+    ] {
+        let snapshot = Engine::new()
+            .open(ArtifactInput::bytes(archive(files)), &mut budget())
+            .expect("frozen complete two-class input opens");
+        let reports = CLASS_NAMES
+            .iter()
+            .map(|class| class_source(&snapshot, class))
+            .collect::<Vec<_>>();
+        for (class, report) in CLASS_NAMES.iter().zip(&reports) {
+            assert_complete_class(report, class);
+        }
+        assert_all_constructor_targets(&reports[0]);
+        compile_and_compare(leg, files, &reports, stdout, stderr);
+    }
+}
+
+#[test]
+fn same_handler_constructor_argument_is_a_complete_source_and_site_positive() {
+    for (leg, files) in [("javac8", HANDLER_JAVAC8), ("javac23", HANDLER_JAVAC23)] {
+        let snapshot = Engine::new()
+            .open(ArtifactInput::bytes(archive(files)), &mut budget())
+            .expect("frozen one-class handler input opens");
+        let report = class_source(&snapshot, "ConstructorPrimitiveHandlerControls");
+        assert_complete_class(&report, "ConstructorPrimitiveHandlerControls");
+        for method_name in ["<init>", "markInt", "identity", "sameHandler"] {
+            let member = recovered(&report, method_name);
+            assert_eq!(
+                member.quality,
+                Quality::Structured,
+                "{leg} {method_name} quality"
+            );
+            assert_eq!(
+                member.representation,
+                Representation::Java,
+                "{leg} {method_name} representation"
+            );
+            assert!(
+                !member.text.contains("@bytecode") && !member.text.contains("jarde_refused_body"),
+                "{leg} {method_name} has a refusal marker:\n{}",
+                member.text
+            );
+        }
+        let body = recovered(&report, "sameHandler");
+        assert_eq!(
+            body.quality,
+            Quality::Structured,
+            "{leg} same-handler quality"
+        );
+        assert_eq!(
+            body.representation,
+            Representation::Java,
+            "{leg} same-handler representation"
+        );
+        assert!(
+            !body.text.contains("@bytecode") && !body.text.contains("jarde_refused_body"),
+            "{leg} same-handler body is not complete:\n{}",
+            body.text
+        );
+        assert_eq!(body.news.len(), 1, "{leg} same-handler allocation record");
+        let site = &body.news[0];
+        assert_eq!(site.class, "java/lang/Long");
+        assert!(
+            site.presented && site.refusal.is_none(),
+            "{leg} same-handler site: {site:?}"
+        );
+        assert_eq!(site.head, 0);
+        assert_eq!(site.dup, Some(3));
+        assert_eq!(site.constructor, Some(9));
+        assert_eq!(site.arguments.as_slice(), &[8]);
+        for bci in [0, 3, 4, 5, 8, 9, 12, 15, 16, 17, 18] {
+            assert!(
+                !body.source_map.of_bci(bci).is_empty(),
+                "{leg} same-handler source map omitted physical BCI {bci}"
+            );
+        }
+        assert!(
+            body.source_map
+                .of_bci(12)
+                .iter()
+                .any(|segment| segment.text(&body.text).contains("identity(")),
+            "{leg} BCI 12 must map the protected identity consumer:\n{}",
+            body.text
+        );
+        assert!(
+            body.text.contains("(long)"),
+            "{leg} same-handler conversion missing:\n{}",
+            body.text
+        );
+        assert_eq!(
+            body.text.matches("identity(").count(),
+            1,
+            "{leg} the unique protected consumer must be identity:\n{}",
+            body.text
+        );
+        assert_eq!(
+            body.text.matches("markInt(").count(),
+            1,
+            "{leg} the constructor argument producer occurs exactly once:\n{}",
+            body.text
+        );
+
+        let scratch = Scratch::new(&format!("{leg}-handler-source"));
+        let source_dir = scratch.path().join("candidate-sources");
+        let candidate_classes = scratch.path().join("candidate-classes");
+        let empty = scratch.path().join("empty-classpath-sourcepath");
+        fs::create_dir_all(&source_dir).expect("complete handler source directory exists");
+        fs::create_dir_all(&empty).expect("empty handler classpath/sourcepath exists");
+        fs::write(
+            source_dir.join("ConstructorPrimitiveHandlerControls.java"),
+            &report.text,
+        )
+        .expect("complete generated handler class source is written");
+        let compile = compile_complete(
+            &source_dir,
+            &candidate_classes,
+            &empty,
+            &["ConstructorPrimitiveHandlerControls.java"],
+        );
+        assert!(
+            compile.status.success(),
+            "{leg} complete handler class source failed empty-path compilation:\n{}\n{}",
+            String::from_utf8_lossy(&compile.stdout),
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let generated_classes = fs::read_dir(&candidate_classes)
+            .expect("handler candidate class directory can be read")
+            .map(|entry| {
+                entry
+                    .expect("class directory entry is readable")
+                    .file_name()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            generated_classes.len(),
+            1,
+            "{leg} full single-class source emits exactly one class"
+        );
+        assert_eq!(
+            generated_classes[0],
+            std::ffi::OsString::from("ConstructorPrimitiveHandlerControls.class"),
+            "{leg} full source compiles without borrowed helper classes"
+        );
+    }
+}
+
+#[test]
+fn boolean_parameter_keeps_the_structural_new_site_but_refuses_its_constructor_body() {
+    for (leg, original_files) in [("javac8", JAVAC8_CLASSES), ("javac23", JAVAC23_CLASSES)] {
+        let original_main = original_files
+            .iter()
+            .find(|(name, _)| *name == "ConstructorPrimitiveConversionControls.class")
+            .expect("the complete fixture includes its main class")
+            .1;
+        let patched_main = boolean_wrapper_variant(original_main);
+        assert_boolean_variant_reaches_ssa(&patched_main);
+        let patched_files = [
+            (
+                "ConstructorPrimitiveConversionControls.class",
+                patched_main.as_slice(),
+            ),
+            ("PrimitiveLongPair.class", original_files[1].1),
+        ];
+        let snapshot = Engine::new()
+            .open(ArtifactInput::bytes(archive(&patched_files)), &mut budget())
+            .expect("the complete two-class patched input opens");
+        let report = class_source(&snapshot, MAIN);
+        assert_eq!(
+            report
+                .declaration
+                .as_ref()
+                .map(|declaration| declaration.name.as_str()),
+            Some(MAIN)
+        );
+        let body = recovered(&report, "wrapperByte");
+        assert_eq!(
+            body.quality,
+            Quality::Fallback,
+            "{leg} Boolean body quality"
+        );
+        assert_eq!(
+            body.representation,
+            Representation::Mixed,
+            "{leg} Boolean body representation"
+        );
+        assert_eq!(
+            body.syntax_status,
+            SyntaxStatus::NotJava,
+            "{leg} Boolean body is explicitly not claimed as Java"
+        );
+        assert!(
+            body.text.contains("@bytecode"),
+            "{leg} refusal quotes source bytecode"
+        );
+        assert_eq!(
+            body.news.len(),
+            1,
+            "{leg} wrapperByte retains its one new-site record"
+        );
+        let site = &body.news[0];
+        assert_eq!(site.class, "java/lang/Byte");
+        assert_eq!(site.arguments.len(), 1);
+        assert_eq!(site.head, 0);
+        assert_eq!(site.dup, Some(3));
+        assert_eq!(site.constructor, Some(6));
+        let conversion = site.arguments[0];
+        assert_eq!(conversion, 5, "i2b directly consumes the Boolean parameter");
+        assert!(
+            body.text.contains(
+                "the primitive conversion at BCI 5 expects `int` but its operand is presented as `boolean`"
+            ),
+            "{leg} Boolean source-category refusal is specific to i2b@5:\n{}",
+            body.text
+        );
+        for bci in [conversion, 9] {
+            assert!(
+                !body.source_map.of_bci(bci).is_empty(),
+                "{leg} refused wrapperByte has no source-map anchor for emitted BCI {bci}; text: {}; gaps are represented by fallbacks/diagnostics (RecoveryReport has no gaps field): fallbacks={:?}, diagnostics={:?}, source-map segments={:?}",
+                body.text,
+                body.fallbacks,
+                body.diagnostics,
+                body.source_map.segments()
+            );
+        }
+        assert!(
+            !body.text_of_bci(conversion).is_empty(),
+            "{leg} the refusal gap points back to the incompatible conversion at BCI {conversion}"
+        );
+    }
+}

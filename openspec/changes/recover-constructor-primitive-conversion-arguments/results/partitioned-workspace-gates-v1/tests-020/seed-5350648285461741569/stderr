@@ -1,0 +1,13 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 3.98s
+     Running tests/p3_narrow_return_boundaries.rs (target/debug/deps/p3_narrow_return_boundaries-9e85eefd3dbd4356)
+     Running tests/p3_nested_annotation_source.rs (target/debug/deps/p3_nested_annotation_source-cc9e9ff3eacb62e3)
+     Running tests/p3_nested_array_initializers.rs (target/debug/deps/p3_nested_array_initializers-43bbfaaab8e421c7)
+     Running tests/p3_nested_try.rs (target/debug/deps/p3_nested_try-4626faf1b69aca77)
+     Running tests/p3_new_value.rs (target/debug/deps/p3_new_value-9e937cc5bece078a)
+     Running tests/p3_null_resource.rs (target/debug/deps/p3_null_resource-4f03c8945c78eb44)
+     Running tests/p3_numeric_comparison.rs (target/debug/deps/p3_numeric_comparison-3e6567f84428ede5)
+     Running tests/p3_one_armed_if.rs (target/debug/deps/p3_one_armed_if-dda1d9b735ce5ff4)
+     Running tests/p3_ordinary_new_invokes.rs (target/debug/deps/p3_ordinary_new_invokes-837c7bdaa47156cf)
+     Running tests/p3_null_lead_straight_finally.rs (target/debug/deps/p3_null_lead_straight_finally-0917c7ee88bfbd51)

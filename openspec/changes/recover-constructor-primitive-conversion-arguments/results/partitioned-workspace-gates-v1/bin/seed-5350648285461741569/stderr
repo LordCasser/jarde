@@ -1,0 +1,3 @@
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+    Finished `test` profile [unoptimized] target(s) in 1.29s
+     Running unittests src/main.rs (target/debug/deps/jarde_cli-608a56cab2a6fb17)

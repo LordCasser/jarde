@@ -1,0 +1,162 @@
+
+running 18 tests
+test a_budget_without_a_ledger_keeps_the_direct_path ... ok
+test a_hammered_dimension_admits_exactly_its_limit_and_never_one_more ... ok
+test a_later_operation_on_one_request_folds_the_first_ones_total ... ok
+test a_local_limit_stops_that_work_and_leaves_the_operation_alone ... ok
+test a_permit_taken_before_a_cancellation_is_still_billed ... ok
+test a_quota_refusal_is_the_operations_stop ... ok
+test a_refused_entry_is_reported_with_the_quota_it_needed ... ok
+test a_worker_can_state_which_part_of_the_operation_its_next_work_is ... ok
+test an_overflowing_request_is_refused_rather_than_wrapped ... ok
+test depth_marks_take_the_deepest_value_per_owner ... ok
+test one_ledger_is_one_total_for_every_worker ... ok
+test the_elapsed_clock_is_the_operations_and_not_the_sum_of_worker_time ... ok
+test the_entry_depths_are_part_of_the_operation_and_its_own_work_can_exceed_them ... ok
+test the_entry_usage_counts_against_the_operation_and_is_never_reset ... ok
+test the_first_stop_is_published_and_later_observations_do_not_replace_it ... ok
+test the_total_reports_every_entry_and_the_observation_moves_no_number ... ok
+test two_successful_output_probes_do_not_reserve_the_last_unit ... ok
+test two_workers_race_for_the_last_quota_and_the_refused_one_is_not_billed ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+
+running 29 tests
+test a06_selects_root_11_and_17_and_marks_the_other_variants ... ok
+test a06_without_v17_falls_back_to_v11_and_without_manifest_to_base ... ok
+test artifact_tree_keeps_reports_for_children_the_physical_aggregate_already_stopped ... ok
+test budget_exhaustion_is_partial_and_never_fakes_completion ... ok
+test cancellation_stops_before_any_faked_selection ... ok
+test class_compliance_diagnostics_do_not_rewrite_path_selection ... ok
+test container_reservation_failure_declares_every_known_ordinal_skipped ... ok
+test container_without_enumerated_ordinals_produces_no_manifest_claim ... ok
+test disabled_policy_and_low_target_inactivate_versioned_entries ... ok
+test duplicate_candidates_are_ambiguous_and_never_first_wins ... ok
+test empty_container_completes_without_entries_or_manifest ... ok
+test empty_manifest_is_malformed_and_never_activates_multi_release ... ok
+test interrupted_item_budget_outranks_the_custom_policy_verdict ... ok
+test interrupted_predecessor_probe_keeps_base_not_applicable ... ok
+test invalid_version_paths_keep_physical_evidence_and_one_diagnostic_each ... ok
+test invalid_view_inputs_are_rejected_with_stable_codes ... ok
+test item_exhaustion_refuses_later_domain_diagnostics_and_evidence ... ok
+test items_exhausted_during_root_processing_declare_the_child_ordinals_skipped ... ok
+test manifest_evidence_states_and_path_diagnostics ... ok
+test missing_base_reports_the_closed_no_selection_reason ... ok
+test physical_evidence_is_the_single_provider_result_it_reports ... ok
+test physical_scope_controls_nested_multi_release_inspection ... ok
+test release_nine_is_a_legal_version_directory_and_selects_at_target_nine ... ok
+test report_json_round_trips_and_mr_owned_types_are_closed ... ok
+test selection_item_exhaustion_keeps_the_proven_prefix_and_stops ... ok
+test selections_follow_the_group_minimum_ordinal_not_path_bytes ... ok
+test truncated_physical_enumeration_after_the_manifest_keeps_its_decision_evidence ... ok
+test typed_diagnostic_rejects_unknown_fields_codes_and_severity_mismatch ... ok
+test unsupported_policies_preserve_candidates_without_a_selected_fact ... ok
+
+test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 12 tests
+test a_content_that_disagrees_with_its_record_is_refused_before_any_byte ... ok
+test a_damaged_class_declaration_is_an_error ... ok
+test a_damaged_member_table_publishes_the_stop_and_no_body_verdict ... ok
+test a_nested_class_is_read_through_its_own_container_chain ... ok
+test a_prepared_class_publishes_the_reads_identity ... ok
+test a_prepared_read_survives_a_cleared_or_zero_capacity_cache ... ok
+test a_real_fixture_class_decodes_every_method_like_the_single_method_path ... ok
+test absent_duplicate_and_single_code_entries_keep_the_codes_of_the_single_method_path ... ok
+test container_backing_hands_out_the_container_that_was_read ... ok
+test one_class_read_is_enough_for_every_method_of_the_class ... ok
+test stored_and_deflated_entries_both_decode_like_the_single_method_path ... ok
+test the_locator_keeps_every_duplicate_declaration_and_decodes_none_of_them ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 23 tests
+test a18_open_snapshot_stays_stable_and_a_reopened_one_rejects_old_cursors ... ok
+test budget_interruption_resumes_at_the_published_boundary ... ok
+test cancellation_is_never_reported_as_complete ... ok
+test cursor_for_another_target_is_rejected_before_the_scan ... ok
+test cursor_mismatches_bind_snapshot_view_relation_and_schema ... ok
+test cursor_rejects_every_target_change ... ok
+test manifest_line_endings_are_handled_without_losing_the_continuation_rule ... ok
+test page_size_does_not_change_query_identity ... ok
+test pagination_continuation_reproduces_one_full_scan ... ok
+test reports_round_trip_as_tagged_json_without_unknown_fields ... ok
+test request_validation_uses_stable_codes ... ok
+test resource_consumer_reports_manifest_and_service_facts ... ok
+test resource_scan_respects_relation_and_consumer_schema ... ok
+test result_item_budget_keeps_the_reliable_prefix ... ok
+test standalone_class_snapshot_uses_class_offset_coverage ... ok
+test unsupported_categories_do_not_change_scanned_evidence ... ok
+test unsupported_relation_candidates_page_without_repeats_or_gaps ... ok
+test unsupported_relation_candidates_use_the_ordinary_item_budget ... ok
+test unsupported_relation_keeps_candidates_for_a_standalone_class ... ok
+test unsupported_relations_do_not_expand_a_pool_owner ... ok
+test unsupported_relations_keep_raw_constant_pool_candidates ... ok
+test unsupported_relations_report_candidates_even_when_a_call_consumes_one ... ok
+test unsupported_relations_report_the_analysis_state_without_resolving ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test cancellation_at_the_high_fanout_unit_boundary_publishes_nothing ... ok
+test high_fanout_pages_splice_back_to_the_whole_scan ... ok
+test result_budget_publishes_the_reliable_prefix_of_a_high_fanout_entry ... ok
+test the_per_unit_accumulation_is_bounded_by_the_input_dimensions ... ok
+test the_within_bound_rejects_every_dimension_over_its_limit ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 6 tests
+test a_page_that_ends_at_a_member_boundary_does_not_decode_it_again ... ok
+test a_replayed_prefix_is_never_published_twice ... ok
+test a_small_page_stops_before_the_work_behind_it ... ok
+test a_small_resource_page_stops_before_the_containers_behind_it ... ok
+test the_continuation_splices_back_to_the_unpaged_scan ... ok
+test the_whole_resource_traversal_pays_for_every_container_it_reaches ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 6 tests
+test consumer_schema_is_canonical_and_all_query_relations_round_trip ... ok
+test directed_nested_origins_preserve_edges_and_distinguish_duplicate_parents ... ok
+test load_domain_keeps_policy_root_order_and_uncertainty_in_identity ... ok
+test physical_variants_coexist_while_runtime_views_only_declare_requests ... ok
+test standalone_and_archive_locations_round_trip_without_synthetic_entries ... ok
+test unknown_runtime_modes_round_trip_without_degrading_to_known_values ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test a_container_the_page_never_reaches_is_unknown_and_not_empty ... ok
+test a_cursor_is_refused_unless_it_describes_the_binding_that_issued_it ... ok
+test a_damaged_class_candidate_is_reported_when_the_page_reads_it ... ok
+test a_full_page_a_cancellation_and_a_budget_stop_are_three_states ... ok
+test a_root_directory_that_does_not_parse_is_refused_as_a_whole ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test a_page_inside_the_bootstrap_step_names_it_and_replays_only_its_prefix ... ok
+test a_page_inside_the_metadata_step_names_it_and_replays_only_its_prefix ... ok
+test a_page_inside_the_resource_step_names_it_over_a_tree_scope ... ok
+test mixed_consumers_share_one_cursor_and_one_item_order ... ok
+test unimplemented_categories_are_stated_without_changing_the_scanned_facts ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 3 tests
+test public_bytecode_path_keeps_its_result_and_charge_shape ... ok
+test public_entry_points_report_budget_hits_and_cancellation_as_errors ... ok
+test public_header_path_keeps_its_result_and_charge_shape ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

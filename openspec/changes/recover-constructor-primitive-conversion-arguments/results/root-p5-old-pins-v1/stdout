@@ -1,0 +1,25 @@
+
+running 6 tests
+test a_slow_consumer_changes_the_readings_and_not_the_shape ... slow consumer (readings only): serial elapsed_millis=44 process call elapsed_millis=43; two workers with a 1 ms consumer elapsed_millis=174 process call elapsed_millis=174
+ok
+test every_case_holds_the_shape_it_is_named_for ... ok
+test record_the_billing_table ... ignored, regenerates the pinned table; run with --ignored --nocapture after an intended shape change
+test the_corpus_is_rebuilt_from_the_committed_bytes_every_time ... ok
+test the_fixed_shape_bills_the_counts_the_corpus_pins ... --- counted dimensions at the pinned shape (counts, not timings) ---
+flat-mixed                 archive_entries=8 entry_bytes=1813 class_bytes=1813 class_headers=0 method_bodies=17 ir_items=2497 analysis_steps=1501 result_items=37 output_bytes=3657 classes(seen=4 prepared=4 refused=0) methods(declared=18 delivered=18)
+FAILED
+test the_old_per_method_arms_keep_their_ledger_and_the_same_text ... --- the two old arms' ledgers over the whole corpus (counts, not timings) ---
+direct  requests=187 input_bytes=0 archive_entries=1915 entry_bytes=365912 read_bytes=346379 class_bytes=327895 attribute_bytes=179852 code_bytes=2237 result_items=1378 output_bytes=39617 class_headers=191 method_bodies=181 ir_items=35580 ir_edges=2537 analysis_steps=19458 normalization_clones=0
+shared  requests=187 input_bytes=0 archive_entries=57 entry_bytes=18680 read_bytes=16476 class_bytes=10817 attribute_bytes=12220 code_bytes=2237 result_items=26 output_bytes=39617 class_headers=191 method_bodies=181 ir_items=35580 ir_edges=2537 analysis_steps=19458 normalization_clones=0
+store   10 entries / 10 containers / 19 definition reads (14771 bytes), 51706 retained bytes of 1024 entries / 16777216 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+reuse   container 398/408 hits, directories parsed 10, nested materialized 4 (2473 bytes); definition reads 168/187 hits (19 stored)
+FAILED
+
+failures:
+
+failures:
+    the_fixed_shape_bills_the_counts_the_corpus_pins
+    the_old_per_method_arms_keep_their_ledger_and_the_same_text
+
+test result: FAILED. 3 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.52s
+

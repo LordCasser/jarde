@@ -1,0 +1,112 @@
+
+running 4 tests
+test essential_and_all_have_the_same_text_but_only_all_has_source_origins ... ok
+test fixture_covers_typed_finite_and_special_float_values ... ok
+test recovered_complete_class_matches_frozen_original_raw_bits ... ignored, requires JDK: compile and execute the original and recovered complete classes
+test recovered_text_keeps_float_double_types_grouping_and_consumers ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+test changed_step_extra_consumer_shared_effect_and_post_use_do_not_move ... ok
+test outer_continue_runs_the_update_and_skips_the_body_tail ... ok
+test pure_add_store_latch_is_one_for_update ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 3 tests
+test a_post_loop_use_or_another_update_refuses_the_header_projection ... ok
+test for_proof_obeys_the_request_budget_and_cancellation ... ok
+test the_single_induction_update_is_a_for_header ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+test a_real_loop_is_still_a_while ... ok
+test the_shared_successor_of_an_and_is_the_outer_ifs_join ... ok
+test the_shared_successor_of_an_or_is_the_same_join ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 13 tests
+test a_close_the_exception_path_lacks_is_refused ... ok
+test a_finally_copy_is_refused_and_the_refusal_says_which_code_it_copies ... ok
+test a_guarded_body_that_branches_is_refused ... ok
+test a_handler_range_that_swallows_the_initialisation_is_refused ... ok
+test a_monitor_whose_exception_path_does_not_exit_is_refused ... ok
+test a_profile_that_does_not_admit_the_header_refuses_it ... ok
+test a_resource_initialised_after_an_earlier_one_is_inside_the_region_that_closes_it ... ok
+test a_second_entry_into_a_monitor_region_is_refused ... ok
+test a_single_resource_is_declared_in_the_header_and_closed_by_the_compiler ... ok
+test a_suppression_that_is_the_other_way_round_is_refused ... ok
+test a_synchronized_block_is_written_only_where_every_path_leaves_the_monitor ... ok
+test a_try_with_a_catch_beside_it_presents_the_statement_and_its_clause ... ok
+test three_resources_are_declared_in_the_order_whose_closes_run_backwards ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 2 tests
+test a_handlers_own_binding_store_is_not_a_resource_header ... ok
+test no_instruction_of_the_member_is_outside_the_graphs_account ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+test class_source_budget_and_cancellation_report_their_exact_stops ... ok
+test direct_new_family_pins_recovered_constructor_methods_and_remaining_controls ... ok
+test factory_families_are_complete_mapped_and_match_both_frozen_jdk_legs ... ok
+test missing_mid_header_refuses_only_initializers_whose_derived_path_uses_mid ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s
+
+
+running 9 tests
+test a_copy_chain_through_another_boolean_local_stays_boolean ... ok
+test a_hoisted_local_copied_from_a_boolean_local_is_declared_boolean ... ok
+test a_write_that_cannot_be_spelled_as_the_decided_type_terminates_its_structure ... ok
+test an_int_local_at_a_boolean_return_uses_the_jvm_low_bit ... ok
+test every_declared_member_is_covered_by_this_file ... ok
+test the_conclusion_does_not_depend_on_the_order_the_arms_come_in ... ok
+test the_controls_the_evidence_types_keep_their_text ... ok
+test the_literal_only_local_keeps_the_type_the_frames_state ... ok
+test the_type_decision_is_billed_and_a_stopped_run_commits_nothing ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 16 tests
+test a_branchy_lambda_helper_renames_while_the_straight_one_inlines ... ok
+test all_three_frozen_classes_keep_typed_immediate_receivers_and_compile_whole ... ok
+test an_overdeep_lambda_helper_renames_instead_of_walking_an_unbounded_body ... ok
+test array_constructor_projection_budget_stop_keeps_method_and_helper_together ... ok
+test captured_array_length_stays_a_lambda_call_and_keeps_its_physical_helper ... ok
+test captured_helper_handle_or_physical_flags_mismatch_refuses_omission ... ok
+test captured_int_parameter_precedes_sam_parameter_in_the_helper_mapping ... ok
+test captured_lambda_ir_budget_stop_keeps_physical_helpers_and_does_not_inline ... ok
+test class_source_projects_array_constructor_atomically_with_same_named_helper ... ok
+test direct_int_and_this_plus_int_captures_inline_with_call_time_semantics ... ok
+test effectful_capture_source_inlines_its_local_capture_once_with_call_time_semantics ... ok
+test lambda_helper_projection_budget_stop_does_not_publish_partial_helpers ... ok
+test no_capture_primitive_lambda_helpers_inline_as_one_class_projection ... ok
+test phi_merged_capture_source_is_refused_without_hiding_its_helper ... ok
+test raw_function_array_constructor_keeps_its_physical_helper_and_lambda_site ... ok
+test receiver_cast_output_and_ir_budgets_and_cancellation_do_not_publish_partial_java ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.81s
+
+
+running 5 tests
+test call_result_is_assigned_once_inside_the_reached_condition ... ok
+test field_read_is_assigned_once_after_the_short_circuit_call ... ok
+test incomplete_copy_type_effect_and_scope_candidates_stay_quoted ... ok
+test local_assignment_budget_and_cancellation_publish_no_partial_method ... ok
+test the_loop_condition_control_presents_the_assignment_in_place ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

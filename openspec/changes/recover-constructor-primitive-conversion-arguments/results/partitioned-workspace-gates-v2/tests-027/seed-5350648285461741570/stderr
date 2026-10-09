@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_typed_catch.rs (target/debug/deps/p3_typed_catch-f576bbb264d3079d)
+     Running tests/p3_typed_catch_boundary_return.rs (target/debug/deps/p3_typed_catch_boundary_return-24a8b334160059fa)
+     Running tests/p3_unary_negation.rs (target/debug/deps/p3_unary_negation-a7daa7f5d0593d17)
+     Running tests/p3_varargs.rs (target/debug/deps/p3_varargs-cc280add31e5a52c)
+     Running tests/p3_wrapped_array_foreach.rs (target/debug/deps/p3_wrapped_array_foreach-ad7da675fccbab20)
+     Running tests/p4_feature_registry.rs (target/debug/deps/p4_feature_registry-b7d6630dd47e1314)
+     Running tests/p4_golden.rs (target/debug/deps/p4_golden-535d08e86db40834)
+     Running tests/p4_modern_facts.rs (target/debug/deps/p4_modern_facts-eebaf03fa8c97baf)
+     Running tests/p4_plugins.rs (target/debug/deps/p4_plugins-e1e6ce29eb134807)
+     Running tests/p3_void_loop_finally.rs (target/debug/deps/p3_void_loop_finally-66b97c2f2e655e1a)

@@ -1,0 +1,12 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 6.79s
+     Running tests/p1_scope_cursor.rs (target/debug/deps/p1_scope_cursor-aaf44ab2ed2e25ac)
+     Running tests/p1_xref_bootstrap.rs (target/debug/deps/p1_xref_bootstrap-c50bdf0c52751d6c)
+     Running tests/p1_xref_code.rs (target/debug/deps/p1_xref_code-38efa75b6f7200fb)
+     Running tests/p1_xref_golden.rs (target/debug/deps/p1_xref_golden-0764279b04e94ea1)
+     Running tests/p1_xref_metadata.rs (target/debug/deps/p1_xref_metadata-c390f4c7bbfc9b1c)
+     Running tests/p1_xref_properties.rs (target/debug/deps/p1_xref_properties-6fff299c26e1c932)
+     Running tests/p2_canonical.rs (target/debug/deps/p2_canonical-4eac115321b15ebf)
+     Running tests/p2_cfg.rs (target/debug/deps/p2_cfg-cd0ec20024eff85c)
+     Running tests/p2_closure.rs (target/debug/deps/p2_closure-147e35be03a7b9ee)
+     Running tests/p2_contracts.rs (target/debug/deps/p2_contracts-11bdab96e7b696a5)

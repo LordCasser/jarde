@@ -1,0 +1,106 @@
+
+running 6 tests
+test the_anchors_guard_presents_whole_on_every_leg ... ok
+test the_anchors_own_class_answers_its_baseline_and_its_presentation_too ... ignored, needs both JDKs: it runs the anchor's own classes on both legs and then compiles the whole-class text and runs its own driver beside them — `readAll` recovered, the registered boundary closed (see the module doc)
+test the_certificate_shape_over_a_caller_owned_stream_presents ... ok
+test the_depth_boundary_presents_three_layers_and_refuses_four ... ok
+test the_mid_read_guard_answers_what_its_class_answers ... ignored, needs both JDKs: it strips the class-source comment lines, compiles the text with `javac --release 8` **and** the real javac 8 and runs both under `-Xverify:all` (see the module doc)
+test the_negatives_keep_their_refusals_verbatim ... ok
+
+test result: ok. 4 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+test a_construction_whose_only_reader_is_the_discard_keeps_the_member_form_out ... ok
+test a_kept_check_result_never_joins_the_site ... ok
+test allocation_qualifier_without_arguments_folds_on_both_legs ... ok
+test real_javac8_allocation_qualifier_folds_with_its_int_argument ... ok
+test the_javac23_leg_of_the_anchor_keeps_its_recovery ... ok
+test user_statements_survive_while_the_member_construction_folds ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+
+
+running 3 tests
+test an_undiscarded_check_refuses_on_the_getclass_spelling ... ok
+test real_javac8_parameter_qualifier_folds_like_the_javac23_leg ... ok
+test user_written_getclass_statement_survives_on_both_legs ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.36s
+
+
+running 6 tests
+test the_frozen_anchor_is_the_recorded_patrol_probe ... ok
+test the_frozen_baseline_of_the_same_anchor_refused_the_capture ... ok
+test the_multianewarray_capture_keeps_its_recorded_status ... ok
+test the_primitive_array_capture_recovers_in_both_javac_legs ... ok
+test the_recovered_text_recompiles_and_prints_the_original_output ... ok
+test the_reference_capture_and_the_rest_of_the_class_are_unchanged ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+
+running 5 tests
+test the_lock_guard_class_renders_whole_on_every_leg ... ok
+test the_negatives_keep_their_refusals_verbatim ... ok
+test the_rendered_class_recompiles_and_answers_what_the_original_answers ... ok
+test the_resource_across_finally_probe_presents_under_the_resource_guard ... ok
+test the_true_two_copy_non_lock_finally_stays_refused ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+
+running 5 tests
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_all_recovering_anchor_class_is_presented_whole ... ok
+test the_ladder_recovers_where_the_patrol_recorded_the_refusal ... ok
+test the_shapes_outside_the_single_level_ladder_keep_their_refusal ... ok
+test the_three_controls_are_byte_identical ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+
+running 5 tests
+test the_controls_keep_their_refusals_on_both_legs ... ok
+test the_multi_consumer_control_keeps_its_refusal_on_both_legs ... ok
+test the_probe_renders_the_same_text_from_a_jar ... ok
+test the_probes_presented_text_answers_what_its_class_answers ... ignored, needs both JDKs: it strips the class-source comment lines, compiles the text with `javac --release 8` **and** the real javac 8 and runs the probe's driver against a real file on both sides (see the module doc)
+test the_same_form_loop_presents_on_every_leg ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+test the_anchors_own_class_answers_its_baseline_and_its_boundary_is_stated ... ignored, needs both JDKs: it runs the anchor's own classes on both legs and states why the whole-class text stays uncompilable while `multiAwait`'s registered refusal stands (see the module doc)
+test the_boundaries_keep_their_refusals_and_the_branching_body_presents ... ok
+test the_negatives_keep_their_refusals_verbatim ... ok
+test the_nested_lock_shapes_present_whole_on_every_leg ... ok
+test the_order_and_exception_drivers_answer_what_the_original_answers ... ignored, needs both JDKs: it strips the class-source comment lines, compiles the text with `javac --release 8` **and** the real javac 8 and runs both under `-Xverify:all` (see the module doc)
+test the_order_leg_presents_the_same_shapes_over_its_recording_lock ... ok
+
+test result: ok. 4 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 8 tests
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_charsequence_and_serializable_positions_are_presented ... ok
+test the_comparable_positions_are_presented ... ok
+test the_enum_positions_are_presented ... ok
+test the_out_of_package_comparable_implementer_still_refuses ... ok
+test the_patrol_nested_enum_shape_presents_its_call ... ok
+test the_platform_enum_still_refuses ... ok
+test the_types_outside_the_closed_rows_still_refuse ... ok
+
+test result: ok. 7 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 6 tests
+test every_stripped_fixture_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_anonymous_comparator_argument_is_presented ... ok
+test the_isolated_ordering_program_presents_its_sort ... ok
+test the_named_platform_target_is_proved_and_the_absent_one_still_refuses ... ok
+test the_own_interface_positions_do_not_move ... ok
+test the_top_level_implementer_argument_is_presented ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.06s
+

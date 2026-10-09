@@ -1,0 +1,12 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 5.05s
+     Running tests/recover_io_resource_finally.rs (target/debug/deps/recover_io_resource_finally-543a656e7d273a13)
+     Running tests/recover_javac8_allocation_qualifier_null_check.rs (target/debug/deps/recover_javac8_allocation_qualifier_null_check-e04d3d3d2f4b32d0)
+     Running tests/recover_javac8_getclass_null_check_idiom.rs (target/debug/deps/recover_javac8_getclass_null_check_idiom-4b3dbe9bab392851)
+     Running tests/recover_lambda_primitive_array_capture.rs (target/debug/deps/recover_lambda_primitive_array_capture-0412518b639f78f6)
+     Running tests/recover_lock_guard_loop_finally.rs (target/debug/deps/recover_lock_guard_loop_finally-5bd370e3c5dc849d)
+     Running tests/recover_loop_else_if_early_returns.rs (target/debug/deps/recover_loop_else_if_early_returns-474d2a6cae23cd87)
+     Running tests/recover_loop_test_copy_store.rs (target/debug/deps/recover_loop_test_copy_store-93b6a96fba122f01)
+     Running tests/recover_nested_lock_finally_bodies.rs (target/debug/deps/recover_nested_lock_finally_bodies-4c09442f1e6e5481)
+     Running tests/recover_platform_implementer_argument_widening.rs (target/debug/deps/recover_platform_implementer_argument_widening-61b81ce01c25c92e)
+     Running tests/recover_platform_interface_argument_widening.rs (target/debug/deps/recover_platform_interface_argument_widening-249fbb9dedaf422f)

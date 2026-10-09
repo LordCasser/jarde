@@ -1,0 +1,140 @@
+
+running 8 tests
+test a_conversion_no_evidence_states_is_refused ... ok
+test a_converted_part_states_the_appends_own_type ... ok
+test a_part_that_already_meets_its_parameter_gains_nothing ... ok
+test a_return_states_the_members_own_type ... ok
+test a_write_states_the_written_types_own_type ... ok
+test an_argument_states_the_callees_parameter_type ... ok
+test every_declared_member_of_the_sample_is_covered ... ok
+test the_conversion_costs_no_ir_item_and_no_normalization_clone ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 12 tests
+test a_boolean_parameter_is_typed_by_the_members_own_descriptor ... ok
+test a_category_two_parameter_leaves_its_second_slot_to_the_signature ... ok
+test a_name_the_table_states_is_used_where_it_exists ... ok
+test a_proved_monitor_cleanup_ends_before_reused_loop_integers ... ok
+test a_slot_filled_and_read_in_one_region_keeps_its_initial_value ... ok
+test a_slot_the_table_names_over_two_ranges_carries_two_variables ... ok
+test a_slot_written_in_both_arms_is_declared_where_both_can_see_it ... ok
+test a_stopped_monitor_reuse_run_publishes_no_partial_local ... ok
+test an_arms_own_local_is_still_declared_inside_that_arm ... ok
+test non_monitor_handler_and_back_edge_do_not_borrow_the_monitor_split ... ok
+test the_debug_table_is_read_by_the_same_run_that_decoded_the_body ... ok
+test without_debug_evidence_a_reused_slot_stays_one_variable ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 5 tests
+test cancellation_cannot_publish_a_partial_concat_recovery ... ok
+test concat_consumed_short_circuit_locals_recover_as_boolean ... ok
+test exhausted_source_budget_cannot_publish_a_partial_concat_recovery ... ok
+test recovered_class_recompiles_and_runs_like_the_original ... ok
+test second_read_outside_the_boolean_positions_keeps_the_degradation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.77s
+
+
+running 5 tests
+test changed_field_increment_or_protection_cannot_claim_one_finally ... ok
+test changed_rows_targets_or_extra_completion_cannot_claim_one_finally ... ok
+test field_candidate_budget_and_cancellation_publish_no_partial_finally ... ok
+test shared_call_has_one_source_finally_and_all_physical_origins ... ok
+test shared_field_has_one_source_finally_and_all_physical_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 8 tests
+test business_form_behavior_matches_the_original_class ... ok
+test business_form_with_inner_break_recovers ... ok
+test exits_that_leave_the_loop_past_its_back_edge_stay_refused ... ok
+test labeled_continue_outer_form_recovers_the_same_way ... ok
+test overlap_with_inner_two_jump_body_stays_refused ... ok
+test shared_latch_double_loop_recovers_and_spells_the_continue ... ok
+test three_level_composition_recovers_and_behaves ... ok
+test untouched_single_continue_and_no_jump_shapes_stay_byte_identical ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s
+
+
+running 5 tests
+test all_shift_directions_narrow_operands_and_call_operands_recover ... ok
+test descriptor_proved_boolean_operands_are_refused ... ok
+test evidence_selection_keeps_shift_text_and_physical_origins ... ok
+test shift_recovery_stops_cleanly_at_resource_limits_and_before_work ... ok
+test widening_cast_remains_on_the_left_of_the_shift ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 7 tests
+test a_numeric_equality_argument_reaches_a_two_boolean_parameter_call ... ok
+test a_reference_equality_argument_is_the_comparison_itself ... ok
+test a_reference_inequality_argument_keeps_the_branches_own_sense ... ok
+test a_stored_comparison_result_passes_on_unchanged ... ok
+test a_zero_test_equality_argument_stays_refused ... ok
+test an_eager_boolean_and_argument_recovers_as_before ... ok
+test an_ordering_comparison_argument_stays_refused ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test negative_copy_target_or_argument_slot_refuses ... ok
+test negative_gap_or_lead_grammar_refuses ... ok
+test negative_rethrow_identity_rewrite_refuses ... ok
+test negative_saved_return_or_self_row_or_condition_refuses ... ok
+test segmented_null_lead_test_has_one_finally_one_folded_close_and_all_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 30 tests
+test catch_loop_test3_has_one_finally_and_all_bci_origins ... ok
+test catch_loop_test3_stop_discards_text_and_source_map ... ok
+test catch_loop_test3_verifier_valid_neighbors_refuse_finally ... ok
+test catch_value_test7_budget_and_cancellation_discard_partial_output ... ok
+test catch_value_test7_has_one_field_finally_and_joined_return ... ok
+test catch_value_test7_verifier_valid_neighbors_refuse_finally ... ok
+test concat_saved_return_has_one_finally_and_complete_physical_origins ... ok
+test concat_saved_return_neighbors_and_stops_refuse_atomically ... ok
+test conditional_test14_has_two_bounded_if_regions_and_all_origins ... ok
+test conditional_test14_neighbors_and_stops_refuse_atomically ... ok
+test empty_catch_test16_has_one_finally_and_two_real_rows ... ok
+test fixed_shared_join_has_one_finally_and_complete_physical_ownership ... ok
+test fixed_test11_has_one_iterable_finally_and_all_physical_origins ... ok
+test multi_return_loop_test5_has_one_finally_and_all_bci_origins ... ok
+test multi_return_loop_test5_valid_neighbors_refuse_and_stops_discard_partial_output ... ok
+test nested_test1_and_test2_have_one_outer_finally_and_complete_ownership ... ok
+test nested_test1_and_test2_stop_discards_text_and_source_map ... ok
+test nested_test1_and_test2_verifier_valid_near_misses_refuse_outer_finally ... ok
+test nested_test3_equal_other_string_is_still_one_finally ... ok
+test nested_test3_has_one_finally_and_complete_physical_ownership ... ok
+test nested_test3_stop_discards_text_and_source_map ... ok
+test nested_test3_verifier_valid_near_misses_refuse_shared_finally ... ok
+test nullable_resource_test9_has_one_finally_and_complete_origins ... ok
+test nullable_resource_test9_neighbors_refuse_and_stops_are_atomic ... ok
+test segmented_test13_has_one_owner_and_all_physical_origins ... ok
+test segmented_test13_neighbors_and_stops_publish_no_partial_finally ... ok
+test shared_join_stop_discards_text_and_source_map ... ok
+test two_catch_test17_has_one_finally_and_all_physical_origins ... ok
+test verifier_valid_boundary_variants_do_not_publish_a_partial_finally ... ok
+test verifier_valid_test11_neighbors_never_gain_a_finally_certificate ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+
+running 5 tests
+test cf03_candidate_budget_and_cancellation_publish_no_partial_source ... ok
+test cf03_independent_guards_stay_recovered ... ok
+test cf03_nested_claims_each_shared_leaf_and_tail_once ... ok
+test incomparable_shared_candidates_do_not_select_an_arbitrary_tail ... ok
+test tail_entry_outside_the_outer_branch_does_not_gain_a_second_owner ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

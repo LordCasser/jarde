@@ -1,0 +1,92 @@
+
+running 6 tests
+test all_evidence_maps_each_folded_dispatch_instruction_and_selector_producer ... ok
+test cancellation_before_string_projection_is_reported_without_a_committed_switch ... ok
+test essential_and_all_evidence_emit_identical_string_switch_text ... ok
+test low_ir_and_output_budgets_stop_without_committing_a_partial_switch ... ok
+test proved_dispatches_use_one_string_switch_and_original_arm_order ... ok
+test refused_certificates_preserve_both_executable_dispatches ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+test a_still_refused_switch_names_its_own_failure_first ... ok
+test join_equal_to_the_latch_recovers_and_the_control_stays_verbatim ... ok
+test switch_arm_continue_and_the_switch_join_present_together ... ok
+test the_variant_family_recovers_and_runs_like_the_original ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.92s
+
+
+running 2 tests
+test default_in_the_middle_keeps_both_proven_fallthrough_edges ... ok
+test lookup_and_table_switches_order_only_proven_fallthrough_and_keep_breaks ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 3 tests
+test analysis_budget_during_switch_join_proof_does_not_publish_a_complete_class ... ok
+test cross_case_goto_and_looping_arm_do_not_gain_a_forward_join ... ok
+test switch_arms_stop_before_the_shared_forward_join ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+test budget_and_cancellation_do_not_publish_a_partial_switch ... ok
+test local_continue_certificate_respects_switch_and_loop_boundaries ... ok
+test nested_switch_and_continue_without_a_unique_local_join_stay_quoted ... ok
+test switch_local_join_precedes_current_loop_continue_without_duplicate_ownership ... ok
+test switch_loop_exit_and_local_join_keep_their_own_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+test a_switch_expressions_join_return_is_written_into_every_arm ... ok
+test a_yielding_arm_keeps_the_store_it_already_wrote ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 3 tests
+test a_return_inside_a_synchronized_block_is_written_between_its_braces ... ok
+test essential_and_all_evidence_keep_the_same_member_body ... ok
+test independent_effects_keep_their_refusal_and_a_proved_nested_monitor_presents ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 8 tests
+test class_source_default_selection_includes_source_maps ... ok
+test duplicated_call_result_is_called_once_or_fully_referenced ... ok
+test fixture_has_the_complete_positive_throw_surface ... ok
+test lower_parameter_stack_value_is_not_an_extra_throw_read ... ok
+test ordinary_throw_shapes_are_presented_with_their_source_types ... ok
+test recovered_throw_probe_matches_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+test stale_parameter_throw_keeps_the_old_stack_value_or_quotes_its_boundary ... ok
+test throw_sources_keep_real_bcis_and_member_identity ... ok
+
+test result: ok. 7 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 5 tests
+test c2_alias_wrapped_rethrow_presents_the_full_catch_body ... ok
+test recovered_c2_runtime_matches_the_original_class ... ok
+test table_out_presentations_keep_the_refusal_and_the_original_runtime ... ok
+test wrap_family_recovers_every_variant_with_the_required_spelling ... ok
+test wrap_recovery_stops_and_cancels_before_any_published_output ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.43s
+
+
+running 4 tests
+test budget_and_cancellation_stop_before_any_partial_source ... ok
+test failed_body_build_quotes_the_whole_candidate ... ok
+test fixed_empty_finally_has_one_plain_catch_and_all_physical_origins ... ok
+test verifier_valid_neighbors_keep_a_stated_refusal ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

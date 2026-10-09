@@ -1,0 +1,93 @@
+{
+  "schema": "root-command-v2-disk-guard",
+  "argv": [
+    "cargo",
+    "test",
+    "--workspace",
+    "--all-features",
+    "--locked",
+    "--test",
+    "em22_boolean_xor",
+    "--test",
+    "em23_field_unit_updates",
+    "--test",
+    "em27_inline_char_array",
+    "--test",
+    "engine",
+    "--test",
+    "enum_string_field_name",
+    "--test",
+    "export_cli",
+    "--test",
+    "field_generic_projection",
+    "--test",
+    "fixture_behavior_guards",
+    "--test",
+    "generic_body_throws_projection",
+    "--test",
+    "generic_constructor_projection"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols",
+    "PROPTEST_RNG_SEED": "5350648285461741570"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 21474836480,
+    "poll_seconds": 2,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/run-root-gate-v2.py",
+    "bytes": 5359,
+    "sha256": "28b62534380035fb0c5ae6dccddf4ff953c0ebc9dfcc6240b86a09dc85241ff0"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 543220,
+      "sha256": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_constructor_primitive_conversion_arguments.rs",
+      "bytes": 44474,
+      "sha256": "6fe9c66f8ed88d3792d03ea26427a9123d4a6c81de960e40c624cc74cdd3821e"
+    }
+  ],
+  "free_before": 39172456448,
+  "exit": 0,
+  "runner_exit": 0,
+  "elapsed_seconds": 14.043318041993189,
+  "free_after": 39171358720,
+  "min_free": 39159361536,
+  "disk_stop_reason": null,
+  "stdout": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/partitioned-workspace-gates-v1/tests-003/seed-5350648285461741570/stdout",
+    "bytes": 6335,
+    "sha256": "009963abc007885bb2f5236bdda4b731fc73649f792112634044c66bc0aed23d"
+  },
+  "stderr": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/partitioned-workspace-gates-v1/tests-003/seed-5350648285461741570/stderr",
+    "bytes": 1083,
+    "sha256": "9a248378477d121671b943bfd89e65d9ee4a1a009628f262a11c87120f8b3c29"
+  }
+}

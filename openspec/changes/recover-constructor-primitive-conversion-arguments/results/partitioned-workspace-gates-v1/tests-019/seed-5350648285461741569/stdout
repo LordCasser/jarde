@@ -1,0 +1,85 @@
+
+running 4 tests
+test budget_and_cancellation_never_publish_a_partial_instance_assignment ... ok
+test java8_rebuild_preserves_all_sixteen_nonnull_and_null_paths ... ok
+test non_boolean_field_copy_and_compound_update_keep_the_entire_candidate_quoted ... ok
+test one_instance_write_owns_the_closed_graph_and_all_origins ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.05s
+
+
+running 5 tests
+test cancellation_cannot_publish_a_partial_local ... ok
+test exhausted_source_budget_cannot_publish_a_partial_local ... ok
+test mixed_local_complete_class_matches_all_eight_jvm_paths ... ok
+test mixed_local_stores_once_and_reads_the_same_boolean_name_twice ... ok
+test numeric_use_second_write_duplicated_phi_and_crossing_scope_refuse_the_local_graph ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.98s
+
+
+running 4 tests
+test cancellation_cannot_publish_a_partial_return ... ok
+test exhausted_source_budget_cannot_publish_a_partial_return ... ok
+test mixed_return_complete_class_matches_all_eight_jvm_paths ... ok
+test mixed_return_has_one_structured_return_and_complete_sources ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s
+
+
+running 7 tests
+test a_main_row_that_ends_at_the_inner_close_is_refused ... ok
+test a_store_cannot_claim_a_different_value_than_the_proved_constructor_result ... ok
+test an_effect_between_a_verified_construction_and_its_store_refuses_the_header ... ok
+test extra_exact_companion_is_not_silently_absorbed ... ok
+test malformed_companion_ranges_types_and_targets_remain_unexplained ... ok
+test recovered_run_compiles_as_java_8_and_matches_original_five_mode_trace ... ignored, needs a JDK on PATH to compile the exact recovered run() text and execute both sides
+test two_resource_header_owns_each_construction_and_preserves_close_evidence ... ok
+
+test result: ok. 6 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+
+running 1 test
+test a_nul_in_a_string_constant_is_presented_as_the_nul_it_is ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 1 test
+test recovered_bcs_array_index_value_order_matches_the_patched_jvm ... ignored, requires JDK and compares actual recovered B/C/S store ordering against verified patched classes
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test boolean_bastore_low_bit_keeps_the_value_and_store_sources ... ok
+test insufficient_output_budget_and_cancellation_stop_the_method_run ... ok
+test proven_bcs_stores_cast_only_at_the_matching_store_and_keep_origins ... ok
+test recovered_core_bcs_methods_match_the_patched_jvm ... ignored, requires JDK; compares all 147 boundary, producer, exception-order and local-store rows
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+test narrowed_field_stores_preserve_value_casts_and_producer_order ... ok
+test patched_field_fixture_has_real_bcs_descriptors_and_all_method_shapes ... ok
+test recovered_narrow_field_stores_match_patched_runtime ... ignored, requires JDK: compile the recovered class and compare its 267-line output with the patched class
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+test cast_sources_contain_operand_and_real_return_bci ... ok
+test default_all_and_replay_keep_identical_narrow_return_text ... ok
+test tight_output_budget_and_precancellation_publish_no_partial_cast ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 3 tests
+test essential_and_all_share_the_narrow_return_body ... ok
+test fixture_has_only_ireturn_narrowing_and_all_return_shapes ... ok
+test recovered_complete_class_matches_descriptor_patched_original ... ignored, requires JDK: compile and execute the original and recovered complete classes
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

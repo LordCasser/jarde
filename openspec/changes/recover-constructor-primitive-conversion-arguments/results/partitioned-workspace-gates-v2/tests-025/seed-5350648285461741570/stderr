@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_string_switch_projection.rs (target/debug/deps/p3_string_switch_projection-f741b9f6f5ea7858)
+     Running tests/p3_switch_arm_loop_exits.rs (target/debug/deps/p3_switch_arm_loop_exits-203e4371616f57c8)
+     Running tests/p3_switch_fallthrough.rs (target/debug/deps/p3_switch_fallthrough-379f6edec62d1812)
+     Running tests/p3_switch_forward_join.rs (target/debug/deps/p3_switch_forward_join-1eb893447eb11342)
+     Running tests/p3_switch_loop_exits.rs (target/debug/deps/p3_switch_loop_exits-030b33e4e7c71d17)
+     Running tests/p3_switch_value.rs (target/debug/deps/p3_switch_value-f353e4f64e641991)
+     Running tests/p3_sync_return.rs (target/debug/deps/p3_sync_return-72d5368191663f5e)
+     Running tests/p3_throw.rs (target/debug/deps/p3_throw-b95fdd5238a8a1eb)
+     Running tests/p3_throwable_wrap_arguments.rs (target/debug/deps/p3_throwable_wrap_arguments-c473e2a85b849375)
+     Running tests/p3_transparent_empty_finally.rs (target/debug/deps/p3_transparent_empty_finally-f2d91e504a6a951d)

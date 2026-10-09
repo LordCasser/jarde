@@ -1,0 +1,13 @@
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 7.96s
+     Running tests/p5_shared_payload.rs (target/debug/deps/p5_shared_payload-b294e3255c73e05c)
+     Running tests/parameterized_interface_headers.rs (target/debug/deps/parameterized_interface_headers-8af74be20ef147ef)
+     Running tests/preserve_local_scope_plan.rs (target/debug/deps/preserve_local_scope_plan-6ad2d723c2eacf0d)
+     Running tests/preserve_local_scope_refusals.rs (target/debug/deps/preserve_local_scope_refusals-20634855aa5c09bc)
+     Running tests/preserve_monitor_exit_evaluation_order.rs (target/debug/deps/preserve_monitor_exit_evaluation_order-3240ac441cc896d4)
+     Running tests/qualified_super_default.rs (target/debug/deps/qualified_super_default-3202a8d090b74579)
+     Running tests/raw_receiver_field_selection.rs (target/debug/deps/raw_receiver_field_selection-077a95a3c4dcbdc5)
+     Running tests/recover_array_element_field_receiver.rs (target/debug/deps/recover_array_element_field_receiver-0eace4739617c117)
+     Running tests/recover_array_initializer_value_positions.rs (target/debug/deps/recover_array_initializer_value_positions-6530712a6c7240da)
+     Running tests/query_cli.rs (target/debug/deps/query_cli-5322f439c5aea7fb)

@@ -1,0 +1,97 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling syn v3.0.5
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.12
+   Compiling cc v1.4.6
+   Compiling crc32fast v1.5.2
+   Compiling cfg-if v1.0.4
+   Compiling equivalent v1.0.2
+   Compiling serde_core v1.0.229
+   Compiling hashbrown v0.17.1
+   Compiling indexmap v2.14.2
+   Compiling blake3 v1.8.7
+   Compiling serde v1.0.229
+   Compiling simd-adler32 v0.3.10
+   Compiling thiserror v2.0.20
+   Compiling adler2 v2.0.1
+   Compiling miniz_oxide v0.9.1
+   Compiling thiserror-impl v2.0.20
+   Compiling serde_derive v1.0.229
+   Compiling constant_time_eq v0.4.2
+   Compiling arrayvec v0.7.8
+   Compiling bitflags v2.13.2
+   Compiling noak v0.7.0
+   Compiling flate2 v1.1.10
+   Compiling foldhash v0.1.5
+   Compiling rawzip v0.5.1
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling hashbrown v0.15.5
+   Compiling fixedbitset v0.5.7
+   Compiling petgraph v0.8.3
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0609]: no field `head` on type `&Gap`
+    --> crates/jarde-java/src/init.rs:3753:37
+     |
+3753 |             .find(|refusal| refusal.head == 7)
+     |                                     ^^^^ unknown field
+
+error[E0609]: no field `refusal` on type `Gap`
+    --> crates/jarde-java/src/init.rs:3755:28
+     |
+3755 |         assert_eq!(refusal.refusal.code(), "jre_new_interleaved_effect");
+     |                            ^^^^^^^ unknown field
+
+error[E0609]: no field `refusal` on type `Gap`
+    --> crates/jarde-java/src/init.rs:3757:21
+     |
+3757 |             refusal.refusal.requirement(),
+     |                     ^^^^^^^ unknown field
+
+error[E0609]: no field `refusal` on type `Gap`
+    --> crates/jarde-java/src/init.rs:3763:18
+     |
+3763 |                 .refusal
+     |                  ^^^^^^^ unknown field
+
+error[E0609]: no field `head` on type `&Gap`
+    --> crates/jarde-java/src/init.rs:3804:37
+     |
+3804 |             .find(|refusal| refusal.head == 0)
+     |                                     ^^^^ unknown field
+
+error[E0609]: no field `refusal` on type `Gap`
+    --> crates/jarde-java/src/init.rs:3806:28
+     |
+3806 |         assert_eq!(refusal.refusal.code(), "jre_new_interleaved_effect");
+     |                            ^^^^^^^ unknown field
+
+error[E0609]: no field `refusal` on type `Gap`
+    --> crates/jarde-java/src/init.rs:3808:21
+     |
+3808 |             refusal.refusal.requirement(),
+     |                     ^^^^^^^ unknown field
+
+error[E0609]: no field `refusal` on type `Gap`
+    --> crates/jarde-java/src/init.rs:3811:25
+     |
+3811 |         assert!(refusal.refusal.message().contains("BCI 5"));
+     |                         ^^^^^^^ unknown field
+
+error[E0609]: no field `head` on type `&Gap`
+    --> crates/jarde-java/src/init.rs:3882:41
+     |
+3882 |                 .find(|refusal| refusal.head == 0)
+     |                                         ^^^^ unknown field
+
+error[E0609]: no field `refusal` on type `Gap`
+    --> crates/jarde-java/src/init.rs:3885:25
+     |
+3885 |                 refusal.refusal.code(),
+     |                         ^^^^^^^ unknown field
+
+For more information about this error, try `rustc --explain E0609`.
+error: could not compile `jarde-java` (lib test) due to 10 previous errors

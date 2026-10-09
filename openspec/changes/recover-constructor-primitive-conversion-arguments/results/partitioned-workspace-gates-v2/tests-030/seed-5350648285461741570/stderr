@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/recover_boolean_int_bitwise_operands.rs (target/debug/deps/recover_boolean_int_bitwise_operands-eb8b8ee872740378)
+     Running tests/recover_boxed_number_widening.rs (target/debug/deps/recover_boxed_number_widening-408a09e612856afd)
+     Running tests/recover_branching_guard_body.rs (target/debug/deps/recover_branching_guard_body-b376eacde029eeea)
+     Running tests/recover_chained_field_assignment.rs (target/debug/deps/recover_chained_field_assignment-3d33ba3e6f31403d)
+     Running tests/recover_conditional_rhs_field_compound.rs (target/debug/deps/recover_conditional_rhs_field_compound-817ecfe4610a851c)
+     Running tests/recover_covariant_array_store_receiver.rs (target/debug/deps/recover_covariant_array_store_receiver-a6fa48e2f0fed384)
+     Running tests/recover_double_brace_allocation_site.rs (target/debug/deps/recover_double_brace_allocation_site-74702cf45860eea4)
+     Running tests/recover_dup_store_conditional.rs (target/debug/deps/recover_dup_store_conditional-971dfe13e1a53dd8)
+     Running tests/recover_inline_conditional_concat_operands.rs (target/debug/deps/recover_inline_conditional_concat_operands-0ea25d33a78db85c)
+     Running tests/recover_instance_field_assignment_chains.rs (target/debug/deps/recover_instance_field_assignment_chains-104626c9eb00de69)

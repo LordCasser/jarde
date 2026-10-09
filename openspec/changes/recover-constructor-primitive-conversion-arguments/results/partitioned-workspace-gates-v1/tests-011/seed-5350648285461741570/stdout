@@ -1,0 +1,99 @@
+
+running 9 tests
+test a_class_position_an_array_type_cannot_occupy_is_recorded_as_a_boundary ... ok
+test a_descriptor_that_states_no_java_type_is_refused_at_its_bci ... ok
+test a_multi_dimensional_array_declaration_states_every_dimension ... ok
+test a_primitive_array_declaration_is_a_java_byte_array ... ok
+test a_reference_array_declaration_spells_its_element_like_any_other_class ... ok
+test an_object_type_and_a_primitive_keep_the_spelling_they_had ... ok
+test an_owner_or_construction_class_with_no_java_spelling_is_refused ... ok
+test every_declared_member_is_covered_by_this_file ... ok
+test no_type_position_publishes_a_descriptor ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+test budget_and_cancellation_do_not_publish_a_partial_array_length_loop ... ok
+test stride_two_loop_keeps_array_length_index_update_return_and_origins ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test a_bitwise_class_source_budget_and_cancellation_are_bounded_outcomes ... ok
+test bitwise_source_uses_real_bcis_and_default_text_is_stable ... ok
+test deep_bitwise_values_fall_back_and_local_dependencies_reach_a_bounded_fixpoint ... ignored, requires JDK: compile deep-expression and local-dependency bounds at runtime
+test fixture_has_the_complete_integral_and_boolean_surface ... ok
+test recovered_bitwise_probe_matches_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+
+test result: ok. 3 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 2 tests
+test complete_recovered_class_recompiles_and_matches_the_verified_fixture ... ignored, needs a JDK on PATH to compile the complete recovered class with Java 8
+test effectful_initializer_recovery_preserves_order_and_partial_exception_trace ... ignored, needs a JDK on PATH to compile and execute the effectful complete-class comparison
+
+test result: ok. 0 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+test a_boolean_provenance_value_keeps_the_existing_direct_spelling ... ok
+test audited_bastore_is_low_bit_boolean_and_keeps_store_and_operand_origins ... ok
+test audited_order_keeps_each_producer_once_and_at_the_original_store ... ok
+test evidence_modes_and_method_replay_keep_the_same_body_and_origins ... ok
+test output_budget_and_precancellation_publish_no_partial_low_bit_result ... ok
+test presented_byte_char_and_short_values_are_admitted_only_at_proven_boolean_stores ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 1 test
+test complete_boolean_array_classes_match_the_verified_jvm ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.37s
+
+
+running 13 tests
+test a_boolean_call_result_is_a_truth_test_not_an_int_comparison ... ok
+test a_boolean_return_is_written_as_a_boolean ... ok
+test a_literal_operand_is_a_truth_test ... ok
+test a_local_filled_from_proven_boolean_evidence_is_declared_boolean ... ok
+test a_proven_boolean_operand_beside_an_int_literal_is_refused ... ok
+test a_store_without_boolean_evidence_into_a_boolean_variable_is_refused ... ok
+test an_int_context_keeps_its_int_shape ... ok
+test an_integer_comparison_keeps_its_integer_literals_on_either_side ... ok
+test an_integer_operand_in_a_z_return_uses_its_low_bit ... ok
+test every_declared_member_is_covered_by_this_file ... ok
+test every_declared_member_of_the_comparison_sample_is_covered ... ok
+test the_boolean_contexts_of_the_comparison_sample_keep_their_presentation ... ok
+test the_evidence_the_layer_states_keeps_its_presentation ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 4 tests
+test frozen_fixture_pins_descriptors_code_and_the_preimplementation_red ... ok
+test recovered_z_field_stores_match_the_patched_jvm ... ignored, requires JDK: compile the complete recovered class and compare its 40 rows with the patched JVM
+test z_field_budget_and_cancellation_stops_publish_no_partial_class ... ok
+test z_field_consumers_keep_boolean_proofs_and_source_origins ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+test integer_return_or_non_boolean_leaves_keep_the_numeric_conversion ... ok
+test return_consumers_use_short_circuit_operators_and_keep_all_origins ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.67s
+
+
+running 5 tests
+test a_store_with_the_wrong_opcode_does_not_enter_the_boolean_initializer ... ok
+test budget_and_cancellation_do_not_publish_a_partial_initializer ... ok
+test effectful_boolean_elements_stay_ordered_once_and_keep_their_three_store_origins ... ok
+test essential_and_all_evidence_select_the_same_initializer_body ... ok
+test proven_boolean_initializer_uses_each_real_bastore_as_low_bit_origin ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

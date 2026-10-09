@@ -1,0 +1,139 @@
+
+running 4 tests
+test a_constructors_own_receiver_is_this_and_its_writes_keep_their_place ... ok
+test a_receiver_the_body_never_reads_is_not_written_and_is_no_longer_an_alias ... ok
+test a_static_members_slot_zero_is_still_its_ordinal_parameter ... ok
+test an_instance_members_receiver_is_written_as_this_where_the_body_reads_it ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 7 tests
+test essential_and_all_have_the_same_text_but_only_all_has_source_origins ... ok
+test fixture_covers_positive_instanceof_shapes_without_merge_negative ... ok
+test frozen_instanceof_patches_have_expected_class_sizes ... ok
+test instanceof_method_replay_and_budget_stops_preserve_atomic_text_and_sources ... ok
+test recovered_complete_class_matches_original_runtime ... ignored, requires JDK: compile and execute original and recovered complete classes
+test recovered_instanceof_text_keeps_operands_targets_and_boolean_consumers ... ok
+test unsupported_instanceof_consumers_keep_producers_and_real_boundary_sources ... ok
+
+test result: ok. 6 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 1 test
+test shared_switch_operand_arms_and_real_ireturn_are_distinct_origins ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+
+running 5 tests
+test evidence_modes_and_replay_keep_the_same_body ... ok
+test integer_boolean_returns_are_structured_and_keep_operand_and_return_sources ... ok
+test raw_boolean_argument_boundary_remains_refused ... ok
+test shared_switch_uses_arm_evaluation_and_real_return_sources ... ok
+test tight_output_budget_and_precancellation_publish_no_partial_conversion ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+test complete_recovered_fixture_is_zero_quote_and_recompiles_to_same_execution ... ok
+test permanent_class_verifies_and_exposes_all_required_integer_boolean_shapes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s
+
+
+running 4 tests
+test call_casts_keep_their_call_site_as_derived_provenance ... ok
+test fixture_has_one_real_class_and_all_argument_shapes ... ok
+test recovered_calls_keep_their_invocation_argument_types ... ok
+test recovered_invocation_arguments_match_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 1 test
+test a_physical_query_constructs_none_of_the_recovery_layer_and_the_recovery_run_constructs_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test complete_java8_debug_and_nodebug_classes_match_original_execution ... ok
+test direct_iterable_projects_with_or_without_debug_names_and_preserves_cast ... ok
+test platform_collection_owners_project_only_with_matching_proof_and_preserve_execution ... ok
+test source_selection_and_bounded_stops_keep_the_loop_atomic ... ok
+test subtype_owners_project_and_extra_next_or_iterator_escape_refuse ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.48s
+
+
+running 5 tests
+test external_inner_join_entry_and_handler_edge_refuse_the_whole_region ... ok
+test inner_join_and_bridge_have_one_outer_arm_owner ... ok
+test intermediate_join_stops_without_publishing_partial_artifact ... ok
+test verifier_valid_independent_call_and_division_bridges_remain_referenced ... ok
+test verifier_valid_unknown_bridge_keeps_the_whole_candidate_referenced ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 55 tests
+test a_body_the_graph_accounts_for_names_the_copy_nothing_reaches ... ok
+test a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied ... ok
+test a_body_without_debug_metadata_gets_deterministic_names ... ok
+test a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope ... ok
+test a_bound_receiver_without_capture_proof_is_refused_and_a_static_reference_is_adapted ... ok
+test a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing ... ok
+test a_cancelled_run_produces_nothing_and_says_it_was_cancelled ... ok
+test a_capture_the_shape_may_not_replay_is_refused_under_the_declared_precondition ... ok
+test a_captured_lambda_is_written_with_its_capture_in_order_before_the_sam_parameters ... ok
+test a_committed_straight_line_body_is_presented_from_its_own_decode ... ok
+test a_discarded_construction_with_a_dynamic_argument_stays_refused ... ok
+test a_do_while_loop_runs_its_body_before_the_test ... ok
+test a_graph_that_is_not_reducible_is_quoted_whole_with_its_own_reason ... ok
+test a_handlers_instructions_a_dead_node_holds_are_accounted_for ... ok
+test a_keyword_name_takes_a_deterministic_alias_and_the_syntax_plane_says_so ... ok
+test a_lambda_body_without_debug_metadata_is_named_deterministically ... ok
+test a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted ... ok
+test a_member_that_cannot_be_presented_leaves_the_member_that_can_alone ... ok
+test a_newarray_capture_is_written_with_the_array_type_its_instruction_states ... ok
+test a_newarray_capture_whose_implementation_disagrees_still_refuses ... ok
+test a_nullable_bound_constructor_argument_preserves_its_creation_time_check ... ok
+test a_nullable_direct_bound_reference_keeps_creation_and_consumer_producers_quoted ... ok
+test a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_empty_body ... ok
+test a_profile_that_does_not_present_java_8_is_refused_the_lambda_rule ... ok
+test a_reused_array_length_value_keeps_the_loop_test_quoted ... ok
+test a_sam_that_the_implementation_does_not_line_up_with_is_refused ... ok
+test a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name ... ok
+test a_straight_line_body_with_a_call_reaches_text_and_a_segment_table ... ok
+test a_tableswitch_becomes_one_arm_per_target_with_its_keys_and_default ... ok
+test a_verified_site_is_recorded_with_its_bootstrap_use_site_and_captures ... ok
+test a_verifier_valid_unrelated_dynamic_creation_is_not_guessed_as_a_constructor_argument ... ok
+test a_while_loop_keeps_its_test_inside_the_statement_and_its_body_in_order ... ok
+test an_alt_metafactory_flag_word_and_an_unread_instance_are_both_refused ... ok
+test an_arbitrary_bootstrap_is_never_presented_as_a_lambda ... ok
+test an_array_length_duplicate_carried_out_of_the_test_keeps_the_loop_quoted ... ok
+test an_array_length_with_an_extra_test_effect_keeps_the_loop_quoted ... ok
+test an_earlier_materialized_lambda_remains_outside_the_constructor_expression ... ok
+test an_if_else_is_written_with_the_arm_the_branch_really_picks ... ok
+test an_unconsumed_array_length_keeps_the_loop_test_quoted ... ok
+test an_unrelated_dynamic_argument_effect_stays_inside_the_constructor_fallback ... ok
+test an_untyped_bound_reference_stays_refused_inside_a_constructor_argument ... ok
+test array_helper_candidate_rejects_non_metafactory_and_foreign_implementation_handles ... ok
+test cf16_named_catch_owns_complete_switch_and_range_end_transfer ... ok
+test cf16_partial_case_ranges_and_real_resource_keep_their_boundaries ... ok
+test cf16_stopped_runs_do_not_publish_a_partial_try ... ok
+test cf18_budget_and_cancellation_never_publish_partial_source ... ok
+test cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins ... ok
+test cf18_same_run_facts ... ignored, CF-18 evidence dump
+test cf18_verifier_valid_near_misses_refuse_the_whole_method ... ok
+test crossing_exception_records_are_quoted_with_the_priority_the_table_states ... ok
+test execution_quality_and_representation_each_state_their_own_thing ... ok
+test javac_bound_reference_nonnull_proofs_preserve_safe_forms_and_reject_class_dup ... ok
+test proved_entry_this_keeps_bound_method_reference ... ok
+test the_output_bound_is_checked_at_the_write_and_a_stop_produces_nothing ... ok
+test two_captures_are_written_in_the_order_the_site_reads_them ... ok
+
+test result: ok. 54 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.07s
+

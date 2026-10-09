@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "free_before": 16294432768,
+  "exit": 0,
+  "free_after": 30378835968,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "a2d3a753844c25798b213d888f6e808c64430d9a1798dd4bbaba19c61d9afc6d",
+  "reason": "可用磁盘跌破20GiB，精确停止本root Cargo后，仅清本项目target；冻结CLI和永久证据保留"
+}

@@ -1,0 +1,17 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 0.99s
+     Running tests/p5_bulk_corpus.rs (target/debug/deps/p5_bulk_corpus-04263dcf1cb08086)
+
+thread 'the_fixed_shape_bills_the_counts_the_corpus_pins' (12597121) panicked at tests/p5_bulk_corpus.rs:1365:9:
+assertion `left == right` failed: flat-mixed (one flat archive, four class entries, STORED and DEFLATED alternating) is billed differently than its pinned shape:
+  pinned:   Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2473, analysis_steps: 1360, result_items: 37, output_bytes: 3657 }
+  measured: Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2497, analysis_steps: 1501, result_items: 37, output_bytes: 3657 }
+  left: Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2497, analysis_steps: 1501, result_items: 37, output_bytes: 3657 }
+ right: Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2473, analysis_steps: 1360, result_items: 37, output_bytes: 3657 }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'the_old_per_method_arms_keep_their_ledger_and_the_same_text' (12597122) panicked at tests/p5_bulk_corpus.rs:1731:5:
+assertion `left == right` failed: the direct arm is billed differently than the shape it is pinned at
+  left: Billing { archive_entries: 1915, entry_bytes: 365912, class_bytes: 327895, class_headers: 191, method_bodies: 181, ir_items: 35580, analysis_steps: 19458, result_items: 1378, output_bytes: 39617 }
+ right: Billing { archive_entries: 1915, entry_bytes: 365912, class_bytes: 327895, class_headers: 191, method_bodies: 181, ir_items: 35378, analysis_steps: 17476, result_items: 1378, output_bytes: 39617 }
+error: test failed, to rerun pass `--test p5_bulk_corpus`

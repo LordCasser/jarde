@@ -1,0 +1,119 @@
+
+running 6 tests
+test a_full_store_refuses_without_invalidating_a_live_payload ... ok
+test a_key_written_again_holds_another_payload_and_a_held_handle_keeps_its_content ... ok
+test a_live_handle_survives_a_clear ... ok
+test a_store_with_room_for_nothing_retains_nothing_and_answers_no_wrong_value ... ok
+test a_trusted_digest_answers_the_entry_the_bytes_wrote ... ok
+test the_store_hands_out_the_one_allocation_it_holds ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+test a_bare_dollar_named_parent_keeps_the_raw_header ... ok
+test a_body_calling_its_own_erased_contract_records_the_argument_spelling_boundary ... ok
+test a_multi_interface_header_projects_the_parameterized_entry_only ... ok
+test a_parameterized_interface_entry_publishes_its_arguments_and_hides_the_bridge ... ok
+test a_type_use_annotated_implements_clause_keeps_the_raw_header_and_visible_bridge ... ok
+test an_interface_definition_that_contradicts_the_signature_refuses_the_header ... ok
+test an_unresolvable_interface_keeps_the_physical_spelling_and_the_visible_bridge ... ok
+test the_parent_cells_whose_criteria_are_unmet_keep_their_refusals ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.10s
+
+
+running 5 tests
+test a_bounded_or_cancelled_run_commits_no_partial_body ... ok
+test a_crossing_local_keeps_the_dependent_slice_refused ... ok
+test the_lifted_declaration_carries_the_origin_of_every_region_it_covers ... ok
+test the_recovered_class_recompiles_and_answers_what_the_original_answers ... ok
+test the_three_answers_are_the_rendered_class ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
+
+
+running 5 tests
+test the_boundary_keeps_the_independent_members_and_quotes_only_the_dependent_slice ... ok
+test the_crossing_fallbacks_belong_to_the_slices_they_refuse ... ok
+test the_legal_shapes_answer_what_the_original_and_jadx_answer ... ignored, needs both JDKs: it compiles the original, the frozen JADX render and the recovered text with `javac --release 8` **and** the real javac 8 and runs every side under `java -Xverify:all` (see the module doc)
+test the_refused_slices_keep_the_instructions_their_closure_covers ... ok
+test the_scope_planning_and_validation_stops_commit_no_partial_body ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 31.16s
+
+
+running 4 tests
+test a_proved_nested_pairs_local_return_moves_inside_and_its_sibling_keeps_its_refusal ... ok
+test the_nested_return_is_written_inside_the_inner_braces ... ok
+test the_rendered_text_runs_with_the_inner_lock_held ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with `javac --release 8` and runs it with `-Xverify:all` (see the module doc)
+test the_single_monitor_members_and_the_refused_void_body_are_unchanged ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 5 tests
+test abstract_target_in_a_direct_interface_keeps_the_refusal ... ok
+test nested_diamond_qualifiers_are_each_independently_presented ... ok
+test nested_single_void_and_parameterized_defaults_are_presented ... ok
+test packaged_nested_qualifier_is_spelled_with_the_package_dot ... ok
+test qualifier_inherited_only_through_extends_keeps_the_refusal ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 6 tests
+test a_folded_this_unknown_writer_other_unsafe_write_and_inherited_owner_stay_closed ... ok
+test alias_pressure_keeps_rebound_and_reused_local_scopes_conservative ... ok
+test pre_cancelled_receiver_recovery_is_not_a_silent_success ... ok
+test raw_formals_use_their_field_erasure_including_slots_null_arrays_and_bounds ... ok
+test synthetic_static_setter_does_not_lend_its_raw_formal_to_a_typed_caller ... ok
+test typed_this_and_published_headers_keep_their_own_binder_boundaries ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.10s
+
+
+running 13 tests
+test an_array_no_fact_states_keeps_the_field_identity_refusal ... ok
+test an_element_field_write_is_presented_by_the_same_proof ... ok
+test an_enum_lookup_tables_loop_body_is_written ... ok
+test every_recovered_fixture_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with `javac --release 8` and runs it with `-Xverify:all` (see the module doc)
+test the_accumulating_and_returning_shapes_are_written ... ok
+test the_call_result_receivers_do_not_move ... ok
+test the_current_class_and_the_companion_class_arrays_both_recover ... ok
+test the_direct_parameter_and_local_alias_reads_do_not_move ... ok
+test the_element_is_a_receiver_directly_and_through_a_local ... ok
+test the_element_method_calls_do_not_move ... ok
+test the_enum_text_stays_uncompilable_on_its_constant_shape ... ignored, needs a JDK on PATH: the enum constants' pooled shape is a rendering debt this change does not touch, and the stripped text must stay uncompilable (see the module doc)
+test the_recovered_lookup_table_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with `javac --release 8` and runs it with `-Xverify:all` (see the module doc)
+test the_static_lookup_tables_loop_body_is_written ... ok
+
+test result: ok. 10 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+
+running 6 tests
+test no_recovering_method_keeps_a_quote ... ok
+test the_admission_is_the_dances_shape_and_not_an_int_special_case ... ok
+test the_hand_built_negatives_keep_their_refusals ... ok
+test the_presenting_positions_keep_their_text_byte_for_byte ... ok
+test the_recovered_text_compiles_and_runs_identically_on_both_legs ... ignored, compiles and runs the recovered text; needs the installed JDK (and javac 8 for the second leg)
+test the_two_refusing_positions_recover_on_both_legs ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.41s
+
+
+running 11 tests
+test cancellation_is_library_state_because_the_cli_request_has_no_token ... ok
+test cursor_for_another_target_is_rejected_by_the_cli ... ok
+test cursor_mismatch_uses_the_stable_error_code ... ok
+test pagination_continuation_reproduces_one_full_scan ... ok
+test physical_scope_declares_snapshot_all_or_the_artifact_tree ... ok
+test protocol_errors_use_the_existing_error_contract ... ok
+test query_report_matches_the_library_field_by_field ... ok
+test result_item_budget_keeps_the_reliable_prefix_and_names_the_dimension ... ok
+test stdout_contract_and_output_budget ... ok
+test unimplemented_consumer_categories_stay_visible_in_the_cli_report ... ok
+test unsupported_relation_is_an_analysis_state_not_an_error_or_a_no_match ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+

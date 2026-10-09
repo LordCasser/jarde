@@ -1,0 +1,212 @@
+
+running 4 tests
+test a_run_without_faults_still_reports_its_own_lifecycle ... ok
+test a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind ... ok
+test a_worker_the_system_refuses_to_create_fails_the_operation_before_dispatching ... ok
+test at_most_the_window_of_class_tasks_runs_at_once_and_two_of_them_overlap ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+test a_consumed_result_is_handed_over_once_and_the_report_keeps_no_result ... ok
+test zero_and_tiny_retention_publish_the_same_scope_as_retention_with_room ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+
+running 7 tests
+test a_class_over_the_preparation_ceiling_is_refused_before_it_is_read_into_memory ... ok
+test a_class_that_cannot_be_prepared_is_refused_and_its_method_count_stays_unknown ... ok
+test an_explanation_only_result_is_an_outcome_and_not_a_stop ... ok
+test the_same_methods_read_one_at_a_time_cost_one_class_read_each ... ok
+test the_serial_configuration_finishes_inside_a_deadline_and_holds_no_window_slot ... ok
+test the_store_the_caller_attached_is_the_store_the_operation_reads_through ... ok
+test the_whole_scope_is_recovered_class_by_class_in_physical_order ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 6 tests
+test a_class_task_overlaps_another_while_the_first_one_is_still_working ... ok
+test one_worker_and_four_publish_the_same_stream ... ok
+test the_observation_port_sees_the_coordination_that_really_happened ... ok
+test the_operations_total_and_a_methods_local_limit_are_two_declarations ... ok
+test the_request_is_checked_before_anything_is_dispatched ... ok
+test the_window_reduces_the_workers_and_publishes_both_numbers ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 7 tests
+test class_scope_constructor_positives_recompile_and_preserve_behavior_and_binders ... ok
+test cross_hold_restores_u_constructor_binder_and_keeps_t_field_erased ... ok
+test peer_new_restores_only_the_two_argument_constructor_binder ... ok
+test positive_constructor_output_budget_and_early_cancellation_stop_cleanly ... ok
+test same_class_call_consumers_restore_class_binders_in_both_evidence_flavors ... ok
+test this_delegate_keeps_physical_signature_and_recompiles_with_original_behavior ... ok
+test unproved_constructor_shapes_keep_physical_parameters_and_refusals ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.34s
+
+
+running 102 tests
+test a_class_in_a_container_is_prepared_from_the_entry_it_lives_in ... ok
+test a_class_that_cannot_be_prepared_keeps_its_presentation ... ok
+test a_member_table_that_stops_is_stated_and_not_padded ... ok
+test a_member_whose_descriptor_cannot_be_read_is_stated_and_not_run ... ok
+test a_member_without_a_body_is_a_declaration_and_never_an_empty_body ... ok
+test a_method_table_that_stops_keeps_its_prefix_and_claims_no_more ... ok
+test a_name_two_definitions_answer_to_presents_nothing ... ok
+test a_request_that_cannot_pay_for_its_declaration_publishes_no_text ... ok
+test a_request_that_stops_mid_class_states_the_shortfall ... ok
+test a_stopped_member_is_marked_and_does_not_stop_the_class ... ok
+test an_admitted_bridge_is_rebuilt_from_the_complete_projected_source ... ok
+test an_explanation_only_member_is_marked_and_its_text_is_kept ... ok
+test an_identity_of_another_snapshot_is_an_input_error ... ok
+test annotation_type_without_a_body_keeps_its_runtime_visible_class_annotation ... ok
+test anonymous_constructor_initializer_rejects_wrong_field_owner_descriptor_and_handlers ... ok
+test anonymous_double_capture_refuses_a_changed_slot_descriptor_and_cross_class_use ... ok
+test anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection ... ok
+test anonymous_inner_this_refuses_a_cross_class_constructor_reference ... ok
+test anonymous_inner_this_refuses_a_fallback_child_method_without_partial_projection ... ok
+test anonymous_inner_this_refuses_a_mismatched_enclosing_method_identity ... ok
+test anonymous_inner_this_refuses_a_second_owner_allocation_and_keeps_physical_child ... ok
+test anonymous_inner_this_refuses_an_additional_local_capture_and_keeps_physical_child ... ok
+test anonymous_interface_projection_budget_stop_keeps_the_original_root_text ... ok
+test anonymous_interface_projection_cancellation_never_publishes_partial_source ... ok
+test anonymous_interface_projection_refuses_a_cross_class_use_of_the_same_child ... ok
+test anonymous_interface_projection_refuses_a_mixed_quality_child_method ... ok
+test anonymous_interface_projection_refuses_a_second_non_direct_same_class_allocation ... ok
+test anonymous_interface_projection_refuses_an_incomplete_child_method ... ok
+test anonymous_interface_projection_refuses_fields_and_constructor_effects ... ok
+test anonymous_interface_projection_refuses_non_source_child_method_flags ... ok
+test anonymous_interface_projection_stays_direct_return_only_for_declaration_sites ... ok
+test anonymous_interface_projects_a_proved_root_double_capture_and_recompiles ... ok
+test anonymous_superclass_budget_and_cancellation_never_publish_partial_source ... ok
+test anonymous_superclass_projects_the_local_declaration_initializer_shape ... ok
+test anonymous_superclass_projects_the_same_shape_with_debug_info ... ok
+test anonymous_superclass_recovers_one_proved_static_int_initializer_block ... ok
+test anonymous_superclass_refuses_a_child_body_allocating_the_anonymous_class_itself ... ok
+test anonymous_superclass_refuses_a_different_parent_constructor_overload ... ok
+test anonymous_superclass_refuses_a_second_allocation_bci_for_the_same_child ... ok
+test anonymous_superclass_refuses_captures_fields_and_constructor_effects ... ok
+test anonymous_superclass_refuses_cross_class_identity_use ... ok
+test anonymous_superclass_refuses_missing_parent_or_incomplete_child_body ... ok
+test anonymous_superclass_refuses_multiple_sites_and_multiple_capture_fields ... ok
+test anonymous_superclass_refuses_nested_parent_source_names_without_a_type_certificate ... ok
+test anonymous_superclass_refuses_reordered_or_reused_constructor_slots ... ok
+test anonymous_superclass_refuses_two_declaration_initializer_sites_in_one_method ... ok
+test anonymous_superclass_refuses_unproved_local_declaration_sites ... ok
+test anonymous_superclass_refuses_unproved_mixed_parameter_roles ... ok
+test br_family_bridges_admit_through_the_extended_gates ... ok
+test br_family_negative_shapes_keep_their_refusals ... ok
+test br_family_recovered_source_recompiles_and_runs_like_the_original ... ok
+test bridge_admission_needs_the_same_run_shape_source_and_resolved_parent_contract ... ok
+test bridge_admission_rejects_handlers_metadata_unwritable_targets_and_ambiguous_parents ... ok
+test class_annotation_named_array_values_keep_nested_annotation_order ... ok
+test class_retention_annotation_is_spelled_from_its_invisible_attribute ... ok
+test class_without_annotation_attributes_gains_no_annotation_content ... ok
+test damaged_class_annotation_attribute_is_reported_as_a_stop ... ok
+test damaged_member_annotation_keeps_its_shell_and_other_attribute_groups ... ok
+test direct_override_projection_requires_selected_complete_ordinary_parent ... ok
+test duplicate_class_annotation_entries_are_refused_without_partial_source ... ok
+test duplicate_type_annotation_is_refused_atomically_and_other_targets_survive ... ok
+test enum_switch_projection_follows_proved_mapping_and_refuses_aliased_enum_fields ... ok
+test enum_switch_projection_groups_distinct_tables_atomically ... ok
+test enum_switch_projection_refuses_irregular_factory_and_public_values ... ok
+test enum_switch_projection_withholds_sibling_when_one_shared_table_proof_fails ... ok
+test field_type_attribute_cannot_claim_a_method_return_target ... ok
+test formal_parameter_target_past_descriptor_count_is_refused_without_shift ... ok
+test formal_parameter_target_uses_descriptor_position_after_a_wide_slot ... ok
+test invisible_member_annotations_align_wide_and_varargs_by_descriptor_position ... ok
+test invisible_type_annotations_keep_their_shell_and_value ... ok
+test member_annotations_keep_field_method_and_parameter_ownership_in_text_and_json ... ok
+test member_declaration_annotations_do_not_consume_type_use_attributes ... ok
+test method_parameters_follow_wide_slots_and_refuse_name_collisions ... ok
+test method_parameters_name_body_and_declaration_only_without_lvt ... ok
+test nested_anonymous_projection_budget_and_cancellation_never_publish_partial_text ... ok
+test nested_anonymous_projection_refuses_cross_class_identity_use_of_the_grandchild ... ok
+test nested_anonymous_projection_refuses_duplicate_inner_allocations_and_constructor_effects ... ok
+test nested_anonymous_projection_refuses_mismatched_relations_and_incomplete_leaf ... ok
+test one_preparation_serves_every_member_body ... ok
+test one_real_class_is_presented_with_its_declaration_and_its_bodies ... ok
+test parameter_count_mismatch_refuses_groups_without_shifting_other_member_annotations ... ok
+test primitive_type_annotations_keep_their_facts_and_are_refused ... ok
+test proved_anonymous_interface_projects_from_both_physical_method_asts ... ok
+test proved_anonymous_superclass_forwards_the_original_ordered_arguments ... ok
+test proved_anonymous_superclass_projects_the_mixed_capture_shape ... ok
+test proved_two_level_anonymous_interfaces_project_as_one_nested_root_expression ... ok
+test qualified_type_annotations_are_spelled_inside_their_member_types ... ok
+test repeated_member_annotation_type_is_refused_atomically_at_its_position ... ok
+test runtime_visible_class_annotation_uses_the_same_declaration_path ... ok
+test same_package_parent_field_writes_keep_owner_source_and_stop_boundaries ... ok
+test same_type_annotations_on_method_and_return_keep_their_separate_facts ... ok
+test single_name_array_and_nested_path_type_uses_are_preserved_as_refusals ... ok
+test the_multilevel_covariant_bridge_walks_two_interface_edges ... ok
+test the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges ... ok
+test the_parameterized_superclass_header_hides_the_parameter_bridge ... ok
+test the_report_serializes_with_the_text_it_publishes ... ok
+test the_same_request_twice_is_the_same_text ... ok
+test typed_functional_references_publish_one_complete_header_body_and_source ... ok
+test unspellable_class_annotation_element_name_refuses_the_whole_annotation ... ok
+test unspellable_class_annotation_is_refused_as_a_whole ... ok
+test unspellable_member_annotation_type_and_element_refuse_the_whole_use ... ok
+test visible_and_invisible_annotations_follow_physical_attribute_order ... ok
+
+test result: ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 18.81s
+
+
+running 17 tests
+test a_budget_override_this_command_cannot_read_is_a_usage_error ... ok
+test a_class_parameter_that_is_not_a_definition_is_a_usage_error ... ok
+test a_definition_of_another_artifact_is_a_usage_error ... ok
+test a_member_that_cannot_be_spelled_is_stated_in_the_text ... ok
+test a_member_without_a_body_and_a_stopped_member_are_marked_in_the_text ... ok
+test a_missing_class_parameter_is_a_usage_error ... ok
+test a_name_two_definitions_answer_to_exits_three ... ok
+test a_policy_that_does_not_fit_the_input_is_a_usage_error ... ok
+test an_unknown_evidence_category_is_a_usage_error ... ok
+test class_source_defaults_to_the_source_map_needed_by_derived_ranges ... ok
+test every_category_of_the_vocabulary_is_a_selection_this_entry_answers ... ok
+test member_family_json_keeps_derived_ranges_and_two_physical_definitions ... ok
+test the_command_reads_no_standard_input ... ok
+test the_json_mode_is_the_librarys_own_document ... ok
+test the_output_file_receives_the_same_document_as_standard_output ... ok
+test the_same_command_twice_writes_the_same_bytes ... ok
+test the_text_mode_writes_the_librarys_own_source ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+
+running 10 tests
+test candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar ... ok
+test candidate_sequence_keeps_unclaimed_top_level_effects_visible ... ok
+test class_source_sidecar_keeps_field_identity_rhs_and_bytecode_order ... ok
+test enum_identity_proof_accepts_distinct_ordinals_and_refuses_aliased_fields ... ok
+test enum_identity_proof_consumes_the_actual_factory_and_public_values_bodies ... ok
+test enum_map_proof_follows_real_initializer_stores_instead_of_field_or_key_order ... ok
+test enum_map_proof_refuses_multiple_writes_and_non_unique_keys ... ok
+test initializer_sidecar_covers_ordinary_classes_and_interfaces_but_not_annotations ... ok
+test sidecar_keeps_forward_and_constant_phase_reads_at_their_real_bcis ... ok
+test sidecar_marks_a_real_exception_handler_and_never_calls_it_a_linear_body ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 7 tests
+test annotation_content_budget_refusal_returns_no_partial_facts ... ok
+test cancellation_before_annotation_content_read_publishes_no_facts ... ok
+test class_attribute_shell_budget_stop_is_not_a_complete_member_read ... ok
+test class_attribute_shell_damage_is_a_structural_error ... ok
+test class_retention_annotation_is_read_from_its_lazy_class_shell ... ok
+test no_class_annotation_shell_means_no_annotation_content_read ... ok
+test runtime_visible_annotation_preserves_its_utf8_element_value ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

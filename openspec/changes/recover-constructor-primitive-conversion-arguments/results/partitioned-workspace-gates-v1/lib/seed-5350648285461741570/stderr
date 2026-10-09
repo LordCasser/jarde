@@ -1,0 +1,6 @@
+    Finished `test` profile [unoptimized] target(s) in 0.09s
+     Running unittests src/lib.rs (target/debug/deps/jarde-a79ab400c62ed690)
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-657c595e424e97c1)
+     Running unittests src/lib.rs (target/debug/deps/jarde_jvm-3844c193ef672a30)
+     Running unittests src/lib.rs (target/debug/deps/jarde_query-6a72a422e40ecfd6)
+     Running unittests src/lib.rs (target/debug/deps/jarde_reader-2395b36051f9febd)

@@ -1,0 +1,12 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 5.19s
+     Running tests/recover_postfix_condition_positions.rs (target/debug/deps/recover_postfix_condition_positions-b3edf1f2e78a78ee)
+     Running tests/recover_postfix_old_value_snapshot.rs (target/debug/deps/recover_postfix_old_value_snapshot-864de332d77c7ea5)
+     Running tests/recover_proved_nonnull_bound_receivers.rs (target/debug/deps/recover_proved_nonnull_bound_receivers-7d2be67640fda1fc)
+     Running tests/recover_short_circuit_local_branch_reads.rs (target/debug/deps/recover_short_circuit_local_branch_reads-198c68d4a866d15a)
+     Running tests/recover_statement_position_news.rs (target/debug/deps/recover_statement_position_news-14887c9c16113cb7)
+     Running tests/recover_static_generic_field_init_text.rs (target/debug/deps/recover_static_generic_field_init_text-02034880f46f1206)
+     Running tests/recover_synthetic_ctor_super_order.rs (target/debug/deps/recover_synthetic_ctor_super_order-e8c4aa9bfdf6788e)
+     Running tests/recover_temporal_argument_widening.rs (target/debug/deps/recover_temporal_argument_widening-3c6675155abe77c2)
+     Running tests/recover_unicode_identifiers.rs (target/debug/deps/recover_unicode_identifiers-5ff15576b8fc3d46)
+     Running tests/recover_write_accessor_field_types.rs (target/debug/deps/recover_write_accessor_field_types-2f98354cc2c9dba4)

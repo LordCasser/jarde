@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/p3_mixed_short_circuit_instance_field.rs (target/debug/deps/p3_mixed_short_circuit_instance_field-ac43e237652b9a28)
+     Running tests/p3_mixed_short_circuit_local.rs (target/debug/deps/p3_mixed_short_circuit_local-6adb416e756724bb)
+     Running tests/p3_mixed_short_circuit_return.rs (target/debug/deps/p3_mixed_short_circuit_return-8d32e66c1be9a427)
+     Running tests/p3_multi_resource_twr_geometry.rs (target/debug/deps/p3_multi_resource_twr_geometry-70f2bf7c9be6afea)
+     Running tests/p3_mutf8.rs (target/debug/deps/p3_mutf8-18fdd1a4ed49a283)
+     Running tests/p3_narrow_array_store_order.rs (target/debug/deps/p3_narrow_array_store_order-395242855c118c2b)
+     Running tests/p3_narrow_array_stores.rs (target/debug/deps/p3_narrow_array_stores-0f0335b448a18ec4)
+     Running tests/p3_narrow_field_stores.rs (target/debug/deps/p3_narrow_field_stores-3595ed880973049e)
+     Running tests/p3_narrow_integer_return_contract.rs (target/debug/deps/p3_narrow_integer_return_contract-1f73b70bbaf4e1fc)
+     Running tests/p3_narrow_integer_returns.rs (target/debug/deps/p3_narrow_integer_returns-6893f30438310b0e)
