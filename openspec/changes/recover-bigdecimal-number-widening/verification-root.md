@@ -45,6 +45,12 @@ root-clean-after-local-v1只清本仓target；冻结新旧CLI和所有raw证据�
 
 ## 发布与实际CI状态
 
-产品6997c9f8b2515cb18c359fe55559a486fe47fff1已推送main；CI37989319644正在执行。已观察fmt/Clippy、MSRV、supply chain成功，workspace双seed与其余steps未全部完成，不计确切CI验收，不勾3.2/3.3。
+产品6997c9f8b2515cb18c359fe55559a486fe47fff1已推送main；CI37989319644已结束为failure：stable seed1在旧closedNumberBoundary负例断言失败，actual Structured/expected Fallback；seed2与显式BigDecimal步骤未执行。MSRV/supply/fuzz成功但不能计产品CI验收，3.2/3.3仍不勾。原JSON与完整gzip stable日志、root失败判定保存在results/ci-run-v1.json、ci-stable-job-v1.log.gz、ci-failure-root-v1.json。
 
 提交后完整diff whitespace检查发现11个原始Cargo stdout的末尾空行；raw bytes必须保留，不能trim。root-committed-whitespace-v1记录全raw检查exit2和排除这些stdout的source检查exit0；所有真实失败保留。此前root-diff-check-v1是工作区源码检查，不能拿它冒称全新raw日志没有whitespace提示。无需修改产品或Git全局规则。
+
+## CI旧边界修正（待新CI）
+
+root用同一冻结产品CLI对两个实际输入重新提取BoundaryControls与BNX，四个完整报告与原双流保存在ci-stale-boundary-current-v2。closedNumberBoundary现为完整Number initializer，每个Integer/BigDecimal构造及mark参数各一次，两个NewRecord及原全部BCI保持；旧拒绝预期需转正。BNX仍wholebody fallback，只有AtomicInteger@46拒绝；BigDecimal@21拒绝消失，完整effect来源闭包仍保留，不能把其正文称已编译成功。v1两BNX成功后root误写Boundary路径中止，partial失败保留。
+
+Luna提供两个旧test更新，root应用/rustfmt并fresh20checks/0errors确认准确预期、Atomic拒绝与全来源；五产品源及原本片测试/workflow都不改。无新增恢复规则。由于其它项目Cargo占用后空闲约19GiB、本仓target已无，root遵守20GiB停线，未运行本地focused Cargo；该限制写入ci-stale-boundary-root-verification-v1.json，必须等新确切CI执行补齐，不能以CLI核验冒称测试已跑。此次CI修正独立提交，不混入下一片nested产品/fixture。

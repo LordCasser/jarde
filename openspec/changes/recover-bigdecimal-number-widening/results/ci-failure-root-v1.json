@@ -1,0 +1,25 @@
+{
+  "schema": "root-exact-product-ci-failure-v1",
+  "product": "6997c9f8b2515cb18c359fe55559a486fe47fff1",
+  "run_id": 37989319644,
+  "url": "https://github.com/LordCasser/jarde/actions/runs/37989319644",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": {
+    "stable / test and specification": "failure",
+    "fuzz smoke": "success",
+    "MSRV 1.88.0": "success",
+    "supply chain": "success"
+  },
+  "completed_success_test_result_records_before_failure": 114,
+  "not_full_workspace_seed": true,
+  "failed_target": "p3_constructed_reference_array_elements",
+  "failed_test": "nested_constructor_composition_is_presented_once_and_boundary_controls_remain_honest",
+  "cause": "historical closedNumberBoundary expected Fallback, actual Structured after separately proved release8 BigDecimal Number row",
+  "raw_json_sha256": "deca83f41407a7cabcf72fddd9f7a7beac8bd4438e9eb754bcf8826ea9656fc5",
+  "log_raw_bytes": 376205,
+  "log_raw_sha256": "4a5f740545112f30a3f48b43cf000f71efd4ebadb24dd267eb1de774a3d01992",
+  "log_gzip_sha256": "048a7b9ac70fa071433f5a300d8ac6f1d4062a87db55b46966be21fc91472a72",
+  "seed2_and_explicit_bigdecimal_not_run": true,
+  "acceptance": false
+}

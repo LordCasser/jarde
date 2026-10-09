@@ -814,16 +814,20 @@ fn nested_constructor_composition_is_presented_once_and_boundary_controls_remain
         let closed = recovered_body(&boundary, "closedNumberBoundary");
         assert_eq!(
             closed.quality,
-            Quality::Fallback,
+            Quality::Structured,
             "{leg} closed Number quality"
         );
-        assert_eq!(closed.representation, Representation::Mixed);
+        assert_eq!(closed.representation, Representation::Java);
+        assert!(!closed.text.contains("@bytecode"), "{leg}: {}", closed.text);
         assert!(
-            closed
-                .text
-                .contains("no compatible reference fact for a Java initializer")
+            closed.text.contains("new java.lang.Number[]{"),
+            "{leg}: {}",
+            closed.text
         );
-        assert!(!closed.text.contains("new java.lang.Number[]{"));
+        assert_eq!(closed.text.matches("new java.lang.Integer(").count(), 1);
+        assert_eq!(closed.text.matches("new java.math.BigDecimal(").count(), 1);
+        assert_eq!(closed.text.matches("mark(\"1\")").count(), 1);
+        assert_eq!(closed.text.matches("mark(\"2\")").count(), 1);
         assert_eq!(closed.news.len(), 2, "{leg} Number constructor records");
         for (head, dup, constructor, class, argument) in [
             (6, 9, 15, "java/lang/Integer", 12),

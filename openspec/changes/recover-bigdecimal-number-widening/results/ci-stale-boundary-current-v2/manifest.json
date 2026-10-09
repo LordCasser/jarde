@@ -1,0 +1,166 @@
+{
+  "schema": "ci-stale-boundary-current-v2",
+  "exact_product": "6997c9f8b2515cb18c359fe55559a486fe47fff1",
+  "cli_sha256": "b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0",
+  "commands": [
+    {
+      "name": "BNX-javac8",
+      "argv": [
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "class-source",
+        "--input",
+        "tests/fixtures/recover-boxed-number-widening/v8-javac8/BNX.class",
+        "--class",
+        "BNX",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "input": "tests/fixtures/recover-boxed-number-widening/v8-javac8/BNX.class",
+      "input_sha256": "85d6dbc80d6f1912a24b953bff043119e2d00ec0220d565dabf4e0f1180495c6",
+      "stdout_sha256": "372b9219adbd37fa0ae5230db3f2e492435432b4df41a14022ea154876853b4a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "BNX-javac23",
+      "argv": [
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "class-source",
+        "--input",
+        "tests/fixtures/recover-boxed-number-widening/v8/BNX.class",
+        "--class",
+        "BNX",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "input": "tests/fixtures/recover-boxed-number-widening/v8/BNX.class",
+      "input_sha256": "0fcaf74b923a0d5e59aee1fee7c964cd71d240abf9be186c278a566bfcc59c8c",
+      "stdout_sha256": "cc4a24d4b8197d93630ba105126d693fc9619178c12e7db746dcf3ac3f309aff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Boundary-javac8",
+      "argv": [
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "class-source",
+        "--input",
+        "tests/fixtures/p3-constructed-reference-array-controls-v1/javac8/BoundaryControls.class",
+        "--class",
+        "BoundaryControls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "input": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac8/BoundaryControls.class",
+      "input_sha256": "f44881ada8171552c95841a0bcbc28962969708e59facae1246ca87b7b55a664",
+      "stdout_sha256": "27bdc0675bac285e3f86fd380e0c77fc4cd01442a6e9be2cfc3dea5c9cec8c43",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Boundary-javac23",
+      "argv": [
+        "/private/tmp/jarde-bigdecimal-number-cli-v1",
+        "class-source",
+        "--input",
+        "tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/BoundaryControls.class",
+        "--class",
+        "BoundaryControls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "input": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/BoundaryControls.class",
+      "input_sha256": "008835c56d57d64fb09ab862638118604d87e757e090af22bd1cdbac1f4bac5f",
+      "stdout_sha256": "495c5b3a9eb6b4bfb48a41310fce0c669273aed11babe0433b4270818a01f183",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "files": [
+    {
+      "path": "BNX-javac23.java",
+      "bytes": 2643,
+      "sha256": "3e1a913551e087e007146c0bc87d58753288974fc9c9a06fb437bf950ef4e9e1"
+    },
+    {
+      "path": "BNX-javac23.json",
+      "bytes": 64848,
+      "sha256": "cc4a24d4b8197d93630ba105126d693fc9619178c12e7db746dcf3ac3f309aff"
+    },
+    {
+      "path": "BNX-javac23.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "BNX-javac8.java",
+      "bytes": 2643,
+      "sha256": "3e1a913551e087e007146c0bc87d58753288974fc9c9a06fb437bf950ef4e9e1"
+    },
+    {
+      "path": "BNX-javac8.json",
+      "bytes": 64858,
+      "sha256": "372b9219adbd37fa0ae5230db3f2e492435432b4df41a14022ea154876853b4a"
+    },
+    {
+      "path": "BNX-javac8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Boundary-javac23.java",
+      "bytes": 6506,
+      "sha256": "ac158e237b3e47fa8507a4a233293884c7a832d72a8c1cd3fbbe18afb51c1530"
+    },
+    {
+      "path": "Boundary-javac23.json",
+      "bytes": 156274,
+      "sha256": "495c5b3a9eb6b4bfb48a41310fce0c669273aed11babe0433b4270818a01f183"
+    },
+    {
+      "path": "Boundary-javac23.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Boundary-javac8.java",
+      "bytes": 6506,
+      "sha256": "ac158e237b3e47fa8507a4a233293884c7a832d72a8c1cd3fbbe18afb51c1530"
+    },
+    {
+      "path": "Boundary-javac8.json",
+      "bytes": 156274,
+      "sha256": "27bdc0675bac285e3f86fd380e0c77fc4cd01442a6e9be2cfc3dea5c9cec8c43"
+    },
+    {
+      "path": "Boundary-javac8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "prior_partial": "v1 first two BNX succeeded, then root incorrect BoundaryControls filename /classes stopped before execution; retained"
+}
