@@ -1,0 +1,90 @@
+{
+  "scope": "固定CLI4控制的root逐项核对；44条源/jar/候选字节及Probe实际转录与已独立裁定CLI3一致，按同一范围裁定；不替代GC10完整门禁",
+  "candidate_cli_sha256": "f6fe20c6dfb4be1673ba58e4536b4f8b1da38efe1ee991285b77dbd429717525",
+  "facts_sha256": "976133b57d131de9d187cc9c1dd2cd70d081beaa87855613e4de0d6ac4518a36",
+  "facts_records": 44,
+  "source_and_criterion_hash_checks_passed": true,
+  "rows": [
+    {
+      "case": "UnknownIncoming",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "另一入边参数是Object，原unchecked (T)源码cast擦除后不提供类型证明；三个关联头一起raw，独立untouched仍T。"
+    },
+    {
+      "case": "CycleRelay",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "两个物理方法有互相invoke依赖，无环callee-first不以候选互证；有限执行控制保持行为但不计API恢复。"
+    },
+    {
+      "case": "MethodHandleUse",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "身份目标位于bootstrap handle，caller没有普通direct identity invoke；Function.apply跨接口的代换不在此片。"
+    },
+    {
+      "case": "RawOwnReceiver",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "原raw alias被renderer折为this，但SSA实参receiver未获直接this/参数化receiver证明；整体保持raw而不从原源码或展示this猜T。"
+    },
+    {
+      "case": "ReboundOwnReceiver",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "原receiver静态类型仍为C<T>，unchecked raw赋值不改变其类型；候选的实际局部声明是raw C。Object alias、raw cast及重绑定传播未获证明，依实际发射保持拒绝。"
+    },
+    {
+      "case": "InheritedUnknown",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "符号owner写本类，但无本类物理get声明；父类ArrayList<T>替换与继承解析未获证明，class和method均保持可靠raw表示。"
+    },
+    {
+      "case": "VarargsCall",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "ACC_VARARGS和调用前数组构造不能作固定参数direct formal代换；保留擦除varargs及调用行为，拒绝泛型头。"
+    },
+    {
+      "case": "SameErasureBinder",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "class T与callee U虽同Number擦除，U还需Runnable且本调用为null无唯一方法变量源；保留sink raw和独立class T，不计U恢复。"
+    },
+    {
+      "case": "MultiUseResult",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "call结果保存为局部并用于observe和return，多use/局部传播在范围外；完整incoming不闭合时identity和relay共同raw，实际observe与返回效果通过。"
+    },
+    {
+      "case": "BridgeUnknown",
+      "four_legs": 4,
+      "verdict": "positive_control",
+      "full_api_recovered": true,
+      "root_basis": "既有pure桥接证明成立，javac重编补桥，保留真实String checkcast；四腿完整API匹配，作为正控制。"
+    },
+    {
+      "case": "IncompleteSite",
+      "four_legs": 4,
+      "verdict": "positive_control",
+      "full_api_recovered": true,
+      "root_basis": "原fixture有合法条件单invoke，四腿两分支和API都匹配，作为正控制；缺项清单由独立故障测试验证，不改该输入凑负例。"
+    }
+  ],
+  "errors": [],
+  "control_review_passed": true,
+  "v3_v4_actual_sources_and_probe_identical": true,
+  "v3_root_disposition_sha256": "e5f852255ee9bcb36f9eeadf413729aedaddfeb6150bb66d425d43a4b12c5e8c"
+}

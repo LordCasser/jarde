@@ -1,0 +1,14 @@
+field.type=T
+field.physical-type=java.lang.Object
+field.declaring=MultiFormalRawParam
+field.identity=T{declaration=class:MultiFormalRawParam,owner=true,method=false}
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:MultiFormalRawParam;owner=true
+method=put;params=MultiFormalRawParam,K{declaration=method:put(MultiFormalRawParam;java.lang.Object;java.lang.Object;)void,owner=false,method=true},java.lang.Object;return=void;typeParameters=K{declaration=method:put(MultiFormalRawParam;java.lang.Object;java.lang.Object;)void,owner=false,method=true};physical-params=MultiFormalRawParam,java.lang.Object,java.lang.Object;physical-return=void;declaration=put(MultiFormalRawParam;java.lang.Object;java.lang.Object;)void
+method.type-parameter=put(MultiFormalRawParam;java.lang.Object;java.lang.Object;)void;name=K;bounds=java.lang.Object;declaration=method:put(MultiFormalRawParam;java.lang.Object;java.lang.Object;)void;method-identity=true
+behavior.value=java.lang.Object
+behavior.array-length=n/a
+behavior.value-is-marker=true
+behavior.array-element-is-marker=true
+behavior.value-is-input=true
+behavior.number-value=n/a
+behavior.return-is-receiver=false

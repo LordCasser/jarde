@@ -1,0 +1,137 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/MethodHandleUse/MethodHandleUse.jar!/MethodHandleUse.class
+  Last modified 2026-10-9; size 1380 bytes
+  MD5 checksum 77a3338139932daaf03777086166d6a5
+  Compiled from "MethodHandleUse.java"
+public class MethodHandleUse<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#29         // java/lang/Object."<init>":()V
+   #2 = InvokeDynamic      #0:#34         // #0:apply:(LMethodHandleUse;)Ljava/util/function/Function;
+   #3 = InterfaceMethodref #35.#36        // java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+   #4 = Class              #37            // MethodHandleUse
+   #5 = Class              #38            // java/lang/Object
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               LineNumberTable
+  #10 = Utf8               LocalVariableTable
+  #11 = Utf8               this
+  #12 = Utf8               LMethodHandleUse;
+  #13 = Utf8               LocalVariableTypeTable
+  #14 = Utf8               LMethodHandleUse<TT;>;
+  #15 = Utf8               identity
+  #16 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #17 = Utf8               x
+  #18 = Utf8               Ljava/lang/Object;
+  #19 = Utf8               TT;
+  #20 = Utf8               Signature
+  #21 = Utf8               (TT;)TT;
+  #22 = Utf8               relay
+  #23 = Utf8               f
+  #24 = Utf8               Ljava/util/function/Function;
+  #25 = Utf8               Ljava/util/function/Function<TT;TT;>;
+  #26 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #27 = Utf8               SourceFile
+  #28 = Utf8               MethodHandleUse.java
+  #29 = NameAndType        #6:#7          // "<init>":()V
+  #30 = Utf8               BootstrapMethods
+  #31 = MethodHandle       #6:#39         // invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #32 = MethodType         #16            //  (Ljava/lang/Object;)Ljava/lang/Object;
+  #33 = MethodHandle       #5:#40         // invokevirtual MethodHandleUse.identity:(Ljava/lang/Object;)Ljava/lang/Object;
+  #34 = NameAndType        #41:#42        // apply:(LMethodHandleUse;)Ljava/util/function/Function;
+  #35 = Class              #43            // java/util/function/Function
+  #36 = NameAndType        #41:#16        // apply:(Ljava/lang/Object;)Ljava/lang/Object;
+  #37 = Utf8               MethodHandleUse
+  #38 = Utf8               java/lang/Object
+  #39 = Methodref          #44.#45        // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #40 = Methodref          #4.#46         // MethodHandleUse.identity:(Ljava/lang/Object;)Ljava/lang/Object;
+  #41 = Utf8               apply
+  #42 = Utf8               (LMethodHandleUse;)Ljava/util/function/Function;
+  #43 = Utf8               java/util/function/Function
+  #44 = Class              #47            // java/lang/invoke/LambdaMetafactory
+  #45 = NameAndType        #48:#52        // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #46 = NameAndType        #15:#16        // identity:(Ljava/lang/Object;)Ljava/lang/Object;
+  #47 = Utf8               java/lang/invoke/LambdaMetafactory
+  #48 = Utf8               metafactory
+  #49 = Class              #54            // java/lang/invoke/MethodHandles$Lookup
+  #50 = Utf8               Lookup
+  #51 = Utf8               InnerClasses
+  #52 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #53 = Class              #55            // java/lang/invoke/MethodHandles
+  #54 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #55 = Utf8               java/lang/invoke/MethodHandles
+{
+  public MethodHandleUse();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LMethodHandleUse;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LMethodHandleUse<TT;>;
+
+  public T identity(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LMethodHandleUse;
+            0       2     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LMethodHandleUse<TT;>;
+            0       2     1     x   TT;
+    Signature: #21                          // (TT;)TT;
+
+  public T relay(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aload_0
+         1: invokedynamic #2,  0              // InvokeDynamic #0:apply:(LMethodHandleUse;)Ljava/util/function/Function;
+         6: astore_2
+         7: aload_2
+         8: aload_1
+         9: invokeinterface #3,  2            // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+        14: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   LMethodHandleUse;
+            0      15     1     x   Ljava/lang/Object;
+            7       8     2     f   Ljava/util/function/Function;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   LMethodHandleUse<TT;>;
+            0      15     1     x   TT;
+            7       8     2     f   Ljava/util/function/Function<TT;TT;>;
+    Signature: #21                          // (TT;)TT;
+}
+Signature: #26                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "MethodHandleUse.java"
+InnerClasses:
+     public static final #50= #49 of #53; //Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles
+BootstrapMethods:
+  0: #31 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #32 (Ljava/lang/Object;)Ljava/lang/Object;
+      #33 invokevirtual MethodHandleUse.identity:(Ljava/lang/Object;)Ljava/lang/Object;
+      #32 (Ljava/lang/Object;)Ljava/lang/Object;

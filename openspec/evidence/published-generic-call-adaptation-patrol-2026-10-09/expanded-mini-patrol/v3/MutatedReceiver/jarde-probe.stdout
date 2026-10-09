@@ -1,0 +1,2 @@
+header=relay<>( java.lang.Object;) -> java.lang.Object
+behavior.marker=true

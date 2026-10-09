@@ -1,0 +1,4 @@
+/private/tmp/jarde-generic-call-patrol-v1/MethodShadow/jadx/MethodShadow.java:15: 错误: 不可比较的类型: Number和int
+        System.out.println("behavior.marker=" + (new MethodShadow().relay(19) == 19));
+                                                                              ^
+1 个错误

@@ -1,0 +1,23 @@
+{
+  "candidate_cli": "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+  "candidate_cli_sha256": "8770d823c70e7f61749cac836e468c0a991093822d1926822d4769adc1cf7339",
+  "candidate_cli_metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/candidate-cli-v8.json",
+  "candidate_cli_metadata_sha256": "61f8986f6d57757b8e491cf1d420deb35070d738ba705f3bcab056fa5a6b32db",
+  "source_archive": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/source-snapshot-v41.tar.gz",
+  "source_archive_sha256": "d2367f1cc6a63c0c99804412a7d4f84c7c97eca3807987eab36828e40f97df1d",
+  "source_snapshot_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/source-snapshot-v41.json",
+  "source_snapshot_manifest_sha256": "0fb10f291ffa8cca48a57eae2e59b52ffc5a2741f6aeb235d92c1e83d3acbb02",
+  "source_hashes": {
+    "src/class_source.rs": "242f95288f10dd57ce078006c0fd6377f4a573d13667a6cc1afc876cc32f7759",
+    "src/facade.rs": "f8737b3f0f6f9de137a263544c1f62feb21cca161bf77454f9328f76a03b24c6",
+    "crates/jarde-java/src/report.rs": "a030bbc78faed44dad77a3b0cce6e584056e726ac41a71abfab69aa53f00a319",
+    "tests/same_class_generic_call_consumers.rs": "31c1ad4ecbb1d35551830f33aa39ec11f0e64c0de9171379e5b3cf810ec30eea",
+    "tests/class_scope_constructor_projection.rs": "db50946fbfb3604a66f6ee0c933bcb30f9f2f122fed2c20e78509617b7913659",
+    "tests/same_class_generic_binding.rs": "8997feb96e259060df75051d7cba91f58f532e1dd20055d01f3f8fe132e86fb2",
+    "tests/generic_method_projection.rs": "5264c5bebf39c4d4b718eb303a1a2e81839897127c7930560ce14b3cab533989",
+    "tests/generic_throws_projection.rs": "7102442211ded320bff8d883899df1897671ad938894316241a627a32fc5c935"
+  },
+  "build_command_metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/candidate-cli-v8-build-v41-result.json",
+  "build_command_metadata_sha256": "b722aa01dadea73326e2c0d76ad4d6b6dbd7a9b2390f2fd5163c913878b4b047",
+  "scope": "GC09 field-23 and constructor-80 replay preflight for frozen CLI8/v41; no source repair conclusion beyond this artifact identity."
+}

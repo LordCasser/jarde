@@ -1,0 +1,74 @@
+[
+  {
+    "label": "fmt-v35",
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v35.json",
+    "started_unix_ns": 1791512502619649000,
+    "exit": 0,
+    "finished_unix_ns": 1791512505308228000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "diff-v35",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v35.json",
+    "started_unix_ns": 1791512505310295000,
+    "exit": 0,
+    "finished_unix_ns": 1791512505406482000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "regressions-v35",
+    "argv": [
+      "cargo",
+      "test",
+      "--test",
+      "generic_method_projection",
+      "--test",
+      "generic_constructor_projection",
+      "--test",
+      "same_class_generic_binding",
+      "--test",
+      "same_class_generic_call_consumers",
+      "--test",
+      "class_scope_constructor_projection",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v35.json",
+    "started_unix_ns": 1791512505408577000,
+    "exit": 101,
+    "finished_unix_ns": 1791512551342460000,
+    "log_sha256": "e6b4979ee4bead9b896edd1fc5bf953f5dd5e412cc6542cf77980280d25d761a",
+    "source_unchanged": true
+  }
+]

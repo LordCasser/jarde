@@ -1,0 +1,10 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.36s
+     Running unittests src/lib.rs (target/debug/deps/jarde-3864b398be2c3436)
+
+running 2 tests
+test class_source::tests::generic_call_components_are_callee_first_and_cycles_are_rejected ... ok
+test class_source::tests::generic_call_components_meter_dense_fan_in_and_honor_cancellation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 204 filtered out; finished in 0.00s
+

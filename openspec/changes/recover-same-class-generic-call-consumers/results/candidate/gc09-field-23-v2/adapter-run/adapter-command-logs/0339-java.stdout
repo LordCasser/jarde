@@ -1,0 +1,5 @@
+fieldValue={raw=value}
+fieldGenericType=java.util.Map<java.lang.String, java.lang.String>
+classvars=0
+method=put methodvars=1 parameterGenericType=R
+method=put methodvars=1 parameterGenericType=boolean

@@ -1,0 +1,8 @@
+classformal#0:A bounds=java.lang.Object
+classformal#1:B bounds=java.lang.Object
+constructor()
+method:combine(java.lang.Object;java.lang.Object;) return=CLASS#1 params=CLASS#0;CLASS#1
+method:relay(java.lang.Object;java.lang.Object;) return=CLASS#1 params=CLASS#0;CLASS#1
+behavior=class-formal-B-marker
+probe.checks=11
+probe.failures=0

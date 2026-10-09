@@ -1,0 +1,60 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.37s
+     Running unittests src/lib.rs (target/debug/deps/jarde-3864b398be2c3436)
+
+running 52 tests
+test class_source::same_class_overload_proof_tests::bound_overload_casts_only_to_the_physical_targets_explicit_number_bound ... ok
+test class_source::same_class_overload_proof_tests::callee_method_binder_is_substituted_and_unknown_user_hierarchy_refuses ... ok
+test class_source::same_class_overload_proof_tests::distinct_type_variables_are_not_assumed_incompatible ... ok
+test class_source::same_class_overload_proof_tests::incomplete_or_foreign_physical_inventories_never_pin_a_target ... ok
+test class_source::same_class_overload_proof_tests::overload_proof_propagates_budget_exhaustion_and_cancellation ... ok
+test class_source::same_class_overload_proof_tests::plain_upper_bound_is_already_unique_and_same_name_string_is_closed_negative ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_defers_only_closed_same_arity_overload_competition ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_defers_unreferenced_generic_sibling_for_real_same_arity_target ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_keeps_unclosed_overload_inventories_unproved ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_propagates_budget_and_cancellation ... ok
+test class_source::same_class_overload_proof_tests::same_name_overload_uses_unbounded_typevar_and_does_not_narrow_to_string ... ok
+test class_source::same_class_overload_proof_tests::unknown_typevar_bound_is_not_negative_evidence_for_an_overload ... ok
+test class_source::same_class_overload_proof_tests::wide_second_argument_keeps_its_descriptor_position_when_casting_first ... ok
+test class_source::tests::a_binary_name_is_split_where_its_own_last_slash_is ... ok
+test class_source::tests::a_name_java_cannot_spell_becomes_the_deterministic_alias ... ok
+test class_source::tests::a_text_that_is_not_that_shape_is_not_placed ... ok
+test class_source::tests::a_varargs_flag_writes_the_last_parameters_array_as_the_dots ... ok
+test class_source::tests::an_arrays_element_width_does_not_move_the_parameters_after_it ... ok
+test class_source::tests::anonymous_capture_class_facts_are_passed_as_typed_assembly_input ... ok
+test class_source::tests::bytes_that_are_not_a_field_descriptor_are_refused_rather_than_guessed ... ok
+test class_source::tests::bytes_that_are_not_a_method_descriptor_are_refused_rather_than_guessed ... ok
+test class_source::tests::class_header_spelling_keeps_pool_names_the_member_spelling_refuses ... ok
+test class_source::tests::class_scope_constructor_gate_matches_exact_same_class_target_and_receiver ... ok
+test class_source::tests::field_write_parameter_proof_distinguishes_published_generic_and_raw_parameters ... ok
+test class_source::tests::field_write_source_type_walk_charges_exact_work_and_propagates_stops ... ok
+test class_source::tests::functional_withholding_uses_projected_state_not_markers_or_source_text ... ok
+test class_source::tests::generic_call_components_are_callee_first_and_cycles_are_rejected ... ok
+test class_source::tests::generic_call_projection_state_stops_atomically_and_clones_with_metering ... ok
+test class_source::tests::generic_call_substitution_preserves_binders_bounds_and_arrays ... ok
+test class_source::tests::generic_constructor_field_write_requires_one_unique_instance_field_by_name ... ok
+test class_source::tests::incomplete_same_class_field_inventory_cannot_prove_a_field_binding ... ok
+test class_source::tests::member_annotation_budget_stop_keeps_the_raw_shell_unread ... ok
+test class_source::tests::member_annotation_cancellation_keeps_the_raw_shell_unread ... ok
+test class_source::tests::method_parameters_need_a_complete_safe_slot_projection ... ok
+test class_source::tests::one_artifact_is_split_at_its_own_block ... ok
+test class_source::tests::one_field_descriptor_is_spelled_as_java_spells_it ... ok
+test class_source::tests::one_internal_name_is_spelled_dotted_and_nothing_else_about_it_changes ... ok
+test class_source::tests::one_member_block_puts_the_envelope_and_the_statements_at_the_same_depth ... ok
+test class_source::tests::one_member_whose_artifact_cannot_be_placed_quotes_it_line_by_line ... ok
+test class_source::tests::one_member_without_an_artifact_keeps_its_marker_inside_the_block ... ok
+test class_source::tests::one_method_descriptor_is_spelled_with_its_slots_and_its_return_type ... ok
+test class_source::tests::one_stop_code_is_the_engines_own_spelling_of_its_reason ... ok
+test class_source::tests::ordinary_signature_types_spell_each_structured_argument_and_array ... ok
+test class_source::tests::projected_parameter_names_and_final_are_one_declaration ... ok
+test class_source::tests::published_method_type_variable_uses_only_its_matching_raw_class_bound ... ok
+test class_source::tests::raw_parameter_platform_widening_rejects_invalid_utf8_name_collisions ... ok
+test class_source::tests::raw_receiver_assignment_uses_java_reference_and_array_erasure_rules ... ok
+test class_source::tests::raw_receiver_type_proof_propagates_budget_and_cancellation ... ok
+test class_source::tests::recovered_names_follow_parameter_slots_across_a_wide_value ... ok
+test class_source::tests::selected_member_path_spells_only_exact_nested_signature_segments ... ok
+test class_source::tests::void_generic_header_output_budget_publishes_no_partial_declaration ... ok
+test class_source::tests::void_generic_signature_stops_before_publishing_on_cancel_or_analysis_budget ... ok
+
+test result: ok. 52 passed; 0 failed; 0 ignored; 0 measured; 152 filtered out; finished in 0.01s
+

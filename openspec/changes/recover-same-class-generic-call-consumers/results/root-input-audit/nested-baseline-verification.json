@@ -1,0 +1,25 @@
+{
+  "scope": "Separate four-input nested-call baseline; no candidate acceptance",
+  "manifest_sha256": "48a191cf6823709429d943ced6140e63c5836fc3ed4e9b66f691a1016d5a4c0f",
+  "verifier_sha256": "120daecb6e56d5d526098366a64e389aef0bf9806c6f6cd21882e715c715bf0c",
+  "files_checked": 115,
+  "cases_checked": 4,
+  "totals": {
+    "original": {
+      "cases": 4,
+      "compile_pass": 4,
+      "probe_pass": 4
+    },
+    "jadx": {
+      "cases": 4,
+      "compile_pass": 4,
+      "probe_pass": 4
+    },
+    "baseline": {
+      "cases": 4,
+      "compile_fail": 4
+    }
+  },
+  "errors": [],
+  "passed": true
+}

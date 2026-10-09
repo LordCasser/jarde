@@ -1,0 +1,18 @@
+{
+  "label": "candidate-cli-v5-build-v36",
+  "argv": [
+    "cargo",
+    "build",
+    "-p",
+    "jarde-cli",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v36.json",
+  "started_unix_ns": 1791512824856323000
+}

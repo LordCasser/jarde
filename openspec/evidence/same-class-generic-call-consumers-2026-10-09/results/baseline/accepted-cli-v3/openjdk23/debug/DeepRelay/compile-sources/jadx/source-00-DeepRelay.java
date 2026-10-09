@@ -1,0 +1,20 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeepRelay.jar:DeepRelay.class */
+public class DeepRelay<T> {
+    public T relay0(T x) {
+        return relay1(x);
+    }
+
+    public T relay1(T x) {
+        return relay2(x);
+    }
+
+    public T relay2(T x) {
+        return identity(x);
+    }
+
+    public T identity(T x) {
+        return x;
+    }
+}

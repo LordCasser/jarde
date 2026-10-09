@@ -1,0 +1,2 @@
+header=relay<>( T;) -> T
+header=sink<U:[class java.lang.Number, interface java.lang.Runnable];>( U;) -> U

@@ -1,0 +1,15 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.86s
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-962e3f8838370d64)
+
+running 7 tests
+test report::generic_call_ast_projection_tests::body_consumers_capture_if_return_and_throw_expression_shapes ... ok
+test report::generic_call_ast_projection_tests::body_consumers_refuse_resource_finally_and_propagate_budget_and_cancel ... ok
+test report::generic_call_ast_projection_tests::body_consumers_report_actual_returns_and_catch_scope_or_refuse_unknown_statements ... ok
+test report::generic_call_ast_projection_tests::cast_mutation_skips_a_foreign_method_node_with_the_same_bci_and_name ... ok
+test report::generic_call_ast_projection_tests::exact_site_and_source_cast_preserve_the_child_anchor_and_presentation ... ok
+test report::generic_call_ast_projection_tests::required_site_scan_propagates_budget_stop_and_cancellation ... ok
+test report::generic_call_ast_projection_tests::result_use_is_return_and_wrong_or_ambiguous_site_keys_refuse ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 292 filtered out; finished in 0.00s
+

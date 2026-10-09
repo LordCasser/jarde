@@ -1,0 +1,151 @@
+// jarde: presentation of `Boundaries` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Boundaries extends java.lang.Object {
+    public Boundaries() {
+        // @method <init>()V
+        // @declaration a constructor of `Boundaries`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.util.List<java.lang.String> identity(java.util.List<java.lang.String> values) {
+        // jarde: generic Signature `(Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+        // @method identity(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return values;
+    }
+
+    public static java.util.List<java.lang.String> bodyPositive(java.util.List<java.lang.String> values) {
+        // jarde: generic Signature `(Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+        // @method bodyPositive(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return values;
+    }
+
+    public static java.util.List<java.lang.String> bodyOverload(java.util.List<java.lang.String> values) {
+        // jarde: generic Signature `(Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof; same-class call binding proved
+        // @method bodyOverload(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return values;
+    }
+
+    public static java.lang.String choose(java.lang.CharSequence value) {
+        // @method choose(Ljava/lang/CharSequence;)Ljava/lang/String;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return "char-sequence";
+    }
+
+    public static java.lang.String choose(java.lang.Object value) {
+        // @method choose(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return "object";
+    }
+
+    // jarde: generic Signature projection refused for `overloadedCall(Ljava/util/List;)Ljava/lang/String;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static java.lang.String overloadedCall(java.util.List values) {
+        // @method overloadedCall(Ljava/util/List;)Ljava/lang/String;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return choose((java.lang.CharSequence) bodyOverload(values).get(0));
+    }
+
+    public static Boundaries$Outer$Inner inner(Boundaries$Outer$Inner value) {
+        // @method inner(LBoundaries$Outer$Inner;)LBoundaries$Outer$Inner;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return value;
+    }
+
+    public static Boundaries$Left$Item leftItem(Boundaries$Left$Item value) {
+        // @method leftItem(LBoundaries$Left$Item;)LBoundaries$Left$Item;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return value;
+    }
+
+    public static Boundaries$Right$Item rightItem(Boundaries$Right$Item value) {
+        // @method rightItem(LBoundaries$Right$Item;)LBoundaries$Right$Item;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return value;
+    }
+
+    // jarde: generic Signature projection refused for `annotated(Ljava/util/List;)Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): member flags, annotation positions, or source name cannot be preserved
+    public static java.util.List annotated(java.util.List value) {
+        // jarde: type annotation refused: target=0x14 info=[] path=[TypePathEntry { kind: 3, index: 0 }]: non-empty type_path is not source-spellable in this change
+        // jarde: type annotation refused: target=0x16 info=[0] path=[TypePathEntry { kind: 3, index: 0 }]: non-empty type_path is not source-spellable in this change
+        // @method annotated(Ljava/util/List;)Ljava/util/List;
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return value;
+    }
+
+    public static void main(java.lang.String[] args) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Boundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.io.PrintStream saved0 = java.lang.System.out;
+        java.lang.StringBuilder saved1 = new java.lang.StringBuilder().append("overload=");
+        saved0.println((java.lang.String) saved1.append((java.lang.String) overloadedCall((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"ok"}))).toString());
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("inner=").append(inner(new Boundaries$Outer$Inner()).value()).toString());
+        java.io.PrintStream saved2 = java.lang.System.out;
+        java.lang.StringBuilder saved3 = new java.lang.StringBuilder().append("annotated=");
+        saved2.println((java.lang.String) saved3.append((java.lang.String) annotated((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"ok"})).get(0)).toString());
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("class-variable=").append((java.lang.String) new GenericContext().identity((java.lang.Object) "ok")).toString());
+        return;
+    }
+
+    public static class GenericContext<T> extends java.lang.Object {
+        public GenericContext() {
+            // @method <init>()V
+            // @declaration a constructor of `Boundaries$GenericContext`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+
+        public T identity(T value) {
+            // jarde: generic Signature `(TT;)TT;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+            // @method identity(Ljava/lang/Object;)Ljava/lang/Object;
+            // @declaration an instance method of `Boundaries$GenericContext`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            return value;
+        }
+    }
+
+    public static class Right extends java.lang.Object {
+        public Right() {
+            // @method <init>()V
+            // @declaration a constructor of `Boundaries$Right`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+
+    public static class Left extends java.lang.Object {
+        public Left() {
+            // @method <init>()V
+            // @declaration a constructor of `Boundaries$Left`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+
+    public static class Outer extends java.lang.Object {
+        public Outer() {
+            // @method <init>()V
+            // @declaration a constructor of `Boundaries$Outer`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            super();
+            return;
+        }
+    }
+}

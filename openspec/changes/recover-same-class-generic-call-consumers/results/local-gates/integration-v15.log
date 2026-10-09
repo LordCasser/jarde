@@ -1,0 +1,49 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0308]: `?` operator has incompatible types
+    --> src/facade.rs:7466:43
+     |
+7466 |                         projection_state: record.generic_call_projection_state(budget)?,
+     |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Option<GenericCallProjectionState>`, found `GenericCallProjectionState`
+     |
+     = note: `?` operator cannot convert from `GenericCallProjectionState` to `std::option::Option<GenericCallProjectionState>`
+     = note: expected enum `std::option::Option<GenericCallProjectionState>`
+              found struct `GenericCallProjectionState`
+help: try wrapping the expression in `Some`
+     |
+7466 |                         projection_state: Some(record.generic_call_projection_state(budget)?),
+     |                                           +++++                                             +
+
+error[E0308]: `?` operator has incompatible types
+    --> src/facade.rs:7656:63
+     |
+7656 |   ...                   projection_state: record
+     |  _________________________________________^
+7657 | | ...                       .generic_call_projection_state(budget)?,
+     | |_________________________________________________________________^ expected `Option<GenericCallProjectionState>`, found `GenericCallProjectionState`
+     |
+     = note: `?` operator cannot convert from `GenericCallProjectionState` to `std::option::Option<GenericCallProjectionState>`
+     = note: expected enum `std::option::Option<GenericCallProjectionState>`
+              found struct `GenericCallProjectionState`
+help: try wrapping the expression in `Some`
+     |
+7656 ~                                             projection_state: Some(record
+7657 ~                                                 .generic_call_projection_state(budget)?),
+     |
+
+warning: unused variable: `input`
+     --> src/facade.rs:12799:72
+      |
+12799 |             let Some(callee) = input_by_index.iter().find_map(|(index, input)| {
+      |                                                                        ^^^^^ help: if this is intentional, prefix it with an underscore: `_input`
+      |
+      = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `input`
+     --> src/facade.rs:12831:63
+      |
+12831 |                     && input_by_index.get(index).is_some_and(|input| {
+      |                                                               ^^^^^ help: if this is intentional, prefix it with an underscore: `_input`
+
+For more information about this error, try `rustc --explain E0308`.
+warning: `jarde` (lib) generated 2 warnings
+error: could not compile `jarde` (lib) due to 2 previous errors; 2 warnings emitted

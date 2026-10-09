@@ -1,0 +1,7 @@
+classformal#0:T bounds=java.lang.Number&java.lang.Runnable
+constructor()
+method:identity(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number
+method:relay(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number
+behavior=Number17+identity+null-control
+probe.checks=5
+probe.failures=0

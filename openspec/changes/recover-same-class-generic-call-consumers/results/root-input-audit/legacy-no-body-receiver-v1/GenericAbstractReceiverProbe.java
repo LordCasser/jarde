@@ -1,0 +1,1 @@
+public abstract class GenericAbstractReceiverProbe { public abstract <T extends Number> T target(T value); public static Number call(GenericAbstractReceiverProbe value) { return value.target(Integer.valueOf(7)); } public Number own() { return this.target(Integer.valueOf(8)); } }

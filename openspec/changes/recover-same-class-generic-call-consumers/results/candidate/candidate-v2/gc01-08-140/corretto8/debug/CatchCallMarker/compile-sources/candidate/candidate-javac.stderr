@@ -1,0 +1,18 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/CatchCallMarker/compile-sources/candidate/CatchCallMarker.java:27: 错误: 找不到符号
+        if (fail) {
+            ^
+  符号:   变量 fail
+  位置: 类 CatchCallMarker<T>
+  其中, T是类型变量:
+    T扩展已在类 CatchCallMarker中声明的Object
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/CatchCallMarker/compile-sources/candidate/CatchCallMarker.java:27: 错误: 非法的类型开始
+        if (fail) {
+           ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/CatchCallMarker/compile-sources/candidate/CatchCallMarker.java:30: 错误: 找不到符号
+            return x;
+                   ^
+  符号:   变量 x
+  位置: 类 CatchCallMarker<T>
+  其中, T是类型变量:
+    T扩展已在类 CatchCallMarker中声明的Object
+3 个错误

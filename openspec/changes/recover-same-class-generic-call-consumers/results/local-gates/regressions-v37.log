@@ -1,0 +1,15 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0277]: can't compare `&u16` with `u16`
+     --> src/facade.rs:12897:38
+      |
+12897 |                     || receiver_slot != formal.slot
+      |                                      ^^ no implementation for `&u16 == u16`
+      |
+      = help: the trait `PartialEq<u16>` is not implemented for `&u16`
+help: consider dereferencing here
+      |
+12897 |                     || *receiver_slot != formal.slot
+      |                        +
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `jarde` (lib) due to 1 previous error

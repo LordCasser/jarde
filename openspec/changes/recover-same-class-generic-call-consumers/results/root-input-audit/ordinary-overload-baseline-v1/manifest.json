@@ -1,0 +1,131 @@
+{
+  "scope": "read-only legacy accepted-baseline CLI comparison for Boundaries.bodyOverload; isolated from Cargo/Git and current CLI",
+  "started_unix_ns": 1791515587351174000,
+  "finished_unix_ns": 1791515587807380000,
+  "output_was_absent_before_run": true,
+  "source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/Boundaries.java",
+    "sha256": "dde40c055a79de92b2b1a2641becba2fd5586db6e134215b47ac6fb8862962aa"
+  },
+  "baseline_cli": {
+    "path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+    "expected_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+  },
+  "jdk": {
+    "root": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+    "javac": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    "jar": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+      "sha256": "46c8af190164ec5b1b8bb69f9abc594b52fb82410634f81b64c8668ca4e5fb31"
+    }
+  },
+  "input_jar": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/Boundaries.jar",
+    "sha256": "8cd9486fdbca45d9d55c7d035bba82a25bef6b83632ce0b51076226e8f63ec73",
+    "class_files": [
+      "Boundaries$GenericContext.class",
+      "Boundaries$Left$Item.class",
+      "Boundaries$Left.class",
+      "Boundaries$Mark.class",
+      "Boundaries$Outer$Inner.class",
+      "Boundaries$Outer.class",
+      "Boundaries$Right$Item.class",
+      "Boundaries$Right.class",
+      "Boundaries.class"
+    ]
+  },
+  "commands": [
+    {
+      "label": "javac-version",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/javac-version.stdout",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/javac-version.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8",
+      "started_unix_ns": 1791515587351174000,
+      "finished_unix_ns": 1791515587465501000
+    },
+    {
+      "label": "baseline-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/empty-classpath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/empty-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/Boundaries.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/baseline-compile.stdout",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/baseline-compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_unix_ns": 1791515587465508000,
+      "finished_unix_ns": 1791515587706737000
+    },
+    {
+      "label": "jar-create",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/Boundaries.jar",
+        "-C",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/classes",
+        "."
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/jar-create.stdout",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/jar-create.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_unix_ns": 1791515587706744000,
+      "finished_unix_ns": 1791515587750537000
+    },
+    {
+      "label": "baseline-class-source",
+      "argv": [
+        "/private/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/Boundaries.jar",
+        "--class",
+        "Boundaries",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/baseline-class-source.stdout",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/ordinary-overload-baseline-v1/baseline-class-source.stderr",
+      "stdout_sha256": "ac457b89337fe3328e0ed8560b189d01c8e04e7316d864cbc8551f4ac734b91d",
+      "stderr_sha256": "0357e8a21d3736b521dfed4a26c01a82ccff9edcfd349eb478b17442a5f7b122",
+      "started_unix_ns": 1791515587750541000,
+      "finished_unix_ns": 1791515587807380000
+    }
+  ],
+  "class_source_exit_code": 0,
+  "class_source_stdout_sha256": "ac457b89337fe3328e0ed8560b189d01c8e04e7316d864cbc8551f4ac734b91d",
+  "class_source_stderr_sha256": "0357e8a21d3736b521dfed4a26c01a82ccff9edcfd349eb478b17442a5f7b122"
+}

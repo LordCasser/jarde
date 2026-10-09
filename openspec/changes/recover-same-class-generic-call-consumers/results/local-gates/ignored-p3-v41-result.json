@@ -1,0 +1,24 @@
+{
+  "label": "ignored-p3-v41",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "p3_execution_comparison",
+    "--locked",
+    "--",
+    "--ignored"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v41.json",
+  "started_unix_ns": 1791523637840436000,
+  "exit": 0,
+  "finished_unix_ns": 1791523717666002000,
+  "log_sha256": "cb2beb5d31d48d406f23b7a8b188529d5700d9e509842fdd2f7e4b8c39d63ce8",
+  "source_unchanged": true
+}

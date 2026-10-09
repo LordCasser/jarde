@@ -1,0 +1,20 @@
+{
+  "label": "initializer-regression-v41",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--test",
+    "class_initializer_candidates",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v41.json",
+  "started_unix_ns": 1791520341893108000
+}

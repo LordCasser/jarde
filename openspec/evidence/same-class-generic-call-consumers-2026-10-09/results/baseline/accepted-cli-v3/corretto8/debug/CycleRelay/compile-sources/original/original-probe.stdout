@@ -1,0 +1,7 @@
+classformal#0:T bounds=java.lang.Object
+constructor()
+method:left(java.lang.Object;boolean;) return=CLASS#0 params=CLASS#0;boolean
+method:right(java.lang.Object;boolean;) return=CLASS#0 params=CLASS#0;boolean
+behavior=finite-cycle-marker
+probe.checks=7
+probe.failures=0

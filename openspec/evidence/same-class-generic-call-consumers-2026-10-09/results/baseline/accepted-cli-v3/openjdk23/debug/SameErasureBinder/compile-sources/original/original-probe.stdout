@@ -1,0 +1,10 @@
+classformal#0:T bounds=java.lang.Number
+field:calls=int
+constructor()
+method:independent(java.lang.Number;) return=CLASS#0 params=CLASS#0
+methodformal:sink(java.lang.Number;)#0 bounds=java.lang.Number&java.lang.Runnable
+method:sink(java.lang.Number;) return=METHOD#sink(java.lang.Number;)#0 params=METHOD#sink(java.lang.Number;)#0
+method:useNull() return=void params=
+behavior=null-call-count=1
+probe.checks=9
+probe.failures=0

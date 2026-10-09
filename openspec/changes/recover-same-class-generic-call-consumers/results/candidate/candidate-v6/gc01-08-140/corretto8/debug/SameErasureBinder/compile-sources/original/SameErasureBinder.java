@@ -1,0 +1,1 @@
+public class SameErasureBinder<T extends Number> { public int calls; public <U extends Number & Runnable> U sink(U x) { calls++; return x; } public T independent(T x) { return x; } public void useNull() { sink(null); } }

@@ -1,0 +1,6 @@
+classformal#0:T bounds=java.lang.Object
+constructor()
+method:relay(int;)->java.lang.Object return=CLASS#0 params=int
+behavior=inherited-marker
+probe.checks=4
+probe.failures=0

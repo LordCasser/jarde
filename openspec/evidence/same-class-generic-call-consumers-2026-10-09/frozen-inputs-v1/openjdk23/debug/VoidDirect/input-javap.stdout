@@ -1,0 +1,123 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/debug/VoidDirect/VoidDirect.jar!/VoidDirect.class
+  Last modified 2026年10月9日; size 751 bytes
+  SHA-256 checksum dd8dce10097d58d705679f8db56b3aef3388f965da8350d0934b4db3ed940ebb
+  Compiled from "VoidDirect.java"
+public class VoidDirect<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // VoidDirect
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 3, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // VoidDirect.seen:Ljava/lang/Object;
+   #8 = Class              #10            // VoidDirect
+   #9 = NameAndType        #11:#12        // seen:Ljava/lang/Object;
+  #10 = Utf8               VoidDirect
+  #11 = Utf8               seen
+  #12 = Utf8               Ljava/lang/Object;
+  #13 = Fieldref           #8.#14         // VoidDirect.calls:I
+  #14 = NameAndType        #15:#16        // calls:I
+  #15 = Utf8               calls
+  #16 = Utf8               I
+  #17 = Methodref          #8.#18         // VoidDirect.sink:(Ljava/lang/Object;)V
+  #18 = NameAndType        #19:#20        // sink:(Ljava/lang/Object;)V
+  #19 = Utf8               sink
+  #20 = Utf8               (Ljava/lang/Object;)V
+  #21 = Utf8               Code
+  #22 = Utf8               LineNumberTable
+  #23 = Utf8               LocalVariableTable
+  #24 = Utf8               this
+  #25 = Utf8               LVoidDirect;
+  #26 = Utf8               LocalVariableTypeTable
+  #27 = Utf8               LVoidDirect<TT;>;
+  #28 = Utf8               x
+  #29 = Utf8               TT;
+  #30 = Utf8               Signature
+  #31 = Utf8               (TT;)V
+  #32 = Utf8               relay
+  #33 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #34 = Utf8               SourceFile
+  #35 = Utf8               VoidDirect.java
+{
+  public java.lang.Object seen;
+    descriptor: Ljava/lang/Object;
+    flags: (0x0001) ACC_PUBLIC
+
+  public int calls;
+    descriptor: I
+    flags: (0x0001) ACC_PUBLIC
+
+  public VoidDirect();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LVoidDirect;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LVoidDirect<TT;>;
+
+  public void sink(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #7                  // Field seen:Ljava/lang/Object;
+         5: aload_0
+         6: dup
+         7: getfield      #13                 // Field calls:I
+        10: iconst_1
+        11: iadd
+        12: putfield      #13                 // Field calls:I
+        15: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      16     0  this   LVoidDirect;
+            0      16     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      16     0  this   LVoidDirect<TT;>;
+            0      16     1     x   TT;
+    Signature: #31                          // (TT;)V
+
+  public void relay(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #17                 // Method sink:(Ljava/lang/Object;)V
+         5: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   LVoidDirect;
+            0       6     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   LVoidDirect<TT;>;
+            0       6     1     x   TT;
+    Signature: #31                          // (TT;)V
+}
+Signature: #33                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "VoidDirect.java"

@@ -1,0 +1,42 @@
+{
+  "runner_original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+  "runner_snapshot_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/replay-executed.py",
+  "runner_sha256_before": "c2eaa605a67c3b1bd6f6a649114048953f15c2f4a9e7157cf766c9b8d44306ac",
+  "runner_snapshot_sha256": "c2eaa605a67c3b1bd6f6a649114048953f15c2f4a9e7157cf766c9b8d44306ac",
+  "execution___file__": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+  "runner_argv": [
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+    "--baseline",
+    "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "--candidate",
+    "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1"
+  ],
+  "launcher_argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-c",
+    "from pathlib import Path\nimport sys\nsnapshot = Path(sys.argv[1])\noriginal = Path(sys.argv[2])\nrunner_args = sys.argv[3:]\nsys.argv = [str(original), *runner_args]\nnamespace = {\"__name__\": \"__main__\", \"__file__\": str(original), \"__package__\": None}\nexec(compile(snapshot.read_bytes(), str(original), \"exec\"), namespace)\n",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/replay-executed.py",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+    "--baseline",
+    "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "--candidate",
+    "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1"
+  ],
+  "launcher_exit": 1,
+  "runner_stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/runner.stdout",
+  "runner_stdout_sha256": "4c7156da9e1c44be97fbb45e80d41a753cdf319969842246cb275410f65773d3",
+  "runner_stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/runner.stderr",
+  "runner_stderr_sha256": "7faff41452e46bde55bbaf631d2ece68b3199752cd5fcefe04012a5b7f35672b",
+  "baseline_cli": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+  "baseline_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "candidate_cli": "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+  "candidate_cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+  "frozen_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/manifest.json",
+  "frozen_manifest_sha256": "4a12aa662b4765f8e45c3012b7e4fd0fb9fccac4060a16f8f1e5ac7075ef2902",
+  "frozen_checksums": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/checksums.sha256",
+  "frozen_checksums_sha256": "7ae224fa8aeddc8680c0a22cf9433a0f2195475f9902d8ae3269d0089a831f11"
+}

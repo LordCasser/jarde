@@ -1,0 +1,7 @@
+--- original
++++ candidate
+@@ -1,3 +1,3 @@
+ value=[list]
+ classvars=1
+-fieldGenericType=java.util.List<T>
++fieldGenericType=java.util.List

@@ -1,0 +1,7 @@
+{
+  "scope": "7 report-side unit tests only; facade staging/overload/milestone unverified",
+  "exit": 0,
+  "command": "CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo test -p jarde-java --lib generic_call_ast_projection_tests -- --test-threads=1",
+  "report_sha256_after": "00b068ff6a789ba6d1ab943ae77f69b22981d9e0cf0fe36359e4eaef73672dc1",
+  "log_sha256": "debe1830843fe9dd988349f8b3a44e80ab8cbddd9c69007af024af482ba5230a"
+}

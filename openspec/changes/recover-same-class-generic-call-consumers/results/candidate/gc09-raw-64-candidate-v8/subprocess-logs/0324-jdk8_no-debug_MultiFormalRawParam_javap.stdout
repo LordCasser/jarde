@@ -1,0 +1,61 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/MultiFormalRawParam.jar!/MultiFormalRawParam.class
+  Last modified 2026-10-9; size 469 bytes
+  MD5 checksum 15eeea5ce35a775a7041e56efaae5029
+public class MultiFormalRawParam<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#17         // java/lang/Object."<init>":()V
+   #2 = Methodref          #5.#18         // java/lang/Object.hashCode:()I
+   #3 = Fieldref           #4.#19         // MultiFormalRawParam.value:Ljava/lang/Object;
+   #4 = Class              #20            // MultiFormalRawParam
+   #5 = Class              #21            // java/lang/Object
+   #6 = Utf8               value
+   #7 = Utf8               Ljava/lang/Object;
+   #8 = Utf8               Signature
+   #9 = Utf8               TT;
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               put
+  #14 = Utf8               (LMultiFormalRawParam;Ljava/lang/Object;Ljava/lang/Object;)V
+  #15 = Utf8               <K:Ljava/lang/Object;>(LMultiFormalRawParam;TK;Ljava/lang/Object;)V
+  #16 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #17 = NameAndType        #10:#11        // "<init>":()V
+  #18 = NameAndType        #22:#23        // hashCode:()I
+  #19 = NameAndType        #6:#7          // value:Ljava/lang/Object;
+  #20 = Utf8               MultiFormalRawParam
+  #21 = Utf8               java/lang/Object
+  #22 = Utf8               hashCode
+  #23 = Utf8               ()I
+{
+  public T value;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #9                           // TT;
+
+  public MultiFormalRawParam();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static <K extends java.lang.Object> void put(MultiFormalRawParam, K, java.lang.Object);
+    descriptor: (LMultiFormalRawParam;Ljava/lang/Object;Ljava/lang/Object;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_1
+         1: invokevirtual #2                  // Method java/lang/Object.hashCode:()I
+         4: pop
+         5: aload_0
+         6: aload_2
+         7: putfield      #3                  // Field value:Ljava/lang/Object;
+        10: return
+    Signature: #15                          // <K:Ljava/lang/Object;>(LMultiFormalRawParam;TK;Ljava/lang/Object;)V
+}
+Signature: #16                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

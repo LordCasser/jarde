@@ -1,0 +1,9 @@
+classformal#0:T bounds=java.lang.Number
+field:selected=java.lang.String
+constructor()
+method:pick(java.lang.Number;) return=void params=java.lang.Number
+method:pick(java.lang.Object;) return=void params=java.lang.Object
+method:relay(java.lang.Number;) return=void params=CLASS#0
+behavior=target-number
+probe.checks=4
+probe.failures=0

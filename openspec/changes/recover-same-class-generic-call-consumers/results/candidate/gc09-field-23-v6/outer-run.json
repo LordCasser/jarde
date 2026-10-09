@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/field-23-replay-adapter.py",
+    "--baseline",
+    "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "--candidate",
+    "/private/tmp/jarde-generic-calls-candidate-v5-cli",
+    "--candidate-sha256",
+    "010e9f1ecd82a1f2c7c4dcd49010afc787d3980a0194e9fc6a1d12994132dac5",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v6/adapter-run"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v6/adapter.stdout",
+  "stdout_sha256": "e6340aefd1a1adcd47a8f5fa4d161bfa574fd2b434e52b5ea2fccf5cba999ec9",
+  "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v6/adapter.stderr",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "preflight": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v6/preflight.json",
+  "preflight_sha256": "4abb584034199e926f23a1d9a61cd8e471af044cc2db28c258f904421fd6ab83"
+}

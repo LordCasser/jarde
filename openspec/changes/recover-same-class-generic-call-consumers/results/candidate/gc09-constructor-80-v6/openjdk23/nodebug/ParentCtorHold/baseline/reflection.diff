@@ -1,0 +1,11 @@
+--- original
++++ baseline
+@@ -1,5 +1,4 @@
+ REFLECT|ctor[0].formalCount=1;typeVariableCount=0
+-REFLECT|ctor[0].param[0]=T;binder=class
+-REFLECT|classTypeVariableCount=1
+-REFLECT|classVar[0]=T;bounds=java.lang.Object
+-REFLECT|field[v]=T;binder=class
++REFLECT|ctor[0].param[0]=java.lang.Object;binder=non-variable
++REFLECT|classTypeVariableCount=0
++REFLECT|field[v]=java.lang.Object;binder=non-variable

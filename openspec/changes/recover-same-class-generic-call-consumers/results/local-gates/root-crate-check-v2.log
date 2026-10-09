@@ -1,0 +1,74 @@
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0425]: cannot find type `SignatureType` in this scope
+     --> src/facade.rs:13557:14
+      |
+13557 |     source: &SignatureType,
+      |              ^^^^^^^^^^^^^ not found in this scope
+
+warning: unused import: `TypeArgument`
+     --> src/facade.rs:13156:50
+      |
+13156 |     use jarde_reader::signature::{SignatureType, TypeArgument};
+      |                                                  ^^^^^^^^^^^^
+      |
+      = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0716]: temporary value dropped while borrowed
+    --> src/class_source.rs:3768:62
+     |
+3768 |             let Some(source_name) = signature_class_erasure(&SignatureType::Class(source.clone()))
+     |                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ creates a temporary value which is freed while still in use
+...
+3771 |             };
+     |              - temporary value is freed at the end of this statement
+...
+3781 |             if source_name == b"java/lang/String"
+     |                ----------- borrow later used here
+     |
+     = note: consider using a `let` binding to create a longer lived value
+
+error[E0716]: temporary value dropped while borrowed
+    --> src/class_source.rs:3772:62
+     |
+3772 |             let Some(target_name) = signature_class_erasure(&SignatureType::Class(target.clone()))
+     |                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ creates a temporary value which is freed while still in use
+...
+3775 |             };
+     |              - temporary value is freed at the end of this statement
+3776 |             if target_name == b"java/lang/Object" {
+     |                ----------- borrow later used here
+     |
+     = note: consider using a `let` binding to create a longer lived value
+
+error[E0506]: cannot assign to `methods[_]` because it is borrowed
+     --> src/facade.rs:13111:17
+      |
+12413 |     let index_for_method = |method: &PhysicalMethodId| {
+      |                            --------------------------- `methods[_]` is borrowed here
+12414 |         methods
+      |         ------- borrow occurs due to use in closure
+...
+12451 |                 && index_for_method(&invoke.physical_caller)
+      |                    ---------------- borrow later captured here by closure
+...
+13111 |                 methods[index] = record;
+      |                 ^^^^^^^^^^^^^^ `methods[_]` is assigned to here but it was already borrowed
+
+error[E0506]: cannot assign to `methods[_]` because it is borrowed
+     --> src/facade.rs:13121:21
+      |
+12413 |     let index_for_method = |method: &PhysicalMethodId| {
+      |                            --------------------------- `methods[_]` is borrowed here
+12414 |         methods
+      |         ------- borrow occurs due to use in closure
+...
+12451 |                 && index_for_method(&invoke.physical_caller)
+      |                    ---------------- borrow later captured here by closure
+...
+13121 |                     methods[index] = rollback;
+      |                     ^^^^^^^^^^^^^^ `methods[_]` is assigned to here but it was already borrowed
+
+Some errors have detailed explanations: E0425, E0506, E0716.
+For more information about an error, try `rustc --explain E0425`.
+warning: `jarde` (lib) generated 1 warning
+error: could not compile `jarde` (lib) due to 5 previous errors; 1 warning emitted

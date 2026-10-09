@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v8/gc01-08-140/corretto8/nodebug/UnknownIncoming/compile-sources/jadx/sources/defpackage/UnknownIncoming.java:19: 错误: 不兼容的类型: Object无法转换为T
+        return identity(obj);
+                        ^
+  其中, T是类型变量:
+    T扩展已在类 UnknownIncoming中声明的Object
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+1 个错误

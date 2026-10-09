@@ -1,0 +1,3 @@
+header=relay<>( java.lang.Number;) -> java.lang.Number
+header=sink<>( java.lang.Number;) -> java.lang.Number
+behavior.null=true

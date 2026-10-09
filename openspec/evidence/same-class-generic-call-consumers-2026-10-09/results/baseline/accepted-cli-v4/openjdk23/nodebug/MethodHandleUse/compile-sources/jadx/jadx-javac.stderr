@@ -1,0 +1,13 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v4/openjdk23/nodebug/MethodHandleUse/compile-sources/jadx/sources/defpackage/MethodHandleUse.java:12: 错误: 不兼容的类型: 方法引用无效
+        Function function = this::identity;
+                            ^
+    不兼容的类型: Object无法转换为T
+  其中, T是类型变量:
+    T扩展已在类 MethodHandleUse中声明的Object
+注: /Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v4/openjdk23/nodebug/MethodHandleUse/compile-sources/jadx/sources/defpackage/MethodHandleUse.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+1 个错误
+3 个警告

@@ -1,0 +1,25 @@
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+warning: unused variable: `bytes`
+     --> src/facade.rs:13145:5
+      |
+13145 |     bytes: &[u8],
+      |     ^^^^^ help: if this is intentional, prefix it with an underscore: `_bytes`
+      |
+      = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `pool`
+     --> src/facade.rs:13146:5
+      |
+13146 |     pool: &[CpEntryFacts],
+      |     ^^^^ help: if this is intentional, prefix it with an underscore: `_pool`
+
+warning: function `same_class_generic_field_source_type` is never used
+    --> src/class_source.rs:5429:15
+     |
+5429 | pub(crate) fn same_class_generic_field_source_type(
+     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `jarde` (lib) generated 3 warnings (run `cargo fix --lib -p jarde` to apply 2 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.72s

@@ -1,0 +1,121 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/debug/NestedCallArgument.input.jar!/NestedCallArgument.class
+  Last modified 2026-10-9; size 861 bytes
+  MD5 checksum 289331dfbe8f818a8479a2b38907e10d
+  Compiled from "NestedCallArgument.java"
+public class NestedCallArgument<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#27         // java/lang/Object."<init>":()V
+   #2 = Methodref          #4.#28         // NestedCallArgument.first:(Ljava/lang/Object;)Ljava/lang/Object;
+   #3 = Methodref          #4.#29         // NestedCallArgument.second:(Ljava/lang/Object;)Ljava/lang/Object;
+   #4 = Class              #30            // NestedCallArgument
+   #5 = Class              #31            // java/lang/Object
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               LineNumberTable
+  #10 = Utf8               LocalVariableTable
+  #11 = Utf8               this
+  #12 = Utf8               LNestedCallArgument;
+  #13 = Utf8               LocalVariableTypeTable
+  #14 = Utf8               LNestedCallArgument<TT;>;
+  #15 = Utf8               first
+  #16 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #17 = Utf8               x
+  #18 = Utf8               Ljava/lang/Object;
+  #19 = Utf8               TT;
+  #20 = Utf8               Signature
+  #21 = Utf8               (TT;)TT;
+  #22 = Utf8               second
+  #23 = Utf8               relay
+  #24 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #25 = Utf8               SourceFile
+  #26 = Utf8               NestedCallArgument.java
+  #27 = NameAndType        #6:#7          // "<init>":()V
+  #28 = NameAndType        #15:#16        // first:(Ljava/lang/Object;)Ljava/lang/Object;
+  #29 = NameAndType        #22:#16        // second:(Ljava/lang/Object;)Ljava/lang/Object;
+  #30 = Utf8               NestedCallArgument
+  #31 = Utf8               java/lang/Object
+{
+  public NestedCallArgument();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LNestedCallArgument;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LNestedCallArgument<TT;>;
+
+  public T first(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LNestedCallArgument;
+            0       2     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LNestedCallArgument<TT;>;
+            0       2     1     x   TT;
+    Signature: #21                          // (TT;)TT;
+
+  public T second(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LNestedCallArgument;
+            0       2     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LNestedCallArgument<TT;>;
+            0       2     1     x   TT;
+    Signature: #21                          // (TT;)TT;
+
+  public T relay(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_0
+         1: aload_0
+         2: aload_1
+         3: invokevirtual #2                  // Method first:(Ljava/lang/Object;)Ljava/lang/Object;
+         6: invokevirtual #3                  // Method second:(Ljava/lang/Object;)Ljava/lang/Object;
+         9: areturn
+      LineNumberTable:
+        line 4: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  this   LNestedCallArgument;
+            0      10     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  this   LNestedCallArgument<TT;>;
+            0      10     1     x   TT;
+    Signature: #21                          // (TT;)TT;
+}
+Signature: #24                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "NestedCallArgument.java"

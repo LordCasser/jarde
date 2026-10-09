@@ -1,0 +1,20 @@
+{
+  "captured_before_replay": true,
+  "unix_time": 1791510371.120811,
+  "candidate_cli": "/private/tmp/jarde-generic-calls-candidate-v4-cli",
+  "candidate_cli_sha256": "f6fe20c6dfb4be1673ba58e4536b4f8b1da38efe1ee991285b77dbd429717525",
+  "source_archive": "openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/source-snapshot-v33.tar.gz",
+  "source_archive_sha256": "36768f4551ec2836b9e81a661df3571906bc7acec304a659bb4964b4899e0082",
+  "source_snapshot_manifest": "openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/source-snapshot-v33.json",
+  "source_snapshot_manifest_sha256": "39759cccd93ac50ebff0fc6c3406d0ac46b596b2a07899a0bc1443701f10650c",
+  "candidate_cli_metadata": "openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/candidate-cli-v4.json",
+  "candidate_cli_metadata_sha256": "75dc624cc413bbe923a5de40e54d9b2b6355c52f26d479b6adf6381e7e905bb7",
+  "source_hashes": {
+    "src/class_source.rs": "f91221a2b822fdee29f9b15bfced5eb06d62748ebd65a0b2bc0814f664c5f6e4",
+    "src/facade.rs": "706b68ede8ddc6390c772cf1fcf297fb8b45f8cf08e2341c6aee23bdd2ce498b",
+    "crates/jarde-java/src/report.rs": "352378b2bb4e8494fb29408794dd247fe4df71ec44a8c1277db28c7aa8657dbd",
+    "tests/same_class_generic_call_consumers.rs": "31c1ad4ecbb1d35551830f33aa39ec11f0e64c0de9171379e5b3cf810ec30eea",
+    "tests/class_scope_constructor_projection.rs": "db50946fbfb3604a66f6ee0c933bcb30f9f2f122fed2c20e78509617b7913659",
+    "tests/same_class_generic_binding.rs": "8997feb96e259060df75051d7cba91f58f532e1dd20055d01f3f8fe132e86fb2"
+  }
+}

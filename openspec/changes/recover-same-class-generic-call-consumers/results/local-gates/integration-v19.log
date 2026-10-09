@@ -1,0 +1,149 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.58s
+     Running tests/same_class_generic_call_consumers.rs (target/debug/deps/same_class_generic_call_consumers-1d910b4666582669)
+
+running 9 tests
+test bounded_same_class_overloads_keep_the_physical_target_with_only_proved_casts ... GC-TX-REJECT class=BoundOverload members=[2, 3] at 13282
+
+thread 'bounded_same_class_overloads_keep_the_physical_target_with_only_proved_casts' (6325756) panicked at tests/same_class_generic_call_consumers.rs:371:5:
+the generic caller header should be publishable:
+// jarde: presentation of `BoundOverload` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T:Ljava/lang/Number;:Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class BoundOverload<T extends java.lang.Number & java.lang.Comparable<T>> extends java.lang.Object {
+    public BoundOverload() {
+        // @method <init>()V
+        // @declaration a constructor of `BoundOverload`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void pick(java.lang.Number arg1) {
+        // @method pick(Ljava/lang/Number;)V
+        // @declaration an instance method of `BoundOverload`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("number");
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `pick(Ljava/lang/Comparable;)V`: same-class generic call dependency did not close over every incoming use
+    public void pick(java.lang.Comparable arg1) {
+        // @method pick(Ljava/lang/Comparable;)V
+        // @declaration an instance method of `BoundOverload`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("comparable");
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `relay(Ljava/lang/Number;)V`: same-class generic call dependency did not close over every incoming use
+    public void relay(java.lang.Number arg1) {
+        // @method relay(Ljava/lang/Number;)V
+        // @declaration an instance method of `BoundOverload`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.pick(arg1);
+        return;
+    }
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+test constructor_only_classes_keep_the_existing_generic_projection ... ok
+test direct_generic_calls_publish_only_closed_parameterized_headers ... ok
+test exhausted_call_publication_does_not_leave_a_partial_generic_chain ... ok
+test nested_generic_call_results_feed_the_next_proved_call ... ok
+test proved_void_effects_survive_generic_call_staging ... GC-TX-REJECT class=VoidDirect members=[1, 2] at 13580
+
+thread 'proved_void_effects_survive_generic_call_staging' (6327809) panicked at tests/same_class_generic_call_consumers.rs:466:5:
+the existing void-body proof must preserve both generic headers and the counter effect:
+// jarde: presentation of `VoidDirect` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T:Ljava/lang/Object;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class VoidDirect<T> extends java.lang.Object {
+    public java.lang.Object seen;
+
+    public int calls;
+
+    public VoidDirect() {
+        // @method <init>()V
+        // @declaration a constructor of `VoidDirect`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `sink(Ljava/lang/Object;)V`: same-class generic call dependency did not close over every incoming use
+    public void sink(java.lang.Object arg1) {
+        // @method sink(Ljava/lang/Object;)V
+        // @declaration an instance method of `VoidDirect`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.seen = arg1;
+        this.calls++;
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `relay(Ljava/lang/Object;)V`: same-class generic call dependency did not close over every incoming use
+    public void relay(java.lang.Object arg1) {
+        // @method relay(Ljava/lang/Object;)V
+        // @declaration an instance method of `VoidDirect`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.sink(arg1);
+        return;
+    }
+}
+
+FAILED
+test raw_incoming_call_keeps_the_previously_proved_field_setter ... GC-TX-REJECT class=SCGA members=[1] at 13605
+
+thread 'raw_incoming_call_keeps_the_previously_proved_field_setter' (6327953) panicked at tests/same_class_generic_call_consumers.rs:451:5:
+the existing void-body proof and actual raw incoming selection must remain valid:
+// jarde: presentation of `SCGA` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class SCGA<T extends java.lang.Comparable<T>> extends java.lang.Object {
+    // jarde: field Signature projection refused for `vLjava/lang/Comparable;`: unsupported (field_generic_write_source_unproved): writer put(Ljava/lang/Comparable;)V@7 is not source-assignable to the projected field type
+    public java.lang.Comparable v;
+
+    public SCGA() {
+        // @method <init>()V
+        // @declaration a constructor of `SCGA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `put(Ljava/lang/Comparable;)V`: same-class generic call dependency did not close over every incoming use
+    public void put(java.lang.Comparable arg1) {
+        // @method put(Ljava/lang/Comparable;)V
+        // @declaration an instance method of `SCGA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.Collections.singletonList((java.lang.Object) arg1);
+        this.v = arg1;
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `SCGA`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        SCGA local1 = new SCGA();
+        local1.put((java.lang.Comparable) "same-class");
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("same-class:").append((java.lang.String) local1.v).toString());
+        return;
+    }
+}
+
+FAILED
+test structured_catch_call_results_keep_the_constructor_contract ... ok
+test unknown_incoming_call_rolls_back_only_its_connected_component ... ok
+
+failures:
+
+failures:
+    bounded_same_class_overloads_keep_the_physical_target_with_only_proved_casts
+    proved_void_effects_survive_generic_call_staging
+    raw_incoming_call_keeps_the_previously_proved_field_setter
+
+test result: FAILED. 6 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.22s
+
+error: test failed, to rerun pass `--test same_class_generic_call_consumers`

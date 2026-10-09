@@ -1,0 +1,15 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.63s
+     Running tests/class_scope_constructor_projection.rs (target/debug/deps/class_scope_constructor_projection-be6b9092a4cb99da)
+
+running 7 tests
+test class_scope_constructor_positives_recompile_and_preserve_behavior_and_binders ... ok
+test cross_hold_restores_u_constructor_binder_and_keeps_t_field_erased ... ok
+test peer_new_restores_only_the_two_argument_constructor_binder ... ok
+test positive_constructor_output_budget_and_early_cancellation_stop_cleanly ... ok
+test same_class_call_consumers_restore_class_binders_in_both_evidence_flavors ... ok
+test this_delegate_keeps_physical_signature_and_recompiles_with_original_behavior ... ok
+test unproved_constructor_shapes_keep_physical_parameters_and_refusals ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.78s
+

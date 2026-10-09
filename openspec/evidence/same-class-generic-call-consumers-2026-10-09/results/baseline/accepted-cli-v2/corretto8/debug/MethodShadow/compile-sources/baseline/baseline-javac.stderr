@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/debug/MethodShadow/compile-sources/baseline/target-0-MethodShadow.java:4: 错误: 类MethodShadow是公共的, 应在名为 MethodShadow.java 的文件中声明
+public class MethodShadow<T> extends java.lang.Object {
+       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/debug/MethodShadow/Probe.java:4: 错误: 类FixtureProbe是公共的, 应在名为 FixtureProbe.java 的文件中声明
+public class FixtureProbe {
+       ^
+2 个错误

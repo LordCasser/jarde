@@ -31,3 +31,11 @@ JADX `TypeUpdate.invokeListener` 与 `InvokeUpdateCallback` 分别替换receiver
 [mini-patrol](mini-patrol/summary.md) 是CI等待期间的Corretto8 debug exploratory，不是四腿最终验收。原/JADX四类全部完整编译、反射和marker均符合预期。Jarde的FieldSetter已有set(T)/fieldT完整闭环；EmptySink未用T参数仍被擦除；TypedSetter的C<T>/T方法参数被擦除，但raw字段T恢复、行为保持；CallRelay的identity(T)已发布，relay仍按Object发射，完整类因实参Object不能传给T而失败。root逐项核对102个结果文件hash后保留源码/jar、实际CLI输出和日志；历史命令路径仍指向实际运行的/tmp位置，脚本可复制到新的空/tmp目录重放，不覆盖已保存目录。
 
 对参考JADX的追加静态核对发现两个条件性失口：若invoke阶段compiler type仍是擦除Number，重载唯一匹配早退且同型不补cast；若类型已是intersection T而bound与目标Comparable表示不精确相等，TypeCompare在未命中extendTypes.contains时要求所有bounds都narrow，遇首个非narrow提前返回，也可能错误排除另一个适用目标。四腿输出不揭示实际IR状态，未做动态IR调试，不能宣称本例确定命中哪条。Jarde下一片以自己的实际published caller/callee类型、实参来源、物理invoke目标闭合证明，不直接照搬该comparator。
+
+## 已立项的同类调用消费位里程碑
+
+main d158989b 最新CI四项成功后，新片 `recover-same-class-generic-call-consumers` 的 proposal/spec/design/tasks/acceptance 已写齐且 strict valid，实施尚未验收。以关联method header/body原子提交与最终全入边核对处理组合错误；只扩展既有same-run AST/SSA和publication，不新增全局type-update pass。direct T/T[]、bounds、宽槽、method binder、有限relay、CallHold/ExceptionHold与封闭重载共同覆盖，getter反向依赖另片。
+
+[expanded-mini-patrol/v3](expanded-mini-patrol/v3/summary.md) 新增10个合法Corretto8 debug exploratory：原/JADX10/10完整编译并保持marker；Jarde CLI10/10为0但完整重编仅7/10，ArrayRelay、NumberBoundRelay、MultiParam有真实Object[]→T[]/Number→T/Object→T失败。VoidDirect是已有正例；MethodShadow/IndependentCallee等编译成功仍有泛型头擦除。raw/mutated外部List两类不当同类正例；前轮main污染/不完整打包调试全部保留并排除正式统计。root核对268个结果文件hash，重建历史Probe原source后独立javac，其两class字节hash与27个成功flavor记录逐一一致，生成类清理；该Probe仍不是完整结构化binder验收，正式四腿会另保存原Probe文件与GenericDeclaration身份断言。
+
+[raw-method-binder-rule-control](raw-method-binder-rule-control/manifest.json) 仅为原语言preflight。按[JLS8 raw成员规则](https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.8)，raw instance 的独立method formal同样擦除，static method不擦除；原Corretto8 javac三个诊断分别1/0/0，不能把raw `<U>`实例调用按参数String推断返回String。不得把这三项算成Jarde恢复或正式四腿。

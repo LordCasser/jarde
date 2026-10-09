@@ -1,0 +1,5 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/baseline/accepted-cli-v5/corretto8/nodebug/BoundOverload/compile-sources/baseline/BoundOverload.java:35: 错误: 对pick的引用不明确
+        this.pick(arg1);
+            ^
+  BoundOverload 中的方法 pick(Number) 和 BoundOverload 中的方法 pick(Comparable) 都匹配
+1 个错误

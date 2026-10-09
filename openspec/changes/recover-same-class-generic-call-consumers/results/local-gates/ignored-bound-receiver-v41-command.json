@@ -1,0 +1,22 @@
+{
+  "label": "ignored-bound-receiver-v41",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "recover_proved_nonnull_bound_receivers",
+    "--locked",
+    "--",
+    "--ignored",
+    "--exact",
+    "every_stripped_anchor_answers_what_its_class_answers"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v41.json",
+  "started_unix_ns": 1791523721440284000
+}

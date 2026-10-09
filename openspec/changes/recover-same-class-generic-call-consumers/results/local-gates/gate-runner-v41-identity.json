@@ -1,0 +1,6 @@
+{
+  "path": "openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/gate-runner-v41.py",
+  "sha256": "4265581cf533820889e8a5024f6d1bf4130a2f17e7223dd5a2c44ff7a79aa9df",
+  "actual_source": "/private/tmp/jarde-generic-gates-v41.py",
+  "scope": "Actual local gate orchestration bytes saved while v41 preflight is live; argv/log/exit per gate in versioned command and result JSON."
+}

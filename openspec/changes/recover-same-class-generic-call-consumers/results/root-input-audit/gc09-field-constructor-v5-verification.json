@@ -1,0 +1,72 @@
+{
+  "scope": "Independent saved-evidence audit of GC09 field-23-v6 and constructor-80-v5, fixed CLI5 only; no Java/candidate reruns.",
+  "passed": true,
+  "cli": {
+    "baseline_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+    "candidate_sha256": "010e9f1ecd82a1f2c7c4dcd49010afc787d3980a0194e9fc6a1d12994132dac5"
+  },
+  "metrics": {
+    "field": {
+      "matrix_rows": 92,
+      "candidate_rows": 46,
+      "actual_commands": 412,
+      "recomputed": {
+        "baseline_api_match": 20,
+        "baseline_behavior_match": 44,
+        "raw_compile_stream_bytes": 17108,
+        "candidate_api_match": 26,
+        "candidate_behavior_match": 44,
+        "candidate_expected_refused_compile": 2
+      },
+      "expected_refusal_candidate_rows": 2,
+      "accepted_api_regressions": []
+    },
+    "ListWrong_cross_jdk": {
+      "javac8": {
+        "original_field_api": [
+          "classvars=1",
+          "fieldGenericType=java.util.List<T>"
+        ],
+        "candidate_field_api": [
+          "classvars=1",
+          "fieldGenericType=java.util.List<T>"
+        ],
+        "put_raw_signature_refusal": true
+      },
+      "javac23": {
+        "original_field_api": [
+          "classvars=1",
+          "fieldGenericType=java.util.List<T>"
+        ],
+        "candidate_field_api": [
+          "classvars=1",
+          "fieldGenericType=java.util.List<T>"
+        ],
+        "put_raw_signature_refusal": true
+      }
+    },
+    "constructor": {
+      "matrix_rows": 160,
+      "candidate_rows": 80,
+      "actual_commands": 776,
+      "recomputed": {
+        "baseline_behavior_match": 72,
+        "baseline_reflection_match": 36,
+        "candidate_behavior_match": 80,
+        "candidate_reflection_match": 36
+      },
+      "accepted_api_regressions": []
+    }
+  },
+  "confirmed_regressions": {
+    "field_vs_baseline_accepted_api": [],
+    "constructor_vs_baseline_accepted_api": []
+  },
+  "limitations": [
+    "Results establish observed behavior for the fixed CLI5 artifact only.",
+    "They do not prove the constructor source regression has been repaired.",
+    "Field GC09 deliberately retains the SCGB producer consumer refusal boundary."
+  ],
+  "errors": [],
+  "verifier_sha256": "32a98469ee3fb7170df3c67bc53b565f5e0d9c1c653509ea09bd6bc490e4b565"
+}

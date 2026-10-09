@@ -1,0 +1,1 @@
+public class Probe { public static void main(String[] args) throws Exception { java.lang.reflect.Method m=GenericNullObjectContextProbe.class.getDeclaredMethod("value"); System.out.print((new GenericNullObjectContextProbe().caller()==null)+":"+m.getTypeParameters().length+":"+m.getGenericReturnType()); } }

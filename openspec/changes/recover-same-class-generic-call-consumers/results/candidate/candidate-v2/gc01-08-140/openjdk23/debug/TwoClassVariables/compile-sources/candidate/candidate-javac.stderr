@@ -1,0 +1,21 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/openjdk23/debug/TwoClassVariables/compile-sources/candidate/TwoClassVariables.java:26: 错误: 找不到符号
+        return this.combine(a, b);
+                            ^
+  符号:   变量 a
+  位置: 类 TwoClassVariables<A,B>
+  其中, A,B是类型变量:
+    A扩展已在类 TwoClassVariables中声明的Object
+    B扩展已在类 TwoClassVariables中声明的Object
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/openjdk23/debug/TwoClassVariables/compile-sources/candidate/TwoClassVariables.java:26: 错误: 找不到符号
+        return this.combine(a, b);
+                               ^
+  符号:   变量 b
+  位置: 类 TwoClassVariables<A,B>
+  其中, A,B是类型变量:
+    A扩展已在类 TwoClassVariables中声明的Object
+    B扩展已在类 TwoClassVariables中声明的Object
+2 个错误
+3 个警告

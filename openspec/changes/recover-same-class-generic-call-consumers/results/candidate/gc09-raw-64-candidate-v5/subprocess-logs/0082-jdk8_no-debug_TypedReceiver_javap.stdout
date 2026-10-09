@@ -1,0 +1,62 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/TypedReceiver.jar!/TypedReceiver.class
+  Last modified 2026-10-9; size 439 bytes
+  MD5 checksum 92c777f3c6fdb9ca551473eb362e28ac
+public class TypedReceiver<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#19         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#20         // TypedReceiver.value:Ljava/lang/Object;
+   #3 = Class              #21            // TypedReceiver
+   #4 = Class              #22            // java/lang/Object
+   #5 = Utf8               value
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               put
+  #13 = Utf8               (LTypedReceiver;Ljava/lang/Object;)V
+  #14 = Utf8               (LTypedReceiver<TT;>;TT;)V
+  #15 = Utf8               observe
+  #16 = Utf8               (LTypedReceiver;)V
+  #17 = Utf8               (LTypedReceiver<TT;>;)V
+  #18 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #19 = NameAndType        #9:#10         // "<init>":()V
+  #20 = NameAndType        #5:#6          // value:Ljava/lang/Object;
+  #21 = Utf8               TypedReceiver
+  #22 = Utf8               java/lang/Object
+{
+  public T value;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public TypedReceiver();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void put(TypedReceiver<T>, T);
+    descriptor: (LTypedReceiver;Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_1
+         1: aload_2
+         2: putfield      #2                  // Field value:Ljava/lang/Object;
+         5: return
+    Signature: #14                          // (LTypedReceiver<TT;>;TT;)V
+
+  public native void observe(TypedReceiver<T>);
+    descriptor: (LTypedReceiver;)V
+    flags: ACC_PUBLIC, ACC_NATIVE
+    Signature: #17                          // (LTypedReceiver<TT;>;)V
+}
+Signature: #18                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

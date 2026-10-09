@@ -1,0 +1,70 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/nodebug/NestedCallArgument.input.jar!/NestedCallArgument.class
+  Last modified 2026-10-9; size 409 bytes
+  MD5 checksum 0e6f65b5469ec0155aa674d0a283907c
+public class NestedCallArgument<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#16         // java/lang/Object."<init>":()V
+   #2 = Methodref          #4.#17         // NestedCallArgument.first:(Ljava/lang/Object;)Ljava/lang/Object;
+   #3 = Methodref          #4.#18         // NestedCallArgument.second:(Ljava/lang/Object;)Ljava/lang/Object;
+   #4 = Class              #19            // NestedCallArgument
+   #5 = Class              #20            // java/lang/Object
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               first
+  #10 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #11 = Utf8               Signature
+  #12 = Utf8               (TT;)TT;
+  #13 = Utf8               second
+  #14 = Utf8               relay
+  #15 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #16 = NameAndType        #6:#7          // "<init>":()V
+  #17 = NameAndType        #9:#10         // first:(Ljava/lang/Object;)Ljava/lang/Object;
+  #18 = NameAndType        #13:#10        // second:(Ljava/lang/Object;)Ljava/lang/Object;
+  #19 = Utf8               NestedCallArgument
+  #20 = Utf8               java/lang/Object
+{
+  public NestedCallArgument();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public T first(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+    Signature: #12                          // (TT;)TT;
+
+  public T second(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+    Signature: #12                          // (TT;)TT;
+
+  public T relay(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_0
+         1: aload_0
+         2: aload_1
+         3: invokevirtual #2                  // Method first:(Ljava/lang/Object;)Ljava/lang/Object;
+         6: invokevirtual #3                  // Method second:(Ljava/lang/Object;)Ljava/lang/Object;
+         9: areturn
+    Signature: #12                          // (TT;)TT;
+}
+Signature: #15                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

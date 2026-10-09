@@ -1,0 +1,964 @@
+{
+  "scope": "12 行是旧 candidate-v1 CLI 输出的事后离线裁定，不是 candidate-v2 重放或验收。",
+  "cli_invoked": false,
+  "post_hoc_of_candidate_v1": true,
+  "candidate_v2_run": false,
+  "candidate_cli": "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+  "candidate_cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+  "candidate_label": "candidate",
+  "matrix_manifest": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/gc01-08-140/manifest.json",
+  "matrix_manifest_sha256": "a2f3ef31dad2c5e4c627d5037bfeebf40bda4a377febe93411f33f6e8fe1160a",
+  "nested_manifest": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/manifest.json",
+  "nested_manifest_sha256": "59ce83e55b7b013182c7042158ca341b6ad73360e7a2eb7abda2211dba6ea311",
+  "frozen_input_manifest": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/frozen-input-manifest.json",
+  "frozen_input_manifest_sha256": "c01c7f3a42e1c5e759ac45e18d13d16e233df54dfc29ae2e32c27200a826496d",
+  "root_control_disposition": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/root-control-disposition-v1.md",
+  "root_control_disposition_sha256": "663cae55647f1cf8db50f20cab50f0f9531e13de15e044e6e712bb6559d0751f",
+  "criterion_script": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate-acceptance-replay.py",
+  "criterion_script_sha256": "a19895e70ef306a3024132a3da7c07cf891ea87e5ef0e25e01413989514ce836",
+  "criterion_snapshot": "candidate-acceptance-replay-criteria.py",
+  "criterion_snapshot_sha256": "a19895e70ef306a3024132a3da7c07cf891ea87e5ef0e25e01413989514ce836",
+  "output_integrity_errors": {
+    "generic": [],
+    "nested": []
+  },
+  "focus_row_count": 12,
+  "family_results": {
+    "SameErasureBinder": {
+      "inputs": 4,
+      "feature_recovery_pass": 0,
+      "refusal_control_pass": 4,
+      "boundary_control_pass": 0,
+      "full_reflection_match": 0,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_match": 4
+    },
+    "MultiUseResult": {
+      "inputs": 4,
+      "feature_recovery_pass": 0,
+      "refusal_control_pass": 4,
+      "boundary_control_pass": 0,
+      "full_reflection_match": 0,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_match": 4
+    },
+    "IncompleteSite": {
+      "inputs": 4,
+      "feature_recovery_pass": 4,
+      "refusal_control_pass": 0,
+      "boundary_control_pass": 0,
+      "full_reflection_match": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_match": 4
+    }
+  },
+  "rows": [
+    {
+      "family": "IncompleteSite",
+      "leg": "corretto8",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "feature_recovery",
+      "check": "positive conditional single-call case: require full reflected API, both branch behaviors, and the frozen one-site physical census",
+      "disposition": null,
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": true,
+      "full_reflection_diff": {
+        "matches": true,
+        "missing_from_candidate": [],
+        "added_by_candidate": []
+      },
+      "input_jar_sha256": "8caf43e2252d114b114d51193e5cd3153fac096f13a48889fc4e88c4f8a1a27b",
+      "input_source_sha256": [
+        "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "corretto8/debug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "56fc806f2c0e6b908118f83d0b6ed0e4bd286205a7f9fcd311d5b25f1d2ef02f",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "8caf43e2252d114b114d51193e5cd3153fac096f13a48889fc4e88c4f8a1a27b",
+        "input_source_sha256": [
+          "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "manifest_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=both-conditional-paths"
+          ]
+        },
+        "source": {
+          "path": "corretto8/debug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "56fc806f2c0e6b908118f83d0b6ed0e4bd286205a7f9fcd311d5b25f1d2ef02f",
+          "exit": 0
+        },
+        "physical_census": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/incomplete-site-census-v1/manifest.json",
+          "sha256": "65d4f42da4e7d48e07ece53d76b88b853e902f8b853c70edcb84b1d7147edc76",
+          "leg": "corretto8",
+          "debug": "debug",
+          "jar_sha256": "8caf43e2252d114b114d51193e5cd3153fac096f13a48889fc4e88c4f8a1a27b",
+          "relay_invoke_lines": [
+            "6: invokevirtual #2                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+          ],
+          "matches_expected_single_conditional_site": true,
+          "error": null
+        }
+      },
+      "feature_check_details": {
+        "partial_census_note": "This ordinary conditional single-call fixture does not test a missing census entry; that requires a unit/transaction test with complete physical facts and an intentionally omitted candidate site.",
+        "full_reflection_match": true,
+        "both_conditional_paths": true,
+        "physical_single_site_census": true
+      },
+      "candidate_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+      "original_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "corretto8",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "multi-use refusal is atomic: identity/relay remain Object, observer and field remain Object, both refusal markers and marker behavior remain",
+      "disposition": "atomic-erased-fallback",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+          "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+        ],
+        "added_by_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ]
+      },
+      "input_jar_sha256": "26c42ab150ae61d478583cc9bb1bd4076dde60efa50202ff56491f95d78531f8",
+      "input_source_sha256": [
+        "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "corretto8/debug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "c4e28f41a7800349c7a11f24c4f38629adae9f3245497436a2c7ab78cddcadc9",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "26c42ab150ae61d478583cc9bb1bd4076dde60efa50202ff56491f95d78531f8",
+        "input_source_sha256": [
+          "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "manifest_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=return+observer-marker"
+          ]
+        },
+        "source": {
+          "path": "corretto8/debug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "c4e28f41a7800349c7a11f24c4f38629adae9f3245497436a2c7ab78cddcadc9",
+          "exit": 0
+        }
+      },
+      "feature_check_details": {
+        "disposition": "atomic-erased-fallback",
+        "raw_api": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ],
+        "source_refusal_markers": true
+      },
+      "candidate_probe_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+      "original_probe_stdout_sha256": "c2f1e388d24dbf0d0fae983c18e4c30059ecc49d3166bb718d8d13fe527e9b08"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "corretto8",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "distinct-binder refusal: retain class T, keep sink raw Number, preserve the null call and explicit refusal marker",
+      "disposition": "raw-number-refusal",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+          "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+        ],
+        "added_by_candidate": [
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ]
+      },
+      "input_jar_sha256": "d2a8ba5de0f4b7d2da306df5f7b11932014b1616c734ef6488acc9ac65cf31ad",
+      "input_source_sha256": [
+        "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "corretto8/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "a74e0070fe9588f94ddb25c1c476fde85e8b592dee41d3472eab0eb55082462e",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "d2a8ba5de0f4b7d2da306df5f7b11932014b1616c734ef6488acc9ac65cf31ad",
+        "input_source_sha256": [
+          "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "manifest_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=null-call-count=1"
+          ]
+        },
+        "source": {
+          "path": "corretto8/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "a74e0070fe9588f94ddb25c1c476fde85e8b592dee41d3472eab0eb55082462e",
+          "exit": 0
+        },
+        "original_api_source": {
+          "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/SameErasureBinder/SameErasureBinder.java",
+          "source_sha256": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+          "source_hash_matches_manifest": true,
+          "source_proves_bounded_method_U_and_null_call": true,
+          "probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+          "probe_hash_matches": true,
+          "input_jar_sha256": "d2a8ba5de0f4b7d2da306df5f7b11932014b1616c734ef6488acc9ac65cf31ad"
+        }
+      },
+      "feature_check_details": {
+        "disposition": "raw-number-refusal",
+        "required_api": [
+          "classformal#0:T bounds=java.lang.Number",
+          "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0",
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ],
+        "forbidden_api_prefixes": [
+          "methodformal:sink("
+        ],
+        "source_refusal_marker": "generic Signature projection refused for `sink(Ljava/lang/Number;)Ljava/lang/Number;`",
+        "accepted_null_call_forms": [
+          "sink(null)",
+          "sink((java.lang.Number)null)"
+        ],
+        "source_check_passed": true,
+        "api_check_passed": true
+      },
+      "candidate_probe_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+      "original_probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58"
+    },
+    {
+      "family": "IncompleteSite",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "feature_recovery",
+      "check": "positive conditional single-call case: require full reflected API, both branch behaviors, and the frozen one-site physical census",
+      "disposition": null,
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": true,
+      "full_reflection_diff": {
+        "matches": true,
+        "missing_from_candidate": [],
+        "added_by_candidate": []
+      },
+      "input_jar_sha256": "c659525e0fa7cb64236e08ea4c643bf182881786617c4fea5ab820fb9405d55e",
+      "input_source_sha256": [
+        "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "corretto8/nodebug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "c22257bfc7fa7dddd45bd7a310887b51506168edcd590403527efe7e205952b1",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "c659525e0fa7cb64236e08ea4c643bf182881786617c4fea5ab820fb9405d55e",
+        "input_source_sha256": [
+          "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "manifest_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=both-conditional-paths"
+          ]
+        },
+        "source": {
+          "path": "corretto8/nodebug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "c22257bfc7fa7dddd45bd7a310887b51506168edcd590403527efe7e205952b1",
+          "exit": 0
+        },
+        "physical_census": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/incomplete-site-census-v1/manifest.json",
+          "sha256": "65d4f42da4e7d48e07ece53d76b88b853e902f8b853c70edcb84b1d7147edc76",
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "jar_sha256": "c659525e0fa7cb64236e08ea4c643bf182881786617c4fea5ab820fb9405d55e",
+          "relay_invoke_lines": [
+            "6: invokevirtual #2                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+          ],
+          "matches_expected_single_conditional_site": true,
+          "error": null
+        }
+      },
+      "feature_check_details": {
+        "partial_census_note": "This ordinary conditional single-call fixture does not test a missing census entry; that requires a unit/transaction test with complete physical facts and an intentionally omitted candidate site.",
+        "full_reflection_match": true,
+        "both_conditional_paths": true,
+        "physical_single_site_census": true
+      },
+      "candidate_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+      "original_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "multi-use refusal is atomic: identity/relay remain Object, observer and field remain Object, both refusal markers and marker behavior remain",
+      "disposition": "atomic-erased-fallback",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+          "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+        ],
+        "added_by_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ]
+      },
+      "input_jar_sha256": "8d5b40d975a71acc2abe5d9d6a33f6b845adfc20dfa209bfc07fc045806e1fd7",
+      "input_source_sha256": [
+        "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "corretto8/nodebug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "2ab22e6df6c7a4071b20120f31b10ceaaac1ef9bdd7f6018585cd069c333060a",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "8d5b40d975a71acc2abe5d9d6a33f6b845adfc20dfa209bfc07fc045806e1fd7",
+        "input_source_sha256": [
+          "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "manifest_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=return+observer-marker"
+          ]
+        },
+        "source": {
+          "path": "corretto8/nodebug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "2ab22e6df6c7a4071b20120f31b10ceaaac1ef9bdd7f6018585cd069c333060a",
+          "exit": 0
+        }
+      },
+      "feature_check_details": {
+        "disposition": "atomic-erased-fallback",
+        "raw_api": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ],
+        "source_refusal_markers": true
+      },
+      "candidate_probe_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+      "original_probe_stdout_sha256": "c2f1e388d24dbf0d0fae983c18e4c30059ecc49d3166bb718d8d13fe527e9b08"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "distinct-binder refusal: retain class T, keep sink raw Number, preserve the null call and explicit refusal marker",
+      "disposition": "raw-number-refusal",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+          "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+        ],
+        "added_by_candidate": [
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ]
+      },
+      "input_jar_sha256": "919b9c4fed9fd5e73b5edb7f2ecea834a67c2964568d910c6f040267f6260ab8",
+      "input_source_sha256": [
+        "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "corretto8/nodebug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "e50214d2a92ed46bdb29584ce512c08687b59232722b6c9526ffe29adaf2cb99",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "919b9c4fed9fd5e73b5edb7f2ecea834a67c2964568d910c6f040267f6260ab8",
+        "input_source_sha256": [
+          "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "manifest_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=null-call-count=1"
+          ]
+        },
+        "source": {
+          "path": "corretto8/nodebug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "e50214d2a92ed46bdb29584ce512c08687b59232722b6c9526ffe29adaf2cb99",
+          "exit": 0
+        },
+        "original_api_source": {
+          "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/nodebug/SameErasureBinder/SameErasureBinder.java",
+          "source_sha256": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+          "source_hash_matches_manifest": true,
+          "source_proves_bounded_method_U_and_null_call": true,
+          "probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+          "probe_hash_matches": true,
+          "input_jar_sha256": "919b9c4fed9fd5e73b5edb7f2ecea834a67c2964568d910c6f040267f6260ab8"
+        }
+      },
+      "feature_check_details": {
+        "disposition": "raw-number-refusal",
+        "required_api": [
+          "classformal#0:T bounds=java.lang.Number",
+          "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0",
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ],
+        "forbidden_api_prefixes": [
+          "methodformal:sink("
+        ],
+        "source_refusal_marker": "generic Signature projection refused for `sink(Ljava/lang/Number;)Ljava/lang/Number;`",
+        "accepted_null_call_forms": [
+          "sink(null)",
+          "sink((java.lang.Number)null)"
+        ],
+        "source_check_passed": true,
+        "api_check_passed": true
+      },
+      "candidate_probe_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+      "original_probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58"
+    },
+    {
+      "family": "IncompleteSite",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "feature_recovery",
+      "check": "positive conditional single-call case: require full reflected API, both branch behaviors, and the frozen one-site physical census",
+      "disposition": null,
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": true,
+      "full_reflection_diff": {
+        "matches": true,
+        "missing_from_candidate": [],
+        "added_by_candidate": []
+      },
+      "input_jar_sha256": "26c16dc2130a6a63193a0535016e519b2f048733d9b68cadef7950ba50bdb94f",
+      "input_source_sha256": [
+        "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "openjdk23/debug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "56fc806f2c0e6b908118f83d0b6ed0e4bd286205a7f9fcd311d5b25f1d2ef02f",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "26c16dc2130a6a63193a0535016e519b2f048733d9b68cadef7950ba50bdb94f",
+        "input_source_sha256": [
+          "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "manifest_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=both-conditional-paths"
+          ]
+        },
+        "source": {
+          "path": "openjdk23/debug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "56fc806f2c0e6b908118f83d0b6ed0e4bd286205a7f9fcd311d5b25f1d2ef02f",
+          "exit": 0
+        },
+        "physical_census": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/incomplete-site-census-v1/manifest.json",
+          "sha256": "65d4f42da4e7d48e07ece53d76b88b853e902f8b853c70edcb84b1d7147edc76",
+          "leg": "openjdk23",
+          "debug": "debug",
+          "jar_sha256": "26c16dc2130a6a63193a0535016e519b2f048733d9b68cadef7950ba50bdb94f",
+          "relay_invoke_lines": [
+            "6: invokevirtual #7                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+          ],
+          "matches_expected_single_conditional_site": true,
+          "error": null
+        }
+      },
+      "feature_check_details": {
+        "partial_census_note": "This ordinary conditional single-call fixture does not test a missing census entry; that requires a unit/transaction test with complete physical facts and an intentionally omitted candidate site.",
+        "full_reflection_match": true,
+        "both_conditional_paths": true,
+        "physical_single_site_census": true
+      },
+      "candidate_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+      "original_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "multi-use refusal is atomic: identity/relay remain Object, observer and field remain Object, both refusal markers and marker behavior remain",
+      "disposition": "atomic-erased-fallback",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+          "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+        ],
+        "added_by_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ]
+      },
+      "input_jar_sha256": "08749c04b3dcce9459e131384ab38e40aeb1da1514aaf4c9f8a4eb0c99ef0cb3",
+      "input_source_sha256": [
+        "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "openjdk23/debug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "c4e28f41a7800349c7a11f24c4f38629adae9f3245497436a2c7ab78cddcadc9",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "08749c04b3dcce9459e131384ab38e40aeb1da1514aaf4c9f8a4eb0c99ef0cb3",
+        "input_source_sha256": [
+          "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "manifest_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=return+observer-marker"
+          ]
+        },
+        "source": {
+          "path": "openjdk23/debug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "c4e28f41a7800349c7a11f24c4f38629adae9f3245497436a2c7ab78cddcadc9",
+          "exit": 0
+        }
+      },
+      "feature_check_details": {
+        "disposition": "atomic-erased-fallback",
+        "raw_api": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ],
+        "source_refusal_markers": true
+      },
+      "candidate_probe_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+      "original_probe_stdout_sha256": "c2f1e388d24dbf0d0fae983c18e4c30059ecc49d3166bb718d8d13fe527e9b08"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "distinct-binder refusal: retain class T, keep sink raw Number, preserve the null call and explicit refusal marker",
+      "disposition": "raw-number-refusal",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+          "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+        ],
+        "added_by_candidate": [
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ]
+      },
+      "input_jar_sha256": "6a4836c9be87000f4f6959415ce47b452ced7e25c64c79ca64de66ff3c572478",
+      "input_source_sha256": [
+        "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "openjdk23/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "a74e0070fe9588f94ddb25c1c476fde85e8b592dee41d3472eab0eb55082462e",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "6a4836c9be87000f4f6959415ce47b452ced7e25c64c79ca64de66ff3c572478",
+        "input_source_sha256": [
+          "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "manifest_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=null-call-count=1"
+          ]
+        },
+        "source": {
+          "path": "openjdk23/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "a74e0070fe9588f94ddb25c1c476fde85e8b592dee41d3472eab0eb55082462e",
+          "exit": 0
+        },
+        "original_api_source": {
+          "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/debug/SameErasureBinder/SameErasureBinder.java",
+          "source_sha256": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+          "source_hash_matches_manifest": true,
+          "source_proves_bounded_method_U_and_null_call": true,
+          "probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+          "probe_hash_matches": true,
+          "input_jar_sha256": "6a4836c9be87000f4f6959415ce47b452ced7e25c64c79ca64de66ff3c572478"
+        }
+      },
+      "feature_check_details": {
+        "disposition": "raw-number-refusal",
+        "required_api": [
+          "classformal#0:T bounds=java.lang.Number",
+          "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0",
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ],
+        "forbidden_api_prefixes": [
+          "methodformal:sink("
+        ],
+        "source_refusal_marker": "generic Signature projection refused for `sink(Ljava/lang/Number;)Ljava/lang/Number;`",
+        "accepted_null_call_forms": [
+          "sink(null)",
+          "sink((java.lang.Number)null)"
+        ],
+        "source_check_passed": true,
+        "api_check_passed": true
+      },
+      "candidate_probe_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+      "original_probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58"
+    },
+    {
+      "family": "IncompleteSite",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "feature_recovery",
+      "check": "positive conditional single-call case: require full reflected API, both branch behaviors, and the frozen one-site physical census",
+      "disposition": null,
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": true,
+      "full_reflection_diff": {
+        "matches": true,
+        "missing_from_candidate": [],
+        "added_by_candidate": []
+      },
+      "input_jar_sha256": "52dc3a3143e5b2e20632bcfb592cfcd8a59055c664bc5b6276c5c763f864c7fd",
+      "input_source_sha256": [
+        "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "openjdk23/nodebug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "c22257bfc7fa7dddd45bd7a310887b51506168edcd590403527efe7e205952b1",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "52dc3a3143e5b2e20632bcfb592cfcd8a59055c664bc5b6276c5c763f864c7fd",
+        "input_source_sha256": [
+          "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "manifest_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=both-conditional-paths"
+          ]
+        },
+        "source": {
+          "path": "openjdk23/nodebug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "c22257bfc7fa7dddd45bd7a310887b51506168edcd590403527efe7e205952b1",
+          "exit": 0
+        },
+        "physical_census": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/incomplete-site-census-v1/manifest.json",
+          "sha256": "65d4f42da4e7d48e07ece53d76b88b853e902f8b853c70edcb84b1d7147edc76",
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "jar_sha256": "52dc3a3143e5b2e20632bcfb592cfcd8a59055c664bc5b6276c5c763f864c7fd",
+          "relay_invoke_lines": [
+            "6: invokevirtual #7                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+          ],
+          "matches_expected_single_conditional_site": true,
+          "error": null
+        }
+      },
+      "feature_check_details": {
+        "partial_census_note": "This ordinary conditional single-call fixture does not test a missing census entry; that requires a unit/transaction test with complete physical facts and an intentionally omitted candidate site.",
+        "full_reflection_match": true,
+        "both_conditional_paths": true,
+        "physical_single_site_census": true
+      },
+      "candidate_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b",
+      "original_probe_stdout_sha256": "ef41a9efed853455228b1449c6d2bf39ca0329f758ca1b53eb5d44d53fd1de8b"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "multi-use refusal is atomic: identity/relay remain Object, observer and field remain Object, both refusal markers and marker behavior remain",
+      "disposition": "atomic-erased-fallback",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+          "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+        ],
+        "added_by_candidate": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ]
+      },
+      "input_jar_sha256": "177ae21dbe67d969dae604f092c0e6c6acbab5a6585cc04f62cf6f4fd2899361",
+      "input_source_sha256": [
+        "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "openjdk23/nodebug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "2ab22e6df6c7a4071b20120f31b10ceaaac1ef9bdd7f6018585cd069c333060a",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "177ae21dbe67d969dae604f092c0e6c6acbab5a6585cc04f62cf6f4fd2899361",
+        "input_source_sha256": [
+          "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "manifest_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=return+observer-marker"
+          ]
+        },
+        "source": {
+          "path": "openjdk23/nodebug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "2ab22e6df6c7a4071b20120f31b10ceaaac1ef9bdd7f6018585cd069c333060a",
+          "exit": 0
+        }
+      },
+      "feature_check_details": {
+        "disposition": "atomic-erased-fallback",
+        "raw_api": [
+          "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+          "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+        ],
+        "source_refusal_markers": true
+      },
+      "candidate_probe_stdout_sha256": "a40718a8527346a3ba6ddc5a6e76cf03614546dd5bc30fd95607053a8e5d4dd8",
+      "original_probe_stdout_sha256": "c2f1e388d24dbf0d0fae983c18e4c30059ecc49d3166bb718d8d13fe527e9b08"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control",
+      "check": "distinct-binder refusal: retain class T, keep sink raw Number, preserve the null call and explicit refusal marker",
+      "disposition": "raw-number-refusal",
+      "candidate_compile_exit": 0,
+      "candidate_probe_exit": 0,
+      "candidate_probe_failures": [],
+      "candidate_behavior_matches_original": true,
+      "full_reflection_matches": false,
+      "full_reflection_diff": {
+        "matches": false,
+        "missing_from_candidate": [
+          "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+          "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+        ],
+        "added_by_candidate": [
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ]
+      },
+      "input_jar_sha256": "571cfc3f8df4f5d139159984f7a9db618e6ec86ee01f3df9ff3a8a135d16edd1",
+      "input_source_sha256": [
+        "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+      ],
+      "candidate_source": {
+        "source": {
+          "path": "openjdk23/nodebug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "e50214d2a92ed46bdb29584ce512c08687b59232722b6c9526ffe29adaf2cb99",
+          "exit": 0
+        }
+      },
+      "feature_check_evidence": {
+        "input_jar_sha256": "571cfc3f8df4f5d139159984f7a9db618e6ec86ee01f3df9ff3a8a135d16edd1",
+        "input_source_sha256": [
+          "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+        ],
+        "probe_source_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+        "probe": {
+          "sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "manifest_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "stdout_hash_matches": true,
+          "probe_exit": 0,
+          "probe_failures": [],
+          "behavior_lines": [
+            "behavior=null-call-count=1"
+          ]
+        },
+        "source": {
+          "path": "openjdk23/nodebug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "e50214d2a92ed46bdb29584ce512c08687b59232722b6c9526ffe29adaf2cb99",
+          "exit": 0
+        },
+        "original_api_source": {
+          "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/nodebug/SameErasureBinder/SameErasureBinder.java",
+          "source_sha256": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+          "source_hash_matches_manifest": true,
+          "source_proves_bounded_method_U_and_null_call": true,
+          "probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+          "probe_hash_matches": true,
+          "input_jar_sha256": "571cfc3f8df4f5d139159984f7a9db618e6ec86ee01f3df9ff3a8a135d16edd1"
+        }
+      },
+      "feature_check_details": {
+        "disposition": "raw-number-refusal",
+        "required_api": [
+          "classformal#0:T bounds=java.lang.Number",
+          "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0",
+          "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+        ],
+        "forbidden_api_prefixes": [
+          "methodformal:sink("
+        ],
+        "source_refusal_marker": "generic Signature projection refused for `sink(Ljava/lang/Number;)Ljava/lang/Number;`",
+        "accepted_null_call_forms": [
+          "sink(null)",
+          "sink((java.lang.Number)null)"
+        ],
+        "source_check_passed": true,
+        "api_check_passed": true
+      },
+      "candidate_probe_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+      "original_probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58"
+    }
+  ]
+}

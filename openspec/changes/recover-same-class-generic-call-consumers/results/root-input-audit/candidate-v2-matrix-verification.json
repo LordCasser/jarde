@@ -1,0 +1,55 @@
+{
+  "scope": "140输入原/JADX/候选的结果身份、实际转录和行为核对；GC各族恢复判据与Nested4/GC09/GC10仍需独立验收",
+  "manifest_sha256": "333ebd512088907be614738bf3760e6b5beb45196d763cb6160cc7055150a21e",
+  "results": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140",
+  "verifier_sha256": "77f9ba818aaaebbfde2f9c492cab5dce5d7e93903605db06864a6efd7566f6d0",
+  "files_checked": 3737,
+  "cases_checked": 140,
+  "totals": {
+    "original": {
+      "cases": 140,
+      "compile_pass": 140,
+      "probe_pass": 140
+    },
+    "jadx": {
+      "cases": 140,
+      "compile_pass": 130,
+      "probe_pass": 130,
+      "reflection_match": 126,
+      "reflection_differ": 4
+    },
+    "candidate": {
+      "cases": 140,
+      "compile_pass": 112,
+      "probe_pass": 112,
+      "reflection_match": 66,
+      "reflection_differ": 46
+    }
+  },
+  "compile_failure_families": {
+    "original": {},
+    "jadx": {
+      "UnknownIncoming": 4,
+      "BoundOverload": 4,
+      "MethodHandleUse": 2
+    },
+    "candidate": {
+      "ArrayDimensionRelay": 2,
+      "ArrayRelay": 2,
+      "CallRelay": 2,
+      "CatchCallMarker": 2,
+      "CompatibleIntersectionBinder": 2,
+      "DeepRelay": 2,
+      "IncompleteSite": 2,
+      "IndependentCallee": 2,
+      "MultiParam": 2,
+      "NumberBoundRelay": 2,
+      "ReverseDeclarationRelay": 2,
+      "TwoClassVariables": 2,
+      "TypedReceiverRelay": 2,
+      "WideRelay": 2
+    }
+  },
+  "errors": [],
+  "passed": true
+}

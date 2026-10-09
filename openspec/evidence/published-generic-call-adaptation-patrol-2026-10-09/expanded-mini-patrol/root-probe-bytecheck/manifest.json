@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-classpath",
+    "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-probe-source-bytecheck-mtumflwx/empty-cp",
+    "-sourcepath",
+    "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-probe-source-bytecheck-mtumflwx/empty-sp",
+    "-d",
+    "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-probe-source-bytecheck-mtumflwx/classes",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/expanded-mini-patrol/v3/HeaderProbe.java"
+  ],
+  "returncode": 0,
+  "probe_source_sha256": "7edb5f2965fcbb17e927172a7e78b36452c2eca79155d8fc6dd1a735af638266",
+  "generated_class_sha256": {
+    "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+    "HeaderProbe.class": "1d0ca4641a2e2f288a3abab2b3bff1d195b651482efd6232a3c11f327fd74a50"
+  },
+  "verified_successful_flavors": 27,
+  "classes_removed": true
+}

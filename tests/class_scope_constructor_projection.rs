@@ -86,11 +86,12 @@ const POSITIVES: [[FrozenClass; 4]; 9] = [
 
 const PARTIAL_PEER_NEW: [FrozenClass; 4] = four_legs!("PeerNewHold");
 
-const REFUSALS: [[FrozenClass; 4]; 9] = [
+const CALL_CONSUMER_POSITIVES: [[FrozenClass; 4]; 2] =
+    [four_legs!("CallHold"), four_legs!("ExceptionHold")];
+
+const REFUSALS: [[FrozenClass; 4]; 7] = [
     four_legs!("RewrittenHold"),
     four_legs!("PhiHold"),
-    four_legs!("CallHold"),
-    four_legs!("ExceptionHold"),
     four_legs!("ThisDelegateHold"),
     four_legs!("ParentCtorHold"),
     four_legs!("ObjectHold"),
@@ -378,6 +379,81 @@ fn class_scope_constructor_positives_recompile_and_preserve_behavior_and_binders
 }
 
 #[test]
+fn same_class_call_consumers_restore_class_binders_in_both_evidence_flavors() {
+    let scratch = Scratch::new("call-consumer-positives");
+    let driver = scratch.path().join("driver");
+    compile_driver(&driver);
+
+    for frozen in CALL_CONSUMER_POSITIVES.iter().flatten().copied() {
+        let essential = report(frozen, &RecoveryEvidenceRequest::essential());
+        let all = report(frozen, &RecoveryEvidenceRequest::all());
+        assert_eq!(
+            essential.text, all.text,
+            "{} ({}/{}) essential/all source remains stable",
+            frozen.class, frozen.jdk, frozen.debug
+        );
+        assert_source_header(&essential.text, frozen.class);
+
+        let method_name = match frozen.class {
+            "CallHold" => "identity",
+            "ExceptionHold" => "maybe",
+            _ => unreachable!("the call-consumer fixture list is explicit"),
+        };
+        assert!(
+            essential.text.contains(&format!(" T {method_name}(T ")),
+            "{} restores both the callee parameter and return to the class T: {}",
+            frozen.class,
+            essential.text
+        );
+        for evidence in [(&essential, "essential"), (&all, "all")] {
+            assert!(
+                evidence
+                    .0
+                    .fields
+                    .iter()
+                    .any(|field| field.item.name.raw().0 == b"v"),
+                "{} reports the physical v field for the {}/{} evidence flavor",
+                frozen.class,
+                frozen.jdk,
+                evidence.1
+            );
+            let label = format!(
+                "{}-{}-{}-{}",
+                frozen.class, frozen.jdk, frozen.debug, evidence.1
+            );
+            let actual = run_candidate(
+                scratch.path(),
+                &driver,
+                frozen.class,
+                &evidence.0.text,
+                &label,
+            );
+            assert_eq!(
+                rows(&actual, "BEHAVIOR|"),
+                rows(frozen.original_output, "BEHAVIOR|"),
+                "{label} preserves the original constructor behavior"
+            );
+            assert_eq!(
+                rows(&actual, "REFLECT|ctor["),
+                rows(frozen.original_output, "REFLECT|ctor["),
+                "{label} preserves the class-bound constructor parameter"
+            );
+            assert_eq!(
+                rows(&actual, "REFLECT|class"),
+                rows(frozen.original_output, "REFLECT|class"),
+                "{label} preserves the class type-variable declaration"
+            );
+            assert!(
+                rows(&actual, "REFLECT|ctor[")
+                    .iter()
+                    .any(|line| line.contains(".param[0]=T;binder=class")),
+                "{label} constructor T is owned by the class, not a constructor binder"
+            );
+        }
+    }
+}
+
+#[test]
 fn peer_new_restores_only_the_two_argument_constructor_binder() {
     let scratch = Scratch::new("peer-new-partial");
     let driver = scratch.path().join("driver");
@@ -571,9 +647,6 @@ fn unproved_constructor_shapes_keep_physical_parameters_and_refusals() {
                 original_constructor_parameters
             );
         }
-        // CallHold and ExceptionHold deliberately stop at source compatibility: the physical
-        // Object parameter cannot be passed to their same-class T-typed method. They are never
-        // counted as successful whole-class recompilations.
     }
 }
 

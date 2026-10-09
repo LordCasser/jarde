@@ -1,0 +1,101 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/BridgeUnknown/BridgeUnknown.jar!/BridgeUnknown.class
+  Last modified 2026-10-9; size 697 bytes
+  MD5 checksum 68eacfa3344c9f38aec634afec1fcccf
+  Compiled from "BridgeUnknown.java"
+public class BridgeUnknown extends BridgeBase<java.lang.String>
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#24         // BridgeBase."<init>":()V
+   #2 = Class              #25            // java/lang/String
+   #3 = Methodref          #4.#26         // BridgeUnknown.apply:(Ljava/lang/String;)Ljava/lang/String;
+   #4 = Class              #27            // BridgeUnknown
+   #5 = Class              #28            // BridgeBase
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               LineNumberTable
+  #10 = Utf8               LocalVariableTable
+  #11 = Utf8               this
+  #12 = Utf8               LBridgeUnknown;
+  #13 = Utf8               apply
+  #14 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #15 = Utf8               x
+  #16 = Utf8               Ljava/lang/String;
+  #17 = Utf8               relay
+  #18 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #19 = Utf8               Ljava/lang/Object;
+  #20 = Utf8               Signature
+  #21 = Utf8               LBridgeBase<Ljava/lang/String;>;
+  #22 = Utf8               SourceFile
+  #23 = Utf8               BridgeUnknown.java
+  #24 = NameAndType        #6:#7          // "<init>":()V
+  #25 = Utf8               java/lang/String
+  #26 = NameAndType        #13:#14        // apply:(Ljava/lang/String;)Ljava/lang/String;
+  #27 = Utf8               BridgeUnknown
+  #28 = Utf8               BridgeBase
+{
+  public BridgeUnknown();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method BridgeBase."<init>":()V
+         4: return
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LBridgeUnknown;
+
+  public java.lang.String apply(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LBridgeUnknown;
+            0       2     1     x   Ljava/lang/String;
+
+  public java.lang.Object relay(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: checkcast     #2                  // class java/lang/String
+         5: invokevirtual #3                  // Method apply:(Ljava/lang/String;)Ljava/lang/String;
+         8: areturn
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   LBridgeUnknown;
+            0       9     1     x   Ljava/lang/Object;
+
+  public java.lang.Object apply(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_BRIDGE, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: checkcast     #2                  // class java/lang/String
+         5: invokevirtual #3                  // Method apply:(Ljava/lang/String;)Ljava/lang/String;
+         8: areturn
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   LBridgeUnknown;
+}
+Signature: #21                          // LBridgeBase<Ljava/lang/String;>;
+SourceFile: "BridgeUnknown.java"

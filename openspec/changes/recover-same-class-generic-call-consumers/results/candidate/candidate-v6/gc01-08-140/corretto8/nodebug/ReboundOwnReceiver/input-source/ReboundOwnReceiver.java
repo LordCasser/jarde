@@ -1,0 +1,1 @@
+public class ReboundOwnReceiver<T> { public T identity(T x) { return x; } @SuppressWarnings({"rawtypes","unchecked"}) public T relay(T x) { ReboundOwnReceiver<T> receiver=this; Object alias=receiver; receiver=(ReboundOwnReceiver)alias; return (T)receiver.identity(x); } }

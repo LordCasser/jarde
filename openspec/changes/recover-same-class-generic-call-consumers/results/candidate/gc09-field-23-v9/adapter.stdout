@@ -1,0 +1,9 @@
+javac8 {'baseline': 22, 'candidate': 22} of 23
+javac23 {'baseline': 22, 'candidate': 22} of 23
+{
+  "out": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/adapter-run",
+  "families": 23,
+  "baseline_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "candidate_sha256": "8770d823c70e7f61749cac836e468c0a991093822d1926822d4769adc1cf7339",
+  "temporary_input_jars": 46
+}

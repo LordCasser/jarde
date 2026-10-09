@@ -1,0 +1,81 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/nodebug/SameNameOverload/SameNameOverload.jar!/SameNameOverload.class
+  Last modified 2026-10-9; size 465 bytes
+  MD5 checksum dc08bff5eaa95463991cfd99758c84c8
+public class SameNameOverload<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#20         // java/lang/Object."<init>":()V
+   #2 = String             #21            // generic
+   #3 = Fieldref           #6.#22         // SameNameOverload.selected:Ljava/lang/String;
+   #4 = String             #23            // string
+   #5 = Methodref          #6.#24         // SameNameOverload.pick:(Ljava/lang/Object;)V
+   #6 = Class              #25            // SameNameOverload
+   #7 = Class              #26            // java/lang/Object
+   #8 = Utf8               selected
+   #9 = Utf8               Ljava/lang/String;
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               pick
+  #14 = Utf8               (Ljava/lang/Object;)V
+  #15 = Utf8               Signature
+  #16 = Utf8               (TT;)V
+  #17 = Utf8               (Ljava/lang/String;)V
+  #18 = Utf8               relay
+  #19 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #20 = NameAndType        #10:#11        // "<init>":()V
+  #21 = Utf8               generic
+  #22 = NameAndType        #8:#9          // selected:Ljava/lang/String;
+  #23 = Utf8               string
+  #24 = NameAndType        #13:#14        // pick:(Ljava/lang/Object;)V
+  #25 = Utf8               SameNameOverload
+  #26 = Utf8               java/lang/Object
+{
+  public java.lang.String selected;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PUBLIC
+
+  public SameNameOverload();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void pick(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: ldc           #2                  // String generic
+         3: putfield      #3                  // Field selected:Ljava/lang/String;
+         6: return
+    Signature: #16                          // (TT;)V
+
+  public void pick(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: ldc           #4                  // String string
+         3: putfield      #3                  // Field selected:Ljava/lang/String;
+         6: return
+
+  public void relay(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #5                  // Method pick:(Ljava/lang/Object;)V
+         5: return
+    Signature: #16                          // (TT;)V
+}
+Signature: #19                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

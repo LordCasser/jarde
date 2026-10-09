@@ -1,0 +1,17 @@
+check.one-class-formal=true
+check.class-formal-owner=true
+check.first-return-is-class-T=true
+check.first-parameter-is-class-T=true
+check.first-return-declaration-is-class=true
+method=first;return=T;parameter=T
+check.second-return-is-class-T=true
+check.second-parameter-is-class-T=true
+check.second-return-declaration-is-class=true
+method=second;return=T;parameter=T
+check.relay-return-is-class-T=true
+check.relay-parameter-is-class-T=true
+check.relay-return-declaration-is-class=true
+method=relay;return=T;parameter=T
+check.nested-result-marker-identity=true
+behavior=nested-result-marker-identity
+probe.failures=0

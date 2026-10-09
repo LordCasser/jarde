@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/field-23-replay-adapter.py",
+    "--baseline",
+    "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "--candidate",
+    "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+    "--candidate-sha256",
+    "8770d823c70e7f61749cac836e468c0a991093822d1926822d4769adc1cf7339",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/adapter-run"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde"
+}

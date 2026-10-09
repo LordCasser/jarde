@@ -1,0 +1,22 @@
+{
+  "label": "graph-v41",
+  "argv": [
+    "cargo",
+    "test",
+    "--lib",
+    "generic_call_components",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v41.json",
+  "started_unix_ns": 1791520359573627000,
+  "exit": 0,
+  "finished_unix_ns": 1791520372458370000,
+  "log_sha256": "df5238b8706ae85dc884d6ee6fc5f92172bc81447db2b4f8db50f7805a1acf82",
+  "source_unchanged": true
+}

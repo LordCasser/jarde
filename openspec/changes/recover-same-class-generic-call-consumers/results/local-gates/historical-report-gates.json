@@ -1,0 +1,21 @@
+{
+  "scope": "Implementation snapshots; none is the final acceptance gate",
+  "attempts": [
+    {
+      "label": "report-check-v1",
+      "file": "report-check-v1.log",
+      "sha256": "8dc260ca79bc84c7081899334249fdd3dc6af1c0c4e81e0bdd7a105f46373c19",
+      "exit": 101,
+      "status": "historical compile failure; correction pending",
+      "command": "CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo check -p jarde-java"
+    },
+    {
+      "label": "report-tests-v2",
+      "file": "report-tests-v2.log",
+      "sha256": "fd9872db71c091980528a0b84e0f49b415558d4b06ecd9a405a73b0c8813f0de",
+      "exit": 101,
+      "status": "historical compile failure; correction pending",
+      "command": "CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo test -p jarde-java class_source_invoke -- --test-threads=1"
+    }
+  ]
+}

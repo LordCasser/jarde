@@ -1,0 +1,6 @@
+/private/tmp/jarde-generic-call-patrol-v1/SameErasureBinder/SameErasureBinder.java:4: 错误: 类型参数Object不在类型变量T的范围内
+  public static void main(String[] a) { SameErasureBinder<Object> c=null; System.out.println("behavior.null=true"); }
+                                                          ^
+  其中, T是类型变量:
+    T扩展已在类 SameErasureBinder中声明的Number,Runnable
+1 个错误

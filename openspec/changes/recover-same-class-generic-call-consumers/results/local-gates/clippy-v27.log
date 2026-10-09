@@ -1,0 +1,218 @@
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Checking libc v0.2.189
+    Checking zmij v1.0.23
+    Checking itoa v1.0.18
+    Checking memchr v2.8.3
+    Checking serde_json v1.0.151
+    Checking getrandom v0.3.4
+    Checking rand_core v0.9.5
+    Checking errno v0.3.14
+    Checking rustix v1.1.4
+    Checking getrandom v0.4.3
+    Checking zerocopy v0.8.57
+    Checking fastrand v2.5.0
+    Checking once_cell v1.21.4
+    Checking tempfile v3.27.0
+    Checking ppv-lite86 v0.2.21
+    Checking wait-timeout v0.2.1
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error: parameter is only used in recursion
+    --> src/class_source.rs:3946:5
+     |
+3946 |     class_parameters: &[TypeParameter],
+     |     ^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_class_parameters`
+     |
+note: parameter used here
+    --> src/class_source.rs:3988:17
+     |
+3988 |                 class_parameters,
+     |                 ^^^^^^^^^^^^^^^^
+...
+4015 |                         class_parameters,
+     |                         ^^^^^^^^^^^^^^^^
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#only_used_in_recursion
+     = note: `-D clippy::only-used-in-recursion` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::only_used_in_recursion)]`
+
+error: returning the result of a `let` binding from a block
+    --> src/class_source.rs:7540:13
+     |
+7435 | /             let returned = match &candidate.value {
+7436 | |                 GenericReturnValue::EmptyVoid
+7437 | |                     if parsed.result.is_none()
+7438 | |                         && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]) =>
+...    |
+7539 | |             };
+     | |______________- unnecessary `let` binding
+7540 |               returned
+     |               ^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_and_return
+     = note: `-D clippy::let-and-return` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::let_and_return)]`
+help: return the expression directly
+     |
+7435 ~             
+7436 ~             match &candidate.value {
+7437 +                 GenericReturnValue::EmptyVoid
+7438 +                     if parsed.result.is_none()
+7439 +                         && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]) =>
+7440 +                 {
+7441 +                     Some(Vec::new())
+7442 +                 }
+7443 +                 GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
+7444 +                 GenericReturnValue::EmptyVoid => None,
+7445 +                 // A complete straight-line void body whose parameters are only read keeps compiling
+7446 +                 // when a class-scope variable replaces the erased parameter spelling: the reader
+7447 +                 // proved the variable's erasure is that parameter, so every read stays assignable to
+7448 +                 // the context that accepted the erased reference. The same-run candidate refused any
+7449 +                 // reassignment of the parameter locals, which is the write side this proof refuses.
+7450 +                 GenericReturnValue::VoidBody {
+7451 +                     unread_parameter_slots,
+7452 +                 } if parsed.result.is_none()
+7453 +                     && parsed.throws.is_empty()
+7454 +                     && void_body_parameters_proved =>
+7455 +                 {
+7456 +                     Some(Vec::new())
+7457 +                 }
+7458 +                 GenericReturnValue::VoidBody { .. } => None,
+7459 +                 GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
+7460 +                 GenericReturnValue::NullLiteral => None,
+7461 +                 GenericReturnValue::Parameter(slot) => signature
+7462 +                     .parameters
+7463 +                     .iter()
+7464 +                     .position(|(_, at)| *at == *slot)
+7465 +                     .map(|position| vec![position]),
+7466 +                 GenericReturnValue::Conditional {
+7467 +                     test,
+7468 +                     when_true,
+7469 +                     when_false,
+7470 +                 } => {
+7471 +                     let test_position =
+7472 +                         signature.parameters.iter().position(|(_, at)| *at == *test);
+7473 +                     let true_position = signature
+7474 +                         .parameters
+7475 +                         .iter()
+7476 +                         .position(|(_, at)| *at == *when_true);
+7477 +                     let false_position = signature
+7478 +                         .parameters
+7479 +                         .iter()
+7480 +                         .position(|(_, at)| *at == *when_false);
+7481 +                     match (test_position, true_position, false_position) {
+7482 +                         (Some(test_position), Some(true_position), Some(false_position))
+7483 +                             if parsed.parameters[test_position] == SignatureType::Base(b'Z') =>
+7484 +                         {
+7485 +                             Some(vec![true_position, false_position])
+7486 +                         }
+7487 +                         _ => None,
+7488 +                     }
+7489 +                 }
+7490 +                 GenericReturnValue::MemberCreation {
+7491 +                     target,
+7492 +                     qualifier_slot,
+7493 +                 } => {
+7494 +                     let qualifier_position = signature
+7495 +                         .parameters
+7496 +                         .iter()
+7497 +                         .position(|(_, slot)| *slot == *qualifier_slot);
+7498 +                     qualifier_position
+7499 +                         .is_some_and(|position| {
+7500 +                             let parameter_matches =
+7501 +                                 parsed.parameters.get(position).is_some_and(|ty| {
+7502 +                                     member_signature_class_matches(
+7503 +                                         ty,
+7504 +                                         &target.outer,
+7505 +                                         &target.source_type_path,
+7506 +                                         false,
+7507 +                                     )
+7508 +                                 });
+7509 +                             parameter_matches
+7510 +                                 && parsed.result.as_ref().is_some_and(|ty| {
+7511 +                                     signature_result_matches_member_creation(ty, target)
+7512 +                                 })
+7513 +                         })
+7514 +                         .then_some(Vec::new())
+7515 +                 }
+7516 +                 GenericReturnValue::StaticMemberCreation { target, .. } => parsed
+7517 +                     .result
+7518 +                     .as_ref()
+7519 +                     .is_some_and(|ty| {
+7520 +                         member_signature_class_matches(
+7521 +                             ty,
+7522 +                             &target.owner,
+7523 +                             &target.source_type_path,
+7524 +                             false,
+7525 +                         )
+7526 +                     })
+7527 +                     .then_some(Vec::new()),
+7528 +                 GenericReturnValue::TypedFunctional { target } => {
+7529 +                     let expected = match target.kind {
+7530 +                         TypedFunctionalKind::FunctionStringInteger => {
+7531 +                             "java.util.function.Function<java.lang.String, java.lang.Integer>"
+7532 +                         }
+7533 +                         TypedFunctionalKind::SupplierString => {
+7534 +                             "java.util.function.Supplier<java.lang.String>"
+7535 +                         }
+7536 +                     };
+7537 +                     (parsed.parameters.is_empty() && result.as_deref() == Some(expected))
+7538 +                         .then_some(Vec::new())
+7539 +                 }
+7540 +             }
+     |
+
+error: used consecutive `str::replace` call
+     --> src/facade.rs:12214:26
+      |
+12214 |         .map(|name| name.replace('/', ".").replace('$', "."));
+      |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `replace(['/', '$'], ".")`
+      |
+      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_str_replace
+      = note: `-D clippy::collapsible-str-replace` implied by `-D warnings`
+      = help: to override `-D warnings` add `#[allow(clippy::collapsible_str_replace)]`
+
+error: unnecessary closure used to substitute value for `Option::None`
+     --> src/facade.rs:12219:20
+      |
+12219 |       let raw_name = declaration
+      |  ____________________^
+12220 | |         .source_type_name
+12221 | |         .as_deref()
+12222 | |         .or_else(|| match &declaration.ty {
+12223 | |             Type::Reference(name) => Some(name.as_str()),
+12224 | |             _ => None,
+12225 | |         });
+      | |__________^
+      |
+      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_lazy_evaluations
+      = note: `-D clippy::unnecessary-lazy-evaluations` implied by `-D warnings`
+      = help: to override `-D warnings` add `#[allow(clippy::unnecessary_lazy_evaluations)]`
+help: use `or` instead
+      |
+12222 ~         .or(match &declaration.ty {
+12223 +             Type::Reference(name) => Some(name.as_str()),
+12224 +             _ => None,
+12225 ~         });
+      |
+
+error: unnecessary closure used to substitute value for `Option::None`
+     --> src/facade.rs:12325:21
+      |
+12325 | /                     declaration
+12326 | |                         .source_type_name
+12327 | |                         .as_deref()
+12328 | |                         .or_else(|| match &declaration.ty {
+12329 | |                             Type::Reference(name) => Some(name.as_str()),
+12330 | |                             _ => None,
+12331 | |                         })
+      | |__________________________^
+      |
+      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_lazy_evaluations
+help: use `or` instead
+      |
+12328 ~                         .or(match &declaration.ty {
+12329 +                             Type::Reference(name) => Some(name.as_str()),
+12330 +                             _ => None,
+12331 +                         })
+      |
+
+error: could not compile `jarde` (lib) due to 5 previous errors

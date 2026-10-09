@@ -1,0 +1,89 @@
+{
+  "class": "IncompleteSite",
+  "records": [
+    {
+      "jdk": "corretto8",
+      "debug": "debug",
+      "jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/IncompleteSite/IncompleteSite.jar",
+      "jar_sha256": "8caf43e2252d114b114d51193e5cd3153fac096f13a48889fc4e88c4f8a1a27b",
+      "javap_argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/IncompleteSite/IncompleteSite.jar",
+        "-c",
+        "-p",
+        "-v",
+        "IncompleteSite"
+      ],
+      "exit": 0,
+      "stdout_sha256": "25e14962ae3cfa5f0882929e5adc81826a3437052041a551033f68284851a33a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "relay_invoke_lines": [
+        "6: invokevirtual #2                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+      ]
+    },
+    {
+      "jdk": "corretto8",
+      "debug": "nodebug",
+      "jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/nodebug/IncompleteSite/IncompleteSite.jar",
+      "jar_sha256": "c659525e0fa7cb64236e08ea4c643bf182881786617c4fea5ab820fb9405d55e",
+      "javap_argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/nodebug/IncompleteSite/IncompleteSite.jar",
+        "-c",
+        "-p",
+        "-v",
+        "IncompleteSite"
+      ],
+      "exit": 0,
+      "stdout_sha256": "30b7594ed00fc7a0b90864002e9109734080f9dc9e7b9489c6e8f80f7044b82b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "relay_invoke_lines": [
+        "6: invokevirtual #2                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+      ]
+    },
+    {
+      "jdk": "openjdk23",
+      "debug": "debug",
+      "jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/debug/IncompleteSite/IncompleteSite.jar",
+      "jar_sha256": "26c16dc2130a6a63193a0535016e519b2f048733d9b68cadef7950ba50bdb94f",
+      "javap_argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/debug/IncompleteSite/IncompleteSite.jar",
+        "-c",
+        "-p",
+        "-v",
+        "IncompleteSite"
+      ],
+      "exit": 0,
+      "stdout_sha256": "7cbcb465f1e9c89d074f2e6ba15ecab158d8bbdd4e666aeddf0fb69ffd670ae1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "relay_invoke_lines": [
+        "6: invokevirtual #7                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+      ]
+    },
+    {
+      "jdk": "openjdk23",
+      "debug": "nodebug",
+      "jar": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/nodebug/IncompleteSite/IncompleteSite.jar",
+      "jar_sha256": "52dc3a3143e5b2e20632bcfb592cfcd8a59055c664bc5b6276c5c763f864c7fd",
+      "javap_argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/nodebug/IncompleteSite/IncompleteSite.jar",
+        "-c",
+        "-p",
+        "-v",
+        "IncompleteSite"
+      ],
+      "exit": 0,
+      "stdout_sha256": "23935e4aa5e29d99dd47960dea3039f14ea5379c0f2e5a80b75a5047049f58b9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "relay_invoke_lines": [
+        "6: invokevirtual #7                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;"
+      ]
+    }
+  ]
+}

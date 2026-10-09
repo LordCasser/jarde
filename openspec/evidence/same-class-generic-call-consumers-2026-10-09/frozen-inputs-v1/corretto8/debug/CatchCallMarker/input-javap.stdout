@@ -1,0 +1,130 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/CatchCallMarker/CatchCallMarker.jar!/CatchCallMarker.class
+  Last modified 2026-10-9; size 918 bytes
+  MD5 checksum f9e7faafa2e22081248a701cfedb534f
+  Compiled from "CatchCallMarker.java"
+public class CatchCallMarker<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#37         // java/lang/Object."<init>":()V
+   #2 = Methodref          #6.#38         // CatchCallMarker.maybe:(Ljava/lang/Object;Z)Ljava/lang/Object;
+   #3 = Fieldref           #6.#39         // CatchCallMarker.value:Ljava/lang/Object;
+   #4 = Class              #40            // java/lang/RuntimeException
+   #5 = Methodref          #4.#37         // java/lang/RuntimeException."<init>":()V
+   #6 = Class              #41            // CatchCallMarker
+   #7 = Class              #42            // java/lang/Object
+   #8 = Utf8               value
+   #9 = Utf8               Ljava/lang/Object;
+  #10 = Utf8               Signature
+  #11 = Utf8               TT;
+  #12 = Utf8               <init>
+  #13 = Utf8               (Ljava/lang/Object;Z)V
+  #14 = Utf8               Code
+  #15 = Utf8               LineNumberTable
+  #16 = Utf8               LocalVariableTable
+  #17 = Utf8               ex
+  #18 = Utf8               Ljava/lang/RuntimeException;
+  #19 = Utf8               this
+  #20 = Utf8               LCatchCallMarker;
+  #21 = Utf8               x
+  #22 = Utf8               fail
+  #23 = Utf8               Z
+  #24 = Utf8               LocalVariableTypeTable
+  #25 = Utf8               LCatchCallMarker<TT;>;
+  #26 = Utf8               StackMapTable
+  #27 = Class              #41            // CatchCallMarker
+  #28 = Class              #42            // java/lang/Object
+  #29 = Class              #40            // java/lang/RuntimeException
+  #30 = Utf8               (TT;Z)V
+  #31 = Utf8               maybe
+  #32 = Utf8               (Ljava/lang/Object;Z)Ljava/lang/Object;
+  #33 = Utf8               (TT;Z)TT;
+  #34 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #35 = Utf8               SourceFile
+  #36 = Utf8               CatchCallMarker.java
+  #37 = NameAndType        #12:#43        // "<init>":()V
+  #38 = NameAndType        #31:#32        // maybe:(Ljava/lang/Object;Z)Ljava/lang/Object;
+  #39 = NameAndType        #8:#9          // value:Ljava/lang/Object;
+  #40 = Utf8               java/lang/RuntimeException
+  #41 = Utf8               CatchCallMarker
+  #42 = Utf8               java/lang/Object
+  #43 = Utf8               ()V
+{
+  public T value;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #11                          // TT;
+
+  public CatchCallMarker(T, boolean);
+    descriptor: (Ljava/lang/Object;Z)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=4, locals=4, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: aload_0
+         6: aload_1
+         7: iload_2
+         8: invokespecial #2                  // Method maybe:(Ljava/lang/Object;Z)Ljava/lang/Object;
+        11: putfield      #3                  // Field value:Ljava/lang/Object;
+        14: goto          23
+        17: astore_3
+        18: aload_0
+        19: aconst_null
+        20: putfield      #3                  // Field value:Ljava/lang/Object;
+        23: return
+      Exception table:
+         from    to  target type
+             4    14    17   Class java/lang/RuntimeException
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           18       5     3    ex   Ljava/lang/RuntimeException;
+            0      24     0  this   LCatchCallMarker;
+            0      24     1     x   Ljava/lang/Object;
+            0      24     2  fail   Z
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      24     0  this   LCatchCallMarker<TT;>;
+            0      24     1     x   TT;
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 17
+          locals = [ class CatchCallMarker, class java/lang/Object, int ]
+          stack = [ class java/lang/RuntimeException ]
+        frame_type = 5 /* same */
+    Signature: #30                          // (TT;Z)V
+
+  private T maybe(T, boolean);
+    descriptor: (Ljava/lang/Object;Z)Ljava/lang/Object;
+    flags: ACC_PRIVATE
+    Code:
+      stack=2, locals=3, args_size=3
+         0: iload_2
+         1: ifeq          12
+         4: new           #4                  // class java/lang/RuntimeException
+         7: dup
+         8: invokespecial #5                  // Method java/lang/RuntimeException."<init>":()V
+        11: athrow
+        12: aload_1
+        13: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      14     0  this   LCatchCallMarker;
+            0      14     1     x   Ljava/lang/Object;
+            0      14     2  fail   Z
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      14     0  this   LCatchCallMarker<TT;>;
+            0      14     1     x   TT;
+      StackMapTable: number_of_entries = 1
+        frame_type = 12 /* same */
+    Signature: #33                          // (TT;Z)TT;
+}
+Signature: #34                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "CatchCallMarker.java"

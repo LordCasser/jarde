@@ -1,0 +1,490 @@
+{
+  "schema": "same-class-generic-call-consumers/frozen-input-index-v1",
+  "baseline_commit": "d158989b",
+  "accepted_jarde_cli": "/tmp/jarde-raw-receiver-final-v3-cli",
+  "accepted_jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "reference_jadx": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+  "legs": [
+    {
+      "name": "corretto8",
+      "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "release": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ]
+    },
+    {
+      "name": "openjdk23",
+      "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "release": [
+        "--release",
+        "8"
+      ]
+    }
+  ],
+  "debug_modes": {
+    "debug": [
+      "-g"
+    ],
+    "nodebug": [
+      "-g:none"
+    ]
+  },
+  "flavors": [
+    "original",
+    "jadx",
+    "baseline",
+    "candidate"
+  ],
+  "new_fixtures": [
+    {
+      "name": "ArrayDimensionRelay",
+      "group": "GC-02",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ArrayDimensionRelay.java",
+      "source_sha256": "d0feba2b5b7c476ab189979ca19cc60249d8b05a16dc9367a5b1a6bb4af1e1c2",
+      "notes": "T[][] dimension and component binder preservation."
+    },
+    {
+      "name": "ArrayRelay",
+      "group": "GC-02",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ArrayRelay.java",
+      "source_sha256": "b0cbb996710658c5d13c551cec40e55fed3a93bd8810f50d4b2b249b9cbb7f46",
+      "notes": "T[] argument and result relay."
+    },
+    {
+      "name": "BridgeUnknown",
+      "group": "GC-08",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/BridgeUnknown.java",
+      "source_sha256": "ed6f25727a6ef7554b35e416ce6b58e25261c5da39256934d9e202c45dabb41d",
+      "notes": "synthetic bridge from BridgeBase<String> to apply(String), including helper source."
+    },
+    {
+      "name": "CallRelay",
+      "group": "GC-01",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java",
+      "source_sha256": "6d420eb4092258b75d1badfe5e13ec9a29e8fbdd627ee009aa3fd29167c0889f",
+      "notes": "direct T return through identity(T)."
+    },
+    {
+      "name": "CatchCallMarker",
+      "group": "GC-06",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CatchCallMarker.java",
+      "source_sha256": "80fbcd75c958a0213a6de3521d66c03c537ca7a720c9ad42d83ad8584be26fd6",
+      "notes": "Object-constructor path is covered by frozen CallHold/ExceptionHold; this new case checks constructor call, normal marker and actual thrown/caught path."
+    },
+    {
+      "name": "CompatibleIntersectionBinder",
+      "group": "GC-04",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CompatibleIntersectionBinder.java",
+      "source_sha256": "e8167ce628f247011c0ccdc64bfb5fa359702698703d8cca0822c4ac8e38d98b",
+      "notes": "class T satisfies both Number and Runnable bounds of independent U."
+    },
+    {
+      "name": "CycleRelay",
+      "group": "GC-08",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CycleRelay.java",
+      "source_sha256": "f68cd9f5d56020a7e03cbd263d7925770bce35e4bc8c57dd464a403eae1db905",
+      "notes": "two-method dependency cycle with boolean base path so runtime terminates; finite-type inference must refuse the cycle."
+    },
+    {
+      "name": "DeepRelay",
+      "group": "GC-03",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/DeepRelay.java",
+      "source_sha256": "55fe671ed5158c705083cb56e5fb6386037b7b946375a01061942ac85dc517e2",
+      "notes": "three caller-first relay layers ending in identity."
+    },
+    {
+      "name": "EmptySink",
+      "group": "GC-01",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/EmptySink.java",
+      "source_sha256": "1f59c1b20b036ad15e771ede3186bba9ce1b8ed072907d6f224c8a45678f17ad",
+      "notes": "unused T parameter; must retain class binder in sink(T)."
+    },
+    {
+      "name": "FieldSetter",
+      "group": "GC-01",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/FieldSetter.java",
+      "source_sha256": "965964f3d4bfb203964c9af01ac0c67f56d3e22d9cd5ef4cb54845e1ddc87208",
+      "notes": "direct class T parameter stored in T field; prior control, rerun four legs."
+    },
+    {
+      "name": "IncompleteSite",
+      "group": "GC-08",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/IncompleteSite.java",
+      "source_sha256": "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a",
+      "notes": "conditional call site with a direct return alternative; verifies site/result use census."
+    },
+    {
+      "name": "IndependentCallee",
+      "group": "GC-04",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/IndependentCallee.java",
+      "source_sha256": "c799f0c06ea1f4e1e56f564b76b826216f039d2044cb2207ff1a31a525c4dd82",
+      "notes": "class T explicitly substitutes into independent unbounded U."
+    },
+    {
+      "name": "IndependentLeaf",
+      "group": "GC-03",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/IndependentLeaf.java",
+      "source_sha256": "3f925b1dba12bef289de56b5049fc39d60da3637763cd1d4a47534c3f674ff86",
+      "notes": "standalone generic leaf control outside a failed call family."
+    },
+    {
+      "name": "InheritedUnknown",
+      "group": "GC-08",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/InheritedUnknown.java",
+      "source_sha256": "834b521f2fec6b6b750f4ef04ed8713c9cf29c4c90455fb027fb22b9ad7d48ac",
+      "notes": "receiver method is inherited from ArrayList<T>, outside same-class target closure."
+    },
+    {
+      "name": "MethodHandleUse",
+      "group": "GC-08",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MethodHandleUse.java",
+      "source_sha256": "277e6d2ad33e55ee5774345acf929e9ee9a3c6a4694604acfa28a3676be1d8e0",
+      "notes": "same-class method reference/bootstrap boundary through Function<T,T>."
+    },
+    {
+      "name": "MethodShadow",
+      "group": "GC-04",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MethodShadow.java",
+      "source_sha256": "0d4cd7f40cfea04ea9b7e7f91b3f42ce7462edbd6d516a0fd49773f545e11d57",
+      "notes": "method T shadows class T; direct callee U has a separate method binder."
+    },
+    {
+      "name": "MultiParam",
+      "group": "GC-02",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MultiParam.java",
+      "source_sha256": "7c782cabb1286d07af27d077a87090dad6242edac1345689c6577aada98c5ced",
+      "notes": "two T formals in order."
+    },
+    {
+      "name": "MultiUseResult",
+      "group": "GC-08",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MultiUseResult.java",
+      "source_sha256": "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84",
+      "notes": "identity result is stored through an observer and returned; every use must be checked."
+    },
+    {
+      "name": "NullCall",
+      "group": "GC-01",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/NullCall.java",
+      "source_sha256": "0eb48754dc2e4faa7331718ba8681092f73a31cae836846129d483fd00bb39e4",
+      "notes": "actual invocation result is null; distinguish null/result consumer from direct parameter return."
+    },
+    {
+      "name": "NumberBoundRelay",
+      "group": "GC-02",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/NumberBoundRelay.java",
+      "source_sha256": "a314e5f862383839f4f2af6c9421e3e8d03ad54be0f29a1910bf5ea56fed9b9d",
+      "notes": "T extends Number with Number marker 17."
+    },
+    {
+      "name": "PlainUpperBoundOverload",
+      "group": "GC-07",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/PlainUpperBoundOverload.java",
+      "source_sha256": "b96173fb4ec76433760cce259cf4c0d9551aa602bbdac549f8e221ed1ac8cb4e",
+      "notes": "T extends Number selects Number over Object without intersection ambiguity."
+    },
+    {
+      "name": "RawOwnReceiver",
+      "group": "GC-05",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/RawOwnReceiver.java",
+      "source_sha256": "61a4b6d25d7525d6fab2685e1875a5f6944f21f6b644a766a4e6c74838912932",
+      "notes": "same-class receiver is actually rebound to raw type before generic invoke and retains explicit cast."
+    },
+    {
+      "name": "ReboundOwnReceiver",
+      "group": "GC-05",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ReboundOwnReceiver.java",
+      "source_sha256": "d0010bfe7d04781b025af9b82b17eec54c71a22a890d883189da67ea4473ea81",
+      "notes": "parameterized alias is rebound through Object to raw same-class receiver before invoke."
+    },
+    {
+      "name": "ReverseDeclarationRelay",
+      "group": "GC-03",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ReverseDeclarationRelay.java",
+      "source_sha256": "2ff86f2a8d265c39beff4ab5e075c5a0c03655f228c949fd19c32215c1e98516",
+      "notes": "identity declared before callers to reverse declaration/dependency order."
+    },
+    {
+      "name": "SameErasureBinder",
+      "group": "GC-04",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/SameErasureBinder.java",
+      "source_sha256": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+      "notes": "class T extends Number while independent method U extends Number & Runnable; legal null call demonstrates same erasure with distinct declaration and incompatible bounds."
+    },
+    {
+      "name": "SameNameOverload",
+      "group": "GC-07",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/SameNameOverload.java",
+      "source_sha256": "b98dab939d96c41905c41c1dc9e3289a7dd72f13458d5b74fdd1bb0ec24cac5f",
+      "notes": "same-arity pick(T)/pick(String), actual marker proves generic target."
+    },
+    {
+      "name": "TwoClassVariables",
+      "group": "GC-02",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/TwoClassVariables.java",
+      "source_sha256": "aa9401caa55a2b4894a26a0ffe9a7ac03a1ef151d4ccb0b3df72b5feb2c6d9dd",
+      "notes": "A/B are different class formals and two arguments map independently."
+    },
+    {
+      "name": "TypedReceiverRelay",
+      "group": "GC-05",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/TypedReceiverRelay.java",
+      "source_sha256": "801193a5a229c3f19e9cf619d06f41da83a905d0eef3291dedcffb9f570eb4b2",
+      "notes": "receiver is a parameterized instance of the same class C<T>."
+    },
+    {
+      "name": "UnknownIncoming",
+      "group": "GC-03",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/UnknownIncoming.java",
+      "source_sha256": "23acc50b951ba101b524698c2788d5eb06500a4e827b2db2f1c59c63c5d8ec85",
+      "notes": "valid unchecked Object-to-T cast incoming plus independent T leaf; preserve the source cast and keep independent method unrelated."
+    },
+    {
+      "name": "VarargsCall",
+      "group": "GC-08",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/VarargsCall.java",
+      "source_sha256": "073e97bd1c4eaab7da3405a58d22561e5e1b86b3e20fac6c2551e9e08647d29b",
+      "notes": "generic varargs callee control; no ordinary fixed-arity inference assumption."
+    },
+    {
+      "name": "VoidDirect",
+      "group": "GC-01",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/VoidDirect.java",
+      "source_sha256": "2a6e79b78fb4487289b929dfef022dfc9bc860b26d17945864b25c260aece3a5",
+      "notes": "already-successful control; direct T forwarding to void sink and call counter/receiver effect."
+    },
+    {
+      "name": "WideRelay",
+      "group": "GC-02",
+      "kind": "new-source",
+      "source": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/WideRelay.java",
+      "source_sha256": "95b2aa43ac0bab47ef4fa8ab3947803c65a6a588690d4a6009455daae9d8e1de",
+      "notes": "long and double occupy wide local/stack slots around T formals."
+    }
+  ],
+  "reused_frozen_inputs": [
+    {
+      "name": "CallHold",
+      "group": "GC-06",
+      "leg": "corretto8",
+      "debug": "debug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CallHold/source/CallHold.java",
+      "source_sha256": "3e777d99a9e763e2640846a2ab52d12486a9106396d11589f84073b67f0fb1ae",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CallHold/CallHold.jar",
+      "jar_sha256": "0aee4e23bc0d951fb24860cfb00c57214565cb8e4b711efd2d7359b0c76eab59",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "CallHold",
+      "group": "GC-06",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CallHold/source/CallHold.java",
+      "source_sha256": "3e777d99a9e763e2640846a2ab52d12486a9106396d11589f84073b67f0fb1ae",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CallHold/CallHold.jar",
+      "jar_sha256": "59c9079736cb221355301ddd0df61c13351b2a294a4f29d30db6639898d7e768",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "CallHold",
+      "group": "GC-06",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CallHold/source/CallHold.java",
+      "source_sha256": "3e777d99a9e763e2640846a2ab52d12486a9106396d11589f84073b67f0fb1ae",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CallHold/CallHold.jar",
+      "jar_sha256": "bcb1e4bd7f3695c8d18df394fc3cbd803f3f0fc1c8519be15fb08b069f791a6b",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "CallHold",
+      "group": "GC-06",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CallHold/source/CallHold.java",
+      "source_sha256": "3e777d99a9e763e2640846a2ab52d12486a9106396d11589f84073b67f0fb1ae",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CallHold/CallHold.jar",
+      "jar_sha256": "c1af30ded002a6120b139b2d676c939abcdf85f7d4db12348e7068645060b059",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "ExceptionHold",
+      "group": "GC-06",
+      "leg": "corretto8",
+      "debug": "debug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ExceptionHold/source/ExceptionHold.java",
+      "source_sha256": "48d52c375f0a1c3ca232269dcd3db3ce6a62f49080ca9c80222a5f65b79f34bb",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ExceptionHold/ExceptionHold.jar",
+      "jar_sha256": "7c1f5524f712591f970a8fc3df5dd09dee30ac125875729f45d4c03f02d09e49",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "ExceptionHold",
+      "group": "GC-06",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ExceptionHold/source/ExceptionHold.java",
+      "source_sha256": "48d52c375f0a1c3ca232269dcd3db3ce6a62f49080ca9c80222a5f65b79f34bb",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ExceptionHold/ExceptionHold.jar",
+      "jar_sha256": "5dbb3e273880a85d6d8a72876957e8518f2ce1df1066c5b1b6b7766c19fb09a2",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "ExceptionHold",
+      "group": "GC-06",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ExceptionHold/source/ExceptionHold.java",
+      "source_sha256": "48d52c375f0a1c3ca232269dcd3db3ce6a62f49080ca9c80222a5f65b79f34bb",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ExceptionHold/ExceptionHold.jar",
+      "jar_sha256": "d2b3c2b8c645c28b533419142802ebd69e8eeb41a6c2c4c95e2089bfcb182934",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "ExceptionHold",
+      "group": "GC-06",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "source": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ExceptionHold/source/ExceptionHold.java",
+      "source_sha256": "48d52c375f0a1c3ca232269dcd3db3ce6a62f49080ca9c80222a5f65b79f34bb",
+      "jar": "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ExceptionHold/ExceptionHold.jar",
+      "jar_sha256": "ef47d7b033a7a3977344f42576468547eb54bad477b3908afc963c66a26d6ed5",
+      "reuse": "exact existing frozen jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "BoundOverload",
+      "group": "GC-07",
+      "leg": "corretto8",
+      "debug": "debug",
+      "source": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/corretto8/debug/BoundOverload.original.java",
+      "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "jar": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/corretto8/debug/BoundOverload.jar",
+      "jar_sha256": "e2f9c3f7565ee3924d7150ff225487ad0d360cf31bd4a246aa4997ae40cdc14b",
+      "reuse": "exact existing strict four-leg jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "BoundOverload",
+      "group": "GC-07",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "source": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/corretto8/nodebug/BoundOverload.original.java",
+      "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "jar": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/corretto8/nodebug/BoundOverload.jar",
+      "jar_sha256": "97c44c117b2c983ceb2f5aed0bbb7cb7e8d79c4230ae75528432b2a289d2b426",
+      "reuse": "exact existing strict four-leg jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "BoundOverload",
+      "group": "GC-07",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "source": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/openjdk23/debug/BoundOverload.original.java",
+      "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "jar": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/openjdk23/debug/BoundOverload.jar",
+      "jar_sha256": "f30f325fc5230635a2d3b9a54c928b6295d1be2dcf5a072ccc4d9d8dcab9a37d",
+      "reuse": "exact existing strict four-leg jar; do not recompile or replace input bytes"
+    },
+    {
+      "name": "BoundOverload",
+      "group": "GC-07",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "source": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/openjdk23/nodebug/BoundOverload.original.java",
+      "source_sha256": "7d088f127dae6f7adde11dcd05c35c9440688a71da912b0b94921d9692d4c452",
+      "jar": "openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-results/openjdk23/nodebug/BoundOverload.jar",
+      "jar_sha256": "f4c666ba19bb180cc7e37f7f9f380333a4ad30ada5457dcce3cf94b9ccd4c0d8",
+      "reuse": "exact existing strict four-leg jar; do not recompile or replace input bytes"
+    }
+  ],
+  "counts": {
+    "new_source_classes": 32,
+    "reused_existing_jar_leg_inputs": 12,
+    "source_families_total": 35,
+    "four_legs_per_new_source": 4,
+    "four_legs_per_reused_frozen_family": 4
+  },
+  "groups": {
+    "GC-01": [
+      "CallRelay",
+      "EmptySink",
+      "FieldSetter",
+      "NullCall",
+      "VoidDirect"
+    ],
+    "GC-02": [
+      "ArrayDimensionRelay",
+      "ArrayRelay",
+      "MultiParam",
+      "NumberBoundRelay",
+      "TwoClassVariables",
+      "WideRelay"
+    ],
+    "GC-03": [
+      "DeepRelay",
+      "IndependentLeaf",
+      "ReverseDeclarationRelay",
+      "UnknownIncoming"
+    ],
+    "GC-04": [
+      "CompatibleIntersectionBinder",
+      "IndependentCallee",
+      "MethodShadow",
+      "SameErasureBinder"
+    ],
+    "GC-05": [
+      "RawOwnReceiver",
+      "ReboundOwnReceiver",
+      "TypedReceiverRelay"
+    ],
+    "GC-06": [
+      "CatchCallMarker"
+    ],
+    "GC-07": [
+      "PlainUpperBoundOverload",
+      "SameNameOverload"
+    ],
+    "GC-08": [
+      "BridgeUnknown",
+      "CycleRelay",
+      "IncompleteSite",
+      "InheritedUnknown",
+      "MethodHandleUse",
+      "MultiUseResult",
+      "VarargsCall"
+    ]
+  }
+}

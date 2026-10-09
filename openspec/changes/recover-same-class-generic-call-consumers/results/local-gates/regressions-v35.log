@@ -1,0 +1,83 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.07s
+     Running tests/class_scope_constructor_projection.rs (target/debug/deps/class_scope_constructor_projection-be6b9092a4cb99da)
+
+running 7 tests
+test class_scope_constructor_positives_recompile_and_preserve_behavior_and_binders ... ok
+test cross_hold_restores_u_constructor_binder_and_keeps_t_field_erased ... ok
+test peer_new_restores_only_the_two_argument_constructor_binder ... ok
+test positive_constructor_output_budget_and_early_cancellation_stop_cleanly ... ok
+test same_class_call_consumers_restore_class_binders_in_both_evidence_flavors ... ok
+test this_delegate_keeps_physical_signature_and_recompiles_with_original_behavior ... ok
+test unproved_constructor_shapes_keep_physical_parameters_and_refusals ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.01s
+
+     Running tests/generic_constructor_projection.rs (target/debug/deps/generic_constructor_projection-1aeeea95ae8c17ad)
+
+running 4 tests
+test body_budget_and_cancellation_never_publish_a_partial_constructor_header ... ok
+test generic_constructor_projects_atomically_for_debug_and_no_debug_classes ... ok
+test same_class_constructor_binding_and_adjacent_generic_method_are_independent ... ok
+test unproved_constructor_body_keeps_its_physical_parameter ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.50s
+
+     Running tests/generic_method_projection.rs (target/debug/deps/generic_method_projection-8f5f7a021f6d4d97)
+
+running 19 tests
+test body_assignment_and_call_without_type_variable_proof_are_refused ... FAILED
+test bounded_method_variable_follows_same_run_parameters ... ok
+test direct_return_and_generic_throws_can_share_the_method_variable ... ok
+test erasure_shape_and_body_refusals_keep_descriptor_declarations ... ok
+test exact_generic_instance_null_return_projects_and_preserves_physical_method ... ok
+test exact_parameterized_list_null_return_projects_with_raw_controls_unchanged ... ok
+test exceptions_without_generic_throws_suffix_survive ... ok
+test generic_instance_null_return_admits_an_arity_disjoint_same_class_overload ... FAILED
+test generic_instance_null_return_rejects_unproved_signatures_bodies_and_bindings ... ok
+test generic_null_return_budget_and_cancellation_never_publish_a_partial_header ... ok
+test generic_null_return_refuses_signature_erasure_mismatch ... ok
+test multiple_local_variables_and_ordinary_parameters_keep_their_positions ... ok
+test neighboring_overload_without_a_caller_does_not_block_the_proved_method ... ok
+test parameterized_null_return_erasure_budget_and_cancellation_keep_raw_method ... ok
+test parameterized_null_return_rejects_other_signatures_effects_and_self_calls ... ok
+test parameterized_null_return_same_class_caller_projects_after_use_proof ... ok
+test raw_direct_return_uses_the_actual_method_bound_and_parameter_positions ... ok
+test same_class_caller_to_arity_disjoint_overload_proves_projection ... ok
+test type_use_annotations_and_varargs_are_whole_method_refusals ... ok
+
+failures:
+
+---- body_assignment_and_call_without_type_variable_proof_are_refused stdout ----
+
+thread 'body_assignment_and_call_without_type_variable_proof_are_refused' (8836857) panicked at tests/generic_method_projection.rs:1042:5:
+    public static <T extends java.lang.Number> T pass(T arg0) {
+        // jarde: generic Signature `<T:Ljava/lang/Number;>(TT;)TT;` projected after descriptor erasure and same-run complete AST/Code/SSA formal and return-consumer proof; same-class call binding proved
+        // @method pass(Ljava/lang/Number;)Ljava/lang/Number;
+        // @declaration a static method of `GenericBodyCallProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return helper(arg0);
+    }
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- generic_instance_null_return_admits_an_arity_disjoint_same_class_overload stdout ----
+
+thread 'generic_instance_null_return_admits_an_arity_disjoint_same_class_overload' (8837498) panicked at tests/generic_method_projection.rs:487:5:
+    // jarde: generic Signature projection refused for `value()Ljava/lang/Number;`: same-class generic call dependency did not close over every incoming use
+    public java.lang.Number value() {
+        // @method value()Ljava/lang/Number;
+        // @declaration an instance method of `GenericNullBindingProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return null;
+    }
+
+
+
+failures:
+    body_assignment_and_call_without_type_variable_proof_are_refused
+    generic_instance_null_return_admits_an_arity_disjoint_same_class_overload
+
+test result: FAILED. 17 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.32s
+
+error: test failed, to rerun pass `--test generic_method_projection`

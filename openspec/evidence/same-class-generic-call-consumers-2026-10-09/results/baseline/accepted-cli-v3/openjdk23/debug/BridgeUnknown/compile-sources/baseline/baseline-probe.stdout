@@ -1,0 +1,7 @@
+constructor()
+method:apply(java.lang.Object;) return=java.lang.Object params=java.lang.Object
+method:apply(java.lang.String;) return=java.lang.String params=java.lang.String
+method:relay(java.lang.Object;) return=java.lang.Object params=java.lang.Object
+behavior=bridge-marker
+probe.checks=2
+probe.failures=0

@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/nodebug/ArrayRelay/compile-sources/original/target-0-ArrayRelay.java:1: 错误: 类ArrayRelay是公共的, 应在名为 ArrayRelay.java 的文件中声明
+public class ArrayRelay<T> { public T[] identity(T[] x) { return x; } public T[] relay(T[] x) { return identity(x); } }
+       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/nodebug/ArrayRelay/Probe.java:4: 错误: 类FixtureProbe是公共的, 应在名为 FixtureProbe.java 的文件中声明
+public class FixtureProbe {
+       ^
+2 个错误

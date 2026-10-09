@@ -1,0 +1,14 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0499]: cannot borrow `*args` as mutable more than once at a time
+     --> crates/jarde-java/src/report.rs:11660:13
+      |
+11655 |             let ExprKind::Cast { ty, value } = &mut args[0].kind else {
+      |                                                     ---- first mutable borrow occurs here
+...
+11660 |             args[0].presented = Some(source_type.clone());
+      |             ^^^^ second mutable borrow occurs here
+11661 |             value.presented = Some(source_type);
+      |             --------------- first borrow later used here
+
+For more information about this error, try `rustc --explain E0499`.
+error: could not compile `jarde-java` (lib test) due to 1 previous error

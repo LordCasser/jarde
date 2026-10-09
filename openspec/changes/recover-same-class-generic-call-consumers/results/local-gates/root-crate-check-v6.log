@@ -1,0 +1,71 @@
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0433]: cannot find type `Slot` in this scope
+     --> src/facade.rs:28407:42
+      |
+28407 |             || !matches!(load.reads(), [(Slot::Local(actual), value)]
+      |                                          ^^^^ use of undeclared type `Slot`
+      |
+note: struct `crate::bulk::Slot` exists but is inaccessible
+     --> src/bulk.rs:1171:1
+      |
+ 1171 | struct Slot {
+      | ^^^^^^^^^^^ not accessible
+
+error[E0433]: cannot find type `Slot` in this scope
+     --> src/facade.rs:28408:99
+      |
+28408 | ...   if *actual == slot && matches!(ssa.value(*value).def(), Definition::Entry { slot: Slot::Local(entry), .. } if *entry == slot))
+      |                                                                                         ^^^^ use of undeclared type `Slot`
+      |
+note: struct `crate::bulk::Slot` exists but is inaccessible
+     --> src/bulk.rs:1171:1
+      |
+ 1171 | struct Slot {
+      | ^^^^^^^^^^^ not accessible
+
+error[E0599]: no method named `ok` found for enum `std::option::Option<T>` in the current scope
+     --> src/facade.rs:12259:75
+      |
+12259 |                 .and_then(|parameter| parameter.bytes(&invoke.descriptor).ok())
+      |                                                                           ^^
+      |
+help: there is a method `or` with a similar name, but with different arguments
+     --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/option.rs:1617:5
+      |
+ 1617 | /     pub const fn or(self, optb: Option<T>) -> Option<T>
+ 1618 | |     where
+ 1619 | |         T: [const] Destruct,
+      | |____________________________^
+
+error[E0599]: no method named `ok` found for enum `std::option::Option<T>` in the current scope
+     --> src/facade.rs:13494:84
+      |
+13494 |                 .and_then(|parameter| parameter.bytes(&callee.method.descriptor.0).ok())
+      |                                                                                    ^^
+      |
+help: there is a method `or` with a similar name, but with different arguments
+     --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/option.rs:1617:5
+      |
+ 1617 | /     pub const fn or(self, optb: Option<T>) -> Option<T>
+ 1618 | |     where
+ 1619 | |         T: [const] Destruct,
+      | |____________________________^
+
+error[E0308]: mismatched types
+     --> src/facade.rs:14935:21
+      |
+14914 |                     jarde_jvm::method_ir::Slot::Stack(depth) => stack_reads
+      |                                                                 ----------- ... which causes `stack_reads` to have type `Vec<(u32, SameClassInvokeValueFact)>`
+14915 |                         .push((*depth, same_class_invoke_value_fact(ssa, *value, budget)?)),
+      |                               ------------------------------------------------------------ this argument has type `(u32, SameClassInvokeValueFact)`...
+...
+14935 |                     stack_reads,
+      |                     ^^^^^^^^^^^ expected `Vec<(u16, SameClassInvokeValueFact)>`, found `Vec<(u32, SameClassInvokeValueFact)>`
+      |
+      = note: expected struct `Vec<(u16, SameClassInvokeValueFact)>`
+                 found struct `Vec<(u32, SameClassInvokeValueFact)>`
+
+Some errors have detailed explanations: E0308, E0433, E0599.
+For more information about an error, try `rustc --explain E0308`.
+error: could not compile `jarde` (lib) due to 5 previous errors

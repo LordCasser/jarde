@@ -1,0 +1,13 @@
+{
+  "cli_label": "candidate",
+  "cli_sha256": "cbeb08d31b559e40e59692da83b8145bbb65e76833465ab265ae55afc8f476a1",
+  "totals": {
+    "inputs": 4,
+    "source_emitted": 4,
+    "full_class_compile": 4,
+    "probe_pass": 4,
+    "generic_checks": 48,
+    "behavior_markers": 4,
+    "matches_frozen_original": 4
+  }
+}

@@ -1,0 +1,3 @@
+header=id<U:[class java.lang.Object]@public java.lang.Object IndependentCallee.id(java.lang.Object);>( U;) -> U
+header=relay<>( T;) -> T
+behavior.marker=true

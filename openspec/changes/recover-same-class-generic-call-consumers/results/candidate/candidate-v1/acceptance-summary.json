@@ -1,0 +1,3736 @@
+{
+  "scope": "Formal candidate 140 frozen inputs plus the independent nested-call 4-leg supplement; 144 input/leg rows total.",
+  "candidate_cli": "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+  "candidate_cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+  "candidate_label": "candidate",
+  "matrix_input_count": 140,
+  "matrix_family_count": 35,
+  "nested_input_count": 4,
+  "total_candidate_input_rows": 144,
+  "matrix_unique_input_keys": 140,
+  "physical_class_source_outputs": 148,
+  "baseline_v5_counts": {
+    "original": {
+      "compile_and_probe": 140,
+      "compile_pass": 140
+    },
+    "jadx": {
+      "compile_and_probe": 130,
+      "compile_pass": 130
+    },
+    "baseline": {
+      "compile_and_probe": 72,
+      "compile_pass": 72
+    }
+  },
+  "runner_exit_codes": {
+    "gc01_08": 0,
+    "nested4": 0
+  },
+  "runner_commands": [
+    {
+      "label": "generic-call-replay",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/replay.py",
+        "--out",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/gc01-08-140",
+        "--frozen-inputs",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1",
+        "--cli",
+        "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+        "--cli-label",
+        "candidate"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/orchestrator-logs/generic-call-replay.stdout",
+      "stdout_sha256": "5e7b07831d01f47a960dda99e9fcf69dbc7e6b605a371465b0d8cceff61f711b",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/orchestrator-logs/generic-call-replay.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "nested-call-replay",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/nested-call-argument-candidate-replay.py",
+        "--frozen-inputs",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1",
+        "--cli",
+        "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+        "--cli-sha256",
+        "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+        "--label",
+        "candidate",
+        "--out",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/orchestrator-logs/nested-call-replay.stdout",
+      "stdout_sha256": "d58f2d261e285df275901d5d58b0662b33c25707878b76d8d2cafec6392725eb",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/orchestrator-logs/nested-call-replay.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "gates": {
+    "GC-01": {
+      "families": [
+        "EmptySink",
+        "VoidDirect",
+        "FieldSetter",
+        "CallRelay",
+        "NullCall"
+      ],
+      "status": "needs-review",
+      "passed_families": 4,
+      "required_families": 5
+    },
+    "GC-02": {
+      "families": [
+        "ArrayRelay",
+        "NumberBoundRelay",
+        "MultiParam",
+        "WideRelay",
+        "TwoClassVariables",
+        "ArrayDimensionRelay"
+      ],
+      "status": "pass",
+      "passed_families": 6,
+      "required_families": 6
+    },
+    "GC-03": {
+      "families": [
+        "DeepRelay",
+        "ReverseDeclarationRelay",
+        "UnknownIncoming",
+        "IndependentLeaf",
+        "NestedCallArgument"
+      ],
+      "status": "needs-review",
+      "passed_families": 4,
+      "required_families": 5
+    },
+    "GC-04": {
+      "families": [
+        "MethodShadow",
+        "IndependentCallee",
+        "CompatibleIntersectionBinder",
+        "SameErasureBinder"
+      ],
+      "status": "needs-review",
+      "passed_families": 3,
+      "required_families": 4
+    },
+    "GC-05": {
+      "families": [
+        "TypedReceiverRelay",
+        "RawOwnReceiver",
+        "ReboundOwnReceiver"
+      ],
+      "status": "needs-review",
+      "passed_families": 1,
+      "required_families": 3
+    },
+    "GC-06": {
+      "families": [
+        "CallHold",
+        "ExceptionHold",
+        "CatchCallMarker"
+      ],
+      "status": "pass",
+      "passed_families": 3,
+      "required_families": 3
+    },
+    "GC-07": {
+      "families": [
+        "BoundOverload",
+        "SameNameOverload",
+        "PlainUpperBoundOverload"
+      ],
+      "status": "needs-review",
+      "passed_families": 2,
+      "required_families": 3
+    },
+    "GC-08": {
+      "families": [
+        "UnknownIncoming",
+        "CycleRelay",
+        "MethodHandleUse",
+        "IncompleteSite",
+        "MultiUseResult",
+        "VarargsCall",
+        "BridgeUnknown",
+        "InheritedUnknown"
+      ],
+      "status": "needs-review",
+      "passed_families": 1,
+      "required_families": 8
+    },
+    "GC-09": {
+      "status": "pending-separate-regressions",
+      "families": [
+        "field-23",
+        "constructor-80",
+        "raw-receiver-64"
+      ],
+      "result_index": "results/regression-replay-plan.md"
+    },
+    "GC-10": {
+      "status": "pending-nonmatrix-gates",
+      "families": [
+        "collector/type-proof/staging/output-budget/cancellation",
+        "fmt/clippy/seeds/ignored/strict-spec/real-JDK25-CI"
+      ],
+      "result_index": "tasks.md and root verification evidence"
+    }
+  },
+  "family_results": [
+    {
+      "family": "ArrayDimensionRelay",
+      "group": "GC-02",
+      "role": "positive",
+      "expected": "T[][] identity and component binder",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 7
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "ArrayRelay",
+      "group": "GC-02",
+      "role": "positive",
+      "expected": "same T[] argument/result identity",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 7
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "BoundOverload",
+      "group": "GC-07",
+      "role": "frozen-positive-overload",
+      "expected": "select physical Number overload and preserve target marker",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 5
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable<CLASS#0>"
+          ],
+          "added_by_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable<CLASS#0>"
+          ],
+          "added_by_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable<CLASS#0>"
+          ],
+          "added_by_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable<CLASS#0>"
+          ],
+          "added_by_candidate": [
+            "method:pick(java.lang.Comparable;)->void return=void params=java.lang.Comparable"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "fail",
+      "decision": "needs-review"
+    },
+    {
+      "family": "BridgeUnknown",
+      "group": "GC-08",
+      "role": "bridge-control",
+      "expected": "preserve bridge and source behavior",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 2
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 2
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 2
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 2
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "method:apply(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:apply(java.lang.String;)->java.lang.String return=java.lang.String params=java.lang.String",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "method:apply(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:apply(java.lang.String;)->java.lang.String return=java.lang.String params=java.lang.String",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "method:apply(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:apply(java.lang.String;)->java.lang.String return=java.lang.String params=java.lang.String",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "method:apply(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:apply(java.lang.String;)->java.lang.String return=java.lang.String params=java.lang.String",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ],
+          "missing_fragments": []
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "CallHold",
+      "group": "GC-06",
+      "role": "frozen-positive",
+      "expected": "constructor T reaches field after Object() initialization",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 6
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 6
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 6
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 6
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "CallRelay",
+      "group": "GC-01",
+      "role": "positive",
+      "expected": "direct T return through same-class identity",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 7
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "CatchCallMarker",
+      "group": "GC-06",
+      "role": "positive-exception-path",
+      "expected": "normal marker and caught throw path",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 7
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0;boolean)",
+            "method:maybe(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0;boolean)",
+            "method:maybe(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0;boolean)",
+            "method:maybe(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0;boolean)",
+            "method:maybe(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "missing_fragments": []
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:value=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:value=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:value=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:value=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:value=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:value=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:value=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:value=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "CompatibleIntersectionBinder",
+      "group": "GC-04",
+      "role": "positive-bounded-substitution",
+      "expected": "class T meets Number & Runnable bounds; retain distinct U declaration",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 11
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "CycleRelay",
+      "group": "GC-08",
+      "role": "finite-cycle-refusal",
+      "expected": "terminate and preserve behavior; do not infer a cyclic type",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 3
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies finite behavior, but does not prove that the candidate rejected the cyclic callsite inference."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies finite behavior, but does not prove that the candidate rejected the cyclic callsite inference."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies finite behavior, but does not prove that the candidate rejected the cyclic callsite inference."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies finite behavior, but does not prove that the candidate rejected the cyclic callsite inference."
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "added_by_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "added_by_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "added_by_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=CLASS#0 params=CLASS#0;boolean"
+          ],
+          "added_by_candidate": [
+            "method:left(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean",
+            "method:right(java.lang.Object;boolean;)->java.lang.Object return=java.lang.Object params=java.lang.Object;boolean"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "DeepRelay",
+      "group": "GC-03",
+      "role": "positive-multilayer",
+      "expected": "restore all relay layers",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 11
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "EmptySink",
+      "group": "GC-01",
+      "role": "positive-empty-body",
+      "expected": "unused parameter remains class T",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 3
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "ExceptionHold",
+      "group": "GC-06",
+      "role": "frozen-positive-exception",
+      "expected": "constructor T and exception handler order remain valid",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 6
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 6
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 6
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 6
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:maybe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:maybe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:maybe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "constructor(CLASS#0)",
+            "method:maybe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": []
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "field:v=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "field:v=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "FieldSetter",
+      "group": "GC-01",
+      "role": "carried-positive-control",
+      "expected": "preserve existing class-T field write",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 5
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "IncompleteSite",
+      "group": "GC-08",
+      "role": "incomplete-site-control",
+      "expected": "preserve conditional alternative; do not infer from one site",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 8
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies both conditional behaviors, but does not prove inference respected the incomplete-site boundary."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies both conditional behaviors, but does not prove inference respected the incomplete-site boundary."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies both conditional behaviors, but does not prove inference respected the incomplete-site boundary."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies both conditional behaviors, but does not prove inference respected the incomplete-site boundary."
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "IndependentCallee",
+      "group": "GC-04",
+      "role": "positive-independent-callee",
+      "expected": "substitute class T for independent callee U",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 9
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 9
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 9
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 9
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "IndependentLeaf",
+      "group": "GC-03",
+      "role": "independent-positive-control",
+      "expected": "unrelated proven leaf remains restored",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 5
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "InheritedUnknown",
+      "group": "GC-08",
+      "role": "inherited-owner-boundary",
+      "expected": "preserve inherited-call source; outside same-class closure",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 1
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 1
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 1
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 1
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the inherited-owner boundary was preserved in callsite typing."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the inherited-owner boundary was preserved in callsite typing."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the inherited-owner boundary was preserved in callsite typing."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the inherited-owner boundary was preserved in callsite typing."
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "classformal#0:T bounds=java.lang.Object",
+            "method:relay(int;)->java.lang.Object return=CLASS#0 params=int"
+          ],
+          "added_by_candidate": [
+            "method:relay(int;)->java.lang.Object return=java.lang.Object params=int"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "classformal#0:T bounds=java.lang.Object",
+            "method:relay(int;)->java.lang.Object return=CLASS#0 params=int"
+          ],
+          "added_by_candidate": [
+            "method:relay(int;)->java.lang.Object return=java.lang.Object params=int"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "classformal#0:T bounds=java.lang.Object",
+            "method:relay(int;)->java.lang.Object return=CLASS#0 params=int"
+          ],
+          "added_by_candidate": [
+            "method:relay(int;)->java.lang.Object return=java.lang.Object params=int"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "classformal#0:T bounds=java.lang.Object",
+            "method:relay(int;)->java.lang.Object return=CLASS#0 params=int"
+          ],
+          "added_by_candidate": [
+            "method:relay(int;)->java.lang.Object return=java.lang.Object params=int"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "MethodHandleUse",
+      "group": "GC-08",
+      "role": "bootstrap-boundary",
+      "expected": "do not treat a method reference as a direct invoke",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 3
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the method-reference bootstrap remained outside direct-invoke inference."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the method-reference bootstrap remained outside direct-invoke inference."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the method-reference bootstrap remained outside direct-invoke inference."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies behavior, but does not prove the method-reference bootstrap remained outside direct-invoke inference."
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "MethodShadow",
+      "group": "GC-04",
+      "role": "positive-shadowed-binder",
+      "expected": "method T remains distinct from class T and callee U",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 11
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "MultiParam",
+      "group": "GC-02",
+      "role": "positive-multiparameter",
+      "expected": "preserve ordered T parameters",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 9
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 9
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 9
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 9
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "MultiUseResult",
+      "group": "GC-08",
+      "role": "all-consumers-control",
+      "expected": "check observer and return uses of one call result",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 4
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 4
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 4
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 4
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "field:observed=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:observe(java.lang.Object;)->void return=void params=java.lang.Object"
+          ],
+          "missing_fragments": [
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "field:observed=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:observe(java.lang.Object;)->void return=void params=java.lang.Object"
+          ],
+          "missing_fragments": [
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "field:observed=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:observe(java.lang.Object;)->void return=void params=java.lang.Object"
+          ],
+          "missing_fragments": [
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Object",
+            "field:observed=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:observe(java.lang.Object;)->void return=void params=java.lang.Object"
+          ],
+          "missing_fragments": [
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ]
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "fail",
+      "decision": "needs-review"
+    },
+    {
+      "family": "NestedCallArgument",
+      "group": "GC-03",
+      "role": "positive-nested-call-result",
+      "expected": "second(first(x)) keeps the exact class T declaration and returns the input marker",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "generic_check_count": 48,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 12
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 12
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 12
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 12
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "all 12 class-owner, nested generic-return/parameter and marker checks match frozen original"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "all 12 class-owner, nested generic-return/parameter and marker checks match frozen original"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "all 12 class-owner, nested generic-return/parameter and marker checks match frozen original"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "all 12 class-owner, nested generic-return/parameter and marker checks match frozen original"
+        }
+      ],
+      "full_reflection_differences": [],
+      "compiler_failures": [],
+      "probe_failure_lines": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "NullCall",
+      "group": "GC-01",
+      "role": "positive-null-result",
+      "expected": "preserve actual null call result and consumer",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 6
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 6
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 6
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 6
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "NumberBoundRelay",
+      "group": "GC-02",
+      "role": "positive-bounded",
+      "expected": "preserve Number bound and marker value 17",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 8
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "PlainUpperBoundOverload",
+      "group": "GC-07",
+      "role": "positive-overload-target",
+      "expected": "select physical Number target without an unnecessary cast",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 4
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 4
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 4
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 4
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "RawOwnReceiver",
+      "group": "GC-05",
+      "role": "raw-receiver-refusal-control",
+      "expected": "raw receiver must not inherit class-T member type",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 3
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove the raw receiver invocation result stayed erased at the callsite."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove the raw receiver invocation result stayed erased at the callsite."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove the raw receiver invocation result stayed erased at the callsite."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove the raw receiver invocation result stayed erased at the callsite."
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "ReboundOwnReceiver",
+      "group": "GC-05",
+      "role": "rebound-receiver-refusal-control",
+      "expected": "rebound raw receiver must not borrow the old parameterized alias",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 3
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove rebound receiver lost the old parameterized alias."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove rebound receiver lost the old parameterized alias."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove rebound receiver lost the old parameterized alias."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Declared relay API and runtime marker do not prove rebound receiver lost the old parameterized alias."
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "ReverseDeclarationRelay",
+      "group": "GC-03",
+      "role": "positive-reverse-order",
+      "expected": "resolve callee dependencies independent of declaration order",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 11
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "SameErasureBinder",
+      "group": "GC-04",
+      "role": "legal-distinct-binder-control",
+      "expected": "same erasure and same name do not merge class T with U",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 5
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Number",
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Number",
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Number",
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "control-specific API fallback/retention fragments",
+          "required_fragments": [
+            "classformal#0:T bounds=java.lang.Number",
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0"
+          ],
+          "missing_fragments": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable"
+          ]
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+          ],
+          "added_by_candidate": [
+            "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+          ],
+          "added_by_candidate": [
+            "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+          ],
+          "added_by_candidate": [
+            "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable",
+            "method:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0"
+          ],
+          "added_by_candidate": [
+            "method:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "fail",
+      "decision": "needs-review"
+    },
+    {
+      "family": "SameNameOverload",
+      "group": "GC-07",
+      "role": "positive-overload-target",
+      "expected": "select generic T overload from the real source argument",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 5
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 5
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "TwoClassVariables",
+      "group": "GC-02",
+      "role": "positive-distinct-formals",
+      "expected": "preserve independent class formals A and B",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 11
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 11
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "TypedReceiverRelay",
+      "group": "GC-05",
+      "role": "positive-typed-receiver",
+      "expected": "apply the actual same-class C<T> receiver substitution",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 8
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    },
+    {
+      "family": "UnknownIncoming",
+      "group": "GC-03",
+      "role": "mixed-incoming-control",
+      "expected": "unchecked incoming keeps the safe/identity dependency group on fallback; independent untouched leaf retains class T",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 7
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 7
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies runtime behavior and declared API, but not callsite-level rollback of the safe/identity group alongside untouched."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies runtime behavior and declared API, but not callsite-level rollback of the safe/identity group alongside untouched."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies runtime behavior and declared API, but not callsite-level rollback of the safe/identity group alongside untouched."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Probe verifies runtime behavior and declared API, but not callsite-level rollback of the safe/identity group alongside untouched."
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:safe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=java.lang.Object"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:safe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:safe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=java.lang.Object"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:safe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:safe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=java.lang.Object"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:safe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:safe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=CLASS#0 params=java.lang.Object"
+          ],
+          "added_by_candidate": [
+            "method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:safe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object",
+            "method:unsafe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "VarargsCall",
+      "group": "GC-08",
+      "role": "varargs-boundary-control",
+      "expected": "preserve varargs shape and behavior",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 3
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 3
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Generic method reflection and behavior do not expose the varargs flag or prove varargs was excluded from direct-call inference."
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Generic method reflection and behavior do not expose the varargs flag or prove varargs was excluded from direct-call inference."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "needs-root-review",
+          "reason": "Generic method reflection and behavior do not expose the varargs flag or prove varargs was excluded from direct-call inference."
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "needs-root-review",
+          "reason": "Generic method reflection and behavior do not expose the varargs flag or prove varargs was excluded from direct-call inference."
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:first(java.lang.Object[];)->java.lang.Object#0 bounds=java.lang.Object",
+            "method:first(java.lang.Object[];)->java.lang.Object return=METHOD#first(java.lang.Object[];)->java.lang.Object#0 params=METHOD#first(java.lang.Object[];)->java.lang.Object#0[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:first(java.lang.Object[];)->java.lang.Object return=java.lang.Object params=java.lang.Object[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:first(java.lang.Object[];)->java.lang.Object#0 bounds=java.lang.Object",
+            "method:first(java.lang.Object[];)->java.lang.Object return=METHOD#first(java.lang.Object[];)->java.lang.Object#0 params=METHOD#first(java.lang.Object[];)->java.lang.Object#0[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:first(java.lang.Object[];)->java.lang.Object return=java.lang.Object params=java.lang.Object[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:first(java.lang.Object[];)->java.lang.Object#0 bounds=java.lang.Object",
+            "method:first(java.lang.Object[];)->java.lang.Object return=METHOD#first(java.lang.Object[];)->java.lang.Object#0 params=METHOD#first(java.lang.Object[];)->java.lang.Object#0[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:first(java.lang.Object[];)->java.lang.Object return=java.lang.Object params=java.lang.Object[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "methodformal:first(java.lang.Object[];)->java.lang.Object#0 bounds=java.lang.Object",
+            "method:first(java.lang.Object[];)->java.lang.Object return=METHOD#first(java.lang.Object[];)->java.lang.Object#0 params=METHOD#first(java.lang.Object[];)->java.lang.Object#0[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:first(java.lang.Object[];)->java.lang.Object return=java.lang.Object params=java.lang.Object[]",
+            "method:relay(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "needs-root-review",
+      "decision": "needs-root-review"
+    },
+    {
+      "family": "VoidDirect",
+      "group": "GC-01",
+      "role": "carried-positive-control",
+      "expected": "preserve direct T forwarding into void sink and call count",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 0,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 4
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 4
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 4
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 4
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "fail",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=CLASS#0",
+            "method:sink(java.lang.Object;)->void return=void params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=java.lang.Object",
+            "method:sink(java.lang.Object;)->void return=void params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=CLASS#0",
+            "method:sink(java.lang.Object;)->void return=void params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=java.lang.Object",
+            "method:sink(java.lang.Object;)->void return=void params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=CLASS#0",
+            "method:sink(java.lang.Object;)->void return=void params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=java.lang.Object",
+            "method:sink(java.lang.Object;)->void return=void params=java.lang.Object"
+          ]
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "matches": false,
+          "missing_from_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=CLASS#0",
+            "method:sink(java.lang.Object;)->void return=void params=CLASS#0"
+          ],
+          "added_by_candidate": [
+            "method:relay(java.lang.Object;)->void return=void params=java.lang.Object",
+            "method:sink(java.lang.Object;)->void return=void params=java.lang.Object"
+          ]
+        }
+      ],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": false,
+      "full_reflection_match_count": 0,
+      "required_feature_decision": "fail",
+      "decision": "needs-review"
+    },
+    {
+      "family": "WideRelay",
+      "group": "GC-02",
+      "role": "positive-wide-slots",
+      "expected": "preserve T source slot around long/double slots",
+      "inputs": 4,
+      "candidate_compile_pass": 4,
+      "candidate_probe_pass": 4,
+      "behavior_matches_original": 4,
+      "reflection_matches_original": 4,
+      "class_header_inputs": 4,
+      "probe_check_counts": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "count": 8
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "count": 8
+        }
+      ],
+      "feature_checks": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "status": "pass",
+          "check": "full reflected API matches frozen original Probe projection"
+        }
+      ],
+      "full_reflection_differences": [],
+      "probe_failure_lines": [],
+      "compiler_failures": [],
+      "cli_errors": [],
+      "all_class_headers": true,
+      "all_class_sources_ok": true,
+      "all_probe_checks_present": true,
+      "all_class_compiles": true,
+      "all_probes_pass": true,
+      "behavior_consistent": true,
+      "reflection_consistent": true,
+      "full_reflection_match_count": 4,
+      "required_feature_decision": "pass",
+      "decision": "pass"
+    }
+  ],
+  "integrity_errors": [],
+  "matrix_scope_decision": "needs-review",
+  "overall_acceptance": "pending GC-09 and GC-10; these are separate regressions/gates and are not inferred from this 144-row matrix"
+}

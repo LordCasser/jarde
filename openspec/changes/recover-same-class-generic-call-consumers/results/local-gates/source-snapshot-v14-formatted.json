@@ -1,0 +1,27 @@
+{
+  "recorded_utc": "2026-10-08T22:52:38.981579+00:00",
+  "head": "d158989b60a56a21934f80c0697dec48aefe347e",
+  "phase": "cargo fmt complete; report 12/12 overload 10/10 integration 6/6; full record clone budget unresolved; candidate exploration only",
+  "files": [
+    {
+      "path": "src/facade.rs",
+      "sha256": "a541c692904d074bbc774970eaba612e2a4da1ae09bbc1e0cc79bb571ebadc5d",
+      "bytes": 1751544
+    },
+    {
+      "path": "src/class_source.rs",
+      "sha256": "be67889e4d72607da23287d0e1afbe1c3e4927a373eab7684dd336a8bd82225f",
+      "bytes": 673777
+    },
+    {
+      "path": "crates/jarde-java/src/report.rs",
+      "sha256": "e1860c55a49073ebea2f3b8cd1b3661a5b7f7343389904d0acafe499ebc2bcd1",
+      "bytes": 524056
+    },
+    {
+      "path": "tests/same_class_generic_call_consumers.rs",
+      "sha256": "f126f3e956d99c6d17078d8e4f0324c48451971741492257e8d52a310cae188f",
+      "bytes": 15489
+    }
+  ]
+}

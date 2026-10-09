@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v7/corretto8/debug/CallHold/baseline/CallHold.java:14: 错误: 不兼容的类型: Object无法转换为T
+        this.v = this.identity(v);
+                               ^
+  其中, T是类型变量:
+    T扩展已在类 CallHold中声明的Object
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+1 个错误

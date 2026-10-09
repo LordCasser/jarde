@@ -1,0 +1,108 @@
+Classfile jar:file:/private/tmp/jarde-generic-call-patrol-v1/v3/RawReceiver/RawReceiver.jar!/RawReceiver.class
+  Last modified 2026-10-9; size 788 bytes
+  MD5 checksum 6c1999a2e820a6784aef3983e3e2a839
+  Compiled from "RawReceiver.java"
+public class RawReceiver<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#30         // java/lang/Object."<init>":()V
+   #2 = Class              #31            // java/util/ArrayList
+   #3 = Methodref          #2.#30         // java/util/ArrayList."<init>":()V
+   #4 = Fieldref           #7.#32         // RawReceiver.box:Ljava/util/List;
+   #5 = InterfaceMethodref #33.#34        // java/util/List.add:(Ljava/lang/Object;)Z
+   #6 = InterfaceMethodref #33.#35        // java/util/List.get:(I)Ljava/lang/Object;
+   #7 = Class              #36            // RawReceiver
+   #8 = Class              #37            // java/lang/Object
+   #9 = Utf8               box
+  #10 = Utf8               Ljava/util/List;
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Utf8               Code
+  #14 = Utf8               LineNumberTable
+  #15 = Utf8               LocalVariableTable
+  #16 = Utf8               this
+  #17 = Utf8               LRawReceiver;
+  #18 = Utf8               LocalVariableTypeTable
+  #19 = Utf8               LRawReceiver<TT;>;
+  #20 = Utf8               relay
+  #21 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #22 = Utf8               x
+  #23 = Utf8               Ljava/lang/Object;
+  #24 = Utf8               TT;
+  #25 = Utf8               Signature
+  #26 = Utf8               (TT;)TT;
+  #27 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #28 = Utf8               SourceFile
+  #29 = Utf8               RawReceiver.java
+  #30 = NameAndType        #11:#12        // "<init>":()V
+  #31 = Utf8               java/util/ArrayList
+  #32 = NameAndType        #9:#10         // box:Ljava/util/List;
+  #33 = Class              #38            // java/util/List
+  #34 = NameAndType        #39:#40        // add:(Ljava/lang/Object;)Z
+  #35 = NameAndType        #41:#42        // get:(I)Ljava/lang/Object;
+  #36 = Utf8               RawReceiver
+  #37 = Utf8               java/lang/Object
+  #38 = Utf8               java/util/List
+  #39 = Utf8               add
+  #40 = Utf8               (Ljava/lang/Object;)Z
+  #41 = Utf8               get
+  #42 = Utf8               (I)Ljava/lang/Object;
+{
+  public java.util.List box;
+    descriptor: Ljava/util/List;
+    flags: ACC_PUBLIC
+
+  public RawReceiver();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: new           #2                  // class java/util/ArrayList
+         8: dup
+         9: invokespecial #3                  // Method java/util/ArrayList."<init>":()V
+        12: putfield      #4                  // Field box:Ljava/util/List;
+        15: return
+      LineNumberTable:
+        line 1: 0
+        line 2: 4
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      16     0  this   LRawReceiver;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      16     0  this   LRawReceiver<TT;>;
+
+  public T relay(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: getfield      #4                  // Field box:Ljava/util/List;
+         4: aload_1
+         5: invokeinterface #5,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+        10: pop
+        11: aload_0
+        12: getfield      #4                  // Field box:Ljava/util/List;
+        15: iconst_0
+        16: invokeinterface #6,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        21: areturn
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      22     0  this   LRawReceiver;
+            0      22     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      22     0  this   LRawReceiver<TT;>;
+            0      22     1     x   TT;
+    Signature: #26                          // (TT;)TT;
+}
+Signature: #27                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "RawReceiver.java"

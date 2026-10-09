@@ -1,0 +1,9 @@
+classformal#0:T bounds=java.lang.Object
+constructor()
+method:identity(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object
+method:safe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object
+method:unsafe(java.lang.Object;)->java.lang.Object return=java.lang.Object params=java.lang.Object
+method:untouched(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0
+behavior=safe+unchecked+independent
+probe.checks=7
+probe.failures=0

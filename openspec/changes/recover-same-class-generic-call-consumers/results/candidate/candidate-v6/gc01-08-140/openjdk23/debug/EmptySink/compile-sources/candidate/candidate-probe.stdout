@@ -1,0 +1,6 @@
+classformal#0:T bounds=java.lang.Object
+constructor()
+method:sink(java.lang.Object;)->void return=void params=CLASS#0
+behavior=void-call
+probe.checks=3
+probe.failures=0

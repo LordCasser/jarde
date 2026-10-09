@@ -1,0 +1,9 @@
+classformal#0:T bounds=java.lang.Object
+field:calls=int
+field:seen=java.lang.Object
+constructor()
+method:relay(java.lang.Object;)->void return=void params=java.lang.Object
+method:sink(java.lang.Object;)->void return=void params=java.lang.Object
+behavior=marker+call-count
+probe.checks=4
+probe.failures=0

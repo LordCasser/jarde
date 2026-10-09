@@ -1,0 +1,15 @@
+{
+  "archive": "source-snapshot-v35.tar.gz",
+  "archive_sha256": "5cbbcbd6cb65317f52426c84c1609d4de104eb49a177d3127213e137af0a8ce9",
+  "files": {
+    "src/class_source.rs": "697589c3ba528c1669caebfe4be91c72a958c8ec51f2322ff919d052e042cc9e",
+    "src/facade.rs": "3a3652d0dcd7f330ac598c16c7520e4af630a611129a7b653ac00dee500086f7",
+    "crates/jarde-java/src/report.rs": "352378b2bb4e8494fb29408794dd247fe4df71ec44a8c1277db28c7aa8657dbd",
+    "tests/same_class_generic_call_consumers.rs": "31c1ad4ecbb1d35551830f33aa39ec11f0e64c0de9171379e5b3cf810ec30eea",
+    "tests/class_scope_constructor_projection.rs": "db50946fbfb3604a66f6ee0c933bcb30f9f2f122fed2c20e78509617b7913659",
+    "tests/same_class_generic_binding.rs": "8997feb96e259060df75051d7cba91f58f532e1dd20055d01f3f8fe132e86fb2",
+    "tests/generic_method_projection.rs": "cb5c80eeee530d01d88c7a878f61cd65eebf216289cb01a55da48cf92194ad0b"
+  },
+  "temporary_trace": false,
+  "git_head": "d158989b60a56a21934f80c0697dec48aefe347e"
+}

@@ -1,0 +1,16 @@
+{
+  "label": "diff-v37",
+  "argv": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v37.json",
+  "started_unix_ns": 1791514777429929000
+}

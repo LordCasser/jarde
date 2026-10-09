@@ -1,0 +1,1158 @@
+{
+  "scope": "Frozen four-leg whole-class baseline replay; exploratory outputs remain separate.",
+  "accepted_baseline_commit": "d158989b",
+  "accepted_baseline_jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "jarde_cli": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+  "jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "jarde_cli_is_accepted_baseline": true,
+  "reference_jadx": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+  "reference_jadx_sha256": "5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3",
+  "jadx_version_stdout": "dev\n",
+  "jadx_lib_directory": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib",
+  "jadx_lib_count": 57,
+  "jadx_libs": [
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+      "bytes": 239543,
+      "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+      "bytes": 721157,
+      "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+      "bytes": 17536,
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+      "bytes": 445288,
+      "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+      "bytes": 1153819,
+      "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+      "bytes": 167761,
+      "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+      "bytes": 126151,
+      "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+      "bytes": 13371507,
+      "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+      "bytes": 208835,
+      "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+      "bytes": 609182,
+      "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+      "bytes": 1039009,
+      "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+      "bytes": 25886,
+      "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+      "bytes": 2020,
+      "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+      "bytes": 20255,
+      "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+      "bytes": 4617,
+      "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+      "bytes": 313604,
+      "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+      "bytes": 2785359,
+      "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+      "bytes": 8781,
+      "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+      "bytes": 23547,
+      "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+      "bytes": 16590,
+      "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+      "bytes": 11946,
+      "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+      "bytes": 8282,
+      "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+      "bytes": 6769,
+      "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+      "bytes": 65020,
+      "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+      "bytes": 2400805,
+      "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+      "bytes": 107404,
+      "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+      "bytes": 54158,
+      "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+      "bytes": 19973,
+      "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+      "bytes": 115864,
+      "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+      "bytes": 56006,
+      "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+      "bytes": 33989,
+      "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+      "bytes": 43273,
+      "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+      "bytes": 25907,
+      "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+      "bytes": 10711,
+      "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+      "bytes": 10470,
+      "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+      "bytes": 27061,
+      "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+      "bytes": 2497,
+      "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+      "bytes": 94038,
+      "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+      "bytes": 19936,
+      "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+      "bytes": 910795,
+      "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+      "bytes": 3750100,
+      "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+      "bytes": 1841933,
+      "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "bytes": 2199,
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+      "bytes": 293273,
+      "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+      "bytes": 650132,
+      "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+      "bytes": 262096,
+      "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+      "bytes": 1876598,
+      "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+      "bytes": 20603304,
+      "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+      "bytes": 32614,
+      "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+      "bytes": 43019,
+      "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+      "bytes": 69982,
+      "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+      "bytes": 313205,
+      "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+      "bytes": 132972,
+      "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+      "bytes": 1194123,
+      "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+      "bytes": 33331,
+      "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+      "bytes": 148627,
+      "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+      "bytes": 82498,
+      "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6"
+    }
+  ],
+  "jdk_legs": {
+    "corretto8": {
+      "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javap_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "release": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ]
+    },
+    "openjdk23": {
+      "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javap_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "release": [
+        "--release",
+        "8"
+      ]
+    }
+  },
+  "probe_source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/FixtureProbe.java",
+  "probe_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+  "frozen_inputs": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1",
+  "frozen_input_manifest_sha256": "c01c7f3a42e1c5e759ac45e18d13d16e233df54dfc29ae2e32c27200a826496d",
+  "input_filter": "all-frozen-inputs",
+  "commands": [
+    {
+      "label": "jar-list",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "tf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/CompatibleIntersectionBinder/CompatibleIntersectionBinder.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "20fc67fbde9bb8f08b57c8383dfc11373e30bf809e1b22e250f8f35ab6cbb783",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder/jadx/full-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/CompatibleIntersectionBinder/CompatibleIntersectionBinder.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-CompatibleIntersectionBinder",
+      "argv": [
+        "/private/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/CompatibleIntersectionBinder/CompatibleIntersectionBinder.jar",
+        "--class",
+        "CompatibleIntersectionBinder",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "6e5f367ed6530948eb8944aca09ecce38a93814e87d42afee8144c749eeecbf2",
+      "stderr_sha256": "05d444905ff3d375c7315512bba745e9102583bffc3b1aef7ee71af71b76f14b"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4drogh_o/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4drogh_o/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4drogh_o/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder/compile-sources/original/CompatibleIntersectionBinder.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder/FixtureProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4drogh_o/classes",
+        "FixtureProbe",
+        "CompatibleIntersectionBinder",
+        "CompatibleIntersectionBinder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "513b5a4688575d204462aa10537915c0af36ced388dff2233f488b5fe009bae9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-50sknzm_/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-50sknzm_/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-50sknzm_/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder/compile-sources/jadx/sources/defpackage/CompatibleIntersectionBinder.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder/FixtureProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-50sknzm_/classes",
+        "FixtureProbe",
+        "defpackage.CompatibleIntersectionBinder",
+        "CompatibleIntersectionBinder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "513b5a4688575d204462aa10537915c0af36ced388dff2233f488b5fe009bae9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-oghuagej/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-oghuagej/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-oghuagej/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder/compile-sources/baseline/CompatibleIntersectionBinder.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder/FixtureProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-oghuagej/classes",
+        "FixtureProbe",
+        "CompatibleIntersectionBinder",
+        "CompatibleIntersectionBinder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/CompatibleIntersectionBinder",
+      "returncode": 0,
+      "stdout_sha256": "7a04acd7b534f3b04108cd9ec479b9ee5d556259ff73c8ab685063124c2d5cf2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jar-list",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "tf",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/SameErasureBinder/SameErasureBinder.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "8c62aae1280155dd53b4afa0123ae8b7e1d20a62a1e8b8a098aee2f94a0fd9b8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder/jadx/full-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/SameErasureBinder/SameErasureBinder.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-SameErasureBinder",
+      "argv": [
+        "/private/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/SameErasureBinder/SameErasureBinder.jar",
+        "--class",
+        "SameErasureBinder",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea",
+      "stderr_sha256": "eb4635526fc3bf0c14a22874f52ca5363a3bb9a3f848812d1bc834bbd7229fbc"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-c2ozs174/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-c2ozs174/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-c2ozs174/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder/compile-sources/original/SameErasureBinder.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder/FixtureProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-c2ozs174/classes",
+        "FixtureProbe",
+        "SameErasureBinder",
+        "SameErasureBinder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4d0c603u/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4d0c603u/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4d0c603u/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder/compile-sources/jadx/sources/defpackage/SameErasureBinder.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder/FixtureProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-4d0c603u/classes",
+        "FixtureProbe",
+        "defpackage.SameErasureBinder",
+        "SameErasureBinder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-j6q_ujz3/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-j6q_ujz3/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-j6q_ujz3/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder/compile-sources/baseline/SameErasureBinder.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder/FixtureProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/gc-compile-j6q_ujz3/classes",
+        "FixtureProbe",
+        "SameErasureBinder",
+        "SameErasureBinder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1/corretto8/debug/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/smoke-probe-v1",
+      "returncode": 0,
+      "stdout_sha256": "9c5955fc99a60b8f6dee6cf582c4420d91e1b3e2a201f532c91e2cbdfce7fa51",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cases": [
+    {
+      "name": "CompatibleIntersectionBinder",
+      "group": "GC-04",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_jar_sha256": "592c901ee06753c6ae3f7e3dea0655c949f66c328e5b33f967e8ce2b02ac7b95",
+      "input_source_sha256": [
+        "e8167ce628f247011c0ccdc64bfb5fa359702698703d8cca0822c4ac8e38d98b"
+      ],
+      "probe_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+      "jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+      "jadx_source_sha256": [
+        "e08bf47caa7eb9cd8984415d230b06c6f573fc5930b90be874977b9ed21f0416"
+      ],
+      "jarde_sources": [
+        {
+          "class": "CompatibleIntersectionBinder",
+          "exit": 0,
+          "source": "corretto8/debug/CompatibleIntersectionBinder/jarde/CompatibleIntersectionBinder.java",
+          "source_sha256": "6e5f367ed6530948eb8944aca09ecce38a93814e87d42afee8144c749eeecbf2"
+        }
+      ],
+      "jarde_declaration_heads": [
+        "public class CompatibleIntersectionBinder<T extends java.lang.Number & java.lang.Runnable> extends java.lang.Object {"
+      ],
+      "jarde_nonempty_declaration_head_assertion": true,
+      "flavors": {
+        "original": {
+          "source_sha256": [
+            "e8167ce628f247011c0ccdc64bfb5fa359702698703d8cca0822c4ac8e38d98b"
+          ],
+          "compile_exit": 0,
+          "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_classes_sha256": {
+            "CompatibleIntersectionBinder.class": "0977fc2e4addf5a9df81870cbfbbbf802308e980ff73f298cd7ea70b2ebd24b7",
+            "FixtureProbe$NumberRunnable.class": "e7232e9ce78ea35d49cd60ae30efe273f36e05a84be6da6acb91d6d83a27d39b",
+            "FixtureProbe.class": "9fdff09edf826c07603ba705eb08b17d66dc6ad7fe8d0abe20b6d6090407181d"
+          },
+          "probe_exit": 0,
+          "probe_stdout_sha256": "513b5a4688575d204462aa10537915c0af36ced388dff2233f488b5fe009bae9",
+          "probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "probe_stdout": "classformal#0:T bounds=java.lang.Number&java.lang.Runnable\nconstructor()\nmethodformal:identity(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable\nmethod:identity(java.lang.Number;)->java.lang.Number return=METHOD#identity(java.lang.Number;)->java.lang.Number#0 params=METHOD#identity(java.lang.Number;)->java.lang.Number#0\nmethod:relay(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0\nbehavior=Number17+identity+null-control\nprobe.checks=11\nprobe.failures=0\n",
+          "reflection_sha256": "7999f35e713963badbe8fdde48c686006bac174132244a3f21f5770a12855675",
+          "behavior_lines": [
+            "behavior=Number17+identity+null-control"
+          ],
+          "probe_failures": []
+        },
+        "jadx": {
+          "source_sha256": [
+            "e08bf47caa7eb9cd8984415d230b06c6f573fc5930b90be874977b9ed21f0416"
+          ],
+          "compile_exit": 0,
+          "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_classes_sha256": {
+            "FixtureProbe$NumberRunnable.class": "e7232e9ce78ea35d49cd60ae30efe273f36e05a84be6da6acb91d6d83a27d39b",
+            "FixtureProbe.class": "9fdff09edf826c07603ba705eb08b17d66dc6ad7fe8d0abe20b6d6090407181d",
+            "defpackage/CompatibleIntersectionBinder.class": "79339b9466c371d24db748abcd1cc51646dbe0a8711a603d4af730847cde8e4f"
+          },
+          "probe_exit": 0,
+          "probe_stdout_sha256": "513b5a4688575d204462aa10537915c0af36ced388dff2233f488b5fe009bae9",
+          "probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "probe_stdout": "classformal#0:T bounds=java.lang.Number&java.lang.Runnable\nconstructor()\nmethodformal:identity(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable\nmethod:identity(java.lang.Number;)->java.lang.Number return=METHOD#identity(java.lang.Number;)->java.lang.Number#0 params=METHOD#identity(java.lang.Number;)->java.lang.Number#0\nmethod:relay(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0\nbehavior=Number17+identity+null-control\nprobe.checks=11\nprobe.failures=0\n",
+          "reflection_sha256": "7999f35e713963badbe8fdde48c686006bac174132244a3f21f5770a12855675",
+          "behavior_lines": [
+            "behavior=Number17+identity+null-control"
+          ],
+          "probe_failures": [],
+          "reflection_matches_original": true
+        },
+        "baseline": {
+          "source_sha256": [
+            "6e5f367ed6530948eb8944aca09ecce38a93814e87d42afee8144c749eeecbf2"
+          ],
+          "compile_exit": 0,
+          "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_classes_sha256": {
+            "CompatibleIntersectionBinder.class": "8aefcfdbdb0eba2959849d23d2c0f8ea6201cfab86cc6da4ebf3dfe2f30b9592",
+            "FixtureProbe$NumberRunnable.class": "e7232e9ce78ea35d49cd60ae30efe273f36e05a84be6da6acb91d6d83a27d39b",
+            "FixtureProbe.class": "9fdff09edf826c07603ba705eb08b17d66dc6ad7fe8d0abe20b6d6090407181d"
+          },
+          "probe_exit": 0,
+          "probe_stdout_sha256": "7a04acd7b534f3b04108cd9ec479b9ee5d556259ff73c8ab685063124c2d5cf2",
+          "probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "probe_stdout": "classformal#0:T bounds=java.lang.Number&java.lang.Runnable\nconstructor()\nmethod:identity(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number\nmethod:relay(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number\nbehavior=Number17+identity+null-control\nprobe.checks=5\nprobe.failures=0\n",
+          "reflection_sha256": "d303cacc613ff67d739e4249e3c507c6a2e1cb9e5f235c055a390224b1b31acc",
+          "behavior_lines": [
+            "behavior=Number17+identity+null-control"
+          ],
+          "probe_failures": [],
+          "reflection_matches_original": false
+        }
+      }
+    },
+    {
+      "name": "SameErasureBinder",
+      "group": "GC-04",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_jar_sha256": "d2a8ba5de0f4b7d2da306df5f7b11932014b1616c734ef6488acc9ac65cf31ad",
+      "input_source_sha256": [
+        "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+      ],
+      "probe_sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e",
+      "jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+      "jadx_source_sha256": [
+        "7270953a484aaeed5ea6d7b5f468f3c4929f22d80c7664c89d9f5f051c236f76"
+      ],
+      "jarde_sources": [
+        {
+          "class": "SameErasureBinder",
+          "exit": 0,
+          "source": "corretto8/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "source_sha256": "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea"
+        }
+      ],
+      "jarde_declaration_heads": [
+        "public class SameErasureBinder<T extends java.lang.Number> extends java.lang.Object {"
+      ],
+      "jarde_nonempty_declaration_head_assertion": true,
+      "flavors": {
+        "original": {
+          "source_sha256": [
+            "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+          ],
+          "compile_exit": 0,
+          "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_classes_sha256": {
+            "FixtureProbe$NumberRunnable.class": "e7232e9ce78ea35d49cd60ae30efe273f36e05a84be6da6acb91d6d83a27d39b",
+            "FixtureProbe.class": "9fdff09edf826c07603ba705eb08b17d66dc6ad7fe8d0abe20b6d6090407181d",
+            "SameErasureBinder.class": "4656deb81065da34a33ed15ddb18a3c4400e4aef90e6ac9afb882b6c449aaca7"
+          },
+          "probe_exit": 0,
+          "probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+          "probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "probe_stdout": "classformal#0:T bounds=java.lang.Number\nfield:calls=int\nconstructor()\nmethod:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0\nmethodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable\nmethod:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0\nmethod:useNull()->void return=void params=\nbehavior=null-call-count=1\nprobe.checks=9\nprobe.failures=0\n",
+          "reflection_sha256": "071021f139a082d8040a7225a5214982cf24c16b986058d98fe4b8ef6373e6cf",
+          "behavior_lines": [
+            "behavior=null-call-count=1"
+          ],
+          "probe_failures": []
+        },
+        "jadx": {
+          "source_sha256": [
+            "7270953a484aaeed5ea6d7b5f468f3c4929f22d80c7664c89d9f5f051c236f76"
+          ],
+          "compile_exit": 0,
+          "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_classes_sha256": {
+            "FixtureProbe$NumberRunnable.class": "e7232e9ce78ea35d49cd60ae30efe273f36e05a84be6da6acb91d6d83a27d39b",
+            "FixtureProbe.class": "9fdff09edf826c07603ba705eb08b17d66dc6ad7fe8d0abe20b6d6090407181d",
+            "defpackage/SameErasureBinder.class": "3fd0ca5763e60c5211aae7685a17214382f4b6b458fd2fd49a36177b9da57bd8"
+          },
+          "probe_exit": 0,
+          "probe_stdout_sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58",
+          "probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "probe_stdout": "classformal#0:T bounds=java.lang.Number\nfield:calls=int\nconstructor()\nmethod:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0\nmethodformal:sink(java.lang.Number;)->java.lang.Number#0 bounds=java.lang.Number&java.lang.Runnable\nmethod:sink(java.lang.Number;)->java.lang.Number return=METHOD#sink(java.lang.Number;)->java.lang.Number#0 params=METHOD#sink(java.lang.Number;)->java.lang.Number#0\nmethod:useNull()->void return=void params=\nbehavior=null-call-count=1\nprobe.checks=9\nprobe.failures=0\n",
+          "reflection_sha256": "071021f139a082d8040a7225a5214982cf24c16b986058d98fe4b8ef6373e6cf",
+          "behavior_lines": [
+            "behavior=null-call-count=1"
+          ],
+          "probe_failures": [],
+          "reflection_matches_original": true
+        },
+        "baseline": {
+          "source_sha256": [
+            "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea"
+          ],
+          "compile_exit": 0,
+          "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_classes_sha256": {
+            "FixtureProbe$NumberRunnable.class": "e7232e9ce78ea35d49cd60ae30efe273f36e05a84be6da6acb91d6d83a27d39b",
+            "FixtureProbe.class": "9fdff09edf826c07603ba705eb08b17d66dc6ad7fe8d0abe20b6d6090407181d",
+            "SameErasureBinder.class": "c783ff33a4f6446c08404fdf769aa0a550cfa8c5f35f0ca69263cc12bee93f18"
+          },
+          "probe_exit": 0,
+          "probe_stdout_sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845",
+          "probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "probe_stdout": "classformal#0:T bounds=java.lang.Number\nfield:calls=int\nconstructor()\nmethod:independent(java.lang.Number;)->java.lang.Number return=CLASS#0 params=CLASS#0\nmethod:sink(java.lang.Number;)->java.lang.Number return=java.lang.Number params=java.lang.Number\nmethod:useNull()->void return=void params=\nbehavior=null-call-count=1\nprobe.checks=5\nprobe.failures=0\n",
+          "reflection_sha256": "b4ffedd271c3d7711a722fea0b17a886541140fdf44139b3ee7976d83cdd9f4b",
+          "behavior_lines": [
+            "behavior=null-call-count=1"
+          ],
+          "probe_failures": [],
+          "reflection_matches_original": false
+        }
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "FixtureProbe.java",
+      "bytes": 14499,
+      "sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/CompatibleIntersectionBinder.input.jar",
+      "bytes": 899,
+      "sha256": "592c901ee06753c6ae3f7e3dea0655c949f66c328e5b33f967e8ce2b02ac7b95"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/FixtureProbe.java",
+      "bytes": 14499,
+      "sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/baseline/CompatibleIntersectionBinder.java",
+      "bytes": 2021,
+      "sha256": "6e5f367ed6530948eb8944aca09ecce38a93814e87d42afee8144c749eeecbf2"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/baseline/baseline-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/baseline/baseline-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/baseline/baseline-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/baseline/baseline-probe.stdout",
+      "bytes": 344,
+      "sha256": "7a04acd7b534f3b04108cd9ec479b9ee5d556259ff73c8ab685063124c2d5cf2"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/jadx/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/jadx/jadx-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/jadx/jadx-probe.stdout",
+      "bytes": 507,
+      "sha256": "513b5a4688575d204462aa10537915c0af36ced388dff2233f488b5fe009bae9"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/jadx/sources/defpackage/CompatibleIntersectionBinder.java",
+      "bytes": 395,
+      "sha256": "e08bf47caa7eb9cd8984415d230b06c6f573fc5930b90be874977b9ed21f0416"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/original/CompatibleIntersectionBinder.java",
+      "bytes": 186,
+      "sha256": "e8167ce628f247011c0ccdc64bfb5fa359702698703d8cca0822c4ac8e38d98b"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/original/original-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/compile-sources/original/original-probe.stdout",
+      "bytes": 507,
+      "sha256": "513b5a4688575d204462aa10537915c0af36ced388dff2233f488b5fe009bae9"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/input-source/CompatibleIntersectionBinder.java",
+      "bytes": 186,
+      "sha256": "e8167ce628f247011c0ccdc64bfb5fa359702698703d8cca0822c4ac8e38d98b"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jadx/compile-tree/sources/defpackage/CompatibleIntersectionBinder.java",
+      "bytes": 395,
+      "sha256": "e08bf47caa7eb9cd8984415d230b06c6f573fc5930b90be874977b9ed21f0416"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jadx/full-output/sources/defpackage/CompatibleIntersectionBinder.java",
+      "bytes": 395,
+      "sha256": "e08bf47caa7eb9cd8984415d230b06c6f573fc5930b90be874977b9ed21f0416"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jar-list.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jar-list.stdout",
+      "bytes": 66,
+      "sha256": "20fc67fbde9bb8f08b57c8383dfc11373e30bf809e1b22e250f8f35ab6cbb783"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jarde/CompatibleIntersectionBinder.java",
+      "bytes": 2021,
+      "sha256": "6e5f367ed6530948eb8944aca09ecce38a93814e87d42afee8144c749eeecbf2"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jarde/jarde-CompatibleIntersectionBinder.stderr",
+      "bytes": 60670,
+      "sha256": "05d444905ff3d375c7315512bba745e9102583bffc3b1aef7ee71af71b76f14b"
+    },
+    {
+      "path": "corretto8/debug/CompatibleIntersectionBinder/jarde/jarde-CompatibleIntersectionBinder.stdout",
+      "bytes": 2021,
+      "sha256": "6e5f367ed6530948eb8944aca09ecce38a93814e87d42afee8144c749eeecbf2"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/FixtureProbe.java",
+      "bytes": 14499,
+      "sha256": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/SameErasureBinder.input.jar",
+      "bytes": 931,
+      "sha256": "d2a8ba5de0f4b7d2da306df5f7b11932014b1616c734ef6488acc9ac65cf31ad"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/baseline/SameErasureBinder.java",
+      "bytes": 2073,
+      "sha256": "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/baseline/baseline-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/baseline/baseline-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/baseline/baseline-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/baseline/baseline-probe.stdout",
+      "bytes": 355,
+      "sha256": "e1e74397d28ee7a76129ec445c94a1523a4d61644421e3d8da8f7e31fc7c6845"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/jadx/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/jadx/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/jadx/jadx-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/jadx/jadx-probe.stdout",
+      "bytes": 523,
+      "sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/jadx/sources/defpackage/SameErasureBinder.java",
+      "bytes": 412,
+      "sha256": "7270953a484aaeed5ea6d7b5f468f3c4929f22d80c7664c89d9f5f051c236f76"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/original/SameErasureBinder.java",
+      "bytes": 221,
+      "sha256": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/original/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/original/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/original/original-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/compile-sources/original/original-probe.stdout",
+      "bytes": 523,
+      "sha256": "556ecfb351e2fd14cb02aa523bbb94b17a1df43a67fae1fec48ded216bdeea58"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/input-source/SameErasureBinder.java",
+      "bytes": 221,
+      "sha256": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jadx/compile-tree/sources/defpackage/SameErasureBinder.java",
+      "bytes": 412,
+      "sha256": "7270953a484aaeed5ea6d7b5f468f3c4929f22d80c7664c89d9f5f051c236f76"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jadx/full-output/sources/defpackage/SameErasureBinder.java",
+      "bytes": 412,
+      "sha256": "7270953a484aaeed5ea6d7b5f468f3c4929f22d80c7664c89d9f5f051c236f76"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jar-list.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jar-list.stdout",
+      "bytes": 55,
+      "sha256": "8c62aae1280155dd53b4afa0123ae8b7e1d20a62a1e8b8a098aee2f94a0fd9b8"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+      "bytes": 2073,
+      "sha256": "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jarde/jarde-SameErasureBinder.stderr",
+      "bytes": 93816,
+      "sha256": "eb4635526fc3bf0c14a22874f52ca5363a3bb9a3f848812d1bc834bbd7229fbc"
+    },
+    {
+      "path": "corretto8/debug/SameErasureBinder/jarde/jarde-SameErasureBinder.stdout",
+      "bytes": 2073,
+      "sha256": "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea"
+    },
+    {
+      "path": "jadx-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jadx-version.stdout",
+      "bytes": 4,
+      "sha256": "9c5955fc99a60b8f6dee6cf582c4420d91e1b3e2a201f532c91e2cbdfce7fa51"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 1054,
+      "sha256": "3a10834642264951932774b727d93eeb1ca2e6159e15b56c541581ce88d51e0a"
+    }
+  ]
+}

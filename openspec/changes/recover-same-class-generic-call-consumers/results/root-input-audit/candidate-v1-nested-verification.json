@@ -1,0 +1,9 @@
+{
+  "scope": "Nested4固定候选完整来源、实际命令与48个owner/parameter/return/marker断言，非最终GC10交付",
+  "files_checked": 34,
+  "cases_checked": 4,
+  "actual_checks": 48,
+  "manifest_sha256": "59ce83e55b7b013182c7042158ca341b6ad73360e7a2eb7abda2211dba6ea311",
+  "errors": [],
+  "passed": true
+}

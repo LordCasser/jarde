@@ -1,0 +1,20 @@
+{
+  "label": "seed-5350648285461741569-v36",
+  "argv": [
+    "cargo",
+    "test",
+    "--workspace",
+    "--all-targets",
+    "--all-features",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "PROPTEST_RNG_SEED": "5350648285461741569"
+  },
+  "source_snapshot": "source-snapshot-v36.json",
+  "started_unix_ns": 1791512862189657000
+}

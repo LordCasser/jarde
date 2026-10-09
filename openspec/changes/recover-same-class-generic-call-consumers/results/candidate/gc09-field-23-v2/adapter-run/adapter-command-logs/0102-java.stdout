@@ -1,0 +1,6 @@
+index:true
+read:true
+fieldValue={}
+fieldGenericType=java.util.Map<java.lang.String, java.util.List<T>>
+classvars=1
+method=main methodvars=0 parameterGenericType=java.lang.String[]

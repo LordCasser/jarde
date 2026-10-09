@@ -1,0 +1,7 @@
+classformal#0:T bounds=java.lang.Object
+field:value=CLASS#0
+constructor(CLASS#0;boolean)
+method:maybe(java.lang.Object;boolean;) return=CLASS#0 params=CLASS#0;boolean
+behavior=normal-marker+caught-throw
+probe.checks=8
+probe.failures=0

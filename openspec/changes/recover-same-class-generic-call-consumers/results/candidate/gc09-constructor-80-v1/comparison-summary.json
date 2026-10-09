@@ -1,0 +1,558 @@
+{
+  "scope": "GC09 constructor-80 paired replay, comparing every candidate row with same 3f75 baseline row",
+  "cli_sha256": {
+    "baseline": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+    "candidate": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900"
+  },
+  "runner_snapshot_sha256": "c2eaa605a67c3b1bd6f6a649114048953f15c2f4a9e7157cf766c9b8d44306ac",
+  "metrics": {
+    "compile_exit": {
+      "baseline_pass": 72,
+      "candidate_pass": 80,
+      "total": 80,
+      "regressions": [],
+      "improvements": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": 1,
+          "candidate": 0
+        },
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": 1,
+          "candidate": 0
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": 1,
+          "candidate": 0
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": 1,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": 1,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": 1,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": 1,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": 1,
+          "candidate": 0
+        }
+      ]
+    },
+    "run_exit": {
+      "baseline_pass": 72,
+      "candidate_pass": 80,
+      "total": 80,
+      "regressions": [],
+      "improvements": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": null,
+          "candidate": 0
+        },
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": null,
+          "candidate": 0
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": null,
+          "candidate": 0
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": null,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": null,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": null,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": null,
+          "candidate": 0
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": null,
+          "candidate": 0
+        }
+      ]
+    },
+    "behavior_match": {
+      "baseline_pass": 72,
+      "candidate_pass": 80,
+      "total": 80,
+      "regressions": [],
+      "improvements": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        }
+      ]
+    },
+    "constructor_reflection_match": {
+      "baseline_pass": 48,
+      "candidate_pass": 52,
+      "total": 80,
+      "regressions": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        }
+      ],
+      "improvements": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        }
+      ]
+    },
+    "field_reflection_match": {
+      "baseline_pass": 36,
+      "candidate_pass": 32,
+      "total": 80,
+      "regressions": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        }
+      ],
+      "improvements": []
+    },
+    "class_reflection_match": {
+      "baseline_pass": 68,
+      "candidate_pass": 76,
+      "total": 80,
+      "regressions": [],
+      "improvements": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "CallHold",
+          "baseline": false,
+          "candidate": true
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "ExceptionHold",
+          "baseline": false,
+          "candidate": true
+        }
+      ]
+    },
+    "reflection_match": {
+      "baseline_pass": 36,
+      "candidate_pass": 32,
+      "total": 80,
+      "regressions": [
+        {
+          "leg": "corretto8",
+          "debug": "debug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "corretto8",
+          "debug": "nodebug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "debug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        },
+        {
+          "leg": "openjdk23",
+          "debug": "nodebug",
+          "class": "RawNewHold",
+          "baseline": true,
+          "candidate": false
+        }
+      ],
+      "improvements": []
+    }
+  },
+  "new_full_reflection_regressions": [
+    {
+      "leg": "corretto8",
+      "debug": "debug",
+      "class": "RawNewHold",
+      "baseline_reflection_match": true,
+      "candidate_reflection_match": false,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/debug/RawNewHold/candidate/RawNewHold.java",
+      "reflection_diff": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/debug/RawNewHold/candidate/reflection.diff",
+      "candidate_javac_stderr": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/debug/RawNewHold/candidate/javac.stderr",
+      "candidate_javac_stderr_bytes": 0,
+      "candidate_javac_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "class": "RawNewHold",
+      "baseline_reflection_match": true,
+      "candidate_reflection_match": false,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/nodebug/RawNewHold/candidate/RawNewHold.java",
+      "reflection_diff": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/nodebug/RawNewHold/candidate/reflection.diff",
+      "candidate_javac_stderr": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/nodebug/RawNewHold/candidate/javac.stderr",
+      "candidate_javac_stderr_bytes": 0,
+      "candidate_javac_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "debug",
+      "class": "RawNewHold",
+      "baseline_reflection_match": true,
+      "candidate_reflection_match": false,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/debug/RawNewHold/candidate/RawNewHold.java",
+      "reflection_diff": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/debug/RawNewHold/candidate/reflection.diff",
+      "candidate_javac_stderr": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/debug/RawNewHold/candidate/javac.stderr",
+      "candidate_javac_stderr_bytes": 243,
+      "candidate_javac_stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "class": "RawNewHold",
+      "baseline_reflection_match": true,
+      "candidate_reflection_match": false,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/nodebug/RawNewHold/candidate/RawNewHold.java",
+      "reflection_diff": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/nodebug/RawNewHold/candidate/reflection.diff",
+      "candidate_javac_stderr": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/nodebug/RawNewHold/candidate/javac.stderr",
+      "candidate_javac_stderr_bytes": 243,
+      "candidate_javac_stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    }
+  ],
+  "runner_assertion": "The original runner completed all 80 input/JDK/debug rows, wrote summary.json, then exited 1 because RawNewHold lost full reflection on the candidate.",
+  "stderr_note": "The RawNewHold candidate javac stderr files are empty for Corretto 8; OpenJDK 23 emits the three expected source/target 8 deprecation warnings. Candidate javac and runtime both exit 0; failure is API/reflection, not compilation or behavior.",
+  "partial_published_header_regressions": [
+    {
+      "leg": "corretto8",
+      "debug": "debug",
+      "class": "PeerNewHold",
+      "member": "<init>(Ljava/lang/Object;Z)V",
+      "baseline_source_type": "PeerNewHold(T v, boolean peer)",
+      "candidate_source_type": "PeerNewHold(java.lang.Object v, boolean peer)",
+      "classification": "partial_published_header_regression",
+      "baseline_header_proved": true,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "baseline_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/debug/PeerNewHold/baseline/PeerNewHold.java",
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/debug/PeerNewHold/candidate/PeerNewHold.java",
+      "baseline_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/debug/PeerNewHold/baseline/reflection.diff",
+      "candidate_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/debug/PeerNewHold/candidate/reflection.diff"
+    },
+    {
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "class": "PeerNewHold",
+      "member": "<init>(Ljava/lang/Object;Z)V",
+      "baseline_source_type": "PeerNewHold(T v, boolean peer)",
+      "candidate_source_type": "PeerNewHold(java.lang.Object v, boolean peer)",
+      "classification": "partial_published_header_regression",
+      "baseline_header_proved": true,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "baseline_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/nodebug/PeerNewHold/baseline/PeerNewHold.java",
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/nodebug/PeerNewHold/candidate/PeerNewHold.java",
+      "baseline_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/nodebug/PeerNewHold/baseline/reflection.diff",
+      "candidate_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/corretto8/nodebug/PeerNewHold/candidate/reflection.diff"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "debug",
+      "class": "PeerNewHold",
+      "member": "<init>(Ljava/lang/Object;Z)V",
+      "baseline_source_type": "PeerNewHold(T v, boolean peer)",
+      "candidate_source_type": "PeerNewHold(java.lang.Object v, boolean peer)",
+      "classification": "partial_published_header_regression",
+      "baseline_header_proved": true,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "baseline_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/debug/PeerNewHold/baseline/PeerNewHold.java",
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/debug/PeerNewHold/candidate/PeerNewHold.java",
+      "baseline_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/debug/PeerNewHold/baseline/reflection.diff",
+      "candidate_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/debug/PeerNewHold/candidate/reflection.diff"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "class": "PeerNewHold",
+      "member": "<init>(Ljava/lang/Object;Z)V",
+      "baseline_source_type": "PeerNewHold(T v, boolean peer)",
+      "candidate_source_type": "PeerNewHold(java.lang.Object v, boolean peer)",
+      "classification": "partial_published_header_regression",
+      "baseline_header_proved": true,
+      "candidate_compile_exit": 0,
+      "candidate_run_exit": 0,
+      "baseline_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/nodebug/PeerNewHold/baseline/PeerNewHold.java",
+      "candidate_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/nodebug/PeerNewHold/candidate/PeerNewHold.java",
+      "baseline_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/nodebug/PeerNewHold/baseline/reflection.diff",
+      "candidate_reflection": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v1/openjdk23/nodebug/PeerNewHold/candidate/reflection.diff"
+    }
+  ],
+  "partial_regression_note": "PeerNewHold loses its previously published two-argument constructor header PeerNewHold(T, boolean), which becomes PeerNewHold(java.lang.Object, boolean) in all four JDK/debug legs. This is a member-level published-header regression; it does not increase the aggregate full-reflection mismatch rows because the baseline already mismatches on the one-argument constructor and Object-typed field. The field was already Object in the baseline and is not counted as a new regression."
+}

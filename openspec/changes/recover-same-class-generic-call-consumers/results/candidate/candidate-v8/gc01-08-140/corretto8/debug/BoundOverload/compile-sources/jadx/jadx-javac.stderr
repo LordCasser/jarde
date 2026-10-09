@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v8/gc01-08-140/corretto8/debug/BoundOverload/compile-sources/jadx/sources/defpackage/BoundOverload.java:17: 错误: 对pick的引用不明确
+        pick(value);
+        ^
+  BoundOverload 中的方法 pick(Number) 和 BoundOverload 中的方法 pick(Comparable<T>) 都匹配
+  其中, T是类型变量:
+    T扩展已在类 BoundOverload中声明的Number,Comparable<T>
+1 个错误

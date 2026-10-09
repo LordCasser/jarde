@@ -1,0 +1,257 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7594:6
+     |
+7571 |   ) -> Result<Option<Vec<u16>>, StopReason> {
+     |        ------------------------------------ expected `StopReason` because of this
+...
+7591 |       budget.charge(
+     |  ____________-
+7592 | |         jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+7593 | |         u64::try_from(code_instructions.len()).unwrap_or(u64::MAX),
+7594 | |     )?;
+     | |     -^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     | |_____|
+     |       this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0061]: this method takes 0 arguments but 1 argument was supplied
+    --> crates/jarde-java/src/report.rs:7603:16
+     |
+7603 |         budget.poll(Some(raw.bci))?;
+     |                ^^^^ ------------- unexpected argument of type `std::option::Option<u32>`
+     |
+note: method defined here
+    --> crates/jarde-reader/src/budget.rs:499:12
+     |
+ 499 |     pub fn poll(&self) -> Result<()> {
+     |            ^^^^
+help: remove the extra argument
+     |
+7603 -         budget.poll(Some(raw.bci))?;
+7603 +         budget.poll()?;
+     |
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7603:35
+     |
+7571 | ) -> Result<Option<Vec<u16>>, StopReason> {
+     |      ------------------------------------ expected `StopReason` because of this
+...
+7603 |         budget.poll(Some(raw.bci))?;
+     |                -------------------^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     |                |
+     |                this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7616:10
+     |
+7571 |   ) -> Result<Option<Vec<u16>>, StopReason> {
+     |        ------------------------------------ expected `StopReason` because of this
+...
+7604 |           budget.charge(
+     |  ________________-
+7605 | |             jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+7606 | |             u64::try_from(
+7607 | |                 instruction
+...    |
+7615 | |             .unwrap_or(u64::MAX),
+7616 | |         )?;
+     | |         -^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     | |_________|
+     |           this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7673:6
+     |
+7571 |   ) -> Result<Option<Vec<u16>>, StopReason> {
+     |        ------------------------------------ expected `StopReason` because of this
+...
+7670 |       budget.charge(
+     |  ____________-
+7671 | |         jarde_reader::budget::CountedBudgetDimension::IrItems,
+7672 | |         u64::try_from(parameter_slots.len()).unwrap_or(u64::MAX),
+7673 | |     )?;
+     | |     -^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     | |_____|
+     |       this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0061]: this method takes 0 arguments but 1 argument was supplied
+    --> crates/jarde-java/src/report.rs:7676:16
+     |
+7676 |         budget.poll(None)?;
+     |                ^^^^ ---- unexpected argument of type `std::option::Option<_>`
+     |
+note: method defined here
+    --> crates/jarde-reader/src/budget.rs:499:12
+     |
+ 499 |     pub fn poll(&self) -> Result<()> {
+     |            ^^^^
+help: remove the extra argument
+     |
+7676 -         budget.poll(None)?;
+7676 +         budget.poll()?;
+     |
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7676:26
+     |
+7571 | ) -> Result<Option<Vec<u16>>, StopReason> {
+     |      ------------------------------------ expected `StopReason` because of this
+...
+7676 |         budget.poll(None)?;
+     |                ----------^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     |                |
+     |                this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7680:10
+     |
+7571 |   ) -> Result<Option<Vec<u16>>, StopReason> {
+     |        ------------------------------------ expected `StopReason` because of this
+...
+7677 |           budget.charge(
+     |  ________________-
+7678 | |             jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+7679 | |             1,
+7680 | |         )?;
+     | |         -^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     | |_________|
+     |           this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0061]: this method takes 0 arguments but 1 argument was supplied
+    --> crates/jarde-java/src/report.rs:7794:16
+     |
+7794 |         budget.poll(None)?;
+     |                ^^^^ ---- unexpected argument of type `std::option::Option<_>`
+     |
+note: method defined here
+    --> crates/jarde-reader/src/budget.rs:499:12
+     |
+ 499 |     pub fn poll(&self) -> Result<()> {
+     |            ^^^^
+help: remove the extra argument
+     |
+7794 -         budget.poll(None)?;
+7794 +         budget.poll()?;
+     |
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7794:26
+     |
+7696 | ) -> Result<Option<GenericReturnCandidate>, StopReason> {
+     |      -------------------------------------------------- expected `StopReason` because of this
+...
+7794 |         budget.poll(None)?;
+     |                ----------^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     |                |
+     |                this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7798:10
+     |
+7696 |   ) -> Result<Option<GenericReturnCandidate>, StopReason> {
+     |        -------------------------------------------------- expected `StopReason` because of this
+...
+7795 |           budget.charge(
+     |  ________________-
+7796 | |             jarde_reader::budget::CountedBudgetDimension::IrItems,
+7797 | |             u64::try_from(parameter_types.len()).unwrap_or(u64::MAX),
+7798 | |         )?;
+     | |         -^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     | |_________|
+     |           this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0061]: this method takes 0 arguments but 1 argument was supplied
+    --> crates/jarde-java/src/report.rs:7808:20
+     |
+7808 |             budget.poll(None)?;
+     |                    ^^^^ ---- unexpected argument of type `std::option::Option<_>`
+     |
+note: method defined here
+    --> crates/jarde-reader/src/budget.rs:499:12
+     |
+ 499 |     pub fn poll(&self) -> Result<()> {
+     |            ^^^^
+help: remove the extra argument
+     |
+7808 -             budget.poll(None)?;
+7808 +             budget.poll()?;
+     |
+
+error[E0277]: `?` couldn't convert the error to `StopReason`
+    --> crates/jarde-java/src/report.rs:7808:30
+     |
+7696 | ) -> Result<Option<GenericReturnCandidate>, StopReason> {
+     |      -------------------------------------------------- expected `StopReason` because of this
+...
+7808 |             budget.poll(None)?;
+     |                    ----------^ the trait `From<jarde_reader::error::Error>` is not implemented for `StopReason`
+     |                    |
+     |                    this can't be annotated with `?` because it has type `Result<_, jarde_reader::error::Error>`
+     |
+note: `StopReason` needs to implement `From<jarde_reader::error::Error>`
+    --> crates/jarde-java/src/stop.rs:27:1
+     |
+  27 | pub enum StopReason {
+     | ^^^^^^^^^^^^^^^^^^^
+     = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+Some errors have detailed explanations: E0061, E0277.
+For more information about an error, try `rustc --explain E0061`.
+error: could not compile `jarde-java` (lib) due to 13 previous errors

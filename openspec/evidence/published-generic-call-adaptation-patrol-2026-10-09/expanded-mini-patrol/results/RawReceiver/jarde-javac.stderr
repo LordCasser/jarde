@@ -1,0 +1,15 @@
+/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/jarde/RawReceiver.java:5: 错误: 找不到符号
+    public RawReceiver$Box box;
+           ^
+  符号:   类 RawReceiver$Box
+  位置: 类 RawReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 RawReceiver中声明的Object
+/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/jarde/RawReceiver.java:12: 错误: 找不到符号
+        this.box = new RawReceiver$Box();
+                       ^
+  符号:   类 RawReceiver$Box
+  位置: 类 RawReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 RawReceiver中声明的Object
+2 个错误

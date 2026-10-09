@@ -1,0 +1,44 @@
+{
+  "scope": "root独立核对GC09 raw-64 accepted-baseline，未核对候选",
+  "files_checked": 479,
+  "commands": {
+    "original-javac": {
+      "count": 64,
+      "passed": 64
+    },
+    "original-probe-javac": {
+      "count": 64,
+      "passed": 64
+    },
+    "jarde-javac": {
+      "count": 64,
+      "passed": 64
+    },
+    "jadx-javac": {
+      "count": 64,
+      "passed": 60
+    },
+    "original-run": {
+      "count": 64,
+      "passed": 64
+    },
+    "jarde-verify-run": {
+      "count": 64,
+      "passed": 64
+    },
+    "jadx-verify-run": {
+      "count": 60,
+      "passed": 60
+    }
+  },
+  "recomputed_api_matches": {
+    "field": 60,
+    "method": 52,
+    "class": 60,
+    "behavior": 64
+  },
+  "rows": 64,
+  "verifier_repair": "首轮runtime参数检查器遗漏-cp，修正兼容实际argv后才给出核对结论；目标runner未修改",
+  "errors": [],
+  "passed": true
+}

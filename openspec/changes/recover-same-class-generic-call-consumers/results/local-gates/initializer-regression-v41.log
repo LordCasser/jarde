@@ -1,0 +1,18 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 17.62s
+     Running tests/class_initializer_candidates.rs (target/debug/deps/class_initializer_candidates-9b9a8e29fa847414)
+
+running 10 tests
+test candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar ... ok
+test candidate_sequence_keeps_unclaimed_top_level_effects_visible ... ok
+test class_source_sidecar_keeps_field_identity_rhs_and_bytecode_order ... ok
+test enum_identity_proof_accepts_distinct_ordinals_and_refuses_aliased_fields ... ok
+test enum_identity_proof_consumes_the_actual_factory_and_public_values_bodies ... ok
+test enum_map_proof_follows_real_initializer_stores_instead_of_field_or_key_order ... ok
+test enum_map_proof_refuses_multiple_writes_and_non_unique_keys ... ok
+test initializer_sidecar_covers_ordinary_classes_and_interfaces_but_not_annotations ... ok
+test sidecar_keeps_forward_and_constant_phase_reads_at_their_real_bcis ... ok
+test sidecar_marks_a_real_exception_handler_and_never_calls_it_a_linear_body ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

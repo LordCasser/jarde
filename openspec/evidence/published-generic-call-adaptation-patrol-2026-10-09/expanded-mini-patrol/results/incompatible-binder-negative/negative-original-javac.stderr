@@ -1,0 +1,12 @@
+/private/tmp/jarde-generic-call-patrol-v1/results/IncompatibleBinder.java:3: 错误: 无法将类 IncompatibleBinder<T>中的方法 sink应用到给定类型;
+  public T relay(T x) { return sink(x); }
+                               ^
+  需要: U
+  找到: T
+  原因: inference variable U has incompatible bounds
+    upper bounds: Number,Runnable
+    lower bounds: T
+  其中, U,T是类型变量:
+    U扩展已在方法 <U>sink(U)中声明的Number,Runnable
+    T扩展已在类 IncompatibleBinder中声明的Number
+1 个错误

@@ -1,0 +1,131 @@
+Classfile jar:file:/private/tmp/jarde-generic-call-patrol-v1/results-v3/SameNameOverload/SameNameOverload.jar!/SameNameOverload.class
+  Last modified 2026-10-9; size 901 bytes
+  MD5 checksum cf63ca97614c48e5306b3776591f6a84
+  Compiled from "SameNameOverload.java"
+public class SameNameOverload<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#31         // java/lang/Object."<init>":()V
+   #2 = String             #32            // generic
+   #3 = Fieldref           #6.#33         // SameNameOverload.selected:Ljava/lang/String;
+   #4 = String             #34            // string
+   #5 = Methodref          #6.#35         // SameNameOverload.pick:(Ljava/lang/Object;)V
+   #6 = Class              #36            // SameNameOverload
+   #7 = Class              #37            // java/lang/Object
+   #8 = Utf8               selected
+   #9 = Utf8               Ljava/lang/String;
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               LineNumberTable
+  #14 = Utf8               LocalVariableTable
+  #15 = Utf8               this
+  #16 = Utf8               LSameNameOverload;
+  #17 = Utf8               LocalVariableTypeTable
+  #18 = Utf8               LSameNameOverload<TT;>;
+  #19 = Utf8               pick
+  #20 = Utf8               (Ljava/lang/Object;)V
+  #21 = Utf8               x
+  #22 = Utf8               Ljava/lang/Object;
+  #23 = Utf8               TT;
+  #24 = Utf8               Signature
+  #25 = Utf8               (TT;)V
+  #26 = Utf8               (Ljava/lang/String;)V
+  #27 = Utf8               relay
+  #28 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #29 = Utf8               SourceFile
+  #30 = Utf8               SameNameOverload.java
+  #31 = NameAndType        #10:#11        // "<init>":()V
+  #32 = Utf8               generic
+  #33 = NameAndType        #8:#9          // selected:Ljava/lang/String;
+  #34 = Utf8               string
+  #35 = NameAndType        #19:#20        // pick:(Ljava/lang/Object;)V
+  #36 = Utf8               SameNameOverload
+  #37 = Utf8               java/lang/Object
+{
+  public java.lang.String selected;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PUBLIC
+
+  public SameNameOverload();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LSameNameOverload;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LSameNameOverload<TT;>;
+
+  public void pick(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: ldc           #2                  // String generic
+         3: putfield      #3                  // Field selected:Ljava/lang/String;
+         6: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   LSameNameOverload;
+            0       7     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   LSameNameOverload<TT;>;
+            0       7     1     x   TT;
+    Signature: #25                          // (TT;)V
+
+  public void pick(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: ldc           #4                  // String string
+         3: putfield      #3                  // Field selected:Ljava/lang/String;
+         6: return
+      LineNumberTable:
+        line 4: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   LSameNameOverload;
+            0       7     1     x   Ljava/lang/String;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   LSameNameOverload<TT;>;
+
+  public void relay(T);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #5                  // Method pick:(Ljava/lang/Object;)V
+         5: return
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   LSameNameOverload;
+            0       6     1     x   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   LSameNameOverload<TT;>;
+            0       6     1     x   TT;
+    Signature: #25                          // (TT;)V
+}
+Signature: #28                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "SameNameOverload.java"

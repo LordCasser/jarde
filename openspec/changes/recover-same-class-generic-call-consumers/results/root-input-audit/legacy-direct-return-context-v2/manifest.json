@@ -1,0 +1,207 @@
+{
+  "scope": "旧已接受method-local null leaf在raw Object直接返回上下文的GC09保存性检查；单JDK no-debug，不冒充冻结四腿矩阵",
+  "source_snapshot": "source-snapshot-v38.json",
+  "tools": {
+    "/usr/bin/javac": "51ec0764f7225b40d5b286b01401aa6b3990d0d171b446d7dc81ca7542b45552",
+    "/usr/bin/java": "51ec0764f7225b40d5b286b01401aa6b3990d0d171b446d7dc81ca7542b45552"
+  },
+  "commands": [
+    {
+      "label": "javac-version",
+      "argv": [
+        "/usr/bin/javac",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "java-version",
+      "argv": [
+        "/usr/bin/java",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "label": "compile-input",
+      "argv": [
+        "/usr/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "",
+        "-sourcepath",
+        "",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/GenericNullObjectContextProbe.java"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "baseline-decompile",
+      "argv": [
+        "/private/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/input/GenericNullObjectContextProbe.class",
+        "--class",
+        "GenericNullObjectContextProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "exit": 0,
+      "stdout_sha256": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+      "stderr_sha256": "8a7349db8efc016c7f2bba5ec78123a4f5aa6a38b0273edb6fa3a513b10514fa"
+    },
+    {
+      "label": "baseline-compile",
+      "argv": [
+        "/usr/bin/javac",
+        "--release",
+        "8",
+        "-classpath",
+        "",
+        "-sourcepath",
+        "",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-xw7sa8a6/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/baseline/GenericNullObjectContextProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/baseline/Probe.java"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "baseline-verify",
+      "argv": [
+        "/usr/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-xw7sa8a6/classes",
+        "Probe"
+      ],
+      "exit": 0,
+      "stdout_sha256": "6d6de170b808092d6d46dc15a9df83868dc07fb873a1d8da7c7f7280d2f911fb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate-v6-decompile",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v6-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/input/GenericNullObjectContextProbe.class",
+        "--class",
+        "GenericNullObjectContextProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "exit": 0,
+      "stdout_sha256": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+      "stderr_sha256": "ec266debb6cda131815db44adfaa8df27021abef1583731b488651f393f65216"
+    },
+    {
+      "label": "candidate-v6-compile",
+      "argv": [
+        "/usr/bin/javac",
+        "--release",
+        "8",
+        "-classpath",
+        "",
+        "-sourcepath",
+        "",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-qjpqdh67/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/candidate-v6/GenericNullObjectContextProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-direct-return-context-v2/candidate-v6/Probe.java"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "candidate-v6-verify",
+      "argv": [
+        "/usr/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-qjpqdh67/classes",
+        "Probe"
+      ],
+      "exit": 0,
+      "stdout_sha256": "6d6de170b808092d6d46dc15a9df83868dc07fb873a1d8da7c7f7280d2f911fb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "baseline",
+      "cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+      "compile_exit": 0,
+      "verify_exit": 0,
+      "probe": "true:1:T",
+      "emitted_source_sha256": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+      "compiled_classes": {
+        "GenericNullObjectContextProbe.class": "0dbaa844e16d18a6aa9d5cb7a0fe968ad4c9134601d627476c1b0b670c4b00c7",
+        "Probe.class": "4937dcee69947aa7a81ff7f80f363c3478e68f23f18eb35027670e28332d3ea7"
+      }
+    },
+    {
+      "label": "candidate-v6",
+      "cli_sha256": "c42c2f64df21fd74e22710e6887eac0040850d2e03906a202e051b65af1dc6d8",
+      "compile_exit": 0,
+      "verify_exit": 0,
+      "probe": "true:1:T",
+      "emitted_source_sha256": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+      "compiled_classes": {
+        "GenericNullObjectContextProbe.class": "0dbaa844e16d18a6aa9d5cb7a0fe968ad4c9134601d627476c1b0b670c4b00c7",
+        "Probe.class": "4937dcee69947aa7a81ff7f80f363c3478e68f23f18eb35027670e28332d3ea7"
+      }
+    }
+  ],
+  "files": {
+    "compile-input.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "baseline-compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "javac-version.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "GenericNullObjectContextProbe.java": "a89c30c094437dd96df898210d23e2cafb2388293cf56519718e181b7a681e74",
+    "Probe.java": "4133ae458f9abe21ac55c516a7d2c4c74dfe5a692d5c45f1b00867e79cf4a4f7",
+    "javac-version.stdout": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+    "executed.py": "b841b73af862730a3fb3c9ef253d0e3d476addff4219fb1add3dcfa6d5bb52e8",
+    "baseline-compile.stderr": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+    "compile-input.stderr": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+    "candidate-v6-decompile.stderr": "ec266debb6cda131815db44adfaa8df27021abef1583731b488651f393f65216",
+    "candidate-v6-compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "baseline-verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "java-version.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate-v6-verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "baseline-decompile.stderr": "8a7349db8efc016c7f2bba5ec78123a4f5aa6a38b0273edb6fa3a513b10514fa",
+    "java-version.stderr": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7",
+    "baseline-decompile.stdout": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+    "candidate-v6-verify.stdout": "6d6de170b808092d6d46dc15a9df83868dc07fb873a1d8da7c7f7280d2f911fb",
+    "candidate-v6-compile.stderr": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+    "baseline-verify.stdout": "6d6de170b808092d6d46dc15a9df83868dc07fb873a1d8da7c7f7280d2f911fb",
+    "candidate-v6-decompile.stdout": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+    "input/GenericNullObjectContextProbe.class": "81978aa7e21d64c5c0b78f20e413d3a2dd60994a931e77ea47545e5a7a468e30",
+    "baseline/GenericNullObjectContextProbe.java": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+    "baseline/Probe.java": "4133ae458f9abe21ac55c516a7d2c4c74dfe5a692d5c45f1b00867e79cf4a4f7",
+    "candidate-v6/GenericNullObjectContextProbe.java": "281cd88a863124c5a2a386bb13464132c7efe3021bee649ea2bea96c43ac0628",
+    "candidate-v6/Probe.java": "4133ae458f9abe21ac55c516a7d2c4c74dfe5a692d5c45f1b00867e79cf4a4f7"
+  }
+}

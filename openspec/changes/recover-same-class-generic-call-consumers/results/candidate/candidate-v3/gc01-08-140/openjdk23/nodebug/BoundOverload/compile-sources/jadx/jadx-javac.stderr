@@ -1,0 +1,11 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v3/gc01-08-140/openjdk23/nodebug/BoundOverload/compile-sources/jadx/sources/defpackage/BoundOverload.java:17: 错误: 对pick的引用不明确
+        pick(t);
+        ^
+  BoundOverload 中的方法 pick(Number) 和 BoundOverload 中的方法 pick(Comparable<T>) 都匹配
+  其中, T是类型变量:
+    T扩展已在类 BoundOverload中声明的Number,Comparable<T>
+1 个错误
+3 个警告

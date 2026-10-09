@@ -1,0 +1,2 @@
+baseline source_header 80 / 80 compile 72 / 80 runtime 72 / 80 behavior-match 72 / 80 reflection-match 36 / 80 ctor-reflection-match 48 / 80
+candidate source_header 80 / 80 compile 80 / 80 runtime 80 / 80 behavior-match 80 / 80 reflection-match 32 / 80 ctor-reflection-match 52 / 80

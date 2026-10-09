@@ -181,3 +181,14 @@ DT-18的字段投影子形继续推进：[raw receiver root验收](../../changes
 普通调用巡查补充了BoundOverload四腿：原源码4/4选择Number重载，Jarde与参考源码构建的JADX均0/4完整编译，保留无checkcast的实际pick(Number)调用和两者歧义失败全文。见 `openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/overload-control/strict-repo-jadx-results/summary.md`；它属于下一调用片的消费位/重载证明，当前raw receiver生产实现未混入此债务，71单元总数不变。
 
 raw receiver实现已提交推送main c5d21640，实际CI run 37831218407四个job全部成功（两seed、真正JDK25 oracle、P3/constructor、strict OpenSpec均通过）；OpenSpec本片8/8。最终交接只追加文档/验收元数据/有限巡查，生产和Rust测试保持冻结，main与最新HEAD CI以根handoff命令核对。
+
+
+## 同类泛型调用里程碑：CLI8/v41 独立对照
+
+[recover-same-class-generic-call-consumers](../../changes/recover-same-class-generic-call-consumers/verification-root.md) 已完成本片冻结输入的 root 独立对照：真实 Corretto8/OpenJDK23 × debug/no-debug，140 主矩阵加 Nested4，完整重编/行为 144/144，完整泛型反射 96/144；原基线为72/144完整重编、20/144完整API。BoundOverload 原物理 Number 目标保持，JADX 对应四腿仍有歧义失败，保留实际输出；不是依据 JADX 失败降低 Jarde 验收条件。
+
+复用 Signature 擦除、同次 AST/Code/SSA、InitRecord 和原 method→field publication，以有限无环关联 staging、最终全 incoming-use 及封闭 overload 验证原子发布。T/T[]、bounds/多参数/宽槽、独立 method binder、逆序/多层 relay、void/调用结果参数位及 Object() 后普通 catch 构造正文按本片证据恢复；具体无 TypeVariable 的声明继续原 ordinary/deferred 路由。未增加 crate、parser、IR pass、fixpoint 或跨类推断。
+
+旧片回放：23字段族双腿46输入有44完整编译/行为，SCGB既有两拒绝保留；字段完整API26/44。80构造全部行为一致、完整API36/80；raw64全部行为一致，字段/方法/类API60/52/60，旧片已接受API无回退。44控制逐输入/完整源/Probe核对：循环依赖、未知incoming、handle/继承/varargs、raw alias重绑定及多use仍可靠拒绝；pure bridge与合法条件单invoke是正控制。不能把拒绝或仅行为一致计为泛型API恢复。
+
+这一里程碑只更新 DT-15/DT-18 相关局部证据，71单元计数及“部分已测/待扩验”的总体口径不变。getter对字段发布的反向依赖、容器/wildcard、任意alias/phi、继承/跨类泛型、this/super委派及完整成员类TestGeneric8另片处理。共享Signature读取/缓存和物理事实复制计费债务单独登记，不混入当前语法实现。最新本地门禁、提交、远端真JDK25 CI与清理状态以根handoff和本片root验收为准。

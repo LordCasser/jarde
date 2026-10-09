@@ -1,0 +1,104 @@
+{
+  "api_mismatch_note": "The candidate API mismatches are identical to the accepted baseline: field API is limited to InstanceRawLocal (4 rows), method API to TypedReceiver/ShadowMethodT/MultiFormalRawParam (12 rows), and class API to RawOwnerChild (4 rows). None are newly introduced.",
+  "baseline_cli": {
+    "path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-generic-calls-candidate-v2-cli",
+    "sha256": "43e41e391250e53982e7d2f948ae016b486b5d62da2b6e76707576455ff77f68"
+  },
+  "comparison": "Per-row candidate and accepted baseline metrics compare independently to original fixture output. field_api compares field.type and field.identity; method_api compares all method and method.type-parameter records; class_api compares class.type-parameter records.",
+  "execution": {
+    "all_nonzero_are_expected_jadx_instance_raw_local_compile_controls": true,
+    "candidate_jarde_compile_pass": 64,
+    "candidate_jarde_runtime_pass": 64,
+    "nonzero_command_rows": 4,
+    "nonzero_scopes": [
+      "jdk8/debug/InstanceRawLocal/jadx-javac",
+      "jdk8/no-debug/InstanceRawLocal/jadx-javac",
+      "jdk23/debug/InstanceRawLocal/jadx-javac",
+      "jdk23/no-debug/InstanceRawLocal/jadx-javac"
+    ],
+    "runner_command_rows": 842,
+    "runner_subprocess_count": 710
+  },
+  "metrics": {
+    "behavior": {
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 64,
+      "total": 64
+    },
+    "class_api": {
+      "candidate_mismatches_vs_original": [
+        "jdk8/debug/RawOwnerChild",
+        "jdk8/no-debug/RawOwnerChild",
+        "jdk23/debug/RawOwnerChild",
+        "jdk23/no-debug/RawOwnerChild"
+      ],
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 60,
+      "total": 64
+    },
+    "compile": {
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 64,
+      "total": 64
+    },
+    "field_api": {
+      "candidate_mismatches_vs_original": [
+        "jdk8/debug/InstanceRawLocal",
+        "jdk8/no-debug/InstanceRawLocal",
+        "jdk23/debug/InstanceRawLocal",
+        "jdk23/no-debug/InstanceRawLocal"
+      ],
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 60,
+      "total": 64
+    },
+    "field_type": {
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 60,
+      "total": 64
+    },
+    "method_api": {
+      "candidate_mismatches_vs_original": [
+        "jdk8/debug/TypedReceiver",
+        "jdk8/debug/ShadowMethodT",
+        "jdk8/debug/MultiFormalRawParam",
+        "jdk8/no-debug/TypedReceiver",
+        "jdk8/no-debug/ShadowMethodT",
+        "jdk8/no-debug/MultiFormalRawParam",
+        "jdk23/debug/TypedReceiver",
+        "jdk23/debug/ShadowMethodT",
+        "jdk23/debug/MultiFormalRawParam",
+        "jdk23/no-debug/TypedReceiver",
+        "jdk23/no-debug/ShadowMethodT",
+        "jdk23/no-debug/MultiFormalRawParam"
+      ],
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 52,
+      "total": 64
+    },
+    "runtime": {
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 64,
+      "total": 64
+    },
+    "source_header": {
+      "improved": [],
+      "new_mismatches": [],
+      "pass": 64,
+      "total": 64
+    }
+  },
+  "runner_row_count": 64,
+  "scope": "GC09 raw-64 candidate-v2 compared row-by-row with the newly replayed accepted 3f75 baseline"
+}

@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "generic_constructor_projection",
+    "--test",
+    "same_class_generic_binding",
+    "--test",
+    "same_class_generic_call_consumers",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "source_snapshot": "source-snapshot-v32.json",
+  "started_unix_ns": 1791509992904810000
+}

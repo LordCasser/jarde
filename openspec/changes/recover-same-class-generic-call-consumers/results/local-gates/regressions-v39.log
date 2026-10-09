@@ -1,0 +1,15 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0425]: cannot find value `callee_contract` in this scope
+     --> src/facade.rs:15469:30
+      |
+15469 | ...                   &callee_contract,
+      |                        ^^^^^^^^^^^^^^^
+      |
+help: the binding `callee_contract` is available in a different scope in the same function
+     --> src/facade.rs:15459:38
+      |
+15459 | ...                   let Some(callee_contract) = published_generic_contract!(callee_index)
+      |                                ^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0425`.
+error: could not compile `jarde` (lib) due to 1 previous error

@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/debug/ReboundOwnReceiver/compile-sources/jadx/target-0-source-00-ReboundOwnReceiver.java:4: 错误: 类ReboundOwnReceiver是公共的, 应在名为 ReboundOwnReceiver.java 的文件中声明
+public class ReboundOwnReceiver<T> {
+       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/debug/ReboundOwnReceiver/Probe.java:4: 错误: 类FixtureProbe是公共的, 应在名为 FixtureProbe.java 的文件中声明
+public class FixtureProbe {
+       ^
+2 个错误

@@ -1,0 +1,40 @@
+{
+  "scope": "140输入原/JADX/候选的结果身份、实际转录和行为核对；GC各族恢复判据与Nested4/GC09/GC10仍需独立验收",
+  "manifest_sha256": "c8c4fcb4cc0d9d87f0975d406806c04dddb29e688534f16017029b0143acbe5b",
+  "results": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v3/gc01-08-140",
+  "verifier_sha256": "77f9ba818aaaebbfde2f9c492cab5dce5d7e93903605db06864a6efd7566f6d0",
+  "files_checked": 3793,
+  "cases_checked": 140,
+  "totals": {
+    "original": {
+      "cases": 140,
+      "compile_pass": 140,
+      "probe_pass": 140
+    },
+    "jadx": {
+      "cases": 140,
+      "compile_pass": 130,
+      "probe_pass": 130,
+      "reflection_match": 126,
+      "reflection_differ": 4
+    },
+    "candidate": {
+      "cases": 140,
+      "compile_pass": 140,
+      "probe_pass": 140,
+      "reflection_match": 92,
+      "reflection_differ": 48
+    }
+  },
+  "compile_failure_families": {
+    "original": {},
+    "jadx": {
+      "UnknownIncoming": 4,
+      "BoundOverload": 4,
+      "MethodHandleUse": 2
+    },
+    "candidate": {}
+  },
+  "errors": [],
+  "passed": true
+}

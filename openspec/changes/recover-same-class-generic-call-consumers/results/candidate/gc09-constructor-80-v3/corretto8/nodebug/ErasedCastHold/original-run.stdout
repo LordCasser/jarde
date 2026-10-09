@@ -1,0 +1,7 @@
+REFLECT|ctor[0].formalCount=1;typeVariableCount=0
+REFLECT|ctor[0].param[0]=java.lang.Object;binder=non-variable
+REFLECT|classTypeVariableCount=1
+REFLECT|classVar[0]=T;bounds=java.lang.Object
+REFLECT|field[v]=T;binder=class
+BEHAVIOR|field[v]=arg0
+BEHAVIOR|constructed=ErasedCastHold

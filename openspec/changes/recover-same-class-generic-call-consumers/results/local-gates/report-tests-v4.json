@@ -1,0 +1,22 @@
+{
+  "scope": "opaque AST call and body consumer interfaces only; not milestone acceptance",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--lib",
+    "generic_call_ast_projection_tests",
+    "--",
+    "--test-threads=1"
+  ],
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "exit": 101,
+  "report_sha256_before": "172f58af02e6ad5327362117255b0c96d39254c7d1177ab1211dd52cc450a1ec",
+  "report_sha256_after": "172f58af02e6ad5327362117255b0c96d39254c7d1177ab1211dd52cc450a1ec",
+  "source_stable": true,
+  "log_sha256": "472ec9138ed120d5ebbe14a4bc1b12d1dca2f84202fdee47033025d30a42dfa1"
+}

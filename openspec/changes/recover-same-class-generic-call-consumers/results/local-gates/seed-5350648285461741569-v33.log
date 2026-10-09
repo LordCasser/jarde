@@ -1,0 +1,829 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 16s
+     Running unittests src/lib.rs (target/debug/deps/jarde-af5b53fff86474f2)
+
+running 208 tests
+test bulk::observation::tests::a_threads_tallies_are_flushed_once ... ok
+test bulk::observation::tests::the_reading_carries_its_site_names ... ok
+test bulk::observation::tests::the_site_names_and_indexes_are_the_declared_order ... ok
+test class_source::same_class_overload_proof_tests::bound_overload_casts_only_to_the_physical_targets_explicit_number_bound ... ok
+test class_source::same_class_overload_proof_tests::callee_method_binder_is_substituted_and_unknown_user_hierarchy_refuses ... ok
+test class_source::same_class_overload_proof_tests::distinct_type_variables_are_not_assumed_incompatible ... ok
+test class_source::same_class_overload_proof_tests::incomplete_or_foreign_physical_inventories_never_pin_a_target ... ok
+test class_source::same_class_overload_proof_tests::overload_proof_propagates_budget_exhaustion_and_cancellation ... ok
+test class_source::same_class_overload_proof_tests::plain_upper_bound_is_already_unique_and_same_name_string_is_closed_negative ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_defers_only_closed_same_arity_overload_competition ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_defers_unreferenced_generic_sibling_for_real_same_arity_target ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_keeps_unclosed_overload_inventories_unproved ... ok
+test class_source::same_class_overload_proof_tests::same_class_binding_propagates_budget_and_cancellation ... ok
+test class_source::same_class_overload_proof_tests::same_name_overload_uses_unbounded_typevar_and_does_not_narrow_to_string ... ok
+test class_source::same_class_overload_proof_tests::unknown_typevar_bound_is_not_negative_evidence_for_an_overload ... ok
+test class_source::same_class_overload_proof_tests::wide_second_argument_keeps_its_descriptor_position_when_casting_first ... ok
+test class_source::tests::a_binary_name_is_split_where_its_own_last_slash_is ... ok
+test class_source::tests::a_name_java_cannot_spell_becomes_the_deterministic_alias ... ok
+test class_source::tests::a_text_that_is_not_that_shape_is_not_placed ... ok
+test class_source::tests::a_varargs_flag_writes_the_last_parameters_array_as_the_dots ... ok
+test class_source::tests::an_arrays_element_width_does_not_move_the_parameters_after_it ... ok
+test class_source::tests::anonymous_capture_class_facts_are_passed_as_typed_assembly_input ... ok
+test class_source::tests::bytes_that_are_not_a_field_descriptor_are_refused_rather_than_guessed ... ok
+test class_source::tests::bytes_that_are_not_a_method_descriptor_are_refused_rather_than_guessed ... ok
+test class_source::tests::class_header_spelling_keeps_pool_names_the_member_spelling_refuses ... ok
+test class_source::tests::class_scope_constructor_gate_matches_exact_same_class_target_and_receiver ... ok
+test class_source::tests::field_write_parameter_proof_distinguishes_published_generic_and_raw_parameters ... ok
+test class_source::tests::field_write_source_type_walk_charges_exact_work_and_propagates_stops ... ok
+test class_source::tests::functional_withholding_uses_projected_state_not_markers_or_source_text ... ok
+test class_source::tests::generic_call_components_are_callee_first_and_cycles_are_rejected ... ok
+test class_source::tests::generic_call_projection_state_stops_atomically_and_clones_with_metering ... ok
+test class_source::tests::generic_call_substitution_preserves_binders_bounds_and_arrays ... ok
+test class_source::tests::generic_constructor_field_write_requires_one_unique_instance_field_by_name ... ok
+test class_source::tests::incomplete_same_class_field_inventory_cannot_prove_a_field_binding ... ok
+test class_source::tests::member_annotation_budget_stop_keeps_the_raw_shell_unread ... ok
+test class_source::tests::member_annotation_cancellation_keeps_the_raw_shell_unread ... ok
+test class_source::tests::method_parameters_need_a_complete_safe_slot_projection ... ok
+test class_source::tests::one_artifact_is_split_at_its_own_block ... ok
+test class_source::tests::one_field_descriptor_is_spelled_as_java_spells_it ... ok
+test class_source::tests::one_internal_name_is_spelled_dotted_and_nothing_else_about_it_changes ... ok
+test class_source::tests::one_member_block_puts_the_envelope_and_the_statements_at_the_same_depth ... ok
+test class_source::tests::one_member_whose_artifact_cannot_be_placed_quotes_it_line_by_line ... ok
+test class_source::tests::one_member_without_an_artifact_keeps_its_marker_inside_the_block ... ok
+test class_source::tests::one_method_descriptor_is_spelled_with_its_slots_and_its_return_type ... ok
+test class_source::tests::one_stop_code_is_the_engines_own_spelling_of_its_reason ... ok
+test class_source::tests::ordinary_signature_types_spell_each_structured_argument_and_array ... ok
+test class_source::tests::projected_parameter_names_and_final_are_one_declaration ... ok
+test class_source::tests::published_method_type_variable_uses_only_its_matching_raw_class_bound ... ok
+test class_source::tests::raw_parameter_platform_widening_rejects_invalid_utf8_name_collisions ... ok
+test class_source::tests::raw_receiver_assignment_uses_java_reference_and_array_erasure_rules ... ok
+test class_source::tests::raw_receiver_type_proof_propagates_budget_and_cancellation ... ok
+test class_source::tests::recovered_names_follow_parameter_slots_across_a_wide_value ... ok
+test class_source::tests::selected_member_path_spells_only_exact_nested_signature_segments ... ok
+test class_source::tests::void_generic_header_output_budget_publishes_no_partial_declaration ... ok
+test class_source::tests::void_generic_signature_stops_before_publishing_on_cancel_or_analysis_budget ... ok
+test enum_constants::tests::abstract_enum_candidate_capture_observes_budget_and_cancellation ... ok
+test enum_constants::tests::arbitrary_argument_fold_stays_a_budget_stop_that_keeps_the_per_field_text ... ok
+test enum_constants::tests::arbitrary_argument_shapes_fold_with_narrowed_spellings_and_verified_runtime ... ok
+test enum_constants::tests::arbitrary_ctor_descriptor_grammar_parses_only_the_admitted_tails ... ok
+test enum_constants::tests::cancellation_is_not_converted_into_a_normal_enum_refusal ... ok
+test enum_constants::tests::cancellation_of_the_measure_request_never_publishes_a_partial_enum_projection ... ok
+test enum_constants::tests::constructor_delegation_edge_preserves_budget_and_cancellation_stops ... ok
+test enum_constants::tests::constructor_delegation_edge_rejects_wrong_edges_arguments_effects_handlers_and_duplicates ... ok
+test enum_constants::tests::constructor_index_uses_the_method_table_not_the_shorter_field_table ... ok
+test enum_constants::tests::counted_side_effectful_suffix_executes_once_in_the_projected_source ... ok
+test enum_constants::tests::custom_map_suffix_output_stop_and_cancellation_leave_no_partial_projection ... ok
+test enum_constants::tests::custom_map_suffix_recompiles_and_preserves_singleton_identity ... ok
+test enum_constants::tests::custom_map_suffix_refuses_unproved_effects_and_loop_shapes_atomically ... ok
+test enum_constants::tests::custom_map_suffix_rejects_changed_loop_increment ... ok
+test enum_constants::tests::delegating_class_source_stops_do_not_publish_a_partial_projection ... ok
+test enum_constants::tests::delegating_projection_keeps_default_all_json_sources_and_method_only_recovery_aligned ... ok
+test enum_constants::tests::delegating_projection_output_budget_stop_keeps_both_physical_constructors ... ok
+test enum_constants::tests::empty_enum_with_a_user_method_emits_its_required_separator ... ok
+test enum_constants::tests::enum_code_capture_is_structured_and_charges_each_instruction ... ok
+test enum_constants::tests::exhausted_proof_budget_is_reported_as_stopped ... ok
+test enum_constants::tests::extra_calls_field_writes_and_exception_edges_keep_the_unprojected_initializer ... ok
+test enum_constants::tests::extra_user_read_of_values_backing_array_refuses_and_stays_visible ... ok
+test enum_constants::tests::frozen_four_constant_factory_rejects_wrong_length_and_duplicate_entries ... ok
+test enum_constants::tests::frozen_plain_enum_arities_project_as_one_ordered_physical_group ... ok
+test enum_constants::tests::helper_constructor_and_prefix_1_2_boundaries_are_refused ... ok
+test enum_constants::tests::implicit_enum_constructor_with_an_extra_effect_refuses_the_whole_group ... ok
+test enum_constants::tests::implicit_enum_constructor_with_wrong_ordinal_forwarding_refuses_the_group ... ok
+test enum_constants::tests::incomplete_enum_code_budget_does_not_project_any_member ... ok
+test enum_constants::tests::int_static_field_arguments_preserve_the_same_run_expression_and_runtime_order ... ok
+test enum_constants::tests::int_ternary_arguments_bind_both_arms_and_preserve_condition_evaluation ... ok
+test enum_constants::tests::int_user_arguments_narrow_by_their_parameter_descriptor ... ok
+test enum_constants::tests::java8_two_constant_enum_capture_admits_op_without_proving_or_fabricating_code ... ok
+test enum_constants::tests::measure_constants_used_by_user_methods_remain_provable ... ok
+test enum_constants::tests::measure_projection_text_is_equal_for_default_and_all_evidence_with_physical_members_intact ... ok
+test enum_constants::tests::measure_static_suffix_recompiles_and_matches_original_and_jadx_with_both_debug_modes ... ok
+test enum_constants::tests::measure_suffix_output_budget_stop_keeps_the_entire_unprojected_initializer ... ok
+test enum_constants::tests::missing_string_varargs_constructor_code_refuses_the_group ... ok
+test enum_constants::tests::object_and_array_descriptors_follow_the_classfile_owner ... ok
+test enum_constants::tests::one_unproved_string_varargs_constant_refuses_all_constants ... ok
+test enum_constants::tests::ordinary_class_fields_and_static_initializer_keep_the_existing_projection ... ok
+test enum_constants::tests::patrol_n0_fixture_keeps_its_exact_folded_text ... ok
+test enum_constants::tests::patrol_n1_full_shape_folds_and_recompiles_run_like_the_fixture_baseline ... ok
+test enum_constants::tests::patrol_n3_probes_fold_and_recompile_run_like_the_fixture_baseline ... ok
+test enum_constants::tests::projected_delegating_enum_compiles_and_preserves_verified_constructor_behavior ... ok
+test enum_constants::tests::projection_output_budget_stop_keeps_the_original_class_source ... ok
+test enum_constants::tests::repeated_string_array_index_write_is_jvm_verifiable_and_refused ... ok
+test enum_constants::tests::same_package_field_uses_its_short_source_name_and_preserves_initialization ... ok
+test enum_constants::tests::scalar_string_arguments_preserve_literal_and_alternating_ternary_runtime ... ok
+test enum_constants::tests::scalar_string_diamond_requires_exact_branch_targets_and_literal_arms ... ok
+test enum_constants::tests::selected_environment_field_ambiguity_and_budget_stop_never_publish_int_arguments ... ok
+test enum_constants::tests::string_varargs_arrays_are_proved_and_projected_atomically ... ok
+test enum_constants::tests::string_varargs_low_budget_and_cancellation_keep_the_group_unpublished ... ok
+test enum_constants::tests::string_varargs_signature_mismatch_refuses_without_partial_projection ... ok
+test enum_constants::tests::string_varargs_source_uses_the_existing_java_literal_escaper ... ok
+test enum_constants::tests::terminal_constructor_body_consumes_the_exact_same_run_ast_and_code_sequence ... ok
+test enum_constants::tests::terminal_constructor_body_propagates_budget_and_cancellation_stops ... ok
+test enum_constants::tests::terminal_constructor_body_rejects_target_parameter_order_signature_effect_and_handler_changes ... ok
+test enum_constants::tests::two_constructor_edge_and_terminal_body_project_as_one_source_group ... ok
+test enum_constants::tests::unsafe_static_field_owners_and_metadata_refuse_the_whole_group ... ok
+test enum_constants::tests::unsupported_arbitrary_argument_shapes_refuse_and_keep_the_per_field_presentation ... ok
+test enum_constants::tests::unsupported_int_argument_shapes_refuse_the_whole_constant_group ... ok
+test enum_constants::tests::unsupported_scalar_string_arguments_refuse_the_whole_group ... ok
+test enum_constants::tests::unsupported_string_varargs_classfiles_refuse_the_complete_group ... ok
+test enum_constants::tests::unsupported_verifier_valid_int_ternary_diamonds_keep_physical_origins ... ok
+test facade::anonymous_allocation_uniqueness_tests::one_site_requires_a_complete_scan_and_verified_candidate ... ok
+test facade::anonymous_allocation_uniqueness_tests::two_sites_in_the_same_method_are_not_one_unique_allocation ... ok
+test facade::array_helper_census_tests::direct_invocation_and_ldc_handle_refuse_the_exact_physical_helper ... ok
+test facade::direct_generic_superclass_tests::cancellation_during_parent_proof_does_not_publish_a_generic_header ... ok
+test facade::direct_generic_superclass_tests::dependency_budget_stop_does_not_publish_a_partial_generic_header ... ok
+test facade::direct_generic_superclass_tests::missing_parent_keeps_the_physical_raw_class_header ... ok
+test facade::direct_generic_superclass_tests::selected_parent_signature_projects_one_direct_string_argument ... ok
+test facade::enum_constant_body_relation_tests::a_second_unwritten_string_field_leaves_the_proved_target_unique ... ok
+test facade::enum_constant_body_relation_tests::broken_constructor_argument_forwarding_refuses_the_whole_group ... ok
+test facade::enum_constant_body_relation_tests::dt12_ascii_string_arguments_project_atomically_and_recompile ... ok
+test facade::enum_constant_body_relation_tests::dt12_output_budget_and_precancellation_publish_no_partial_group ... ok
+test facade::enum_constant_body_relation_tests::dt12_rejects_non_ascii_nonliteral_and_three_constant_groups ... ok
+test facade::enum_constant_body_relation_tests::dt12_rejects_verifier_valid_ordinal_and_bridge_forwarding_changes ... ok
+test facade::enum_constant_body_relation_tests::enum_body_group_rejects_a_changed_generated_values_helper ... ok
+test facade::enum_constant_body_relation_tests::enum_body_group_requires_each_abstract_implementation_and_keeps_physical_child ... ok
+test facade::enum_constant_body_relation_tests::enum_body_prefix_reads_actual_name_and_ordinal_and_allows_closed_user_suffix ... ok
+test facade::enum_constant_body_relation_tests::enum_body_prefix_rejects_extra_alias_store_and_unclosed_suffix ... ok
+test facade::enum_constant_body_relation_tests::enum_body_projection_budget_and_cancellation_leave_no_half_body ... ok
+test facade::enum_constant_body_relation_tests::enum_body_projection_is_atomic_when_the_second_body_cannot_be_written ... ok
+test facade::enum_constant_body_relation_tests::enum_body_projection_keeps_physical_json_and_independent_child_requests ... ok
+test facade::enum_constant_body_relation_tests::enum_child_body_proof_rejects_fields_effects_and_unspellable_overrides ... ok
+test facade::enum_constant_body_relation_tests::enum_child_body_recovery_is_evidence_independent_and_budgeted ... ok
+test facade::enum_constant_body_relation_tests::enum_child_constructor_read_preserves_budget_and_cancellation_stops ... ok
+test facade::enum_constant_body_relation_tests::enum_child_exceptional_body_cannot_pass_full_recovery ... ok
+test facade::enum_constant_body_relation_tests::enum_constant_body_census_rejects_another_constant_and_other_class_code_use ... ok
+test facade::enum_constant_body_relation_tests::enum_constant_body_relations_follow_each_verified_construction_and_reject_missing_or_changed_rows ... ok
+test facade::enum_constant_body_relation_tests::enum_constructor_edges_require_exact_forwarding_and_targets ... ok
+test facade::enum_constant_body_relation_tests::frozen_nested_matrix_jars_flip_exactly_the_nested_cells ... ok
+test facade::enum_constant_body_relation_tests::labeled_field_name_string_bodies_project_from_the_proved_name ... ok
+test facade::enum_constant_body_relation_tests::mixed_argument_constant_bodies_fold_as_one_ordered_group ... ok
+test facade::enum_constant_body_relation_tests::multi_level_nested_enum_structural_semantics_are_registered ... ok
+test facade::enum_constant_body_relation_tests::nested_enum_constant_bodies_fold_with_the_same_structural_obligations ... ok
+test facade::enum_constant_body_relation_tests::nested_enum_projection_is_proved_and_budget_stop_is_atomic ... ok
+test facade::enum_constant_body_relation_tests::nested_enum_with_unproved_body_obligations_stays_field_by_field ... ok
+test facade::enum_constant_body_relation_tests::nested_mixed_constant_bodies_fold_with_the_same_obligations ... ok
+test facade::enum_constant_body_relation_tests::proved_body_group_shares_selected_methods_and_their_physical_origins ... ok
+test facade::enum_constant_body_relation_tests::proved_enum_bodies_recompile_and_match_original_and_jadx_behavior ... ok
+test facade::enum_constant_body_relation_tests::static_field_argument_constant_bodies_stay_field_by_field ... ok
+test facade::enum_constant_body_relation_tests::string_constructor_identity_binds_the_written_field_and_refuses_everything_else ... ok
+test facade::enum_constant_body_relation_tests::string_constructor_negatives_refuse_loudly ... ok
+test facade::enum_constant_body_relation_tests::three_argument_constant_bodies_fold_with_narrowed_literals ... ok
+test facade::enum_constant_body_relation_tests::user_dollar_named_toplevel_enum_keeps_its_toplevel_semantics ... ok
+test facade::enum_int_static_owner_gate_tests::same_enum_owner_is_rejected_before_any_dependency_read ... ok
+test facade::enum_int_static_owner_gate_tests::same_package_owner_name_is_rejected_when_an_enum_member_shadows_it ... ok
+test facade::enum_int_static_owner_gate_tests::static_field_owner_gate_rejects_self_cross_package_and_binary_member_names ... ok
+test facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals ... ok
+test facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key ... ok
+test facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins ... ok
+test facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name ... ok
+test facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection ... ok
+test facade::interface_super_proof_tests::interface_hierarchy_cycles_are_unknown ... ok
+test facade::interface_super_proof_tests::interface_hierarchy_observes_dependency_depth_and_cancellation ... ok
+test facade::interface_super_proof_tests::unique_source_default_rejects_multiple_inherited_defaults ... ok
+test facade::lambda_helper_census_tests::cancellation_stops_class_census_before_publication ... ok
+test facade::lambda_helper_census_tests::constant_dynamic_reuse_of_an_owned_lambda_row_refuses_projection ... ok
+test facade::lambda_helper_census_tests::direct_helper_invocation_and_incomplete_scan_both_refuse ... ok
+test facade::lambda_helper_census_tests::nested_dynamic_back_edge_to_earlier_owned_row_refuses_independent_of_queue_order ... ok
+test facade::lambda_helper_census_tests::nested_dynamic_bootstrap_with_helper_in_non_implementation_argument_is_rejected ... ok
+test facade::lambda_helper_census_tests::shared_bootstrap_row_rejects_any_unprojected_invokedynamic_site ... ok
+test facade::member_inner_target_tests::caller_relation_is_optional_but_a_present_row_must_agree ... ok
+test facade::member_inner_target_tests::generic_outer_path_and_all_member_call_shapes_remain_selected_and_emittable ... ok
+test facade::member_inner_target_tests::malformed_generic_outer_signature_and_ambiguous_outer_definitions_do_not_prove ... ok
+test facade::member_inner_target_tests::selected_target_is_required_and_ambiguous_definitions_do_not_prove ... ok
+test facade::member_inner_target_tests::target_selection_observes_budget_and_cancellation ... ok
+test facade::nested_enum_source_rewrite_tests::candidate_spans_skip_literals_and_comments_for_later_physical_proof ... ok
+test facade::outer_super_bridge_closure_tests::closed_bridge_projects_exact_outer_super_and_keeps_both_physical_methods ... ok
+test facade::outer_super_bridge_closure_tests::effectful_outer_super_arguments_project_in_evaluation_order ... ok
+test facade::outer_super_bridge_closure_tests::exact_bridge_closure_requires_every_static_call_and_a_complete_scan ... ok
+test facade::package_info_source_tests::non_package_target_annotation_cannot_enter_the_projection ... ok
+test facade::package_info_source_tests::output_budget_stop_keeps_the_physical_package_info_presentation ... ok
+test facade::package_info_source_tests::pre_cancelled_request_cannot_publish_a_package_projection ... ok
+test facade::package_info_source_tests::proved_package_info_is_only_annotation_then_package_statement ... ok
+test facade::reference_overload_tests::exact_target_refuses_same_formal_ambiguity_and_bridge ... ok
+test facade::reference_overload_tests::private_target_keeps_a_binding_with_b_overload_and_refuses_bad_declarations ... ok
+test facade::same_class_generic_call_inventory_tests::incomplete_expected_inventory_rolls_back_only_its_call_component ... ok
+test facade::snapshot_hierarchy_tests::named_reference_classes_carry_both_spellings_and_no_arrays ... ok
+test facade::snapshot_hierarchy_tests::parameter_ordinals_count_values_not_slots ... ok
+test member_inner::tests::bridge_load_and_return_opcodes_follow_jvm_parameter_categories ... ok
+test member_inner::tests::exact_target_relation_field_and_prologue_are_required ... ok
+test member_inner::tests::family_capture_distinguishes_other_and_refuses_unclosed_shapes ... ok
+test member_inner::tests::family_relation_needs_matching_typed_rows_and_uses_member_flags ... ok
+test member_inner::tests::family_row_scan_observes_real_budget_and_cancellation ... ok
+test member_inner::tests::generic_member_signature_and_constructor_tail_are_proved ... ok
+test member_inner::tests::generic_signature_proof_preserves_budget_and_cancellation_stops ... ok
+test member_inner::tests::mixed_family_scan_collects_the_static_subset_beside_the_instance_candidate ... ok
+test member_inner::tests::nested_enum_root_scan_reports_budget_and_cancellation_stops ... ok
+test member_inner::tests::nested_enum_root_scan_requires_exact_rows_and_never_guesses_dollar_names ... ok
+test member_inner::tests::outer_super_bridge_and_call_require_exact_body_target_and_capture_value ... ok
+test member_inner::tests::outer_super_call_keeps_effectful_arguments_in_physical_order ... ok
+
+test result: ok. 208 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 60.12s
+
+     Running tests/anonymous_parameterized_root.rs (target/debug/deps/anonymous_parameterized_root-fd87213eba5ff031)
+
+running 4 tests
+test the_parameterized_root_fixture_projects_the_capture_parameter_form ... ok
+test the_parameterized_root_projection_does_not_need_debug_information ... ok
+test the_parameterized_root_projection_recompiles_and_runs_as_the_original ... ok
+test the_parameterized_root_refusals_keep_their_physical_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.90s
+
+     Running tests/anonymous_supertype_return.rs (target/debug/deps/anonymous_supertype_return-bc8470110fb5b650)
+
+running 6 tests
+test non_javac_return_descriptors_keep_their_refusals ... ok
+test the_gate_keeps_the_one_layer_and_spelling_boundaries ... ok
+test the_interface_path_keeps_refusing_child_self_invocations ... ok
+test the_parameterized_supertype_return_contrast_positive_projects_and_runs ... ok
+test the_supertype_return_anchor_projects_the_interface_declaration ... ok
+test the_supertype_return_anchor_recompiles_and_runs_as_the_original ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+     Running tests/assert_statement_sugar.rs (target/debug/deps/assert_statement_sugar-e2e6babb698846a3)
+
+running 7 tests
+test a1_family_presents_assert_statements_and_hides_every_synthetic_layer ... ok
+test a1_family_recompiles_and_prints_the_original_output_in_both_assertion_states ... ok
+test class_without_asserts_stages_no_projection ... ok
+test extra_statement_inside_the_guard_keeps_the_physical_presentation ... ok
+test guards_that_do_not_all_fold_keep_the_whole_class_physical ... ok
+test message_side_effects_keep_their_evaluation_order ... ok
+test wrong_owner_switch_keeps_the_physical_presentation ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.04s
+
+     Running tests/bulk_recovery_backpressure.rs (target/debug/deps/bulk_recovery_backpressure-49b509dd14270e57)
+
+running 7 tests
+test a_pool_of_one_result_still_cannot_starve_the_earliest_class ... ok
+test a_result_weighs_what_it_owns_and_not_the_length_it_writes ... ok
+test a_shared_pool_lets_the_classes_behind_the_front_work_ahead ... ok
+test a_slow_first_class_does_not_starve_the_later_ones_or_the_order ... ok
+test a_window_that_only_funds_the_reservations_is_one_result_per_class ... ok
+test one_result_larger_than_the_ceiling_stops_that_method_only ... ok
+test the_shared_pool_is_the_declared_window_outside_the_reservations ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.82s
+
+     Running tests/bulk_recovery_cancel.rs (target/debug/deps/bulk_recovery_cancel-be54bef41dbab415)
+
+running 7 tests
+test a_cancellation_between_classes_ends_the_traversal_and_the_class_in_flight ... ok
+test a_cancellation_mid_run_keeps_the_prefix_and_bills_the_holes ... ok
+test a_cancellation_wakes_a_producer_waiting_for_room_in_the_shared_pool ... ok
+test a_cancellation_while_the_window_is_full_wakes_every_waiter ... ok
+test a_cancelled_request_publishes_nothing_and_dispatches_nothing ... ok
+test a_consumer_that_fails_is_infrastructure ... ok
+test a_consumer_that_stops_the_stream_keeps_its_prefix ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+     Running tests/bulk_recovery_delivery.rs (target/debug/deps/bulk_recovery_delivery-fa886d9c12a90be0)
+
+running 3 tests
+test a_refused_permit_stops_the_stream_at_the_one_total_and_names_the_delivery_owner ... ok
+test one_declaration_bounds_the_librarys_own_presentation_too ... ok
+test the_terminal_record_pays_for_itself_before_the_call_returns ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/bulk_recovery_handover.rs (target/debug/deps/bulk_recovery_handover-87cffa074374d5e8)
+
+running 2 tests
+test a_container_a_class_task_is_still_using_is_never_parsed_again ... ok
+test a_run_holds_a_container_only_until_the_class_task_reading_it_ends ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.08s
+
+     Running tests/bulk_recovery_lifecycle.rs (target/debug/deps/bulk_recovery_lifecycle-54af6e4f5c348306)
+
+running 4 tests
+test a_run_without_faults_still_reports_its_own_lifecycle ... ok
+test a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind ... ok
+test a_worker_the_system_refuses_to_create_fails_the_operation_before_dispatching ... ok
+test at_most_the_window_of_class_tasks_runs_at_once_and_two_of_them_overlap ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/bulk_recovery_retention.rs (target/debug/deps/bulk_recovery_retention-dac31b95402ba262)
+
+running 2 tests
+test a_consumed_result_is_handed_over_once_and_the_report_keeps_no_result ... ok
+test zero_and_tiny_retention_publish_the_same_scope_as_retention_with_room ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+     Running tests/bulk_recovery_serial.rs (target/debug/deps/bulk_recovery_serial-34ef226432903019)
+
+running 7 tests
+test a_class_over_the_preparation_ceiling_is_refused_before_it_is_read_into_memory ... ok
+test a_class_that_cannot_be_prepared_is_refused_and_its_method_count_stays_unknown ... ok
+test an_explanation_only_result_is_an_outcome_and_not_a_stop ... ok
+test the_same_methods_read_one_at_a_time_cost_one_class_read_each ... ok
+test the_serial_configuration_finishes_inside_a_deadline_and_holds_no_window_slot ... ok
+test the_store_the_caller_attached_is_the_store_the_operation_reads_through ... ok
+test the_whole_scope_is_recovered_class_by_class_in_physical_order ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/bulk_recovery_workers.rs (target/debug/deps/bulk_recovery_workers-3fb9a527114de32c)
+
+running 6 tests
+test a_class_task_overlaps_another_while_the_first_one_is_still_working ... ok
+test one_worker_and_four_publish_the_same_stream ... ok
+test the_observation_port_sees_the_coordination_that_really_happened ... ok
+test the_operations_total_and_a_methods_local_limit_are_two_declarations ... ok
+test the_request_is_checked_before_anything_is_dispatched ... ok
+test the_window_reduces_the_workers_and_publishes_both_numbers ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/bulk_support.rs (target/debug/deps/bulk_support-eb17a30deb19a8c6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/class_scope_constructor_projection.rs (target/debug/deps/class_scope_constructor_projection-b9914668aeff1479)
+
+running 7 tests
+test class_scope_constructor_positives_recompile_and_preserve_behavior_and_binders ... ok
+test cross_hold_restores_u_constructor_binder_and_keeps_t_field_erased ... ok
+test peer_new_restores_only_the_two_argument_constructor_binder ... ok
+test positive_constructor_output_budget_and_early_cancellation_stop_cleanly ... ok
+test same_class_call_consumers_restore_class_binders_in_both_evidence_flavors ... ok
+test this_delegate_keeps_physical_signature_and_recompiles_with_original_behavior ... ok
+test unproved_constructor_shapes_keep_physical_parameters_and_refusals ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.23s
+
+     Running tests/class_source.rs (target/debug/deps/class_source-21e52c7cc4075f57)
+
+running 102 tests
+test a_class_in_a_container_is_prepared_from_the_entry_it_lives_in ... ok
+test a_class_that_cannot_be_prepared_keeps_its_presentation ... ok
+test a_member_table_that_stops_is_stated_and_not_padded ... ok
+test a_member_whose_descriptor_cannot_be_read_is_stated_and_not_run ... ok
+test a_member_without_a_body_is_a_declaration_and_never_an_empty_body ... ok
+test a_method_table_that_stops_keeps_its_prefix_and_claims_no_more ... ok
+test a_name_two_definitions_answer_to_presents_nothing ... ok
+test a_request_that_cannot_pay_for_its_declaration_publishes_no_text ... ok
+test a_request_that_stops_mid_class_states_the_shortfall ... ok
+test a_stopped_member_is_marked_and_does_not_stop_the_class ... ok
+test an_admitted_bridge_is_rebuilt_from_the_complete_projected_source ... ok
+test an_explanation_only_member_is_marked_and_its_text_is_kept ... ok
+test an_identity_of_another_snapshot_is_an_input_error ... ok
+test annotation_type_without_a_body_keeps_its_runtime_visible_class_annotation ... ok
+test anonymous_constructor_initializer_rejects_wrong_field_owner_descriptor_and_handlers ... ok
+test anonymous_double_capture_refuses_a_changed_slot_descriptor_and_cross_class_use ... ok
+test anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection ... ok
+test anonymous_inner_this_refuses_a_cross_class_constructor_reference ... ok
+test anonymous_inner_this_refuses_a_fallback_child_method_without_partial_projection ... ok
+test anonymous_inner_this_refuses_a_mismatched_enclosing_method_identity ... ok
+test anonymous_inner_this_refuses_a_second_owner_allocation_and_keeps_physical_child ... ok
+test anonymous_inner_this_refuses_an_additional_local_capture_and_keeps_physical_child ... ok
+test anonymous_interface_projection_budget_stop_keeps_the_original_root_text ... ok
+test anonymous_interface_projection_cancellation_never_publishes_partial_source ... ok
+test anonymous_interface_projection_refuses_a_cross_class_use_of_the_same_child ... ok
+test anonymous_interface_projection_refuses_a_mixed_quality_child_method ... ok
+test anonymous_interface_projection_refuses_a_second_non_direct_same_class_allocation ... ok
+test anonymous_interface_projection_refuses_an_incomplete_child_method ... ok
+test anonymous_interface_projection_refuses_fields_and_constructor_effects ... ok
+test anonymous_interface_projection_refuses_non_source_child_method_flags ... ok
+test anonymous_interface_projection_stays_direct_return_only_for_declaration_sites ... ok
+test anonymous_interface_projects_a_proved_root_double_capture_and_recompiles ... ok
+test anonymous_superclass_budget_and_cancellation_never_publish_partial_source ... ok
+test anonymous_superclass_projects_the_local_declaration_initializer_shape ... ok
+test anonymous_superclass_projects_the_same_shape_with_debug_info ... ok
+test anonymous_superclass_recovers_one_proved_static_int_initializer_block ... ok
+test anonymous_superclass_refuses_a_child_body_allocating_the_anonymous_class_itself ... ok
+test anonymous_superclass_refuses_a_different_parent_constructor_overload ... ok
+test anonymous_superclass_refuses_a_second_allocation_bci_for_the_same_child ... ok
+test anonymous_superclass_refuses_captures_fields_and_constructor_effects ... ok
+test anonymous_superclass_refuses_cross_class_identity_use ... ok
+test anonymous_superclass_refuses_missing_parent_or_incomplete_child_body ... ok
+test anonymous_superclass_refuses_multiple_sites_and_multiple_capture_fields ... ok
+test anonymous_superclass_refuses_nested_parent_source_names_without_a_type_certificate ... ok
+test anonymous_superclass_refuses_reordered_or_reused_constructor_slots ... ok
+test anonymous_superclass_refuses_two_declaration_initializer_sites_in_one_method ... ok
+test anonymous_superclass_refuses_unproved_local_declaration_sites ... ok
+test anonymous_superclass_refuses_unproved_mixed_parameter_roles ... ok
+test br_family_bridges_admit_through_the_extended_gates ... ok
+test br_family_negative_shapes_keep_their_refusals ... ok
+test br_family_recovered_source_recompiles_and_runs_like_the_original ... ok
+test bridge_admission_needs_the_same_run_shape_source_and_resolved_parent_contract ... ok
+test bridge_admission_rejects_handlers_metadata_unwritable_targets_and_ambiguous_parents ... ok
+test class_annotation_named_array_values_keep_nested_annotation_order ... ok
+test class_retention_annotation_is_spelled_from_its_invisible_attribute ... ok
+test class_without_annotation_attributes_gains_no_annotation_content ... ok
+test damaged_class_annotation_attribute_is_reported_as_a_stop ... ok
+test damaged_member_annotation_keeps_its_shell_and_other_attribute_groups ... ok
+test direct_override_projection_requires_selected_complete_ordinary_parent ... ok
+test duplicate_class_annotation_entries_are_refused_without_partial_source ... ok
+test duplicate_type_annotation_is_refused_atomically_and_other_targets_survive ... ok
+test enum_switch_projection_follows_proved_mapping_and_refuses_aliased_enum_fields ... ok
+test enum_switch_projection_groups_distinct_tables_atomically ... ok
+test enum_switch_projection_refuses_irregular_factory_and_public_values ... ok
+test enum_switch_projection_withholds_sibling_when_one_shared_table_proof_fails ... ok
+test field_type_attribute_cannot_claim_a_method_return_target ... ok
+test formal_parameter_target_past_descriptor_count_is_refused_without_shift ... ok
+test formal_parameter_target_uses_descriptor_position_after_a_wide_slot ... ok
+test invisible_member_annotations_align_wide_and_varargs_by_descriptor_position ... ok
+test invisible_type_annotations_keep_their_shell_and_value ... ok
+test member_annotations_keep_field_method_and_parameter_ownership_in_text_and_json ... ok
+test member_declaration_annotations_do_not_consume_type_use_attributes ... ok
+test method_parameters_follow_wide_slots_and_refuse_name_collisions ... ok
+test method_parameters_name_body_and_declaration_only_without_lvt ... ok
+test nested_anonymous_projection_budget_and_cancellation_never_publish_partial_text ... ok
+test nested_anonymous_projection_refuses_cross_class_identity_use_of_the_grandchild ... ok
+test nested_anonymous_projection_refuses_duplicate_inner_allocations_and_constructor_effects ... ok
+test nested_anonymous_projection_refuses_mismatched_relations_and_incomplete_leaf ... ok
+test one_preparation_serves_every_member_body ... ok
+test one_real_class_is_presented_with_its_declaration_and_its_bodies ... ok
+test parameter_count_mismatch_refuses_groups_without_shifting_other_member_annotations ... ok
+test primitive_type_annotations_keep_their_facts_and_are_refused ... ok
+test proved_anonymous_interface_projects_from_both_physical_method_asts ... ok
+test proved_anonymous_superclass_forwards_the_original_ordered_arguments ... ok
+test proved_anonymous_superclass_projects_the_mixed_capture_shape ... ok
+test proved_two_level_anonymous_interfaces_project_as_one_nested_root_expression ... ok
+test qualified_type_annotations_are_spelled_inside_their_member_types ... ok
+test repeated_member_annotation_type_is_refused_atomically_at_its_position ... ok
+test runtime_visible_class_annotation_uses_the_same_declaration_path ... ok
+test same_package_parent_field_writes_keep_owner_source_and_stop_boundaries ... ok
+test same_type_annotations_on_method_and_return_keep_their_separate_facts ... ok
+test single_name_array_and_nested_path_type_uses_are_preserved_as_refusals ... ok
+test the_multilevel_covariant_bridge_walks_two_interface_edges ... ok
+test the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges ... ok
+test the_parameterized_superclass_header_hides_the_parameter_bridge ... ok
+test the_report_serializes_with_the_text_it_publishes ... ok
+test the_same_request_twice_is_the_same_text ... ok
+test typed_functional_references_publish_one_complete_header_body_and_source ... ok
+test unspellable_class_annotation_element_name_refuses_the_whole_annotation ... ok
+test unspellable_class_annotation_is_refused_as_a_whole ... ok
+test unspellable_member_annotation_type_and_element_refuse_the_whole_use ... ok
+test visible_and_invisible_annotations_follow_physical_attribute_order ... ok
+
+test result: ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 18.99s
+
+     Running tests/class_static_initializer_projection.rs (target/debug/deps/class_static_initializer_projection-45058ffa2ed6978d)
+
+running 4 tests
+test em06_projects_only_the_complete_static_chain ... ok
+test incomplete_or_unsafe_static_groups_remain_in_clinit ... ok
+test ordinary_class_without_clinit_has_no_initializer_group ... ok
+test output_stop_and_cancellation_do_not_commit_a_prefix ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.07s
+
+     Running tests/ctor_reorder_dispatch_guard.rs (target/debug/deps/ctor_reorder_dispatch_guard-edccfb82a43c7769)
+
+running 2 tests
+test the_dispatch_fixture_keeps_the_capture_write_before_the_constructor_call ... ok
+test user_class_super_fixtures_return_to_the_compiler_s_byte_order ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+     Running tests/d0_demand_counts.rs (target/debug/deps/d0_demand_counts-c6c10d0dd4c5589c)
+
+running 5 tests
+test a_class_source_request_materializes_its_class_once_and_prepares_it_once ... ok
+test a_consumer_release_drops_the_prepared_facts_handle_back_to_its_baseline ... ok
+test a_member_only_read_decodes_no_body_and_builds_no_record ... ok
+test a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit ... ok
+test one_requested_body_decodes_one_body_and_runs_no_recovery ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/d1_evidence_selection.rs (target/debug/deps/d1_evidence_selection-6215045558ef3bb3)
+
+running 8 tests
+test a_legal_empty_range_is_a_complete_empty_selection ... ok
+test a_range_over_a_body_with_no_code_is_refused_as_a_missing_table ... ok
+test a_selected_category_that_stopped_states_its_prefix ... ok
+test a_selection_this_entry_cannot_answer_is_refused_with_its_own_code ... ok
+test closing_the_rule_records_keeps_the_refusals_and_the_explanation ... ok
+test the_driver_range_selects_the_records_it_intersects ... ok
+test the_ordinary_entry_and_the_stated_essential_selection_answer_the_same_report ... ok
+test the_same_request_under_either_selection_presents_the_same_body ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/d2_prepared_handoff.rs (target/debug/deps/d2_prepared_handoff-ce64bd2f5d060393)
+
+running 9 tests
+test a_cancelled_request_leaves_nothing_retained ... ok
+test a_recovery_run_without_same_class_callees_reads_once_and_prepares_nothing ... ok
+test a_request_with_a_missing_dependency_reads_no_class ... ok
+test a_store_never_makes_the_next_storeless_request_cheaper ... ok
+test a_view_decodes_every_requested_body_against_one_preparation ... ok
+test a_view_that_decodes_no_body_prepares_nothing ... ok
+test an_ambiguous_name_prepares_nothing_and_keeps_every_candidate ... ok
+test both_binding_paths_prepare_the_read_they_selected_once ... ok
+test the_four_store_states_do_the_same_work_and_no_request_is_free ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/d3_artifact_binding.rs (target/debug/deps/d3_artifact_binding-5f1e4f514d4cd894)
+
+running 13 tests
+test a_binding_of_another_schema_is_a_mismatch ... ok
+test a_binding_states_the_member_record_the_read_established ... ok
+test a_changed_rule_set_is_a_mismatch ... ok
+test a_duplicated_member_record_binds_nothing ... ok
+test a_run_without_an_artifact_compares_nothing ... ok
+test a_text_that_is_not_this_artifact_is_a_mismatch_and_never_a_missing_answer ... ok
+test a_tight_budget_stops_the_rebuild_where_it_really_stops ... ok
+test an_expectation_without_a_selection_is_refused ... ok
+test one_class_stored_twice_is_two_artifacts ... ok
+test the_binding_holds_no_payload_of_the_run ... ok
+test the_evidence_is_rebuilt_after_every_temporary_of_the_first_request_is_dropped ... ok
+test the_sequence_keeps_the_artifact_and_bounds_every_residency ... ok
+test two_definitions_of_one_name_are_two_artifacts ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/d5_acceptance_ledger.rs (target/debug/deps/d5_acceptance_ledger-21a526372803834d)
+
+running 1 test
+test the_ledger_names_only_records_this_repository_has ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/d5_process_release.rs (target/debug/deps/d5_process_release-98d8545057ffe1d5)
+
+running 5 tests
+test child_a_stop_at_every_stage_releases_what_it_held ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_deep_expressions_terminate_normally ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_the_abandon_sequence_leaves_no_work_behind ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_the_cache_and_a_slow_consumer_stay_bounded ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test every_gate_runs_to_a_normal_exit_in_its_own_process ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/d5_semantic_comparison.rs (target/debug/deps/d5_semantic_comparison-aaa89bcb184af6ef)
+
+running 5 tests
+test a_repeated_request_states_the_same_report ... ok
+test every_fixture_names_the_record_it_came_from ... ok
+test every_selection_presents_the_same_answer ... ok
+test the_essential_and_the_full_selection_compile_the_same_program ... ignored, needs a JDK on PATH: it compiles the recovered text with `javac --release 8` and runs it with `java`. `cargo test` therefore stays green without a compiler; run it with `-- --ignored` on a machine that has one
+test the_local_delivery_is_the_full_one_projected_onto_its_range ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running tests/double_brace_capture.rs (target/debug/deps/double_brace_capture-dbcd4adb0aad79b5)
+
+running 4 tests
+test the_capture_companion_presents_the_capture_write_after_the_constructor_call ... ok
+test the_companions_keep_their_presentation_and_the_host_presents_the_double_brace_form ... ok
+test the_recompiled_family_compiles_and_runs_as_the_original_classes ... ok
+test the_super_argument_probes_keep_the_current_refusal_and_the_byte_order ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.80s
+
+     Running tests/em22_boolean_xor.rs (target/debug/deps/em22_boolean_xor-6e396b1bea01b3bf)
+
+running 3 tests
+test a_result_boolean_context_does_not_promote_an_unproved_int_xor_operand ... ok
+test budget_and_cancellation_do_not_publish_a_partially_built_xor_expression ... ok
+test proved_boolean_xor_literals_keep_type_effect_and_origin_facts ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.73s
+
+     Running tests/em23_field_unit_updates.rs (target/debug/deps/em23_field_unit_updates-7665bfb02fac95e7)
+
+running 3 tests
+test a_returned_old_value_stays_an_expression_and_budget_or_cancellation_stops_atomically ... ok
+test owner_descriptor_volatile_receiver_and_effect_boundaries_do_not_use_this_slice ... ok
+test same_class_int_unit_updates_are_single_source_mapped_postfix_statements ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s
+
+     Running tests/engine.rs (target/debug/deps/engine-5a5dadeea7aa180d)
+
+running 9 tests
+test empty_zip_enumeration_reports_the_open_snapshot ... ok
+test handler_budget_partial_has_precise_coverage ... ok
+test materialization_failure_is_err_and_body_partial_is_preserved ... ok
+test method_request_decodes_and_charges_only_the_selected_body ... ok
+test one_budget_accumulates_open_and_header_and_preserves_atomic_stage_failure ... ok
+test public_engine_entrypoints_honor_precancelled_requests_at_their_stage_boundary ... ok
+test standalone_engine_reports_owned_source_and_usage ... ok
+test target_and_header_body_boundaries_are_preserved ... ok
+test zip_duplicate_origins_and_validation_are_preserved ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/enum_string_field_name.rs (target/debug/deps/enum_string_field_name-f1e9eb204ec56eda)
+
+running 2 tests
+test the_labeled_projection_recompiles_and_runs_as_the_original ... ok
+test the_labeled_string_argument_fixture_projects_the_proved_field_name ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.96s
+
+     Running tests/field_generic_projection.rs (target/debug/deps/field_generic_projection-bb5c65d850d02a46)
+
+running 3 tests
+test field_signature_refusals_keep_descriptor_for_mismatch_unbound_and_body_use ... ok
+test standalone_field_signatures_recompile_and_match_reflection_and_caller_types ... ok
+test type_use_annotations_and_stopped_requests_do_not_publish_field_candidates ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.09s
+
+     Running tests/fixture_behavior_guards.rs (target/debug/deps/fixture_behavior_guards-c7762a603c4afc07)
+
+running 13 tests
+test anonymous_member_base_keeps_the_qualified_receiver_refusal ... ok
+test anonymous_member_base_presents_the_member_base_constructor_order ... ok
+test anonymous_member_base_runs_and_its_text_stays_uncompilable ... ignored, needs a JDK on PATH: it runs the frozen classes and asks `javac` whether the recovered text compiles (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test anonymous_top_level_pins_the_childs_capture_write_before_the_super_call ... ok
+test anonymous_top_level_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test enum_arity_pins_the_zero_one_and_four_constant_headers ... ok
+test enum_arity_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test lambda_body_inline_pins_the_forwarding_arrow_and_the_refused_main ... ok
+test lambda_body_inline_runs_and_its_text_stays_uncompilable ... ignored, needs a JDK on PATH: it runs the frozen classes and asks `javac` whether the recovered text compiles (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test package_info_basic_pins_the_package_annotation_before_the_package_line ... ok
+test package_info_basic_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+test short_circuit_left_false_pins_the_single_short_circuit_write ... ok
+test short_circuit_left_false_runs_and_recompiles_to_the_recorded_output ... ignored, needs a JDK on PATH: it runs the frozen classes and recompiles the recovered text under `javac --release 8` (see openspec/changes/recover-fixture-behavior-guard-coverage/results/)
+
+test result: ok. 7 passed; 0 failed; 6 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/generic_body_throws_projection.rs (target/debug/deps/generic_body_throws_projection-f75075f9231653df)
+
+running 3 tests
+test body_budget_stop_and_cancellation_do_not_publish_a_generic_throws_clause ... ok
+test body_effects_and_object_method_names_keep_physical_throws ... ok
+test empty_body_class_throws_projection_compiles_and_runs_for_both_debug_variants ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.83s
+
+     Running tests/generic_constructor_projection.rs (target/debug/deps/generic_constructor_projection-b839ae71e389e8d8)
+
+running 4 tests
+test body_budget_and_cancellation_never_publish_a_partial_constructor_header ... ok
+test generic_constructor_projects_atomically_for_debug_and_no_debug_classes ... ok
+test same_class_constructor_binding_and_adjacent_generic_method_are_independent ... ok
+test unproved_constructor_body_keeps_its_physical_parameter ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.69s
+
+     Running tests/generic_method_budget.rs (target/debug/deps/generic_method_budget-af26bf3cce766e0b)
+
+running 4 tests
+test body_budget_stop_keeps_the_physical_generic_member_without_a_partial_header ... ok
+test essential_and_all_evidence_keep_complete_generic_class_text_identical ... ok
+test internal_budget_stops_do_not_publish_a_partial_generic_header ... ok
+test pre_cancellation_reports_cancelled_without_a_generic_declaration ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/generic_method_projection.rs (target/debug/deps/generic_method_projection-008bceb0210b711b)
+
+running 18 tests
+test body_assignment_and_call_without_type_variable_proof_are_refused ... FAILED
+test bounded_method_variable_follows_same_run_parameters ... ok
+test direct_return_and_generic_throws_can_share_the_method_variable ... ok
+test erasure_shape_and_body_refusals_keep_descriptor_declarations ... FAILED
+test exact_generic_instance_null_return_projects_and_preserves_physical_method ... ok
+test exact_parameterized_list_null_return_projects_with_raw_controls_unchanged ... ok
+test exceptions_without_generic_throws_suffix_survive ... ok
+test generic_instance_null_return_admits_an_arity_disjoint_same_class_overload ... FAILED
+test generic_instance_null_return_rejects_unproved_signatures_bodies_and_bindings ... ok
+test generic_null_return_budget_and_cancellation_never_publish_a_partial_header ... ok
+test generic_null_return_refuses_signature_erasure_mismatch ... FAILED
+test multiple_local_variables_and_ordinary_parameters_keep_their_positions ... ok
+test neighboring_overload_without_a_caller_does_not_block_the_proved_method ... ok
+test parameterized_null_return_erasure_budget_and_cancellation_keep_raw_method ... FAILED
+test parameterized_null_return_rejects_other_signatures_effects_and_self_calls ... ok
+test parameterized_null_return_same_class_caller_projects_after_use_proof ... ok
+test same_class_caller_to_arity_disjoint_overload_proves_projection ... FAILED
+test type_use_annotations_and_varargs_are_whole_method_refusals ... FAILED
+
+failures:
+
+---- body_assignment_and_call_without_type_variable_proof_are_refused stdout ----
+
+thread 'body_assignment_and_call_without_type_variable_proof_are_refused' (8684801) panicked at tests/generic_method_projection.rs:938:5:
+assertion failed: assignment.text.contains("generic_source_shape_unproved")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- erasure_shape_and_body_refusals_keep_descriptor_declarations stdout ----
+
+thread 'erasure_shape_and_body_refusals_keep_descriptor_declarations' (8685068) panicked at tests/generic_method_projection.rs:634:9:
+GenericMethodProbe: // jarde: presentation of `GenericMethodProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class GenericMethodProbe extends java.lang.Object {
+    public GenericMethodProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `GenericMethodProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.Number choose(java.lang.Number arg0, java.lang.Number arg1, boolean arg2) {
+        // @method choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+        // @declaration a static method of `GenericMethodProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg2 ? arg0 : arg1;
+    }
+}
+
+
+---- generic_instance_null_return_admits_an_arity_disjoint_same_class_overload stdout ----
+
+thread 'generic_instance_null_return_admits_an_arity_disjoint_same_class_overload' (8685619) panicked at tests/generic_method_projection.rs:489:5:
+    // jarde: generic Signature projection refused for `value()Ljava/lang/Number;`: same-class generic call dependency did not close over every incoming use
+    public java.lang.Number value() {
+        // @method value()Ljava/lang/Number;
+        // @declaration an instance method of `GenericNullBindingProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return null;
+    }
+
+
+---- generic_null_return_refuses_signature_erasure_mismatch stdout ----
+
+thread 'generic_null_return_refuses_signature_erasure_mismatch' (8686237) panicked at tests/generic_method_projection.rs:535:5:
+assertion failed: method.text.contains("jvm_signature_erasure_mismatch")
+
+---- parameterized_null_return_erasure_budget_and_cancellation_keep_raw_method stdout ----
+
+thread 'parameterized_null_return_erasure_budget_and_cancellation_keep_raw_method' (8686665) panicked at tests/generic_method_projection.rs:317:5:
+assertion failed: method.text.contains("jvm_signature_erasure_mismatch")
+
+---- same_class_caller_to_arity_disjoint_overload_proves_projection stdout ----
+
+thread 'same_class_caller_to_arity_disjoint_overload_proves_projection' (8686893) panicked at tests/generic_method_projection.rs:798:5:
+// jarde: presentation of `GenericCallerProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class GenericCallerProbe extends java.lang.Object {
+    public GenericCallerProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `GenericCallerProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;`: same-class generic call dependency did not close over every incoming use
+    public static java.lang.Number choose(java.lang.Number arg0, java.lang.Number arg1, boolean arg2) {
+        // @method choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+        // @declaration a static method of `GenericCallerProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg2 ? arg0 : arg1;
+    }
+
+    public static java.lang.Number choose(java.lang.Number arg0, java.lang.Number arg1) {
+        // @method choose(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Number;
+        // @declaration a static method of `GenericCallerProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0;
+    }
+
+    public static java.lang.Number call() {
+        // @method call()Ljava/lang/Number;
+        // @declaration a static method of `GenericCallerProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return choose((java.lang.Number) java.lang.Integer.valueOf(1), (java.lang.Number) java.lang.Integer.valueOf(2), true);
+    }
+}
+
+
+---- type_use_annotations_and_varargs_are_whole_method_refusals stdout ----
+
+thread 'type_use_annotations_and_varargs_are_whole_method_refusals' (8686941) panicked at tests/generic_method_projection.rs:825:5:
+// jarde: presentation of `GenericTypeUseProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class GenericTypeUseProbe extends java.lang.Object {
+    public GenericTypeUseProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `GenericTypeUseProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `choose(Ljava/lang/Number;)Ljava/lang/Number;`: same-class generic call dependency did not close over every incoming use
+    public static java.lang.@Mark Number choose(java.lang.@Mark Number arg0) {
+        // @method choose(Ljava/lang/Number;)Ljava/lang/Number;
+        // @declaration a static method of `GenericTypeUseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0;
+    }
+}
+
+
+
+failures:
+    body_assignment_and_call_without_type_variable_proof_are_refused
+    erasure_shape_and_body_refusals_keep_descriptor_declarations
+    generic_instance_null_return_admits_an_arity_disjoint_same_class_overload
+    generic_null_return_refuses_signature_erasure_mismatch
+    parameterized_null_return_erasure_budget_and_cancellation_keep_raw_method
+    same_class_caller_to_arity_disjoint_overload_proves_projection
+    type_use_annotations_and_varargs_are_whole_method_refusals
+
+test result: FAILED. 11 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.45s
+
+error: test failed, to rerun pass `-p jarde --test generic_method_projection`

@@ -1,0 +1,80 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/nodebug/PlainUpperBoundOverload/PlainUpperBoundOverload.jar!/PlainUpperBoundOverload.class
+  Last modified 2026-10-9; size 463 bytes
+  MD5 checksum 9a0cf134c4c4622c887391543949cae4
+public class PlainUpperBoundOverload<T extends java.lang.Number> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#20         // java/lang/Object."<init>":()V
+   #2 = String             #21            // number
+   #3 = Fieldref           #6.#22         // PlainUpperBoundOverload.selected:Ljava/lang/String;
+   #4 = String             #23            // object
+   #5 = Methodref          #6.#24         // PlainUpperBoundOverload.pick:(Ljava/lang/Number;)V
+   #6 = Class              #25            // PlainUpperBoundOverload
+   #7 = Class              #26            // java/lang/Object
+   #8 = Utf8               selected
+   #9 = Utf8               Ljava/lang/String;
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               pick
+  #14 = Utf8               (Ljava/lang/Number;)V
+  #15 = Utf8               (Ljava/lang/Object;)V
+  #16 = Utf8               relay
+  #17 = Utf8               Signature
+  #18 = Utf8               (TT;)V
+  #19 = Utf8               <T:Ljava/lang/Number;>Ljava/lang/Object;
+  #20 = NameAndType        #10:#11        // "<init>":()V
+  #21 = Utf8               number
+  #22 = NameAndType        #8:#9          // selected:Ljava/lang/String;
+  #23 = Utf8               object
+  #24 = NameAndType        #13:#14        // pick:(Ljava/lang/Number;)V
+  #25 = Utf8               PlainUpperBoundOverload
+  #26 = Utf8               java/lang/Object
+{
+  public java.lang.String selected;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PUBLIC
+
+  public PlainUpperBoundOverload();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void pick(java.lang.Number);
+    descriptor: (Ljava/lang/Number;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: ldc           #2                  // String number
+         3: putfield      #3                  // Field selected:Ljava/lang/String;
+         6: return
+
+  public void pick(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: ldc           #4                  // String object
+         3: putfield      #3                  // Field selected:Ljava/lang/String;
+         6: return
+
+  public void relay(T);
+    descriptor: (Ljava/lang/Number;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #5                  // Method pick:(Ljava/lang/Number;)V
+         5: return
+    Signature: #18                          // (TT;)V
+}
+Signature: #19                          // <T:Ljava/lang/Number;>Ljava/lang/Object;

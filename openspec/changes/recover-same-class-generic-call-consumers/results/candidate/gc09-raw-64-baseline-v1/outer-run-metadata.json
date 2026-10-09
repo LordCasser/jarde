@@ -1,0 +1,666 @@
+{
+  "scope": "GC09 raw-64 accepted-baseline replay only; candidate is not run",
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1",
+  "output_was_absent_before_run": true,
+  "label": "accepted-baseline",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/replay.py",
+    "--cli",
+    "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "--cli-sha256",
+    "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+    "--jadx",
+    "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+    "--label",
+    "accepted-baseline",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1"
+  ],
+  "python": {
+    "path": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/replay.py",
+    "sha256_before_run": "2c9b8233f41f13a483fa252a898f81e4602b9c7b3a0308cbc95bcd42162dc3a2",
+    "snapshot": "/tmp/jarde-gc09-raw64-baseline-v1-preflight/replay-executed.py",
+    "snapshot_sha256": "2c9b8233f41f13a483fa252a898f81e4602b9c7b3a0308cbc95bcd42162dc3a2",
+    "snapshot_in_output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/replay-executed.py",
+    "snapshot_in_output_sha256": "2c9b8233f41f13a483fa252a898f81e4602b9c7b3a0308cbc95bcd42162dc3a2",
+    "sha256_after_run": "2c9b8233f41f13a483fa252a898f81e4602b9c7b3a0308cbc95bcd42162dc3a2",
+    "source_after_sha256": "2c9b8233f41f13a483fa252a898f81e4602b9c7b3a0308cbc95bcd42162dc3a2",
+    "source_unchanged_during_replay": true
+  },
+  "jadx": {
+    "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+    "sha256": "5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3",
+    "lib_directory": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib",
+    "libraries": [
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+        "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+        "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+        "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+        "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+        "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+        "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+        "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+        "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+        "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+        "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+        "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+        "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+        "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+        "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+        "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+        "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+        "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+        "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+        "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+        "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+        "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+        "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+        "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+        "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+        "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+        "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+        "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+        "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+        "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+        "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+        "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+        "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+        "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+        "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+        "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+        "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+        "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+        "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+        "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+        "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+        "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+        "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+        "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+        "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+        "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+        "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+        "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+        "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+        "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+        "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+        "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+        "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+        "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+        "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+        "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+        "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6"
+      }
+    ]
+  },
+  "jdk_tools": {
+    "jdk8": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "jar": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "sha256": "46c8af190164ec5b1b8bb69f9abc594b52fb82410634f81b64c8668ca4e5fb31"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    },
+    "jdk23": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "jar": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+        "sha256": "e5529066a9bd98758e6f6e385fa1f28c66900e34de3554d35b33b5ca642b1af6"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "frozen_sources": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/Array2DRawParam.java",
+      "sha256": "5bbef8f6469c09463424842bdd8b847a7f536cbec26a78a4e93ba8408be4c882"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/ArrayRawParam.java",
+      "sha256": "423e853d9ce8ae640156986631be6762194245270cd80e2070d0939f581c84d4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/BoundRawParam.java",
+      "sha256": "0101effc94988a11beb9964d30ed6f88b505cd1988fd30ba82975820ddc6972a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/DirectInstanceRawParam.java",
+      "sha256": "b6a80e3802628d93702469bd6300678ef50f65f4607fb4a9feada492b202b510"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/InstanceRawLocal.java",
+      "sha256": "a684ab125e58722a5b75102e826763143cac1450d0be5616c3930e3f36023093"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/MultiFormalRawParam.java",
+      "sha256": "34cc89f2e08b0b33b3d473221b9bae1a3962b5d82e13241044a611cc2d67b9bf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/NullRawParam.java",
+      "sha256": "99cc5803d75e93dc0a7fed86f79893f357ea4f0754211630223df221b577b211"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/PrimitiveArrayRawParam.java",
+      "sha256": "b13a23ec4548b064d48c14c544b6f2091eaeb50c1369ca1a7f4584f7673d00f3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/RawOwnerBase.java",
+      "sha256": "737bb6e89d5234b19de77c681d25f0307de04db9d984a72ccc81d788873e8ae2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/RawOwnerChild.java",
+      "sha256": "78d24079184e0635743abe91bcea4cbc9fdc2c4867eee55a5f7e60a9d5bb18a6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/RawParam.java",
+      "sha256": "eb63c19999c1f01efed1030f8e27e2f9aa128b0f7fc1cc2f264c884356650914"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/ReceiverProbe.java",
+      "sha256": "a411376a5e0aef02c9da74de267722cd25c06692bf745c6446613be3da069489"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/RetainedAliasRawParam.java",
+      "sha256": "6586fed7104b0ebe30107567caeb38d5aea3a6bee3d80f5535d301a504a8975d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/ShadowMethodT.java",
+      "sha256": "8f189a6fe11b9ebb78c1f557f3b25b51d5c7506a705fd86bf2adc926b8493716"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/StaticRawLocal.java",
+      "sha256": "963c4aeed2be1bb85e2e4b91ed3516794fd3d8500eb4cc5a3e5c18393ed643a5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/ThisReceiver.java",
+      "sha256": "d5c55c17372dcffdbcf8af781edc6ed8ed02efde8c6be1c0826853876664ec43"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/TypedReceiver.java",
+      "sha256": "bbc3ee0a4a9b73f4f46d7d5adfb7f9a2b9a9a82273e08d9e5f8b1c54592eea5d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/source/WideRawParam.java",
+      "sha256": "bc386bbadf6d46b77fedd3a4f57c08ae728dff84fd93b60d30062bad3a127237"
+    }
+  ],
+  "frozen_input_jars": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/Array2DRawParam.jar",
+      "sha256": "ed4a6f00c34a5dbd0d75fd595e368a5b204ed51f32edd947acef135331ec6294"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/ArrayRawParam.jar",
+      "sha256": "d2f7e5d405c2a2bf8715ae14b7c38b471d1ece6dd91c06ed65d064bd56e96b61"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/BoundRawParam.jar",
+      "sha256": "5bfe8232bceaf07b23ddde22407b8db1cea23928ce2ba7f30d69e62830c488ab"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/DirectInstanceRawParam.jar",
+      "sha256": "47e134a94d6f35dd102dab7636696c2ea09fa93e36332b1533deea4a1179b6a2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/InstanceRawLocal.jar",
+      "sha256": "61df3c841268b66622400f86aa1fd8d4e7ab0a01eb0c5ef14a93e8120a998fe0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/MultiFormalRawParam.jar",
+      "sha256": "3f06dd124e75e4ac43c4943f4602d37da1812f208b4ca35c7e8b7c50e0e3828e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/NullRawParam.jar",
+      "sha256": "e6cd3b31dac7ba7065fe75c91fd19c6bd6ddce7f0608fcbe4604ebcb93ce4840"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/PrimitiveArrayRawParam.jar",
+      "sha256": "57b4cec8f60bc77429a08d2534518c8bc122054d361383db077b0769659b5e6c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/RawOwnerChild.jar",
+      "sha256": "ae3a9ca315b0650f8efe4c01c765bd222d125aba4cf0c1efb1da2f3dc8645682"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/RawParam.jar",
+      "sha256": "42a11b9938f9af82dae64d7a628bd0f73974df2ed8e722f9ec066c15511bf19c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/RetainedAliasRawParam.jar",
+      "sha256": "03740d4e575beac8bda6a7e8b23fa026885d459d2e976e7fd2b16172b2149dc7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/ShadowMethodT.jar",
+      "sha256": "36f472287d7fe6a58c7cf73ae4e94c86931159bc339da463cdb2d1484798c8a0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/StaticRawLocal.jar",
+      "sha256": "29a8a42bc2f2be7ea1bdb8309f764d3abc847ea8c1c4a1a87fdb829a535774d8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/ThisReceiver.jar",
+      "sha256": "6bea3b8ccf4ff01e2c72ba456b7943dbcbb3b4e25088dbcc4e41f2a6b2b85567"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/TypedReceiver.jar",
+      "sha256": "dca7c8f9fe53c3998515124df0450f0250d953b824c56a2239a7fc29b6754543"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/WideRawParam.jar",
+      "sha256": "0012879b775e290c899c33839a114ae80a519a45e853c87ebf9ff049f3d57114"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/Array2DRawParam.jar",
+      "sha256": "bb4a21e0877d1f2b2e97d1ba38eb5f4438ee7da5e9fced1f8613ddd1a7e468d3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/ArrayRawParam.jar",
+      "sha256": "ee4eed69f0a0826271e603faf2f53049d55a3455a4db988feaa53dccd780d4d9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/BoundRawParam.jar",
+      "sha256": "dd5e996f4465836875534fae7ca92c04bb101be744ffdfe02910c0632c57ccbb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/DirectInstanceRawParam.jar",
+      "sha256": "b9e9589e7f918f1ce7fc955191117f1ff39f7a700f0068443f9a4198ff250c62"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/InstanceRawLocal.jar",
+      "sha256": "e51a2137b0d1aaf143428e4511e69edf84f58f1354143597068ceb8151f0b5d9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/MultiFormalRawParam.jar",
+      "sha256": "4ddf7a0122cc541d040183955d91b7db3dd262bdf033e572817be349d46ebe7a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/NullRawParam.jar",
+      "sha256": "bebbc44cb4d8ee4906add5ca3e8f7c4c1a3fb99f33b95001fbdd94f764a5b432"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/PrimitiveArrayRawParam.jar",
+      "sha256": "2bc2383021a7d10808e744c52b9d47b333d3b37632a531d19c98ba3bb0b48565"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/RawOwnerChild.jar",
+      "sha256": "e64d82dd18c5f1657e970486d76b74a9514cbac5eb4424fb10c3011a530e3c51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/RawParam.jar",
+      "sha256": "336edb21f0d2b04b0ede8b0252bf1447df18ca83a41613f94e639bf889af07f6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/RetainedAliasRawParam.jar",
+      "sha256": "1ffe65d5d26605a7a2f9c52b9c16496bb5f67cf1e9edbd80a65e256a6d7ac707"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/ShadowMethodT.jar",
+      "sha256": "ef5d5f559281aa679798f3ac78053aa76f8e63716ed6579b8e0bf60e3451eb5b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/StaticRawLocal.jar",
+      "sha256": "9e760a11bed2e671132d947da5c0d5694e958745d6bb39d2bc8c349eb452fe28"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/ThisReceiver.jar",
+      "sha256": "d2f09d1ee0e45eb28e2684388c057ce45d63cb87b09533c45c9bdd471bc360dc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/TypedReceiver.jar",
+      "sha256": "38bbedc216a80690cd1e70afc91ffcb4db81231401fc0b59ff8a4c81be05834c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/no-debug/input/WideRawParam.jar",
+      "sha256": "c0791c1c89a5d28b92840756b55bf69afb59cbda05975bed1fddb7c888463528"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/Array2DRawParam.jar",
+      "sha256": "67abed08338d07259943514a135cba9687501e3c767019b8297c69c567dca4fa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/ArrayRawParam.jar",
+      "sha256": "968b7adc2d0b86ee36c68b66762fff9310ac9f10c246fa2d4783a1e2fb413776"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/BoundRawParam.jar",
+      "sha256": "231be91145dd7bb0a3bcdf2d06eecfe9a63b5c205828b97d20c13375cd27083a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/DirectInstanceRawParam.jar",
+      "sha256": "7542690337d414bddfe6cb7cc87ece53c182d339c5f8f787de466e9d0002d970"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/InstanceRawLocal.jar",
+      "sha256": "12922e688432df06cee044161c855a54fde84898b9cad9935af60cdf08d43a32"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/MultiFormalRawParam.jar",
+      "sha256": "8a7a66a3c50c2f8d12271af5c0482bbc471372472dd31cc7a311c6c3905b94b7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/NullRawParam.jar",
+      "sha256": "d1ac257e69879cf5ff0f370526229b823be3d1b5cf22ed65841e758e02b98db6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/PrimitiveArrayRawParam.jar",
+      "sha256": "2115b5538c580da62b071c9c16cf5a0f3091ecf57a465947e6dca373e7aa452e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/RawOwnerChild.jar",
+      "sha256": "ededf36f5a6c0eef71a07d657ec361d05bbc10e840172551618a227dc67c7f05"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/RawParam.jar",
+      "sha256": "d9d52e72db9ddd847bef8380652b42ff156daed0804c928fe41fc9a57944d0aa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/RetainedAliasRawParam.jar",
+      "sha256": "cfec5476df2b13ff6dd7ed5a0289cbf9564265f4da190de68ccee87f68405b5e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/ShadowMethodT.jar",
+      "sha256": "e6efb6251d866db61c0af9db6dbedc2951c7c3900715f255a4259de0258b1029"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/StaticRawLocal.jar",
+      "sha256": "7c3a4729303ab2be5edadd5d43c6c6e27d52d55e8abaa1076d3e8cb8d90b619c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/ThisReceiver.jar",
+      "sha256": "ace6321786ec3f059fdcf9074e913fc70d9579dd7eb2950e2680ac6df508aa83"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/TypedReceiver.jar",
+      "sha256": "55a68fc8f2693acd2785d8a1629ef56806cb4e7ef0a1dc285ea50885d6cdc99f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/WideRawParam.jar",
+      "sha256": "586757ec337a3cbe0ad7e6e7a7ea422959d5000260710bf9aa2fe75cabba1a5f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/Array2DRawParam.jar",
+      "sha256": "c7fbb0516c975f63935c1a245933e4d8219a5da806d8e2044f618f467b957e3c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/ArrayRawParam.jar",
+      "sha256": "5866233cd8b8978af4c5bda7a6f4af05874fb170b3badcc2a2159bb87181d6f0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/BoundRawParam.jar",
+      "sha256": "ef39c087461ef66e101adb8bbf10f1cc0ea801c4d13fa7ceac1a466fcff39539"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/DirectInstanceRawParam.jar",
+      "sha256": "a38fbda3d735ee397af879ecf03c35d52b1d7b7d7cbcfbfe10864616b2fd780f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/InstanceRawLocal.jar",
+      "sha256": "c131ecde6a9fa8cd4a95dfc0fb11df5cc2bb35102d5e553f9e230e79dc036e49"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/MultiFormalRawParam.jar",
+      "sha256": "023971ab43b471d6b8065ce0bedcb25451a92127c8f5d946cbb339110c8e13d5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/NullRawParam.jar",
+      "sha256": "533af07481b31517cb8d412d65921b0f39029ac3789fa2078007f63d3c28ac43"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/PrimitiveArrayRawParam.jar",
+      "sha256": "26b3251e2fe93e93ad68841195f3673f76a5e1e35d7e26e1a9a871f1a4436116"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/RawOwnerChild.jar",
+      "sha256": "c399e5654e8e518c750165e8da45de47eae105558f03d3653e963a7dda82da5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/RawParam.jar",
+      "sha256": "b6e4be270fd569e6501e67b23b9d8cbe60fa79eb94ec5abf5503d5a10efabd51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/RetainedAliasRawParam.jar",
+      "sha256": "a253579b84e141a62b4ddbbcc2e98eb4341190349b7b2ce14cacc796c2b33c55"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/ShadowMethodT.jar",
+      "sha256": "35810cd65e0df83eef400663402bfe26a2b9d6c0e228797b2d494c843b749b71"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/StaticRawLocal.jar",
+      "sha256": "afc3d85cddd22b6fda421be74ea54a550678ffbe93f29f4755323dd2a44eef81"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/ThisReceiver.jar",
+      "sha256": "90697dcf25283906de27bfeaedaf26bff4ab6a58e68012307abba260d6fe86fa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/TypedReceiver.jar",
+      "sha256": "9d8b9a64b0483480d56a87952664092a905178bae6760b50c1d612c324d6e3f3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/WideRawParam.jar",
+      "sha256": "e34fd8e28698ca582769d4c4583da7915f6c43eed2a0413fa29fc30861c07ce2"
+    }
+  ],
+  "runtime_policy": "runner uses fresh temporary class directories and java -Xverify:all; no original input jar is used as runtime classpath",
+  "execution": {
+    "exit_code": 0,
+    "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/outer-runner.stdout",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/outer-runner.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "note": "exec runner returned exit_code=0 with no stdout/stderr; hashes are of those captured empty streams",
+    "command_cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "summary_json_sha256": "f1c32f8c4410a3d7886957f75e243c837e2466cbe306bc379ce6378d1f65ab7f",
+    "summary_markdown_sha256": "aa16af8d7cb6f7cfa56bc8d345f914bfee976fd26f16927a8e040f5d119dfad7"
+  },
+  "working_directory": "/Users/lordcasser/workspace/projects/jarde",
+  "post_run_verification": {
+    "row_count": 64,
+    "frozen_input_jar_hashes_match_preflight": true,
+    "frozen_source_hashes_match_preflight": true,
+    "runtime_policy_verified": true,
+    "generated_class_file_count": 0,
+    "class_source_command_count": 68,
+    "self_describing_source_header_count": 68
+  }
+}

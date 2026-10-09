@@ -1,0 +1,85 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.69s
+     Running tests/generic_constructor_projection.rs (target/debug/deps/generic_constructor_projection-1aeeea95ae8c17ad)
+
+running 4 tests
+test body_budget_and_cancellation_never_publish_a_partial_constructor_header ... ok
+test generic_constructor_projects_atomically_for_debug_and_no_debug_classes ... ok
+test same_class_constructor_binding_and_adjacent_generic_method_are_independent ... ok
+test unproved_constructor_body_keeps_its_physical_parameter ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.47s
+
+     Running tests/same_class_generic_binding.rs (target/debug/deps/same_class_generic_binding-92c8a8247a2a16df)
+
+running 15 tests
+test adjacent_same_arity_overload_keeps_the_binding_refusal ... FAILED
+test budget_and_cancellation_never_publish_a_partial_binding_projection ... ok
+test deferred_same_class_writer_settles_before_its_generic_field ... ok
+test essential_and_all_evidence_admit_the_same_binding_projections ... ok
+test field_shadowing_projection_keeps_the_own_field_binding ... ok
+test frozen_holder_write_boundaries_recompile_and_match_on_both_javac_legs ... ok
+test generic_field_write_sources_keep_the_frozen_safe_and_unsafe_boundaries ... ok
+test published_raw_class_bound_keeps_its_unchecked_parameterized_field_assignment ... ok
+test raw_reference_parameters_keep_array_and_static_assignments ... ok
+test receiver_consumed_field_read_keeps_the_field_refusal ... ok
+test same_class_field_read_write_proves_binding_and_reflects_like_the_original ... ok
+test same_class_method_call_proves_binding_and_reflects_like_the_original ... ok
+test unconsumed_same_class_pool_entries_do_not_block_projection ... ok
+test unproved_field_write_sources_and_shadowed_types_keep_erased_fields ... FAILED
+test z1_family_replays_item_by_item_after_the_binding_proof ... ok
+
+failures:
+
+---- adjacent_same_arity_overload_keeps_the_binding_refusal stdout ----
+
+thread 'adjacent_same_arity_overload_keeps_the_binding_refusal' (8530664) panicked at tests/same_class_generic_binding.rs:1301:5:
+a same-arity sibling must keep the refusal:
+    // jarde: generic Signature projection refused for `choose(Ljava/lang/Comparable;)Ljava/lang/Comparable;`: same-class generic call dependency did not close over every incoming use
+    public java.lang.Comparable choose(java.lang.Comparable arg1) {
+        // @method choose(Ljava/lang/Comparable;)Ljava/lang/Comparable;
+        // @declaration an instance method of `SCGD`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1;
+    }
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- unproved_field_write_sources_and_shadowed_types_keep_erased_fields stdout ----
+
+thread 'unproved_field_write_sources_and_shadowed_types_keep_erased_fields' (8533444) panicked at tests/same_class_generic_binding.rs:1090:9:
+ParameterShift projected a field with an unproved source type:
+// jarde: presentation of `ParameterShift` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T:Ljava/lang/Object;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class ParameterShift<T> extends java.lang.Object {
+    // jarde: field Signature `TT;` projected after descriptor erasure and same-class uses at put(JDLjava/lang/Object;)V@3
+    public T v;
+
+    public ParameterShift() {
+        // @method <init>()V
+        // @declaration a constructor of `ParameterShift`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void put(long arg1, double arg3, T arg5) {
+        // jarde: generic Signature `(JDTT;)V` projected after descriptor erasure and same-run AST/Code/SSA straight-line void body proof
+        // @method put(JDLjava/lang/Object;)V
+        // @declaration an instance method of `ParameterShift`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.v = arg5;
+        return;
+    }
+}
+
+
+
+failures:
+    adjacent_same_arity_overload_keeps_the_binding_refusal
+    unproved_field_write_sources_and_shadowed_types_keep_erased_fields
+
+test result: FAILED. 13 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.65s
+
+error: test failed, to rerun pass `--test same_class_generic_binding`

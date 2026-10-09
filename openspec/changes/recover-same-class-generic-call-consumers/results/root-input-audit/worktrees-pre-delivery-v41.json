@@ -1,0 +1,127 @@
+{
+  "checked_unix_ns": 1791523011035823000,
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "d158989b60a56a21934f80c0697dec48aefe347e",
+      "detached": false,
+      "branch": "refs/heads/main",
+      "clean": false,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "branch": null,
+      "clean": true,
+      "ancestor_of_main": true
+    }
+  ],
+  "auxiliary_pending_work": false,
+  "scope": "Read-only actual Git inventory before delivery; protected detached Codex copies are retained."
+}

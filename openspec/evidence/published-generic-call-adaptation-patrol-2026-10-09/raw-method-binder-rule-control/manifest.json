@@ -1,0 +1,72 @@
+{
+  "scope": "original javac preflight only; not decompiler acceptance",
+  "jls": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.8",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+  "commands": [
+    {
+      "case": "raw-instance-erased",
+      "source_sha256": "5c99031ef177f42360847e2df416eb470ebb3a492813649b76bb5bb1223061b6",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-y32kx6p2/cp",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-y32kx6p2/sp",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-y32kx6p2/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/raw-method-binder-rule-control/raw-instance-erased/RawMethodRule.java"
+      ],
+      "returncode": 1,
+      "stderr_sha256": "1883884c70deaf911b3e9d673ea9696f775128f95c9f72c7474bdd78e72c67b7"
+    },
+    {
+      "case": "raw-instance-explicit-physical-cast",
+      "source_sha256": "a4a731f67ae832ae530b1fcfce12f1f605766f536de8953f19c4c45934dd6569",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-z73bkk0m/cp",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-z73bkk0m/sp",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-z73bkk0m/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/raw-method-binder-rule-control/raw-instance-explicit-physical-cast/RawMethodRule.java"
+      ],
+      "returncode": 0,
+      "stderr_sha256": "c44d62789e5b8677c1ccf4bd3c7e0517c77a8b6a8104296d3fd380e47eb3cede"
+    },
+    {
+      "case": "raw-static-unerased",
+      "source_sha256": "82b8186f4ee9e4b4afc26bb033a44bd0ece6e39198c0cd32beb0ea609f15bbc1",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-ojownj4g/cp",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-ojownj4g/sp",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-raw-method-rule-ojownj4g/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/raw-method-binder-rule-control/raw-static-unerased/RawMethodRule.java"
+      ],
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "generated_classes_removed": true
+}

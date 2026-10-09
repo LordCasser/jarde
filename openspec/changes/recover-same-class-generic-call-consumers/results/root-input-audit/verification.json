@@ -1,0 +1,16 @@
+{
+  "scope": "冻结输入身份、四腿完整性、真实输入编译命令和结果；不代表反编译候选验收",
+  "manifest_sha256": "c01c7f3a42e1c5e759ac45e18d13d16e233df54dfc29ae2e32c27200a826496d",
+  "verifier_sha256": "cf2c12be5d14ee7da4253f70e95b284bd460ba3c9cc6b92714b0f17c8f9ceb37",
+  "frozen_files_checked": 1072,
+  "unique_inputs": 140,
+  "source_families": 35,
+  "input_kinds": {
+    "new-source": 128,
+    "reused-existing-jar": 12
+  },
+  "new_source_compile_commands": 128,
+  "jar_class_entries_checked": 144,
+  "errors": [],
+  "passed": true
+}

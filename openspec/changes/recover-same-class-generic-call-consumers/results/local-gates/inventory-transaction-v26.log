@@ -1,0 +1,10 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.42s
+     Running unittests src/lib.rs (target/debug/deps/jarde-3864b398be2c3436)
+
+running 1 test
+test facade::same_class_generic_call_inventory_tests::incomplete_expected_inventory_rolls_back_only_its_call_component ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 204 filtered out; finished in 0.34s
+

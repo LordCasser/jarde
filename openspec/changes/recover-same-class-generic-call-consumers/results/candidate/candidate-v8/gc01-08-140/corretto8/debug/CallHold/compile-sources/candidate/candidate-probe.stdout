@@ -1,0 +1,7 @@
+classformal#0:T bounds=java.lang.Object
+field:v=java.lang.Object
+constructor(CLASS#0)
+method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0
+behavior=constructor-marker
+probe.checks=6
+probe.failures=0

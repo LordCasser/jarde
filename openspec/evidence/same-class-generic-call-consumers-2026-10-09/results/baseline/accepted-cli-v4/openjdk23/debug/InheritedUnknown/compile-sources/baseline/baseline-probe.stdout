@@ -1,0 +1,5 @@
+constructor()
+method:relay(int;)->java.lang.Object return=java.lang.Object params=int
+behavior=inherited-marker
+probe.checks=1
+probe.failures=0

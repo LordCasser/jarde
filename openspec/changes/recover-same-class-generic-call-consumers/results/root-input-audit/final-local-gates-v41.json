@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "commands": 13,
+  "seed_metrics": {
+    "5350648285461741569": {
+      "targets": 348,
+      "passed": 3304,
+      "failed": 0,
+      "ignored": 93
+    },
+    "5350648285461741570": {
+      "targets": 348,
+      "passed": 3304,
+      "failed": 0,
+      "ignored": 93
+    }
+  },
+  "source_archive_sha256": "d2367f1cc6a63c0c99804412a7d4f84c7c97eca3807987eab36828e40f97df1d",
+  "source_unchanged_at_acceptance": true,
+  "remaining_delivery": "Commit/push main, latest HEAD four-job CI including real JDK25 oracle, Cargo cleanup and clean handoff."
+}

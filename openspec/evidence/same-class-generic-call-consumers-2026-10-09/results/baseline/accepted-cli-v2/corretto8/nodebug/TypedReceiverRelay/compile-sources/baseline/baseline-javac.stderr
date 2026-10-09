@@ -1,0 +1,9 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/nodebug/TypedReceiverRelay/compile-sources/baseline/target-0-TypedReceiverRelay.java:4: 错误: 类TypedReceiverRelay是公共的, 应在名为 TypedReceiverRelay.java 的文件中声明
+public class TypedReceiverRelay<T> extends java.lang.Object {
+       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/nodebug/TypedReceiverRelay/Probe.java:4: 错误: 类FixtureProbe是公共的, 应在名为 FixtureProbe.java 的文件中声明
+public class FixtureProbe {
+       ^
+注: /Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/nodebug/TypedReceiverRelay/compile-sources/baseline/target-0-TypedReceiverRelay.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+2 个错误

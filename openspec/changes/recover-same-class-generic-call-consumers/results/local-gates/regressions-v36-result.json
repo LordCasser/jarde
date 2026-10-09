@@ -1,0 +1,30 @@
+{
+  "label": "regressions-v36",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "generic_method_projection",
+    "--test",
+    "generic_constructor_projection",
+    "--test",
+    "same_class_generic_binding",
+    "--test",
+    "same_class_generic_call_consumers",
+    "--test",
+    "class_scope_constructor_projection",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v36.json",
+  "started_unix_ns": 1791512712923356000,
+  "exit": 0,
+  "finished_unix_ns": 1791512781987326000,
+  "log_sha256": "99b678463cb5212e5df6fa280487785e26820a564cb5350e909d22a0b556c127",
+  "source_unchanged": true
+}

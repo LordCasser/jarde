@@ -1,0 +1,138 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/BoundOverload/BoundOverload.jar!/BoundOverload.class
+  Last modified 2026-10-9; size 1101 bytes
+  MD5 checksum 83863cf285de2f0a7ce68f468d5af645
+  Compiled from "BoundOverload.java"
+public class BoundOverload<T extends java.lang.Number & java.lang.Comparable<T>> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#33         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #34.#35        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #36            // number
+   #4 = Methodref          #37.#38        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #5 = String             #39            // comparable
+   #6 = Methodref          #7.#40         // BoundOverload.pick:(Ljava/lang/Number;)V
+   #7 = Class              #41            // BoundOverload
+   #8 = Class              #42            // java/lang/Object
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               LBoundOverload;
+  #16 = Utf8               LocalVariableTypeTable
+  #17 = Utf8               LBoundOverload<TT;>;
+  #18 = Utf8               pick
+  #19 = Utf8               (Ljava/lang/Number;)V
+  #20 = Utf8               value
+  #21 = Utf8               Ljava/lang/Number;
+  #22 = Utf8               (Ljava/lang/Comparable;)V
+  #23 = Utf8               Ljava/lang/Comparable;
+  #24 = Utf8               Ljava/lang/Comparable<TT;>;
+  #25 = Utf8               Signature
+  #26 = Utf8               (Ljava/lang/Comparable<TT;>;)V
+  #27 = Utf8               relay
+  #28 = Utf8               TT;
+  #29 = Utf8               (TT;)V
+  #30 = Utf8               <T:Ljava/lang/Number;:Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;
+  #31 = Utf8               SourceFile
+  #32 = Utf8               BoundOverload.java
+  #33 = NameAndType        #9:#10         // "<init>":()V
+  #34 = Class              #43            // java/lang/System
+  #35 = NameAndType        #44:#45        // out:Ljava/io/PrintStream;
+  #36 = Utf8               number
+  #37 = Class              #46            // java/io/PrintStream
+  #38 = NameAndType        #47:#48        // println:(Ljava/lang/String;)V
+  #39 = Utf8               comparable
+  #40 = NameAndType        #18:#19        // pick:(Ljava/lang/Number;)V
+  #41 = Utf8               BoundOverload
+  #42 = Utf8               java/lang/Object
+  #43 = Utf8               java/lang/System
+  #44 = Utf8               out
+  #45 = Utf8               Ljava/io/PrintStream;
+  #46 = Utf8               java/io/PrintStream
+  #47 = Utf8               println
+  #48 = Utf8               (Ljava/lang/String;)V
+{
+  public BoundOverload();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LBoundOverload;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LBoundOverload<TT;>;
+
+  public void pick(java.lang.Number);
+    descriptor: (Ljava/lang/Number;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #3                  // String number
+         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: return
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   LBoundOverload;
+            0       9     1 value   Ljava/lang/Number;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   LBoundOverload<TT;>;
+
+  public void pick(java.lang.Comparable<T>);
+    descriptor: (Ljava/lang/Comparable;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #5                  // String comparable
+         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   LBoundOverload;
+            0       9     1 value   Ljava/lang/Comparable;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   LBoundOverload<TT;>;
+            0       9     1 value   Ljava/lang/Comparable<TT;>;
+    Signature: #26                          // (Ljava/lang/Comparable<TT;>;)V
+
+  public void relay(T);
+    descriptor: (Ljava/lang/Number;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #6                  // Method pick:(Ljava/lang/Number;)V
+         5: return
+      LineNumberTable:
+        line 4: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   LBoundOverload;
+            0       6     1 value   Ljava/lang/Number;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   LBoundOverload<TT;>;
+            0       6     1 value   TT;
+    Signature: #29                          // (TT;)V
+}
+Signature: #30                          // <T:Ljava/lang/Number;:Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;
+SourceFile: "BoundOverload.java"

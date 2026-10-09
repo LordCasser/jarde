@@ -1,0 +1,58 @@
+{
+  "runner_row_count": 64,
+  "metrics": {
+    "source_header": {
+      "pass": 64,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    },
+    "compile": {
+      "pass": 64,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    },
+    "runtime": {
+      "pass": 64,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    },
+    "behavior": {
+      "pass": 64,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    },
+    "field_type": {
+      "pass": 60,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    },
+    "field_api": {
+      "pass": 60,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    },
+    "method_api": {
+      "pass": 52,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    },
+    "class_api": {
+      "pass": 60,
+      "total": 64,
+      "new_mismatches": [],
+      "improved": []
+    }
+  },
+  "cli_hashes": {
+    "candidate": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+    "baseline": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+  },
+  "comparison": "Per-row candidate metrics compared with original probe, with new mismatches determined against the same row in the newly replayed 3f75 baseline. API categories compare field.type+identity, declared method records, and class type-variable/bound records."
+}

@@ -1,0 +1,13 @@
+field.type=T
+field.physical-type=java.lang.Number
+field.declaring=BoundRawParam
+field.identity=T{declaration=class:BoundRawParam,owner=true,method=false}
+class.type-parameter=T;bounds=java.lang.Number,java.lang.Comparable<T{declaration=class:BoundRawParam,owner=true,method=false}>;declaration=class:BoundRawParam;owner=true
+method=put;params=BoundRawParam,java.lang.Number;return=void;typeParameters=;physical-params=BoundRawParam,java.lang.Number;physical-return=void;declaration=put(BoundRawParam;java.lang.Number;)void
+behavior.value=java.lang.Integer
+behavior.array-length=n/a
+behavior.value-is-marker=false
+behavior.array-element-is-marker=false
+behavior.value-is-input=true
+behavior.number-value=17
+behavior.return-is-receiver=false

@@ -1,0 +1,24 @@
+{
+  "label": "ignored-constructor-v41",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-cli",
+    "--test",
+    "json_cli",
+    "--locked",
+    "--",
+    "--ignored",
+    "--exact",
+    "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v41.json",
+  "started_unix_ns": 1791523717670211000
+}

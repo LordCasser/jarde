@@ -1067,12 +1067,6 @@ fn unproved_field_write_sources_and_shadowed_types_keep_erased_fields() {
             "Object v",
         ),
         (
-            "scg-parameter-shift-writer",
-            "ParameterShift",
-            PARAMETER_SHIFT_FIELD_WRITER_SOURCE,
-            "Object v",
-        ),
-        (
             "scg-unknown-call-writer",
             "UnknownCall",
             UNKNOWN_CALL,
@@ -1108,6 +1102,101 @@ fn unproved_field_write_sources_and_shadowed_types_keep_erased_fields() {
             report.text
         );
     }
+}
+
+#[test]
+fn parameter_shift_preserves_the_wide_slot_generic_field_write() {
+    let (jar, _) = compile_family(
+        "scg-parameter-shift-writer",
+        PARAMETER_SHIFT_FIELD_WRITER_SOURCE,
+    );
+    let report = source_of(&jar, "ParameterShift");
+    assert!(
+        report
+            .fields
+            .iter()
+            .find(|field| field.item.name.raw().0 == b"v")
+            .and_then(|field| field.declaration.as_deref())
+            .is_some_and(|declaration| declaration.contains("T v")),
+        "the direct third-formal write lost its class variable:\n{}",
+        report.text
+    );
+    let put = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"put")
+        .expect("the physical ParameterShift writer remains present");
+    assert!(
+        put.declaration.as_deref().is_some_and(|declaration| {
+            declaration.contains("put(long ")
+                && declaration.contains("double ")
+                && declaration.contains("T ")
+        }),
+        "the wide-slot writer lost its third-formal type variable:\n{}",
+        report.text
+    );
+
+    const PROBE: &str = r#"
+import java.lang.reflect.*;
+public final class Probe {
+  public static void main(String[] args) throws Exception {
+    Class<?> owner = ParameterShift.class;
+    Type fieldType = owner.getField("v").getGenericType();
+    Type parameterType = owner.getMethod("put", long.class, double.class, Object.class)
+        .getGenericParameterTypes()[2];
+    if (!(fieldType instanceof TypeVariable)
+        || !(parameterType instanceof TypeVariable)
+        || !fieldType.equals(parameterType)
+        || ((TypeVariable<?>) fieldType).getGenericDeclaration() != owner
+        || ((TypeVariable<?>) parameterType).getGenericDeclaration() != owner) {
+      throw new AssertionError("field and third parameter must share class T: "
+          + fieldType + " / " + parameterType);
+    }
+    ParameterShift<Object> holder = new ParameterShift<>();
+    Object marker = new Object();
+    holder.put(11L, 2.5D, marker);
+    if (holder.v != marker) {
+      throw new AssertionError("wide-slot call did not preserve the field value");
+    }
+    System.out.println("parameterShift=class-T;wide-slots=preserved");
+  }
+}
+"#;
+    let temp = TestDirectory::new("scg-parameter-shift-writer");
+    let classes = temp.path().join("classes");
+    std::fs::create_dir_all(&classes).expect("the isolated class directory is created");
+    std::fs::write(temp.path().join("ParameterShift.java"), &report.text)
+        .expect("the recovered class source is written");
+    std::fs::write(temp.path().join("Probe.java"), PROBE).expect("the probe is written");
+    let compiled = Command::new("javac")
+        .args(["--release", "8", "-classpath", "", "-sourcepath", "", "-d"])
+        .arg(&classes)
+        .args(["ParameterShift.java", "Probe.java"])
+        .current_dir(temp.path())
+        .output()
+        .expect("javac compiles the isolated recovered class and probe");
+    assert!(
+        compiled.status.success(),
+        "the recovered ParameterShift and probe compile without family dependencies:\n{}\n{}",
+        String::from_utf8_lossy(&compiled.stderr),
+        report.text
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&classes)
+        .arg("Probe")
+        .current_dir(temp.path())
+        .output()
+        .expect("the isolated reflection and behavior probe runs");
+    assert!(
+        run.status.success(),
+        "the recovered ParameterShift verifies and preserves its class-bound type and value:\n{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(run.stdout).expect("the probe prints UTF-8"),
+        "parameterShift=class-T;wide-slots=preserved\n"
+    );
 }
 
 #[test]
@@ -1299,7 +1388,9 @@ fn adjacent_same_arity_overload_keeps_the_binding_refusal() {
         })
         .expect("the physical generic choose remains");
     assert!(
-        generic.text.contains("generic_call_binding_unproved"),
+        generic
+            .text
+            .contains("same-class generic call dependency did not close over every incoming use"),
         "a same-arity sibling must keep the refusal:\n{}",
         generic.text
     );

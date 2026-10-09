@@ -1,0 +1,6 @@
+{
+  "cli": "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+  "sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+  "phase": "exploration only; full record clone budget unresolved",
+  "source_snapshot": "results/local-gates/source-snapshot-v14-formatted.json"
+}

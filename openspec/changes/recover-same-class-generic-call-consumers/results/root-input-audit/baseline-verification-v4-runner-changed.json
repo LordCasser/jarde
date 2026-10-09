@@ -1,0 +1,61 @@
+{
+  "scope": "140 输入原/JADX/已验收 main CLI 基线；不代表本片候选通过",
+  "manifest_sha256": "1e6228c61d8508263cf0b7effbffc3e971afcc67b89d371a8a779365d6050a96",
+  "verifier_sha256": "2721311c4693e38e00ad6ba0d5dafa4a91e43d00fe8570f83d2e235a8fb5612c",
+  "files_checked": 3657,
+  "cases_checked": 140,
+  "totals": {
+    "original": {
+      "cases": 140,
+      "compile_pass": 140,
+      "probe_pass": 140
+    },
+    "jadx": {
+      "cases": 140,
+      "compile_pass": 130,
+      "probe_pass": 130,
+      "reflection_match": 126,
+      "reflection_differ": 4
+    },
+    "baseline": {
+      "cases": 140,
+      "compile_pass": 72,
+      "probe_pass": 72,
+      "reflection_match": 20,
+      "reflection_differ": 52
+    }
+  },
+  "compile_failure_families": {
+    "original": {},
+    "jadx": {
+      "UnknownIncoming": 4,
+      "BoundOverload": 4,
+      "MethodHandleUse": 2
+    },
+    "baseline": {
+      "ArrayDimensionRelay": 4,
+      "ArrayRelay": 4,
+      "CallRelay": 4,
+      "DeepRelay": 4,
+      "IncompleteSite": 4,
+      "MultiParam": 4,
+      "MultiUseResult": 4,
+      "NullCall": 4,
+      "NumberBoundRelay": 4,
+      "RawOwnReceiver": 4,
+      "ReverseDeclarationRelay": 4,
+      "TwoClassVariables": 4,
+      "UnknownIncoming": 4,
+      "WideRelay": 4,
+      "CallHold": 4,
+      "ExceptionHold": 4,
+      "BoundOverload": 4
+    }
+  },
+  "errors": [
+    {
+      "kind": "saved-runner-mismatch"
+    }
+  ],
+  "passed": false
+}

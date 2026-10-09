@@ -1,0 +1,42 @@
+{
+  "scope": "Root independently executed actual CLI8 matrix, nested, 44 controls and three GC09 replay verifiers. Local full gates and latest HEAD remote CI are separate required evidence.",
+  "candidate_cli_sha256": "8770d823c70e7f61749cac836e468c0a991093822d1926822d4769adc1cf7339",
+  "source_archive_sha256": "d2367f1cc6a63c0c99804412a7d4f84c7c97eca3807987eab36828e40f97df1d",
+  "checks": [
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/candidate-v8-matrix-verification-root.json",
+      "sha256": "ee69e89efeabe4db929a5d5c7a66aa0a47d69269dbf67636cd49da4459ffefa4",
+      "passed": true
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/candidate-v8-nested-verification-root.json",
+      "sha256": "b501741c926372b43574a62ad1ae723d67783e65503c2a0d6e5696c9910b0c5a",
+      "passed": true
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/candidate-v8-control-root-disposition.json",
+      "sha256": "27a318cfa9b299a7c2a09b7d26486631f09bba27be7a4bc3b62b846d7d5cc96c",
+      "passed": true
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/gc09-field-constructor-v8-verification.json",
+      "sha256": "4aa9e333597cc163a4f601af1f2d380a59cffb2a85faee61b9bfc3e73915e9df",
+      "passed": true
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/raw-64-candidate-verification-v8-root.json",
+      "sha256": "b67547be7268901bd6401eeac99153f5debcd1c85f1bcf00942bfc46db74bd4a",
+      "passed": true
+    }
+  ],
+  "source_unchanged_at_acceptance": true,
+  "architecture_review": {
+    "existing_opaque_ast_code_ssa_init_facts": true,
+    "finite_callee_first_staging_final_incoming_and_overload": true,
+    "atomic_narrow_source_overlay": true,
+    "completed_independent_components_preserved": true,
+    "concrete_signature_and_method_formal_constructor_old_routes_preserved": true,
+    "no_new_crate_parser_pass_fixpoint_or_cross_class_inference": true
+  },
+  "passed": true
+}

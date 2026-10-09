@@ -1,0 +1,11 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/openjdk23/debug/BridgeUnknown/compile-sources/original/target-0-BridgeUnknown.java:2: 错误: 类 BridgeUnknown 是公共的, 应在名为 BridgeUnknown.java 的文件中声明
+public class BridgeUnknown extends BridgeBase<String> { @Override public String apply(String x) { return x; } public Object relay(Object x) { return apply((String)x); } }
+       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/openjdk23/debug/BridgeUnknown/Probe.java:4: 错误: 类 FixtureProbe 是公共的, 应在名为 FixtureProbe.java 的文件中声明
+public class FixtureProbe {
+       ^
+2 个错误
+3 个警告

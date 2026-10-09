@@ -1,0 +1,9 @@
+classformal#0:T bounds=java.lang.Object
+field:observed=java.lang.Object
+constructor()
+method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0
+method:observe(java.lang.Object;)->void return=void params=java.lang.Object
+method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0
+behavior=return+observer-marker
+probe.checks=8
+probe.failures=0

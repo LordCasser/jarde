@@ -1,0 +1,12 @@
+{
+  "out": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/nested-call-4",
+  "cli_label": "candidate",
+  "cli_sha256": "43e41e391250e53982e7d2f948ae016b486b5d62da2b6e76707576455ff77f68",
+  "inputs": 4,
+  "source_emitted": 4,
+  "full_class_compile": 2,
+  "probe_pass": 2,
+  "generic_checks": 24,
+  "behavior_markers": 2,
+  "matches_frozen_original": 2
+}

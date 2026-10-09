@@ -1,0 +1,9 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/gc01-08-140/corretto8/nodebug/MethodHandleUse/compile-sources/jadx/sources/defpackage/MethodHandleUse.java:12: 错误: 不兼容的类型: 方法引用无效
+        Function function = this::identity;
+                            ^
+    不兼容的类型: Object无法转换为T
+  其中, T是类型变量:
+    T扩展已在类 MethodHandleUse中声明的Object
+注: /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/gc01-08-140/corretto8/nodebug/MethodHandleUse/compile-sources/jadx/sources/defpackage/MethodHandleUse.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+1 个错误

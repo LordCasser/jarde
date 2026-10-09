@@ -1,0 +1,76 @@
+[
+  {
+    "label": "fmt-v37",
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v37.json",
+    "started_unix_ns": 1791514774890175000,
+    "exit": 0,
+    "finished_unix_ns": 1791514777427509000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "diff-v37",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v37.json",
+    "started_unix_ns": 1791514777429929000,
+    "exit": 0,
+    "finished_unix_ns": 1791514777514196000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "regressions-v37",
+    "argv": [
+      "cargo",
+      "test",
+      "--test",
+      "generic_method_projection",
+      "--test",
+      "generic_throws_projection",
+      "--test",
+      "generic_constructor_projection",
+      "--test",
+      "same_class_generic_binding",
+      "--test",
+      "same_class_generic_call_consumers",
+      "--test",
+      "class_scope_constructor_projection",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v37.json",
+    "started_unix_ns": 1791514777516200000,
+    "exit": 101,
+    "finished_unix_ns": 1791514780484954000,
+    "log_sha256": "4c3bbef81f8d8bf7f0056367a7ce471f6b90f969c5a1b2c0f41bdc4aa30a8dc3",
+    "source_unchanged": true
+  }
+]

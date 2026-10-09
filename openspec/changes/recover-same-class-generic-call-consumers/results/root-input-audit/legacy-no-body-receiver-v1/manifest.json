@@ -1,0 +1,209 @@
+{
+  "scope": "旧已接受abstract声明leaf在本类直接形参/explicit this的完整动态调用、method binder反射GC09保存性检查；单JDK no-debug，不冒充冻结四腿矩阵",
+  "source_snapshot": "source-snapshot-v38.json",
+  "tools": {
+    "/usr/bin/javac": "51ec0764f7225b40d5b286b01401aa6b3990d0d171b446d7dc81ca7542b45552",
+    "/usr/bin/java": "51ec0764f7225b40d5b286b01401aa6b3990d0d171b446d7dc81ca7542b45552"
+  },
+  "commands": [
+    {
+      "label": "javac-version",
+      "argv": [
+        "/usr/bin/javac",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "java-version",
+      "argv": [
+        "/usr/bin/java",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "label": "compile-input",
+      "argv": [
+        "/usr/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "",
+        "-sourcepath",
+        "",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/GenericAbstractReceiverProbe.java"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "baseline-decompile",
+      "argv": [
+        "/private/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/input/GenericAbstractReceiverProbe.class",
+        "--class",
+        "GenericAbstractReceiverProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "exit": 0,
+      "stdout_sha256": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded",
+      "stderr_sha256": "97ac88bd20d43cbdbd43f25cf7d40b3166fb7e443bd24de79afe4817920ea928"
+    },
+    {
+      "label": "baseline-compile",
+      "argv": [
+        "/usr/bin/javac",
+        "--release",
+        "8",
+        "-classpath",
+        "",
+        "-sourcepath",
+        "",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-59cnznco/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/baseline/GenericAbstractReceiverProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/baseline/Probe.java"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "baseline-verify",
+      "argv": [
+        "/usr/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-59cnznco/classes",
+        "Probe"
+      ],
+      "exit": 0,
+      "stdout_sha256": "0810e7a1aa77ecd3fa42073024c89e937e01656386ad6def154bc4b7988779be",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate-v6-decompile",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v6-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/input/GenericAbstractReceiverProbe.class",
+        "--class",
+        "GenericAbstractReceiverProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "exit": 0,
+      "stdout_sha256": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded",
+      "stderr_sha256": "1bc1ef354efe2f3a4b12f2a3144a2c2df232d828803e6b3a0879d8ef360fa540"
+    },
+    {
+      "label": "candidate-v6-compile",
+      "argv": [
+        "/usr/bin/javac",
+        "--release",
+        "8",
+        "-classpath",
+        "",
+        "-sourcepath",
+        "",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-ow052pqg/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/candidate-v6/GenericAbstractReceiverProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/legacy-no-body-receiver-v1/candidate-v6/Probe.java"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "candidate-v6-verify",
+      "argv": [
+        "/usr/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-direct-return-context-ow052pqg/classes",
+        "Probe"
+      ],
+      "exit": 0,
+      "stdout_sha256": "0810e7a1aa77ecd3fa42073024c89e937e01656386ad6def154bc4b7988779be",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "baseline",
+      "cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+      "compile_exit": 0,
+      "verify_exit": 0,
+      "probe": "7:8:true:true:true:[class java.lang.Number]",
+      "emitted_source_sha256": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded",
+      "compiled_classes": {
+        "Probe$Impl.class": "d784e186ae19418cf547ee047b1a9e8b6cb164dadc95733ea00fc03ddca90b14",
+        "Probe.class": "8255702efc30aa54f9ccea2f893e5d15f63df5c53710c54eb92b1d7de40dad6f",
+        "GenericAbstractReceiverProbe.class": "703c40fc52c3d61eb1a003ac2aa494751d4a3ec35fa7791a20d4e1a8e2a5fadf"
+      }
+    },
+    {
+      "label": "candidate-v6",
+      "cli_sha256": "c42c2f64df21fd74e22710e6887eac0040850d2e03906a202e051b65af1dc6d8",
+      "compile_exit": 0,
+      "verify_exit": 0,
+      "probe": "7:8:true:true:true:[class java.lang.Number]",
+      "emitted_source_sha256": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded",
+      "compiled_classes": {
+        "Probe$Impl.class": "d784e186ae19418cf547ee047b1a9e8b6cb164dadc95733ea00fc03ddca90b14",
+        "Probe.class": "8255702efc30aa54f9ccea2f893e5d15f63df5c53710c54eb92b1d7de40dad6f",
+        "GenericAbstractReceiverProbe.class": "703c40fc52c3d61eb1a003ac2aa494751d4a3ec35fa7791a20d4e1a8e2a5fadf"
+      }
+    }
+  ],
+  "files": {
+    "compile-input.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "baseline-compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "javac-version.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "Probe.java": "2aecc28464bf358e00a66cd61c01e1a027418efa51013eed825e41b48b37e2c5",
+    "javac-version.stdout": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+    "executed.py": "17645bf417e7864b06fe3ce06c493b70bd294a29a24647ab3b45f8deab713856",
+    "baseline-compile.stderr": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+    "compile-input.stderr": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+    "candidate-v6-decompile.stderr": "1bc1ef354efe2f3a4b12f2a3144a2c2df232d828803e6b3a0879d8ef360fa540",
+    "candidate-v6-compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "baseline-verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "java-version.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate-v6-verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "baseline-decompile.stderr": "97ac88bd20d43cbdbd43f25cf7d40b3166fb7e443bd24de79afe4817920ea928",
+    "GenericAbstractReceiverProbe.java": "3919d9276f5af45f063507e8888056ccf094caa3e6b1a96544e2a6fe2d030799",
+    "java-version.stderr": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7",
+    "baseline-decompile.stdout": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded",
+    "candidate-v6-verify.stdout": "0810e7a1aa77ecd3fa42073024c89e937e01656386ad6def154bc4b7988779be",
+    "candidate-v6-compile.stderr": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+    "baseline-verify.stdout": "0810e7a1aa77ecd3fa42073024c89e937e01656386ad6def154bc4b7988779be",
+    "candidate-v6-decompile.stdout": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded",
+    "input/GenericAbstractReceiverProbe.class": "829e5c3ed63bad886e25b6c580e856b39653ceb7384e7fda71a8da109e249dde",
+    "baseline/Probe.java": "2aecc28464bf358e00a66cd61c01e1a027418efa51013eed825e41b48b37e2c5",
+    "baseline/GenericAbstractReceiverProbe.java": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded",
+    "candidate-v6/Probe.java": "2aecc28464bf358e00a66cd61c01e1a027418efa51013eed825e41b48b37e2c5",
+    "candidate-v6/GenericAbstractReceiverProbe.java": "898bebd404a49168b3b4cd73dabf70faaab4a3b3a071872891e883aeb6433ded"
+  }
+}

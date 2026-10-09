@@ -1,0 +1,18 @@
+{
+  "label": "graph-v40",
+  "argv": [
+    "cargo",
+    "test",
+    "--lib",
+    "generic_call_components",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v40.json",
+  "started_unix_ns": 1791516707484236000
+}

@@ -1,0 +1,25 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/IncompleteSite/compile-sources/candidate/IncompleteSite.java:26: 错误: 找不到符号
+        if (use) {
+            ^
+  符号:   变量 use
+  位置: 类 IncompleteSite<T>
+  其中, T是类型变量:
+    T扩展已在类 IncompleteSite中声明的Object
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/IncompleteSite/compile-sources/candidate/IncompleteSite.java:26: 错误: 非法的类型开始
+        if (use) {
+           ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/IncompleteSite/compile-sources/candidate/IncompleteSite.java:27: 错误: 找不到符号
+            return this.identity(x);
+                                 ^
+  符号:   变量 x
+  位置: 类 IncompleteSite<T>
+  其中, T是类型变量:
+    T扩展已在类 IncompleteSite中声明的Object
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/IncompleteSite/compile-sources/candidate/IncompleteSite.java:29: 错误: 找不到符号
+            return x;
+                   ^
+  符号:   变量 x
+  位置: 类 IncompleteSite<T>
+  其中, T是类型变量:
+    T扩展已在类 IncompleteSite中声明的Object
+4 个错误

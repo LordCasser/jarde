@@ -1,0 +1,17 @@
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+warning: unused import: `Slot`
+     --> src/facade.rs:11999:44
+      |
+11999 |     use jarde_jvm::method_ir::{Definition, Slot};
+      |                                            ^^^^
+      |
+      = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Slot`
+     --> src/facade.rs:13248:44
+      |
+13248 |     use jarde_jvm::method_ir::{Definition, Slot};
+      |                                            ^^^^
+
+warning: `jarde` (lib) generated 2 warnings (run `cargo fix --lib -p jarde` to apply 2 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.97s

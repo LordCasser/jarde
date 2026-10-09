@@ -1,0 +1,123 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/debug/CycleRelay/CycleRelay.jar!/CycleRelay.class
+  Last modified 2026年10月9日; size 797 bytes
+  SHA-256 checksum 205df9426081491edefac150b33564f64176f9b78bf654f5cbbd991cf3a406da
+  Compiled from "CycleRelay.java"
+public class CycleRelay<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // CycleRelay
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // CycleRelay.right:(Ljava/lang/Object;Z)Ljava/lang/Object;
+   #8 = Class              #10            // CycleRelay
+   #9 = NameAndType        #11:#12        // right:(Ljava/lang/Object;Z)Ljava/lang/Object;
+  #10 = Utf8               CycleRelay
+  #11 = Utf8               right
+  #12 = Utf8               (Ljava/lang/Object;Z)Ljava/lang/Object;
+  #13 = Methodref          #8.#14         // CycleRelay.left:(Ljava/lang/Object;Z)Ljava/lang/Object;
+  #14 = NameAndType        #15:#12        // left:(Ljava/lang/Object;Z)Ljava/lang/Object;
+  #15 = Utf8               left
+  #16 = Utf8               Code
+  #17 = Utf8               LineNumberTable
+  #18 = Utf8               LocalVariableTable
+  #19 = Utf8               this
+  #20 = Utf8               LCycleRelay;
+  #21 = Utf8               LocalVariableTypeTable
+  #22 = Utf8               LCycleRelay<TT;>;
+  #23 = Utf8               x
+  #24 = Utf8               Ljava/lang/Object;
+  #25 = Utf8               again
+  #26 = Utf8               Z
+  #27 = Utf8               TT;
+  #28 = Utf8               StackMapTable
+  #29 = Utf8               Signature
+  #30 = Utf8               (TT;Z)TT;
+  #31 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #32 = Utf8               SourceFile
+  #33 = Utf8               CycleRelay.java
+{
+  public CycleRelay();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LCycleRelay;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LCycleRelay<TT;>;
+
+  public T left(T, boolean);
+    descriptor: (Ljava/lang/Object;Z)Ljava/lang/Object;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: iload_2
+         1: ifeq          11
+         4: aload_0
+         5: aload_1
+         6: iconst_0
+         7: invokevirtual #7                  // Method right:(Ljava/lang/Object;Z)Ljava/lang/Object;
+        10: areturn
+        11: aload_1
+        12: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      13     0  this   LCycleRelay;
+            0      13     1     x   Ljava/lang/Object;
+            0      13     2 again   Z
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      13     0  this   LCycleRelay<TT;>;
+            0      13     1     x   TT;
+      StackMapTable: number_of_entries = 1
+        frame_type = 11 /* same */
+    Signature: #30                          // (TT;Z)TT;
+
+  public T right(T, boolean);
+    descriptor: (Ljava/lang/Object;Z)Ljava/lang/Object;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: iload_2
+         1: ifeq          11
+         4: aload_0
+         5: aload_1
+         6: iconst_0
+         7: invokevirtual #13                 // Method left:(Ljava/lang/Object;Z)Ljava/lang/Object;
+        10: areturn
+        11: aload_1
+        12: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      13     0  this   LCycleRelay;
+            0      13     1     x   Ljava/lang/Object;
+            0      13     2 again   Z
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      13     0  this   LCycleRelay<TT;>;
+            0      13     1     x   TT;
+      StackMapTable: number_of_entries = 1
+        frame_type = 11 /* same */
+    Signature: #30                          // (TT;Z)TT;
+}
+Signature: #31                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "CycleRelay.java"

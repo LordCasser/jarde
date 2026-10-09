@@ -1,0 +1,7 @@
+/private/tmp/jarde-generic-call-patrol-v1/results-v2/NumberBoundRelay/jarde/NumberBoundRelay.java:26: 错误: 不兼容的类型: Number无法转换为T
+        return this.id(x);
+                       ^
+  其中, T是类型变量:
+    T扩展已在类 NumberBoundRelay中声明的Number
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+1 个错误

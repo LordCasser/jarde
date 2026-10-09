@@ -1,0 +1,604 @@
+{
+  "scope": "Candidate replay against the four frozen nested-call input jars; no input jar is rebuilt.",
+  "cli_label": "candidate",
+  "candidate_cli": "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+  "candidate_cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+  "frozen_inputs": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1",
+  "frozen_manifest_sha256": "48a191cf6823709429d943ced6140e63c5836fc3ed4e9b66f691a1016d5a4c0f",
+  "runner_source": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/replay-executed.py",
+  "runner_source_sha256": "fb0235563fe9cb68df7d362997a1bd601928f9335d78af01326ddf1282d604f6",
+  "jdk_legs": {
+    "corretto8": {
+      "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "release": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ]
+    },
+    "openjdk23": {
+      "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "release": [
+        "--release",
+        "8"
+      ]
+    }
+  },
+  "debug_modes": {
+    "debug": [
+      "-g"
+    ],
+    "nodebug": [
+      "-g:none"
+    ]
+  },
+  "runtime_classpath": "candidate compiled classes only; -Xverify:all",
+  "javac_search_paths": "fresh empty classpath and sourcepath directories",
+  "input_jars": [
+    {
+      "leg": "corretto8",
+      "debug": "debug",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/debug/NestedCallArgument.input.jar",
+      "sha256": "67a2ad14756626ea0b0e38419b50f345558d6193af81ddc3e73d37c5ed9fcc2d"
+    },
+    {
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/nodebug/NestedCallArgument.input.jar",
+      "sha256": "43a4e4811bf41425e392f9baf15f27f29a7b76a18b8289c563bd06b62d014943"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "debug",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/openjdk23/debug/NestedCallArgument.input.jar",
+      "sha256": "028e8063b694864633d39c59f8437e5be65c62ed07ca46a28bc3a3b4ee45011b"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/openjdk23/nodebug/NestedCallArgument.input.jar",
+      "sha256": "9abc9ffc175d7fcfe71b7f2f5b81ae14640acefb5b5e0a0c65f694e20d17ea62"
+    }
+  ],
+  "commands": [
+    {
+      "label": "candidate-class-source",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/debug/NestedCallArgument.input.jar",
+        "--class",
+        "NestedCallArgument",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/candidate-source/class-source.stdout",
+      "stdout_sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/candidate-source/class-source.stderr",
+      "stderr_sha256": "96a527347f8ae5a294e78e4d44c095d9455984611c47fec93f03606be0185b42"
+    },
+    {
+      "label": "candidate-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/empty-classpath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-igigrr5l/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/candidate-source/NestedCallArgument.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/NestedCallProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/candidate-source/candidate-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/candidate-source/candidate-javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-igigrr5l/classes",
+        "NestedCallProbe",
+        "NestedCallArgument"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/candidate-source/candidate-probe.stdout",
+      "stdout_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/debug/candidate-source/candidate-probe.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate-class-source",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/nodebug/NestedCallArgument.input.jar",
+        "--class",
+        "NestedCallArgument",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/candidate-source/class-source.stdout",
+      "stdout_sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/candidate-source/class-source.stderr",
+      "stderr_sha256": "342cae09084243b12654eaa06e21345a822b501d948f246762f5864ea0b77321"
+    },
+    {
+      "label": "candidate-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/empty-classpath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-55m24qcm/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/candidate-source/NestedCallArgument.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/NestedCallProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/candidate-source/candidate-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/candidate-source/candidate-javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-55m24qcm/classes",
+        "NestedCallProbe",
+        "NestedCallArgument"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/candidate-source/candidate-probe.stdout",
+      "stdout_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/corretto8/nodebug/candidate-source/candidate-probe.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate-class-source",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/openjdk23/debug/NestedCallArgument.input.jar",
+        "--class",
+        "NestedCallArgument",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/candidate-source/class-source.stdout",
+      "stdout_sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/candidate-source/class-source.stderr",
+      "stderr_sha256": "82640e2c223622935fad32a0e82de53e0b2c93913357456d6284303b6d8d91b6"
+    },
+    {
+      "label": "candidate-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/empty-classpath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-s2tgd25n/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/candidate-source/NestedCallArgument.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/NestedCallProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/candidate-source/candidate-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/candidate-source/candidate-javac.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "candidate-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-s2tgd25n/classes",
+        "NestedCallProbe",
+        "NestedCallArgument"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/candidate-source/candidate-probe.stdout",
+      "stdout_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/debug/candidate-source/candidate-probe.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate-class-source",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/openjdk23/nodebug/NestedCallArgument.input.jar",
+        "--class",
+        "NestedCallArgument",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/candidate-source/class-source.stdout",
+      "stdout_sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/candidate-source/class-source.stderr",
+      "stderr_sha256": "939a9be94c30db7377c820b175e7b8bd2d4efc692807827c5bf8e988eca3dd53"
+    },
+    {
+      "label": "candidate-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/empty-classpath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-cuykc21y/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/candidate-source/NestedCallArgument.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/NestedCallProbe.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/candidate-source/candidate-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/candidate-source/candidate-javac.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "candidate-probe",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/nested-candidate-classes-cuykc21y/classes",
+        "NestedCallProbe",
+        "NestedCallArgument"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug",
+      "exit": 0,
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/candidate-source/candidate-probe.stdout",
+      "stdout_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/openjdk23/nodebug/candidate-source/candidate-probe.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cases": [
+    {
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/debug/NestedCallArgument.input.jar",
+      "input_jar_sha256": "67a2ad14756626ea0b0e38419b50f345558d6193af81ddc3e73d37c5ed9fcc2d",
+      "input_source_sha256": "1eca9b2db72c2e9a4c270b1ab71a6f501ec87fdcc61a7139e39e6cf3ce6719b6",
+      "probe_source_sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f",
+      "cli_label": "candidate",
+      "cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+      "class_source_exit": 0,
+      "candidate_source_sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1",
+      "candidate_nonempty_class_header": true,
+      "compile_exit": 0,
+      "compiled_classes_sha256": {
+        "NestedCallArgument.class": "6c31f4626309d4df45c2ac7afb106a6c2a7f1088508e52ec254e593c57d66036",
+        "NestedCallProbe.class": "b0fe7771c4f47fec024a9275577de3b37504e4c5ffd63329c9dbb230078a20b4"
+      },
+      "probe_exit": 0,
+      "probe_stdout": "check.one-class-formal=true\ncheck.class-formal-owner=true\ncheck.first-return-is-class-T=true\ncheck.first-parameter-is-class-T=true\ncheck.first-return-declaration-is-class=true\nmethod=first;return=T;parameter=T\ncheck.second-return-is-class-T=true\ncheck.second-parameter-is-class-T=true\ncheck.second-return-declaration-is-class=true\nmethod=second;return=T;parameter=T\ncheck.relay-return-is-class-T=true\ncheck.relay-parameter-is-class-T=true\ncheck.relay-return-declaration-is-class=true\nmethod=relay;return=T;parameter=T\ncheck.nested-result-marker-identity=true\nbehavior=nested-result-marker-identity\nprobe.failures=0\n",
+      "probe_failures": [],
+      "generic_declaration_and_marker_check_count": 12,
+      "behavior_marker": true,
+      "probe_matches_frozen_original": true,
+      "frozen_original_probe_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "class_source_status": "source-emitted"
+    },
+    {
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/corretto8/nodebug/NestedCallArgument.input.jar",
+      "input_jar_sha256": "43a4e4811bf41425e392f9baf15f27f29a7b76a18b8289c563bd06b62d014943",
+      "input_source_sha256": "1eca9b2db72c2e9a4c270b1ab71a6f501ec87fdcc61a7139e39e6cf3ce6719b6",
+      "probe_source_sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f",
+      "cli_label": "candidate",
+      "cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+      "class_source_exit": 0,
+      "candidate_source_sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857",
+      "candidate_nonempty_class_header": true,
+      "compile_exit": 0,
+      "compiled_classes_sha256": {
+        "NestedCallArgument.class": "b942f9c677d40ab46d5b4e8584a2a0f770bddb8b8c4bd3fa28e35b4627220f60",
+        "NestedCallProbe.class": "fa73643855df4c62e907e28f9397ddb54b7d81c676f39ab6ad35c79471b6dd7d"
+      },
+      "probe_exit": 0,
+      "probe_stdout": "check.one-class-formal=true\ncheck.class-formal-owner=true\ncheck.first-return-is-class-T=true\ncheck.first-parameter-is-class-T=true\ncheck.first-return-declaration-is-class=true\nmethod=first;return=T;parameter=T\ncheck.second-return-is-class-T=true\ncheck.second-parameter-is-class-T=true\ncheck.second-return-declaration-is-class=true\nmethod=second;return=T;parameter=T\ncheck.relay-return-is-class-T=true\ncheck.relay-parameter-is-class-T=true\ncheck.relay-return-declaration-is-class=true\nmethod=relay;return=T;parameter=T\ncheck.nested-result-marker-identity=true\nbehavior=nested-result-marker-identity\nprobe.failures=0\n",
+      "probe_failures": [],
+      "generic_declaration_and_marker_check_count": 12,
+      "behavior_marker": true,
+      "probe_matches_frozen_original": true,
+      "frozen_original_probe_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "class_source_status": "source-emitted"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/openjdk23/debug/NestedCallArgument.input.jar",
+      "input_jar_sha256": "028e8063b694864633d39c59f8437e5be65c62ed07ca46a28bc3a3b4ee45011b",
+      "input_source_sha256": "1eca9b2db72c2e9a4c270b1ab71a6f501ec87fdcc61a7139e39e6cf3ce6719b6",
+      "probe_source_sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f",
+      "cli_label": "candidate",
+      "cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+      "class_source_exit": 0,
+      "candidate_source_sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1",
+      "candidate_nonempty_class_header": true,
+      "compile_exit": 0,
+      "compiled_classes_sha256": {
+        "NestedCallArgument.class": "7508e09e1fdca2f09d0e994175b0d24581991c17f5d51e22a0d499225449c612",
+        "NestedCallProbe.class": "5a9143ac6beddf710c777261ee640cffa63d6034515a3969df4a0dc310a1bf8c"
+      },
+      "probe_exit": 0,
+      "probe_stdout": "check.one-class-formal=true\ncheck.class-formal-owner=true\ncheck.first-return-is-class-T=true\ncheck.first-parameter-is-class-T=true\ncheck.first-return-declaration-is-class=true\nmethod=first;return=T;parameter=T\ncheck.second-return-is-class-T=true\ncheck.second-parameter-is-class-T=true\ncheck.second-return-declaration-is-class=true\nmethod=second;return=T;parameter=T\ncheck.relay-return-is-class-T=true\ncheck.relay-parameter-is-class-T=true\ncheck.relay-return-declaration-is-class=true\nmethod=relay;return=T;parameter=T\ncheck.nested-result-marker-identity=true\nbehavior=nested-result-marker-identity\nprobe.failures=0\n",
+      "probe_failures": [],
+      "generic_declaration_and_marker_check_count": 12,
+      "behavior_marker": true,
+      "probe_matches_frozen_original": true,
+      "frozen_original_probe_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "class_source_status": "source-emitted"
+    },
+    {
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/openjdk23/nodebug/NestedCallArgument.input.jar",
+      "input_jar_sha256": "9abc9ffc175d7fcfe71b7f2f5b81ae14640acefb5b5e0a0c65f694e20d17ea62",
+      "input_source_sha256": "1eca9b2db72c2e9a4c270b1ab71a6f501ec87fdcc61a7139e39e6cf3ce6719b6",
+      "probe_source_sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f",
+      "cli_label": "candidate",
+      "cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+      "class_source_exit": 0,
+      "candidate_source_sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857",
+      "candidate_nonempty_class_header": true,
+      "compile_exit": 0,
+      "compiled_classes_sha256": {
+        "NestedCallArgument.class": "ebb75f1cd92163c28a7facebdf6c67919b7bbc936352dbcc00cef8baebe85ba2",
+        "NestedCallProbe.class": "8dc0cc6edbfeec6d82091797ba259741bc40297419b934d5b05326d3eb8aa4a7"
+      },
+      "probe_exit": 0,
+      "probe_stdout": "check.one-class-formal=true\ncheck.class-formal-owner=true\ncheck.first-return-is-class-T=true\ncheck.first-parameter-is-class-T=true\ncheck.first-return-declaration-is-class=true\nmethod=first;return=T;parameter=T\ncheck.second-return-is-class-T=true\ncheck.second-parameter-is-class-T=true\ncheck.second-return-declaration-is-class=true\nmethod=second;return=T;parameter=T\ncheck.relay-return-is-class-T=true\ncheck.relay-parameter-is-class-T=true\ncheck.relay-return-declaration-is-class=true\nmethod=relay;return=T;parameter=T\ncheck.nested-result-marker-identity=true\nbehavior=nested-result-marker-identity\nprobe.failures=0\n",
+      "probe_failures": [],
+      "generic_declaration_and_marker_check_count": 12,
+      "behavior_marker": true,
+      "probe_matches_frozen_original": true,
+      "frozen_original_probe_sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05",
+      "class_source_status": "source-emitted"
+    }
+  ],
+  "files": [
+    {
+      "path": "corretto8/debug/NestedCallProbe.java",
+      "bytes": 1473,
+      "sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f"
+    },
+    {
+      "path": "corretto8/debug/candidate-source/NestedCallArgument.java",
+      "bytes": 2137,
+      "sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1"
+    },
+    {
+      "path": "corretto8/debug/candidate-source/candidate-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/candidate-source/candidate-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/candidate-source/candidate-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/debug/candidate-source/candidate-probe.stdout",
+      "bytes": 615,
+      "sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05"
+    },
+    {
+      "path": "corretto8/debug/candidate-source/class-source.stderr",
+      "bytes": 82782,
+      "sha256": "96a527347f8ae5a294e78e4d44c095d9455984611c47fec93f03606be0185b42"
+    },
+    {
+      "path": "corretto8/debug/candidate-source/class-source.stdout",
+      "bytes": 2137,
+      "sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1"
+    },
+    {
+      "path": "corretto8/nodebug/NestedCallProbe.java",
+      "bytes": 1473,
+      "sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f"
+    },
+    {
+      "path": "corretto8/nodebug/candidate-source/NestedCallArgument.java",
+      "bytes": 2155,
+      "sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857"
+    },
+    {
+      "path": "corretto8/nodebug/candidate-source/candidate-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/candidate-source/candidate-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/candidate-source/candidate-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "corretto8/nodebug/candidate-source/candidate-probe.stdout",
+      "bytes": 615,
+      "sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05"
+    },
+    {
+      "path": "corretto8/nodebug/candidate-source/class-source.stderr",
+      "bytes": 82802,
+      "sha256": "342cae09084243b12654eaa06e21345a822b501d948f246762f5864ea0b77321"
+    },
+    {
+      "path": "corretto8/nodebug/candidate-source/class-source.stdout",
+      "bytes": 2155,
+      "sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857"
+    },
+    {
+      "path": "openjdk23/debug/NestedCallProbe.java",
+      "bytes": 1473,
+      "sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f"
+    },
+    {
+      "path": "openjdk23/debug/candidate-source/NestedCallArgument.java",
+      "bytes": 2137,
+      "sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1"
+    },
+    {
+      "path": "openjdk23/debug/candidate-source/candidate-javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openjdk23/debug/candidate-source/candidate-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/candidate-source/candidate-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/debug/candidate-source/candidate-probe.stdout",
+      "bytes": 615,
+      "sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05"
+    },
+    {
+      "path": "openjdk23/debug/candidate-source/class-source.stderr",
+      "bytes": 82782,
+      "sha256": "82640e2c223622935fad32a0e82de53e0b2c93913357456d6284303b6d8d91b6"
+    },
+    {
+      "path": "openjdk23/debug/candidate-source/class-source.stdout",
+      "bytes": 2137,
+      "sha256": "ef1f0e444283a45560d3a63c507eda3b4a3fb19443be05850ed1c12dc9d03ad1"
+    },
+    {
+      "path": "openjdk23/nodebug/NestedCallProbe.java",
+      "bytes": 1473,
+      "sha256": "1d4387d00540eb2be7ad63fb35c51a9399c72280c79d3b1f1368220c8110935f"
+    },
+    {
+      "path": "openjdk23/nodebug/candidate-source/NestedCallArgument.java",
+      "bytes": 2155,
+      "sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857"
+    },
+    {
+      "path": "openjdk23/nodebug/candidate-source/candidate-javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openjdk23/nodebug/candidate-source/candidate-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/candidate-source/candidate-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openjdk23/nodebug/candidate-source/candidate-probe.stdout",
+      "bytes": 615,
+      "sha256": "74f20a4010825d4817af25bcdefb921541bfdc144ad6bcb88a0c86ab2d667d05"
+    },
+    {
+      "path": "openjdk23/nodebug/candidate-source/class-source.stderr",
+      "bytes": 82802,
+      "sha256": "939a9be94c30db7377c820b175e7b8bd2d4efc692807827c5bf8e988eca3dd53"
+    },
+    {
+      "path": "openjdk23/nodebug/candidate-source/class-source.stdout",
+      "bytes": 2155,
+      "sha256": "74ea074cf0c8de47f10bdcdcd83de2c8148ae1bd4a6c4082728bd7f8800bb857"
+    },
+    {
+      "path": "replay-executed.py",
+      "bytes": 9183,
+      "sha256": "fb0235563fe9cb68df7d362997a1bd601928f9335d78af01326ddf1282d604f6"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 312,
+      "sha256": "db543c11f675721210b37483b133d7a03c2501b37c5eee27b1c3a400d8f9671a"
+    }
+  ]
+}

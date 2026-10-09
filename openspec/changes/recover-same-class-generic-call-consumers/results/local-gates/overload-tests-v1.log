@@ -1,0 +1,153 @@
+   Compiling libc v0.2.189
+   Compiling bitflags v2.13.2
+   Compiling getrandom v0.3.4
+   Compiling getrandom v0.4.3
+   Compiling rustix v1.1.4
+   Compiling zerocopy v0.8.57
+   Compiling rand_core v0.9.5
+   Compiling noak v0.7.0
+   Compiling errno v0.3.14
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling zmij v1.0.23
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling tempfile v3.27.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling wait-timeout v0.2.1
+   Compiling fnv v1.0.7
+   Compiling quick-error v1.2.3
+   Compiling serde_json v1.0.151
+   Compiling bit-vec v0.8.0
+   Compiling bit-set v0.8.0
+   Compiling rusty-fork v0.3.1
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling rand_chacha v0.9.0
+   Compiling rand_xorshift v0.4.0
+   Compiling rand v0.9.5
+   Compiling unarray v0.1.4
+   Compiling itoa v1.0.18
+   Compiling regex-syntax v0.8.11
+   Compiling memchr v2.8.3
+   Compiling proptest v1.11.0
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0422]: cannot find struct, variant or union type `ClassType` in this scope
+     --> src/class_source.rs:15140:52
+      |
+15140 |             class_bound: Some(SignatureType::Class(ClassType {
+      |                                                    ^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `ClassTypeSegment` in this scope
+     --> src/class_source.rs:15141:32
+      |
+15141 |                 segments: vec![ClassTypeSegment {
+      |                                ^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `ClassType` in this scope
+     --> src/class_source.rs:15146:57
+      |
+15146 |             interface_bounds: vec![SignatureType::Class(ClassType {
+      |                                                         ^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `ClassTypeSegment` in this scope
+     --> src/class_source.rs:15147:32
+      |
+15147 |                 segments: vec![ClassTypeSegment {
+      |                                ^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `ClassType` in this scope
+     --> src/class_source.rs:15179:52
+      |
+15179 |             class_bound: Some(SignatureType::Class(ClassType {
+      |                                                    ^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `ClassTypeSegment` in this scope
+     --> src/class_source.rs:15180:32
+      |
+15180 |                 segments: vec![ClassTypeSegment {
+      |                                ^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `ClassType` in this scope
+     --> src/class_source.rs:15185:57
+      |
+15185 |             interface_bounds: vec![SignatureType::Class(ClassType {
+      |                                                         ^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `ClassTypeSegment` in this scope
+     --> src/class_source.rs:15186:32
+      |
+15186 |                 segments: vec![ClassTypeSegment {
+      |                                ^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `unlimited_annotation_test_limits` in this scope
+     --> src/class_source.rs:15419:30
+      |
+15419 |             &mut Budget::new(unlimited_annotation_test_limits()),
+      |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+      |
+note: function `crate::class_source::tests::unlimited_annotation_test_limits` exists but is inaccessible
+     --> src/class_source.rs:13531:5
+      |
+13531 |     fn unlimited_annotation_test_limits() -> Limits {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not accessible
+
+error[E0425]: cannot find function `unlimited_annotation_test_limits` in this scope
+     --> src/class_source.rs:15689:38
+      |
+15689 |         let mut budget = Budget::new(unlimited_annotation_test_limits());
+      |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+      |
+note: function `crate::class_source::tests::unlimited_annotation_test_limits` exists but is inaccessible
+     --> src/class_source.rs:13531:5
+      |
+13531 |     fn unlimited_annotation_test_limits() -> Limits {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not accessible
+
+error[E0425]: cannot find function `unlimited_annotation_test_limits` in this scope
+     --> src/class_source.rs:15723:26
+      |
+15723 |         let mut limits = unlimited_annotation_test_limits();
+      |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+      |
+note: function `crate::class_source::tests::unlimited_annotation_test_limits` exists but is inaccessible
+     --> src/class_source.rs:13531:5
+      |
+13531 |     fn unlimited_annotation_test_limits() -> Limits {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not accessible
+
+error[E0425]: cannot find function `unlimited_annotation_test_limits` in this scope
+     --> src/class_source.rs:15753:45
+      |
+15753 |             Budget::with_cancellation_token(unlimited_annotation_test_limits(), token);
+      |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+      |
+note: function `crate::class_source::tests::unlimited_annotation_test_limits` exists but is inaccessible
+     --> src/class_source.rs:13531:5
+      |
+13531 |     fn unlimited_annotation_test_limits() -> Limits {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not accessible
+
+error[E0425]: cannot find function `unlimited_annotation_test_limits` in this scope
+     --> src/class_source.rs:15909:34
+      |
+15909 |                 &mut Budget::new(unlimited_annotation_test_limits()),
+      |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+      |
+note: function `crate::class_source::tests::unlimited_annotation_test_limits` exists but is inaccessible
+     --> src/class_source.rs:13531:5
+      |
+13531 |     fn unlimited_annotation_test_limits() -> Limits {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not accessible
+
+error[E0308]: mismatched types
+     --> src/class_source.rs:15021:28
+      |
+15021 |                     owner: crate::JvmBytes(b"pkg/Caller".to_vec()),
+      |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `PhysicalDefinitionId`, found `JvmBytes`
+
+Some errors have detailed explanations: E0308, E0422, E0425.
+For more information about an error, try `rustc --explain E0308`.
+error: could not compile `jarde` (lib test) due to 14 previous errors

@@ -1,0 +1,152 @@
+[
+  {
+    "label": "seed-5350648285461741569-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked",
+      "--no-fail-fast"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "PROPTEST_RNG_SEED": "5350648285461741569"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791522708919884000,
+    "exit": 0,
+    "finished_unix_ns": 1791523305325402000,
+    "log_sha256": "c8fbe184c1707e9af9942fd03210aff19f4b820e315add980f8506b6bcbb42d5",
+    "source_unchanged": true
+  },
+  {
+    "label": "seed-5350648285461741570-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked",
+      "--no-fail-fast"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "PROPTEST_RNG_SEED": "5350648285461741570"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791523305330437000,
+    "exit": 0,
+    "finished_unix_ns": 1791523637835934000,
+    "log_sha256": "daa21a235ead1011d8fb403ed3dc2c79d79725a3586a6cbd200976d1c1f3c2e4",
+    "source_unchanged": true
+  },
+  {
+    "label": "ignored-p3-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "--test",
+      "p3_execution_comparison",
+      "--locked",
+      "--",
+      "--ignored"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791523637840436000,
+    "exit": 0,
+    "finished_unix_ns": 1791523717666002000,
+    "log_sha256": "cb2beb5d31d48d406f23b7a8b188529d5700d9e509842fdd2f7e4b8c39d63ce8",
+    "source_unchanged": true
+  },
+  {
+    "label": "ignored-constructor-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-cli",
+      "--test",
+      "json_cli",
+      "--locked",
+      "--",
+      "--ignored",
+      "--exact",
+      "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791523717670211000,
+    "exit": 0,
+    "finished_unix_ns": 1791523721438159000,
+    "log_sha256": "e14059b80fd32219d16f577a44bce3ed20b1ff7bc9bdcb2bc5e8b337a3a88b7a",
+    "source_unchanged": true
+  },
+  {
+    "label": "ignored-bound-receiver-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "--test",
+      "recover_proved_nonnull_bound_receivers",
+      "--locked",
+      "--",
+      "--ignored",
+      "--exact",
+      "every_stripped_anchor_answers_what_its_class_answers"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791523721440284000,
+    "exit": 0,
+    "finished_unix_ns": 1791523723773586000,
+    "log_sha256": "92df1d00478cb577b67bbbae0bfe3491480a7d50d5004c44e5f9fe613c111cc8",
+    "source_unchanged": true
+  },
+  {
+    "label": "openspec-strict-v41",
+    "argv": [
+      "openspec",
+      "validate",
+      "--all",
+      "--strict",
+      "--no-interactive"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791523723775787000,
+    "exit": 0,
+    "finished_unix_ns": 1791523724319577000,
+    "log_sha256": "76c11c200e755efcfdbe55d2e0129085e634ee3ca5d1f01783499675f63ed1a4",
+    "source_unchanged": true
+  }
+]

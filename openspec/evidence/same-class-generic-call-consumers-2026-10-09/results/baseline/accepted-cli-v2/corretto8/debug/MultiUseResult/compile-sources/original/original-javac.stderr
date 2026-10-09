@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/debug/MultiUseResult/compile-sources/original/target-0-MultiUseResult.java:1: 错误: 类MultiUseResult是公共的, 应在名为 MultiUseResult.java 的文件中声明
+public class MultiUseResult<T> { public Object observed; public T identity(T x) { return x; } public void observe(Object x) { observed=x; } public T relay(T x) { T result=identity(x); observe(result); return result; } }
+       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/corretto8/debug/MultiUseResult/Probe.java:4: 错误: 类FixtureProbe是公共的, 应在名为 FixtureProbe.java 的文件中声明
+public class FixtureProbe {
+       ^
+2 个错误

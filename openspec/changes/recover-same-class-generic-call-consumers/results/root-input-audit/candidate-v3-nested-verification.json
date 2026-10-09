@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "cases_checked": 4,
+  "files_checked": 34,
+  "actual_checks": 48,
+  "manifest_sha256": "b120d3136bebcbbcccea8a6c541d880d97e09d89c8d5251c08fdd81782c2ced6",
+  "verifier_sha256": "f6a2e4d4dba8baa6711f9c0d22b9758b470650c986e9d0297073238137cedbe0",
+  "errors": []
+}

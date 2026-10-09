@@ -1,0 +1,435 @@
+{
+  "scope": "GC09 raw-64 accepted-baseline replay only; candidate CLI was not run.",
+  "cli_label": "accepted-baseline",
+  "cli_path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+  "cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "row_count": 64,
+  "source_family_count": 16,
+  "jdk_legs": [
+    "jdk8",
+    "jdk23"
+  ],
+  "debug_modes": [
+    "debug",
+    "no-debug"
+  ],
+  "input_jar_count": 64,
+  "input_jar_hashes_match_preflight": true,
+  "class_source_cli_outputs": {
+    "count": 68,
+    "expected": 68,
+    "headers": {
+      "self_describing_rows": 68,
+      "rows": 68
+    }
+  },
+  "full_class_compile": {
+    "original": {
+      "passed": 64,
+      "total": 64,
+      "failed": []
+    },
+    "jarde": {
+      "passed": 64,
+      "total": 64,
+      "failed": []
+    },
+    "jadx": {
+      "passed": 60,
+      "total": 64,
+      "failed": [
+        {
+          "scope": "jdk8/debug/InstanceRawLocal/jadx-javac",
+          "exit": 1
+        },
+        {
+          "scope": "jdk8/no-debug/InstanceRawLocal/jadx-javac",
+          "exit": 1
+        },
+        {
+          "scope": "jdk23/debug/InstanceRawLocal/jadx-javac",
+          "exit": 1
+        },
+        {
+          "scope": "jdk23/no-debug/InstanceRawLocal/jadx-javac",
+          "exit": 1
+        }
+      ]
+    },
+    "original_probe": {
+      "passed": 64,
+      "total": 64,
+      "failed": []
+    }
+  },
+  "verified_runtime": {
+    "original": {
+      "passed": 64,
+      "total": 64,
+      "failed": []
+    },
+    "jarde": {
+      "passed": 64,
+      "total": 64,
+      "failed": []
+    },
+    "jadx": {
+      "passed": 60,
+      "total": 60,
+      "failed": []
+    }
+  },
+  "behavior_matches_original": {
+    "jarde_matches_original": 64,
+    "jadx_matches_original": 60,
+    "rows": 64
+  },
+  "field_type_matches_original": {
+    "jarde": 60,
+    "jadx": 60,
+    "rows": 64
+  },
+  "api_matches_original": {
+    "jarde_field": {
+      "match_count": 60,
+      "input_count": 64,
+      "comparable_count": 64,
+      "unavailable_count": 0,
+      "mismatch_count": 4
+    },
+    "jarde_method": {
+      "match_count": 52,
+      "input_count": 64,
+      "comparable_count": 64,
+      "unavailable_count": 0,
+      "mismatch_count": 12
+    },
+    "jarde_class": {
+      "match_count": 60,
+      "input_count": 64,
+      "comparable_count": 64,
+      "unavailable_count": 0,
+      "mismatch_count": 4
+    },
+    "jadx_field": {
+      "match_count": 60,
+      "input_count": 64,
+      "comparable_count": 60,
+      "unavailable_count": 4,
+      "mismatch_count": 0
+    },
+    "jadx_method": {
+      "match_count": 60,
+      "input_count": 64,
+      "comparable_count": 60,
+      "unavailable_count": 4,
+      "mismatch_count": 0
+    },
+    "jadx_class": {
+      "match_count": 60,
+      "input_count": 64,
+      "comparable_count": 60,
+      "unavailable_count": 4,
+      "mismatch_count": 0
+    }
+  },
+  "api_mismatch_rows": {
+    "jarde_field": [
+      {
+        "leg": "jdk8",
+        "variant": "debug",
+        "case": "InstanceRawLocal"
+      },
+      {
+        "leg": "jdk8",
+        "variant": "no-debug",
+        "case": "InstanceRawLocal"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "debug",
+        "case": "InstanceRawLocal"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "no-debug",
+        "case": "InstanceRawLocal"
+      }
+    ],
+    "jarde_method": [
+      {
+        "leg": "jdk8",
+        "variant": "debug",
+        "case": "TypedReceiver"
+      },
+      {
+        "leg": "jdk8",
+        "variant": "debug",
+        "case": "ShadowMethodT"
+      },
+      {
+        "leg": "jdk8",
+        "variant": "debug",
+        "case": "MultiFormalRawParam"
+      },
+      {
+        "leg": "jdk8",
+        "variant": "no-debug",
+        "case": "TypedReceiver"
+      },
+      {
+        "leg": "jdk8",
+        "variant": "no-debug",
+        "case": "ShadowMethodT"
+      },
+      {
+        "leg": "jdk8",
+        "variant": "no-debug",
+        "case": "MultiFormalRawParam"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "debug",
+        "case": "TypedReceiver"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "debug",
+        "case": "ShadowMethodT"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "debug",
+        "case": "MultiFormalRawParam"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "no-debug",
+        "case": "TypedReceiver"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "no-debug",
+        "case": "ShadowMethodT"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "no-debug",
+        "case": "MultiFormalRawParam"
+      }
+    ],
+    "jarde_class": [
+      {
+        "leg": "jdk8",
+        "variant": "debug",
+        "case": "RawOwnerChild"
+      },
+      {
+        "leg": "jdk8",
+        "variant": "no-debug",
+        "case": "RawOwnerChild"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "debug",
+        "case": "RawOwnerChild"
+      },
+      {
+        "leg": "jdk23",
+        "variant": "no-debug",
+        "case": "RawOwnerChild"
+      }
+    ],
+    "jadx_field": [],
+    "jadx_method": [],
+    "jadx_class": []
+  },
+  "nonzero_commands": [
+    {
+      "scope": "jdk8/debug/InstanceRawLocal/jadx-javac",
+      "exit": 1,
+      "stderr_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/failures/jdk8/debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "stderr_sha256": "6674f695402d222a4b408c7b67235d346a17f764e64ed9c0a5dc1127077a699d",
+      "diagnostic_lines": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/jdk8/debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java:9: 错误: 不兼容的类型: Object无法转换为T",
+        "        this.value = obj;",
+        "                     ^",
+        "  其中, T是类型变量:",
+        "    T扩展已在类 InstanceRawLocal中声明的Object",
+        "1 个错误"
+      ]
+    },
+    {
+      "scope": "jdk8/no-debug/InstanceRawLocal/jadx-javac",
+      "exit": 1,
+      "stderr_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/failures/jdk8/no-debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "stderr_sha256": "27381737f53649d267027afdbf7e99fa02b754b4e8a16b0320c1c9121c1733fd",
+      "diagnostic_lines": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/jdk8/no-debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java:9: 错误: 不兼容的类型: Object无法转换为T",
+        "        this.value = obj;",
+        "                     ^",
+        "  其中, T是类型变量:",
+        "    T扩展已在类 InstanceRawLocal中声明的Object",
+        "1 个错误"
+      ]
+    },
+    {
+      "scope": "jdk23/debug/InstanceRawLocal/jadx-javac",
+      "exit": 1,
+      "stderr_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/failures/jdk23/debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "stderr_sha256": "9376e8db41ac32e5de8e14c82a8eb5475033c4075a877bdf64bef0ece0cd578e",
+      "diagnostic_lines": [
+        "警告: [options] 源值 8 已过时，将在未来发行版中删除",
+        "警告: [options] 目标值 8 已过时，将在未来发行版中删除",
+        "警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/jdk23/debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java:9: 错误: 不兼容的类型: Object无法转换为T",
+        "        this.value = obj;",
+        "                     ^",
+        "  其中, T是类型变量:",
+        "    T扩展已在类 InstanceRawLocal中声明的Object",
+        "1 个错误",
+        "3 个警告"
+      ]
+    },
+    {
+      "scope": "jdk23/no-debug/InstanceRawLocal/jadx-javac",
+      "exit": 1,
+      "stderr_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/failures/jdk23/no-debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "stderr_sha256": "1c8adb8b2fdb73e429bd45a8d8de999bbee5f5b52b91ac01c62ea73667656ae9",
+      "diagnostic_lines": [
+        "警告: [options] 源值 8 已过时，将在未来发行版中删除",
+        "警告: [options] 目标值 8 已过时，将在未来发行版中删除",
+        "警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-raw-64-baseline-v1/jdk23/no-debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java:9: 错误: 不兼容的类型: Object无法转换为T",
+        "        this.value = obj;",
+        "                     ^",
+        "  其中, T是类型变量:",
+        "    T扩展已在类 InstanceRawLocal中声明的Object",
+        "1 个错误",
+        "3 个警告"
+      ]
+    }
+  ],
+  "source_hashes_match_preflight": true,
+  "source_hash_checks": [
+    {
+      "path": "source/Array2DRawParam.java",
+      "expected_sha256": "5bbef8f6469c09463424842bdd8b847a7f536cbec26a78a4e93ba8408be4c882",
+      "recorded_sha256": "5bbef8f6469c09463424842bdd8b847a7f536cbec26a78a4e93ba8408be4c882",
+      "matches": true
+    },
+    {
+      "path": "source/ArrayRawParam.java",
+      "expected_sha256": "423e853d9ce8ae640156986631be6762194245270cd80e2070d0939f581c84d4",
+      "recorded_sha256": "423e853d9ce8ae640156986631be6762194245270cd80e2070d0939f581c84d4",
+      "matches": true
+    },
+    {
+      "path": "source/BoundRawParam.java",
+      "expected_sha256": "0101effc94988a11beb9964d30ed6f88b505cd1988fd30ba82975820ddc6972a",
+      "recorded_sha256": "0101effc94988a11beb9964d30ed6f88b505cd1988fd30ba82975820ddc6972a",
+      "matches": true
+    },
+    {
+      "path": "source/DirectInstanceRawParam.java",
+      "expected_sha256": "b6a80e3802628d93702469bd6300678ef50f65f4607fb4a9feada492b202b510",
+      "recorded_sha256": "b6a80e3802628d93702469bd6300678ef50f65f4607fb4a9feada492b202b510",
+      "matches": true
+    },
+    {
+      "path": "source/InstanceRawLocal.java",
+      "expected_sha256": "a684ab125e58722a5b75102e826763143cac1450d0be5616c3930e3f36023093",
+      "recorded_sha256": "a684ab125e58722a5b75102e826763143cac1450d0be5616c3930e3f36023093",
+      "matches": true
+    },
+    {
+      "path": "source/MultiFormalRawParam.java",
+      "expected_sha256": "34cc89f2e08b0b33b3d473221b9bae1a3962b5d82e13241044a611cc2d67b9bf",
+      "recorded_sha256": "34cc89f2e08b0b33b3d473221b9bae1a3962b5d82e13241044a611cc2d67b9bf",
+      "matches": true
+    },
+    {
+      "path": "source/NullRawParam.java",
+      "expected_sha256": "99cc5803d75e93dc0a7fed86f79893f357ea4f0754211630223df221b577b211",
+      "recorded_sha256": "99cc5803d75e93dc0a7fed86f79893f357ea4f0754211630223df221b577b211",
+      "matches": true
+    },
+    {
+      "path": "source/PrimitiveArrayRawParam.java",
+      "expected_sha256": "b13a23ec4548b064d48c14c544b6f2091eaeb50c1369ca1a7f4584f7673d00f3",
+      "recorded_sha256": "b13a23ec4548b064d48c14c544b6f2091eaeb50c1369ca1a7f4584f7673d00f3",
+      "matches": true
+    },
+    {
+      "path": "source/RawOwnerBase.java",
+      "expected_sha256": "737bb6e89d5234b19de77c681d25f0307de04db9d984a72ccc81d788873e8ae2",
+      "recorded_sha256": "737bb6e89d5234b19de77c681d25f0307de04db9d984a72ccc81d788873e8ae2",
+      "matches": true
+    },
+    {
+      "path": "source/RawOwnerChild.java",
+      "expected_sha256": "78d24079184e0635743abe91bcea4cbc9fdc2c4867eee55a5f7e60a9d5bb18a6",
+      "recorded_sha256": "78d24079184e0635743abe91bcea4cbc9fdc2c4867eee55a5f7e60a9d5bb18a6",
+      "matches": true
+    },
+    {
+      "path": "source/RawParam.java",
+      "expected_sha256": "eb63c19999c1f01efed1030f8e27e2f9aa128b0f7fc1cc2f264c884356650914",
+      "recorded_sha256": "eb63c19999c1f01efed1030f8e27e2f9aa128b0f7fc1cc2f264c884356650914",
+      "matches": true
+    },
+    {
+      "path": "source/ReceiverProbe.java",
+      "expected_sha256": "a411376a5e0aef02c9da74de267722cd25c06692bf745c6446613be3da069489",
+      "recorded_sha256": "a411376a5e0aef02c9da74de267722cd25c06692bf745c6446613be3da069489",
+      "matches": true
+    },
+    {
+      "path": "source/RetainedAliasRawParam.java",
+      "expected_sha256": "6586fed7104b0ebe30107567caeb38d5aea3a6bee3d80f5535d301a504a8975d",
+      "recorded_sha256": "6586fed7104b0ebe30107567caeb38d5aea3a6bee3d80f5535d301a504a8975d",
+      "matches": true
+    },
+    {
+      "path": "source/ShadowMethodT.java",
+      "expected_sha256": "8f189a6fe11b9ebb78c1f557f3b25b51d5c7506a705fd86bf2adc926b8493716",
+      "recorded_sha256": "8f189a6fe11b9ebb78c1f557f3b25b51d5c7506a705fd86bf2adc926b8493716",
+      "matches": true
+    },
+    {
+      "path": "source/StaticRawLocal.java",
+      "expected_sha256": "963c4aeed2be1bb85e2e4b91ed3516794fd3d8500eb4cc5a3e5c18393ed643a5",
+      "recorded_sha256": "963c4aeed2be1bb85e2e4b91ed3516794fd3d8500eb4cc5a3e5c18393ed643a5",
+      "matches": true
+    },
+    {
+      "path": "source/ThisReceiver.java",
+      "expected_sha256": "d5c55c17372dcffdbcf8af781edc6ed8ed02efde8c6be1c0826853876664ec43",
+      "recorded_sha256": "d5c55c17372dcffdbcf8af781edc6ed8ed02efde8c6be1c0826853876664ec43",
+      "matches": true
+    },
+    {
+      "path": "source/TypedReceiver.java",
+      "expected_sha256": "bbc3ee0a4a9b73f4f46d7d5adfb7f9a2b9a9a82273e08d9e5f8b1c54592eea5d",
+      "recorded_sha256": "bbc3ee0a4a9b73f4f46d7d5adfb7f9a2b9a9a82273e08d9e5f8b1c54592eea5d",
+      "matches": true
+    },
+    {
+      "path": "source/WideRawParam.java",
+      "expected_sha256": "bc386bbadf6d46b77fedd3a4f57c08ae728dff84fd93b60d30062bad3a127237",
+      "recorded_sha256": "bc386bbadf6d46b77fedd3a4f57c08ae728dff84fd93b60d30062bad3a127237",
+      "matches": true
+    }
+  ],
+  "runtime_uses_only_temporary_classes_and_verify_all": true,
+  "runtime_commands_count": 188,
+  "generated_class_files_in_result": 0,
+  "generated_class_paths": [],
+  "runner_exit_code": 0,
+  "runner_snapshot_sha256": "2c9b8233f41f13a483fa252a898f81e4602b9c7b3a0308cbc95bcd42162dc3a2",
+  "outer_metadata": "outer-run-metadata.json",
+  "runner_manifest": "commands.tsv",
+  "tool_hash_manifest": "versions/tool-hashes.tsv",
+  "comparison_file": "runtime-comparisons.tsv",
+  "interpretation": "API matching compares field type+identity, declared method signatures+method formals, and class type parameters+bounds independently; defpackage. is stripped only for JADX class-name normalization. Missing outputs count as unavailable, never as matches."
+}

@@ -1,0 +1,15 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/MultiParam/compile-sources/candidate/MultiParam.java:26: 错误: 找不到符号
+        return this.first(x, y);
+                          ^
+  符号:   变量 x
+  位置: 类 MultiParam<T>
+  其中, T是类型变量:
+    T扩展已在类 MultiParam中声明的Object
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/MultiParam/compile-sources/candidate/MultiParam.java:26: 错误: 找不到符号
+        return this.first(x, y);
+                             ^
+  符号:   变量 y
+  位置: 类 MultiParam<T>
+  其中, T是类型变量:
+    T扩展已在类 MultiParam中声明的Object
+2 个错误

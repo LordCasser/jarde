@@ -1,0 +1,7 @@
+classformal#0:T bounds=java.lang.Object
+constructor()
+method:identity(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0
+method:relay(TypedReceiverRelay;java.lang.Object;)->java.lang.Object return=java.lang.Object params=TypedReceiverRelay;java.lang.Object
+behavior=typed-receiver-marker
+probe.checks=5
+probe.failures=0

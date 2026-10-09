@@ -1,0 +1,8 @@
+/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/jarde/MethodShadow.java:42: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 MethodShadow<T>
+  其中, T是类型变量:
+    T扩展已在类 MethodShadow中声明的Object
+1 个错误

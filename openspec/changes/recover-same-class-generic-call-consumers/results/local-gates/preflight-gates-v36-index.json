@@ -1,0 +1,202 @@
+[
+  {
+    "label": "fmt-v36",
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v36.json",
+    "started_unix_ns": 1791512710145990000,
+    "exit": 0,
+    "finished_unix_ns": 1791512712825390000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "diff-v36",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v36.json",
+    "started_unix_ns": 1791512712827261000,
+    "exit": 0,
+    "finished_unix_ns": 1791512712921472000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "regressions-v36",
+    "argv": [
+      "cargo",
+      "test",
+      "--test",
+      "generic_method_projection",
+      "--test",
+      "generic_constructor_projection",
+      "--test",
+      "same_class_generic_binding",
+      "--test",
+      "same_class_generic_call_consumers",
+      "--test",
+      "class_scope_constructor_projection",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v36.json",
+    "started_unix_ns": 1791512712923356000,
+    "exit": 0,
+    "finished_unix_ns": 1791512781987326000,
+    "log_sha256": "99b678463cb5212e5df6fa280487785e26820a564cb5350e909d22a0b556c127",
+    "source_unchanged": true
+  },
+  {
+    "label": "graph-v36",
+    "argv": [
+      "cargo",
+      "test",
+      "--lib",
+      "generic_call_components",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v36.json",
+    "started_unix_ns": 1791512781991226000,
+    "exit": 0,
+    "finished_unix_ns": 1791512795122533000,
+    "log_sha256": "4913cf8a87980c5789a653f74d7794a2d384abb565a5194de7993c4fbb5b1739",
+    "source_unchanged": true
+  },
+  {
+    "label": "clippy-v36",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked",
+      "--",
+      "-A",
+      "clippy::too_many_arguments",
+      "-A",
+      "clippy::cloned_ref_to_slice_refs",
+      "-A",
+      "clippy::collapsible_if",
+      "-A",
+      "clippy::type_complexity",
+      "-A",
+      "clippy::len_zero",
+      "-A",
+      "clippy::needless_option_as_deref",
+      "-A",
+      "clippy::needless_borrow",
+      "-A",
+      "clippy::useless_conversion",
+      "-A",
+      "clippy::large_enum_variant",
+      "-A",
+      "clippy::question_mark",
+      "-A",
+      "clippy::comparison_to_empty",
+      "-A",
+      "clippy::op_ref",
+      "-A",
+      "clippy::manual_range_patterns",
+      "-A",
+      "clippy::if_same_then_else",
+      "-A",
+      "clippy::filter_map_bool_then",
+      "-A",
+      "clippy::filter_next",
+      "-A",
+      "clippy::unneeded_struct_pattern",
+      "-A",
+      "clippy::redundant_guards",
+      "-A",
+      "clippy::map_identity",
+      "-A",
+      "clippy::redundant_slicing",
+      "-A",
+      "clippy::unnecessary_get_then_check",
+      "-A",
+      "clippy::unnecessary_unwrap",
+      "-A",
+      "clippy::redundant_locals",
+      "-A",
+      "clippy::replace_box",
+      "-A",
+      "clippy::map_clone",
+      "-A",
+      "clippy::unnecessary_mut_passed",
+      "-A",
+      "clippy::single_element_loop",
+      "-A",
+      "clippy::unnecessary_to_owned",
+      "-A",
+      "clippy::needless_lifetimes",
+      "-D",
+      "warnings"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v36.json",
+    "started_unix_ns": 1791512795126074000,
+    "exit": 0,
+    "finished_unix_ns": 1791512824854234000,
+    "log_sha256": "4b2ea70f675bb42bbdad64328ad858a72334a18cec92def0aead86b36b01784b",
+    "source_unchanged": true
+  },
+  {
+    "label": "candidate-cli-v5-build-v36",
+    "argv": [
+      "cargo",
+      "build",
+      "-p",
+      "jarde-cli",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v36.json",
+    "started_unix_ns": 1791512824856323000,
+    "exit": 0,
+    "finished_unix_ns": 1791512837876736000,
+    "log_sha256": "58ce2fc9305b60157f19c039cc330f35517b14d6b7a102720fa0beb89fb1ce5a",
+    "source_unchanged": true
+  }
+]

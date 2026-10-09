@@ -1,0 +1,14 @@
+field.type=T
+field.physical-type=java.lang.Object
+field.declaring=defpackage.TypedReceiver
+field.identity=T{declaration=class:defpackage.TypedReceiver,owner=true,method=false}
+class.type-parameter=T;bounds=java.lang.Object;declaration=class:defpackage.TypedReceiver;owner=true
+method=observe;params=defpackage.TypedReceiver<T{declaration=class:defpackage.TypedReceiver,owner=true,method=false}>;return=void;typeParameters=;physical-params=defpackage.TypedReceiver;physical-return=void;declaration=observe(defpackage.TypedReceiver;)void
+method=put;params=defpackage.TypedReceiver<T{declaration=class:defpackage.TypedReceiver,owner=true,method=false}>,T{declaration=class:defpackage.TypedReceiver,owner=true,method=false};return=void;typeParameters=;physical-params=defpackage.TypedReceiver,java.lang.Object;physical-return=void;declaration=put(defpackage.TypedReceiver;java.lang.Object;)void
+behavior.value=java.lang.Object
+behavior.array-length=n/a
+behavior.value-is-marker=true
+behavior.array-element-is-marker=true
+behavior.value-is-input=true
+behavior.number-value=n/a
+behavior.return-is-receiver=false

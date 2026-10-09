@@ -1,0 +1,84 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/nodebug/ReverseDeclarationRelay/ReverseDeclarationRelay.jar!/ReverseDeclarationRelay.class
+  Last modified 2026-10-9; size 477 bytes
+  MD5 checksum facbfc3d4ad1457d065cc88af6c98fa5
+public class ReverseDeclarationRelay<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#18         // java/lang/Object."<init>":()V
+   #2 = Methodref          #5.#19         // ReverseDeclarationRelay.identity:(Ljava/lang/Object;)Ljava/lang/Object;
+   #3 = Methodref          #5.#20         // ReverseDeclarationRelay.relay2:(Ljava/lang/Object;)Ljava/lang/Object;
+   #4 = Methodref          #5.#21         // ReverseDeclarationRelay.relay1:(Ljava/lang/Object;)Ljava/lang/Object;
+   #5 = Class              #22            // ReverseDeclarationRelay
+   #6 = Class              #23            // java/lang/Object
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               identity
+  #11 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #12 = Utf8               Signature
+  #13 = Utf8               (TT;)TT;
+  #14 = Utf8               relay2
+  #15 = Utf8               relay1
+  #16 = Utf8               relay0
+  #17 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #18 = NameAndType        #7:#8          // "<init>":()V
+  #19 = NameAndType        #10:#11        // identity:(Ljava/lang/Object;)Ljava/lang/Object;
+  #20 = NameAndType        #14:#11        // relay2:(Ljava/lang/Object;)Ljava/lang/Object;
+  #21 = NameAndType        #15:#11        // relay1:(Ljava/lang/Object;)Ljava/lang/Object;
+  #22 = Utf8               ReverseDeclarationRelay
+  #23 = Utf8               java/lang/Object
+{
+  public ReverseDeclarationRelay();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public T identity(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+    Signature: #13                          // (TT;)TT;
+
+  public T relay2(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #2                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;
+         5: areturn
+    Signature: #13                          // (TT;)TT;
+
+  public T relay1(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #3                  // Method relay2:(Ljava/lang/Object;)Ljava/lang/Object;
+         5: areturn
+    Signature: #13                          // (TT;)TT;
+
+  public T relay0(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #4                  // Method relay1:(Ljava/lang/Object;)Ljava/lang/Object;
+         5: areturn
+    Signature: #13                          // (TT;)TT;
+}
+Signature: #17                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

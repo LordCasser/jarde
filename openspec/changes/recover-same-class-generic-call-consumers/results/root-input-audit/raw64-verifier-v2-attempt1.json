@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "cause": "root verifier invocation supplied nonexistent baseline directory gc09-raw-64-accepted-v1; FileNotFoundError before API comparison. Target replay succeeded; verifier not yet passed.",
+  "target_replay": "results/candidate/gc09-raw-64-candidate-v2",
+  "incorrect_baseline": "results/baseline/gc09-raw-64-accepted-v1"
+}

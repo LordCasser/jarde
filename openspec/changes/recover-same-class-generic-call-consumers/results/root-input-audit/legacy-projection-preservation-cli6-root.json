@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "legacy-direct-return-context-v2",
+      "scope": "旧已接受method-local null leaf在raw Object直接返回上下文的GC09保存性检查；单JDK no-debug，不冒充冻结四腿矩阵",
+      "probe": "true:1:T",
+      "manifest_sha256": "11d167df023191f52487224051e838a832e4660e93b8bacf44badfec80ca9653",
+      "files_checked": 26,
+      "actual_commands": 9,
+      "baseline_candidate_source_and_compiled_class_hashes_identical": true
+    },
+    {
+      "name": "legacy-no-body-receiver-v1",
+      "scope": "旧已接受abstract声明leaf在本类直接形参/explicit this的完整动态调用、method binder反射GC09保存性检查；单JDK no-debug，不冒充冻结四腿矩阵",
+      "probe": "7:8:true:true:true:[class java.lang.Number]",
+      "manifest_sha256": "e58ecacd3710fcfec79d06cd3f573355f16f1f33f7bd1a2efd08edc31ca2275d",
+      "files_checked": 26,
+      "actual_commands": 9,
+      "baseline_candidate_source_and_compiled_class_hashes_identical": true
+    }
+  ],
+  "limitation": "single-JDK nodebug supplementary check; not four-leg matrix"
+}

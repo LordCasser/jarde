@@ -1,0 +1,36 @@
+/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jarde/MutatedReceiver.java:18: 错误: 找不到符号
+        MutatedReceiver$Box receiver = new MutatedReceiver$Box();
+        ^
+  符号:   类 MutatedReceiver$Box
+  位置: 类 MutatedReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 MutatedReceiver中声明的Object
+/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jarde/MutatedReceiver.java:18: 错误: 找不到符号
+        MutatedReceiver$Box receiver = new MutatedReceiver$Box();
+                                           ^
+  符号:   类 MutatedReceiver$Box
+  位置: 类 MutatedReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 MutatedReceiver中声明的Object
+/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jarde/MutatedReceiver.java:19: 错误: 找不到符号
+        MutatedReceiver$Box raw = new MutatedReceiver$Box();
+        ^
+  符号:   类 MutatedReceiver$Box
+  位置: 类 MutatedReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 MutatedReceiver中声明的Object
+/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jarde/MutatedReceiver.java:19: 错误: 找不到符号
+        MutatedReceiver$Box raw = new MutatedReceiver$Box();
+                                      ^
+  符号:   类 MutatedReceiver$Box
+  位置: 类 MutatedReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 MutatedReceiver中声明的Object
+/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jarde/MutatedReceiver.java:37: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 MutatedReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 MutatedReceiver中声明的Object
+5 个错误

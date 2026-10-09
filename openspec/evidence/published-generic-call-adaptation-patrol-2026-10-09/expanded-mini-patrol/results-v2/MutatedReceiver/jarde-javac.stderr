@@ -1,0 +1,10 @@
+/private/tmp/jarde-generic-call-patrol-v1/results-v2/MutatedReceiver/jarde/MutatedReceiver.java:38: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 MutatedReceiver<T>
+  其中, T是类型变量:
+    T扩展已在类 MutatedReceiver中声明的Object
+注: /private/tmp/jarde-generic-call-patrol-v1/results-v2/MutatedReceiver/jarde/MutatedReceiver.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+1 个错误

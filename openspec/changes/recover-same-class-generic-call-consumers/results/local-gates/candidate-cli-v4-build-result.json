@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "cargo",
+    "build",
+    "-p",
+    "jarde-cli",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v33.json",
+  "started_unix_ns": 1791510248220674000,
+  "label": "candidate-cli-v4-build",
+  "exit": 0,
+  "finished_unix_ns": 1791510261216855000,
+  "log_sha256": "f45e530d3706caa9c86079ad1d132ae69fdb394702d0bdc2d93c0aa7f2df298c",
+  "source_unchanged": true
+}

@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "source": "target/debug/jarde",
+  "reason": "root复制脚本误写二进制名称；实际Cargo build exit0，Cargo.toml默认bin为jarde-cli；未运行候选",
+  "correction": "target/debug/jarde-cli"
+}

@@ -1,0 +1,128 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0308]: mismatched types
+     --> src/facade.rs:14401:37
+      |
+14396 | ...                   let overload_proof = prove_generic_call_overload_site(
+      |                                            -------------------------------- arguments to this function are incorrect
+...
+14401 | ...                       caller_constructor_candidate.as_ref(),
+      |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Option<&GenericConstructorCandidate>`, found `Option<&&GenericConstructorCandidate>`
+      |
+      = note: expected enum `std::option::Option<&jarde_java::report::GenericConstructorCandidate>`
+                 found enum `std::option::Option<&&jarde_java::report::GenericConstructorCandidate>`
+note: function defined here
+     --> src/facade.rs:13413:4
+      |
+13413 | fn prove_generic_call_overload_site(
+      |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+13418 |     constructor_candidate: Option<&jarde_java::report::GenericConstructorCandidate>,
+      |     -------------------------------------------------------------------------------
+help: try removing the method call
+      |
+14401 -                                     caller_constructor_candidate.as_ref(),
+14401 +                                     caller_constructor_candidate,
+      |
+
+error[E0308]: mismatched types
+     --> src/facade.rs:14573:37
+      |
+14567 | ...                   let projection = class_source::project_method_signature_with_state(
+      |                                        ------------------------------------------------- arguments to this function are incorrect
+...
+14573 | ...                       caller_constructor_candidate.as_ref(),
+      |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Option<&GenericConstructorCandidate>`, found `Option<&&GenericConstructorCandidate>`
+      |
+      = note: expected enum `std::option::Option<&jarde_java::report::GenericConstructorCandidate>`
+                 found enum `std::option::Option<&&jarde_java::report::GenericConstructorCandidate>`
+note: function defined here
+     --> src/class_source.rs:5478:15
+      |
+ 5478 | pub(crate) fn project_method_signature_with_state(
+      |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 5484 |     constructor_candidate: Option<&GenericConstructorCandidate>,
+      |     -----------------------------------------------------------
+help: try removing the method call
+      |
+14573 -                                     caller_constructor_candidate.as_ref(),
+14573 +                                     caller_constructor_candidate,
+      |
+
+error[E0308]: mismatched types
+     --> src/facade.rs:14631:33
+      |
+14615 | ...                   let body_proof = prove_generic_method_body(
+      |                                        ------------------------- arguments to this function are incorrect
+...
+14631 | ...                       caller_constructor_candidate.as_ref(),
+      |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Option<&GenericConstructorCandidate>`, found `Option<&&GenericConstructorCandidate>`
+      |
+      = note: expected enum `std::option::Option<&jarde_java::report::GenericConstructorCandidate>`
+                 found enum `std::option::Option<&&jarde_java::report::GenericConstructorCandidate>`
+note: function defined here
+     --> src/facade.rs:15817:4
+      |
+15817 | fn prove_generic_method_body(
+      |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+15833 |     constructor_candidate: Option<&jarde_java::report::GenericConstructorCandidate>,
+      |     -------------------------------------------------------------------------------
+help: try removing the method call
+      |
+14631 -                                 caller_constructor_candidate.as_ref(),
+14631 +                                 caller_constructor_candidate,
+      |
+
+error[E0308]: mismatched types
+     --> src/facade.rs:14687:29
+      |
+14681 |                         let projection = class_source::project_method_signature_with_state(
+      |                                          ------------------------------------------------- arguments to this function are incorrect
+...
+14687 |                             caller_constructor_candidate.as_ref(),
+      |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Option<&GenericConstructorCandidate>`, found `Option<&&GenericConstructorCandidate>`
+      |
+      = note: expected enum `std::option::Option<&jarde_java::report::GenericConstructorCandidate>`
+                 found enum `std::option::Option<&&jarde_java::report::GenericConstructorCandidate>`
+note: function defined here
+     --> src/class_source.rs:5478:15
+      |
+ 5478 | pub(crate) fn project_method_signature_with_state(
+      |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 5484 |     constructor_candidate: Option<&GenericConstructorCandidate>,
+      |     -----------------------------------------------------------
+help: try removing the method call
+      |
+14687 -                             caller_constructor_candidate.as_ref(),
+14687 +                             caller_constructor_candidate,
+      |
+
+error[E0308]: mismatched types
+     --> src/facade.rs:14887:33
+      |
+14882 | ...                   let Some(casts) = prove_generic_call_overload_site(
+      |                                         -------------------------------- arguments to this function are incorrect
+...
+14887 | ...                       caller_constructor_candidate.as_ref(),
+      |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Option<&GenericConstructorCandidate>`, found `Option<&&GenericConstructorCandidate>`
+      |
+      = note: expected enum `std::option::Option<&jarde_java::report::GenericConstructorCandidate>`
+                 found enum `std::option::Option<&&jarde_java::report::GenericConstructorCandidate>`
+note: function defined here
+     --> src/facade.rs:13413:4
+      |
+13413 | fn prove_generic_call_overload_site(
+      |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+13418 |     constructor_candidate: Option<&jarde_java::report::GenericConstructorCandidate>,
+      |     -------------------------------------------------------------------------------
+help: try removing the method call
+      |
+14887 -                                 caller_constructor_candidate.as_ref(),
+14887 +                                 caller_constructor_candidate,
+      |
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `jarde` (lib) due to 5 previous errors

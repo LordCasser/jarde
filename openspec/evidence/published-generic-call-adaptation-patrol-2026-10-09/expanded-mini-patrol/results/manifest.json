@@ -1,0 +1,3859 @@
+{
+  "scope": "Corretto 8.432 debug exploratory only; ten whole-class cases plus one invalid-source preflight; no Cargo or production changes.",
+  "jdk_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+  "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+  "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+  "jar_sha256": "46c8af190164ec5b1b8bb69f9abc594b52fb82410634f81b64c8668ca4e5fb31",
+  "jarde_cli": "/tmp/jarde-raw-receiver-final-v3-cli",
+  "jarde_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "jadx_cli": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+  "jadx_cli_sha256": "5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3",
+  "negative_control": {
+    "source": "/private/tmp/jarde-generic-call-patrol-v1/results/IncompatibleBinder.java",
+    "source_sha256": "50165da2ecc4f86785fcb25af8eab09a602d356b6b9fb8ee707f69fe91742cfc",
+    "javac_exit": 1,
+    "note": "intentionally invalid: class T extends Number cannot satisfy method U extends Number & Runnable; no class/JADX/Jarde pipeline exists"
+  },
+  "cases": [
+    {
+      "name": "VoidDirect",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/VoidDirect.java",
+      "source_sha256": "f49216c05fd0e139c582607f4ce713cafb74433a9279d47c7424290ab828db57",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/VoidDirect.jar",
+      "input_jar_sha256": "3b5297afd25ff2092ddcff7e0239ab23e4f745de7700362b5002c6c0cb2fe440",
+      "original_class_sha256": {
+        "VoidDirect.class": "f1c5529f265a975365438c320dfdd226af5673adb5e2e8b1e6768d4d75a65b95"
+      },
+      "jarde_source_sha256": "4c54bda390a6856d3bf0df51916027cef5edf0e297ad43592fe6c33349a3f6d4",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "76f5cd5d5be7127d24fc92bdfc6a42669d17596f7bd3b3c33057efe3c415e818",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "VoidDirect.class": "f1c5529f265a975365438c320dfdd226af5673adb5e2e8b1e6768d4d75a65b95"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=relay<>( T;) -> void\nheader=sink<>( T;) -> void\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "6bfc0e4edea0d27845b138d94d16609fd3a1dcae39c00a5f45353a0374f578fd",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "VoidDirect.class": "7e5ff25b04ffab2e3a518582efb797fe566f49fee580aec33406691c7421b00b"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=relay<>( T;) -> void\nheader=sink<>( T;) -> void\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jadx": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "defpackage/VoidDirect.class": "e87915f90ec363a8a92554e7456f3bf17cef5227b15dedf1b905fe5e25338109"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=relay<>( T;) -> void\nheader=sink<>( T;) -> void\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "ArrayRelay",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/ArrayRelay.java",
+      "source_sha256": "7d812e3f58d3357a774cf731bea3e546af27e5f71595fa9ca957a925c49d3142",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/ArrayRelay.jar",
+      "input_jar_sha256": "2c0aec4149e2e88b734824ed217293895ad2d9b692c18c4b45e0bfeaeff170ec",
+      "original_class_sha256": {
+        "ArrayRelay.class": "0c93888c7fa0975a3d325eb71faa5b38dc83e1d93c769badd0946a719a596dd0"
+      },
+      "jarde_source_sha256": "59a8a84dec6139a5416bdf115f83c8d046e3125f0d8ab1de2f12866909fa2025",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "a9e8c06fcb53b9193d51322e775d35f1590396c5da23b44dd74f67920cd89c0a",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "ArrayRelay.class": "0c93888c7fa0975a3d325eb71faa5b38dc83e1d93c769badd0946a719a596dd0",
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=id<>( T[];) -> T[]\nheader=relay<>( T[];) -> T[]\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "d0d9ef02f7be0ad93a3f2200723e99dc9e2d0c0737154327d794df2a4c6cba9c",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "defpackage/ArrayRelay.class": "c97a628c805fd7e33caacaefee5cc611e131b87cdf8dd72c75d3e1f0ddbe248e"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=id<>( T[];) -> T[]\nheader=relay<>( T[];) -> T[]\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "NumberBoundRelay",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/NumberBoundRelay.java",
+      "source_sha256": "bf9a027daec2695e5ba3aa6160e7d86a3231e6a533b5811e4b5af5c62d913130",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/NumberBoundRelay.jar",
+      "input_jar_sha256": "ed30277858ceb7037be3918d7624b9c97d9c765725cc7aea9c5425731af4c39f",
+      "original_class_sha256": {
+        "NumberBoundRelay.class": "4f251ade8fd20b3cc78bb3cf43d83e7faaaa9ca76b634d0da195b87de1011bf6"
+      },
+      "jarde_source_sha256": "3bb9d56fd4ae0178e0ea49a0b1b45ba398447fc6bc3866f9fda428122b3a44bb",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "ae654a67353bc8df66104fc121140108693d0ccde9c0f0694f0f9513b2601ee8",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "NumberBoundRelay.class": "4f251ade8fd20b3cc78bb3cf43d83e7faaaa9ca76b634d0da195b87de1011bf6"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=id<>( T;) -> T\nheader=relay<>( T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "dd2c7afaf07b71f71e8e8e9f8429a88ca0b23045444d409ecb86cd55d0495cc8",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "defpackage/NumberBoundRelay.class": "933d4fecbc502414375fcf1abc7690839c971d0553c91c57c63e0f653551cf14"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=id<>( T;) -> T\nheader=relay<>( T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "MethodShadow",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/MethodShadow.java",
+      "source_sha256": "2ac8f6b24b90429174ee97cc6aec49cddbf0b158a99cb24f603e222640a0e196",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/MethodShadow.jar",
+      "input_jar_sha256": "14ea1d09268bc3563c6b40cbf9aaa8247063b437645958e3392f1c322237d0b8",
+      "original_class_sha256": {
+        "MethodShadow.class": "2d0796d8cd93fe92960fbceca9c3b03acd4bad31fe49096e3b83bd5836d35081"
+      },
+      "jarde_source_sha256": "95f8f280fb0da49f227845b99f4361186491efaa396932fd5a4d3461e90e93dd",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "aa092e3ced22e9b616a2be79098310434628b98aee83aa8197a0f8ce18f8b3bd",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "MethodShadow.class": "2d0796d8cd93fe92960fbceca9c3b03acd4bad31fe49096e3b83bd5836d35081"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=id<U:[class java.lang.Number];>( U;) -> U\nheader=relay<T:[class java.lang.Number];>( T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "1743c84d48099c958e9b069c6e6a72d6ca10bbf11dfbc7d3477c2414b78dd9da",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "3ec42b721dab0c1acffd4311da5ed59a38e75af34db1cec54d68207491353a6f",
+          "compiled_class_sha256": {}
+        }
+      }
+    },
+    {
+      "name": "IndependentCallee",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/IndependentCallee.java",
+      "source_sha256": "d2df3e1d626925edf485909fda9edb7b384b31e76f6de57b37318a16158171f5",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/IndependentCallee.jar",
+      "input_jar_sha256": "2a62b1e932f5ae2fc8fb7e2fe8dd7b4a3b542c239a22bb4dbcee6cb002c3d9ba",
+      "original_class_sha256": {
+        "IndependentCallee.class": "04e7e7c3604a59d4d61c95455c64cb6fb055b68702b323b9fafc558a2ecb5d13"
+      },
+      "jarde_source_sha256": "ac13d4e6b0efa80e72f7fa0e5f8a9fb8840ce7a3fbe7303ed70429a27864bc30",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "8278ec0df44f8de4708f5b4b10f827d3b24ccd9d56690c2c30136c4cb9f8aa50",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "IndependentCallee.class": "04e7e7c3604a59d4d61c95455c64cb6fb055b68702b323b9fafc558a2ecb5d13"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=id<U:[class java.lang.Object];>( U;) -> U\nheader=relay<>( T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "85154de88d60e910e176ca673ac694e164e607cfe912cc8e50e3f29f3bb7fdd0",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "bc5f82a85c087979a3816e3f78c06e8fbd7f690abe19a81e3f6493ac9e9022e6",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "defpackage/IndependentCallee.class": "724a7a0e496f50bd215f98bf3d905023d2cafcf0e015f6bfb8056b5b1a21b842"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=id<U:[class java.lang.Object];>( U;) -> U\nheader=relay<>( T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "MultiParam",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/MultiParam.java",
+      "source_sha256": "867bcf3e1c4dee37c22f52dd01628b28a6f8a180f4e88da77519f626cb7f4702",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/MultiParam.jar",
+      "input_jar_sha256": "2fe10abf69513546f0c864d300c7b2ec18e7b19e020e47ed06609ac85e294797",
+      "original_class_sha256": {
+        "MultiParam.class": "6a170c88f548b4df77903101546fb7ae602915f93a7f8589e4c0da03ecdb11bb"
+      },
+      "jarde_source_sha256": "aae05b42a08f45d5c4263f8310c269c6fad8c5f9db315dd5b6381c2ca06d546b",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "315ff1d0c5df6bb48d1c49ec728f1cbff43d4899d0c367ada209df48f257ca66",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "MultiParam.class": "6a170c88f548b4df77903101546fb7ae602915f93a7f8589e4c0da03ecdb11bb"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=first<>( T;T;) -> T\nheader=relay<>( T;T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "fce46af5ae80e837996c39687a0057f8963e45de4310580c10836f3da59b8323",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "7b39b1e717897550a9ce4bebdd21ff7ea44e9cb6b46d8fd517167d8fcd2bcbf5",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "defpackage/MultiParam.class": "b765c88995721865eec3d3a001763e58631551cced484759262c43f0aa552eb5"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=first<>( T;T;) -> T\nheader=relay<>( T;T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "RawReceiver",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/RawReceiver.java",
+      "source_sha256": "4d1fe05d4474aec8c6a41341ec0b3b659b2c9594d44691bd493ac7a69ba1cb4f",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/RawReceiver.jar",
+      "input_jar_sha256": "1161566c3637c3574ec15275d264556eb39dd75802b9a15353bc8442ad6205bc",
+      "original_class_sha256": {
+        "RawReceiver$Box.class": "be11f04ee18afdb97dcda5f41d5b6059f0c22448bb45b5303289c4bb98bdcd46",
+        "RawReceiver.class": "e35eb3b38aa87ef9f8834750fae067a2709d76a9c212c653810cbe103859fea2"
+      },
+      "jarde_source_sha256": "49257fabd1165912247ed52c8f7c3dd8cbf17ae7b1039162a30cd74db40ca057",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "84b502215173fea67e1cadde9092ddabf67ccc0408ab93b9729aed38db6498e6",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "RawReceiver$Box.class": "be11f04ee18afdb97dcda5f41d5b6059f0c22448bb45b5303289c4bb98bdcd46",
+            "RawReceiver.class": "e35eb3b38aa87ef9f8834750fae067a2709d76a9c212c653810cbe103859fea2"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=relay<>( T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "901ae0478f61a4a3a951ccca56c97b0c2a768513e5bd9c7eccf2df20e23ced02",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "24285df3b540bb592d2b4634684bf4250d41e9f563df3558ede380ad0464d249",
+          "compiled_class_sha256": {}
+        }
+      }
+    },
+    {
+      "name": "SameNameOverload",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/SameNameOverload.java",
+      "source_sha256": "dfa8887d2d511c4bf1dc2f8847e4249cbed518c8416fd395120a241705d178d6",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/SameNameOverload.jar",
+      "input_jar_sha256": "b5da8b09148a36701cd6046422e8696746027890e43b90f38ce4d3e2a51fd525",
+      "original_class_sha256": {
+        "SameNameOverload.class": "ff58b20adbffcd9f0454323bedb788bdbeaa88c7ce0ad6f0f82e8bc31d72fe8f"
+      },
+      "jarde_source_sha256": "8fbf451665fd6c714254bc74dc4e4a280f98f2e2b0e79d6d6f42f146e92e51c0",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "d62eeb5cf58a2e88a3bf6896a0599e0f6c7db534db0165cc7c463647f1568f23",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "SameNameOverload.class": "ff58b20adbffcd9f0454323bedb788bdbeaa88c7ce0ad6f0f82e8bc31d72fe8f"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=pick<>( T;) -> void\nheader=pick<>( java.lang.String;) -> void\nheader=relay<>( T;) -> void\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.selected=generic\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "939852d4c5ce741e7980a4e6f3632434573ab8b05ef50907f86e4be386dc5e16",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "SameNameOverload.class": "bcde7a2a9759111e39dcbd70ae9c0242fe3383bc368c9bc98276588fca9789e5"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=pick<>( java.lang.Object;) -> void\nheader=pick<>( java.lang.String;) -> void\nheader=relay<>( T;) -> void\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.selected=generic\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jadx": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "defpackage/SameNameOverload.class": "84b829d4bdf44e289b5f056264d7ed676457260e9f95fada6231d2229581f2d8"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=pick<>( T;) -> void\nheader=pick<>( java.lang.String;) -> void\nheader=relay<>( T;) -> void\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.selected=generic\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "SameErasureBinder",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/SameErasureBinder.java",
+      "source_sha256": "83a3a9deaf54eae04c842831e28cf5856de877f76f6780c3137aad4ca110dea9",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/SameErasureBinder.jar",
+      "input_jar_sha256": "ea106d6ce1d7ad2bc3f0a006c0968597cdc4fc7ce8618639d9d9f3ee8d61fd0f",
+      "original_class_sha256": {
+        "SameErasureBinder.class": "9498b3192756d86ad346ef7832250aded6f7450ba74420101ac789c2736c63aa"
+      },
+      "jarde_source_sha256": "a5b477699d8b1142bdf975ccce272140b3fde4dcc80092ae4d62d61794146619",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "77126938ce952ac6bf63b8287617541ed066de0913453c022994a583b08001e7",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "SameErasureBinder.class": "9498b3192756d86ad346ef7832250aded6f7450ba74420101ac789c2736c63aa"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=relay<>( T;) -> T\nheader=sink<U:[class java.lang.Number, interface java.lang.Runnable];>( U;) -> U\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.null=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "8d746e2849ce80b8356a55eabb37a92465eb7588e78d17f1e1f6378c0aa40822",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "defpackage/SameErasureBinder.class": "49a500ab76a52e65164a4805ab870777e4e5f4ffcc998f4f3ec915b6fdc14898"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=relay<>( T;) -> T\nheader=sink<U:[class java.lang.Number, interface java.lang.Runnable];>( U;) -> U\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.null=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "MutatedReceiver",
+      "source": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/MutatedReceiver.java",
+      "source_sha256": "f97d742746f1f7336461febf46532e2e3407d1035832664567ba9c4db0a074bd",
+      "input_jar": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/MutatedReceiver.jar",
+      "input_jar_sha256": "29edfe7db94bf3f3bba3d621d5ba56c0e241db6ae519cc7f911b52653689f3d5",
+      "original_class_sha256": {
+        "MutatedReceiver$Box.class": "8cc9afdf150e6f65d1d00d7a705b3770068f455189ecfabba3223c47e813e895",
+        "MutatedReceiver.class": "f7bc683f8144c8451de13ec0518af12fc00c0a51cad233a5b4fed53b82eee8f4"
+      },
+      "jarde_source_sha256": "bac48b318ee2b0198950262ba06386b75050dcf973f6dcaa230bad91d8394264",
+      "jarde_cli_exit": 0,
+      "jadx_source_sha256": "ac1d71980a0142d2dca277cca17a8916e9de75d2a79c7c3e8890bf8bfac19477",
+      "jadx_cli_exit": 0,
+      "flavors": {
+        "original": {
+          "compile_exit": 0,
+          "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compiled_class_sha256": {
+            "HeaderProbe$1.class": "52e8c5a923f366d86dd38d30c97e20be7d3eb5119c13345780039d7a48c0d0bf",
+            "HeaderProbe.class": "de4a37f146f331bf2807aaf146f3cc6bfe230de5c29f33ef3e92e87d2e627bdd",
+            "MutatedReceiver$Box.class": "8cc9afdf150e6f65d1d00d7a705b3770068f455189ecfabba3223c47e813e895",
+            "MutatedReceiver.class": "f7bc683f8144c8451de13ec0518af12fc00c0a51cad233a5b4fed53b82eee8f4"
+          },
+          "headers_exit": 0,
+          "headers_stdout": "header=relay<>( T;) -> T\n",
+          "headers_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "behavior_exit": 0,
+          "behavior_stdout": "behavior.marker=true\n",
+          "behavior_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jarde": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "44a10447ee03fb90e3629ccb92b54efc7ca0afb8419252926ef8fa86f1471375",
+          "compiled_class_sha256": {}
+        },
+        "jadx": {
+          "compile_exit": 1,
+          "compile_stderr_sha256": "7d0a98208ed1c1613bdf547ca7d7e014eb1159b08267b103b71b00ad62b7dc50",
+          "compiled_class_sha256": {}
+        }
+      }
+    }
+  ],
+  "commands": [
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/VoidDirect.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/VoidDirect.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/input-classes",
+        "VoidDirect.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/VoidDirect.jar",
+        "--class",
+        "VoidDirect",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "4c54bda390a6856d3bf0df51916027cef5edf0e297ad43592fe6c33349a3f6d4",
+      "stderr_sha256": "077571e08462c3ca405c354ce816c20d21b0ad4ff667dca16d57118c4480396b"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/VoidDirect.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-9y_909z7/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-9y_909z7/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-9y_909z7/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/VoidDirect.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-9y_909z7/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-9y_909z7/classes",
+        "HeaderProbe",
+        "VoidDirect"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "01672100ed6ece599590525ab74efd1b739fc70f91a5c5120f1b4a5e1171e7db",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-9y_909z7/classes",
+        "VoidDirect"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qnbn_zx6/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qnbn_zx6/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qnbn_zx6/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/jarde/VoidDirect.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qnbn_zx6/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6bfc0e4edea0d27845b138d94d16609fd3a1dcae39c00a5f45353a0374f578fd"
+    },
+    {
+      "label": "jarde-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qnbn_zx6/classes",
+        "HeaderProbe",
+        "VoidDirect"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "01672100ed6ece599590525ab74efd1b739fc70f91a5c5120f1b4a5e1171e7db",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qnbn_zx6/classes",
+        "VoidDirect"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-g4l_g4g8/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-g4l_g4g8/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-g4l_g4g8/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect/jadx/VoidDirect.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-g4l_g4g8/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-g4l_g4g8/classes",
+        "HeaderProbe",
+        "defpackage.VoidDirect"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "01672100ed6ece599590525ab74efd1b739fc70f91a5c5120f1b4a5e1171e7db",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-g4l_g4g8/classes",
+        "defpackage.VoidDirect"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/VoidDirect",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/ArrayRelay.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/ArrayRelay.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/input-classes",
+        "ArrayRelay.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/ArrayRelay.jar",
+        "--class",
+        "ArrayRelay",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "59a8a84dec6139a5416bdf115f83c8d046e3125f0d8ab1de2f12866909fa2025",
+      "stderr_sha256": "b72435f46c3de6577948d831c84ce7d9632e741eb05c2814908624f57bd1332c"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/ArrayRelay.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-1ab_mf0q/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-1ab_mf0q/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-1ab_mf0q/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/ArrayRelay.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-1ab_mf0q/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-1ab_mf0q/classes",
+        "HeaderProbe",
+        "ArrayRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "9aa11f1de7cdd5240d7373b7cbe8557256df9913e5d6eb3c081e9adbdb687e91",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-1ab_mf0q/classes",
+        "ArrayRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yfk66b5p/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yfk66b5p/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yfk66b5p/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/jarde/ArrayRelay.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yfk66b5p/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d0d9ef02f7be0ad93a3f2200723e99dc9e2d0c0737154327d794df2a4c6cba9c"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-tox1u5jq/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-tox1u5jq/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-tox1u5jq/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay/jadx/ArrayRelay.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-tox1u5jq/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-tox1u5jq/classes",
+        "HeaderProbe",
+        "defpackage.ArrayRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "9aa11f1de7cdd5240d7373b7cbe8557256df9913e5d6eb3c081e9adbdb687e91",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-tox1u5jq/classes",
+        "defpackage.ArrayRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/ArrayRelay",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/NumberBoundRelay.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/NumberBoundRelay.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/input-classes",
+        "NumberBoundRelay.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/NumberBoundRelay.jar",
+        "--class",
+        "NumberBoundRelay",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "3bb9d56fd4ae0178e0ea49a0b1b45ba398447fc6bc3866f9fda428122b3a44bb",
+      "stderr_sha256": "e9b3002240e6f6d62b72ad53916ef082be895203254936c6e9b5753616c378d1"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/NumberBoundRelay.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-48w30x4b/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-48w30x4b/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-48w30x4b/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/NumberBoundRelay.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-48w30x4b/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-48w30x4b/classes",
+        "HeaderProbe",
+        "NumberBoundRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "3cf13fdbc8889f553a4c23955d5897f0526b8eb4e15f82c3ba4d2309673b5992",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-48w30x4b/classes",
+        "NumberBoundRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-xpc5eyj9/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-xpc5eyj9/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-xpc5eyj9/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/jarde/NumberBoundRelay.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-xpc5eyj9/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "dd2c7afaf07b71f71e8e8e9f8429a88ca0b23045444d409ecb86cd55d0495cc8"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-0342gurb/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-0342gurb/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-0342gurb/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay/jadx/NumberBoundRelay.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-0342gurb/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-0342gurb/classes",
+        "HeaderProbe",
+        "defpackage.NumberBoundRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "3cf13fdbc8889f553a4c23955d5897f0526b8eb4e15f82c3ba4d2309673b5992",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-0342gurb/classes",
+        "defpackage.NumberBoundRelay"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/NumberBoundRelay",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/MethodShadow.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/MethodShadow.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/input-classes",
+        "MethodShadow.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/MethodShadow.jar",
+        "--class",
+        "MethodShadow",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 0,
+      "stdout_sha256": "95f8f280fb0da49f227845b99f4361186491efaa396932fd5a4d3461e90e93dd",
+      "stderr_sha256": "deaa7a3a176f4df720936b63af53d3e607e55fb13bc8c1c1804b6919a311bd04"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/MethodShadow.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-vkpj8qng/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-vkpj8qng/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-vkpj8qng/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/MethodShadow.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-vkpj8qng/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-vkpj8qng/classes",
+        "HeaderProbe",
+        "MethodShadow"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 0,
+      "stdout_sha256": "41592ddefd36e31719299cf03b4c1c996e3c9a555325c2ebc9f19e617e9606d7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-vkpj8qng/classes",
+        "MethodShadow"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yr6x_i3k/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yr6x_i3k/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yr6x_i3k/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/jarde/MethodShadow.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-yr6x_i3k/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "1743c84d48099c958e9b069c6e6a72d6ca10bbf11dfbc7d3477c2414b78dd9da"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-t47e4gkv/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-t47e4gkv/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-t47e4gkv/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow/jadx/MethodShadow.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-t47e4gkv/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MethodShadow",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3ec42b721dab0c1acffd4311da5ed59a38e75af34db1cec54d68207491353a6f"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/IndependentCallee.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/IndependentCallee.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/input-classes",
+        "IndependentCallee.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/IndependentCallee.jar",
+        "--class",
+        "IndependentCallee",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "ac13d4e6b0efa80e72f7fa0e5f8a9fb8840ce7a3fbe7303ed70429a27864bc30",
+      "stderr_sha256": "dbed1f5139e27c204d3abc6685240e24b25071c2207b24371a0a9348f8392cdc"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/IndependentCallee.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-hks30of_/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-hks30of_/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-hks30of_/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/IndependentCallee.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-hks30of_/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-hks30of_/classes",
+        "HeaderProbe",
+        "IndependentCallee"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "2178483d91c432cbfec3ccb993cacfd4aa03953ed1e5fa48a7d0d4102e15d362",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-hks30of_/classes",
+        "IndependentCallee"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-tgae2si7/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-tgae2si7/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-tgae2si7/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/jarde/IndependentCallee.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-tgae2si7/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "85154de88d60e910e176ca673ac694e164e607cfe912cc8e50e3f29f3bb7fdd0"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-o9lz2jxx/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-o9lz2jxx/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-o9lz2jxx/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee/jadx/IndependentCallee.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-o9lz2jxx/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "bc5f82a85c087979a3816e3f78c06e8fbd7f690abe19a81e3f6493ac9e9022e6"
+    },
+    {
+      "label": "jadx-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-o9lz2jxx/classes",
+        "HeaderProbe",
+        "defpackage.IndependentCallee"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "2178483d91c432cbfec3ccb993cacfd4aa03953ed1e5fa48a7d0d4102e15d362",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-o9lz2jxx/classes",
+        "defpackage.IndependentCallee"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/IndependentCallee",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/MultiParam.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/MultiParam.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/input-classes",
+        "MultiParam.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/MultiParam.jar",
+        "--class",
+        "MultiParam",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "aae05b42a08f45d5c4263f8310c269c6fad8c5f9db315dd5b6381c2ca06d546b",
+      "stderr_sha256": "80d265b4460cbe406a3c2b49c614a722f41423de5137e0002bd37a7fa69e1688"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/MultiParam.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-n9_yu_fg/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-n9_yu_fg/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-n9_yu_fg/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/MultiParam.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-n9_yu_fg/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-n9_yu_fg/classes",
+        "HeaderProbe",
+        "MultiParam"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "88e63fe56e777a4edff78c5ae1fac2eeb855bf3beb38fbd49116e9807bbb85ed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-n9_yu_fg/classes",
+        "MultiParam"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-hgns5xpz/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-hgns5xpz/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-hgns5xpz/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/jarde/MultiParam.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-hgns5xpz/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "fce46af5ae80e837996c39687a0057f8963e45de4310580c10836f3da59b8323"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1kzh95z1/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1kzh95z1/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1kzh95z1/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam/jadx/MultiParam.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1kzh95z1/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "7b39b1e717897550a9ce4bebdd21ff7ea44e9cb6b46d8fd517167d8fcd2bcbf5"
+    },
+    {
+      "label": "jadx-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1kzh95z1/classes",
+        "HeaderProbe",
+        "defpackage.MultiParam"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "88e63fe56e777a4edff78c5ae1fac2eeb855bf3beb38fbd49116e9807bbb85ed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1kzh95z1/classes",
+        "defpackage.MultiParam"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MultiParam",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/RawReceiver.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/RawReceiver.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/input-classes",
+        "RawReceiver.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/RawReceiver.jar",
+        "--class",
+        "RawReceiver",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 0,
+      "stdout_sha256": "49257fabd1165912247ed52c8f7c3dd8cbf17ae7b1039162a30cd74db40ca057",
+      "stderr_sha256": "7c74dc54531b6180d26c7c6a2b59a9a741c3700d8516427e8991ca374024038f"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/RawReceiver.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-fck9gs35/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-fck9gs35/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-fck9gs35/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/RawReceiver.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-fck9gs35/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-fck9gs35/classes",
+        "HeaderProbe",
+        "RawReceiver"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 0,
+      "stdout_sha256": "658ae1206948743689a2032dd6c7080b89e0f9418fb0220dd56c6598d7d917bf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-fck9gs35/classes",
+        "RawReceiver"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-aupc9vfv/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-aupc9vfv/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-aupc9vfv/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/jarde/RawReceiver.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-aupc9vfv/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "901ae0478f61a4a3a951ccca56c97b0c2a768513e5bd9c7eccf2df20e23ced02"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-qnpvwvxu/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-qnpvwvxu/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-qnpvwvxu/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver/jadx/RawReceiver.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-qnpvwvxu/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/RawReceiver",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "24285df3b540bb592d2b4634684bf4250d41e9f563df3558ede380ad0464d249"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/SameNameOverload.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/SameNameOverload.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/input-classes",
+        "SameNameOverload.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/SameNameOverload.jar",
+        "--class",
+        "SameNameOverload",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "8fbf451665fd6c714254bc74dc4e4a280f98f2e2b0e79d6d6f42f146e92e51c0",
+      "stderr_sha256": "8b0d1c05845a7571b344a7647287ad59d094f9cd311282336b4b42f4268963fc"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/SameNameOverload.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-zxxyo75q/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-zxxyo75q/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-zxxyo75q/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/SameNameOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-zxxyo75q/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-zxxyo75q/classes",
+        "HeaderProbe",
+        "SameNameOverload"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "7f6d545790f70240c1f6ba7ed01a2038029ef2616582258153b2552b678f7e83",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-zxxyo75q/classes",
+        "SameNameOverload"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "db28e490dfa266d9713a9f3660b909f96b1486996510423bf1c84991724ede79",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-7caxt8uf/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-7caxt8uf/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-7caxt8uf/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/jarde/SameNameOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-7caxt8uf/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "939852d4c5ce741e7980a4e6f3632434573ab8b05ef50907f86e4be386dc5e16"
+    },
+    {
+      "label": "jarde-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-7caxt8uf/classes",
+        "HeaderProbe",
+        "SameNameOverload"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "a36e3ca71737e97495baaa7bd518eff57e8cf551c15089441e73bd8a318f53b0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-7caxt8uf/classes",
+        "SameNameOverload"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "db28e490dfa266d9713a9f3660b909f96b1486996510423bf1c84991724ede79",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1xvbwd9b/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1xvbwd9b/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1xvbwd9b/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload/jadx/SameNameOverload.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1xvbwd9b/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1xvbwd9b/classes",
+        "HeaderProbe",
+        "defpackage.SameNameOverload"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "7f6d545790f70240c1f6ba7ed01a2038029ef2616582258153b2552b678f7e83",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-1xvbwd9b/classes",
+        "defpackage.SameNameOverload"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameNameOverload",
+      "returncode": 0,
+      "stdout_sha256": "db28e490dfa266d9713a9f3660b909f96b1486996510423bf1c84991724ede79",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/SameErasureBinder.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/SameErasureBinder.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/input-classes",
+        "SameErasureBinder.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/SameErasureBinder.jar",
+        "--class",
+        "SameErasureBinder",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "a5b477699d8b1142bdf975ccce272140b3fde4dcc80092ae4d62d61794146619",
+      "stderr_sha256": "1f9f99f4c92606faf4cd2097a90af758b2fafec52bd233cd8569b8f3a8776d2f"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/SameErasureBinder.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-sjsxrl8d/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-sjsxrl8d/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-sjsxrl8d/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/SameErasureBinder.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-sjsxrl8d/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-sjsxrl8d/classes",
+        "HeaderProbe",
+        "SameErasureBinder"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "73fe754d48828c960d35ce13c50b6939185daeca60eb78bca0e56bc23c3e5441",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-sjsxrl8d/classes",
+        "SameErasureBinder"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "2caa94fc3c938862c042e3d677607e504597b981e5c4e0ae2e8979b2801548e7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-zhwpygcc/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-zhwpygcc/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-zhwpygcc/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/jarde/SameErasureBinder.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-zhwpygcc/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8d746e2849ce80b8356a55eabb37a92465eb7588e78d17f1e1f6378c0aa40822"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-jx1dn2n7/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-jx1dn2n7/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-jx1dn2n7/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder/jadx/SameErasureBinder.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-jx1dn2n7/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-jx1dn2n7/classes",
+        "HeaderProbe",
+        "defpackage.SameErasureBinder"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "73fe754d48828c960d35ce13c50b6939185daeca60eb78bca0e56bc23c3e5441",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-jx1dn2n7/classes",
+        "defpackage.SameErasureBinder"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/SameErasureBinder",
+      "returncode": 0,
+      "stdout_sha256": "2caa94fc3c938862c042e3d677607e504597b981e5c4e0ae2e8979b2801548e7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/empty-input-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/empty-input-sourcepath",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/input-classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/MutatedReceiver.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "freeze-jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/MutatedReceiver.jar",
+        "-C",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/input-classes",
+        "MutatedReceiver.class"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-class-source",
+      "argv": [
+        "/tmp/jarde-raw-receiver-final-v3-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/MutatedReceiver.jar",
+        "--class",
+        "MutatedReceiver",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 0,
+      "stdout_sha256": "bac48b318ee2b0198950262ba06386b75050dcf973f6dcaa230bad91d8394264",
+      "stderr_sha256": "788bd07552e5906f79b282d6b34830f2cb7c33a9dc10c1172c2dc34eb479ba3c"
+    },
+    {
+      "label": "jadx",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jadx/full-output",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/MutatedReceiver.jar"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-x8322phn/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-x8322phn/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-x8322phn/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/MutatedReceiver.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-x8322phn/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-headers",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-x8322phn/classes",
+        "HeaderProbe",
+        "MutatedReceiver"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 0,
+      "stdout_sha256": "658ae1206948743689a2032dd6c7080b89e0f9418fb0220dd56c6598d7d917bf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-behavior",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-original-x8322phn/classes",
+        "MutatedReceiver"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 0,
+      "stdout_sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qzt7k88f/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qzt7k88f/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qzt7k88f/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jarde/MutatedReceiver.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jarde-qzt7k88f/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "44a10447ee03fb90e3629ccb92b54efc7ca0afb8419252926ef8fa86f1471375"
+    },
+    {
+      "label": "jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-ikot3v6b/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-ikot3v6b/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-ikot3v6b/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver/jadx/MutatedReceiver.java",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/generic-call-jadx-ikot3v6b/HeaderProbe.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/MutatedReceiver",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "7d0a98208ed1c1613bdf547ca7d7e014eb1159b08267b103b71b00ad62b7dc50"
+    },
+    {
+      "label": "negative-original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-classpath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/incompatible-binder-negative-qruagas6/empty-classpath",
+        "-sourcepath",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/incompatible-binder-negative-qruagas6/empty-sourcepath",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/incompatible-binder-negative-qruagas6/classes",
+        "/private/tmp/jarde-generic-call-patrol-v1/results/IncompatibleBinder.java"
+      ],
+      "cwd": "/private/tmp/jarde-generic-call-patrol-v1/results/incompatible-binder-negative",
+      "returncode": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "db3ae158f8927b1554ab9b2053f38284916248f907dc51efea166d71564a02e4"
+    }
+  ],
+  "files": [
+    {
+      "path": "ArrayRelay/ArrayRelay.jar",
+      "bytes": 1161,
+      "sha256": "2c0aec4149e2e88b734824ed217293895ad2d9b692c18c4b45e0bfeaeff170ec"
+    },
+    {
+      "path": "ArrayRelay/ArrayRelay.java",
+      "bytes": 296,
+      "sha256": "7d812e3f58d3357a774cf731bea3e546af27e5f71595fa9ca957a925c49d3142"
+    },
+    {
+      "path": "ArrayRelay/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/jadx/ArrayRelay.java",
+      "bytes": 429,
+      "sha256": "a9e8c06fcb53b9193d51322e775d35f1590396c5da23b44dd74f67920cd89c0a"
+    },
+    {
+      "path": "ArrayRelay/jadx/full-output/sources/defpackage/ArrayRelay.java",
+      "bytes": 429,
+      "sha256": "a9e8c06fcb53b9193d51322e775d35f1590396c5da23b44dd74f67920cd89c0a"
+    },
+    {
+      "path": "ArrayRelay/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "ArrayRelay/jadx-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/jadx-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "ArrayRelay/jadx-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/jadx-headers.stdout",
+      "bytes": 55,
+      "sha256": "9aa11f1de7cdd5240d7373b7cbe8557256df9913e5d6eb3c081e9adbdb687e91"
+    },
+    {
+      "path": "ArrayRelay/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/jarde/ArrayRelay.java",
+      "bytes": 3419,
+      "sha256": "59a8a84dec6139a5416bdf115f83c8d046e3125f0d8ab1de2f12866909fa2025"
+    },
+    {
+      "path": "ArrayRelay/jarde/jarde-class-source.stderr",
+      "bytes": 166543,
+      "sha256": "b72435f46c3de6577948d831c84ce7d9632e741eb05c2814908624f57bd1332c"
+    },
+    {
+      "path": "ArrayRelay/jarde/jarde-class-source.stdout",
+      "bytes": 3419,
+      "sha256": "59a8a84dec6139a5416bdf115f83c8d046e3125f0d8ab1de2f12866909fa2025"
+    },
+    {
+      "path": "ArrayRelay/jarde-javac.stderr",
+      "bytes": 675,
+      "sha256": "d0d9ef02f7be0ad93a3f2200723e99dc9e2d0c0737154327d794df2a4c6cba9c"
+    },
+    {
+      "path": "ArrayRelay/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "ArrayRelay/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/original-headers.stdout",
+      "bytes": 55,
+      "sha256": "9aa11f1de7cdd5240d7373b7cbe8557256df9913e5d6eb3c081e9adbdb687e91"
+    },
+    {
+      "path": "ArrayRelay/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ArrayRelay/original.jar",
+      "bytes": 1161,
+      "sha256": "2c0aec4149e2e88b734824ed217293895ad2d9b692c18c4b45e0bfeaeff170ec"
+    },
+    {
+      "path": "ArrayRelay/original.java",
+      "bytes": 296,
+      "sha256": "7d812e3f58d3357a774cf731bea3e546af27e5f71595fa9ca957a925c49d3142"
+    },
+    {
+      "path": "IncompatibleBinder.java",
+      "bytes": 161,
+      "sha256": "50165da2ecc4f86785fcb25af8eab09a602d356b6b9fb8ee707f69fe91742cfc"
+    },
+    {
+      "path": "IndependentCallee/IndependentCallee.jar",
+      "bytes": 1155,
+      "sha256": "2a62b1e932f5ae2fc8fb7e2fe8dd7b4a3b542c239a22bb4dbcee6cb002c3d9ba"
+    },
+    {
+      "path": "IndependentCallee/IndependentCallee.java",
+      "bytes": 274,
+      "sha256": "d2df3e1d626925edf485909fda9edb7b384b31e76f6de57b37318a16158171f5"
+    },
+    {
+      "path": "IndependentCallee/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/jadx/IndependentCallee.java",
+      "bytes": 475,
+      "sha256": "8278ec0df44f8de4708f5b4b10f827d3b24ccd9d56690c2c30136c4cb9f8aa50"
+    },
+    {
+      "path": "IndependentCallee/jadx/full-output/sources/defpackage/IndependentCallee.java",
+      "bytes": 475,
+      "sha256": "8278ec0df44f8de4708f5b4b10f827d3b24ccd9d56690c2c30136c4cb9f8aa50"
+    },
+    {
+      "path": "IndependentCallee/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "IndependentCallee/jadx-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/jadx-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "IndependentCallee/jadx-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/jadx-headers.stdout",
+      "bytes": 74,
+      "sha256": "2178483d91c432cbfec3ccb993cacfd4aa03953ed1e5fa48a7d0d4102e15d362"
+    },
+    {
+      "path": "IndependentCallee/jadx-javac.stderr",
+      "bytes": 214,
+      "sha256": "bc5f82a85c087979a3816e3f78c06e8fbd7f690abe19a81e3f6493ac9e9022e6"
+    },
+    {
+      "path": "IndependentCallee/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/jarde/IndependentCallee.java",
+      "bytes": 2916,
+      "sha256": "ac13d4e6b0efa80e72f7fa0e5f8a9fb8840ce7a3fbe7303ed70429a27864bc30"
+    },
+    {
+      "path": "IndependentCallee/jarde/jarde-class-source.stderr",
+      "bytes": 140315,
+      "sha256": "dbed1f5139e27c204d3abc6685240e24b25071c2207b24371a0a9348f8392cdc"
+    },
+    {
+      "path": "IndependentCallee/jarde/jarde-class-source.stdout",
+      "bytes": 2916,
+      "sha256": "ac13d4e6b0efa80e72f7fa0e5f8a9fb8840ce7a3fbe7303ed70429a27864bc30"
+    },
+    {
+      "path": "IndependentCallee/jarde-javac.stderr",
+      "bytes": 337,
+      "sha256": "85154de88d60e910e176ca673ac694e164e607cfe912cc8e50e3f29f3bb7fdd0"
+    },
+    {
+      "path": "IndependentCallee/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "IndependentCallee/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/original-headers.stdout",
+      "bytes": 74,
+      "sha256": "2178483d91c432cbfec3ccb993cacfd4aa03953ed1e5fa48a7d0d4102e15d362"
+    },
+    {
+      "path": "IndependentCallee/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "IndependentCallee/original.jar",
+      "bytes": 1155,
+      "sha256": "2a62b1e932f5ae2fc8fb7e2fe8dd7b4a3b542c239a22bb4dbcee6cb002c3d9ba"
+    },
+    {
+      "path": "IndependentCallee/original.java",
+      "bytes": 274,
+      "sha256": "d2df3e1d626925edf485909fda9edb7b384b31e76f6de57b37318a16158171f5"
+    },
+    {
+      "path": "MethodShadow/MethodShadow.jar",
+      "bytes": 1188,
+      "sha256": "14ea1d09268bc3563c6b40cbf9aaa8247063b437645958e3392f1c322237d0b8"
+    },
+    {
+      "path": "MethodShadow/MethodShadow.java",
+      "bytes": 306,
+      "sha256": "2ac8f6b24b90429174ee97cc6aec49cddbf0b158a99cb24f603e222640a0e196"
+    },
+    {
+      "path": "MethodShadow/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/jadx/MethodShadow.java",
+      "bytes": 492,
+      "sha256": "aa092e3ced22e9b616a2be79098310434628b98aee83aa8197a0f8ce18f8b3bd"
+    },
+    {
+      "path": "MethodShadow/jadx/full-output/sources/defpackage/MethodShadow.java",
+      "bytes": 492,
+      "sha256": "aa092e3ced22e9b616a2be79098310434628b98aee83aa8197a0f8ce18f8b3bd"
+    },
+    {
+      "path": "MethodShadow/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "MethodShadow/jadx-javac.stderr",
+      "bytes": 313,
+      "sha256": "3ec42b721dab0c1acffd4311da5ed59a38e75af34db1cec54d68207491353a6f"
+    },
+    {
+      "path": "MethodShadow/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/jarde/MethodShadow.java",
+      "bytes": 2863,
+      "sha256": "95f8f280fb0da49f227845b99f4361186491efaa396932fd5a4d3461e90e93dd"
+    },
+    {
+      "path": "MethodShadow/jarde/jarde-class-source.stderr",
+      "bytes": 137369,
+      "sha256": "deaa7a3a176f4df720936b63af53d3e607e55fb13bc8c1c1804b6919a311bd04"
+    },
+    {
+      "path": "MethodShadow/jarde/jarde-class-source.stdout",
+      "bytes": 2863,
+      "sha256": "95f8f280fb0da49f227845b99f4361186491efaa396932fd5a4d3461e90e93dd"
+    },
+    {
+      "path": "MethodShadow/jarde-javac.stderr",
+      "bytes": 317,
+      "sha256": "1743c84d48099c958e9b069c6e6a72d6ca10bbf11dfbc7d3477c2414b78dd9da"
+    },
+    {
+      "path": "MethodShadow/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "MethodShadow/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/original-headers.stdout",
+      "bytes": 101,
+      "sha256": "41592ddefd36e31719299cf03b4c1c996e3c9a555325c2ebc9f19e617e9606d7"
+    },
+    {
+      "path": "MethodShadow/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MethodShadow/original.jar",
+      "bytes": 1188,
+      "sha256": "14ea1d09268bc3563c6b40cbf9aaa8247063b437645958e3392f1c322237d0b8"
+    },
+    {
+      "path": "MethodShadow/original.java",
+      "bytes": 306,
+      "sha256": "2ac8f6b24b90429174ee97cc6aec49cddbf0b158a99cb24f603e222640a0e196"
+    },
+    {
+      "path": "MultiParam/MultiParam.jar",
+      "bytes": 1146,
+      "sha256": "2fe10abf69513546f0c864d300c7b2ec18e7b19e020e47ed06609ac85e294797"
+    },
+    {
+      "path": "MultiParam/MultiParam.java",
+      "bytes": 269,
+      "sha256": "867bcf3e1c4dee37c22f52dd01628b28a6f8a180f4e88da77519f626cb7f4702"
+    },
+    {
+      "path": "MultiParam/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/jadx/MultiParam.java",
+      "bytes": 461,
+      "sha256": "315ff1d0c5df6bb48d1c49ec728f1cbff43d4899d0c367ada209df48f257ca66"
+    },
+    {
+      "path": "MultiParam/jadx/full-output/sources/defpackage/MultiParam.java",
+      "bytes": 461,
+      "sha256": "315ff1d0c5df6bb48d1c49ec728f1cbff43d4899d0c367ada209df48f257ca66"
+    },
+    {
+      "path": "MultiParam/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "MultiParam/jadx-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/jadx-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "MultiParam/jadx-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/jadx-headers.stdout",
+      "bytes": 54,
+      "sha256": "88e63fe56e777a4edff78c5ae1fac2eeb855bf3beb38fbd49116e9807bbb85ed"
+    },
+    {
+      "path": "MultiParam/jadx-javac.stderr",
+      "bytes": 200,
+      "sha256": "7b39b1e717897550a9ce4bebdd21ff7ea44e9cb6b46d8fd517167d8fcd2bcbf5"
+    },
+    {
+      "path": "MultiParam/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/jarde/MultiParam.java",
+      "bytes": 2851,
+      "sha256": "aae05b42a08f45d5c4263f8310c269c6fad8c5f9db315dd5b6381c2ca06d546b"
+    },
+    {
+      "path": "MultiParam/jarde/jarde-class-source.stderr",
+      "bytes": 143050,
+      "sha256": "80d265b4460cbe406a3c2b49c614a722f41423de5137e0002bd37a7fa69e1688"
+    },
+    {
+      "path": "MultiParam/jarde/jarde-class-source.stdout",
+      "bytes": 2851,
+      "sha256": "aae05b42a08f45d5c4263f8310c269c6fad8c5f9db315dd5b6381c2ca06d546b"
+    },
+    {
+      "path": "MultiParam/jarde-javac.stderr",
+      "bytes": 680,
+      "sha256": "fce46af5ae80e837996c39687a0057f8963e45de4310580c10836f3da59b8323"
+    },
+    {
+      "path": "MultiParam/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "MultiParam/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/original-headers.stdout",
+      "bytes": 54,
+      "sha256": "88e63fe56e777a4edff78c5ae1fac2eeb855bf3beb38fbd49116e9807bbb85ed"
+    },
+    {
+      "path": "MultiParam/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MultiParam/original.jar",
+      "bytes": 1146,
+      "sha256": "2fe10abf69513546f0c864d300c7b2ec18e7b19e020e47ed06609ac85e294797"
+    },
+    {
+      "path": "MultiParam/original.java",
+      "bytes": 269,
+      "sha256": "867bcf3e1c4dee37c22f52dd01628b28a6f8a180f4e88da77519f626cb7f4702"
+    },
+    {
+      "path": "MutatedReceiver/MutatedReceiver.jar",
+      "bytes": 1214,
+      "sha256": "29edfe7db94bf3f3bba3d621d5ba56c0e241db6ae519cc7f911b52653689f3d5"
+    },
+    {
+      "path": "MutatedReceiver/MutatedReceiver.java",
+      "bytes": 429,
+      "sha256": "f97d742746f1f7336461febf46532e2e3407d1035832664567ba9c4db0a074bd"
+    },
+    {
+      "path": "MutatedReceiver/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/jadx/MutatedReceiver.java",
+      "bytes": 444,
+      "sha256": "ac1d71980a0142d2dca277cca17a8916e9de75d2a79c7c3e8890bf8bfac19477"
+    },
+    {
+      "path": "MutatedReceiver/jadx/full-output/sources/defpackage/MutatedReceiver.java",
+      "bytes": 444,
+      "sha256": "ac1d71980a0142d2dca277cca17a8916e9de75d2a79c7c3e8890bf8bfac19477"
+    },
+    {
+      "path": "MutatedReceiver/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "MutatedReceiver/jadx-javac.stderr",
+      "bytes": 826,
+      "sha256": "7d0a98208ed1c1613bdf547ca7d7e014eb1159b08267b103b71b00ad62b7dc50"
+    },
+    {
+      "path": "MutatedReceiver/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/jarde/MutatedReceiver.java",
+      "bytes": 2518,
+      "sha256": "bac48b318ee2b0198950262ba06386b75050dcf973f6dcaa230bad91d8394264"
+    },
+    {
+      "path": "MutatedReceiver/jarde/jarde-class-source.stderr",
+      "bytes": 142174,
+      "sha256": "788bd07552e5906f79b282d6b34830f2cb7c33a9dc10c1172c2dc34eb479ba3c"
+    },
+    {
+      "path": "MutatedReceiver/jarde/jarde-class-source.stdout",
+      "bytes": 2518,
+      "sha256": "bac48b318ee2b0198950262ba06386b75050dcf973f6dcaa230bad91d8394264"
+    },
+    {
+      "path": "MutatedReceiver/jarde-javac.stderr",
+      "bytes": 1780,
+      "sha256": "44a10447ee03fb90e3629ccb92b54efc7ca0afb8419252926ef8fa86f1471375"
+    },
+    {
+      "path": "MutatedReceiver/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "MutatedReceiver/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/original-headers.stdout",
+      "bytes": 25,
+      "sha256": "658ae1206948743689a2032dd6c7080b89e0f9418fb0220dd56c6598d7d917bf"
+    },
+    {
+      "path": "MutatedReceiver/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "MutatedReceiver/original.jar",
+      "bytes": 1214,
+      "sha256": "29edfe7db94bf3f3bba3d621d5ba56c0e241db6ae519cc7f911b52653689f3d5"
+    },
+    {
+      "path": "MutatedReceiver/original.java",
+      "bytes": 429,
+      "sha256": "f97d742746f1f7336461febf46532e2e3407d1035832664567ba9c4db0a074bd"
+    },
+    {
+      "path": "NumberBoundRelay/NumberBoundRelay.jar",
+      "bytes": 1207,
+      "sha256": "ed30277858ceb7037be3918d7624b9c97d9c765725cc7aea9c5425731af4c39f"
+    },
+    {
+      "path": "NumberBoundRelay/NumberBoundRelay.java",
+      "bytes": 315,
+      "sha256": "bf9a027daec2695e5ba3aa6160e7d86a3231e6a533b5811e4b5af5c62d913130"
+    },
+    {
+      "path": "NumberBoundRelay/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/jadx/NumberBoundRelay.java",
+      "bytes": 462,
+      "sha256": "ae654a67353bc8df66104fc121140108693d0ccde9c0f0694f0f9513b2601ee8"
+    },
+    {
+      "path": "NumberBoundRelay/jadx/full-output/sources/defpackage/NumberBoundRelay.java",
+      "bytes": 462,
+      "sha256": "ae654a67353bc8df66104fc121140108693d0ccde9c0f0694f0f9513b2601ee8"
+    },
+    {
+      "path": "NumberBoundRelay/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "NumberBoundRelay/jadx-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/jadx-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "NumberBoundRelay/jadx-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/jadx-headers.stdout",
+      "bytes": 47,
+      "sha256": "3cf13fdbc8889f553a4c23955d5897f0526b8eb4e15f82c3ba4d2309673b5992"
+    },
+    {
+      "path": "NumberBoundRelay/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/jarde/NumberBoundRelay.java",
+      "bytes": 2260,
+      "sha256": "3bb9d56fd4ae0178e0ea49a0b1b45ba398447fc6bc3866f9fda428122b3a44bb"
+    },
+    {
+      "path": "NumberBoundRelay/jarde/jarde-class-source.stderr",
+      "bytes": 147066,
+      "sha256": "e9b3002240e6f6d62b72ad53916ef082be895203254936c6e9b5753616c378d1"
+    },
+    {
+      "path": "NumberBoundRelay/jarde/jarde-class-source.stdout",
+      "bytes": 2260,
+      "sha256": "3bb9d56fd4ae0178e0ea49a0b1b45ba398447fc6bc3866f9fda428122b3a44bb"
+    },
+    {
+      "path": "NumberBoundRelay/jarde-javac.stderr",
+      "bytes": 392,
+      "sha256": "dd2c7afaf07b71f71e8e8e9f8429a88ca0b23045444d409ecb86cd55d0495cc8"
+    },
+    {
+      "path": "NumberBoundRelay/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "NumberBoundRelay/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/original-headers.stdout",
+      "bytes": 47,
+      "sha256": "3cf13fdbc8889f553a4c23955d5897f0526b8eb4e15f82c3ba4d2309673b5992"
+    },
+    {
+      "path": "NumberBoundRelay/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "NumberBoundRelay/original.jar",
+      "bytes": 1207,
+      "sha256": "ed30277858ceb7037be3918d7624b9c97d9c765725cc7aea9c5425731af4c39f"
+    },
+    {
+      "path": "NumberBoundRelay/original.java",
+      "bytes": 315,
+      "sha256": "bf9a027daec2695e5ba3aa6160e7d86a3231e6a533b5811e4b5af5c62d913130"
+    },
+    {
+      "path": "RawReceiver/RawReceiver.jar",
+      "bytes": 1204,
+      "sha256": "1161566c3637c3574ec15275d264556eb39dd75802b9a15353bc8442ad6205bc"
+    },
+    {
+      "path": "RawReceiver/RawReceiver.java",
+      "bytes": 405,
+      "sha256": "4d1fe05d4474aec8c6a41341ec0b3b659b2c9594d44691bd493ac7a69ba1cb4f"
+    },
+    {
+      "path": "RawReceiver/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/jadx/RawReceiver.java",
+      "bytes": 420,
+      "sha256": "84b502215173fea67e1cadde9092ddabf67ccc0408ab93b9729aed38db6498e6"
+    },
+    {
+      "path": "RawReceiver/jadx/full-output/sources/defpackage/RawReceiver.java",
+      "bytes": 420,
+      "sha256": "84b502215173fea67e1cadde9092ddabf67ccc0408ab93b9729aed38db6498e6"
+    },
+    {
+      "path": "RawReceiver/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "RawReceiver/jadx-javac.stderr",
+      "bytes": 594,
+      "sha256": "24285df3b540bb592d2b4634684bf4250d41e9f563df3558ede380ad0464d249"
+    },
+    {
+      "path": "RawReceiver/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/jarde/RawReceiver.java",
+      "bytes": 1820,
+      "sha256": "49257fabd1165912247ed52c8f7c3dd8cbf17ae7b1039162a30cd74db40ca057"
+    },
+    {
+      "path": "RawReceiver/jarde/jarde-class-source.stderr",
+      "bytes": 138999,
+      "sha256": "7c74dc54531b6180d26c7c6a2b59a9a741c3700d8516427e8991ca374024038f"
+    },
+    {
+      "path": "RawReceiver/jarde/jarde-class-source.stdout",
+      "bytes": 1820,
+      "sha256": "49257fabd1165912247ed52c8f7c3dd8cbf17ae7b1039162a30cd74db40ca057"
+    },
+    {
+      "path": "RawReceiver/jarde-javac.stderr",
+      "bytes": 629,
+      "sha256": "901ae0478f61a4a3a951ccca56c97b0c2a768513e5bd9c7eccf2df20e23ced02"
+    },
+    {
+      "path": "RawReceiver/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "RawReceiver/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/original-headers.stdout",
+      "bytes": 25,
+      "sha256": "658ae1206948743689a2032dd6c7080b89e0f9418fb0220dd56c6598d7d917bf"
+    },
+    {
+      "path": "RawReceiver/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RawReceiver/original.jar",
+      "bytes": 1204,
+      "sha256": "1161566c3637c3574ec15275d264556eb39dd75802b9a15353bc8442ad6205bc"
+    },
+    {
+      "path": "RawReceiver/original.java",
+      "bytes": 405,
+      "sha256": "4d1fe05d4474aec8c6a41341ec0b3b659b2c9594d44691bd493ac7a69ba1cb4f"
+    },
+    {
+      "path": "SameErasureBinder/SameErasureBinder.jar",
+      "bytes": 1152,
+      "sha256": "ea106d6ce1d7ad2bc3f0a006c0968597cdc4fc7ce8618639d9d9f3ee8d61fd0f"
+    },
+    {
+      "path": "SameErasureBinder/SameErasureBinder.java",
+      "bytes": 287,
+      "sha256": "83a3a9deaf54eae04c842831e28cf5856de877f76f6780c3137aad4ca110dea9"
+    },
+    {
+      "path": "SameErasureBinder/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/jadx/SameErasureBinder.java",
+      "bytes": 460,
+      "sha256": "77126938ce952ac6bf63b8287617541ed066de0913453c022994a583b08001e7"
+    },
+    {
+      "path": "SameErasureBinder/jadx/full-output/sources/defpackage/SameErasureBinder.java",
+      "bytes": 460,
+      "sha256": "77126938ce952ac6bf63b8287617541ed066de0913453c022994a583b08001e7"
+    },
+    {
+      "path": "SameErasureBinder/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "SameErasureBinder/jadx-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/jadx-behavior.stdout",
+      "bytes": 19,
+      "sha256": "2caa94fc3c938862c042e3d677607e504597b981e5c4e0ae2e8979b2801548e7"
+    },
+    {
+      "path": "SameErasureBinder/jadx-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/jadx-headers.stdout",
+      "bytes": 106,
+      "sha256": "73fe754d48828c960d35ce13c50b6939185daeca60eb78bca0e56bc23c3e5441"
+    },
+    {
+      "path": "SameErasureBinder/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/jarde/SameErasureBinder.java",
+      "bytes": 2959,
+      "sha256": "a5b477699d8b1142bdf975ccce272140b3fde4dcc80092ae4d62d61794146619"
+    },
+    {
+      "path": "SameErasureBinder/jarde/jarde-class-source.stderr",
+      "bytes": 128544,
+      "sha256": "1f9f99f4c92606faf4cd2097a90af758b2fafec52bd233cd8569b8f3a8776d2f"
+    },
+    {
+      "path": "SameErasureBinder/jarde/jarde-class-source.stdout",
+      "bytes": 2959,
+      "sha256": "a5b477699d8b1142bdf975ccce272140b3fde4dcc80092ae4d62d61794146619"
+    },
+    {
+      "path": "SameErasureBinder/jarde-javac.stderr",
+      "bytes": 346,
+      "sha256": "8d746e2849ce80b8356a55eabb37a92465eb7588e78d17f1e1f6378c0aa40822"
+    },
+    {
+      "path": "SameErasureBinder/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/original-behavior.stdout",
+      "bytes": 19,
+      "sha256": "2caa94fc3c938862c042e3d677607e504597b981e5c4e0ae2e8979b2801548e7"
+    },
+    {
+      "path": "SameErasureBinder/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/original-headers.stdout",
+      "bytes": 106,
+      "sha256": "73fe754d48828c960d35ce13c50b6939185daeca60eb78bca0e56bc23c3e5441"
+    },
+    {
+      "path": "SameErasureBinder/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameErasureBinder/original.jar",
+      "bytes": 1152,
+      "sha256": "ea106d6ce1d7ad2bc3f0a006c0968597cdc4fc7ce8618639d9d9f3ee8d61fd0f"
+    },
+    {
+      "path": "SameErasureBinder/original.java",
+      "bytes": 287,
+      "sha256": "83a3a9deaf54eae04c842831e28cf5856de877f76f6780c3137aad4ca110dea9"
+    },
+    {
+      "path": "SameNameOverload/SameNameOverload.jar",
+      "bytes": 1157,
+      "sha256": "b5da8b09148a36701cd6046422e8696746027890e43b90f38ce4d3e2a51fd525"
+    },
+    {
+      "path": "SameNameOverload/SameNameOverload.java",
+      "bytes": 390,
+      "sha256": "dfa8887d2d511c4bf1dc2f8847e4249cbed518c8416fd395120a241705d178d6"
+    },
+    {
+      "path": "SameNameOverload/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jadx/SameNameOverload.java",
+      "bytes": 585,
+      "sha256": "d62eeb5cf58a2e88a3bf6896a0599e0f6c7db534db0165cc7c463647f1568f23"
+    },
+    {
+      "path": "SameNameOverload/jadx/full-output/sources/defpackage/SameNameOverload.java",
+      "bytes": 585,
+      "sha256": "d62eeb5cf58a2e88a3bf6896a0599e0f6c7db534db0165cc7c463647f1568f23"
+    },
+    {
+      "path": "SameNameOverload/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "SameNameOverload/jadx-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jadx-behavior.stdout",
+      "bytes": 26,
+      "sha256": "db28e490dfa266d9713a9f3660b909f96b1486996510423bf1c84991724ede79"
+    },
+    {
+      "path": "SameNameOverload/jadx-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jadx-headers.stdout",
+      "bytes": 97,
+      "sha256": "7f6d545790f70240c1f6ba7ed01a2038029ef2616582258153b2552b678f7e83"
+    },
+    {
+      "path": "SameNameOverload/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jarde/SameNameOverload.java",
+      "bytes": 2632,
+      "sha256": "8fbf451665fd6c714254bc74dc4e4a280f98f2e2b0e79d6d6f42f146e92e51c0"
+    },
+    {
+      "path": "SameNameOverload/jarde/jarde-class-source.stderr",
+      "bytes": 149148,
+      "sha256": "8b0d1c05845a7571b344a7647287ad59d094f9cd311282336b4b42f4268963fc"
+    },
+    {
+      "path": "SameNameOverload/jarde/jarde-class-source.stdout",
+      "bytes": 2632,
+      "sha256": "8fbf451665fd6c714254bc74dc4e4a280f98f2e2b0e79d6d6f42f146e92e51c0"
+    },
+    {
+      "path": "SameNameOverload/jarde-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jarde-behavior.stdout",
+      "bytes": 26,
+      "sha256": "db28e490dfa266d9713a9f3660b909f96b1486996510423bf1c84991724ede79"
+    },
+    {
+      "path": "SameNameOverload/jarde-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/jarde-headers.stdout",
+      "bytes": 112,
+      "sha256": "a36e3ca71737e97495baaa7bd518eff57e8cf551c15089441e73bd8a318f53b0"
+    },
+    {
+      "path": "SameNameOverload/jarde-javac.stderr",
+      "bytes": 213,
+      "sha256": "939852d4c5ce741e7980a4e6f3632434573ab8b05ef50907f86e4be386dc5e16"
+    },
+    {
+      "path": "SameNameOverload/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/original-behavior.stdout",
+      "bytes": 26,
+      "sha256": "db28e490dfa266d9713a9f3660b909f96b1486996510423bf1c84991724ede79"
+    },
+    {
+      "path": "SameNameOverload/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/original-headers.stdout",
+      "bytes": 97,
+      "sha256": "7f6d545790f70240c1f6ba7ed01a2038029ef2616582258153b2552b678f7e83"
+    },
+    {
+      "path": "SameNameOverload/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SameNameOverload/original.jar",
+      "bytes": 1157,
+      "sha256": "b5da8b09148a36701cd6046422e8696746027890e43b90f38ce4d3e2a51fd525"
+    },
+    {
+      "path": "SameNameOverload/original.java",
+      "bytes": 390,
+      "sha256": "dfa8887d2d511c4bf1dc2f8847e4249cbed518c8416fd395120a241705d178d6"
+    },
+    {
+      "path": "VoidDirect/VoidDirect.jar",
+      "bytes": 1178,
+      "sha256": "3b5297afd25ff2092ddcff7e0239ab23e4f745de7700362b5002c6c0cb2fe440"
+    },
+    {
+      "path": "VoidDirect/VoidDirect.java",
+      "bytes": 315,
+      "sha256": "f49216c05fd0e139c582607f4ce713cafb74433a9279d47c7424290ab828db57"
+    },
+    {
+      "path": "VoidDirect/freeze-jar.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/freeze-jar.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jadx/VoidDirect.java",
+      "bytes": 476,
+      "sha256": "76f5cd5d5be7127d24fc92bdfc6a42669d17596f7bd3b3c33057efe3c415e818"
+    },
+    {
+      "path": "VoidDirect/jadx/full-output/sources/defpackage/VoidDirect.java",
+      "bytes": 476,
+      "sha256": "76f5cd5d5be7127d24fc92bdfc6a42669d17596f7bd3b3c33057efe3c415e818"
+    },
+    {
+      "path": "VoidDirect/jadx/jadx.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jadx/jadx.stdout",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "VoidDirect/jadx-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jadx-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "VoidDirect/jadx-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jadx-headers.stdout",
+      "bytes": 55,
+      "sha256": "01672100ed6ece599590525ab74efd1b739fc70f91a5c5120f1b4a5e1171e7db"
+    },
+    {
+      "path": "VoidDirect/jadx-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jadx-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jarde/VoidDirect.java",
+      "bytes": 2162,
+      "sha256": "4c54bda390a6856d3bf0df51916027cef5edf0e297ad43592fe6c33349a3f6d4"
+    },
+    {
+      "path": "VoidDirect/jarde/jarde-class-source.stderr",
+      "bytes": 152092,
+      "sha256": "077571e08462c3ca405c354ce816c20d21b0ad4ff667dca16d57118c4480396b"
+    },
+    {
+      "path": "VoidDirect/jarde/jarde-class-source.stdout",
+      "bytes": 2162,
+      "sha256": "4c54bda390a6856d3bf0df51916027cef5edf0e297ad43592fe6c33349a3f6d4"
+    },
+    {
+      "path": "VoidDirect/jarde-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jarde-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "VoidDirect/jarde-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/jarde-headers.stdout",
+      "bytes": 55,
+      "sha256": "01672100ed6ece599590525ab74efd1b739fc70f91a5c5120f1b4a5e1171e7db"
+    },
+    {
+      "path": "VoidDirect/jarde-javac.stderr",
+      "bytes": 201,
+      "sha256": "6bfc0e4edea0d27845b138d94d16609fd3a1dcae39c00a5f45353a0374f578fd"
+    },
+    {
+      "path": "VoidDirect/jarde-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/original-behavior.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/original-behavior.stdout",
+      "bytes": 21,
+      "sha256": "afb63e5749c688ba28b2f8aea0dfce852f4ba3da48ce036aa4a1dda3ff04cc47"
+    },
+    {
+      "path": "VoidDirect/original-headers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/original-headers.stdout",
+      "bytes": 55,
+      "sha256": "01672100ed6ece599590525ab74efd1b739fc70f91a5c5120f1b4a5e1171e7db"
+    },
+    {
+      "path": "VoidDirect/original-javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "VoidDirect/original.jar",
+      "bytes": 1178,
+      "sha256": "3b5297afd25ff2092ddcff7e0239ab23e4f745de7700362b5002c6c0cb2fe440"
+    },
+    {
+      "path": "VoidDirect/original.java",
+      "bytes": 315,
+      "sha256": "f49216c05fd0e139c582607f4ce713cafb74433a9279d47c7424290ab828db57"
+    },
+    {
+      "path": "incompatible-binder-negative/negative-original-javac.stderr",
+      "bytes": 529,
+      "sha256": "db3ae158f8927b1554ab9b2053f38284916248f907dc51efea166d71564a02e4"
+    },
+    {
+      "path": "incompatible-binder-negative/negative-original-javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "generated_class_cleanup": {
+    "input_class_directories_removed": true,
+    "remaining_class_files": 0
+  }
+}

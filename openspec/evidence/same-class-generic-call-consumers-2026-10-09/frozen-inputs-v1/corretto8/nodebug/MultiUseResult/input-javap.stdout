@@ -1,0 +1,83 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/nodebug/MultiUseResult/MultiUseResult.jar!/MultiUseResult.class
+  Last modified 2026-10-9; size 482 bytes
+  MD5 checksum 3eed54d9468306b715602842ee3c87d6
+public class MultiUseResult<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#20         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #5.#21         // MultiUseResult.observed:Ljava/lang/Object;
+   #3 = Methodref          #5.#22         // MultiUseResult.identity:(Ljava/lang/Object;)Ljava/lang/Object;
+   #4 = Methodref          #5.#23         // MultiUseResult.observe:(Ljava/lang/Object;)V
+   #5 = Class              #24            // MultiUseResult
+   #6 = Class              #25            // java/lang/Object
+   #7 = Utf8               observed
+   #8 = Utf8               Ljava/lang/Object;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               identity
+  #13 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #14 = Utf8               Signature
+  #15 = Utf8               (TT;)TT;
+  #16 = Utf8               observe
+  #17 = Utf8               (Ljava/lang/Object;)V
+  #18 = Utf8               relay
+  #19 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #20 = NameAndType        #9:#10         // "<init>":()V
+  #21 = NameAndType        #7:#8          // observed:Ljava/lang/Object;
+  #22 = NameAndType        #12:#13        // identity:(Ljava/lang/Object;)Ljava/lang/Object;
+  #23 = NameAndType        #16:#17        // observe:(Ljava/lang/Object;)V
+  #24 = Utf8               MultiUseResult
+  #25 = Utf8               java/lang/Object
+{
+  public java.lang.Object observed;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+
+  public MultiUseResult();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public T identity(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+    Signature: #15                          // (TT;)TT;
+
+  public void observe(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #2                  // Field observed:Ljava/lang/Object;
+         5: return
+
+  public T relay(T);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #3                  // Method identity:(Ljava/lang/Object;)Ljava/lang/Object;
+         5: astore_2
+         6: aload_0
+         7: aload_2
+         8: invokevirtual #4                  // Method observe:(Ljava/lang/Object;)V
+        11: aload_2
+        12: areturn
+    Signature: #15                          // (TT;)TT;
+}
+Signature: #19                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

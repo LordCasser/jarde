@@ -1,0 +1,5 @@
+fieldValue=object
+fieldGenericType=java.lang.Object
+classvars=1
+method=putObject methodvars=0 parameterGenericType=java.lang.Object
+method=putT methodvars=0 parameterGenericType=T

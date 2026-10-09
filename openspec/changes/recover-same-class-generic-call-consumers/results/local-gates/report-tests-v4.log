@@ -1,0 +1,57 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0631]: type mismatch in function arguments
+    --> crates/jarde-java/src/report.rs:1842:18
+     |
+1842 |             .map(class_source_invoke_ast_expression_anchor_count)
+     |              --- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected due to this
+     |              |
+     |              required by a bound introduced by this call
+...
+3011 | fn class_source_invoke_ast_expression_anchor_count(expression: &crate::ast::Expr) -> usize {
+     | ------------------------------------------------------------------------------------------ found signature defined here
+     |
+     = note: expected function signature `fn(&Box<ast::Expr>) -> _`
+                found function signature `fn(&ast::Expr) -> _`
+note: required by a bound in `map`
+    --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/iter/traits/iterator.rs:834:12
+     |
+ 831 |     fn map<B, F>(self, f: F) -> Map<Self, F>
+     |        --- required by a bound in this associated function
+...
+ 834 |         F: FnMut(Self::Item) -> B,
+     |            ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Iterator::map`
+help: consider wrapping the function in a closure
+     |
+1842 |             .map(|arg0: &Box<ast::Expr>| class_source_invoke_ast_expression_anchor_count(/* &ast::Expr */))
+     |                  +++++++++++++++++++++++                                                ++++++++++++++++++
+
+error[E0599]: the method `chain` exists for struct `Map<Iter<'_, Box<Expr>>, ...>`, but its trait bounds were not satisfied
+    --> crates/jarde-java/src/report.rs:1843:14
+     |
+1840 |           let anchor_count = receiver
+     |  ____________________________-
+1841 | |             .iter()
+1842 | |             .map(class_source_invoke_ast_expression_anchor_count)
+1843 | |             .chain(
+     | |             -^^^^^ method cannot be called on `Map<Iter<'_, Box<Expr>>, ...>` due to unsatisfied trait bounds
+     | |_____________|
+     |
+     |
+    ::: /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/iter/adapters/map.rs:61:1
+     |
+  61 |   pub struct Map<I, F> {
+     |   -------------------- doesn't satisfy `_: Iterator`
+     |
+     = note: the following trait bounds were not satisfied:
+             `<for<'a> fn(&'a ast::Expr) -> usize {class_source_invoke_ast_expression_anchor_count} as FnOnce<(&Box<ast::Expr>,)>>::Output = _`
+             which is required by `std::iter::Map<std::option::Iter<'_, Box<ast::Expr>>, for<'a> fn(&'a ast::Expr) -> usize {class_source_invoke_ast_expression_anchor_count}>: Iterator`
+             `for<'a> fn(&'a ast::Expr) -> usize {class_source_invoke_ast_expression_anchor_count}: FnMut<(&Box<ast::Expr>,)>`
+             which is required by `std::iter::Map<std::option::Iter<'_, Box<ast::Expr>>, for<'a> fn(&'a ast::Expr) -> usize {class_source_invoke_ast_expression_anchor_count}>: Iterator`
+             `std::iter::Map<std::option::Iter<'_, Box<ast::Expr>>, for<'a> fn(&'a ast::Expr) -> usize {class_source_invoke_ast_expression_anchor_count}>: Iterator`
+             which is required by `&mut std::iter::Map<std::option::Iter<'_, Box<ast::Expr>>, for<'a> fn(&'a ast::Expr) -> usize {class_source_invoke_ast_expression_anchor_count}>: Iterator`
+     = note: the full name for the type has been written to '/Users/lordcasser/workspace/projects/jarde/target/debug/deps/jarde_java-962e3f8838370d64.long-type-6713898245239271067.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+
+Some errors have detailed explanations: E0599, E0631.
+For more information about an error, try `rustc --explain E0599`.
+error: could not compile `jarde-java` (lib test) due to 2 previous errors

@@ -1,0 +1,210 @@
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0425]: cannot find value `class_superclass` in this scope
+     --> src/facade.rs:11786:9
+      |
+11786 |         class_superclass,
+      |         ^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `descriptor_parameter_count` in this scope
+     --> src/facade.rs:12239:13
+      |
+12239 |             descriptor_parameter_count(&candidate.descriptor) == Some(actuals.len())
+      |             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+35058 | fn bridge_parameter_count(descriptor: &[u8]) -> Option<usize> {
+      | ------------------------------------------------------------- similarly named function `bridge_parameter_count` defined here
+      |
+note: function `crate::class_source::descriptor_parameter_count` exists but is inaccessible
+     --> src/class_source.rs:4146:1
+      |
+ 4146 | fn descriptor_parameter_count(descriptor: &[u8]) -> Option<usize> {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not accessible
+help: a function with a similar name exists
+      |
+12239 -             descriptor_parameter_count(&candidate.descriptor) == Some(actuals.len())
+12239 +             bridge_parameter_count(&candidate.descriptor) == Some(actuals.len())
+      |
+
+error[E0425]: cannot find type `ResolvedInnerClass` in this scope
+     --> src/facade.rs:12393:31
+      |
+12393 |     resolved_inner_classes: &[ResolvedInnerClass],
+      |                               ^^^^^^^^^^^^^^^^^^ not found in this scope
+      |
+help: consider importing this struct through its public re-export
+      |
+   11 + use crate::ResolvedInnerClass;
+      |
+
+error[E0425]: cannot find type `SignatureType` in this scope
+     --> src/facade.rs:13543:14
+      |
+13543 |     source: &SignatureType,
+      |              ^^^^^^^^^^^^^ not found in this scope
+
+warning: unused import: `TypeArgument`
+     --> src/facade.rs:13142:50
+      |
+13142 |     use jarde_reader::signature::{SignatureType, TypeArgument};
+      |                                                  ^^^^^^^^^^^^
+      |
+      = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0308]: mismatched types
+    --> src/class_source.rs:5359:41
+     |
+5359 |         || record.item.identity.name != member.name
+     |            -------------------------    ^^^^^^^^^^^ expected `JvmBytes`, found `JvmString`
+     |            |
+     |            expected because this is `jarde_reader::model::JvmBytes`
+
+error[E0308]: mismatched types
+    --> src/class_source.rs:5360:47
+     |
+5360 |         || record.item.identity.descriptor != member.descriptor
+     |            -------------------------------    ^^^^^^^^^^^^^^^^^ expected `JvmBytes`, found `JvmString`
+     |            |
+     |            expected because this is `jarde_reader::model::JvmBytes`
+
+error[E0599]: no method named `raw` found for struct `jarde_reader::model::JvmBytes` in the current scope
+     --> src/facade.rs:11935:31
+      |
+11935 |         || caller.method.name.raw().0 != caller_header.name.raw().0
+      |                               ^^^ method not found in `jarde_reader::model::JvmBytes`
+
+error[E0599]: no method named `raw` found for struct `jarde_reader::model::JvmBytes` in the current scope
+     --> src/facade.rs:11936:37
+      |
+11936 |         || caller.method.descriptor.raw().0 != caller_header.descriptor.raw().0
+      |                                     ^^^ method not found in `jarde_reader::model::JvmBytes`
+
+error[E0599]: no method named `raw` found for struct `jarde_reader::model::JvmBytes` in the current scope
+     --> src/facade.rs:12222:38
+      |
+12222 |             && candidate.method.name.raw().0 == key.target.name().as_bytes()
+      |                                      ^^^ method not found in `jarde_reader::model::JvmBytes`
+
+error[E0425]: cannot find function `parse_method_signature` in this scope
+     --> src/facade.rs:12308:32
+      |
+12308 |             let parsed = match parse_method_signature(&signature.0, budget) {
+      |                                ^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `parse_method_signature` in this scope
+     --> src/facade.rs:12342:32
+      |
+12342 |             let parsed = match parse_method_signature(&header.descriptor.raw().0, budget) {
+      |                                ^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0609]: no field `identity` on type `&MemberHeader`
+     --> src/facade.rs:12415:39
+      |
+12415 |             .position(|header| header.identity == *method)
+      |                                       ^^^^^^^^ unknown field
+      |
+      = note: available fields are: `name`, `descriptor`, `access_flags`, `attributes`
+
+error[E0599]: no variant, associated function, or constant named `Deferred` found for enum `SignatureProjection` in the current scope
+     --> src/facade.rs:12693:92
+      |
+12693 | ...                   || matches!(projection, class_source::SignatureProjection::Deferred)
+      |                                                                                  ^^^^^^^^ variant, associated function, or constant not found in `SignatureProjection`
+      |
+     ::: src/class_source.rs:4915:1
+      |
+ 4915 | pub(crate) enum SignatureProjection {
+      | ----------------------------------- variant, associated function, or constant `Deferred` not found for this enum
+
+error[E0599]: no variant, associated function, or constant named `Deferred` found for enum `SignatureProjection` in the current scope
+     --> src/facade.rs:12771:84
+      |
+12771 |                         || matches!(projection, class_source::SignatureProjection::Deferred)
+      |                                                                                    ^^^^^^^^ variant, associated function, or constant not found in `SignatureProjection`
+      |
+     ::: src/class_source.rs:4915:1
+      |
+ 4915 | pub(crate) enum SignatureProjection {
+      | ----------------------------------- variant, associated function, or constant `Deferred` not found for this enum
+
+error[E0308]: mismatched types
+     --> src/facade.rs:14404:21
+      |
+14404 |                 let Some(source) = ssa.value(*value) else {
+      |                     ^^^^^^^^^^^^   ----------------- this expression has type `&SsaValue`
+      |                     |
+      |                     expected `SsaValue`, found `Option<_>`
+      |
+      = note: expected struct `SsaValue`
+                   found enum `std::option::Option<_>`
+
+error[E0277]: the `?` operator can only be applied to values that implement `std::ops::Try`
+     --> src/facade.rs:14553:38
+      |
+14553 |                         let source = ssa?.value(value)?;
+      |                                      ^^^^^^^^^^^^^^^^^^ the `?` operator cannot be applied to type `&SsaValue`
+      |
+      = help: the nightly-only, unstable trait `std::ops::Try` is not implemented for `&SsaValue`
+
+error[E0502]: cannot borrow `candidate_actuals` as immutable because it is also borrowed as mutable
+    --> src/class_source.rs:3097:17
+     |
+3087 |             let Some(actual) = candidate_actuals.get_mut(*argument_index) else {
+     |                                ----------------- mutable borrow occurs here
+...
+3097 |                 &candidate_actuals,
+     |                 ^^^^^^^^^^^^^^^^^^ immutable borrow occurs here
+...
+3107 |                 *actual = Some(cast_choices[choice_index].1.clone());
+     |                 ------- mutable borrow later used here
+
+error[E0505]: cannot move out of `applicable` because it is borrowed
+    --> src/class_source.rs:3276:32
+     |
+3255 |     let mut applicable = Vec::new();
+     |         -------------- binding `applicable` declared here
+...
+3272 |     let Some((_, selected_parameters)) = applicable.iter().find(|(index, _)| *index == selected)
+     |                                          ---------- borrow of `applicable` occurs here
+...
+3276 |     for (index, parameters) in applicable {
+     |                                ^^^^^^^^^^ move out of `applicable` occurs here
+...
+3282 |         for (selected_type, other_type) in selected_parameters.iter().zip(&parameters) {
+     |                                            ------------------- borrow later used here
+
+error[E0004]: non-exhaustive patterns: `(&SignatureType::TypeVariable(_), &SignatureType::TypeVariable(_))` not covered
+    --> src/class_source.rs:3725:11
+     |
+3725 |     match (source, target) {
+     |           ^^^^^^^^^^^^^^^^ pattern `(&SignatureType::TypeVariable(_), &SignatureType::TypeVariable(_))` not covered
+     |
+     = note: the matched value is of type `(&SignatureType, &SignatureType)`
+help: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown
+     |
+3863 ~         (SignatureType::Class(_), SignatureType::TypeVariable(_)) => Ok(Some(false)),
+3864 ~         (&SignatureType::TypeVariable(_), &SignatureType::TypeVariable(_)) => todo!(),
+     |
+
+error[E0433]: cannot find type `SignatureType` in this scope
+     --> src/facade.rs:13550:9
+      |
+13550 |     let SignatureType::Class(class) = source else {
+      |         ^^^^^^^^^^^^^ use of undeclared type `SignatureType`
+
+error[E0433]: cannot find type `TypeArgument` in this scope
+     --> src/facade.rs:13565:36
+      |
+13565 |             || !matches!(argument, TypeArgument::Exact(SignatureType::TypeVariable(name)) if name == &variable.name)
+      |                                    ^^^^^^^^^^^^ use of undeclared type `TypeArgument`
+
+error[E0433]: cannot find type `SignatureType` in this scope
+     --> src/facade.rs:13565:56
+      |
+13565 |             || !matches!(argument, TypeArgument::Exact(SignatureType::TypeVariable(name)) if name == &variable.name)
+      |                                                        ^^^^^^^^^^^^^ use of undeclared type `SignatureType`
+
+Some errors have detailed explanations: E0004, E0277, E0308, E0425, E0433, E0502, E0505, E0599, E0609.
+For more information about an error, try `rustc --explain E0004`.
+warning: `jarde` (lib) generated 1 warning
+error: could not compile `jarde` (lib) due to 22 previous errors; 1 warning emitted

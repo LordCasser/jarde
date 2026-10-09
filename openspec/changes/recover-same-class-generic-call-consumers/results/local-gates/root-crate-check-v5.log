@@ -1,0 +1,25 @@
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0599]: no method named `as_bytes` found for reference `&JvmBytes` in the current scope
+    --> crates/jarde-java/src/report.rs:3356:56
+     |
+3356 |         Base::Object(name) => std::str::from_utf8(name.as_bytes())
+     |                                                        ^^^^^^^^ method not found in `&JvmBytes`
+
+error[E0382]: borrow of partially moved value: `consumer`
+    --> crates/jarde-java/src/report.rs:2132:50
+     |
+2047 |                 Consumer::LocalStore(write_bci, local_name) => {
+     |                                                 ---------- value partially moved here
+...
+2132 |                 let transparent_consumer = match &consumer {
+     |                                                  ^^^^^^^^^ value borrowed here after partial move
+     |
+     = note: partial move occurs because value has type `std::string::String`, which does not implement the `Copy` trait
+help: borrow this binding in the pattern to avoid moving the value
+     |
+2047 |                 Consumer::LocalStore(write_bci, ref local_name) => {
+     |                                                 +++
+
+Some errors have detailed explanations: E0382, E0599.
+For more information about an error, try `rustc --explain E0382`.
+error: could not compile `jarde-java` (lib) due to 2 previous errors

@@ -1,0 +1,8 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/nested-call-4/corretto8/debug/candidate-source/NestedCallArgument.java:34: 错误: 找不到符号
+                    return this.second(this.first(x));
+                                                  ^
+  符号:   变量 x
+  位置: 类 NestedCallArgument<T>
+  其中, T是类型变量:
+    T扩展已在类 NestedCallArgument中声明的Object
+1 个错误

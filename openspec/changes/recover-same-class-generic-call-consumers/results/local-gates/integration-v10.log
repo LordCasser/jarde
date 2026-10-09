@@ -1,0 +1,25 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0425]: cannot find value `caller_constructor_candidate` in this scope
+     --> src/facade.rs:12110:21
+      |
+12110 |         .or_else(|| caller_constructor_candidate.map(|candidate| &candidate.init));
+      |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      |
+help: a local variable with a similar name exists
+      |
+12110 -         .or_else(|| caller_constructor_candidate.map(|candidate| &candidate.init));
+12110 +         .or_else(|| constructor_candidate.map(|candidate| &candidate.init));
+      |
+
+warning: unused variable: `constructor_candidate`
+     --> src/facade.rs:13781:5
+      |
+13781 |     constructor_candidate: Option<&jarde_java::report::GenericConstructorCandidate>,
+      |     ^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_constructor_candidate`
+      |
+      = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+For more information about this error, try `rustc --explain E0425`.
+warning: `jarde` (lib) generated 1 warning
+error: could not compile `jarde` (lib) due to 1 previous error; 1 warning emitted

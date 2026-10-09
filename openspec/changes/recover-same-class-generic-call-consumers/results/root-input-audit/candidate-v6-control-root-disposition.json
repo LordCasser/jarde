@@ -1,0 +1,931 @@
+{
+  "scope": "root独立核CLI6 44控制的源/jar/完整候选/Probe与CLI5逐字节一致；相同题面/源码边界采用同一九拒绝、两正控制裁定。仅v38/CLI6，不替代完整门禁，普通List<String>与AttributeBytes门禁失败仍未解决。",
+  "candidate_cli_sha256": "c42c2f64df21fd74e22710e6887eac0040850d2e03906a202e051b65af1dc6d8",
+  "facts_sha256": "12145142d47ea09ffa32387734d8b0643cac7ec269fbd76000875c5295c71229",
+  "facts_records": 44,
+  "rows": [
+    {
+      "case": "UnknownIncoming",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "另一入边参数是Object，原unchecked (T)源码cast擦除后不提供类型证明；三个关联头一起raw，独立untouched仍T。"
+    },
+    {
+      "case": "CycleRelay",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "两个物理方法有互相invoke依赖，无环callee-first不以候选互证；有限执行控制保持行为但不计API恢复。"
+    },
+    {
+      "case": "MethodHandleUse",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "身份目标位于bootstrap handle，caller没有普通direct identity invoke；Function.apply跨接口的代换不在此片。"
+    },
+    {
+      "case": "RawOwnReceiver",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "原raw alias被renderer折为this，但SSA实参receiver未获直接this/参数化receiver证明；整体保持raw而不从原源码或展示this猜T。"
+    },
+    {
+      "case": "ReboundOwnReceiver",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "原receiver静态类型仍为C<T>，unchecked raw赋值不改变其类型；候选的实际局部声明是raw C。Object alias、raw cast及重绑定传播未获证明，依实际发射保持拒绝。"
+    },
+    {
+      "case": "InheritedUnknown",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "符号owner写本类，但无本类物理get声明；父类ArrayList<T>替换与继承解析未获证明，class和method均保持可靠raw表示。"
+    },
+    {
+      "case": "VarargsCall",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "ACC_VARARGS和调用前数组构造不能作固定参数direct formal代换；保留擦除varargs及调用行为，拒绝泛型头。"
+    },
+    {
+      "case": "SameErasureBinder",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "class T与callee U虽同Number擦除，U还需Runnable且本调用为null无唯一方法变量源；保留sink raw和独立class T，不计U恢复。"
+    },
+    {
+      "case": "MultiUseResult",
+      "four_legs": 4,
+      "verdict": "bounded_refusal",
+      "full_api_recovered": false,
+      "root_basis": "call结果保存为局部并用于observe和return，多use/局部传播在范围外；完整incoming不闭合时identity和relay共同raw，实际observe与返回效果通过。"
+    },
+    {
+      "case": "BridgeUnknown",
+      "four_legs": 4,
+      "verdict": "positive_control",
+      "full_api_recovered": true,
+      "root_basis": "既有pure桥接证明成立，javac重编补桥，保留真实String checkcast；四腿完整API匹配，作为正控制。"
+    },
+    {
+      "case": "IncompleteSite",
+      "four_legs": 4,
+      "verdict": "positive_control",
+      "full_api_recovered": true,
+      "root_basis": "原fixture有合法条件单invoke，四腿两分支和API都匹配，作为正控制；缺项清单由独立故障测试验证，不改该输入凑负例。"
+    }
+  ],
+  "actual_checks": [
+    {
+      "case": "UnknownIncoming",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "23acc50b951ba101b524698c2788d5eb06500a4e827b2db2f1c59c63c5d8ec85",
+        "jar": "72327f51b077244ba5fe2896a7c8897acfd7e326ece2bc1c0c1fa1270bea519b",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "UnknownIncoming",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/UnknownIncoming/jarde/UnknownIncoming.java",
+          "sha256": "8eb63a571e6f6f240b98d6cae458d58755233787208d41cc2b198b5804da7ef4"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "UnknownIncoming",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "23acc50b951ba101b524698c2788d5eb06500a4e827b2db2f1c59c63c5d8ec85",
+        "jar": "ea3309ef41feae4efe5091976a54899f25d1627ae4e572b7f5635669cb691577",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "UnknownIncoming",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/UnknownIncoming/jarde/UnknownIncoming.java",
+          "sha256": "c13515486182a7c0233229cca698695bea4f7df50ff8f2e14b6fed5f0852e0ae"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "UnknownIncoming",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "23acc50b951ba101b524698c2788d5eb06500a4e827b2db2f1c59c63c5d8ec85",
+        "jar": "dbe1f18fa7dcec4135024bfbe68d3c5a61d358a45ea69f63e2d0b20ecf314447",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "UnknownIncoming",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/UnknownIncoming/jarde/UnknownIncoming.java",
+          "sha256": "8eb63a571e6f6f240b98d6cae458d58755233787208d41cc2b198b5804da7ef4"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "UnknownIncoming",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "23acc50b951ba101b524698c2788d5eb06500a4e827b2db2f1c59c63c5d8ec85",
+        "jar": "6b1d92d63160c91655e838f87ba7ceccc5066dbba1bcaa01150fd6b4576cc2c3",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "UnknownIncoming",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/UnknownIncoming/jarde/UnknownIncoming.java",
+          "sha256": "c13515486182a7c0233229cca698695bea4f7df50ff8f2e14b6fed5f0852e0ae"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "CycleRelay",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "f68cd9f5d56020a7e03cbd263d7925770bce35e4bc8c57dd464a403eae1db905",
+        "jar": "0a19c1468a138d4686dd223683ead772576d5527ff27b176b61aab00442eb4f2",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "CycleRelay",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/CycleRelay/jarde/CycleRelay.java",
+          "sha256": "a0782cb01ebd2a66c1fa07fe758065f7d6b708dbc556ed72bd5276386f8ca2f3"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "CycleRelay",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "f68cd9f5d56020a7e03cbd263d7925770bce35e4bc8c57dd464a403eae1db905",
+        "jar": "93811aca27631b11d07b2be9f08e81612240e215f697b263633d2116e63cf808",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "CycleRelay",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/CycleRelay/jarde/CycleRelay.java",
+          "sha256": "cd62d37698c910d793f9799686e71485b12029c2e87dcd3ffe3c3afe095b3f9b"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "CycleRelay",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "f68cd9f5d56020a7e03cbd263d7925770bce35e4bc8c57dd464a403eae1db905",
+        "jar": "1436b39ebfabb2d3b47e1a42a0b0152b803c4d640f467afbad630b4f8c748b6e",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "CycleRelay",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/CycleRelay/jarde/CycleRelay.java",
+          "sha256": "a0782cb01ebd2a66c1fa07fe758065f7d6b708dbc556ed72bd5276386f8ca2f3"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "CycleRelay",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "f68cd9f5d56020a7e03cbd263d7925770bce35e4bc8c57dd464a403eae1db905",
+        "jar": "4724274f1301d83a75972e00b6071a02ab5b3f2d89f7a2fca84fde33273c369f",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "CycleRelay",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/CycleRelay/jarde/CycleRelay.java",
+          "sha256": "cd62d37698c910d793f9799686e71485b12029c2e87dcd3ffe3c3afe095b3f9b"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MethodHandleUse",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "277e6d2ad33e55ee5774345acf929e9ee9a3c6a4694604acfa28a3676be1d8e0",
+        "jar": "76e9b4578b846b46fb0d503759b22f13d0a5d98d79c63b88a410a92e3e671030",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MethodHandleUse",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/MethodHandleUse/jarde/MethodHandleUse.java",
+          "sha256": "fb80f400fbab7e0180c6846cd314785d354662254fd78adba9fa57fdf980c5fd"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MethodHandleUse",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "277e6d2ad33e55ee5774345acf929e9ee9a3c6a4694604acfa28a3676be1d8e0",
+        "jar": "41944535109c1af3d7ea94b6d75045f10e766b35e89956f09fc92247060de18e",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MethodHandleUse",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/MethodHandleUse/jarde/MethodHandleUse.java",
+          "sha256": "824a4363116dffd2001098a9dedb81c6a6c65971addce4b2e16ab51a0ed73610"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MethodHandleUse",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "277e6d2ad33e55ee5774345acf929e9ee9a3c6a4694604acfa28a3676be1d8e0",
+        "jar": "96bdcbc0b2b5962b800cdd64382466e4ee75d133e3d4d895887237df5288809a",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MethodHandleUse",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/MethodHandleUse/jarde/MethodHandleUse.java",
+          "sha256": "fb80f400fbab7e0180c6846cd314785d354662254fd78adba9fa57fdf980c5fd"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MethodHandleUse",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "277e6d2ad33e55ee5774345acf929e9ee9a3c6a4694604acfa28a3676be1d8e0",
+        "jar": "be97ae98de7e3052cab42696a060cdd3349ac44d30dc9c29414bbb9a6b762189",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MethodHandleUse",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/MethodHandleUse/jarde/MethodHandleUse.java",
+          "sha256": "824a4363116dffd2001098a9dedb81c6a6c65971addce4b2e16ab51a0ed73610"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "RawOwnReceiver",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "61a4b6d25d7525d6fab2685e1875a5f6944f21f6b644a766a4e6c74838912932",
+        "jar": "86f184bd8b1d77ccf240c31aa4e4944e9f90ce001de7c5d543ce1c03361da943",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "RawOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/RawOwnReceiver/jarde/RawOwnReceiver.java",
+          "sha256": "9841e2b87c9c222434ec2f7bafc0e6438b13989a351e1b71d73baf9df378c4c8"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "RawOwnReceiver",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "61a4b6d25d7525d6fab2685e1875a5f6944f21f6b644a766a4e6c74838912932",
+        "jar": "bee7fcf9598de25917cefd4e8b915e35bb2b2e568dc41cfde2f8b939ab04e92f",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "RawOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/RawOwnReceiver/jarde/RawOwnReceiver.java",
+          "sha256": "6b6e312e35bab8fb84012b291deb55df266080add57f632ad937f3977079d208"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "RawOwnReceiver",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "61a4b6d25d7525d6fab2685e1875a5f6944f21f6b644a766a4e6c74838912932",
+        "jar": "f4fd34adc6ab76cbce3d87a2beb62d6375ddfa045ebf19322cfd1d07130b7ce2",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "RawOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/RawOwnReceiver/jarde/RawOwnReceiver.java",
+          "sha256": "9841e2b87c9c222434ec2f7bafc0e6438b13989a351e1b71d73baf9df378c4c8"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "RawOwnReceiver",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "61a4b6d25d7525d6fab2685e1875a5f6944f21f6b644a766a4e6c74838912932",
+        "jar": "4a8f260f57cabb8edf7a3ba6fab17f09e493b00a2cdd400128ad902b25b7e4fc",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "RawOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/RawOwnReceiver/jarde/RawOwnReceiver.java",
+          "sha256": "6b6e312e35bab8fb84012b291deb55df266080add57f632ad937f3977079d208"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "ReboundOwnReceiver",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "d0010bfe7d04781b025af9b82b17eec54c71a22a890d883189da67ea4473ea81",
+        "jar": "7e03c42cbe96cff0daa8d424e3fc237b2b0f1287f6697666aad5f8ec3d7710be",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "ReboundOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/ReboundOwnReceiver/jarde/ReboundOwnReceiver.java",
+          "sha256": "ff8bf4447ea94cc7832be42fff301f3a143eefb920fcf2d156e935e417c4e3e8"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "ReboundOwnReceiver",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "d0010bfe7d04781b025af9b82b17eec54c71a22a890d883189da67ea4473ea81",
+        "jar": "56d3743931a614c2240bfd164ab761d7ce65c781f2b02aca9cda59ec14f5f627",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "ReboundOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/ReboundOwnReceiver/jarde/ReboundOwnReceiver.java",
+          "sha256": "81e32ec2c2e5a186839326855521a0a4990aa021cc77f5ec7e93164328a19ce3"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "ReboundOwnReceiver",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "d0010bfe7d04781b025af9b82b17eec54c71a22a890d883189da67ea4473ea81",
+        "jar": "ee70661aec76415d5ca4a3c296502ef4128f44b820d1ececa58ab8f7811e86bd",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "ReboundOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/ReboundOwnReceiver/jarde/ReboundOwnReceiver.java",
+          "sha256": "ff8bf4447ea94cc7832be42fff301f3a143eefb920fcf2d156e935e417c4e3e8"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "ReboundOwnReceiver",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "d0010bfe7d04781b025af9b82b17eec54c71a22a890d883189da67ea4473ea81",
+        "jar": "463519ed62210f9854530be4a58868bf8c0cd6db0aae9a302cba29d5e33d9d14",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "ReboundOwnReceiver",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/ReboundOwnReceiver/jarde/ReboundOwnReceiver.java",
+          "sha256": "81e32ec2c2e5a186839326855521a0a4990aa021cc77f5ec7e93164328a19ce3"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "InheritedUnknown",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "834b521f2fec6b6b750f4ef04ed8713c9cf29c4c90455fb027fb22b9ad7d48ac",
+        "jar": "772de6b969a14e4956ea1a52b39567856d0f08568b9de1d8c29c8751c0ffa4b9",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "InheritedUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/InheritedUnknown/jarde/InheritedUnknown.java",
+          "sha256": "b1a19788afca0dba1724e77c2f258594ebe9fcc60c8d40b6ca5c47a55d24aefa"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "InheritedUnknown",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "834b521f2fec6b6b750f4ef04ed8713c9cf29c4c90455fb027fb22b9ad7d48ac",
+        "jar": "efd7b68c6d3004f5423c6d07a72088818bd2b93ebc5f973425718db9390f1784",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "InheritedUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/InheritedUnknown/jarde/InheritedUnknown.java",
+          "sha256": "6ed6cce44fe8fe55b01f8bef2092c50a060f05499fca7bcba2e8c2376ed0f532"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "InheritedUnknown",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "834b521f2fec6b6b750f4ef04ed8713c9cf29c4c90455fb027fb22b9ad7d48ac",
+        "jar": "4e6fff8b3902aee971cab85491b63d05411723be2ae9acb667a5fe5963ee4413",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "InheritedUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/InheritedUnknown/jarde/InheritedUnknown.java",
+          "sha256": "b1a19788afca0dba1724e77c2f258594ebe9fcc60c8d40b6ca5c47a55d24aefa"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "InheritedUnknown",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "834b521f2fec6b6b750f4ef04ed8713c9cf29c4c90455fb027fb22b9ad7d48ac",
+        "jar": "39aaef3ae858aba9b21c65dc8a4f0612eeb1574cfe05f9a864b60a5ef94b6249",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "InheritedUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/InheritedUnknown/jarde/InheritedUnknown.java",
+          "sha256": "6ed6cce44fe8fe55b01f8bef2092c50a060f05499fca7bcba2e8c2376ed0f532"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "VarargsCall",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "073e97bd1c4eaab7da3405a58d22561e5e1b86b3e20fac6c2551e9e08647d29b",
+        "jar": "61f0a7c7e16c6aa610fdb2ee9c4d8bdf16c54d0a656ae67ce9e0f763bc70f8e1",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "VarargsCall",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/VarargsCall/jarde/VarargsCall.java",
+          "sha256": "913c41baf1ae4866bf7da4c80ba0f6e01aa3f2b22ef24438acd28179b2c9634a"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "VarargsCall",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "073e97bd1c4eaab7da3405a58d22561e5e1b86b3e20fac6c2551e9e08647d29b",
+        "jar": "619f82efa329ca6a6ed59667922a1725a31f0b10881a2ad4aadc51b330c31885",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "VarargsCall",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/VarargsCall/jarde/VarargsCall.java",
+          "sha256": "908a05872c2f7de6f2d04f5de7849083ed7c8dd4c32d059a7a8588bd85bfea84"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "VarargsCall",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "073e97bd1c4eaab7da3405a58d22561e5e1b86b3e20fac6c2551e9e08647d29b",
+        "jar": "93b793a3ec3fc6afd845e5d2231b0bdc484bf16dcc8960a45933c830481314c7",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "VarargsCall",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/VarargsCall/jarde/VarargsCall.java",
+          "sha256": "913c41baf1ae4866bf7da4c80ba0f6e01aa3f2b22ef24438acd28179b2c9634a"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "VarargsCall",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "073e97bd1c4eaab7da3405a58d22561e5e1b86b3e20fac6c2551e9e08647d29b",
+        "jar": "b8a22da2c714908e2aaaa9a45516bcc8ac356879896ff5deecf305d792322615",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "VarargsCall",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/VarargsCall/jarde/VarargsCall.java",
+          "sha256": "908a05872c2f7de6f2d04f5de7849083ed7c8dd4c32d059a7a8588bd85bfea84"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "SameErasureBinder",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+        "jar": "d2a8ba5de0f4b7d2da306df5f7b11932014b1616c734ef6488acc9ac65cf31ad",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "SameErasureBinder",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "SameErasureBinder",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+        "jar": "919b9c4fed9fd5e73b5edb7f2ecea834a67c2964568d910c6f040267f6260ab8",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "SameErasureBinder",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "ffa161ba83deae05500641df11e9532a71a8757875f4efd299bb86057f838c81"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "SameErasureBinder",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+        "jar": "6a4836c9be87000f4f6959415ce47b452ced7e25c64c79ca64de66ff3c572478",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "SameErasureBinder",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "55c22e2b994c2d28a6df7e28e1b7602f772ec05183ebfc78f0ed6d4c872eccea"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "SameErasureBinder",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "039e59c313e43331e9c658b84caeb056be5e435ac5bbae951cf0c1de5dbacd4d",
+        "jar": "571cfc3f8df4f5d139159984f7a9db618e6ec86ee01f3df9ff3a8a135d16edd1",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "SameErasureBinder",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/SameErasureBinder/jarde/SameErasureBinder.java",
+          "sha256": "ffa161ba83deae05500641df11e9532a71a8757875f4efd299bb86057f838c81"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MultiUseResult",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84",
+        "jar": "26c42ab150ae61d478583cc9bb1bd4076dde60efa50202ff56491f95d78531f8",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MultiUseResult",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "5b75c5ad433f9c590fd0dc3bbbf400d1e8c5565f134c952b960ec2362efb1ddd"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MultiUseResult",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84",
+        "jar": "8d5b40d975a71acc2abe5d9d6a33f6b845adfc20dfa209bfc07fc045806e1fd7",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MultiUseResult",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "86c0e55a82f12945a5db96dcfeff0f51e36b59023c8ed152424458edf59296b2"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MultiUseResult",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84",
+        "jar": "08749c04b3dcce9459e131384ab38e40aeb1da1514aaf4c9f8a4eb0c99ef0cb3",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MultiUseResult",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "5b75c5ad433f9c590fd0dc3bbbf400d1e8c5565f134c952b960ec2362efb1ddd"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "MultiUseResult",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "218fe6e2973099667db77c1d9936f148a5001ac6501671d4989f791dc0a0ef84",
+        "jar": "177ae21dbe67d969dae604f092c0e6c6acbab5a6585cc04f62cf6f4fd2899361",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "MultiUseResult",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/MultiUseResult/jarde/MultiUseResult.java",
+          "sha256": "86c0e55a82f12945a5db96dcfeff0f51e36b59023c8ed152424458edf59296b2"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": false
+    },
+    {
+      "case": "BridgeUnknown",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "ed6f25727a6ef7554b35e416ce6b58e25261c5da39256934d9e202c45dabb41d",
+        "jar": "3823cd1f8756394e9e1f437728da89e145e9efd825f2334c3985e943a3df9f72",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "BridgeUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/BridgeUnknown/jarde/BridgeUnknown.java",
+          "sha256": "b2ba5183c053b297e145505543afa6fe829062fec257fb5229f49e10873ab39f"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    },
+    {
+      "case": "BridgeUnknown",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "ed6f25727a6ef7554b35e416ce6b58e25261c5da39256934d9e202c45dabb41d",
+        "jar": "66a13df08756d49bc9a6078f7f673b89b03afa3df404c1363b5bd378cf38b0d4",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "BridgeUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/BridgeUnknown/jarde/BridgeUnknown.java",
+          "sha256": "6ef39b72c339d5499ff91ae5e8083d568edd6fbe17e796f1035fac03bf6f6742"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    },
+    {
+      "case": "BridgeUnknown",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "ed6f25727a6ef7554b35e416ce6b58e25261c5da39256934d9e202c45dabb41d",
+        "jar": "350f04a0901b2988b9d46db166fba891ba1694e9f7a25a808f9c3fa0e7423ca0",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "BridgeUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/BridgeUnknown/jarde/BridgeUnknown.java",
+          "sha256": "b2ba5183c053b297e145505543afa6fe829062fec257fb5229f49e10873ab39f"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    },
+    {
+      "case": "BridgeUnknown",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "ed6f25727a6ef7554b35e416ce6b58e25261c5da39256934d9e202c45dabb41d",
+        "jar": "69ea0c814fc5c13fe11f141e5c742016e54f43d226028a809a32cf0f402a4762",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "BridgeUnknown",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/BridgeUnknown/jarde/BridgeUnknown.java",
+          "sha256": "6ef39b72c339d5499ff91ae5e8083d568edd6fbe17e796f1035fac03bf6f6742"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    },
+    {
+      "case": "IncompleteSite",
+      "leg": "corretto8",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a",
+        "jar": "8caf43e2252d114b114d51193e5cd3153fac096f13a48889fc4e88c4f8a1a27b",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "IncompleteSite",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/debug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "56fc806f2c0e6b908118f83d0b6ed0e4bd286205a7f9fcd311d5b25f1d2ef02f"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    },
+    {
+      "case": "IncompleteSite",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a",
+        "jar": "c659525e0fa7cb64236e08ea4c643bf182881786617c4fea5ab820fb9405d55e",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "IncompleteSite",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/corretto8/nodebug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "c22257bfc7fa7dddd45bd7a310887b51506168edcd590403527efe7e205952b1"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    },
+    {
+      "case": "IncompleteSite",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "input_hashes": {
+        "source": "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a",
+        "jar": "26c16dc2130a6a63193a0535016e519b2f048733d9b68cadef7950ba50bdb94f",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "IncompleteSite",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/debug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "56fc806f2c0e6b908118f83d0b6ed0e4bd286205a7f9fcd311d5b25f1d2ef02f"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    },
+    {
+      "case": "IncompleteSite",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "input_hashes": {
+        "source": "3d4c9f64d35222cb1e6591e24f64bdee3178f1d0370ca09bd9356b51d4d55e0a",
+        "jar": "52dc3a3143e5b2e20632bcfb592cfcd8a59055c664bc5b6276c5c763f864c7fd",
+        "probe_source": "15311367877b47f1c09c950aaaa572a0ec64ad5bc497c987d842f19a3b4b807e"
+      },
+      "candidate_files": [
+        {
+          "class": "IncompleteSite",
+          "path": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v6/gc01-08-140/openjdk23/nodebug/IncompleteSite/jarde/IncompleteSite.java",
+          "sha256": "c22257bfc7fa7dddd45bd7a310887b51506168edcd590403527efe7e205952b1"
+        }
+      ],
+      "source_and_probe_equal_to_cli5": true,
+      "reflection_matches_original": true
+    }
+  ],
+  "limitations": [
+    "没有冻结逐调用内部AST/SSA trace，不声称由marker文本证明具体内部拒绝路径；裁定是原物理输入、实际发射形和已审代码支持边界。",
+    "36条marker变化保留具体ordinary/raw拒绝，未改变声明或正文；拒绝不计API恢复。",
+    "Rebound原receiver为C<T>，candidate局部实际为raw C；不能反向推定原源码类型。",
+    "v1 reflection键映射缺失产生None，v1保留，v2按真实manifest对齐36false/8true，经root核对实际stdout和reflection hash。"
+  ],
+  "passed": true,
+  "facts_source": "candidate-v6-control-facts-v2.json"
+}

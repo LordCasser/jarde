@@ -1,0 +1,3 @@
+Exception in thread "main" java.lang.NoSuchFieldException: seen
+	at java.lang.Class.getField(Class.java:1731)
+	at HeaderProbe.main(HeaderProbe.java:21)

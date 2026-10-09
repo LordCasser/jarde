@@ -1,0 +1,476 @@
+{
+  "wrapper_snapshot": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/run-field23-v9.executed.py",
+  "wrapper_sha256": "9d075df7318533feb5f3e8df5eebaf43c839e0a3b7e6f0258b3e91b07ce6e761",
+  "wrapper_argv": [
+    "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/run-field23-v9.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "adapter_snapshot": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/field-23-replay-adapter-v9.pre-run.py",
+  "adapter_snapshot_sha256": "1e2ff8e6382585587dc60545adb622c0ad3e69aa4ee8cb0f968fc93a7076e2dc",
+  "runner_snapshot": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/field-regression-replay-v9.pre-run.py",
+  "runner_snapshot_sha256": "e3b5dfecc9395fe1d071833bb61359cf03a82173920c36a99f32872f36c0010c",
+  "baseline_cli": {
+    "path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+    "sha256": "8770d823c70e7f61749cac836e468c0a991093822d1926822d4769adc1cf7339"
+  },
+  "tools": [
+    {
+      "label": "python",
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634"
+    },
+    {
+      "label": "baseline_cli",
+      "path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+      "sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+    },
+    {
+      "label": "candidate_cli",
+      "path": "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+      "sha256": "8770d823c70e7f61749cac836e468c0a991093822d1926822d4769adc1cf7339"
+    },
+    {
+      "label": "adapter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/field-23-replay-adapter.py",
+      "sha256": "1e2ff8e6382585587dc60545adb622c0ad3e69aa4ee8cb0f968fc93a7076e2dc"
+    },
+    {
+      "label": "runner",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/results/field-regression/replay.py",
+      "sha256": "e3b5dfecc9395fe1d071833bb61359cf03a82173920c36a99f32872f36c0010c"
+    },
+    {
+      "label": "source_audit",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/acceptance-manifest.json",
+      "sha256": "2fd6b7062bbed75dbe01808194aa0240480745388472e7dfad8bffa5c8dea0c4"
+    },
+    {
+      "label": "reflect_driver_source",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ReflectDriver.java",
+      "sha256": "a05c88ed27ea66785c24518d17dc70bccb1f8b4ed932369e03731a12f6d0d0ea"
+    },
+    {
+      "label": "javac8_java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "label": "javac8_javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "label": "javac8_jar",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+      "sha256": "46c8af190164ec5b1b8bb69f9abc594b52fb82410634f81b64c8668ca4e5fb31"
+    },
+    {
+      "label": "javac23_java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "label": "javac23_javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "label": "javac23_jar",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+      "sha256": "e5529066a9bd98758e6f6e385fa1f28c66900e34de3554d35b33b5ca642b1af6"
+    }
+  ],
+  "tool_version_commands": [
+    {
+      "label": "javac8_java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "openjdk version \"1.8.0_432\"\nOpenJDK Runtime Environment Corretto-8.432.06.1 (build 1.8.0_432-b06)\nOpenJDK 64-Bit Server VM Corretto-8.432.06.1 (build 25.432-b06, mixed mode)\n"
+    },
+    {
+      "label": "javac8_javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "javac 1.8.0_432\n"
+    },
+    {
+      "label": "javac8_jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "-help"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "\u975e\u6cd5\u9009\u9879: h\n\u7528\u6cd5: jar {ctxui}[vfmn0PMe] [jar-file] [manifest-file] [entry-point] [-C dir] files ...\n\u9009\u9879:\n    -c  \u521b\u5efa\u65b0\u6863\u6848\n    -t  \u5217\u51fa\u6863\u6848\u76ee\u5f55\n    -x  \u4ece\u6863\u6848\u4e2d\u63d0\u53d6\u6307\u5b9a\u7684 (\u6216\u6240\u6709) \u6587\u4ef6\n    -u  \u66f4\u65b0\u73b0\u6709\u6863\u6848\n    -v  \u5728\u6807\u51c6\u8f93\u51fa\u4e2d\u751f\u6210\u8be6\u7ec6\u8f93\u51fa\n    -f  \u6307\u5b9a\u6863\u6848\u6587\u4ef6\u540d\n    -m  \u5305\u542b\u6307\u5b9a\u6e05\u5355\u6587\u4ef6\u4e2d\u7684\u6e05\u5355\u4fe1\u606f\n    -n  \u521b\u5efa\u65b0\u6863\u6848\u540e\u6267\u884c Pack200 \u89c4\u8303\u5316\n    -e  \u4e3a\u6346\u7ed1\u5230\u53ef\u6267\u884c jar \u6587\u4ef6\u7684\u72ec\u7acb\u5e94\u7528\u7a0b\u5e8f\n        \u6307\u5b9a\u5e94\u7528\u7a0b\u5e8f\u5165\u53e3\u70b9\n    -0  \u4ec5\u5b58\u50a8; \u4e0d\u4f7f\u7528\u4efb\u4f55 ZIP \u538b\u7f29\n    -P  \u4fdd\u7559\u6587\u4ef6\u540d\u4e2d\u7684\u524d\u5bfc '/' (\u7edd\u5bf9\u8def\u5f84) \u548c \"..\" (\u7236\u76ee\u5f55) \u7ec4\u4ef6\n    -M  \u4e0d\u521b\u5efa\u6761\u76ee\u7684\u6e05\u5355\u6587\u4ef6\n    -i  \u4e3a\u6307\u5b9a\u7684 jar \u6587\u4ef6\u751f\u6210\u7d22\u5f15\u4fe1\u606f\n    -C  \u66f4\u6539\u4e3a\u6307\u5b9a\u7684\u76ee\u5f55\u5e76\u5305\u542b\u4ee5\u4e0b\u6587\u4ef6\n\u5982\u679c\u4efb\u4f55\u6587\u4ef6\u4e3a\u76ee\u5f55, \u5219\u5bf9\u5176\u8fdb\u884c\u9012\u5f52\u5904\u7406\u3002\n\u6e05\u5355\u6587\u4ef6\u540d, \u6863\u6848\u6587\u4ef6\u540d\u548c\u5165\u53e3\u70b9\u540d\u79f0\u7684\u6307\u5b9a\u987a\u5e8f\n\u4e0e 'm', 'f' \u548c 'e' \u6807\u8bb0\u7684\u6307\u5b9a\u987a\u5e8f\u76f8\u540c\u3002\n\n\u793a\u4f8b 1: \u5c06\u4e24\u4e2a\u7c7b\u6587\u4ef6\u5f52\u6863\u5230\u4e00\u4e2a\u540d\u4e3a classes.jar \u7684\u6863\u6848\u4e2d: \n       jar cvf classes.jar Foo.class Bar.class \n\u793a\u4f8b 2: \u4f7f\u7528\u73b0\u6709\u7684\u6e05\u5355\u6587\u4ef6 'mymanifest' \u5e76\n           \u5c06 foo/ \u76ee\u5f55\u4e2d\u7684\u6240\u6709\u6587\u4ef6\u5f52\u6863\u5230 'classes.jar' \u4e2d: \n       jar cvfm classes.jar mymanifest -C foo/ .\n\n"
+    },
+    {
+      "label": "javac23_java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)\n"
+    },
+    {
+      "label": "javac23_javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "javac 23.0.1\n",
+      "stderr": ""
+    },
+    {
+      "label": "javac23_jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "jar 23.0.1\n",
+      "stderr": ""
+    }
+  ],
+  "source_audit": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/acceptance-manifest.json",
+    "sha256": "2fd6b7062bbed75dbe01808194aa0240480745388472e7dfad8bffa5c8dea0c4"
+  },
+  "reflect_driver_source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ReflectDriver.java",
+    "sha256": "a05c88ed27ea66785c24518d17dc70bccb1f8b4ed932369e03731a12f6d0d0ea"
+  },
+  "source_families": [
+    {
+      "family": "ArrayObjectSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ArrayObjectSetter/source/ArrayObjectSetter.java",
+      "sha256": "8f1238d3abe429bddbe0a518afc0eaa5369610cb414ab25447789dafc41ecb95"
+    },
+    {
+      "family": "ArraySetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ArraySetter/source/ArraySetter.java",
+      "sha256": "482ac7080dae2d69834788092de0004a02bb04898d5316f77e82b2b5e6b63c5a"
+    },
+    {
+      "family": "CrossSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/CrossSetter/source/CrossSetter.java",
+      "sha256": "42bd018e593827dfc367a293234f191c6d2c2e7befd1257795622497448f6647"
+    },
+    {
+      "family": "DeferredSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/DeferredSetter/source/DeferredSetter.java",
+      "sha256": "3a1bae0c7c8649c88da51c363be239ac3d3c5cd6d287e8c498300bf579f0c7b2"
+    },
+    {
+      "family": "Hold",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/Hold/source/Hold.java",
+      "sha256": "cc4cc3469cab77ec43cf9e93d194ebdf4e6cc9d6587f28306d91a415b50caa84"
+    },
+    {
+      "family": "MixedSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/MixedSetter/source/MixedSetter.java",
+      "sha256": "09569011f1ca0742ea6863ba18b4a4caa7b0d7a87685a402c59c8109feeee77e"
+    },
+    {
+      "family": "NullSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/NullSetter/source/NullSetter.java",
+      "sha256": "7d5f5447a082dff13c44c2fc37668966a02769ed2c259bd2f852da9cfcbaeaf9"
+    },
+    {
+      "family": "ObjectHold",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ObjectHold/source/ObjectHold.java",
+      "sha256": "4c5b8fb8a20c9e5e44edf502efdd1854dc376ed96ed5cb63347c0a648874331f"
+    },
+    {
+      "family": "ObjectSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ObjectSetter/source/ObjectSetter.java",
+      "sha256": "0022639592a1e5373e40a55fbd514cea9b8da89fe20c8220242f3be9b0f2a1e9"
+    },
+    {
+      "family": "RawListField",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/RawListField/source/RawListField.java",
+      "sha256": "6b47720903441708be5fc646e165315707c81c1ce16de0ce0aed37ce3178f6a5"
+    },
+    {
+      "family": "SCGA",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/SCGA/source/SCGA.java",
+      "sha256": "5be4580f33be3500139600b24965670a2a9484a5d2aa9fe8e181edec316944eb"
+    },
+    {
+      "family": "SCGB",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/SCGB/source/SCGB.java",
+      "sha256": "7881e02c16a6ad43929032edee05119dec552b5c204bae8702e458325f4f60fd"
+    },
+    {
+      "family": "ShadowSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ShadowSetter/source/ShadowSetter.java",
+      "sha256": "0114b238e74a340b393ab8c8dab0c9320cfd286615290856ef06cad7d26f26ea"
+    },
+    {
+      "family": "TypedSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/TypedSetter/source/TypedSetter.java",
+      "sha256": "722b950805b21bd82e1b1fad7959bab72dd26780d0dfb90504d1df9630ccdaa9"
+    },
+    {
+      "family": "RawBoundWriter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-anchors/RawBoundWriter.java",
+      "sha256": "da9e3356ac409b416693775b586cc0c63d39748d858761ecd210ef914b828564"
+    },
+    {
+      "family": "SCGBCompat",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-anchors/SCGBCompat.java",
+      "sha256": "ccca9c1baed50a3e63e417b57a1a1c382ab41f9b0940f256e2eb5608203fbbb7"
+    },
+    {
+      "family": "ListWrong",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ListWrong/ListWrong.java",
+      "sha256": "bea5862c35d24ab8fe32fbf99d2a78759b58bb36b941aa18b60b9d61f01c6db8"
+    },
+    {
+      "family": "NullLocal",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/NullLocal/NullLocal.java",
+      "sha256": "3b71ec690eb5060e9b81cea9cfac5864d41b5b9f6b9e43b8ac1407ac99e2f58e"
+    },
+    {
+      "family": "ParamReassigned",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParamReassigned/ParamReassigned.java",
+      "sha256": "d2dfd55cd938a39a7aedcd775e5ff270f39d8b69223bccaa6ea56453d6943217"
+    },
+    {
+      "family": "ParameterShift",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParameterShift/ParameterShift.java",
+      "sha256": "719558f4f965803d0d7207be47d131a473f11e6e698fb6f9f0344f0cb08a85b9"
+    },
+    {
+      "family": "RawAllocationVariable",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawAllocationVariable/RawAllocationVariable.java",
+      "sha256": "e0641e0c13e4aad7d06531f3d70cb9b30a5bf38195974c579daa1bafbf76d1d1"
+    },
+    {
+      "family": "RawParamArray",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawParamArray/RawParamArray.java",
+      "sha256": "d8ff774f56ed6f5c64df935e00c80bb54c0c2f3c2026b238b858ac20dfd64fb1"
+    },
+    {
+      "family": "StaticRawField",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/StaticRawField/StaticRawField.java",
+      "sha256": "c4c142bfc0c911bb449bff34e5420e41ce6bfeb6512ade104b1f4294f6d3ffdb"
+    }
+  ],
+  "historical_jars": [
+    {
+      "leg": "javac8",
+      "family": "ArrayObjectSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/ArrayObjectSetter/ArrayObjectSetter.jar",
+      "sha256": "b9b1a059240eba9a228db294e20bfdb2d98e4617076a5a63c1bcea559c5becc9",
+      "class_sha256": "38ced4c1e2a9f44ca4c03c3cd9bddf9eecab07c683f046a1cc77bb86df65da25"
+    },
+    {
+      "leg": "javac23",
+      "family": "ArrayObjectSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/ArrayObjectSetter/ArrayObjectSetter.jar",
+      "sha256": "617abf7d5c48ce17388fce202db0178a96bb4a2a2ef32e7f9599b01259c7380c",
+      "class_sha256": "cf353bdeff1a5bdbb3ec3976c8c37a93bc0a3a7b629a59756202bc468337afd7"
+    },
+    {
+      "leg": "javac8",
+      "family": "ArraySetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/ArraySetter/ArraySetter.jar",
+      "sha256": "652a57ed93d0e3912da9230994b111cca151f74684de6623071e79024c13e52d",
+      "class_sha256": "6c3fe3fc82bd41c42e19578a77518ddbbd3ad8862534eeae7cc8a12fe1af7f90"
+    },
+    {
+      "leg": "javac23",
+      "family": "ArraySetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/ArraySetter/ArraySetter.jar",
+      "sha256": "81ecbf92f4233a8a7533ffec9a382d9e627443ed0f708e40de5604036479cac8",
+      "class_sha256": "b4d288e1819dfe847aa4ed910cfe1524e58dd9eec438bd97dc8de0077412881f"
+    },
+    {
+      "leg": "javac8",
+      "family": "CrossSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/CrossSetter/CrossSetter.jar",
+      "sha256": "3cd29d205c1121235ca56e0b985ac54d604db9c83157d18902e4f883b2da940c",
+      "class_sha256": "dd9889450f8dfab77554ea1893b2d58d3e7f02fc8509d521bc75baca9d78e5f4"
+    },
+    {
+      "leg": "javac23",
+      "family": "CrossSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/CrossSetter/CrossSetter.jar",
+      "sha256": "d2ddf69c490c87ec8a3dc572c9a9c4a1e0237cf4b0e2aeda083f36199024c7dd",
+      "class_sha256": "d49f41a7b952e703c7b0171737bfb1f50550443e4439038cc978927e9ad2e195"
+    },
+    {
+      "leg": "javac8",
+      "family": "DeferredSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/DeferredSetter/DeferredSetter.jar",
+      "sha256": "d50e99e2f9b1bf38f6510aded5b58bb551c0162d1ada1d838da091ef3b8db1b2",
+      "class_sha256": "e4a182c479e5c5b02a75ef74b0be67224c00e074c115665cde5a0ff3d1597a7d"
+    },
+    {
+      "leg": "javac23",
+      "family": "DeferredSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/DeferredSetter/DeferredSetter.jar",
+      "sha256": "80412b63bd57c1f2d4f1969453325d7d9fc6b6c7bdf0b03227562d96910d8028",
+      "class_sha256": "fc2b3f036e54eb8df01586d011ed50600fcaf2d85237aca9189a83d44b1ee390"
+    },
+    {
+      "leg": "javac8",
+      "family": "Hold",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/Hold/Hold.jar",
+      "sha256": "6499fd1415534ab3df586942cdad298460a5639a8e639d5e568f9a7298e99555",
+      "class_sha256": "98057ccd45b6adc5cb790dfa5154ea90e163db2f171719a3956e447d401c7c71"
+    },
+    {
+      "leg": "javac23",
+      "family": "Hold",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/Hold/Hold.jar",
+      "sha256": "f4f414c376f07a0553b540e383806a2bf51c260aea05fb85678e25ee0c9f49e1",
+      "class_sha256": "6f285009ea4c656dbc3922590fc3e84d8ec1d30e7075443bd0bbe2fda4405510"
+    },
+    {
+      "leg": "javac8",
+      "family": "MixedSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/MixedSetter/MixedSetter.jar",
+      "sha256": "0a8bdea62f048183bedbbdbb71d3b1ea023b7b8bba95375e9fb051ba2ea69cf1",
+      "class_sha256": "f7fb7e330f974f802b888b3920d64de7cc0c7ac1084cf6274f14cb009fe8c57d"
+    },
+    {
+      "leg": "javac23",
+      "family": "MixedSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/MixedSetter/MixedSetter.jar",
+      "sha256": "52f65ebfb99b7810ad5cd9471faf6ec2ac8f534c634f1c2155b41b1d1e6efd87",
+      "class_sha256": "140f72b7ca3fda7ce88618388c2249e02cb4f544b553b4968a69f21446e7ea23"
+    },
+    {
+      "leg": "javac8",
+      "family": "NullSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/NullSetter/NullSetter.jar",
+      "sha256": "31a713cae34d1eb696194b532ac5c3712e0f55cc66686be499a746d01d5aff3b",
+      "class_sha256": "cbfbc36425eb41affcd903646b46432eb923c83d9d7be7025b1f9056e398cbc8"
+    },
+    {
+      "leg": "javac23",
+      "family": "NullSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/NullSetter/NullSetter.jar",
+      "sha256": "b3e0cc5979d748de53da79fe2b09a07d6ff17c04ca781b435ec150ec052375ed",
+      "class_sha256": "adb7ff75eab8e5fbbbfc749d00091df62dbf77e1396a5fdf29fa0435ed4f8932"
+    },
+    {
+      "leg": "javac8",
+      "family": "ObjectHold",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/ObjectHold/ObjectHold.jar",
+      "sha256": "ea010fce9f98ceb3aae8e74814e3fcda4e9dfa037cdca140c23122f473f61b6d",
+      "class_sha256": "c50c470c303ffa6ad9ac5085bbf4eb3fc73a4c302fc8ec025d0cf604d3fbad3c"
+    },
+    {
+      "leg": "javac23",
+      "family": "ObjectHold",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/ObjectHold/ObjectHold.jar",
+      "sha256": "dc88c0dc7438a6fdcc07bbedb2b7f32abadb46367f98bf5fe465daa95c0bcff8",
+      "class_sha256": "899ef8505fcebf22a01caaa5afe4d4a92e9d925802262a4558244810bb345ba8"
+    },
+    {
+      "leg": "javac8",
+      "family": "ObjectSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/ObjectSetter/ObjectSetter.jar",
+      "sha256": "52b0b81a3341181c98f304ec46e2a3005d76d24cdb934391bcad5136908b53da",
+      "class_sha256": "fae122ca188f0d2d68553861e4bbb52ad96ea75b60c4c138e23fe6e7f2faafb6"
+    },
+    {
+      "leg": "javac23",
+      "family": "ObjectSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/ObjectSetter/ObjectSetter.jar",
+      "sha256": "43f4ccc9c0f8ee758def26312ad114356006e20471d9267c018160c2f4e4e0f4",
+      "class_sha256": "8a030e06992706c518f69adb5fe6a91243f70f5aebf3cd41eacfbee63d97d729"
+    },
+    {
+      "leg": "javac8",
+      "family": "RawListField",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/RawListField/RawListField.jar",
+      "sha256": "01d8f2164303d3cca07eb63743f5704cdc429b76da95260cfe692794531ac5c0",
+      "class_sha256": "f7a86e8cdb3c645e520e19f4b88ccd1c715d4186885306d049764043e4bc6750"
+    },
+    {
+      "leg": "javac23",
+      "family": "RawListField",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/RawListField/RawListField.jar",
+      "sha256": "ae0f9a11a2e5706262d738512d01cb14bbfc2bf95b03d210705ab4c55bc3df79",
+      "class_sha256": "0f3410fa587e109274e0ee81d52baf1c2287f2813b774c6499fc1a6d7c9dab64"
+    },
+    {
+      "leg": "javac8",
+      "family": "SCGA",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/SCGA/SCGA.jar",
+      "sha256": "6238ad3a69a205b098e1335fde292303a85e84ff9b69e136ff17f5c2963f7183",
+      "class_sha256": "43e2f0f468649929d469cf5eb6305eba30c885023c655ad00097be2f44ae384b"
+    },
+    {
+      "leg": "javac23",
+      "family": "SCGA",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/SCGA/SCGA.jar",
+      "sha256": "3989207a7b63f39c8529ce43e9c975c475c0f939299f90c3c7ea1dda1e532b77",
+      "class_sha256": "1d47f539c8082f8e4ffd8be784bf872170016fc1e43c74dc0a755c27b8f8bf7f"
+    },
+    {
+      "leg": "javac8",
+      "family": "SCGB",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/SCGB/SCGB.jar",
+      "sha256": "f5836ca9205850c1f09dfab588cdafa3a1095caac402015040b5cd358f4fa0e6",
+      "class_sha256": "7a7e2ae5ab6c9fc7a9bc1e3065de1a6ed28586bacb1ac2fb43d4459e4fdfa8f7"
+    },
+    {
+      "leg": "javac23",
+      "family": "SCGB",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/SCGB/SCGB.jar",
+      "sha256": "a6a4afa747c2226621279e1b0566f0b5c0ef1a512f1ebd34ac2d48008297b2c6",
+      "class_sha256": "a172f8c031d4104da2380c59024cd64dcc5d4d1c56686afcb26c2d98f8843545"
+    },
+    {
+      "leg": "javac8",
+      "family": "ShadowSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/ShadowSetter/ShadowSetter.jar",
+      "sha256": "bbe5ebda78b3203ea10f52efb4e34e708dd095e0431d311f13df9f0ecab8f17c",
+      "class_sha256": "bfe0e09945732f71cb4d19a58dcdce8f4822d4665d9f2bab580bd9e06a50f0b4"
+    },
+    {
+      "leg": "javac23",
+      "family": "ShadowSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/ShadowSetter/ShadowSetter.jar",
+      "sha256": "5d6a37e96537b4934243fd42c76e44d999c635f66c92faa16e282e7d86218102",
+      "class_sha256": "630f2352e67c6ebd257a34acfd40b396fbc05964466243ac05695d02fe1e268e"
+    },
+    {
+      "leg": "javac8",
+      "family": "TypedSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac8/TypedSetter/TypedSetter.jar",
+      "sha256": "72bd31ed3eab26a17de34050aece16afd95df8839c4b21ae5ac67075d20fc71e",
+      "class_sha256": "3db9b9ecf1b4337f66a322366e5381d5cba3d58eb66eb71c1bd79cc96f34708d"
+    },
+    {
+      "leg": "javac23",
+      "family": "TypedSetter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/javac23/TypedSetter/TypedSetter.jar",
+      "sha256": "98e7d377ca3e70ede79ccea16b827a884607ed80ddbd8cf38cc7c43772f9c261",
+      "class_sha256": "c70ccd44eb27915eb324dceefb3a30a61097a35145480a786cdb4b0e2bf3b3fe"
+    }
+  ],
+  "empty_classpath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/empty-classpath",
+  "empty_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/empty-sourcepath",
+  "adapter_output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v9/adapter-run",
+  "isolation": "adapter adds empty classpath/sourcepath to actual javac commands; runtime is the frozen runner policy"
+}

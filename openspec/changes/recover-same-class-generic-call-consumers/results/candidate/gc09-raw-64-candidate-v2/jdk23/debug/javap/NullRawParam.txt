@@ -1,0 +1,80 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk23/debug/input/NullRawParam.jar!/NullRawParam.class
+  Last modified 2026年10月9日; size 553 bytes
+  SHA-256 checksum 38bc585ba24c722d869bab1fc013c50e1b0b330803423303814c5e7c141c2619
+  Compiled from "NullRawParam.java"
+public class NullRawParam<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // NullRawParam
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // NullRawParam.value:Ljava/lang/Object;
+   #8 = Class              #10            // NullRawParam
+   #9 = NameAndType        #11:#12        // value:Ljava/lang/Object;
+  #10 = Utf8               NullRawParam
+  #11 = Utf8               value
+  #12 = Utf8               Ljava/lang/Object;
+  #13 = Utf8               Signature
+  #14 = Utf8               TT;
+  #15 = Utf8               Code
+  #16 = Utf8               LineNumberTable
+  #17 = Utf8               LocalVariableTable
+  #18 = Utf8               this
+  #19 = Utf8               LNullRawParam;
+  #20 = Utf8               LocalVariableTypeTable
+  #21 = Utf8               LNullRawParam<TT;>;
+  #22 = Utf8               put
+  #23 = Utf8               (LNullRawParam;)V
+  #24 = Utf8               receiver
+  #25 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #26 = Utf8               SourceFile
+  #27 = Utf8               NullRawParam.java
+{
+  public T value;
+    descriptor: Ljava/lang/Object;
+    flags: (0x0001) ACC_PUBLIC
+    Signature: #14                          // TT;
+
+  public NullRawParam();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LNullRawParam;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LNullRawParam<TT;>;
+
+  public static void put(NullRawParam);
+    descriptor: (LNullRawParam;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: aconst_null
+         2: putfield      #7                  // Field value:Ljava/lang/Object;
+         5: return
+      LineNumberTable:
+        line 5: 0
+        line 6: 5
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0 receiver   LNullRawParam;
+}
+Signature: #25                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "NullRawParam.java"

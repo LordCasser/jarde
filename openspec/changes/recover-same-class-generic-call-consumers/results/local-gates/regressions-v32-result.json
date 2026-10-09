@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "generic_constructor_projection",
+    "--test",
+    "same_class_generic_binding",
+    "--test",
+    "same_class_generic_call_consumers",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "source_snapshot": "source-snapshot-v32.json",
+  "started_unix_ns": 1791509992904810000,
+  "exit": 101,
+  "finished_unix_ns": 1791510020750794000,
+  "log_sha256": "1f9d60f3752c896e13f87b4c9ba5934d5f3e2d1f5843cb90b04abcb143fdde12",
+  "source_unchanged": true
+}

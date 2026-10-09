@@ -1,0 +1,54 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/no-debug/input/StaticRawLocal.jar!/StaticRawLocal.class
+  Last modified 2026-10-9; size 333 bytes
+  MD5 checksum c0c977c07ab0e32f88c779e83789dc6b
+public class StaticRawLocal<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#15         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#16         // StaticRawLocal.value:Ljava/lang/Object;
+   #3 = Class              #17            // StaticRawLocal
+   #4 = Class              #18            // java/lang/Object
+   #5 = Utf8               value
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               put
+  #13 = Utf8               (LStaticRawLocal;Ljava/lang/Object;)V
+  #14 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #15 = NameAndType        #9:#10         // "<init>":()V
+  #16 = NameAndType        #5:#6          // value:Ljava/lang/Object;
+  #17 = Utf8               StaticRawLocal
+  #18 = Utf8               java/lang/Object
+{
+  public T value;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public StaticRawLocal();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void put(StaticRawLocal, java.lang.Object);
+    descriptor: (LStaticRawLocal;Ljava/lang/Object;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aload_0
+         1: astore_2
+         2: aload_2
+         3: aload_1
+         4: putfield      #2                  // Field value:Ljava/lang/Object;
+         7: return
+}
+Signature: #14                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

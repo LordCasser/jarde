@@ -1,0 +1,58 @@
+{
+  "scope": "140 输入原/JADX/已验收 main CLI 基线；不代表本片候选通过",
+  "manifest_sha256": "4590edb8bb7c178b01a2c418cf712aa214f9ec7dfadbaa7129b800fddcd0c724",
+  "results": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/baseline/accepted-cli-v5",
+  "verifier_sha256": "f90c8eed4c88eafa84972290695aa58af9d3df763308eaa923b45a5a6b6961a2",
+  "files_checked": 3657,
+  "cases_checked": 140,
+  "totals": {
+    "original": {
+      "cases": 140,
+      "compile_pass": 140,
+      "probe_pass": 140
+    },
+    "jadx": {
+      "cases": 140,
+      "compile_pass": 130,
+      "probe_pass": 130,
+      "reflection_match": 126,
+      "reflection_differ": 4
+    },
+    "baseline": {
+      "cases": 140,
+      "compile_pass": 72,
+      "probe_pass": 72,
+      "reflection_match": 20,
+      "reflection_differ": 52
+    }
+  },
+  "compile_failure_families": {
+    "original": {},
+    "jadx": {
+      "UnknownIncoming": 4,
+      "BoundOverload": 4,
+      "MethodHandleUse": 2
+    },
+    "baseline": {
+      "ArrayDimensionRelay": 4,
+      "ArrayRelay": 4,
+      "CallRelay": 4,
+      "DeepRelay": 4,
+      "IncompleteSite": 4,
+      "MultiParam": 4,
+      "MultiUseResult": 4,
+      "NullCall": 4,
+      "NumberBoundRelay": 4,
+      "RawOwnReceiver": 4,
+      "ReverseDeclarationRelay": 4,
+      "TwoClassVariables": 4,
+      "UnknownIncoming": 4,
+      "WideRelay": 4,
+      "CallHold": 4,
+      "ExceptionHold": 4,
+      "BoundOverload": 4
+    }
+  },
+  "errors": [],
+  "passed": true
+}

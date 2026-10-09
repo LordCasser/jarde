@@ -1,0 +1,1129 @@
+{
+  "wrapper_snapshot": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v2/run-constructor80-v2.py",
+  "wrapper_sha256": "61f427a0ffce51fb3eb1375f777193f85120e6536943456865d1216bddf64f65",
+  "wrapper_argv": [
+    "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v2/run-constructor80-v2.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "runner_original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+  "runner_snapshot": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v2/replay-executed.py",
+  "runner_snapshot_sha256": "c2eaa605a67c3b1bd6f6a649114048953f15c2f4a9e7157cf766c9b8d44306ac",
+  "runner_execution_filename": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+  "baseline_cli": {
+    "path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-generic-calls-candidate-v2-cli",
+    "sha256": "43e41e391250e53982e7d2f948ae016b486b5d62da2b6e76707576455ff77f68"
+  },
+  "tools": [
+    {
+      "label": "python",
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634"
+    },
+    {
+      "label": "baseline_cli",
+      "path": "/private/tmp/jarde-raw-receiver-final-v3-cli",
+      "sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70"
+    },
+    {
+      "label": "candidate_cli",
+      "path": "/private/tmp/jarde-generic-calls-candidate-v2-cli",
+      "sha256": "43e41e391250e53982e7d2f948ae016b486b5d62da2b6e76707576455ff77f68"
+    },
+    {
+      "label": "runner",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+      "sha256": "c2eaa605a67c3b1bd6f6a649114048953f15c2f4a9e7157cf766c9b8d44306ac"
+    },
+    {
+      "label": "manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/manifest.json",
+      "sha256": "4a12aa662b4765f8e45c3012b7e4fd0fb9fccac4060a16f8f1e5ac7075ef2902"
+    },
+    {
+      "label": "driver",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/ConstructorDriver.java",
+      "sha256": "77535fc59e006b3ad2977eb4467cf4d58597a84f2253782415f8cc2baf1961e5"
+    },
+    {
+      "label": "corretto8_java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "label": "corretto8_javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "label": "corretto8_jar",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+      "sha256": "46c8af190164ec5b1b8bb69f9abc594b52fb82410634f81b64c8668ca4e5fb31"
+    },
+    {
+      "label": "openjdk23_java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "label": "openjdk23_javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "label": "openjdk23_jar",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+      "sha256": "e5529066a9bd98758e6f6e385fa1f28c66900e34de3554d35b33b5ca642b1af6"
+    }
+  ],
+  "tool_version_commands": [
+    {
+      "label": "corretto8_java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "openjdk version \"1.8.0_432\"\nOpenJDK Runtime Environment Corretto-8.432.06.1 (build 1.8.0_432-b06)\nOpenJDK 64-Bit Server VM Corretto-8.432.06.1 (build 25.432-b06, mixed mode)\n"
+    },
+    {
+      "label": "corretto8_javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "javac 1.8.0_432\n"
+    },
+    {
+      "label": "corretto8_jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "-help"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "\u975e\u6cd5\u9009\u9879: h\n\u7528\u6cd5: jar {ctxui}[vfmn0PMe] [jar-file] [manifest-file] [entry-point] [-C dir] files ...\n\u9009\u9879:\n    -c  \u521b\u5efa\u65b0\u6863\u6848\n    -t  \u5217\u51fa\u6863\u6848\u76ee\u5f55\n    -x  \u4ece\u6863\u6848\u4e2d\u63d0\u53d6\u6307\u5b9a\u7684 (\u6216\u6240\u6709) \u6587\u4ef6\n    -u  \u66f4\u65b0\u73b0\u6709\u6863\u6848\n    -v  \u5728\u6807\u51c6\u8f93\u51fa\u4e2d\u751f\u6210\u8be6\u7ec6\u8f93\u51fa\n    -f  \u6307\u5b9a\u6863\u6848\u6587\u4ef6\u540d\n    -m  \u5305\u542b\u6307\u5b9a\u6e05\u5355\u6587\u4ef6\u4e2d\u7684\u6e05\u5355\u4fe1\u606f\n    -n  \u521b\u5efa\u65b0\u6863\u6848\u540e\u6267\u884c Pack200 \u89c4\u8303\u5316\n    -e  \u4e3a\u6346\u7ed1\u5230\u53ef\u6267\u884c jar \u6587\u4ef6\u7684\u72ec\u7acb\u5e94\u7528\u7a0b\u5e8f\n        \u6307\u5b9a\u5e94\u7528\u7a0b\u5e8f\u5165\u53e3\u70b9\n    -0  \u4ec5\u5b58\u50a8; \u4e0d\u4f7f\u7528\u4efb\u4f55 ZIP \u538b\u7f29\n    -P  \u4fdd\u7559\u6587\u4ef6\u540d\u4e2d\u7684\u524d\u5bfc '/' (\u7edd\u5bf9\u8def\u5f84) \u548c \"..\" (\u7236\u76ee\u5f55) \u7ec4\u4ef6\n    -M  \u4e0d\u521b\u5efa\u6761\u76ee\u7684\u6e05\u5355\u6587\u4ef6\n    -i  \u4e3a\u6307\u5b9a\u7684 jar \u6587\u4ef6\u751f\u6210\u7d22\u5f15\u4fe1\u606f\n    -C  \u66f4\u6539\u4e3a\u6307\u5b9a\u7684\u76ee\u5f55\u5e76\u5305\u542b\u4ee5\u4e0b\u6587\u4ef6\n\u5982\u679c\u4efb\u4f55\u6587\u4ef6\u4e3a\u76ee\u5f55, \u5219\u5bf9\u5176\u8fdb\u884c\u9012\u5f52\u5904\u7406\u3002\n\u6e05\u5355\u6587\u4ef6\u540d, \u6863\u6848\u6587\u4ef6\u540d\u548c\u5165\u53e3\u70b9\u540d\u79f0\u7684\u6307\u5b9a\u987a\u5e8f\n\u4e0e 'm', 'f' \u548c 'e' \u6807\u8bb0\u7684\u6307\u5b9a\u987a\u5e8f\u76f8\u540c\u3002\n\n\u793a\u4f8b 1: \u5c06\u4e24\u4e2a\u7c7b\u6587\u4ef6\u5f52\u6863\u5230\u4e00\u4e2a\u540d\u4e3a classes.jar \u7684\u6863\u6848\u4e2d: \n       jar cvf classes.jar Foo.class Bar.class \n\u793a\u4f8b 2: \u4f7f\u7528\u73b0\u6709\u7684\u6e05\u5355\u6587\u4ef6 'mymanifest' \u5e76\n           \u5c06 foo/ \u76ee\u5f55\u4e2d\u7684\u6240\u6709\u6587\u4ef6\u5f52\u6863\u5230 'classes.jar' \u4e2d: \n       jar cvfm classes.jar mymanifest -C foo/ .\n\n"
+    },
+    {
+      "label": "openjdk23_java",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)\n"
+    },
+    {
+      "label": "openjdk23_javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "exit": 0,
+      "stdout": "javac 23.0.1\n",
+      "stderr": ""
+    },
+    {
+      "label": "openjdk23_jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "jar 23.0.1\n",
+      "stderr": ""
+    }
+  ],
+  "manifest_case_count": 20,
+  "frozen_input_count": 242,
+  "frozen_inputs": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/manifest.json",
+      "sha256": "4a12aa662b4765f8e45c3012b7e4fd0fb9fccac4060a16f8f1e5ac7075ef2902"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/ConstructorDriver.java",
+      "sha256": "77535fc59e006b3ad2977eb4467cf4d58597a84f2253782415f8cc2baf1961e5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/Hold/Hold.jar",
+      "sha256": "ed7c17ba95e7479b279fc293ebf0350a8e778a4cb1236210f964e6beb7d42afd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/Hold/classes/Hold.class",
+      "sha256": "f7561c3375e8214ec9e0e27d9c3c6bfb23b283b49b3a4214ac3e06700f222767"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/Hold/jadx/sources/defpackage/Hold.java",
+      "sha256": "e870a62451ae2c9d4e2136ad0a10632093c8010f667db8f91818d857582f7141"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/BoundHold/BoundHold.jar",
+      "sha256": "caa40c1448221fa8d88dc3a49e50d125c6a1b5dc9f0cbb150ae88550b607e51f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/BoundHold/classes/BoundHold.class",
+      "sha256": "8ada25fa307ed46c5d0b253b61a49a7e5e33fa95f5e98aff53805f0e0526da0a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/BoundHold/jadx/sources/defpackage/BoundHold.java",
+      "sha256": "7080fc10e76d24dcf272feff9cc935fe24ae7a6a95dcbe1ae5b0eeec4a442210"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ArrayHold/ArrayHold.jar",
+      "sha256": "73a2fee6ebfa4124c581b843e35752a16651c405e3ac7b878963d82bce30d307"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ArrayHold/classes/ArrayHold.class",
+      "sha256": "9f2f925091ef6af56ed7799d3e07cbfea60334fb94e1c57eaff7a940d3b0aa2b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ArrayHold/jadx/sources/defpackage/ArrayHold.java",
+      "sha256": "f4cee8e71df9dece9dab899581ca59686d4da9c3ff3fdcee6b02abca85f34b49"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/WideHold/WideHold.jar",
+      "sha256": "c73eadd1a75f2ab9ce0c4d6e4b52f16242e126f1e62158d58a3946e92d2b220a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/WideHold/classes/WideHold.class",
+      "sha256": "98c99df6146b243b8bff0b8e2cb20821933acc105baaa7c78783c98308090274"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/WideHold/jadx/sources/defpackage/WideHold.java",
+      "sha256": "13f661ff5bdb25cb852a6f87d95bbc8df67abd0e42c4996f15e6c4f2b3f42e01"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RepeatedHold/RepeatedHold.jar",
+      "sha256": "0531ce9995c7fe188d86bf08494e947226e083c9b4d1845ba55f4c3ad9fe5cb6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RepeatedHold/classes/RepeatedHold.class",
+      "sha256": "b41d0590e6f51ca8af7b64aa8449e41693e873a7ea93cdd7aeab167bad0c8782"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RepeatedHold/jadx/sources/defpackage/RepeatedHold.java",
+      "sha256": "82135dfabdf07e4e401a863ecf67a97d752c70def43d9cb9709e64125849c3fc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/WideStoredHold/WideStoredHold.jar",
+      "sha256": "aff35cc8c66ba476ced5ee95012182592ba014b9d739a82a6c5ccc8e24744523"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/WideStoredHold/classes/WideStoredHold.class",
+      "sha256": "5f00d454cf38e984b12397d3c29392931081cb861397dfa6e1c9def7afad0ef2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/WideStoredHold/jadx/sources/defpackage/WideStoredHold.java",
+      "sha256": "f00506c436739c4bda56c068a13e3550cc57ce43073c8a35adcb5a2c89ddcda6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/MultiHold/MultiHold.jar",
+      "sha256": "0e2a920caae62b7dd2e53a5ddb3964740987004f131ffc3009034606aae3b970"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/MultiHold/classes/MultiHold.class",
+      "sha256": "5ee0daee5600892fe22c9b6352757651c53ce8b2be4b2ec2d9eb2cdf3499def1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/MultiHold/jadx/sources/defpackage/MultiHold.java",
+      "sha256": "653b2053aefbb73b688ebceac65fa8f80feccadd4ccbde937b9fc73a55260a65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/UnusedHold/UnusedHold.jar",
+      "sha256": "db4008e59d038889cee6347bca714a662d78b9b37cdec99d39dadce48440d520"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/UnusedHold/classes/UnusedHold.class",
+      "sha256": "532e11ad56b778b9c742e4b3e6a0551678ff66afad0c8bb77e7714a45aa5c1ac"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/UnusedHold/jadx/sources/defpackage/UnusedHold.java",
+      "sha256": "eb67cdb132e4a29e3e7d450d34377adb9498c5196ab7666deea63b2a0272c1e3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RawNewHold/RawNewHold.jar",
+      "sha256": "fb0c6236c227f45a933938e31681b536651ee8b3316e1d7643fec88f062d4e6b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RawNewHold/classes/RawNewHold.class",
+      "sha256": "f63ef4a73ca7b9e38a3c1582fc66060d07fdeb94eb84d20fc71f9be87347e6c7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RawNewHold/jadx/sources/defpackage/RawNewHold.java",
+      "sha256": "58128fbd4995936602e680ce3ab76bf4da60334967eb5e85fef46f7dda9db350"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/PeerNewHold/PeerNewHold.jar",
+      "sha256": "8a96942c0fd5ecf0244e234704fc65a2a18df967e88a4541d4c738a8571d2c94"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/PeerNewHold/classes/PeerNewHold.class",
+      "sha256": "5f8a5e8c8be3e05b08a68bfd1fe7e63b2141c7cf894270086c843ab99e73b3d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/PeerNewHold/jadx/sources/defpackage/PeerNewHold.java",
+      "sha256": "a6d244ba1801b01fe5e2eafe3092bee685844600a20172737683dd279b896c27"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ObjectHold/ObjectHold.jar",
+      "sha256": "625f2ef26f6b0310bae82beaa7f3274a49fedca5d112ac832fcdd97b283a0dde"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ObjectHold/classes/ObjectHold.class",
+      "sha256": "fbeb74221fe64bc9f92e75ec1e4f4164ef49a97c95a089de2143bfbb96feac8e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ObjectHold/jadx/sources/defpackage/ObjectHold.java",
+      "sha256": "a847b06f788983032902878139920477a0f58bd941cdd52f68bcb7fb01d2d2a9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ErasedCastHold/ErasedCastHold.jar",
+      "sha256": "7072874fa28c74b59fa56a825ed59dc4146c6602f5b00a862500853728f293ba"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ErasedCastHold/classes/ErasedCastHold.class",
+      "sha256": "a588bbc8823c1a95d1bb2ec3dd70502191214638bddc2878e7fdf4bddf7a20e1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ErasedCastHold/jadx/sources/defpackage/ErasedCastHold.java",
+      "sha256": "a6c855327091b769070ec8761598c795fb75a75a529ac42299d68c5f3e763b19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RewrittenHold/RewrittenHold.jar",
+      "sha256": "765f3cdfce0d113d171ad19831a50c41c3695189f8fc137c044ac4e85cd42305"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RewrittenHold/classes/RewrittenHold.class",
+      "sha256": "dc75e7b108c17f4b363847afd2dcbcee6166a12ccd595091d031bea1a42d117f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/RewrittenHold/jadx/sources/defpackage/RewrittenHold.java",
+      "sha256": "853f30134fd97fe43b7aaa77240fd2e0f28edfe026b4d39251f11349523ee906"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/PhiHold/PhiHold.jar",
+      "sha256": "e45aca8c47dd290b65d275ba0ac25d6c6edb0701ecd92fd0530c24b91ca89235"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/PhiHold/classes/PhiHold.class",
+      "sha256": "4e838916b391111e4344e32600fbaf9081914b2a8db94b03b17d913815f4ea02"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/PhiHold/jadx/sources/defpackage/PhiHold.java",
+      "sha256": "9274ec5d6bfb6b6239d13d88f36cce9308356b6102bc01f08e28b163fd953c18"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CallHold/CallHold.jar",
+      "sha256": "0aee4e23bc0d951fb24860cfb00c57214565cb8e4b711efd2d7359b0c76eab59"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CallHold/classes/CallHold.class",
+      "sha256": "4cc5e3e57cd311e6f10780ceca1d2f2ad99f0b52ff3644c0869a3e3d72fd300f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CallHold/jadx/sources/defpackage/CallHold.java",
+      "sha256": "0c706ae2548a4ed63bc797f48d9870a7ffe91e1cb21d5a6d0e1e8201bd687d68"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ShadowHold/ShadowHold.jar",
+      "sha256": "5e5d613546faabaef5c1dab7b53f1aaed921ad9dcfbfa2b99dc949e3d42db291"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ShadowHold/classes/ShadowHold.class",
+      "sha256": "cc60b35f675781d8bcebaec99feb9004a4616b3173be8d35b73153efce2ace58"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ShadowHold/jadx/sources/defpackage/ShadowHold.java",
+      "sha256": "ca52565b11ff678a5fcc171a4d82ad1397acd1687f595a4f893c710a43af4609"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CrossHold/CrossHold.jar",
+      "sha256": "ea3677d40100d0562b63f17191fe38dfc305b86300e8dd39324ba806c137b3ac"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CrossHold/classes/CrossHold.class",
+      "sha256": "0ed9d6dce3be9aee677729fdf048f854736381c387d655575b122c382e88534d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/CrossHold/jadx/sources/defpackage/CrossHold.java",
+      "sha256": "f1670b32fe21d82f1fc19b2d65ffaa46953e4398c0efa1bad5b67fc6fbdb9bcd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ParentCtorHold/ParentCtorHold.jar",
+      "sha256": "c979316c72e598e8bf8cd6578681c6f2acf6641405f4f8e7a3ad33510782d744"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ParentCtorHold/classes/ParentCtorHold.class",
+      "sha256": "0ef7fd8030cb4fe4418dfc6bb667fea28d9eee4dafc5301e51006d073bda8ff3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ParentCtorHold/jadx/sources/defpackage/ParentCtorHold.java",
+      "sha256": "34b36240a30d649a372d61f9ae855e3af5b09bf4feb7586fe9e940f4c4439003"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ThisDelegateHold/ThisDelegateHold.jar",
+      "sha256": "b9810107912dbc0f4e0a1a4a680af70df557b10a4c759278ad02375fcb1ce8e1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ThisDelegateHold/classes/ThisDelegateHold.class",
+      "sha256": "6ac415225793725a675bd906eaf70e0535ca3b02d4d445f7a9ad165620b84036"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ThisDelegateHold/jadx/sources/defpackage/ThisDelegateHold.java",
+      "sha256": "fe2833861bd66259b36fa9bb2d9ca31844af63ee66df433d4bfefd230210b05c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ExceptionHold/ExceptionHold.jar",
+      "sha256": "7c1f5524f712591f970a8fc3df5dd09dee30ac125875729f45d4c03f02d09e49"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ExceptionHold/classes/ExceptionHold.class",
+      "sha256": "090a963649e208633a2f07ee5ba63cf13993d30932e0f7011dc97c95a1f9c524"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/debug/ExceptionHold/jadx/sources/defpackage/ExceptionHold.java",
+      "sha256": "a8d30392d80eec3b3f8b05121ab56d7367168328887de61ed48d2b631a1e5de4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/Hold/Hold.jar",
+      "sha256": "e9ad3ef630772f3d1f409f3c366abdce8faab09551e134298dc3c2d16b5f3219"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/Hold/classes/Hold.class",
+      "sha256": "98057ccd45b6adc5cb790dfa5154ea90e163db2f171719a3956e447d401c7c71"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/Hold/jadx/sources/defpackage/Hold.java",
+      "sha256": "e0a4e6b148926cf49ace2f8254aa8acfd976ce1e3a08e6834ca4f45ec9d47399"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/BoundHold/BoundHold.jar",
+      "sha256": "ca44e7a9399c114dbe9760ec165f57a2b42844334b8382ee2669cebd7cca1b8d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/BoundHold/classes/BoundHold.class",
+      "sha256": "9ba0c005fc70206e3b03c5569a3438bde97d606f14c13453e7e9cf9028f1ec74"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/BoundHold/jadx/sources/defpackage/BoundHold.java",
+      "sha256": "e2c7c4812411dda120ca78ae535d85c520431f3358930ce8b6dd9653dfcf49a9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ArrayHold/ArrayHold.jar",
+      "sha256": "29981959b10b199589442938d0c3b8cf5ee5bbb22732df2af67910da854f69cf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ArrayHold/classes/ArrayHold.class",
+      "sha256": "d5a3533de6b84a7a304b6c8add1cd92ced51b8a115e24b6367ac26d82cdbb508"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ArrayHold/jadx/sources/defpackage/ArrayHold.java",
+      "sha256": "aba1dcd22630a3885fce76e345e934e11d4b44406c3f669f3174d08557511c01"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/WideHold/WideHold.jar",
+      "sha256": "ce25deca406d980083be86c4ecc08ff2ff98869313e272c52a1ee135af0fec54"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/WideHold/classes/WideHold.class",
+      "sha256": "3af60ee36bdef962f071b8c6780406114a2800ef4e21fbd6235621da456f95ca"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/WideHold/jadx/sources/defpackage/WideHold.java",
+      "sha256": "3250e01b714d26f8a52b192cb3036462b99781411db2fa0c32b18ed8f44f402c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RepeatedHold/RepeatedHold.jar",
+      "sha256": "2cec976764f0257956b5ef7bba5647b2f2976510fbdb1576e434cef47a9b8fa5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RepeatedHold/classes/RepeatedHold.class",
+      "sha256": "33253633a4dff234423a63986cfbd02b1b6e7f4b1ac3c7394fdf821b1a97eecf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RepeatedHold/jadx/sources/defpackage/RepeatedHold.java",
+      "sha256": "e96cd404062817cd76e53bf8d30cb07066f8c35ecfc90328352505c556c2b730"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/WideStoredHold/WideStoredHold.jar",
+      "sha256": "f365338f839c77dd3c30047da4814bab1c3ee9d5a63305ed45afe208383d9692"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/WideStoredHold/classes/WideStoredHold.class",
+      "sha256": "0c8646f387118f2a03a26b7bd31e11c9ec2ec26af02c3dc8f08f1ec3fae077bf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/WideStoredHold/jadx/sources/defpackage/WideStoredHold.java",
+      "sha256": "955474cce74446037dec681f6e58df2b142c83e96072c387051c7829ce34e7ab"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/MultiHold/MultiHold.jar",
+      "sha256": "0e37182ff66462c1b199e29018cfd9a16e4d76c07201d6917e32bb792ae0a7fb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/MultiHold/classes/MultiHold.class",
+      "sha256": "d2752b4a8ef843cb481dd4e4753051dbb46b7a46446ff44a60f176078c6fbd41"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/MultiHold/jadx/sources/defpackage/MultiHold.java",
+      "sha256": "2e9cc8625854c7996fbd312c13bd8b2d6998fb944f8a78d386f748b38d571324"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/UnusedHold/UnusedHold.jar",
+      "sha256": "561aa7caeb6baa11df43913faebe6b157aaf0ecf9ee756c5370173892f98c2a2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/UnusedHold/classes/UnusedHold.class",
+      "sha256": "05360eedff40788b64660fd793f0cf0113ee3972d89e2cba235d83b10c6769da"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/UnusedHold/jadx/sources/defpackage/UnusedHold.java",
+      "sha256": "8f9dff52bca6f18ceb53682607fb9ee43147ebdc9f55995be08ca331b4114b5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RawNewHold/RawNewHold.jar",
+      "sha256": "783142b8990353a4032af168777cf8d08b117b4a5a05fd8afef37d8089ede81a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RawNewHold/classes/RawNewHold.class",
+      "sha256": "b3c9d3c0206e88f5f1b5a562216180dbe545764b8dd8d52eb31f28a9d9c045b9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RawNewHold/jadx/sources/defpackage/RawNewHold.java",
+      "sha256": "b6591379052c718518e9945ca27b68da5dac033c673d504951faf9e8ad097106"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/PeerNewHold/PeerNewHold.jar",
+      "sha256": "b830b308d1817d064bf95a41f28de5eb0f8b276c94cd5e772b202437fb475a6d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/PeerNewHold/classes/PeerNewHold.class",
+      "sha256": "972323f452b4e7910c912b4053048245f4b88e0cab38140d503d3d26dbddf8a6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/PeerNewHold/jadx/sources/defpackage/PeerNewHold.java",
+      "sha256": "52d5584a8ed83cb5644c15664d6bebb807b1d5741884add3175f1096b8f88df5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ObjectHold/ObjectHold.jar",
+      "sha256": "956674e7f615413bd84e9cd2471f27f788b525ea34e81d99d496186b27e16c69"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ObjectHold/classes/ObjectHold.class",
+      "sha256": "c50c470c303ffa6ad9ac5085bbf4eb3fc73a4c302fc8ec025d0cf604d3fbad3c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ObjectHold/jadx/sources/defpackage/ObjectHold.java",
+      "sha256": "a847b06f788983032902878139920477a0f58bd941cdd52f68bcb7fb01d2d2a9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ErasedCastHold/ErasedCastHold.jar",
+      "sha256": "1e1c85f9779fb00be75ca3d71d4c2c14673dbf683f9d7748744f9a0569f0e867"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ErasedCastHold/classes/ErasedCastHold.class",
+      "sha256": "72704186199d2dafd7a58767dbe0c23ceba59dc03140ad914d8bd673590ad4bc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ErasedCastHold/jadx/sources/defpackage/ErasedCastHold.java",
+      "sha256": "a6c855327091b769070ec8761598c795fb75a75a529ac42299d68c5f3e763b19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RewrittenHold/RewrittenHold.jar",
+      "sha256": "d8f0b962d5ac333694aa6ce2b6f5884412f064005b882e429b9ab7e3ff32cf5b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RewrittenHold/classes/RewrittenHold.class",
+      "sha256": "e181b4efb437c1a6d36e7961b5d1634d5335ddb2fd3beedad239b8ee9fd75b21"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/RewrittenHold/jadx/sources/defpackage/RewrittenHold.java",
+      "sha256": "853f30134fd97fe43b7aaa77240fd2e0f28edfe026b4d39251f11349523ee906"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/PhiHold/PhiHold.jar",
+      "sha256": "894891428b02befb5994d6bf672f556e975e9957ad69aa39d12f77d880946307"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/PhiHold/classes/PhiHold.class",
+      "sha256": "3ae5a34c5cee0c752f4f4eb00cace72112c27c32658b5ecc8cbacbd9136b0b4b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/PhiHold/jadx/sources/defpackage/PhiHold.java",
+      "sha256": "d47004b6db8d0fc19c0d2c7f06d64f2e343ea351e02d6b8a16879fec45970cc8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CallHold/CallHold.jar",
+      "sha256": "59c9079736cb221355301ddd0df61c13351b2a294a4f29d30db6639898d7e768"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CallHold/classes/CallHold.class",
+      "sha256": "bf47694089527b08e2663bd7489d0182dc8dc04f43f1748c04fc669c613eeb81"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CallHold/jadx/sources/defpackage/CallHold.java",
+      "sha256": "5d3c4edbdd7e5268c2aebef6e245ed064f5c10b851d8689c3d2f54bb7b744b9f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ShadowHold/ShadowHold.jar",
+      "sha256": "7534775c2e756500d21768c34b2efc71d4ccae3c901a260d1904912e6be398f1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ShadowHold/classes/ShadowHold.class",
+      "sha256": "5d3849fc2feb2271bdfe9b0dda76e1699b17976ce523c864760e06980d40c82d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ShadowHold/jadx/sources/defpackage/ShadowHold.java",
+      "sha256": "5d3bf2c8893aaef5908ffd93dd8d837980593ad7ddb01c03015f874d8995a543"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CrossHold/CrossHold.jar",
+      "sha256": "26722350eb3da7f4db69f1c2ab599ffe98ca0834ac2caf4d9602c2696cd259ba"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CrossHold/classes/CrossHold.class",
+      "sha256": "d57439cd275683e50a09859c4fe88cbba395267d11f09b6bdb51d9b9a3fdce9e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/CrossHold/jadx/sources/defpackage/CrossHold.java",
+      "sha256": "f1670b32fe21d82f1fc19b2d65ffaa46953e4398c0efa1bad5b67fc6fbdb9bcd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ParentCtorHold/ParentCtorHold.jar",
+      "sha256": "d76e1f4e92853d2654af9a53d3571bf6c9685e3935944dd7dc6c8c94efa407ae"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ParentCtorHold/classes/ParentCtorHold.class",
+      "sha256": "9d3519733c102030a490cf9034272cd510dcbbb8ae57bde2e542117d54537af7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ParentCtorHold/jadx/sources/defpackage/ParentCtorHold.java",
+      "sha256": "225adfe214fdb29abdd2146fbacd3c5aba2d18ba0394e6d86d46ffe74a1ef21d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ThisDelegateHold/ThisDelegateHold.jar",
+      "sha256": "7f2835864e9951efbd37fb1c932b8a6995082472c215ecb34e067fd717e9a88b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ThisDelegateHold/classes/ThisDelegateHold.class",
+      "sha256": "f1e352b5a42f3ffb2d6cebb84c12c07248352e5fc13397ebe78805f849c3e72b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ThisDelegateHold/jadx/sources/defpackage/ThisDelegateHold.java",
+      "sha256": "a7f2149b8df738e28eaa6661f8e91fa6c9e2731e597d49c4e1d34c57221dd979"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ExceptionHold/ExceptionHold.jar",
+      "sha256": "5dbb3e273880a85d6d8a72876957e8518f2ce1df1066c5b1b6b7766c19fb09a2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ExceptionHold/classes/ExceptionHold.class",
+      "sha256": "35befb695cf829d4fff19ae5007b6494a4e08a1d0ef843fbf5620cdf3520b52c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/corretto8/nodebug/ExceptionHold/jadx/sources/defpackage/ExceptionHold.java",
+      "sha256": "dfe340547d2dacfe82d650aaaa6737bad1a9eb572e8afb61a38c17667bc03be2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/Hold/Hold.jar",
+      "sha256": "1d588222304780b85f34aabea58a201277ff773d3cb0adc4bdaea8159104f555"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/Hold/classes/Hold.class",
+      "sha256": "575964e10fbf69bbc62acc591cbf647e35b02df60dbcb9a79040826617cd1c2d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/Hold/jadx/sources/defpackage/Hold.java",
+      "sha256": "e870a62451ae2c9d4e2136ad0a10632093c8010f667db8f91818d857582f7141"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/BoundHold/BoundHold.jar",
+      "sha256": "8256e0eba9eae5a2b7acb3b12846187c2dedff585407c07a74efcf845d50f774"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/BoundHold/classes/BoundHold.class",
+      "sha256": "d397f0974165af28ef450a9473ff7553d3be0a7c3e4794b395809a6e5218f2a6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/BoundHold/jadx/sources/defpackage/BoundHold.java",
+      "sha256": "7080fc10e76d24dcf272feff9cc935fe24ae7a6a95dcbe1ae5b0eeec4a442210"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ArrayHold/ArrayHold.jar",
+      "sha256": "1aacccc8687101fa3d7a982246a2917cb559803abe621750c3c56911555d7494"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ArrayHold/classes/ArrayHold.class",
+      "sha256": "4fdc6b02f6f1edf358d17ca69edc62d09911849e33ffb6ff43b313101713c013"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ArrayHold/jadx/sources/defpackage/ArrayHold.java",
+      "sha256": "f4cee8e71df9dece9dab899581ca59686d4da9c3ff3fdcee6b02abca85f34b49"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/WideHold/WideHold.jar",
+      "sha256": "9ddac1dfac8c33342aca119ac0963a80cacc25e171402d7a423c4a06df0e13bb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/WideHold/classes/WideHold.class",
+      "sha256": "cdcc4d18cd08e8892093cbdfa675b93e3be42ce7ecf36749161718f708d8bd8e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/WideHold/jadx/sources/defpackage/WideHold.java",
+      "sha256": "13f661ff5bdb25cb852a6f87d95bbc8df67abd0e42c4996f15e6c4f2b3f42e01"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RepeatedHold/RepeatedHold.jar",
+      "sha256": "3d776c580506a6d01c40281fc143ea7e7a828b793cff1e0597d8ce8029065bd0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RepeatedHold/classes/RepeatedHold.class",
+      "sha256": "bc4ed448be3349bcb64c51d53ed7f4069dbbfd2353dce1783664516c2fd160dd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RepeatedHold/jadx/sources/defpackage/RepeatedHold.java",
+      "sha256": "82135dfabdf07e4e401a863ecf67a97d752c70def43d9cb9709e64125849c3fc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/WideStoredHold/WideStoredHold.jar",
+      "sha256": "40e8751ba7900461170d53b9aa9edbcb3961dc11a3c7340be125ee6e32d2a35e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/WideStoredHold/classes/WideStoredHold.class",
+      "sha256": "abd70e62d1ba5ee68f8456531ee5f1fa81a095a64026f080f56c263f6166a898"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/WideStoredHold/jadx/sources/defpackage/WideStoredHold.java",
+      "sha256": "f00506c436739c4bda56c068a13e3550cc57ce43073c8a35adcb5a2c89ddcda6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/MultiHold/MultiHold.jar",
+      "sha256": "3008d1dd5d06184b94ccb969d12b9f673b3e89534e564c683fe2c9ca849dce55"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/MultiHold/classes/MultiHold.class",
+      "sha256": "d10c967f74f635eb2350b2d8c7a09d0439b51e23ccab48916afc93d1f7b199fd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/MultiHold/jadx/sources/defpackage/MultiHold.java",
+      "sha256": "653b2053aefbb73b688ebceac65fa8f80feccadd4ccbde937b9fc73a55260a65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/UnusedHold/UnusedHold.jar",
+      "sha256": "0b6fd70d1fc386e65df73a9c78e93954efb408b590192bb7fe84e73e5eb86359"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/UnusedHold/classes/UnusedHold.class",
+      "sha256": "39b227aceb103caba576187746b4c0771d854a1ae965860ce466a29560d27fd8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/UnusedHold/jadx/sources/defpackage/UnusedHold.java",
+      "sha256": "eb67cdb132e4a29e3e7d450d34377adb9498c5196ab7666deea63b2a0272c1e3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RawNewHold/RawNewHold.jar",
+      "sha256": "adddcf645112854a4f5c36eb1c1939ed4f0d46ac3877688a463f1e90a62581fc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RawNewHold/classes/RawNewHold.class",
+      "sha256": "97bd373578f0c8c10f98e81a4ac33b5a1ae893b16f91d2b33dfb6d9ced888751"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RawNewHold/jadx/sources/defpackage/RawNewHold.java",
+      "sha256": "58128fbd4995936602e680ce3ab76bf4da60334967eb5e85fef46f7dda9db350"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/PeerNewHold/PeerNewHold.jar",
+      "sha256": "cefcf5b6a9c23c62825ef8718aaeb65100f5a6ef5d64f593d8b0393b05426600"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/PeerNewHold/classes/PeerNewHold.class",
+      "sha256": "97dbb51e1b65ed9db9def9288d093170720b914415271ace1b5caf21de045d4f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/PeerNewHold/jadx/sources/defpackage/PeerNewHold.java",
+      "sha256": "a6d244ba1801b01fe5e2eafe3092bee685844600a20172737683dd279b896c27"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ObjectHold/ObjectHold.jar",
+      "sha256": "2b5c20dc03412cdd371081450706ed26abc1461caec5c0084a5fc0f7917aa8af"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ObjectHold/classes/ObjectHold.class",
+      "sha256": "2399813551325fc62ca168abfe929a2848f0efbaf0c551ab322ad1ff6ce029d3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ObjectHold/jadx/sources/defpackage/ObjectHold.java",
+      "sha256": "a847b06f788983032902878139920477a0f58bd941cdd52f68bcb7fb01d2d2a9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ErasedCastHold/ErasedCastHold.jar",
+      "sha256": "c99c5f1f1942eb692eff967dad1f9f3be0780b6bce11d4558744bbb50b3d85b2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ErasedCastHold/classes/ErasedCastHold.class",
+      "sha256": "7465d829512ca30727539f896501c9211a3400ee4ed6bdf9467dd567b1740e25"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ErasedCastHold/jadx/sources/defpackage/ErasedCastHold.java",
+      "sha256": "a6c855327091b769070ec8761598c795fb75a75a529ac42299d68c5f3e763b19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RewrittenHold/RewrittenHold.jar",
+      "sha256": "1fac53965ebac15559c5e5e158eccc61ebf746206d523841a1faf9d0679b4a01"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RewrittenHold/classes/RewrittenHold.class",
+      "sha256": "d2600a21c40b3a29ba2bad26b7ad2fdf491d885baa9809e8f19987dcbbb0ebd2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/RewrittenHold/jadx/sources/defpackage/RewrittenHold.java",
+      "sha256": "853f30134fd97fe43b7aaa77240fd2e0f28edfe026b4d39251f11349523ee906"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/PhiHold/PhiHold.jar",
+      "sha256": "f504b843352eaf669c952541bf5b2011605a1a9d0d505dcac0682c77bb92d8af"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/PhiHold/classes/PhiHold.class",
+      "sha256": "24b9e4cf35780bf63406ec6647498b32dfc14d5c1c1b3655c1546b0199b64f9e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/PhiHold/jadx/sources/defpackage/PhiHold.java",
+      "sha256": "9274ec5d6bfb6b6239d13d88f36cce9308356b6102bc01f08e28b163fd953c18"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CallHold/CallHold.jar",
+      "sha256": "bcb1e4bd7f3695c8d18df394fc3cbd803f3f0fc1c8519be15fb08b069f791a6b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CallHold/classes/CallHold.class",
+      "sha256": "cf9d66858f7adaea5da56a778797ffc5155a5b303d76d26af35eb154cc360f80"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CallHold/jadx/sources/defpackage/CallHold.java",
+      "sha256": "0c706ae2548a4ed63bc797f48d9870a7ffe91e1cb21d5a6d0e1e8201bd687d68"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ShadowHold/ShadowHold.jar",
+      "sha256": "3ec24f426f4a26cb8fb97c9669d0308f6b5e3fb272f2bcb33d77514d48998556"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ShadowHold/classes/ShadowHold.class",
+      "sha256": "e7694471778a97873c678e37280594d55d0a25e21065f6445bdb5b88a853b292"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ShadowHold/jadx/sources/defpackage/ShadowHold.java",
+      "sha256": "ca52565b11ff678a5fcc171a4d82ad1397acd1687f595a4f893c710a43af4609"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CrossHold/CrossHold.jar",
+      "sha256": "d026cd128bd71d0e7a37eb71d1ae3f52fe6d645e467d582119e925f9b3c5701e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CrossHold/classes/CrossHold.class",
+      "sha256": "54a32befcd43776e1a96c90c9e34153004b1ba0b9a1151ddae66175d45ffb791"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/CrossHold/jadx/sources/defpackage/CrossHold.java",
+      "sha256": "f1670b32fe21d82f1fc19b2d65ffaa46953e4398c0efa1bad5b67fc6fbdb9bcd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ParentCtorHold/ParentCtorHold.jar",
+      "sha256": "9d038b6d9764d99cd527d8eafe77cc03b3277203095d4f10c04510e59b50e2a4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ParentCtorHold/classes/ParentCtorHold.class",
+      "sha256": "6a6fb59371b65e61b9b9bfd59524f68ac308148b7d531c5275b2d2b7c9de635b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ParentCtorHold/jadx/sources/defpackage/ParentCtorHold.java",
+      "sha256": "34b36240a30d649a372d61f9ae855e3af5b09bf4feb7586fe9e940f4c4439003"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ThisDelegateHold/ThisDelegateHold.jar",
+      "sha256": "cd3f5be4f9f888397e0ecc4d1fca38088411ef56602f11b1b2a171f3dde7d7de"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ThisDelegateHold/classes/ThisDelegateHold.class",
+      "sha256": "01c0b2a3b96aa63e320e26ab98f8e46e880a03570356cb9a784c1146e5b074ed"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ThisDelegateHold/jadx/sources/defpackage/ThisDelegateHold.java",
+      "sha256": "fe2833861bd66259b36fa9bb2d9ca31844af63ee66df433d4bfefd230210b05c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ExceptionHold/ExceptionHold.jar",
+      "sha256": "d2b3c2b8c645c28b533419142802ebd69e8eeb41a6c2c4c95e2089bfcb182934"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ExceptionHold/classes/ExceptionHold.class",
+      "sha256": "1be8c83472d1dd45bb4a31b03b20f086e4e51b83fdc3b0f31ed0458374ff44a8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/debug/ExceptionHold/jadx/sources/defpackage/ExceptionHold.java",
+      "sha256": "a8d30392d80eec3b3f8b05121ab56d7367168328887de61ed48d2b631a1e5de4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/Hold/Hold.jar",
+      "sha256": "8f34ee04a805f76335306a05244dcdf247d814ccbdc188d1490c47b1f5af4459"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/Hold/classes/Hold.class",
+      "sha256": "6f285009ea4c656dbc3922590fc3e84d8ec1d30e7075443bd0bbe2fda4405510"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/Hold/jadx/sources/defpackage/Hold.java",
+      "sha256": "e0a4e6b148926cf49ace2f8254aa8acfd976ce1e3a08e6834ca4f45ec9d47399"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/BoundHold/BoundHold.jar",
+      "sha256": "6b037199b2673e6d6bfd5afb789fb6642192704b7101d59a3a898c4cbd141e97"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/BoundHold/classes/BoundHold.class",
+      "sha256": "802d19d05e153e7dfcc6863efbb37eca083f2e06f658c9ddc208a84aeea65722"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/BoundHold/jadx/sources/defpackage/BoundHold.java",
+      "sha256": "e2c7c4812411dda120ca78ae535d85c520431f3358930ce8b6dd9653dfcf49a9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ArrayHold/ArrayHold.jar",
+      "sha256": "f471066343d769643da7cb75a2a6fbeee6025750ac461d8483a37eecc5395dee"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ArrayHold/classes/ArrayHold.class",
+      "sha256": "ef0ff69256bb9b201cfd2e92a10bc8665cd2a50c4fb4902a9c282bc9bcee44de"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ArrayHold/jadx/sources/defpackage/ArrayHold.java",
+      "sha256": "aba1dcd22630a3885fce76e345e934e11d4b44406c3f669f3174d08557511c01"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/WideHold/WideHold.jar",
+      "sha256": "7a1d6df06506ca5ec3ba1b1a2409cbfa079926b85cef5aa7a6e0263f27a5af5f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/WideHold/classes/WideHold.class",
+      "sha256": "d489b3cba8a234d73a82c437767806802c5a24d29392134f0ba82183e038674b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/WideHold/jadx/sources/defpackage/WideHold.java",
+      "sha256": "3250e01b714d26f8a52b192cb3036462b99781411db2fa0c32b18ed8f44f402c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RepeatedHold/RepeatedHold.jar",
+      "sha256": "ed4897cbf82bc9b4206c2500e44c0f730489262f1d30d6208b0f6a24078f7974"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RepeatedHold/classes/RepeatedHold.class",
+      "sha256": "a4a0bd5b766b71652afe8f2575900e13ed7dfe3786336bbc570f00d5ec7ce5c0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RepeatedHold/jadx/sources/defpackage/RepeatedHold.java",
+      "sha256": "e96cd404062817cd76e53bf8d30cb07066f8c35ecfc90328352505c556c2b730"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/WideStoredHold/WideStoredHold.jar",
+      "sha256": "faa44ca6ac1a805fd656aff2b4d6b329cd4439985870edad7716ede3ffe7cfeb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/WideStoredHold/classes/WideStoredHold.class",
+      "sha256": "3c2568cea6fd0c79d137ca35ab5ce713a3a73c9fd24292058143d50658ac3980"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/WideStoredHold/jadx/sources/defpackage/WideStoredHold.java",
+      "sha256": "955474cce74446037dec681f6e58df2b142c83e96072c387051c7829ce34e7ab"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/MultiHold/MultiHold.jar",
+      "sha256": "85881c8e2d1225aeaad5003bfb861aba2e2951adb688d33298d6e13bf89e4689"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/MultiHold/classes/MultiHold.class",
+      "sha256": "22c97d74ac2d1bdbd4f72af5dbfa6f709fb2cd36367d6fd3f4da877da017066f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/MultiHold/jadx/sources/defpackage/MultiHold.java",
+      "sha256": "2e9cc8625854c7996fbd312c13bd8b2d6998fb944f8a78d386f748b38d571324"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/UnusedHold/UnusedHold.jar",
+      "sha256": "3034f5ee5cd606803ecb11089cebccf3a4a3c41877e08e8b7c79a267a667fb59"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/UnusedHold/classes/UnusedHold.class",
+      "sha256": "494bb2d0ebd8a8d73decda59576b3f25ff6c4b68d247d9faab87d35641922d00"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/UnusedHold/jadx/sources/defpackage/UnusedHold.java",
+      "sha256": "8f9dff52bca6f18ceb53682607fb9ee43147ebdc9f55995be08ca331b4114b5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RawNewHold/RawNewHold.jar",
+      "sha256": "de70711e0920216e0b92619b1eb66c3616b38333aabe2b3fecf544c3fcc1eb27"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RawNewHold/classes/RawNewHold.class",
+      "sha256": "623ab3c9092f86f6e01b5b002eb16e22028c03a2f1e6f1c043a0129614a3c698"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RawNewHold/jadx/sources/defpackage/RawNewHold.java",
+      "sha256": "b6591379052c718518e9945ca27b68da5dac033c673d504951faf9e8ad097106"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/PeerNewHold/PeerNewHold.jar",
+      "sha256": "7f0af18544583771b57fbfe53e9d3446a511b5398131a26fb7f0c27b27897b29"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/PeerNewHold/classes/PeerNewHold.class",
+      "sha256": "e3f895c626eafd46f7a4f76d3eef36d8501e2dee06642246ea55fa036ea378d3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/PeerNewHold/jadx/sources/defpackage/PeerNewHold.java",
+      "sha256": "52d5584a8ed83cb5644c15664d6bebb807b1d5741884add3175f1096b8f88df5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ObjectHold/ObjectHold.jar",
+      "sha256": "2b83a9a2c28dabe857b60a23dee0499509398f4f92f1cfb1750794e9a5437474"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ObjectHold/classes/ObjectHold.class",
+      "sha256": "899ef8505fcebf22a01caaa5afe4d4a92e9d925802262a4558244810bb345ba8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ObjectHold/jadx/sources/defpackage/ObjectHold.java",
+      "sha256": "a847b06f788983032902878139920477a0f58bd941cdd52f68bcb7fb01d2d2a9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ErasedCastHold/ErasedCastHold.jar",
+      "sha256": "86792ff55b047d5ab950fb99c91b6567f0217583108eab7e4c458147b564ca23"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ErasedCastHold/classes/ErasedCastHold.class",
+      "sha256": "f7e0ca15f6b42353d05a236f16749efc63191c08efb762d9f302f82ebd9b7c47"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ErasedCastHold/jadx/sources/defpackage/ErasedCastHold.java",
+      "sha256": "a6c855327091b769070ec8761598c795fb75a75a529ac42299d68c5f3e763b19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RewrittenHold/RewrittenHold.jar",
+      "sha256": "17dd456bc27009d1d8f35db983dcc2a836870848f6e7ed93abbba2ab0939523d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RewrittenHold/classes/RewrittenHold.class",
+      "sha256": "d4de4248dfd509d000b41b4006711e11d35fb8cb0b72d2850387c00b408f3d59"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/RewrittenHold/jadx/sources/defpackage/RewrittenHold.java",
+      "sha256": "853f30134fd97fe43b7aaa77240fd2e0f28edfe026b4d39251f11349523ee906"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/PhiHold/PhiHold.jar",
+      "sha256": "be1956fc5295dc45935a5013e5dcf43ccc8a2b4ebd97b4010f4c6b1e1c0d623c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/PhiHold/classes/PhiHold.class",
+      "sha256": "ac333166c4697c37d62bb120005b973e104b658cc2e391f28be5b88d924b92e8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/PhiHold/jadx/sources/defpackage/PhiHold.java",
+      "sha256": "d47004b6db8d0fc19c0d2c7f06d64f2e343ea351e02d6b8a16879fec45970cc8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CallHold/CallHold.jar",
+      "sha256": "c1af30ded002a6120b139b2d676c939abcdf85f7d4db12348e7068645060b059"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CallHold/classes/CallHold.class",
+      "sha256": "2985d5e89adc0fb69818aa40fecd7494a83233563da5c4fdd19e8386ffa17006"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CallHold/jadx/sources/defpackage/CallHold.java",
+      "sha256": "5d3c4edbdd7e5268c2aebef6e245ed064f5c10b851d8689c3d2f54bb7b744b9f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ShadowHold/ShadowHold.jar",
+      "sha256": "b3c0f74374a7e5fc04ce702130d8bde38b3688e09c4ae71f6f23e0609a9e5815"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ShadowHold/classes/ShadowHold.class",
+      "sha256": "5fc8aecbd40fc35207ac6ff3ea029d52a5920b57ce9da4aefab4cc18afdb9bd9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ShadowHold/jadx/sources/defpackage/ShadowHold.java",
+      "sha256": "5d3bf2c8893aaef5908ffd93dd8d837980593ad7ddb01c03015f874d8995a543"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CrossHold/CrossHold.jar",
+      "sha256": "122d09e6e5f0465eaf2a1220de3f96f99081ccb06f369aa144f0e132b0901303"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CrossHold/classes/CrossHold.class",
+      "sha256": "fd9c338388c8f26f72ca15eaab8ac9a71ccef847a4f2127c487d13daacfbda3b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/CrossHold/jadx/sources/defpackage/CrossHold.java",
+      "sha256": "f1670b32fe21d82f1fc19b2d65ffaa46953e4398c0efa1bad5b67fc6fbdb9bcd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ParentCtorHold/ParentCtorHold.jar",
+      "sha256": "16f061ed09f180ed7d98edcea604657504e0ce10bd42dd8dc35f6de7ecf5dec9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ParentCtorHold/classes/ParentCtorHold.class",
+      "sha256": "1446a245483fef60dc00847acc901b4876881f227b38a28d6edb23a16f54f6ea"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ParentCtorHold/jadx/sources/defpackage/ParentCtorHold.java",
+      "sha256": "225adfe214fdb29abdd2146fbacd3c5aba2d18ba0394e6d86d46ffe74a1ef21d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ThisDelegateHold/ThisDelegateHold.jar",
+      "sha256": "3b37fefccae9f83ca256d3d8a6f9c61e78cfe6c468924e72bf2bff8d4663e83e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ThisDelegateHold/classes/ThisDelegateHold.class",
+      "sha256": "d9aea785b54a6b95c6cb9764c225d4e600fa7e7f340d2dac2d613f6732cd10dc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ThisDelegateHold/jadx/sources/defpackage/ThisDelegateHold.java",
+      "sha256": "a7f2149b8df738e28eaa6661f8e91fa6c9e2731e597d49c4e1d34c57221dd979"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ExceptionHold/ExceptionHold.jar",
+      "sha256": "ef47d7b033a7a3977344f42576468547eb54bad477b3908afc963c66a26d6ed5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ExceptionHold/classes/ExceptionHold.class",
+      "sha256": "13e28013b7859114add4d0feed4602616d13cb47c58bbdd5ea2c06f30dd611b6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/openjdk23/nodebug/ExceptionHold/jadx/sources/defpackage/ExceptionHold.java",
+      "sha256": "dfe340547d2dacfe82d650aaaa6737bad1a9eb572e8afb61a38c17667bc03be2"
+    }
+  ],
+  "empty_classpath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v2/empty-classpath",
+  "empty_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v2/empty-sourcepath",
+  "runner_invocation": [
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-class-scope-constructor-parameters/evidence/replay.py",
+    "--baseline",
+    "/private/tmp/jarde-raw-receiver-final-v3-cli",
+    "--candidate",
+    "/private/tmp/jarde-generic-calls-candidate-v2-cli",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-constructor-80-v2"
+  ],
+  "compile_isolation": "every javac argv receives explicit empty -classpath and -sourcepath",
+  "runtime_isolation": "original runtime uses frozen classes plus external driver; candidate runtime uses generated classes plus external driver; -Xverify:all retained; JAR paths forbidden in runtime classpaths"
+}

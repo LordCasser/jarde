@@ -1,0 +1,77 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling syn v3.0.5
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.12
+   Compiling cc v1.4.6
+   Compiling serde_core v1.0.229
+    Checking hashbrown v0.17.1
+    Checking equivalent v1.0.2
+    Checking cfg-if v1.0.4
+   Compiling crc32fast v1.5.2
+    Checking indexmap v2.14.2
+   Compiling blake3 v1.8.7
+   Compiling thiserror v2.0.20
+    Checking simd-adler32 v0.3.10
+   Compiling serde v1.0.229
+    Checking adler2 v2.0.1
+    Checking miniz_oxide v0.9.1
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.20
+    Checking constant_time_eq v0.4.2
+    Checking arrayvec v0.7.8
+    Checking bitflags v2.13.2
+    Checking noak v0.7.0
+    Checking flate2 v1.1.10
+    Checking rawzip v0.5.1
+    Checking foldhash v0.1.5
+    Checking hashbrown v0.15.5
+    Checking jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Checking fixedbitset v0.5.7
+    Checking petgraph v0.8.3
+    Checking jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+    Checking jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+warning: unused import: `StmtKind`
+    --> crates/jarde-java/src/report.rs:1743:44
+     |
+1743 |     use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+     |                                            ^^^^^^^^
+     |
+     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0277]: the trait bound `CallTarget: Ord` is not satisfied
+    --> crates/jarde-java/src/report.rs:1682:18
+     |
+1682 |         if !seen.insert((key.call_bci, key.target.clone()))
+     |                  ^^^^^^ unsatisfied trait bound
+     |
+help: the trait `Ord` is not implemented for `CallTarget`
+    --> crates/jarde-java/src/facts.rs:534:1
+     |
+ 534 | pub struct CallTarget {
+     | ^^^^^^^^^^^^^^^^^^^^^
+     = help: the following other types implement trait `Ord`:
+               ()
+               (A, Z, Y, X, W, V, U, T)
+               (B, A, Z, Y, X, W, V, U, T)
+               (C, B, A, Z, Y, X, W, V, U, T)
+               (D, C, B, A, Z, Y, X, W, V, U, T)
+               (E, D, C, B, A, Z, Y, X, W, V, U, T)
+               (T,)
+               (U, T)
+             and 5 others
+     = note: required for `(u32, CallTarget)` to implement `Ord`
+note: required by a bound in `BTreeSet::<T, A>::insert`
+    --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/alloc/src/collections/btree/set.rs:902:12
+     |
+ 900 |     pub fn insert(&mut self, value: T) -> bool
+     |            ------ required by a bound in this associated function
+ 901 |     where
+ 902 |         T: Ord,
+     |            ^^^ required by this bound in `BTreeSet::<T, A>::insert`
+
+For more information about this error, try `rustc --explain E0277`.
+warning: `jarde-java` (lib) generated 1 warning
+error: could not compile `jarde-java` (lib) due to 1 previous error; 1 warning emitted

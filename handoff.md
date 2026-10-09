@@ -1,50 +1,47 @@
-# HANDOFF — jarde 当前接续入口（2026-10-09）
+# HANDOFF — jarde 主线交接
 
-先核对 Git 和最新 HEAD 的 CI，再按下方队列继续。历史交接已在 Git 中保留，不从旧任务勾选数、分支名或旧 CI 结果推断当前状态。
-
-## 当前接续入口（raw receiver 已交付）
-
-实现与全部冻结证据已提交推送main `c5d21640`，[实际CI run 37831218407](https://github.com/LordCasser/jarde/actions/runs/37831218407) 四个job全部成功，包含真正JDK25 oracle。本片基线为 `564e22c1`；本片结论不引用基线CI。此次handoff收尾提交仅含文档/验收元数据/独立巡查证据，生产与Rust测试不变；最新main HEAD CI仍按文末命令查询。最终CLI hash、16族64输入对照、23字段族与80构造输入回归见 [本片root验收](openspec/changes/recover-raw-receiver-field-selection/verification-root.md)。字段反射12/64→60/64，完整三类API反射44/64，64/64完整编译并行为一致；方法API没有扩容。
-
-当前OpenSpec为8/8任务完成，实现与远端验收均已结束。fmt、CI同口径clippy、两固定seed各3253 passed/0 failed/93 ignored、显式ignored P3 3项/constructor 1项/bound-receiver 1项、strict OpenSpec 322/322均通过，命令和日志在 `results/local-gates`。三次首轮门禁失败分别是新增corpus登记、零formal静态初始化器额外扫描收费、standalone fixture总数断言遗漏，均修正并保留失败日志。
-
-root共享Cargo已清理8105个文件、19.0GiB，target/fuzz target均不存在，清理后可用空间约72GiB，最终核对约76GiB；其他项目的构建不动。本片没有新增分支或worktree，14个辅助树均detached、干净且HEAD是main祖先；受Codex保护的副本保持原样。
-
-下一项是 [普通泛型调用实参适配巡查](openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/summary.md)，尚未立项。CallHold/ExceptionHold原/JADX八输入可编译，Jarde均因Object→已发布T callee失败。新增BoundOverload四腿原源码均选择Number重载，Jarde与参考源码构建的JADX都因歧义失败；完整证据保留。新增四个最小Corretto8 debug巡查（exploratory）在同一evidence的 `mini-patrol`：FieldSetter已恢复set(T)/fieldT；EmptySink与TypedSetter仍有方法API擦除；CallRelay有实际编译失败。已有void setter证明不能泛化为所有调用消费位证明，getter反向依赖另片处理。重绑定raw alias/phi、分离局部scope仍在本片保持擦除。
-
-## 已交付的构造器片（历史）
-
-基线 `790579e2` 的四个 CI job 已成功：[run 37786347619](https://github.com/LordCasser/jarde/actions/runs/37786347619)。前一片泛型字段源码写证明已经合入。本轮 `recover-class-scope-constructor-parameters` 实现、独立对照与本地完整门禁已完成，代码和证据一起合入 main 并推送。fmt、CI 同口径 clippy、两固定 seed 各 3,243 passed/0 failed/93 ignored、显式 ignored P3 3 项/构造实参 1 项/绑定引用 1 项、strict OpenSpec 321/321 全部通过。实现提交 `698a219e` 的远端 [run 37804470415](https://github.com/LordCasser/jarde/actions/runs/37804470415) 第二 seed 在既有 bulk 预算并发断言失败，后续 JDK25 oracle 未执行。修正已合入并推送 `d6598866`，按原 OpenSpec 区分两种预算拒绝并加入确定性 probe/charge 对照，生产预算与语法恢复逻辑未变；本地 21 项及最终二进制 30 次并发用例复验通过。见 [CI 预算验收](openspec/changes/recover-class-scope-constructor-parameters/ci-delivery-verification-root.md) 与 [修正提交 CI](https://github.com/LordCasser/jarde/actions/runs/37808909595)。交接文档提交不改变生产代码或测试；最终远端结论按最新 main HEAD 查询。本地通过不能替代实际 JDK25 oracle。
-
-构造器片沿既有 candidate → method commit → published parameters → field commit 恢复 Object() 后直接 this 字段初始化的类作用域参数。T/T[]、上界、多变量、重复参数加载及宽槽均使用完整 AST/Code/SSA/InitRecord 与物理字段身份。未增加 pass、parser、IR、fixpoint，也不以未发布字段 Signature 循环证明构造参数。方法级字段赋值、任意调用/EH/this 委派仍有独立边界。
-
-root 首次对照抓到 ThisDelegateHold 新回退：callee 发布 T，但 caller 仍是 Object。最终用既有调用清单的实际 SSA receiver 阻止未证明的委派目标投影；raw new 保持放行，发射端 raw 形及两个受限 diamond 来源已审查。`new; dup` 的 receiver 深度 1 误拒也由冻结 fixture 抓到并修复。初版失败证据保留，没有删掉测试缩小结果。
-
-最终 20 族 × 真 Corretto8/OpenJDK23 × debug/no-debug：基线与候选均 72/80 完整编译并行为一致，无新增回退；9 个正例/36 输入完整 class/ctor/field 泛型反射一致。CrossHold 恢复 U 参数但擦除不兼容 T 字段；PeerNewHold 只恢复二参数 callee，caller/字段保持擦除；不能计为全恢复。前片 23 族重放每腿仍 22/23 编译并行为一致。见 [构造器 root 验收](openspec/changes/recover-class-scope-constructor-parameters/verification-root.md) 和 [字段 root 验收](openspec/changes/prove-generic-field-write-source-types/verification-root.md)。
-
-## 下一步队列
-
-1. **raw receiver 字段选择类型**：已立项并进入root验收，当前状态以上方接续补记为准。以下为立项前判断。新证据在 [只读巡查](openspec/evidence/raw-receiver-source-selection-patrol/summary.md)。static raw 参数与保留 raw local 的字段 T 反事实可编译；InstanceRawLocal 被 renderer 折成 this，字段 T 反事实失败。因此不能只用 SSA 来源或物理擦除判断 receiver raw，需实际发射 AST 与已发布方法参数事实；先 direct raw 参数最小闭环，alias 分拆。原型取证不等于当前已恢复。
-2. **普通泛型调用实参适配**：未立项。构造器 evidence 的 CallHold/ExceptionHold 正文已恢复，但 Object 参数传给实际发布 T 的 identity 方法，整类仍编译失败；JADX 四腿可编译。这是参数完整使用/实际已发布 callee 类型证明，不能误写成“正文拒绝”，也不能猜 cast。this 委派同类目标本片只安全拒绝，并未恢复其泛型链。
-3. **构造器其他形与泛型剩余边界**：method-formal 字段赋值、this 委派/non-Object 父类/复杂正文、成员类 TestGeneric8 的完整恢复均不在本片；SCGB 原有 main 正文拒绝、DeferredSetter sink 反射及 ArraySetter T[] 参数仍有前片记录。不能把少量 fixture 的闭环当成整个泛型单元追平。
-4. 接着按旧队列确认 ScopeRefusalsEscape 合法未变异形、LoopTestValues.storeTest 真实源形、switchBody guard。Class 字面量绑定引用的复制值/check 与完整 LG 的局部类型复用/finalize 是独立片，不混入 generic。
-5. 依据本地 `/Users/lordcasser/workspace/testzone/jadx` 的测试/算法及 [71 单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 继续。71 是验收单元，不是成功率；先冻结源码/原类/JADX/Jarde差异，再写 OpenSpec，确定性实施用 Luna，root独立验收。JADX 可参考提取代码与算法，但语义由原 JVM 行为裁决。
-
-## 构建与交接纪律
-
-只允许 root 使用主仓共享 Cargo target：`CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`，辅助树不建独立 target。20 GiB 可用空间为停建线，验收后清理残留。保留冻结输入 class/jar 和验收文本，清理生成类/临时 Driver，不删除另一项目的 target。
-
-预算、取消、完整类编译与 JVM 行为需要同时验收。自述头和非空类文本必须断言；CLI 0/4 不是源码正确性判据。重编和执行 classpath 不含原 jar，不能删拒绝方法后冒充整类成功。反射核对 GenericDeclaration 身份，不以同名 T 或相同擦除合并 binder。
-
-本地门禁：fmt、CI 明列债务白名单之外 -D warnings 的 workspace clippy、两固定 seed 5350648285461741569/70、strict OpenSpec、ignored P3/functional-constructor/bound-receiver。JDK25 instruction-boundary oracle 在远端实际 JDK25 核对，本地8/23不能冒充25。最终远端状态必须按最新 main HEAD查询。
-
-收尾已核对 15 个工作树：辅助树全部 detached、干净且 HEAD 为 main 祖先；本地和远端只剩 main，没有分支占用。共享 Cargo 清理 7,690 个文件、17.1 GiB；CI 修正复验后又清理 1,232 个文件、979.5 MiB，target 已不存在，最后核对可用空间约 81 GiB。历史固定保护的 detached 副本，Codex 归档明确拒绝删除，保留这些副本，不绕过保护。
+本轮只收尾既有工作树和同类泛型调用里程碑。先用下面命令核对当前主线；历史源码、失败日志与冻结输入都保留在 OpenSpec 中。
 
 ```sh
-git status -sb
+git status --short
+git log -1 --oneline
 git rev-parse HEAD origin/main
-git branch -avv
-git worktree list --porcelain
-gh run list --repo LordCasser/jarde --limit 5
-df -h /System/Volumes/Data
+git branch -av
+git worktree list
+gh run list --workflow CI --commit "$(git rev-parse HEAD)" --limit 3
 ```
+
+## 当前交付状态
+
+CLI8/v41实现与独立对照、本地门禁均已完成，OpenSpec8/9；本次提交包含全部生产、测试、spec和冻结证据。两个固定seed各3304passed/0failed/93ignored，显式ignored P3/constructor/bound receiver与strict OpenSpec全部通过。提交推送后仍需确认最新HEAD四个CI job含真正JDK25 oracle；最后清理主仓Cargo并提交完成交接。暂不把当前状态写成已完成远端交付。
+
+多轮接续历史保留在本片 `results/handoff-history-before-clean-v41.md` 与 `verification-root.md`，历史失败不覆盖最新验收。本地完整命令、日志和exit见 `results/local-gates/final-gates-v41-index.json`。
+
+## 本轮已完成的源码范围
+
+`recover-same-class-generic-call-consumers` 复用 Signature 擦除、同次 AST/Code/SSA、InitRecord 与原 method→field publication。直接 T/T[]、bounds/多参数/宽槽、独立 method binder、无环有限 relay 与逆声明序、void/调用结果参数位、Object() 后普通 catch 构造正文、封闭 overload 的 Number 上转型，按完整入边及最终源码类型共同验证后原子发布。
+
+事务只保存八个可变源码投影字段。独立已证 abstract NoBody、具体无 TypeVariable 声明和 constructor 自身 method formal 保留原路由；stop/cancel 沿现有 Partial/diagnostic，未提交组移动回退，此前完整独立 commit 保留。没有新增 crate、parser、IR pass、fixpoint、容器或跨类推断。
+
+## 验收与证据入口
+
+- [本片 root 验收](openspec/changes/recover-same-class-generic-call-consumers/verification-root.md)、[任务](openspec/changes/recover-same-class-generic-call-consumers/tasks.md)、[设计](openspec/changes/recover-same-class-generic-call-consumers/design.md)。
+- 固定 CLI8：`/private/tmp/jarde-generic-calls-candidate-v8-cli`，SHA256 `8770d823c70e7f61749cac836e468c0a991093822d1926822d4769adc1cf7339`。源码真实八文件 v41 archive SHA256 `d2367f1cc6a63c0c99804412a7d4f84c7c97eca3807987eab36828e40f97df1d`，详见 `results/local-gates/candidate-cli-v8.json`。
+- 真 Corretto8/OpenJDK23 × debug/no-debug：140 主矩阵 + Nested4，完整重编/行为 144/144，完整泛型 API 96/144。基线完整重编72/144、API20/144。JADX 的真实失败照实保留。
+- 44 控制 root 逐输入、完整源和实际 Probe 核对；九族可靠拒绝、pure bridge/合法条件单invoke 两族正控制。拒绝不计 API 恢复。
+- GC09：23 字段族双腿46输入，44完整编译/行为、26完整API，SCGB两既有拒绝；80构造行为、36完整API；raw64行为，字段/方法/类API60/52/60，旧已接受API零回退。
+- 独立验收 JSON、实际 runner、命令双流/退出码、前后hash在本片 `results/root-input-audit`。完整门禁见 `results/local-gates`，历史各轮失败保留；不借原jar执行，不删除拒绝成员。
+
+## 下一位 agent 从哪里继续
+
+先按 [71 单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 选一个明确未闭合的家族，结合 `/Users/lordcasser/workspace/testzone/jadx` 的具体测试与生产算法确定完整源码/原class/JADX/Jarde差异，再写 OpenSpec。确定性实现用 Luna，root 独立做边界审阅、完整对照与验收。71 是验收单元数，不是成功率；本片不意味着整个泛型单元或全部 JADX 语法追平。
+
+剩余泛型边界：getter 对字段发布的反向依赖、容器/wildcard、任意 alias/phi、继承/跨类泛型、this/super 委派和完整成员类 TestGeneric8。SCGB 保留的正文拒绝也单独处理。共享 Signature 解码/缓存、物理事实复制计费是另片架构债务，不混入下一语法修复。
+
+其他旧队列继续按账本证据排序：ScopeRefusalsEscape 合法原形、LoopTestValues.storeTest 实际源码、switchBody guard、完整 LG 的局部类型复用/finalize。不要从零散 exploratory 样例直接推定一个语法单元全部覆盖。
+
+## 构建纪律
+
+主仓共享 Cargo 只允许一个 agent 操作：`CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`。20 GiB可用空间为停建线，验收后清理。冻结输入jar和失败/成功证据保留，生成class与Cargo残留及时清理；不动其他项目的target。
+
+14个辅助工作树均detached、干净且提交为main祖先，无待合入工作或分支占用。Codex保护的副本保留，不在这些树另起构建。

@@ -1,0 +1,11 @@
+{
+  "archive": "source-snapshot-v24.tar.gz",
+  "archive_sha256": "72c83ba2c37aebef3a3b1e37a01dff48129a4b5d7293c50c78829b4360382d13",
+  "files": {
+    "src/class_source.rs": "04a4f22d80d1340f5f383409ac04eb8541ae409886d781e265585a506e95add2",
+    "src/facade.rs": "f7c6d28b6fb057bfeaa7333b0b1aefefd6108d3c0fb651eedc7966b708a2a5a7",
+    "crates/jarde-java/src/report.rs": "8a188d48115108fd4ba61a2faefef4a2db5ea6a86b874c62652c040d8ac773ab",
+    "tests/same_class_generic_call_consumers.rs": "b9c47ef309ef3c05f998834b64fe9984ce13d803a1babef8eabce84f6d40c352"
+  },
+  "temporary_trace": true
+}

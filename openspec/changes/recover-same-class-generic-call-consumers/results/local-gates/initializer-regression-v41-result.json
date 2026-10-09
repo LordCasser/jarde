@@ -1,0 +1,24 @@
+{
+  "label": "initializer-regression-v41",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--test",
+    "class_initializer_candidates",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v41.json",
+  "started_unix_ns": 1791520341893108000,
+  "exit": 0,
+  "finished_unix_ns": 1791520359569344000,
+  "log_sha256": "db42ba3f1b1b4c4416558352ff17eac084a28b4e78825f3746d4263d8b9f0f51",
+  "source_unchanged": true
+}

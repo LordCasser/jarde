@@ -1,0 +1,22 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/DeepRelay/compile-sources/candidate/DeepRelay.java:18: 错误: 找不到符号
+        return this.relay1(x);
+                           ^
+  符号:   变量 x
+  位置: 类 DeepRelay<T>
+  其中, T是类型变量:
+    T扩展已在类 DeepRelay中声明的Object
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/DeepRelay/compile-sources/candidate/DeepRelay.java:26: 错误: 找不到符号
+        return this.relay2(x);
+                           ^
+  符号:   变量 x
+  位置: 类 DeepRelay<T>
+  其中, T是类型变量:
+    T扩展已在类 DeepRelay中声明的Object
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v2/gc01-08-140/corretto8/debug/DeepRelay/compile-sources/candidate/DeepRelay.java:34: 错误: 找不到符号
+        return this.identity(x);
+                             ^
+  符号:   变量 x
+  位置: 类 DeepRelay<T>
+  其中, T是类型变量:
+    T扩展已在类 DeepRelay中声明的Object
+3 个错误

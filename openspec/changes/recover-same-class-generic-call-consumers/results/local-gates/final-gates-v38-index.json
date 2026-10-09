@@ -1,0 +1,26 @@
+[
+  {
+    "label": "seed-5350648285461741569-v38",
+    "argv": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1",
+      "PROPTEST_RNG_SEED": "5350648285461741569"
+    },
+    "source_snapshot": "source-snapshot-v38.json",
+    "started_unix_ns": 1791514992016083000,
+    "exit": 101,
+    "finished_unix_ns": 1791515393562352000,
+    "log_sha256": "e0ae90a3ac989eaa9479c7a5ae68e70b9b73f05a520ba5eaac93596a78db217e",
+    "source_unchanged": true
+  }
+]

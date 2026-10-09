@@ -1,0 +1,16 @@
+--- original
++++ candidate
+@@ -1,8 +1,8 @@
+-REFLECT|ctor[0].formalCount=1;typeVariableCount=0
++REFLECT|ctor[0].formalCount=2;typeVariableCount=0
+ REFLECT|ctor[0].param[0]=T;binder=class
+-REFLECT|ctor[1].formalCount=2;typeVariableCount=0
+-REFLECT|ctor[1].param[0]=T;binder=class
+-REFLECT|ctor[1].param[1]=boolean;binder=non-variable
++REFLECT|ctor[0].param[1]=boolean;binder=non-variable
++REFLECT|ctor[1].formalCount=1;typeVariableCount=0
++REFLECT|ctor[1].param[0]=java.lang.Object;binder=non-variable
+ REFLECT|classTypeVariableCount=1
+ REFLECT|classVar[0]=T;bounds=java.lang.Object
+-REFLECT|field[v]=T;binder=class
++REFLECT|field[v]=java.lang.Object;binder=non-variable

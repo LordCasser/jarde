@@ -1,0 +1,20 @@
+{
+  "label": "diff-v34",
+  "argv": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v34.json",
+  "started_unix_ns": 1791512449413116000,
+  "exit": 0,
+  "finished_unix_ns": 1791512449534613000,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_unchanged": true
+}

@@ -1,0 +1,27 @@
+{
+  "kind": "offline-post-hoc-disposition",
+  "created_from_existing_candidate_v1": true,
+  "cli_invoked": false,
+  "candidate_cli_sha256": "b613c0482c8aa56bdf479321abbcc6cadd12c500dc9eec6e2efd8a62daa00900",
+  "criterion_script_source": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate-acceptance-replay.py",
+  "criterion_script_sha256": "a19895e70ef306a3024132a3da7c07cf891ea87e5ef0e25e01413989514ce836",
+  "criterion_snapshot": "candidate-acceptance-replay-criteria.py",
+  "criterion_snapshot_sha256": "a19895e70ef306a3024132a3da7c07cf891ea87e5ef0e25e01413989514ce836",
+  "matrix_manifest": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/gc01-08-140/manifest.json",
+  "matrix_manifest_sha256": "a2f3ef31dad2c5e4c627d5037bfeebf40bda4a377febe93411f33f6e8fe1160a",
+  "nested_manifest": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/candidate-v1/nested-call-4/manifest.json",
+  "nested_manifest_sha256": "59ce83e55b7b013182c7042158ca341b6ad73360e7a2eb7abda2211dba6ea311",
+  "frozen_input_manifest": "openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/frozen-input-manifest.json",
+  "frozen_input_manifest_sha256": "c01c7f3a42e1c5e759ac45e18d13d16e233df54dfc29ae2e32c27200a826496d",
+  "root_control_disposition": "openspec/changes/recover-same-class-generic-call-consumers/results/candidate/root-control-disposition-v1.md",
+  "root_control_disposition_sha256": "663cae55647f1cf8db50f20cab50f0f9531e13de15e044e6e712bb6559d0751f",
+  "summary_json": "offline-disposition.json",
+  "summary_json_sha256": "a19d158b7fdc34a89ad2e3c1316393504257e9f0de3f11e987c5b47f625b93d1",
+  "summary_markdown": "offline-disposition.md",
+  "summary_markdown_sha256": "81e0e25f581b6b576515490d80f7f18cdcf1cd9c158c358bcd530406257340b1",
+  "row_count": 12,
+  "output_integrity_errors": {
+    "generic": [],
+    "nested": []
+  }
+}

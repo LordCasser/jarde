@@ -1,0 +1,8 @@
+{
+  "path": "/private/tmp/jarde-generic-calls-candidate-v3-cli",
+  "sha256": "5b58a8816479c63fbcae8c0d9dcb0c7c7be59e80203551a0c72977585353a1b7",
+  "source_snapshot": "source-snapshot-v31.json",
+  "source_archive_sha256": "417fb4f9444769b245f74f13f7d155ab60cdf9f80a76dfa297741637b8a8e6d9",
+  "git_head": "d158989b60a56a21934f80c0697dec48aefe347e",
+  "build_command": "candidate-cli-v3-build-command.json"
+}

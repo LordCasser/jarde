@@ -1,0 +1,57 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.80s
+     Running tests/same_class_generic_call_consumers.rs (target/debug/deps/same_class_generic_call_consumers-1d910b4666582669)
+
+running 1 test
+test raw_incoming_call_keeps_the_previously_proved_field_setter ... GC-RAW-REJECT caller=main call_bci=11 at 11955
+GC-TX-REJECT class=SCGA members=[1] at 14167
+
+thread 'raw_incoming_call_keeps_the_previously_proved_field_setter' (6904562) panicked at tests/same_class_generic_call_consumers.rs:451:5:
+the existing void-body proof and actual raw incoming selection must remain valid:
+// jarde: presentation of `SCGA` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class Signature `<T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class SCGA<T extends java.lang.Comparable<T>> extends java.lang.Object {
+    // jarde: field Signature projection refused for `vLjava/lang/Comparable;`: unsupported (field_generic_write_source_unproved): writer put(Ljava/lang/Comparable;)V@7 is not source-assignable to the projected field type
+    public java.lang.Comparable v;
+
+    public SCGA() {
+        // @method <init>()V
+        // @declaration a constructor of `SCGA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `put(Ljava/lang/Comparable;)V`: same-class generic call dependency did not close over every incoming use
+    public void put(java.lang.Comparable arg1) {
+        // @method put(Ljava/lang/Comparable;)V
+        // @declaration an instance method of `SCGA`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.Collections.singletonList((java.lang.Object) arg1);
+        this.v = arg1;
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `SCGA`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        SCGA local1 = new SCGA();
+        local1.put((java.lang.Comparable) "same-class");
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("same-class:").append((java.lang.String) local1.v).toString());
+        return;
+    }
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    raw_incoming_call_keeps_the_previously_proved_field_setter
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.35s
+
+error: test failed, to rerun pass `-p jarde --test same_class_generic_call_consumers`

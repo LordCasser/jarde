@@ -1,0 +1,12 @@
+{
+  "head": "d158989b60a56a21934f80c0697dec48aefe347e",
+  "archive": "source-snapshot-v15.tar.gz",
+  "archive_sha256": "e686334571eb268899ed34caa674f48c3fe891bb1e6cfb561519e42b9e75d199",
+  "files": {
+    "src/class_source.rs": "17f3181bb3b68b037547dd16a91f4fc2aebb0f3586c7ea5b11f4a664fd507356",
+    "src/facade.rs": "1a180a222caed54b08fa090c89853672bd41e89a5380bc51bbf0df264c6a180f",
+    "crates/jarde-java/src/report.rs": "e1860c55a49073ebea2f3b8cd1b3661a5b7f7343389904d0acafe499ebc2bcd1",
+    "tests/same_class_generic_call_consumers.rs": "013edb693d2afd1c0cd0d79eb0244dcbc594e0fd3915a7f6afbd2bb89f2f531a"
+  },
+  "scope": "frozen before v15 tests; contains actual source bytes, not hashes alone"
+}

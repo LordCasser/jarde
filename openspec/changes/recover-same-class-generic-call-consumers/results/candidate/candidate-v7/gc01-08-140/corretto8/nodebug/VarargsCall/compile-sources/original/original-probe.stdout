@@ -1,0 +1,8 @@
+classformal#0:T bounds=java.lang.Object
+constructor()
+methodformal:first(java.lang.Object[];)->java.lang.Object#0 bounds=java.lang.Object
+method:first(java.lang.Object[];)->java.lang.Object return=METHOD#first(java.lang.Object[];)->java.lang.Object#0 params=METHOD#first(java.lang.Object[];)->java.lang.Object#0[]
+method:relay(java.lang.Object;)->java.lang.Object return=CLASS#0 params=CLASS#0
+behavior=varargs-marker
+probe.checks=9
+probe.failures=0

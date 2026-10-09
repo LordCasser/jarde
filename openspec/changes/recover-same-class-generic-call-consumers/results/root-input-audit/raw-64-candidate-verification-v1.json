@@ -1,0 +1,2403 @@
+{
+  "scope": "root独立核对GC09 raw64候选；只证明固定CLI，不证明当前正在编辑源码",
+  "passed": true,
+  "rows": 64,
+  "commands_checked": 842,
+  "tool_hashes_checked": 59,
+  "recomputed_matches": {
+    "field_api": 60,
+    "method_api": 52,
+    "class_api": 60,
+    "behavior": 64
+  },
+  "new_api_regressions": [],
+  "limitations": "runner未保存成功命令的stderr及运行前JDK二进制hash；检查保存命令、JDK版本、实际运行转录。文件索引为本次核对生成，不伪称原runner manifest。",
+  "files": [
+    {
+      "path": "commands.tsv",
+      "bytes": 336364,
+      "sha256": "e4b1e4ece3ea48f844cffdf51782320ad6fedd2879f5f6f07d030416a4e80d06"
+    },
+    {
+      "path": "comparison-summary.json",
+      "bytes": 1408,
+      "sha256": "ed7035983b0bdf3657cd8f6b5682540022012cc21354b16191016578ffcf22dd"
+    },
+    {
+      "path": "failures/jdk23/debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "bytes": 662,
+      "sha256": "4c8bc180044841f3ea9a5593dffa1d8897162cc00d6410a819e32fec473923cd"
+    },
+    {
+      "path": "failures/jdk23/no-debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "bytes": 665,
+      "sha256": "807f1e746f21457a7ca1f6e24c635850f5ef128b486e212c554f8c3328023fa5"
+    },
+    {
+      "path": "failures/jdk8/debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "bytes": 418,
+      "sha256": "1214cf253a985e984b868482b5400414c03f984c24c3b918d53048dc635ee505"
+    },
+    {
+      "path": "failures/jdk8/no-debug/InstanceRawLocal/jadx-javac.stderr.txt",
+      "bytes": 421,
+      "sha256": "79b634f01a7bcc067585a58224441999bfb9bcb3d1e43a48c9040d82a45d4bc8"
+    },
+    {
+      "path": "jdk23/debug/jadx/Array2DRawParam/sources/defpackage/Array2DRawParam.java",
+      "bytes": 323,
+      "sha256": "d9af1990c95193456c46473f31939177a2632e34152dde0ed791caf10ac40d27"
+    },
+    {
+      "path": "jdk23/debug/jadx/ArrayRawParam/sources/defpackage/ArrayRawParam.java",
+      "bytes": 313,
+      "sha256": "b9356814382670f5cc31457caf107ca11a4836ca88b6a2964a73120afa021457"
+    },
+    {
+      "path": "jdk23/debug/jadx/BoundRawParam/sources/defpackage/BoundRawParam.java",
+      "bytes": 395,
+      "sha256": "4545a9f6e22269ff21bcac1e1abc69f7f9186d982c4c395eb5c10471783b9eda"
+    },
+    {
+      "path": "jdk23/debug/jadx/DirectInstanceRawParam/sources/defpackage/DirectInstanceRawParam.java",
+      "bytes": 332,
+      "sha256": "d5a81d1a0941226f34e220c355943cd81eace76a7f72ab9c0a07e079166af029"
+    },
+    {
+      "path": "jdk23/debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java",
+      "bytes": 277,
+      "sha256": "183a867140d3ec0d651f1c6024251ab3805b4a7cb5736eab8893104121ed39df"
+    },
+    {
+      "path": "jdk23/debug/jadx/MultiFormalRawParam/sources/defpackage/MultiFormalRawParam.java",
+      "bytes": 362,
+      "sha256": "46dff0ad150401facc3becf5fa2e92685a87d46f2c9b537e02a20af4e0da4072"
+    },
+    {
+      "path": "jdk23/debug/jadx/NullRawParam/sources/defpackage/NullRawParam.java",
+      "bytes": 230,
+      "sha256": "2497fde8c7696cef28caddbb5432e9775944289511bd27767183fd2665087b19"
+    },
+    {
+      "path": "jdk23/debug/jadx/PrimitiveArrayRawParam/sources/defpackage/PrimitiveArrayRawParam.java",
+      "bytes": 340,
+      "sha256": "6e080e95264345c55088fab59d326568454b5c431b3bd4674254c4c3f7931b0b"
+    },
+    {
+      "path": "jdk23/debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerBase.java",
+      "bytes": 141,
+      "sha256": "a4256e0b800f68dffd6124722d909d24bb9958b2d27d0668e20575fd05ead39d"
+    },
+    {
+      "path": "jdk23/debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerChild.java",
+      "bytes": 306,
+      "sha256": "ea53cd737a4ca1e297f8ae71a5ed156924a2cf3ad7c61206b43694e7cb016fde"
+    },
+    {
+      "path": "jdk23/debug/jadx/RawParam/sources/defpackage/RawParam.java",
+      "bytes": 283,
+      "sha256": "a36e1bd1ec630ddccadc5178ea2ef1483d9b784fef412784d34d672f34d9c855"
+    },
+    {
+      "path": "jdk23/debug/jadx/RetainedAliasRawParam/sources/defpackage/RetainedAliasRawParam.java",
+      "bytes": 362,
+      "sha256": "0d8c28f014d9873131e2277ec147645b4f2e8f88f10d96ebafa1ca68ec7519a9"
+    },
+    {
+      "path": "jdk23/debug/jadx/ShadowMethodT/sources/defpackage/ShadowMethodT.java",
+      "bytes": 332,
+      "sha256": "e638423e067858654f869a3c38d7f38daf64e4a0855011122ace6be028722f99"
+    },
+    {
+      "path": "jdk23/debug/jadx/StaticRawLocal/sources/defpackage/StaticRawLocal.java",
+      "bytes": 307,
+      "sha256": "0875242685024debb56daf13e862932967d9e7c860f92e7b89c872dc99a16be8"
+    },
+    {
+      "path": "jdk23/debug/jadx/ThisReceiver/sources/defpackage/ThisReceiver.java",
+      "bytes": 206,
+      "sha256": "908f8f9ccda887868f6a515f1942aed41297b5a73a55e0a062da8faeca7b049f"
+    },
+    {
+      "path": "jdk23/debug/jadx/TypedReceiver/sources/defpackage/TypedReceiver.java",
+      "bytes": 305,
+      "sha256": "f6885117b5b3c43020e4cede27dbe323b9d8ef2900b0d386adc3a22e1abcc97f"
+    },
+    {
+      "path": "jdk23/debug/jadx/WideRawParam/sources/defpackage/WideRawParam.java",
+      "bytes": 327,
+      "sha256": "1b5390662572c65827dc2e38557a649a6c3f92cb2c6813556092327e680a54fd"
+    },
+    {
+      "path": "jdk23/debug/jarde/Array2DRawParam.java",
+      "bytes": 1303,
+      "sha256": "d4ba813f6f198eed97a53a5c193bca2f69698ce49b7a93aa69e279e7c27acb62"
+    },
+    {
+      "path": "jdk23/debug/jarde/Array2DRawParam.stderr.txt",
+      "bytes": 44818,
+      "sha256": "1ffe104068709fc0ea6c3d2f1f37fd81644cdc0b00f14f3434d05b4e429a05cb"
+    },
+    {
+      "path": "jdk23/debug/jarde/ArrayRawParam.java",
+      "bytes": 1283,
+      "sha256": "c8c72849f11741a77f70b21b0436745c69e7f2e9d60ae7c7724adfd147a8faab"
+    },
+    {
+      "path": "jdk23/debug/jarde/ArrayRawParam.stderr.txt",
+      "bytes": 44607,
+      "sha256": "03e7c11475ee94d0373a503ecd87c3141d4b24f049e473bed105127b6a6a2852"
+    },
+    {
+      "path": "jdk23/debug/jarde/BoundRawParam.java",
+      "bytes": 1355,
+      "sha256": "6780b9df7fd79af1b6d8e0acb289d0257a77eaa548101c8cfe3fdc3911d66eac"
+    },
+    {
+      "path": "jdk23/debug/jarde/BoundRawParam.stderr.txt",
+      "bytes": 44744,
+      "sha256": "68afcfc1140db2b61ec7963012a1addd28c6a0654beea9421f0ca20eacdaacda"
+    },
+    {
+      "path": "jdk23/debug/jarde/DirectInstanceRawParam.java",
+      "bytes": 1344,
+      "sha256": "66882766f2731a7d18b72428b8ad38d8f2bd8e0183b4bf42ab71e0a8bcb56671"
+    },
+    {
+      "path": "jdk23/debug/jarde/DirectInstanceRawParam.stderr.txt",
+      "bytes": 45501,
+      "sha256": "6a19a66197a77cec1fce2012dc65b5fab31cceb548a4ce26ca4d4bc489b252a2"
+    },
+    {
+      "path": "jdk23/debug/jarde/InstanceRawLocal.java",
+      "bytes": 1341,
+      "sha256": "5739eae80933689e02968db38be749560fea18f7852efc7071bc402ac1657445"
+    },
+    {
+      "path": "jdk23/debug/jarde/InstanceRawLocal.stderr.txt",
+      "bytes": 44329,
+      "sha256": "1e298259f07eb57b48ee9904d3876331138cab8276222ac4aef46aa3f966ad68"
+    },
+    {
+      "path": "jdk23/debug/jarde/MultiFormalRawParam.java",
+      "bytes": 1601,
+      "sha256": "fc2962c0aac9ec98ea86aa50ec132f77514a683ba76d7c329493e954bce56e48"
+    },
+    {
+      "path": "jdk23/debug/jarde/MultiFormalRawParam.stderr.txt",
+      "bytes": 52153,
+      "sha256": "60ee6eff35a121a635137b3d74c2050701c4a2a73befdd921ca4206520ec4a1e"
+    },
+    {
+      "path": "jdk23/debug/jarde/NullRawParam.java",
+      "bytes": 1207,
+      "sha256": "f60daa335370ba4b9535a79d8a6039e957fde7f7fbf1179b722b7dff8c1bb168"
+    },
+    {
+      "path": "jdk23/debug/jarde/NullRawParam.stderr.txt",
+      "bytes": 43830,
+      "sha256": "44265c3ef731c5a8c239e6eb985e368dae4f5b23e84ff330c97e85f06d24e1c7"
+    },
+    {
+      "path": "jdk23/debug/jarde/PrimitiveArrayRawParam.java",
+      "bytes": 1305,
+      "sha256": "ca19f53923fbfb66917c75ea83f0d5053343cf8c6aa62b562778ef54d5028a26"
+    },
+    {
+      "path": "jdk23/debug/jarde/PrimitiveArrayRawParam.stderr.txt",
+      "bytes": 45004,
+      "sha256": "0e65ac550598b7a86e4fd1b4b0197935c7100457197565cfdb06f86794168a42"
+    },
+    {
+      "path": "jdk23/debug/jarde/RawOwnerBase.java",
+      "bytes": 888,
+      "sha256": "f400195673e17b46cfe5e1ecf2dfa6ad1e569fc2a83c23d92202a00ba21aba24"
+    },
+    {
+      "path": "jdk23/debug/jarde/RawOwnerBase.stderr.txt",
+      "bytes": 24648,
+      "sha256": "aca0c220c88ed78307b61f4e589421712ca6a9cc3a446ba73b9a7a7224411f9e"
+    },
+    {
+      "path": "jdk23/debug/jarde/RawOwnerChild.java",
+      "bytes": 1243,
+      "sha256": "85654234ed265aea8c2af90fe4353ca2be2b352c36d98476b0f89a9661e064cd"
+    },
+    {
+      "path": "jdk23/debug/jarde/RawOwnerChild.stderr.txt",
+      "bytes": 42675,
+      "sha256": "5931f984dd3dbf87f44c256ff0867e4999e09396c8b8de8ba1f931122d855766"
+    },
+    {
+      "path": "jdk23/debug/jarde/RawParam.java",
+      "bytes": 1236,
+      "sha256": "e086985b6879bfbebb341e501fb7f963bc33d5623ac87904b40e011163135e9b"
+    },
+    {
+      "path": "jdk23/debug/jarde/RawParam.stderr.txt",
+      "bytes": 44044,
+      "sha256": "93b84c599796d102715101fc933fe1f51709e95e5b7453497e09083833e171bb"
+    },
+    {
+      "path": "jdk23/debug/jarde/RetainedAliasRawParam.java",
+      "bytes": 1437,
+      "sha256": "67c03164c7f4c286881d760c247bdc8ed73c851a4377db2751830cc607eb3f89"
+    },
+    {
+      "path": "jdk23/debug/jarde/RetainedAliasRawParam.stderr.txt",
+      "bytes": 52000,
+      "sha256": "472848bbce013487afdf3a2103ca6b006706981fe621240efc4d6a9db52f3102"
+    },
+    {
+      "path": "jdk23/debug/jarde/ShadowMethodT.java",
+      "bytes": 1957,
+      "sha256": "4bd7e971db097e54afcb2dfe2a4ccc9029b04e3c9626bd76bd0ee0e0b5a316b4"
+    },
+    {
+      "path": "jdk23/debug/jarde/ShadowMethodT.stderr.txt",
+      "bytes": 48223,
+      "sha256": "3d647138694a07a86fd5fa56fc1ef75f9c69abde7cf483a82884b75265dd2d0a"
+    },
+    {
+      "path": "jdk23/debug/jarde/StaticRawLocal.java",
+      "bytes": 1322,
+      "sha256": "9ec274de3d0847441e7de73ff79a6d027179b6c14306c18643ee8e2346b54332"
+    },
+    {
+      "path": "jdk23/debug/jarde/StaticRawLocal.stderr.txt",
+      "bytes": 48430,
+      "sha256": "d643edc3fa1c381a55024fc81e29d7b35df3fafaddaaa62915033c72f8cce29a"
+    },
+    {
+      "path": "jdk23/debug/jarde/ThisReceiver.java",
+      "bytes": 1330,
+      "sha256": "a97d2cf3fb8ae606b390fe7a96386fb611ca686a76a5a25889978f7e8fc03c52"
+    },
+    {
+      "path": "jdk23/debug/jarde/ThisReceiver.stderr.txt",
+      "bytes": 44239,
+      "sha256": "e325520865082900468aa8a153dbb74e26387e3d72095d01ee9c56689887e15b"
+    },
+    {
+      "path": "jdk23/debug/jarde/TypedReceiver.java",
+      "bytes": 1763,
+      "sha256": "161785be22add146d3c6fd6f56636a636935030610ccacf7511a7d7982dd2e71"
+    },
+    {
+      "path": "jdk23/debug/jarde/TypedReceiver.stderr.txt",
+      "bytes": 47657,
+      "sha256": "d9325c9bcd067a03ff3efaefcd37b728f60d4340455ed0d26a3c3b90e0162271"
+    },
+    {
+      "path": "jdk23/debug/jarde/WideRawParam.java",
+      "bytes": 1300,
+      "sha256": "a8c2366e3a709f7941c00dff72d5921e0b3e9772cd7195d3caf1094bb0a95be9"
+    },
+    {
+      "path": "jdk23/debug/jarde/WideRawParam.stderr.txt",
+      "bytes": 44598,
+      "sha256": "f40d4ebeee911d7e9da406139e4a9ff2095fdbfce1d2e745c1d95c9dd3cfc89c"
+    },
+    {
+      "path": "jdk23/debug/javap/Array2DRawParam.txt",
+      "bytes": 3472,
+      "sha256": "d3e7d59ed9de6427484423766e890742100e50539680c5500ba76a78e978aee4"
+    },
+    {
+      "path": "jdk23/debug/javap/ArrayRawParam.txt",
+      "bytes": 3381,
+      "sha256": "545cc0ed9cd4ee5a3dfd9cd36bc2ea9f99b43a4f296001fa1ba87c4e70461483"
+    },
+    {
+      "path": "jdk23/debug/javap/BoundRawParam.txt",
+      "bytes": 3449,
+      "sha256": "a9cc48530178948b0ef2522222ee87f6fa4b18a9562c438d23c2d4df0f163cec"
+    },
+    {
+      "path": "jdk23/debug/javap/DirectInstanceRawParam.txt",
+      "bytes": 3722,
+      "sha256": "dae6436bf67ca48a6be069fb2a99259f629e616df93c99788d6e280e92c7e1a0"
+    },
+    {
+      "path": "jdk23/debug/javap/InstanceRawLocal.txt",
+      "bytes": 3559,
+      "sha256": "61694ae4173e5acf45257dc21e14f18369f88e8d6174cfecd499bb58b4716a5b"
+    },
+    {
+      "path": "jdk23/debug/javap/MultiFormalRawParam.txt",
+      "bytes": 4333,
+      "sha256": "c0f896241d7a15ce2877ce98de100e669f49b4bece1511ba65c16a2fa4ce30e8"
+    },
+    {
+      "path": "jdk23/debug/javap/NullRawParam.txt",
+      "bytes": 3243,
+      "sha256": "24639551a84c9f092e03155ca19a00ce4785ab1a0c04ee008338724e5e688749"
+    },
+    {
+      "path": "jdk23/debug/javap/PrimitiveArrayRawParam.txt",
+      "bytes": 3509,
+      "sha256": "0c5e9afe111852818d0ec9547e756192d3bc649e63e7c30af4a83cd8c15c5a88"
+    },
+    {
+      "path": "jdk23/debug/javap/RawOwnerChild.txt",
+      "bytes": 3181,
+      "sha256": "0132462da1080853f38ff9c046056abc9d806c2dcc4f0512ee12bbb1c19261fa"
+    },
+    {
+      "path": "jdk23/debug/javap/RawParam.txt",
+      "bytes": 3254,
+      "sha256": "643f960b952233003d168002eff538f1174de04eaf360b4fed0e1bf87c87fc49"
+    },
+    {
+      "path": "jdk23/debug/javap/RetainedAliasRawParam.txt",
+      "bytes": 3738,
+      "sha256": "52f1a5e1188002499119033efef31c9651210558f5418d43808f7d80148d4ac7"
+    },
+    {
+      "path": "jdk23/debug/javap/ShadowMethodT.txt",
+      "bytes": 4041,
+      "sha256": "62ec7dca1ba288360e9cdb3dee7d6fa51bae38174902fd3bf4b25b89706bdbab"
+    },
+    {
+      "path": "jdk23/debug/javap/StaticRawLocal.txt",
+      "bytes": 3495,
+      "sha256": "3c02dbbd54549b6584dcc4fda9101a47af57af55262067b96d7fcc0a3d769992"
+    },
+    {
+      "path": "jdk23/debug/javap/ThisReceiver.txt",
+      "bytes": 3475,
+      "sha256": "343a15458cd6d05d7e7f5ffc955904a3cb22e08e6a218bac9f67c26aff810430"
+    },
+    {
+      "path": "jdk23/debug/javap/TypedReceiver.txt",
+      "bytes": 4061,
+      "sha256": "644a2c56d254b7f5fa9ba80670e3d02a9669e01d27ed79af9f3eb1678495a307"
+    },
+    {
+      "path": "jdk23/debug/javap/WideRawParam.txt",
+      "bytes": 3578,
+      "sha256": "32e088383eb2592a9d7024fdad617672d9dd852f63dc5c9f6c519674a14fbf1a"
+    },
+    {
+      "path": "jdk23/debug/runtime/Array2DRawParam.jadx.txt",
+      "bytes": 757,
+      "sha256": "8a25af8b8504893fffac8c1872e3c93e85925b6aa0b3d9ff5f62750cee2ba267"
+    },
+    {
+      "path": "jdk23/debug/runtime/Array2DRawParam.jarde.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk23/debug/runtime/Array2DRawParam.original.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk23/debug/runtime/ArrayRawParam.jadx.txt",
+      "bytes": 740,
+      "sha256": "65890eea8fe7c3065fbc2f644c7253d5354fdffeba56efc1a47107d7914063b6"
+    },
+    {
+      "path": "jdk23/debug/runtime/ArrayRawParam.jarde.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk23/debug/runtime/ArrayRawParam.original.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk23/debug/runtime/BoundRawParam.jadx.txt",
+      "bytes": 817,
+      "sha256": "bdeb71e6ccb9da375831745c55c6fa5137fd29b7007948eecaea74516d6991ca"
+    },
+    {
+      "path": "jdk23/debug/runtime/BoundRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk23/debug/runtime/BoundRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk23/debug/runtime/DirectInstanceRawParam.jadx.txt",
+      "bytes": 777,
+      "sha256": "b3cda9506188b60dd9d215bc5efd1dafb315f344e7cea3910361ebe407f0cc9b"
+    },
+    {
+      "path": "jdk23/debug/runtime/DirectInstanceRawParam.jarde.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk23/debug/runtime/DirectInstanceRawParam.original.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk23/debug/runtime/InstanceRawLocal.jarde.txt",
+      "bytes": 594,
+      "sha256": "c4a0fd4eb5e838df4c7116cc09d11740387e51309b8dd9c85cb1eac73adb9692"
+    },
+    {
+      "path": "jdk23/debug/runtime/InstanceRawLocal.original.txt",
+      "bytes": 624,
+      "sha256": "b5f800a25ef5e547f36ccdecb9d6798cca74aee4a8a677d83bd449aea30f57e1"
+    },
+    {
+      "path": "jdk23/debug/runtime/MultiFormalRawParam.jadx.txt",
+      "bytes": 1277,
+      "sha256": "8d284d37fb44425659f63776c8f684d596146724e653b1147b4adc2b7c50d4e2"
+    },
+    {
+      "path": "jdk23/debug/runtime/MultiFormalRawParam.jarde.txt",
+      "bytes": 744,
+      "sha256": "8bc5d0b9f7ed8f8820c0a056a24f74615b3e6104dd1ccada41aee9975df41485"
+    },
+    {
+      "path": "jdk23/debug/runtime/MultiFormalRawParam.original.txt",
+      "bytes": 1167,
+      "sha256": "6d16de1512a82cf13a56f94903001249dbfdb1ab81b29b817616448334e1d0c4"
+    },
+    {
+      "path": "jdk23/debug/runtime/NullRawParam.jadx.txt",
+      "bytes": 657,
+      "sha256": "f4e759450c3306919076b843e677ebd4315a206a7a08c607258e8ee49a6eb720"
+    },
+    {
+      "path": "jdk23/debug/runtime/NullRawParam.jarde.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk23/debug/runtime/NullRawParam.original.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk23/debug/runtime/PrimitiveArrayRawParam.jadx.txt",
+      "bytes": 724,
+      "sha256": "8dbde5389e6da69a121d5ad297157ee52bcb682d49d75d8a4bc7844fd4d1d1e8"
+    },
+    {
+      "path": "jdk23/debug/runtime/PrimitiveArrayRawParam.jarde.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk23/debug/runtime/PrimitiveArrayRawParam.original.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk23/debug/runtime/RawOwnerChild.jadx.txt",
+      "bytes": 721,
+      "sha256": "2404a47a7f7c206decbce521d1ad8ca2966f33929a01a6e1cd462d7eda65b76b"
+    },
+    {
+      "path": "jdk23/debug/runtime/RawOwnerChild.jarde.txt",
+      "bytes": 565,
+      "sha256": "e65da6d8f2478e3a0b6f43759b106518ecb2b77f17bd072cf737ed70a4ac28ad"
+    },
+    {
+      "path": "jdk23/debug/runtime/RawOwnerChild.original.txt",
+      "bytes": 655,
+      "sha256": "c25e0c82c8f818f082f08ceef41ac63b15ed1ce4bb020bcf1eff5396c577b047"
+    },
+    {
+      "path": "jdk23/debug/runtime/RawParam.jadx.txt",
+      "bytes": 693,
+      "sha256": "33b65814b563635c3b26f292f11a234ec9eda87fc8bbf5409c3fc0f323ad9d3d"
+    },
+    {
+      "path": "jdk23/debug/runtime/RawParam.jarde.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk23/debug/runtime/RawParam.original.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk23/debug/runtime/RetainedAliasRawParam.jadx.txt",
+      "bytes": 806,
+      "sha256": "f92fd71052669f4c2419e8516949617f14ee858caeb232d80d63117f41ea2d94"
+    },
+    {
+      "path": "jdk23/debug/runtime/RetainedAliasRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk23/debug/runtime/RetainedAliasRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk23/debug/runtime/ShadowMethodT.jadx.txt",
+      "bytes": 1930,
+      "sha256": "1c91e9e73e2b1038112652360b7e0dcd639e400df84523aac0d0102801a17264"
+    },
+    {
+      "path": "jdk23/debug/runtime/ShadowMethodT.jarde.txt",
+      "bytes": 863,
+      "sha256": "ceb1dd45add8519cb6e22a15e06a6eab6b515c2f59d517b64ede6b379fcd7b53"
+    },
+    {
+      "path": "jdk23/debug/runtime/ShadowMethodT.original.txt",
+      "bytes": 1721,
+      "sha256": "e491f2fc9b0efb07abdaf9da8848a50d38b4da3848f045e3268c35d95124df5a"
+    },
+    {
+      "path": "jdk23/debug/runtime/StaticRawLocal.jadx.txt",
+      "bytes": 729,
+      "sha256": "caa078a6f6a66a11482c09645632ebb52566091c80fab4fa927b1053dce64fde"
+    },
+    {
+      "path": "jdk23/debug/runtime/StaticRawLocal.jarde.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk23/debug/runtime/StaticRawLocal.original.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk23/debug/runtime/ThisReceiver.jadx.txt",
+      "bytes": 697,
+      "sha256": "f2c2ade79741f3c077a9767a2c86b6f9e8b3c91395a41c1c035e78ca2c19717e"
+    },
+    {
+      "path": "jdk23/debug/runtime/ThisReceiver.jarde.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk23/debug/runtime/ThisReceiver.original.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk23/debug/runtime/TypedReceiver.jadx.txt",
+      "bytes": 1106,
+      "sha256": "1a07b6f4350dff1a6ca5a3e4ec3062096840ad9dbc1a6efbd816e82d4c9ccb31"
+    },
+    {
+      "path": "jdk23/debug/runtime/TypedReceiver.jarde.txt",
+      "bytes": 872,
+      "sha256": "d7134843994e4b3ba1d434e5bdfba85531e98e0ec94492801f5dbfa4a5b0ca18"
+    },
+    {
+      "path": "jdk23/debug/runtime/TypedReceiver.original.txt",
+      "bytes": 974,
+      "sha256": "7f08ef56194b137543c901f9bd3946d1ac0f4153f2cc202df75762d9c8052a16"
+    },
+    {
+      "path": "jdk23/debug/runtime/WideRawParam.jadx.txt",
+      "bytes": 753,
+      "sha256": "bb098a483d7226c3ef490fd7d5502cfaae0fa2dc00a248054971f81a95f5b14e"
+    },
+    {
+      "path": "jdk23/debug/runtime/WideRawParam.jarde.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk23/debug/runtime/WideRawParam.original.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/Array2DRawParam/sources/defpackage/Array2DRawParam.java",
+      "bytes": 337,
+      "sha256": "7bf3005284b755fe00567641896be8ddcb1010ecdf431bb7cbd62e0fed69cd65"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/ArrayRawParam/sources/defpackage/ArrayRawParam.java",
+      "bytes": 323,
+      "sha256": "ce0ba57264c94dc463df8d3dbd6b3be4221b852d694a4a6471d38a3f13b35d4b"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/BoundRawParam/sources/defpackage/BoundRawParam.java",
+      "bytes": 405,
+      "sha256": "c728ec861a3d99357641665f0f7db8e272eda3309e78679b587b8bf8d4b156b7"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/DirectInstanceRawParam/sources/defpackage/DirectInstanceRawParam.java",
+      "bytes": 360,
+      "sha256": "d510980f6071ada1a310dd5a76fd7ff932c97703337c794fbccb526b8309c33c"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java",
+      "bytes": 277,
+      "sha256": "183a867140d3ec0d651f1c6024251ab3805b4a7cb5736eab8893104121ed39df"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/MultiFormalRawParam/sources/defpackage/MultiFormalRawParam.java",
+      "bytes": 380,
+      "sha256": "7d015e6743c7ed99d6c7690a03fcf4ecf861a9c582097a14130d74c338cc9376"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/NullRawParam/sources/defpackage/NullRawParam.java",
+      "bytes": 238,
+      "sha256": "a851150cb6e01aab4844ecce9c0ebb6f65cf050e4aef37382ef53b379c9c7d87"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/PrimitiveArrayRawParam/sources/defpackage/PrimitiveArrayRawParam.java",
+      "bytes": 368,
+      "sha256": "331c49fc214f34eda5179d4a5fdd3a84dccbec84b083fc49d9121ea426240d11"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerBase.java",
+      "bytes": 141,
+      "sha256": "a4256e0b800f68dffd6124722d909d24bb9958b2d27d0668e20575fd05ead39d"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerChild.java",
+      "bytes": 316,
+      "sha256": "7b1d0110195f085b030ec850679ab6449421c0bc84e5a9decc86d154332e6a5b"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/RawParam/sources/defpackage/RawParam.java",
+      "bytes": 283,
+      "sha256": "12bd0a83b15704e980d959b9015f1cee6036fe3e2ea3cf799a394dd9a4732787"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/RetainedAliasRawParam/sources/defpackage/RetainedAliasRawParam.java",
+      "bytes": 401,
+      "sha256": "a04d278d436e9e8d24ab1aa54b93f44ae2766c59e3670b1f663515abdd163ced"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/ShadowMethodT/sources/defpackage/ShadowMethodT.java",
+      "bytes": 334,
+      "sha256": "a3cc4ded8594ea60b6a6aded917b5d81b18665b64ed2a0e7e869b7435445eeec"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/StaticRawLocal/sources/defpackage/StaticRawLocal.java",
+      "bytes": 319,
+      "sha256": "c62aaca50bf0904967018ce58649678d845644764106ae6e56fc95af81c82cd2"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/ThisReceiver/sources/defpackage/ThisReceiver.java",
+      "bytes": 198,
+      "sha256": "29bdbc10deda533facdba2757b0246d7b9e1284023c246cbff18c76ea9e82a3c"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/TypedReceiver/sources/defpackage/TypedReceiver.java",
+      "bytes": 307,
+      "sha256": "93a41a4f4f11b77fc7b06c143144ebb4254d182495e5a60594be22385b0e594b"
+    },
+    {
+      "path": "jdk23/no-debug/jadx/WideRawParam/sources/defpackage/WideRawParam.java",
+      "bytes": 325,
+      "sha256": "688c4a0e9325d677f23f0a8f7c56c05436f009b6b8249eb0336dc5362904b189"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/Array2DRawParam.java",
+      "bytes": 1293,
+      "sha256": "84b51bbf39ee444117977442cc40e3d8c27a72fb65b6164c7b2fbdfcc4eae13c"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/Array2DRawParam.stderr.txt",
+      "bytes": 44792,
+      "sha256": "a397c36b510881584f2f750c79853d42bfe4432f1ef9eec5e3ca01b7f089f1d7"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/ArrayRawParam.java",
+      "bytes": 1273,
+      "sha256": "6eca13086c3cca27c7ef5ed7c3ebc60b7bd9d8daada5cdd7d9c1eb80bf88c0bf"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/ArrayRawParam.stderr.txt",
+      "bytes": 44581,
+      "sha256": "125202f892a6151582e6aa3231c78c73c18c36221c046e1f024a3322aacc0641"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/BoundRawParam.java",
+      "bytes": 1345,
+      "sha256": "81ee814aa442d16bedb0f72f370830c16ee2069d4e84754453ae15445e258294"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/BoundRawParam.stderr.txt",
+      "bytes": 44718,
+      "sha256": "fc828cb3291ffbe352b2646a87b4867a7f00e8ae7b0f64b1535195a41f98e6e8"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/DirectInstanceRawParam.java",
+      "bytes": 1334,
+      "sha256": "4a94736315b6eae244e0c86bd52673d4184206d783c03a281542fea7858efed2"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/DirectInstanceRawParam.stderr.txt",
+      "bytes": 45475,
+      "sha256": "47ea18fa9408c1dabf71fa77f2b888aae764f837c85f6490be192916395f94c3"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/InstanceRawLocal.java",
+      "bytes": 1339,
+      "sha256": "da10013688a30b0cc61c5f8ad8649f79792d67b4ea0d861293afdaf595225214"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/InstanceRawLocal.stderr.txt",
+      "bytes": 44319,
+      "sha256": "28d93a2850dd82aa67ac5aba1012266186e05bee561a42af23e18592bddc81e5"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/MultiFormalRawParam.java",
+      "bytes": 1593,
+      "sha256": "4b437b42cf47a3ccf750355128c463728a56d507544aa92a0cb529860058e62c"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/MultiFormalRawParam.stderr.txt",
+      "bytes": 52131,
+      "sha256": "975780cf5fea27345b49bced7432a82637a2d2c58e96d74dbfe97d6192abc1f3"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/NullRawParam.java",
+      "bytes": 1199,
+      "sha256": "d68300b3bdd64dc0a1769de4c77a88e3eebccc14b47a17dc3e1ee4f8165ca2e2"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/NullRawParam.stderr.txt",
+      "bytes": 43808,
+      "sha256": "19ec1f9239b0042691ceec43a0e1620e62450c0d611c9d0b0537fb47dcead294"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/PrimitiveArrayRawParam.java",
+      "bytes": 1295,
+      "sha256": "90298d00e9daee2bf9bea1ca50260dee0b170c49e8bc25e85ffbce8789fa2c77"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/PrimitiveArrayRawParam.stderr.txt",
+      "bytes": 44978,
+      "sha256": "449b131449da84638ee273bfe14f779201ffef16e8b79e78939aad575ec83481"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RawOwnerBase.java",
+      "bytes": 888,
+      "sha256": "f400195673e17b46cfe5e1ecf2dfa6ad1e569fc2a83c23d92202a00ba21aba24"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RawOwnerBase.stderr.txt",
+      "bytes": 24648,
+      "sha256": "7a158b2c6fe1eccd314f2e0ce30651bfb9e92b0e9b4a832ce194ce3789a3d8b7"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RawOwnerChild.java",
+      "bytes": 1233,
+      "sha256": "8bc50b0f6cb5bc0a65e96706a623c1fc4bc19fa7d9d3586ebaace845198a1015"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RawOwnerChild.stderr.txt",
+      "bytes": 42647,
+      "sha256": "d944909db4349c4be226a3e2a9013520a40de4f1272d8077c6901eb1e157edd0"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RawParam.java",
+      "bytes": 1226,
+      "sha256": "deadf9d5abebeb93b29bb8330dd107c0f9f84ba1ddfa430103fcb8261f91caa4"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RawParam.stderr.txt",
+      "bytes": 44018,
+      "sha256": "25866e5241d7b76dcb46125351285df3c1e320447cadacc91869066249a10f25"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RetainedAliasRawParam.java",
+      "bytes": 1430,
+      "sha256": "e3536151d6425f7cf9e601be73cd6fccdb94be39c2157ee6ae0f84a8c7d364e5"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/RetainedAliasRawParam.stderr.txt",
+      "bytes": 51980,
+      "sha256": "0e2a087e1044a3c3739f727d22b17819c46abedb57aaaa7ea02007ca4392ab1c"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/ShadowMethodT.java",
+      "bytes": 1947,
+      "sha256": "d40fba0fc2def10495115feecb8a0139d3b24cd1fb22da16660c49bde2ca9953"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/ShadowMethodT.stderr.txt",
+      "bytes": 48197,
+      "sha256": "a651a03869a515427a4e70bdf33154f165b32a8db70bcac95d5f1584dbdc3b7c"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/StaticRawLocal.java",
+      "bytes": 1314,
+      "sha256": "fd3a53f3051037b2d49c8966c16550fc2360b0f7494664a72673443748783747"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/StaticRawLocal.stderr.txt",
+      "bytes": 48408,
+      "sha256": "9e0b8ba0ec482275ae3b72f696eb6d68f80694fb4dc45022432ea54c0c5a0913"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/ThisReceiver.java",
+      "bytes": 1328,
+      "sha256": "0c40a3e0e09b0e97ca13b527dcc647a9f01c29a3f73f31f6d7de68b4408b0d8f"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/ThisReceiver.stderr.txt",
+      "bytes": 44229,
+      "sha256": "1af93282a8ef3ca9777e2200c568ab451224e14119b90c8b059578a8c57d8ed4"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/TypedReceiver.java",
+      "bytes": 1753,
+      "sha256": "bc23f6d670ae4739cc5c483c23851a87180cb7706f8bb4daa8c17c88625efb56"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/TypedReceiver.stderr.txt",
+      "bytes": 47630,
+      "sha256": "62ac9e3b36350049527b771a9dcf22ad4316907c0d7be8c4d064f8549a82df58"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/WideRawParam.java",
+      "bytes": 1286,
+      "sha256": "1fffb038dc24c28f794c348a356b25bf8f3cac2017e72733ba1b38208c722010"
+    },
+    {
+      "path": "jdk23/no-debug/jarde/WideRawParam.stderr.txt",
+      "bytes": 44564,
+      "sha256": "d2be74eaf61da6b3eb3d3ffd6f69687f63a7737b1979448c3db33fe42e30e3fa"
+    },
+    {
+      "path": "jdk23/no-debug/javap/Array2DRawParam.txt",
+      "bytes": 2418,
+      "sha256": "de0dd64fa34b565d95e66c3dd20304a0c61908e78e94815258d484d805894dee"
+    },
+    {
+      "path": "jdk23/no-debug/javap/ArrayRawParam.txt",
+      "bytes": 2392,
+      "sha256": "76131af95db7c4c709ae0a1ac1f17e1941539e37fef78db6fe7c544ea40a3f77"
+    },
+    {
+      "path": "jdk23/no-debug/javap/BoundRawParam.txt",
+      "bytes": 2461,
+      "sha256": "a5cc3eb82c80f8280fbc27eb671f298f44ad55c18b51ebd9fb1b1dfee515319e"
+    },
+    {
+      "path": "jdk23/no-debug/javap/DirectInstanceRawParam.txt",
+      "bytes": 2459,
+      "sha256": "86b769b524ec33859cadd81aa8555413bab468a4f6c6fb443e23e3bcfd337a1b"
+    },
+    {
+      "path": "jdk23/no-debug/javap/InstanceRawLocal.txt",
+      "bytes": 2380,
+      "sha256": "ff39951f4582e15378eac0ce1397753e028059a8a7446254fc50b21b7e777eee"
+    },
+    {
+      "path": "jdk23/no-debug/javap/MultiFormalRawParam.txt",
+      "bytes": 3045,
+      "sha256": "4a09857ffb5fb119716fadaab498240930a0315b6ec6efcbac843d0b6ecd0729"
+    },
+    {
+      "path": "jdk23/no-debug/javap/NullRawParam.txt",
+      "bytes": 2318,
+      "sha256": "3da7f16383956fcfba0362b07d0397c4521642a0129cb1d11a6d5b0794734e43"
+    },
+    {
+      "path": "jdk23/no-debug/javap/PrimitiveArrayRawParam.txt",
+      "bytes": 2435,
+      "sha256": "46921aa1b278c7e676eeb72ee249cc5b9b5c6ce85a313d320faa4514e476c6ae"
+    },
+    {
+      "path": "jdk23/no-debug/javap/RawOwnerChild.txt",
+      "bytes": 2193,
+      "sha256": "1faa3568f1ac92d22de17f20c46261e9ec207e3b1e8a44f5dbe98337e214c13e"
+    },
+    {
+      "path": "jdk23/no-debug/javap/RawParam.txt",
+      "bytes": 2324,
+      "sha256": "da4a2617e0e141bd47eda6588e1493e538f200232d07ad2b4b45a375ba72b62a"
+    },
+    {
+      "path": "jdk23/no-debug/javap/RetainedAliasRawParam.txt",
+      "bytes": 2575,
+      "sha256": "62fc5ac7f72922c89480e5a834531e8f83800794857777d7708557259feddc97"
+    },
+    {
+      "path": "jdk23/no-debug/javap/ShadowMethodT.txt",
+      "bytes": 2895,
+      "sha256": "21bdc1dc6eaae9e029c98be6702c2be862675bb102994fb0ffea284c0fa0e895"
+    },
+    {
+      "path": "jdk23/no-debug/javap/StaticRawLocal.txt",
+      "bytes": 2431,
+      "sha256": "650bcea27e776c0eb6eae39111c62625889c7fb1ecc319bd62b40869f51404c4"
+    },
+    {
+      "path": "jdk23/no-debug/javap/ThisReceiver.txt",
+      "bytes": 2380,
+      "sha256": "f8cb778404269f6dbb0e4ec7b2557386cfba4cb551527c4b21529354aa8df6c4"
+    },
+    {
+      "path": "jdk23/no-debug/javap/TypedReceiver.txt",
+      "bytes": 2806,
+      "sha256": "e3d115aedb5acf674231df3249b1cfc3da3ec4db2a135c59cff7fa9042f29958"
+    },
+    {
+      "path": "jdk23/no-debug/javap/WideRawParam.txt",
+      "bytes": 2394,
+      "sha256": "8040f386f71de3028b172bcf3c865af0c91588114f3b077d990cb692bcaa77d8"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/Array2DRawParam.jadx.txt",
+      "bytes": 757,
+      "sha256": "8a25af8b8504893fffac8c1872e3c93e85925b6aa0b3d9ff5f62750cee2ba267"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/Array2DRawParam.jarde.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/Array2DRawParam.original.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ArrayRawParam.jadx.txt",
+      "bytes": 740,
+      "sha256": "65890eea8fe7c3065fbc2f644c7253d5354fdffeba56efc1a47107d7914063b6"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ArrayRawParam.jarde.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ArrayRawParam.original.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/BoundRawParam.jadx.txt",
+      "bytes": 817,
+      "sha256": "bdeb71e6ccb9da375831745c55c6fa5137fd29b7007948eecaea74516d6991ca"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/BoundRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/BoundRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/DirectInstanceRawParam.jadx.txt",
+      "bytes": 777,
+      "sha256": "b3cda9506188b60dd9d215bc5efd1dafb315f344e7cea3910361ebe407f0cc9b"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/DirectInstanceRawParam.jarde.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/DirectInstanceRawParam.original.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/InstanceRawLocal.jarde.txt",
+      "bytes": 594,
+      "sha256": "c4a0fd4eb5e838df4c7116cc09d11740387e51309b8dd9c85cb1eac73adb9692"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/InstanceRawLocal.original.txt",
+      "bytes": 624,
+      "sha256": "b5f800a25ef5e547f36ccdecb9d6798cca74aee4a8a677d83bd449aea30f57e1"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/MultiFormalRawParam.jadx.txt",
+      "bytes": 1277,
+      "sha256": "8d284d37fb44425659f63776c8f684d596146724e653b1147b4adc2b7c50d4e2"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/MultiFormalRawParam.jarde.txt",
+      "bytes": 744,
+      "sha256": "8bc5d0b9f7ed8f8820c0a056a24f74615b3e6104dd1ccada41aee9975df41485"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/MultiFormalRawParam.original.txt",
+      "bytes": 1167,
+      "sha256": "6d16de1512a82cf13a56f94903001249dbfdb1ab81b29b817616448334e1d0c4"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/NullRawParam.jadx.txt",
+      "bytes": 657,
+      "sha256": "f4e759450c3306919076b843e677ebd4315a206a7a08c607258e8ee49a6eb720"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/NullRawParam.jarde.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/NullRawParam.original.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/PrimitiveArrayRawParam.jadx.txt",
+      "bytes": 724,
+      "sha256": "8dbde5389e6da69a121d5ad297157ee52bcb682d49d75d8a4bc7844fd4d1d1e8"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/PrimitiveArrayRawParam.jarde.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/PrimitiveArrayRawParam.original.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RawOwnerChild.jadx.txt",
+      "bytes": 721,
+      "sha256": "2404a47a7f7c206decbce521d1ad8ca2966f33929a01a6e1cd462d7eda65b76b"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RawOwnerChild.jarde.txt",
+      "bytes": 565,
+      "sha256": "e65da6d8f2478e3a0b6f43759b106518ecb2b77f17bd072cf737ed70a4ac28ad"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RawOwnerChild.original.txt",
+      "bytes": 655,
+      "sha256": "c25e0c82c8f818f082f08ceef41ac63b15ed1ce4bb020bcf1eff5396c577b047"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RawParam.jadx.txt",
+      "bytes": 693,
+      "sha256": "33b65814b563635c3b26f292f11a234ec9eda87fc8bbf5409c3fc0f323ad9d3d"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RawParam.jarde.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RawParam.original.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RetainedAliasRawParam.jadx.txt",
+      "bytes": 806,
+      "sha256": "f92fd71052669f4c2419e8516949617f14ee858caeb232d80d63117f41ea2d94"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RetainedAliasRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/RetainedAliasRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ShadowMethodT.jadx.txt",
+      "bytes": 1930,
+      "sha256": "1c91e9e73e2b1038112652360b7e0dcd639e400df84523aac0d0102801a17264"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ShadowMethodT.jarde.txt",
+      "bytes": 863,
+      "sha256": "ceb1dd45add8519cb6e22a15e06a6eab6b515c2f59d517b64ede6b379fcd7b53"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ShadowMethodT.original.txt",
+      "bytes": 1721,
+      "sha256": "e491f2fc9b0efb07abdaf9da8848a50d38b4da3848f045e3268c35d95124df5a"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/StaticRawLocal.jadx.txt",
+      "bytes": 729,
+      "sha256": "caa078a6f6a66a11482c09645632ebb52566091c80fab4fa927b1053dce64fde"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/StaticRawLocal.jarde.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/StaticRawLocal.original.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ThisReceiver.jadx.txt",
+      "bytes": 697,
+      "sha256": "f2c2ade79741f3c077a9767a2c86b6f9e8b3c91395a41c1c035e78ca2c19717e"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ThisReceiver.jarde.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/ThisReceiver.original.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/TypedReceiver.jadx.txt",
+      "bytes": 1106,
+      "sha256": "1a07b6f4350dff1a6ca5a3e4ec3062096840ad9dbc1a6efbd816e82d4c9ccb31"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/TypedReceiver.jarde.txt",
+      "bytes": 872,
+      "sha256": "d7134843994e4b3ba1d434e5bdfba85531e98e0ec94492801f5dbfa4a5b0ca18"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/TypedReceiver.original.txt",
+      "bytes": 974,
+      "sha256": "7f08ef56194b137543c901f9bd3946d1ac0f4153f2cc202df75762d9c8052a16"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/WideRawParam.jadx.txt",
+      "bytes": 753,
+      "sha256": "bb098a483d7226c3ef490fd7d5502cfaae0fa2dc00a248054971f81a95f5b14e"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/WideRawParam.jarde.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk23/no-debug/runtime/WideRawParam.original.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk23/versions/java.txt",
+      "bytes": 152,
+      "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "path": "jdk23/versions/javac.txt",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "jdk8/debug/jadx/Array2DRawParam/sources/defpackage/Array2DRawParam.java",
+      "bytes": 323,
+      "sha256": "d9af1990c95193456c46473f31939177a2632e34152dde0ed791caf10ac40d27"
+    },
+    {
+      "path": "jdk8/debug/jadx/ArrayRawParam/sources/defpackage/ArrayRawParam.java",
+      "bytes": 313,
+      "sha256": "b9356814382670f5cc31457caf107ca11a4836ca88b6a2964a73120afa021457"
+    },
+    {
+      "path": "jdk8/debug/jadx/BoundRawParam/sources/defpackage/BoundRawParam.java",
+      "bytes": 395,
+      "sha256": "4545a9f6e22269ff21bcac1e1abc69f7f9186d982c4c395eb5c10471783b9eda"
+    },
+    {
+      "path": "jdk8/debug/jadx/DirectInstanceRawParam/sources/defpackage/DirectInstanceRawParam.java",
+      "bytes": 332,
+      "sha256": "d5a81d1a0941226f34e220c355943cd81eace76a7f72ab9c0a07e079166af029"
+    },
+    {
+      "path": "jdk8/debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java",
+      "bytes": 277,
+      "sha256": "183a867140d3ec0d651f1c6024251ab3805b4a7cb5736eab8893104121ed39df"
+    },
+    {
+      "path": "jdk8/debug/jadx/MultiFormalRawParam/sources/defpackage/MultiFormalRawParam.java",
+      "bytes": 362,
+      "sha256": "46dff0ad150401facc3becf5fa2e92685a87d46f2c9b537e02a20af4e0da4072"
+    },
+    {
+      "path": "jdk8/debug/jadx/NullRawParam/sources/defpackage/NullRawParam.java",
+      "bytes": 230,
+      "sha256": "2497fde8c7696cef28caddbb5432e9775944289511bd27767183fd2665087b19"
+    },
+    {
+      "path": "jdk8/debug/jadx/PrimitiveArrayRawParam/sources/defpackage/PrimitiveArrayRawParam.java",
+      "bytes": 340,
+      "sha256": "6e080e95264345c55088fab59d326568454b5c431b3bd4674254c4c3f7931b0b"
+    },
+    {
+      "path": "jdk8/debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerBase.java",
+      "bytes": 141,
+      "sha256": "a4256e0b800f68dffd6124722d909d24bb9958b2d27d0668e20575fd05ead39d"
+    },
+    {
+      "path": "jdk8/debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerChild.java",
+      "bytes": 306,
+      "sha256": "ea53cd737a4ca1e297f8ae71a5ed156924a2cf3ad7c61206b43694e7cb016fde"
+    },
+    {
+      "path": "jdk8/debug/jadx/RawParam/sources/defpackage/RawParam.java",
+      "bytes": 283,
+      "sha256": "a36e1bd1ec630ddccadc5178ea2ef1483d9b784fef412784d34d672f34d9c855"
+    },
+    {
+      "path": "jdk8/debug/jadx/RetainedAliasRawParam/sources/defpackage/RetainedAliasRawParam.java",
+      "bytes": 362,
+      "sha256": "0d8c28f014d9873131e2277ec147645b4f2e8f88f10d96ebafa1ca68ec7519a9"
+    },
+    {
+      "path": "jdk8/debug/jadx/ShadowMethodT/sources/defpackage/ShadowMethodT.java",
+      "bytes": 332,
+      "sha256": "e638423e067858654f869a3c38d7f38daf64e4a0855011122ace6be028722f99"
+    },
+    {
+      "path": "jdk8/debug/jadx/StaticRawLocal/sources/defpackage/StaticRawLocal.java",
+      "bytes": 307,
+      "sha256": "0875242685024debb56daf13e862932967d9e7c860f92e7b89c872dc99a16be8"
+    },
+    {
+      "path": "jdk8/debug/jadx/ThisReceiver/sources/defpackage/ThisReceiver.java",
+      "bytes": 206,
+      "sha256": "908f8f9ccda887868f6a515f1942aed41297b5a73a55e0a062da8faeca7b049f"
+    },
+    {
+      "path": "jdk8/debug/jadx/TypedReceiver/sources/defpackage/TypedReceiver.java",
+      "bytes": 305,
+      "sha256": "f6885117b5b3c43020e4cede27dbe323b9d8ef2900b0d386adc3a22e1abcc97f"
+    },
+    {
+      "path": "jdk8/debug/jadx/WideRawParam/sources/defpackage/WideRawParam.java",
+      "bytes": 327,
+      "sha256": "1b5390662572c65827dc2e38557a649a6c3f92cb2c6813556092327e680a54fd"
+    },
+    {
+      "path": "jdk8/debug/jarde/Array2DRawParam.java",
+      "bytes": 1303,
+      "sha256": "d4ba813f6f198eed97a53a5c193bca2f69698ce49b7a93aa69e279e7c27acb62"
+    },
+    {
+      "path": "jdk8/debug/jarde/Array2DRawParam.stderr.txt",
+      "bytes": 44818,
+      "sha256": "84146c40858f1886afef4a2f2c3726fd9416c499ed533c28bb3c4e974495dd77"
+    },
+    {
+      "path": "jdk8/debug/jarde/ArrayRawParam.java",
+      "bytes": 1283,
+      "sha256": "c8c72849f11741a77f70b21b0436745c69e7f2e9d60ae7c7724adfd147a8faab"
+    },
+    {
+      "path": "jdk8/debug/jarde/ArrayRawParam.stderr.txt",
+      "bytes": 44607,
+      "sha256": "4ce8417d588bb3e873e7c63ff2881a7e984667ed9c5fb6c38688f5bb59accbb6"
+    },
+    {
+      "path": "jdk8/debug/jarde/BoundRawParam.java",
+      "bytes": 1355,
+      "sha256": "6780b9df7fd79af1b6d8e0acb289d0257a77eaa548101c8cfe3fdc3911d66eac"
+    },
+    {
+      "path": "jdk8/debug/jarde/BoundRawParam.stderr.txt",
+      "bytes": 44744,
+      "sha256": "512ded7eaecf54ffc3950d028e80c732999884ae8e14ec4b0d80ce71ae8fc2a4"
+    },
+    {
+      "path": "jdk8/debug/jarde/DirectInstanceRawParam.java",
+      "bytes": 1344,
+      "sha256": "66882766f2731a7d18b72428b8ad38d8f2bd8e0183b4bf42ab71e0a8bcb56671"
+    },
+    {
+      "path": "jdk8/debug/jarde/DirectInstanceRawParam.stderr.txt",
+      "bytes": 45501,
+      "sha256": "7e548463c95a58920be22fe92d3939a426551fee4ad252216be3126b6deebf9d"
+    },
+    {
+      "path": "jdk8/debug/jarde/InstanceRawLocal.java",
+      "bytes": 1341,
+      "sha256": "5739eae80933689e02968db38be749560fea18f7852efc7071bc402ac1657445"
+    },
+    {
+      "path": "jdk8/debug/jarde/InstanceRawLocal.stderr.txt",
+      "bytes": 44329,
+      "sha256": "17ba20cd02479cb16e4c5a752aa8d6407418db1367b6c22ae1c20dcf87a8329d"
+    },
+    {
+      "path": "jdk8/debug/jarde/MultiFormalRawParam.java",
+      "bytes": 1601,
+      "sha256": "fc2962c0aac9ec98ea86aa50ec132f77514a683ba76d7c329493e954bce56e48"
+    },
+    {
+      "path": "jdk8/debug/jarde/MultiFormalRawParam.stderr.txt",
+      "bytes": 52153,
+      "sha256": "6f94bcdc816ebb1d36e2e84b50dc03a3c0862897791a6f539ab87b347cb2a4fd"
+    },
+    {
+      "path": "jdk8/debug/jarde/NullRawParam.java",
+      "bytes": 1207,
+      "sha256": "f60daa335370ba4b9535a79d8a6039e957fde7f7fbf1179b722b7dff8c1bb168"
+    },
+    {
+      "path": "jdk8/debug/jarde/NullRawParam.stderr.txt",
+      "bytes": 43830,
+      "sha256": "71cc19bc3bbaf298b2e56ae648827796305af353d25c82f632c0f3d0590cd5d9"
+    },
+    {
+      "path": "jdk8/debug/jarde/PrimitiveArrayRawParam.java",
+      "bytes": 1305,
+      "sha256": "ca19f53923fbfb66917c75ea83f0d5053343cf8c6aa62b562778ef54d5028a26"
+    },
+    {
+      "path": "jdk8/debug/jarde/PrimitiveArrayRawParam.stderr.txt",
+      "bytes": 45004,
+      "sha256": "6ed748f4c4739e139098d698f6a8005d24298ba374e516185383ed3a45299171"
+    },
+    {
+      "path": "jdk8/debug/jarde/RawOwnerBase.java",
+      "bytes": 888,
+      "sha256": "f400195673e17b46cfe5e1ecf2dfa6ad1e569fc2a83c23d92202a00ba21aba24"
+    },
+    {
+      "path": "jdk8/debug/jarde/RawOwnerBase.stderr.txt",
+      "bytes": 24648,
+      "sha256": "8824f209e7a2b6085403ac415258bb95ceaedfbcd2bad72feaf8ee3bce3d5f2e"
+    },
+    {
+      "path": "jdk8/debug/jarde/RawOwnerChild.java",
+      "bytes": 1243,
+      "sha256": "85654234ed265aea8c2af90fe4353ca2be2b352c36d98476b0f89a9661e064cd"
+    },
+    {
+      "path": "jdk8/debug/jarde/RawOwnerChild.stderr.txt",
+      "bytes": 42675,
+      "sha256": "50ac2e718fa138e6f650e96729eb7889aa38a9f01fea9fcfc3799d3fa6104d71"
+    },
+    {
+      "path": "jdk8/debug/jarde/RawParam.java",
+      "bytes": 1236,
+      "sha256": "e086985b6879bfbebb341e501fb7f963bc33d5623ac87904b40e011163135e9b"
+    },
+    {
+      "path": "jdk8/debug/jarde/RawParam.stderr.txt",
+      "bytes": 44044,
+      "sha256": "50eab7f0725a3bac30972893171f04a17dc8f9e23a83dea8a83a61f4b6cdaada"
+    },
+    {
+      "path": "jdk8/debug/jarde/RetainedAliasRawParam.java",
+      "bytes": 1437,
+      "sha256": "67c03164c7f4c286881d760c247bdc8ed73c851a4377db2751830cc607eb3f89"
+    },
+    {
+      "path": "jdk8/debug/jarde/RetainedAliasRawParam.stderr.txt",
+      "bytes": 52000,
+      "sha256": "6c02e8343a4bc464912cb13f410d073a98537bf20cc2f92457153e45beb25977"
+    },
+    {
+      "path": "jdk8/debug/jarde/ShadowMethodT.java",
+      "bytes": 1957,
+      "sha256": "4bd7e971db097e54afcb2dfe2a4ccc9029b04e3c9626bd76bd0ee0e0b5a316b4"
+    },
+    {
+      "path": "jdk8/debug/jarde/ShadowMethodT.stderr.txt",
+      "bytes": 48223,
+      "sha256": "fb1432264a14ffcb34e9b25a003e88045b7a42f9b87f89dd61720849c2651155"
+    },
+    {
+      "path": "jdk8/debug/jarde/StaticRawLocal.java",
+      "bytes": 1322,
+      "sha256": "9ec274de3d0847441e7de73ff79a6d027179b6c14306c18643ee8e2346b54332"
+    },
+    {
+      "path": "jdk8/debug/jarde/StaticRawLocal.stderr.txt",
+      "bytes": 48430,
+      "sha256": "1723220adff8f3cda10678de28b9682709e49db2febb19bf57735fd2b92d7037"
+    },
+    {
+      "path": "jdk8/debug/jarde/ThisReceiver.java",
+      "bytes": 1330,
+      "sha256": "a97d2cf3fb8ae606b390fe7a96386fb611ca686a76a5a25889978f7e8fc03c52"
+    },
+    {
+      "path": "jdk8/debug/jarde/ThisReceiver.stderr.txt",
+      "bytes": 44239,
+      "sha256": "8673cb6e6ac04255d47ac05ff08bef6b7df888aa47ccb20ced2ce35d23814e7a"
+    },
+    {
+      "path": "jdk8/debug/jarde/TypedReceiver.java",
+      "bytes": 1763,
+      "sha256": "161785be22add146d3c6fd6f56636a636935030610ccacf7511a7d7982dd2e71"
+    },
+    {
+      "path": "jdk8/debug/jarde/TypedReceiver.stderr.txt",
+      "bytes": 47657,
+      "sha256": "6f584a0537840f4ed3b8bd4d2480a66f6cd0aeac9a84cfa0b08183d474c5f130"
+    },
+    {
+      "path": "jdk8/debug/jarde/WideRawParam.java",
+      "bytes": 1300,
+      "sha256": "a8c2366e3a709f7941c00dff72d5921e0b3e9772cd7195d3caf1094bb0a95be9"
+    },
+    {
+      "path": "jdk8/debug/jarde/WideRawParam.stderr.txt",
+      "bytes": 44598,
+      "sha256": "cabc952079cfaa432f0a133c936d42c7d1295f169b60776e4d6ce2df20c941c1"
+    },
+    {
+      "path": "jdk8/debug/javap/Array2DRawParam.txt",
+      "bytes": 3213,
+      "sha256": "deba0d0fd6477619e89f6e76cb0525d7928b911974091d0073491756b6417e97"
+    },
+    {
+      "path": "jdk8/debug/javap/ArrayRawParam.txt",
+      "bytes": 3124,
+      "sha256": "4c7ce421a74e0ffc33ec4ecc7a9712fe726a9b9db67edf403b567249c28fe909"
+    },
+    {
+      "path": "jdk8/debug/javap/BoundRawParam.txt",
+      "bytes": 3192,
+      "sha256": "0583d8322acdeef96e916b2cd62e0e25b844428cb9daff422eefb25ea2352e81"
+    },
+    {
+      "path": "jdk8/debug/javap/DirectInstanceRawParam.txt",
+      "bytes": 3456,
+      "sha256": "985b63aa149ff87b9b79d1688950f005707ac1fe3ebca01c335333d2b931f006"
+    },
+    {
+      "path": "jdk8/debug/javap/InstanceRawLocal.txt",
+      "bytes": 3299,
+      "sha256": "9249a05a4572e949a37723bf4ff6085801591039804b4eee4014d3dd1f8cfd06"
+    },
+    {
+      "path": "jdk8/debug/javap/MultiFormalRawParam.txt",
+      "bytes": 4070,
+      "sha256": "dd1d4e622d2f408c5f5449b163dce274f44ce66b401816ce045a25ad1fc513c7"
+    },
+    {
+      "path": "jdk8/debug/javap/NullRawParam.txt",
+      "bytes": 2987,
+      "sha256": "139d2e1df5d613b81e80530d7449c85459b12960a83cda1800ca1f8801c39daf"
+    },
+    {
+      "path": "jdk8/debug/javap/PrimitiveArrayRawParam.txt",
+      "bytes": 3243,
+      "sha256": "6c4c7ae38c5a52141338d2360ce13fbbcd8a280a300025a4a460905647984ee8"
+    },
+    {
+      "path": "jdk8/debug/javap/RawOwnerChild.txt",
+      "bytes": 2937,
+      "sha256": "a3a1264e9c4e89058dde177c37e9e84d5d04b0241e271244df647a02a10108f8"
+    },
+    {
+      "path": "jdk8/debug/javap/RawParam.txt",
+      "bytes": 3002,
+      "sha256": "bc0b7e43895553691716cf1abb0c59faf3ab7b72ef31d17ce517b552e969b435"
+    },
+    {
+      "path": "jdk8/debug/javap/RetainedAliasRawParam.txt",
+      "bytes": 3473,
+      "sha256": "3cb057158548fc3131bab5f82e09bcb27fd50bfa5ef8d55801944101226deb0e"
+    },
+    {
+      "path": "jdk8/debug/javap/ShadowMethodT.txt",
+      "bytes": 3775,
+      "sha256": "5f88b0dbb9231e78d4e602f89003a6cb83bbca11530d969965acb02353395676"
+    },
+    {
+      "path": "jdk8/debug/javap/StaticRawLocal.txt",
+      "bytes": 3237,
+      "sha256": "e0994f098dd155f0f2867b8a271f4c7dfb09c0342b8f7ac40d767ee8c18864e4"
+    },
+    {
+      "path": "jdk8/debug/javap/ThisReceiver.txt",
+      "bytes": 3219,
+      "sha256": "2f2a02e12469f568ae016a6557d63d63bdb89f4e4ab63fe6a2e6ddf9a205ecaf"
+    },
+    {
+      "path": "jdk8/debug/javap/TypedReceiver.txt",
+      "bytes": 3795,
+      "sha256": "0fafdbe630a9c84f8a1689942d1d318fbf4965b15a3f175ce3af6e45ad59f135"
+    },
+    {
+      "path": "jdk8/debug/javap/WideRawParam.txt",
+      "bytes": 3322,
+      "sha256": "251a24fecb60d9545e8c5bff05871e4aec25485f0800735c1fe9de099cd4efdb"
+    },
+    {
+      "path": "jdk8/debug/runtime/Array2DRawParam.jadx.txt",
+      "bytes": 757,
+      "sha256": "8a25af8b8504893fffac8c1872e3c93e85925b6aa0b3d9ff5f62750cee2ba267"
+    },
+    {
+      "path": "jdk8/debug/runtime/Array2DRawParam.jarde.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk8/debug/runtime/Array2DRawParam.original.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk8/debug/runtime/ArrayRawParam.jadx.txt",
+      "bytes": 740,
+      "sha256": "65890eea8fe7c3065fbc2f644c7253d5354fdffeba56efc1a47107d7914063b6"
+    },
+    {
+      "path": "jdk8/debug/runtime/ArrayRawParam.jarde.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk8/debug/runtime/ArrayRawParam.original.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk8/debug/runtime/BoundRawParam.jadx.txt",
+      "bytes": 817,
+      "sha256": "bdeb71e6ccb9da375831745c55c6fa5137fd29b7007948eecaea74516d6991ca"
+    },
+    {
+      "path": "jdk8/debug/runtime/BoundRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk8/debug/runtime/BoundRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk8/debug/runtime/DirectInstanceRawParam.jadx.txt",
+      "bytes": 777,
+      "sha256": "b3cda9506188b60dd9d215bc5efd1dafb315f344e7cea3910361ebe407f0cc9b"
+    },
+    {
+      "path": "jdk8/debug/runtime/DirectInstanceRawParam.jarde.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk8/debug/runtime/DirectInstanceRawParam.original.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk8/debug/runtime/InstanceRawLocal.jarde.txt",
+      "bytes": 594,
+      "sha256": "c4a0fd4eb5e838df4c7116cc09d11740387e51309b8dd9c85cb1eac73adb9692"
+    },
+    {
+      "path": "jdk8/debug/runtime/InstanceRawLocal.original.txt",
+      "bytes": 624,
+      "sha256": "b5f800a25ef5e547f36ccdecb9d6798cca74aee4a8a677d83bd449aea30f57e1"
+    },
+    {
+      "path": "jdk8/debug/runtime/MultiFormalRawParam.jadx.txt",
+      "bytes": 1277,
+      "sha256": "8d284d37fb44425659f63776c8f684d596146724e653b1147b4adc2b7c50d4e2"
+    },
+    {
+      "path": "jdk8/debug/runtime/MultiFormalRawParam.jarde.txt",
+      "bytes": 744,
+      "sha256": "8bc5d0b9f7ed8f8820c0a056a24f74615b3e6104dd1ccada41aee9975df41485"
+    },
+    {
+      "path": "jdk8/debug/runtime/MultiFormalRawParam.original.txt",
+      "bytes": 1167,
+      "sha256": "6d16de1512a82cf13a56f94903001249dbfdb1ab81b29b817616448334e1d0c4"
+    },
+    {
+      "path": "jdk8/debug/runtime/NullRawParam.jadx.txt",
+      "bytes": 657,
+      "sha256": "f4e759450c3306919076b843e677ebd4315a206a7a08c607258e8ee49a6eb720"
+    },
+    {
+      "path": "jdk8/debug/runtime/NullRawParam.jarde.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk8/debug/runtime/NullRawParam.original.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk8/debug/runtime/PrimitiveArrayRawParam.jadx.txt",
+      "bytes": 724,
+      "sha256": "8dbde5389e6da69a121d5ad297157ee52bcb682d49d75d8a4bc7844fd4d1d1e8"
+    },
+    {
+      "path": "jdk8/debug/runtime/PrimitiveArrayRawParam.jarde.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk8/debug/runtime/PrimitiveArrayRawParam.original.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk8/debug/runtime/RawOwnerChild.jadx.txt",
+      "bytes": 721,
+      "sha256": "2404a47a7f7c206decbce521d1ad8ca2966f33929a01a6e1cd462d7eda65b76b"
+    },
+    {
+      "path": "jdk8/debug/runtime/RawOwnerChild.jarde.txt",
+      "bytes": 565,
+      "sha256": "e65da6d8f2478e3a0b6f43759b106518ecb2b77f17bd072cf737ed70a4ac28ad"
+    },
+    {
+      "path": "jdk8/debug/runtime/RawOwnerChild.original.txt",
+      "bytes": 655,
+      "sha256": "c25e0c82c8f818f082f08ceef41ac63b15ed1ce4bb020bcf1eff5396c577b047"
+    },
+    {
+      "path": "jdk8/debug/runtime/RawParam.jadx.txt",
+      "bytes": 693,
+      "sha256": "33b65814b563635c3b26f292f11a234ec9eda87fc8bbf5409c3fc0f323ad9d3d"
+    },
+    {
+      "path": "jdk8/debug/runtime/RawParam.jarde.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk8/debug/runtime/RawParam.original.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk8/debug/runtime/RetainedAliasRawParam.jadx.txt",
+      "bytes": 806,
+      "sha256": "f92fd71052669f4c2419e8516949617f14ee858caeb232d80d63117f41ea2d94"
+    },
+    {
+      "path": "jdk8/debug/runtime/RetainedAliasRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk8/debug/runtime/RetainedAliasRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk8/debug/runtime/ShadowMethodT.jadx.txt",
+      "bytes": 1930,
+      "sha256": "1c91e9e73e2b1038112652360b7e0dcd639e400df84523aac0d0102801a17264"
+    },
+    {
+      "path": "jdk8/debug/runtime/ShadowMethodT.jarde.txt",
+      "bytes": 863,
+      "sha256": "ceb1dd45add8519cb6e22a15e06a6eab6b515c2f59d517b64ede6b379fcd7b53"
+    },
+    {
+      "path": "jdk8/debug/runtime/ShadowMethodT.original.txt",
+      "bytes": 1721,
+      "sha256": "e491f2fc9b0efb07abdaf9da8848a50d38b4da3848f045e3268c35d95124df5a"
+    },
+    {
+      "path": "jdk8/debug/runtime/StaticRawLocal.jadx.txt",
+      "bytes": 729,
+      "sha256": "caa078a6f6a66a11482c09645632ebb52566091c80fab4fa927b1053dce64fde"
+    },
+    {
+      "path": "jdk8/debug/runtime/StaticRawLocal.jarde.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk8/debug/runtime/StaticRawLocal.original.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk8/debug/runtime/ThisReceiver.jadx.txt",
+      "bytes": 697,
+      "sha256": "f2c2ade79741f3c077a9767a2c86b6f9e8b3c91395a41c1c035e78ca2c19717e"
+    },
+    {
+      "path": "jdk8/debug/runtime/ThisReceiver.jarde.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk8/debug/runtime/ThisReceiver.original.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk8/debug/runtime/TypedReceiver.jadx.txt",
+      "bytes": 1106,
+      "sha256": "1a07b6f4350dff1a6ca5a3e4ec3062096840ad9dbc1a6efbd816e82d4c9ccb31"
+    },
+    {
+      "path": "jdk8/debug/runtime/TypedReceiver.jarde.txt",
+      "bytes": 872,
+      "sha256": "d7134843994e4b3ba1d434e5bdfba85531e98e0ec94492801f5dbfa4a5b0ca18"
+    },
+    {
+      "path": "jdk8/debug/runtime/TypedReceiver.original.txt",
+      "bytes": 974,
+      "sha256": "7f08ef56194b137543c901f9bd3946d1ac0f4153f2cc202df75762d9c8052a16"
+    },
+    {
+      "path": "jdk8/debug/runtime/WideRawParam.jadx.txt",
+      "bytes": 753,
+      "sha256": "bb098a483d7226c3ef490fd7d5502cfaae0fa2dc00a248054971f81a95f5b14e"
+    },
+    {
+      "path": "jdk8/debug/runtime/WideRawParam.jarde.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk8/debug/runtime/WideRawParam.original.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/Array2DRawParam/sources/defpackage/Array2DRawParam.java",
+      "bytes": 337,
+      "sha256": "7bf3005284b755fe00567641896be8ddcb1010ecdf431bb7cbd62e0fed69cd65"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/ArrayRawParam/sources/defpackage/ArrayRawParam.java",
+      "bytes": 323,
+      "sha256": "ce0ba57264c94dc463df8d3dbd6b3be4221b852d694a4a6471d38a3f13b35d4b"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/BoundRawParam/sources/defpackage/BoundRawParam.java",
+      "bytes": 405,
+      "sha256": "c728ec861a3d99357641665f0f7db8e272eda3309e78679b587b8bf8d4b156b7"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/DirectInstanceRawParam/sources/defpackage/DirectInstanceRawParam.java",
+      "bytes": 360,
+      "sha256": "d510980f6071ada1a310dd5a76fd7ff932c97703337c794fbccb526b8309c33c"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/InstanceRawLocal/sources/defpackage/InstanceRawLocal.java",
+      "bytes": 277,
+      "sha256": "183a867140d3ec0d651f1c6024251ab3805b4a7cb5736eab8893104121ed39df"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/MultiFormalRawParam/sources/defpackage/MultiFormalRawParam.java",
+      "bytes": 380,
+      "sha256": "7d015e6743c7ed99d6c7690a03fcf4ecf861a9c582097a14130d74c338cc9376"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/NullRawParam/sources/defpackage/NullRawParam.java",
+      "bytes": 238,
+      "sha256": "a851150cb6e01aab4844ecce9c0ebb6f65cf050e4aef37382ef53b379c9c7d87"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/PrimitiveArrayRawParam/sources/defpackage/PrimitiveArrayRawParam.java",
+      "bytes": 368,
+      "sha256": "331c49fc214f34eda5179d4a5fdd3a84dccbec84b083fc49d9121ea426240d11"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerBase.java",
+      "bytes": 141,
+      "sha256": "a4256e0b800f68dffd6124722d909d24bb9958b2d27d0668e20575fd05ead39d"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/RawOwnerChild/sources/defpackage/RawOwnerChild.java",
+      "bytes": 316,
+      "sha256": "7b1d0110195f085b030ec850679ab6449421c0bc84e5a9decc86d154332e6a5b"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/RawParam/sources/defpackage/RawParam.java",
+      "bytes": 283,
+      "sha256": "12bd0a83b15704e980d959b9015f1cee6036fe3e2ea3cf799a394dd9a4732787"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/RetainedAliasRawParam/sources/defpackage/RetainedAliasRawParam.java",
+      "bytes": 401,
+      "sha256": "a04d278d436e9e8d24ab1aa54b93f44ae2766c59e3670b1f663515abdd163ced"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/ShadowMethodT/sources/defpackage/ShadowMethodT.java",
+      "bytes": 334,
+      "sha256": "a3cc4ded8594ea60b6a6aded917b5d81b18665b64ed2a0e7e869b7435445eeec"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/StaticRawLocal/sources/defpackage/StaticRawLocal.java",
+      "bytes": 319,
+      "sha256": "c62aaca50bf0904967018ce58649678d845644764106ae6e56fc95af81c82cd2"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/ThisReceiver/sources/defpackage/ThisReceiver.java",
+      "bytes": 198,
+      "sha256": "29bdbc10deda533facdba2757b0246d7b9e1284023c246cbff18c76ea9e82a3c"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/TypedReceiver/sources/defpackage/TypedReceiver.java",
+      "bytes": 307,
+      "sha256": "93a41a4f4f11b77fc7b06c143144ebb4254d182495e5a60594be22385b0e594b"
+    },
+    {
+      "path": "jdk8/no-debug/jadx/WideRawParam/sources/defpackage/WideRawParam.java",
+      "bytes": 325,
+      "sha256": "688c4a0e9325d677f23f0a8f7c56c05436f009b6b8249eb0336dc5362904b189"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/Array2DRawParam.java",
+      "bytes": 1293,
+      "sha256": "84b51bbf39ee444117977442cc40e3d8c27a72fb65b6164c7b2fbdfcc4eae13c"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/Array2DRawParam.stderr.txt",
+      "bytes": 44792,
+      "sha256": "4af96adcd84a9b8c7aa810398b73bd5a1d32936c7e51a19b4254105f251e35fd"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/ArrayRawParam.java",
+      "bytes": 1273,
+      "sha256": "6eca13086c3cca27c7ef5ed7c3ebc60b7bd9d8daada5cdd7d9c1eb80bf88c0bf"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/ArrayRawParam.stderr.txt",
+      "bytes": 44581,
+      "sha256": "311a31d840a9386e41d5766f29784cf65534bff325adb2ece33344520dea6372"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/BoundRawParam.java",
+      "bytes": 1345,
+      "sha256": "81ee814aa442d16bedb0f72f370830c16ee2069d4e84754453ae15445e258294"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/BoundRawParam.stderr.txt",
+      "bytes": 44718,
+      "sha256": "8046b067635aeb81eae58d83f75fb93686b9bba88b7d4b5aed4e179557916082"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/DirectInstanceRawParam.java",
+      "bytes": 1334,
+      "sha256": "4a94736315b6eae244e0c86bd52673d4184206d783c03a281542fea7858efed2"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/DirectInstanceRawParam.stderr.txt",
+      "bytes": 45475,
+      "sha256": "215dc3ffae6f21c0cd9b276c56647c9a0d580c9770509f5d1a14ce97b0f3a38d"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/InstanceRawLocal.java",
+      "bytes": 1339,
+      "sha256": "da10013688a30b0cc61c5f8ad8649f79792d67b4ea0d861293afdaf595225214"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/InstanceRawLocal.stderr.txt",
+      "bytes": 44319,
+      "sha256": "8b242337de7235857d1adcbbe7989fc229ee050cff5a75dc6e7c7dcf9814fe9a"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/MultiFormalRawParam.java",
+      "bytes": 1593,
+      "sha256": "4b437b42cf47a3ccf750355128c463728a56d507544aa92a0cb529860058e62c"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/MultiFormalRawParam.stderr.txt",
+      "bytes": 52131,
+      "sha256": "35053593a0784150d88de23eb8e539eb7485e80524bfd332e4f1585ed4baa426"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/NullRawParam.java",
+      "bytes": 1199,
+      "sha256": "d68300b3bdd64dc0a1769de4c77a88e3eebccc14b47a17dc3e1ee4f8165ca2e2"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/NullRawParam.stderr.txt",
+      "bytes": 43808,
+      "sha256": "0bb628496543b6d39c540e04a04696903759487617bbb921337509df331d2638"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/PrimitiveArrayRawParam.java",
+      "bytes": 1295,
+      "sha256": "90298d00e9daee2bf9bea1ca50260dee0b170c49e8bc25e85ffbce8789fa2c77"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/PrimitiveArrayRawParam.stderr.txt",
+      "bytes": 44978,
+      "sha256": "ac3c688dddd97153b1f0ae5a046f6ef5402428e6e0aeb4ea1c996f8d1c9a75cb"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RawOwnerBase.java",
+      "bytes": 888,
+      "sha256": "f400195673e17b46cfe5e1ecf2dfa6ad1e569fc2a83c23d92202a00ba21aba24"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RawOwnerBase.stderr.txt",
+      "bytes": 24648,
+      "sha256": "5ee780f2a6fd8d95368a13ca5b72eb1cf3ff8654d3bf983d7eda378f5b4452b8"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RawOwnerChild.java",
+      "bytes": 1233,
+      "sha256": "8bc50b0f6cb5bc0a65e96706a623c1fc4bc19fa7d9d3586ebaace845198a1015"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RawOwnerChild.stderr.txt",
+      "bytes": 42647,
+      "sha256": "7fa6ecef6b46f8ed79040af4505976244f1f95f70e09a5cc560535b39a6cf3e1"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RawParam.java",
+      "bytes": 1226,
+      "sha256": "deadf9d5abebeb93b29bb8330dd107c0f9f84ba1ddfa430103fcb8261f91caa4"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RawParam.stderr.txt",
+      "bytes": 44018,
+      "sha256": "9f263ef886e30938eae5f4a7a64ccaa77c4b0b76760a96b3087cb1a4e6e6faec"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RetainedAliasRawParam.java",
+      "bytes": 1430,
+      "sha256": "e3536151d6425f7cf9e601be73cd6fccdb94be39c2157ee6ae0f84a8c7d364e5"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/RetainedAliasRawParam.stderr.txt",
+      "bytes": 51980,
+      "sha256": "d01cc149556731c6ef007fea40504116cc0d18b483c321a95921029f68ab9095"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/ShadowMethodT.java",
+      "bytes": 1947,
+      "sha256": "d40fba0fc2def10495115feecb8a0139d3b24cd1fb22da16660c49bde2ca9953"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/ShadowMethodT.stderr.txt",
+      "bytes": 48197,
+      "sha256": "a560237e046b7ceaf39f4d9ddb73448ff441228089039382d7b40f5a8326810b"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/StaticRawLocal.java",
+      "bytes": 1314,
+      "sha256": "fd3a53f3051037b2d49c8966c16550fc2360b0f7494664a72673443748783747"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/StaticRawLocal.stderr.txt",
+      "bytes": 48408,
+      "sha256": "d4bfdd88475a3534310be669695166189c96415647ffd8be989ea043686fa0b1"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/ThisReceiver.java",
+      "bytes": 1328,
+      "sha256": "0c40a3e0e09b0e97ca13b527dcc647a9f01c29a3f73f31f6d7de68b4408b0d8f"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/ThisReceiver.stderr.txt",
+      "bytes": 44229,
+      "sha256": "4f016ce26e6f99e4cd238e67c412ab02e7c80b843cde42d642c37db60f989d53"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/TypedReceiver.java",
+      "bytes": 1753,
+      "sha256": "bc23f6d670ae4739cc5c483c23851a87180cb7706f8bb4daa8c17c88625efb56"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/TypedReceiver.stderr.txt",
+      "bytes": 47630,
+      "sha256": "cd6c67ea5abc9544a02501afbdfa93dd9413576521dde3baa13c7bf0c15e4a3b"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/WideRawParam.java",
+      "bytes": 1286,
+      "sha256": "1fffb038dc24c28f794c348a356b25bf8f3cac2017e72733ba1b38208c722010"
+    },
+    {
+      "path": "jdk8/no-debug/jarde/WideRawParam.stderr.txt",
+      "bytes": 44564,
+      "sha256": "b3acdf24abbde6c672323bd2bc82c2e3758e28cc01aeb553357401e6111dc10d"
+    },
+    {
+      "path": "jdk8/no-debug/javap/Array2DRawParam.txt",
+      "bytes": 2159,
+      "sha256": "9085a4808db8ad5e0144f9e80b3bd5fb71cc39d9128c891f71ebe19da37b12d7"
+    },
+    {
+      "path": "jdk8/no-debug/javap/ArrayRawParam.txt",
+      "bytes": 2135,
+      "sha256": "24ed418999b82029ba80cfe7fb5f5170b36d811fe7db60dc4fc424f0dac2188f"
+    },
+    {
+      "path": "jdk8/no-debug/javap/BoundRawParam.txt",
+      "bytes": 2204,
+      "sha256": "35328488ae05ff6cb9f5ea7516ee2ff849fd1910c1da48b8be5d2290ccf91aaf"
+    },
+    {
+      "path": "jdk8/no-debug/javap/DirectInstanceRawParam.txt",
+      "bytes": 2193,
+      "sha256": "4957d9f929264dc89c0ce8e20c5518e881a8862ea97e61f11d9ed818e6cd5b73"
+    },
+    {
+      "path": "jdk8/no-debug/javap/InstanceRawLocal.txt",
+      "bytes": 2120,
+      "sha256": "d7aad3786566a8bfdffbfabdf54ee56978abafe2c5c4f9154f892c01bf836281"
+    },
+    {
+      "path": "jdk8/no-debug/javap/MultiFormalRawParam.txt",
+      "bytes": 2782,
+      "sha256": "576d418084006c3432ae54bde722c5e1f3329fa92d098f3b84fce07ff58a8b83"
+    },
+    {
+      "path": "jdk8/no-debug/javap/NullRawParam.txt",
+      "bytes": 2062,
+      "sha256": "9a59b31b98a5661258bcaf443731f7673ffb6ced1e6bd1a1aed6f998cc92b6f1"
+    },
+    {
+      "path": "jdk8/no-debug/javap/PrimitiveArrayRawParam.txt",
+      "bytes": 2169,
+      "sha256": "275f1e044e17248fbec53bb33c68fcd2bb7a3501f996d9ede23b698af39fc073"
+    },
+    {
+      "path": "jdk8/no-debug/javap/RawOwnerChild.txt",
+      "bytes": 1949,
+      "sha256": "4b6867ba7a8ffd26d6b4167344e0025c5756c4895040f1f7d5ebe1ad40a3deed"
+    },
+    {
+      "path": "jdk8/no-debug/javap/RawParam.txt",
+      "bytes": 2072,
+      "sha256": "cc2c68d9572b763ce658882d9210752a0cd40c7a38cb210d8abbc6ba5f6aa291"
+    },
+    {
+      "path": "jdk8/no-debug/javap/RetainedAliasRawParam.txt",
+      "bytes": 2310,
+      "sha256": "b9fe7985316c785d39a3760244459ca1200626315058c1b0a2d5baa16cb822cb"
+    },
+    {
+      "path": "jdk8/no-debug/javap/ShadowMethodT.txt",
+      "bytes": 2629,
+      "sha256": "f4bcacef3b8048d7270b588c9fdc067893b945c368750d1d7f1bf6f89da099c2"
+    },
+    {
+      "path": "jdk8/no-debug/javap/StaticRawLocal.txt",
+      "bytes": 2173,
+      "sha256": "f524d996d106d91974cf2b6d64dbe542b10606b0499411bdcd62f1698717625a"
+    },
+    {
+      "path": "jdk8/no-debug/javap/ThisReceiver.txt",
+      "bytes": 2124,
+      "sha256": "6ca1c12ab28e407f2ebce7f75369b2122364e2218c6c3c7543db1144a7b80a60"
+    },
+    {
+      "path": "jdk8/no-debug/javap/TypedReceiver.txt",
+      "bytes": 2540,
+      "sha256": "95eafd92fd08eea310d88bc1cd1cde1bca66ce8f8eeeb6801efc78caaa685a15"
+    },
+    {
+      "path": "jdk8/no-debug/javap/WideRawParam.txt",
+      "bytes": 2138,
+      "sha256": "d09c8be9c649a1712af9cc5e05f0f9f4b726e1dccedf88236075288c3e34e0a5"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/Array2DRawParam.jadx.txt",
+      "bytes": 757,
+      "sha256": "8a25af8b8504893fffac8c1872e3c93e85925b6aa0b3d9ff5f62750cee2ba267"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/Array2DRawParam.jarde.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/Array2DRawParam.original.txt",
+      "bytes": 691,
+      "sha256": "f48a2d307b1f6c7abb8d91e7a8ed8a5ccc87d07c1114588c08ddfb0808240329"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ArrayRawParam.jadx.txt",
+      "bytes": 740,
+      "sha256": "65890eea8fe7c3065fbc2f644c7253d5354fdffeba56efc1a47107d7914063b6"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ArrayRawParam.jarde.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ArrayRawParam.original.txt",
+      "bytes": 674,
+      "sha256": "d51f3b7d45328701a337bb2285770bcd1cf8f2179c66734c318010571e65ac8b"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/BoundRawParam.jadx.txt",
+      "bytes": 817,
+      "sha256": "bdeb71e6ccb9da375831745c55c6fa5137fd29b7007948eecaea74516d6991ca"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/BoundRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/BoundRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "0c5cb2a465e5db671d09e57d82dc7d2279cee6ef898da3154a4cac90f5c80de8"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/DirectInstanceRawParam.jadx.txt",
+      "bytes": 777,
+      "sha256": "b3cda9506188b60dd9d215bc5efd1dafb315f344e7cea3910361ebe407f0cc9b"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/DirectInstanceRawParam.jarde.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/DirectInstanceRawParam.original.txt",
+      "bytes": 711,
+      "sha256": "9358c79b8f63417a168963e9dc02e1e1359ee5bda8614638bec755f01d5683be"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/InstanceRawLocal.jarde.txt",
+      "bytes": 594,
+      "sha256": "c4a0fd4eb5e838df4c7116cc09d11740387e51309b8dd9c85cb1eac73adb9692"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/InstanceRawLocal.original.txt",
+      "bytes": 624,
+      "sha256": "b5f800a25ef5e547f36ccdecb9d6798cca74aee4a8a677d83bd449aea30f57e1"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/MultiFormalRawParam.jadx.txt",
+      "bytes": 1277,
+      "sha256": "8d284d37fb44425659f63776c8f684d596146724e653b1147b4adc2b7c50d4e2"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/MultiFormalRawParam.jarde.txt",
+      "bytes": 744,
+      "sha256": "8bc5d0b9f7ed8f8820c0a056a24f74615b3e6104dd1ccada41aee9975df41485"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/MultiFormalRawParam.original.txt",
+      "bytes": 1167,
+      "sha256": "6d16de1512a82cf13a56f94903001249dbfdb1ab81b29b817616448334e1d0c4"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/NullRawParam.jadx.txt",
+      "bytes": 657,
+      "sha256": "f4e759450c3306919076b843e677ebd4315a206a7a08c607258e8ee49a6eb720"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/NullRawParam.jarde.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/NullRawParam.original.txt",
+      "bytes": 591,
+      "sha256": "99432d5aa83e97874597f1a0fde12c2a963ce4099787ae00fd33faff35b18418"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/PrimitiveArrayRawParam.jadx.txt",
+      "bytes": 724,
+      "sha256": "8dbde5389e6da69a121d5ad297157ee52bcb682d49d75d8a4bc7844fd4d1d1e8"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/PrimitiveArrayRawParam.jarde.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/PrimitiveArrayRawParam.original.txt",
+      "bytes": 658,
+      "sha256": "e156798549dd3ab3c3eced5fadfdced0789f4ee0e3f65410c291f2c46434dfba"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RawOwnerChild.jadx.txt",
+      "bytes": 721,
+      "sha256": "2404a47a7f7c206decbce521d1ad8ca2966f33929a01a6e1cd462d7eda65b76b"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RawOwnerChild.jarde.txt",
+      "bytes": 565,
+      "sha256": "e65da6d8f2478e3a0b6f43759b106518ecb2b77f17bd072cf737ed70a4ac28ad"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RawOwnerChild.original.txt",
+      "bytes": 655,
+      "sha256": "c25e0c82c8f818f082f08ceef41ac63b15ed1ce4bb020bcf1eff5396c577b047"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RawParam.jadx.txt",
+      "bytes": 693,
+      "sha256": "33b65814b563635c3b26f292f11a234ec9eda87fc8bbf5409c3fc0f323ad9d3d"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RawParam.jarde.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RawParam.original.txt",
+      "bytes": 627,
+      "sha256": "6a2e3f1a9739b680582fea7e805eed4d712c0aaa5f345bb00d8449a502e68b6d"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RetainedAliasRawParam.jadx.txt",
+      "bytes": 806,
+      "sha256": "f92fd71052669f4c2419e8516949617f14ee858caeb232d80d63117f41ea2d94"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RetainedAliasRawParam.jarde.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/RetainedAliasRawParam.original.txt",
+      "bytes": 740,
+      "sha256": "587147b6fcdb6f90959b73653be0302d121556b4c0626fb20a88ff47291ce8ff"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ShadowMethodT.jadx.txt",
+      "bytes": 1930,
+      "sha256": "1c91e9e73e2b1038112652360b7e0dcd639e400df84523aac0d0102801a17264"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ShadowMethodT.jarde.txt",
+      "bytes": 863,
+      "sha256": "ceb1dd45add8519cb6e22a15e06a6eab6b515c2f59d517b64ede6b379fcd7b53"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ShadowMethodT.original.txt",
+      "bytes": 1721,
+      "sha256": "e491f2fc9b0efb07abdaf9da8848a50d38b4da3848f045e3268c35d95124df5a"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/StaticRawLocal.jadx.txt",
+      "bytes": 729,
+      "sha256": "caa078a6f6a66a11482c09645632ebb52566091c80fab4fa927b1053dce64fde"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/StaticRawLocal.jarde.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/StaticRawLocal.original.txt",
+      "bytes": 663,
+      "sha256": "25ea87cacc91c856b41331c020cf776ffda40333d737cff0309fadf5141463b0"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ThisReceiver.jadx.txt",
+      "bytes": 697,
+      "sha256": "f2c2ade79741f3c077a9767a2c86b6f9e8b3c91395a41c1c035e78ca2c19717e"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ThisReceiver.jarde.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/ThisReceiver.original.txt",
+      "bytes": 653,
+      "sha256": "9916911dd761a7b0d550673bef203cb77fb4cb96733a8fb0a2184fb7d3ba65b8"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/TypedReceiver.jadx.txt",
+      "bytes": 1106,
+      "sha256": "1a07b6f4350dff1a6ca5a3e4ec3062096840ad9dbc1a6efbd816e82d4c9ccb31"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/TypedReceiver.jarde.txt",
+      "bytes": 872,
+      "sha256": "d7134843994e4b3ba1d434e5bdfba85531e98e0ec94492801f5dbfa4a5b0ca18"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/TypedReceiver.original.txt",
+      "bytes": 974,
+      "sha256": "7f08ef56194b137543c901f9bd3946d1ac0f4153f2cc202df75762d9c8052a16"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/WideRawParam.jadx.txt",
+      "bytes": 753,
+      "sha256": "bb098a483d7226c3ef490fd7d5502cfaae0fa2dc00a248054971f81a95f5b14e"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/WideRawParam.jarde.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk8/no-debug/runtime/WideRawParam.original.txt",
+      "bytes": 687,
+      "sha256": "9b6ad934d85edae64408a458838c3e4654befd592a41b43cedf7710c2e9b1512"
+    },
+    {
+      "path": "jdk8/versions/java.txt",
+      "bytes": 174,
+      "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "path": "jdk8/versions/javac.txt",
+      "bytes": 16,
+      "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "path": "outer-run-metadata.json",
+      "bytes": 4025,
+      "sha256": "fca7bc336e4de2a03bc8a8e63c448952d8d9af163efd16fe619fe286ee08e8b0"
+    },
+    {
+      "path": "replay-executed.py",
+      "bytes": 15120,
+      "sha256": "2c9b8233f41f13a483fa252a898f81e4602b9c7b3a0308cbc95bcd42162dc3a2"
+    },
+    {
+      "path": "run-label.txt",
+      "bytes": 10,
+      "sha256": "1e81270f1a47dce22a2e4985250c74b2e3374443734f1492b03ea2cd2af4ec48"
+    },
+    {
+      "path": "runner.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runner.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runtime-comparisons.tsv",
+      "bytes": 3131,
+      "sha256": "59f46618900e7c2db880727853072b27009fac81285d19a5b6f6a0f72bea24b0"
+    },
+    {
+      "path": "versions/frozen-input-jar-hashes.tsv",
+      "bytes": 6665,
+      "sha256": "01066ef00dd1d514566c806fba7b80aeb7097218a09068765fdb8422fc02cbe7"
+    },
+    {
+      "path": "versions/jadx-cli.txt",
+      "bytes": 4,
+      "sha256": "9c5955fc99a60b8f6dee6cf582c4420d91e1b3e2a201f532c91e2cbdfce7fa51"
+    },
+    {
+      "path": "versions/jarde-cli.txt",
+      "bytes": 16,
+      "sha256": "4e3523057f610dda085c877b3d636cbdeb15c23a541dba3b399c7c04eb4b14b5"
+    },
+    {
+      "path": "versions/source-hashes.tsv",
+      "bytes": 22576,
+      "sha256": "9b0ebd895bc738ec761b2c9c3fd639a4e23824056d349071c67bde98ca92a59c"
+    },
+    {
+      "path": "versions/tool-hashes.tsv",
+      "bytes": 11445,
+      "sha256": "bfcb74dfddedd5124a73da056d084cbc66a33a03ec7934a4cf32d5207266e1e8"
+    }
+  ],
+  "errors": []
+}

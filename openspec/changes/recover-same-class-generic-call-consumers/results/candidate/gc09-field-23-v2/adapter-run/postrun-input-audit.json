@@ -1,0 +1,8 @@
+{
+  "capture_timing": "post-run; this is explicitly not part of preflight.json",
+  "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/generic-holder-write-boundaries/ReflectDriver.java",
+  "sha256_observed_after_run": "a05c88ed27ea66785c24518d17dc70bccb1f8b4ed932369e03731a12f6d0d0ea",
+  "used_by": "field-23-replay-adapter.py reads this source, applies the two frozen in-memory string edits, then compiles the resulting temporary driver per JDK",
+  "coverage_run_metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/gc09-field-23-v2/adapter-run/run-metadata.json",
+  "limitation": "no pre-run hash for this helper in v2; v3 wrapper will include it before invocation"
+}

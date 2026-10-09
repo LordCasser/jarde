@@ -1,0 +1,93 @@
+{
+  "scope": "Root re-evaluation of exactly 12 saved candidate-v1 rows; no CLI, compiler or JVM invoked; immutable original statistics retained.",
+  "criterion_snapshot_sha256": "a19895e70ef306a3024132a3da7c07cf891ea87e5ef0e25e01413989514ce836",
+  "offline_disposition_sha256": "a19d158b7fdc34a89ad2e3c1316393504257e9f0de3f11e987c5b47f625b93d1",
+  "rows": [
+    {
+      "family": "IncompleteSite",
+      "leg": "corretto8",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "feature_recovery"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "corretto8",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "corretto8",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control"
+    },
+    {
+      "family": "IncompleteSite",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "feature_recovery"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "corretto8",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control"
+    },
+    {
+      "family": "IncompleteSite",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "feature_recovery"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "openjdk23",
+      "debug": "debug",
+      "status": "pass",
+      "classification": "refusal_control"
+    },
+    {
+      "family": "IncompleteSite",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "feature_recovery"
+    },
+    {
+      "family": "MultiUseResult",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control"
+    },
+    {
+      "family": "SameErasureBinder",
+      "leg": "openjdk23",
+      "debug": "nodebug",
+      "status": "pass",
+      "classification": "refusal_control"
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

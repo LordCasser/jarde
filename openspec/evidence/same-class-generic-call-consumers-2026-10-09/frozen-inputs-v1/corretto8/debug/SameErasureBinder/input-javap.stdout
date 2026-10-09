@@ -1,0 +1,131 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/corretto8/debug/SameErasureBinder/SameErasureBinder.jar!/SameErasureBinder.class
+  Last modified 2026-10-9; size 922 bytes
+  MD5 checksum f1de031738d8b3fdbeb636dc7b3a1dc6
+  Compiled from "SameErasureBinder.java"
+public class SameErasureBinder<T extends java.lang.Number> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#31         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #4.#32         // SameErasureBinder.calls:I
+   #3 = Methodref          #4.#33         // SameErasureBinder.sink:(Ljava/lang/Number;)Ljava/lang/Number;
+   #4 = Class              #34            // SameErasureBinder
+   #5 = Class              #35            // java/lang/Object
+   #6 = Utf8               calls
+   #7 = Utf8               I
+   #8 = Utf8               <init>
+   #9 = Utf8               ()V
+  #10 = Utf8               Code
+  #11 = Utf8               LineNumberTable
+  #12 = Utf8               LocalVariableTable
+  #13 = Utf8               this
+  #14 = Utf8               LSameErasureBinder;
+  #15 = Utf8               LocalVariableTypeTable
+  #16 = Utf8               LSameErasureBinder<TT;>;
+  #17 = Utf8               sink
+  #18 = Utf8               (Ljava/lang/Number;)Ljava/lang/Number;
+  #19 = Utf8               x
+  #20 = Utf8               Ljava/lang/Number;
+  #21 = Utf8               TU;
+  #22 = Utf8               Signature
+  #23 = Utf8               <U:Ljava/lang/Number;:Ljava/lang/Runnable;>(TU;)TU;
+  #24 = Utf8               independent
+  #25 = Utf8               TT;
+  #26 = Utf8               (TT;)TT;
+  #27 = Utf8               useNull
+  #28 = Utf8               <T:Ljava/lang/Number;>Ljava/lang/Object;
+  #29 = Utf8               SourceFile
+  #30 = Utf8               SameErasureBinder.java
+  #31 = NameAndType        #8:#9          // "<init>":()V
+  #32 = NameAndType        #6:#7          // calls:I
+  #33 = NameAndType        #17:#18        // sink:(Ljava/lang/Number;)Ljava/lang/Number;
+  #34 = Utf8               SameErasureBinder
+  #35 = Utf8               java/lang/Object
+{
+  public int calls;
+    descriptor: I
+    flags: ACC_PUBLIC
+
+  public SameErasureBinder();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LSameErasureBinder;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LSameErasureBinder<TT;>;
+
+  public <U extends java.lang.Number & java.lang.Runnable> U sink(U);
+    descriptor: (Ljava/lang/Number;)Ljava/lang/Number;
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_0
+         1: dup
+         2: getfield      #2                  // Field calls:I
+         5: iconst_1
+         6: iadd
+         7: putfield      #2                  // Field calls:I
+        10: aload_1
+        11: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      12     0  this   LSameErasureBinder;
+            0      12     1     x   Ljava/lang/Number;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      12     0  this   LSameErasureBinder<TT;>;
+            0      12     1     x   TU;
+    Signature: #23                          // <U:Ljava/lang/Number;:Ljava/lang/Runnable;>(TU;)TU;
+
+  public T independent(T);
+    descriptor: (Ljava/lang/Number;)Ljava/lang/Number;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LSameErasureBinder;
+            0       2     1     x   Ljava/lang/Number;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   LSameErasureBinder<TT;>;
+            0       2     1     x   TT;
+    Signature: #26                          // (TT;)TT;
+
+  public void useNull();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: aconst_null
+         2: invokevirtual #3                  // Method sink:(Ljava/lang/Number;)Ljava/lang/Number;
+         5: pop
+         6: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   LSameErasureBinder;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   LSameErasureBinder<TT;>;
+}
+Signature: #28                          // <T:Ljava/lang/Number;>Ljava/lang/Object;
+SourceFile: "SameErasureBinder.java"

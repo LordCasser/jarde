@@ -1,0 +1,1 @@
+public class CallHold<T> { public T v; public CallHold(T v) { this.v=identity(v); } private T identity(T x) { return x; } }

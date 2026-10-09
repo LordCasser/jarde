@@ -1,0 +1,4 @@
+fieldValue=[raw]
+fieldGenericType=java.util.List<T>
+classvars=1
+method=put methodvars=0 parameterGenericType=java.util.List

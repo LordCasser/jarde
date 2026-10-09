@@ -1,0 +1,232 @@
+[
+  {
+    "label": "fmt-v41",
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791520226258000000,
+    "exit": 0,
+    "finished_unix_ns": 1791520229014569000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "diff-v41",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791520229016816000,
+    "exit": 0,
+    "finished_unix_ns": 1791520229105705000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "label": "regressions-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "--test",
+      "preserve_local_scope_refusals",
+      "--test",
+      "generic_method_projection",
+      "--test",
+      "generic_throws_projection",
+      "--test",
+      "ordinary_generic_projection",
+      "--test",
+      "generic_constructor_projection",
+      "--test",
+      "same_class_generic_binding",
+      "--test",
+      "same_class_generic_call_consumers",
+      "--test",
+      "class_scope_constructor_projection",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791520229107731000,
+    "exit": 0,
+    "finished_unix_ns": 1791520341888629000,
+    "log_sha256": "87a8561717ac82c1015844632de71acc8040cd03a5b4dec3e0b31d5b9a94d431",
+    "source_unchanged": true
+  },
+  {
+    "label": "initializer-regression-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-java",
+      "--test",
+      "class_initializer_candidates",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791520341893108000,
+    "exit": 0,
+    "finished_unix_ns": 1791520359569344000,
+    "log_sha256": "db42ba3f1b1b4c4416558352ff17eac084a28b4e78825f3746d4263d8b9f0f51",
+    "source_unchanged": true
+  },
+  {
+    "label": "graph-v41",
+    "argv": [
+      "cargo",
+      "test",
+      "--lib",
+      "generic_call_components",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791520359573627000,
+    "exit": 0,
+    "finished_unix_ns": 1791520372458370000,
+    "log_sha256": "df5238b8706ae85dc884d6ee6fc5f92172bc81447db2b4f8db50f7805a1acf82",
+    "source_unchanged": true
+  },
+  {
+    "label": "clippy-v41",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--locked",
+      "--",
+      "-A",
+      "clippy::too_many_arguments",
+      "-A",
+      "clippy::cloned_ref_to_slice_refs",
+      "-A",
+      "clippy::collapsible_if",
+      "-A",
+      "clippy::type_complexity",
+      "-A",
+      "clippy::len_zero",
+      "-A",
+      "clippy::needless_option_as_deref",
+      "-A",
+      "clippy::needless_borrow",
+      "-A",
+      "clippy::useless_conversion",
+      "-A",
+      "clippy::large_enum_variant",
+      "-A",
+      "clippy::question_mark",
+      "-A",
+      "clippy::comparison_to_empty",
+      "-A",
+      "clippy::op_ref",
+      "-A",
+      "clippy::manual_range_patterns",
+      "-A",
+      "clippy::if_same_then_else",
+      "-A",
+      "clippy::filter_map_bool_then",
+      "-A",
+      "clippy::filter_next",
+      "-A",
+      "clippy::unneeded_struct_pattern",
+      "-A",
+      "clippy::redundant_guards",
+      "-A",
+      "clippy::map_identity",
+      "-A",
+      "clippy::redundant_slicing",
+      "-A",
+      "clippy::unnecessary_get_then_check",
+      "-A",
+      "clippy::unnecessary_unwrap",
+      "-A",
+      "clippy::redundant_locals",
+      "-A",
+      "clippy::replace_box",
+      "-A",
+      "clippy::map_clone",
+      "-A",
+      "clippy::unnecessary_mut_passed",
+      "-A",
+      "clippy::single_element_loop",
+      "-A",
+      "clippy::unnecessary_to_owned",
+      "-A",
+      "clippy::needless_lifetimes",
+      "-D",
+      "warnings"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791520372462333000,
+    "exit": 0,
+    "finished_unix_ns": 1791520413100185000,
+    "log_sha256": "66b1c35ef035e0d877ef5ad51fa340e6593ac1c00858a94b2c9f86cde55eae64",
+    "source_unchanged": true
+  },
+  {
+    "label": "candidate-cli-v8-build-v41",
+    "argv": [
+      "cargo",
+      "build",
+      "-p",
+      "jarde-cli",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v41.json",
+    "started_unix_ns": 1791520413103973000,
+    "exit": 0,
+    "finished_unix_ns": 1791520441458275000,
+    "log_sha256": "a32cc6a8ea1ad8933b45dd652f7b967355a6ff0de82c3e0d3aac25256ea4e1f8",
+    "source_unchanged": true
+  }
+]

@@ -1,0 +1,9 @@
+--- original
++++ baseline
+@@ -1,4 +1,4 @@
+ fieldValue=[put]
+-fieldGenericType=T[]
++fieldGenericType=java.lang.Object[]
+ classvars=1
+-method=put methodvars=0 parameterGenericType=T[]
++method=put methodvars=0 parameterGenericType=java.lang.Object[]

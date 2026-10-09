@@ -1,0 +1,45 @@
+{
+  "scope": "Local real JDK header evidence for closed overload source relations; not target execution or decompiler acceptance",
+  "records": [
+    {
+      "leg": "corretto8",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-public",
+        "java.lang.Number",
+        "java.lang.String",
+        "java.lang.Comparable",
+        "java.lang.Object"
+      ],
+      "exit": 0,
+      "stdout_sha256": "8c99003b1793cc6b72612090f16ddbfc478b751bbff960432434f54ea6ab492e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "headers": [
+        "public abstract class java.lang.Number implements java.io.Serializable {",
+        "public final class java.lang.String implements java.io.Serializable, java.lang.Comparable<java.lang.String>, java.lang.CharSequence {",
+        "public interface java.lang.Comparable<T> {",
+        "public class java.lang.Object {"
+      ]
+    },
+    {
+      "leg": "openjdk23",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-public",
+        "java.lang.Number",
+        "java.lang.String",
+        "java.lang.Comparable",
+        "java.lang.Object"
+      ],
+      "exit": 0,
+      "stdout_sha256": "eae381b212f5fd79a9bc612f60ec72ef1346c7c64c5f38a9ff5c5e63fc16f58e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "headers": [
+        "public abstract class java.lang.Number implements java.io.Serializable {",
+        "public final class java.lang.String implements java.io.Serializable, java.lang.Comparable<java.lang.String>, java.lang.CharSequence, java.lang.constant.Constable, java.lang.constant.ConstantDesc {",
+        "public interface java.lang.Comparable<T> {",
+        "public class java.lang.Object {"
+      ]
+    }
+  ]
+}

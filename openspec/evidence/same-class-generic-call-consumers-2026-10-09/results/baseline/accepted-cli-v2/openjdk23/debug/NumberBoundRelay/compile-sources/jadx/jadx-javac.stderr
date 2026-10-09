@@ -1,0 +1,11 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/openjdk23/debug/NumberBoundRelay/compile-sources/jadx/target-0-source-00-NumberBoundRelay.java:6: 错误: 类 NumberBoundRelay 是公共的, 应在名为 NumberBoundRelay.java 的文件中声明
+public class NumberBoundRelay<T extends Number> {
+       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/same-class-generic-call-consumers-2026-10-09/results/baseline/accepted-cli-v2/openjdk23/debug/NumberBoundRelay/Probe.java:4: 错误: 类 FixtureProbe 是公共的, 应在名为 FixtureProbe.java 的文件中声明
+public class FixtureProbe {
+       ^
+2 个错误
+3 个警告

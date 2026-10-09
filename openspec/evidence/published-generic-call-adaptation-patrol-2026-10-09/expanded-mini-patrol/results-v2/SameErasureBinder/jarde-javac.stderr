@@ -1,0 +1,8 @@
+/private/tmp/jarde-generic-call-patrol-v1/results-v2/SameErasureBinder/jarde/SameErasureBinder.java:42: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 SameErasureBinder<T>
+  其中, T是类型变量:
+    T扩展已在类 SameErasureBinder中声明的Number,Runnable
+1 个错误

@@ -1,0 +1,22 @@
+{
+  "label": "openspec-strict-v41",
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--no-interactive"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v41.json",
+  "started_unix_ns": 1791523723775787000,
+  "exit": 0,
+  "finished_unix_ns": 1791523724319577000,
+  "log_sha256": "76c11c200e755efcfdbe55d2e0129085e634ee3ca5d1f01783499675f63ed1a4",
+  "source_unchanged": true
+}

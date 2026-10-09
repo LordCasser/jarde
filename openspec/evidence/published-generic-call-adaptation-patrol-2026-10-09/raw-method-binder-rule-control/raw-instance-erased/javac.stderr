@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/raw-method-binder-rule-control/raw-instance-erased/RawMethodRule.java:1: 错误: 不兼容的类型: Object无法转换为String
+public class RawMethodRule<T> { public <U> U id(U x){return x;} public String use(RawMethodRule receiver, String x){return receiver.id(x);} }
+                                                                                                                                      ^
+注: /Users/lordcasser/workspace/projects/jarde/openspec/evidence/published-generic-call-adaptation-patrol-2026-10-09/raw-method-binder-rule-control/raw-instance-erased/RawMethodRule.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+1 个错误

@@ -1,0 +1,14 @@
+/private/tmp/jarde-generic-call-patrol-v1/results-v2/ArrayRelay/jarde/ArrayRelay.java:26: 错误: 不兼容的类型: Object[]无法转换为T[]
+        return this.id(x);
+                       ^
+  其中, T是类型变量:
+    T扩展已在类 ArrayRelay中声明的Object
+/private/tmp/jarde-generic-call-patrol-v1/results-v2/ArrayRelay/jarde/ArrayRelay.java:48: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 ArrayRelay<T>
+  其中, T是类型变量:
+    T扩展已在类 ArrayRelay中声明的Object
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+2 个错误

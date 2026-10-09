@@ -1,0 +1,79 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/raw-receiver-field-selection-2026-10-09/jdk8/debug/input/Array2DRawParam.jar!/Array2DRawParam.class
+  Last modified 2026-10-9; size 623 bytes
+  MD5 checksum c47d399d5f01c3f7a0972e58cd048a20
+  Compiled from "Array2DRawParam.java"
+public class Array2DRawParam<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#25         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#26         // Array2DRawParam.value:[Ljava/lang/Object;
+   #3 = Class              #27            // Array2DRawParam
+   #4 = Class              #28            // java/lang/Object
+   #5 = Utf8               value
+   #6 = Utf8               [Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               [TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               LArray2DRawParam;
+  #16 = Utf8               LocalVariableTypeTable
+  #17 = Utf8               LArray2DRawParam<TT;>;
+  #18 = Utf8               put
+  #19 = Utf8               (LArray2DRawParam;[[Ljava/lang/Object;)V
+  #20 = Utf8               receiver
+  #21 = Utf8               [[Ljava/lang/Object;
+  #22 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #23 = Utf8               SourceFile
+  #24 = Utf8               Array2DRawParam.java
+  #25 = NameAndType        #9:#10         // "<init>":()V
+  #26 = NameAndType        #5:#6          // value:[Ljava/lang/Object;
+  #27 = Utf8               Array2DRawParam
+  #28 = Utf8               java/lang/Object
+{
+  public T[] value;
+    descriptor: [Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // [TT;
+
+  public Array2DRawParam();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LArray2DRawParam;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LArray2DRawParam<TT;>;
+
+  public static void put(Array2DRawParam, java.lang.Object[][]);
+    descriptor: (LArray2DRawParam;[[Ljava/lang/Object;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #2                  // Field value:[Ljava/lang/Object;
+         5: return
+      LineNumberTable:
+        line 5: 0
+        line 6: 5
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0 receiver   LArray2DRawParam;
+            0       6     1 value   [[Ljava/lang/Object;
+}
+Signature: #22                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "Array2DRawParam.java"

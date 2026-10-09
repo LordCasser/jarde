@@ -1,0 +1,61 @@
+    Checking bitflags v2.13.2
+    Checking serde v1.0.229
+    Checking thiserror v2.0.20
+    Checking noak v0.7.0
+    Checking jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Checking jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+    Checking jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error: parameter is only used in recursion
+    --> crates/jarde-java/src/report.rs:2278:9
+     |
+2278 |         field_targets: &HashMap<(u32, String), ClassSourceInvokeFieldTarget>,
+     |         ^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_field_targets`
+     |
+note: parameter used here
+    --> crates/jarde-java/src/report.rs:2326:25
+     |
+2326 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+...
+2337 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+...
+2351 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+...
+2361 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+...
+2383 |                 field_targets,
+     |                 ^^^^^^^^^^^^^
+...
+2408 |                     field_targets,
+     |                     ^^^^^^^^^^^^^
+...
+2424 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+...
+2440 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+...
+2456 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+...
+2468 |                         field_targets,
+     |                         ^^^^^^^^^^^^^
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#only_used_in_recursion
+     = note: `-D clippy::only-used-in-recursion` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::only_used_in_recursion)]`
+
+error: using `clone` on type `ConstructorTarget` which implements the `Copy` trait
+    --> crates/jarde-java/src/report.rs:2891:37
+     |
+2891 | ...                   target: target.clone(),
+     |                               ^^^^^^^^^^^^^^ help: try dereferencing it: `*target`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#clone_on_copy
+     = note: `-D clippy::clone-on-copy` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::clone_on_copy)]`
+
+error: could not compile `jarde-java` (lib) due to 2 previous errors

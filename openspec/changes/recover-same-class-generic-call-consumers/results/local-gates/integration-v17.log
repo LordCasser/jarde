@@ -1,0 +1,596 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+12901 |                     trace_generic_call_reject!();
+      |                     ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+12907 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+12917 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+12931 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+12938 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+12959 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13004 |                                     trace_generic_call_reject!();
+      |                                     ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13020 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13024 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13039 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13061 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13118 |                                     trace_generic_call_reject!();
+      |                                     ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13162 |                                     trace_generic_call_reject!();
+      |                                     ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13180 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13210 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13214 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13277 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13285 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13316 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13347 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13360 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13364 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13379 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13391 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13409 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13430 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13470 |                                 trace_generic_call_reject!();
+      |                                 ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13482 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13486 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13501 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13523 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13547 |                             trace_generic_call_reject!();
+      |                             ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13575 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13596 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13600 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13615 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `group_closed` in this scope
+     --> src/facade.rs:12857:21
+      |
+12857 |                     group_closed = false;
+      |                     ^^^^^^^^^^^^ not found in this scope
+...
+13641 |                         trace_generic_call_reject!();
+      |                         ---------------------------- in this macro invocation
+      |
+help: an identifier with the same name exists, but is not accessible due to macro hygiene
+     --> src/facade.rs:12897:21
+      |
+12897 |             let mut group_closed = component.order.is_some();
+      |                     ^^^^^^^^^^^^
+      = note: this error originates in the macro `trace_generic_call_reject` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+For more information about this error, try `rustc --explain E0425`.
+error: could not compile `jarde` (lib) due to 37 previous errors

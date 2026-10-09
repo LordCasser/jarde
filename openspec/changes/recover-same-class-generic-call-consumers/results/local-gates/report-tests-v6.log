@@ -1,0 +1,25 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0529]: expected an array or slice, found `Vec<ast::Expr>`
+     --> crates/jarde-java/src/report.rs:11529:33
+      |
+11529 | / ...                   [
+11530 | | ...                       Expr {
+11531 | | ...                           kind: ExprKind::Cast { ty, value },
+11532 | | ...                           ..
+11533 | | ...                       },
+11534 | | ...                   ],
+      | |_______________________^ pattern cannot match with input type `Vec<ast::Expr>`
+
+error[E0529]: expected an array or slice, found `Vec<ast::Expr>`
+     --> crates/jarde-java/src/report.rs:11700:37
+      |
+11700 | / ...                   [
+11701 | | ...                       Expr {
+11702 | | ...                           kind: ExprKind::Call { .. },
+11703 | | ...                           ..
+11704 | | ...                       },
+11705 | | ...                   ],
+      | |_______________________^ pattern cannot match with input type `Vec<ast::Expr>`
+
+For more information about this error, try `rustc --explain E0529`.
+error: could not compile `jarde-java` (lib test) due to 2 previous errors
