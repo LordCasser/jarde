@@ -1,0 +1,11 @@
+{
+  "cli_path": "/private/tmp/jarde-em18-candidate-v1-cli",
+  "cli_sha256": "0ebf4e6189c02d1d84072c9aeacd380303e71e6885f95408e054e8f843154f79",
+  "base_sha": "4fba93438acd444c4ce0f5d916a05f9af72caa28",
+  "source_sha256": {
+    "crates/jarde-java/src/build.rs": "3a1eb15d8563c074dab8303fbfb70a09e4e9bc0bc1ea54facb03f6a85d26a15f",
+    "crates/jarde-java/src/report.rs": "88f88541154ea4881f3dd0545b71660046e6ae0a3746f9aae1876cfe9188a3a8",
+    "src/facade.rs": "f00a75f147542e4663b10fafff8daec28275dcd07996d8c01436c41ba145a16b"
+  },
+  "focused_index_sha256": "73686e48b0ffbbb393126d8cedab9d6b0d3733a509d61afea5091e15cda8eb15"
+}

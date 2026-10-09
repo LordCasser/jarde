@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "p3_heterogeneous_array_initializers",
+    "--locked",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 101,
+  "reason": "test harness three partial-move E0382; production focused/build passed; logs retained",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "88eb81095f33c1f704cd9a65d603dc6a7417245dc7710ea59a7fcdd5870fbd34"
+}

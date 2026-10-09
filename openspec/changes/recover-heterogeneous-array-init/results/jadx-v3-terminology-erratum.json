@@ -1,0 +1,44 @@
+{
+  "schema": "jarde-em18-jadx-v3-terminology-erratum-v1",
+  "scope": "/private/tmp/jarde-em18-jadx-v3-reference",
+  "original_manifest": "manifest.json",
+  "original_manifest_sha256": "8c080d22464974d4274f80bdd70962f3d89581a1a5dcef11cfb2c6cb1273e3f0",
+  "manifest_modified": false,
+  "correction": {
+    "old_interpretation": "72/72 accepted",
+    "corrected_interpretation": "72/72 syntax observations only",
+    "detail": "The 72 count means the nine named methods in each of eight generated source sets retained array-initializer syntax. It does not mean semantic acceptance, successful behavior equivalence, or 72 passing cases."
+  },
+  "verified_outcome": {
+    "legs": 8,
+    "compile_exit_zero": 8,
+    "runtime_exit_zero": 8,
+    "syntax_observations": 72,
+    "syntax_observation_total": 72,
+    "complete_raw_stdout_stderr_matches": 4,
+    "complete_raw_stdout_stderr_total": 8,
+    "behavior_pass_legs": [
+      "factory/javac8/rename-flags-none",
+      "factory/javac23/rename-flags-none",
+      "direct/javac8/rename-flags-none",
+      "direct/javac23/rename-flags-none"
+    ],
+    "behavior_fail_legs": [
+      "factory/javac8/default",
+      "factory/javac23/default",
+      "direct/javac8/default",
+      "direct/javac23/default"
+    ],
+    "failure_observation": "Default-profile stdout differs because default-package classes are renamed into defpackage; the raw streams were retained and not normalized."
+  },
+  "files_manifest_correction": {
+    "superseded_file": "files-manifest.json",
+    "superseded_sha256_at_erratum_creation": "5631da9531d8f31ed8d4a5f3100ec02fb4fa5db7896b40fb570597bec9afe290",
+    "replacement_file": "files-manifest-v2.json",
+    "replacement_excludes": [
+      "files-manifest-v2.json",
+      "files-manifest.json"
+    ],
+    "replacement_self_omitted": true
+  }
+}

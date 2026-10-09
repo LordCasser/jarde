@@ -1,0 +1,238 @@
+{
+  "runner_sha256": "cd42ce9ff5ce67ce85b2c74ae838c966bf7731d4a6f7d961babccc6d346e3bce",
+  "ci_yml_sha256": "392cc33befd4802ff57a71b277318404c708c36cc4047115284cb0c972f3bbd9",
+  "stages": [
+    {
+      "name": "msrv-188",
+      "argv": [
+        "rustup",
+        "run",
+        "1.88.0",
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:40:59.728362+00:00",
+      "exit": 0,
+      "stdout": "msrv-188.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "msrv-188.stderr",
+      "stderr_sha256": "c27d10edbfe1be27fd6fb03c05f1f2a082665bb71de60673c01aae5083f2b3e8",
+      "free_bytes_after": 42114686976
+    },
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:41:58.301365+00:00",
+      "exit": 0,
+      "stdout": "fmt.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "fmt.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "free_bytes_after": 42114564096
+    },
+    {
+      "name": "ci-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:42:01.064257+00:00",
+      "exit": 0,
+      "stdout": "ci-clippy.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "ci-clippy.stderr",
+      "stderr_sha256": "7bd8deed9cd3aee3bc97084252db7c1b5e95ec37b4680d7c2414e72f383bb69d",
+      "free_bytes_after": 42011561984
+    },
+    {
+      "name": "ignored-p3",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_execution_comparison",
+        "--locked",
+        "--",
+        "--ignored"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:43:05.184081+00:00",
+      "exit": 0,
+      "stdout": "ignored-p3.stdout",
+      "stdout_sha256": "57d92de5f0bab6548e800fa7982225c62f872860f4d4c3d3ca39105944521823",
+      "stderr": "ignored-p3.stderr",
+      "stderr_sha256": "552d3d44f1874a566be9b4414d7bcfadc4c9342ab7fc85424821c05f2e1c0d20",
+      "free_bytes_after": 41288978432
+    },
+    {
+      "name": "ignored-constructor",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-cli",
+        "--test",
+        "json_cli",
+        "--locked",
+        "--",
+        "--ignored",
+        "--exact",
+        "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:45:13.151800+00:00",
+      "exit": 0,
+      "stdout": "ignored-constructor.stdout",
+      "stdout_sha256": "18d4f5754cbc76c6fb04ba4c1957ad43673c05236c175ac4d033a4b6b8bc30a0",
+      "stderr": "ignored-constructor.stderr",
+      "stderr_sha256": "b785dca2f08631246894075e7c46cee646d4bd0b4d9d3083ddb65bee9eea3c3a",
+      "free_bytes_after": 40336195584
+    },
+    {
+      "name": "strict-openspec",
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:45:57.713581+00:00",
+      "exit": 0,
+      "stdout": "strict-openspec.stdout",
+      "stdout_sha256": "f6eb6db84cad1aa938c218d45e89cf37e7c24dd7195ac47bd741c607b2a75ad5",
+      "stderr": "strict-openspec.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "free_bytes_after": 40335781888
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:45:58.243102+00:00",
+      "exit": 0,
+      "stdout": "diff-check.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "diff-check.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "free_bytes_after": 40335454208
+    }
+  ]
+}

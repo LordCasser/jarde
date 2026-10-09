@@ -1,0 +1,28 @@
+{
+  "schema": "em18-baseline-archive-v1",
+  "base_sha": "4fba93438acd444c4ce0f5d916a05f9af72caa28",
+  "source_hashes_at_base_sha": {
+    "crates/jarde-java/src/build.rs": "39880f309ece9dadae17414948b23086734e0bafebe28ff4f5ab02310d1978ef",
+    "crates/jarde-java/src/report.rs": "1af8be8a4f9c1c490f8e6c93254d2bc3315f708b7f5149a8c42a6ff4c18fa004",
+    "src/facade.rs": "f8737b3f0f6f9de137a263544c1f62feb21cca161bf77454f9328f76a03b24c6",
+    "crates/jarde-jvm/src/frame.rs": "40a72a278a2b08db107b2db597f6f578e3862125b9875a72fb4a64bd18c0ea41"
+  },
+  "archive": "openspec/changes/recover-heterogeneous-array-init/evidence/baseline-20261009.tar.gz",
+  "archive_sha256": "317fff979cd7c53cbcf44b09b4553e13d578eb44abdfdff977f8a7e34a7808d9",
+  "archive_bytes": 540815,
+  "original_evidence_root": "/private/tmp/jarde-em18-baseline-20261009",
+  "all_regular_files": 1225,
+  "primary_manifest_sha256": "16ca3cd8a08bce34b32d9f7a4bca6e6b44efb2abd94a23cf260b8f8388cc9705",
+  "command_complete_addendum_sha256": "6276e7c987ade43de10340abad9bb3788f2d6f180d2fa51e499da0bff03fc02c",
+  "reference_checkout_jadx_manifest_sha256": "61365ed13d9dd7e86ac513c9620c155f520ccf95e8aec058339df3a8a76a7524",
+  "valid_distinct_legs": 18,
+  "jarde_behavior_passes": 0,
+  "homebrew_jadx_behavior_passes": 18,
+  "reference_checkout_jadx_behavior_passes": 18,
+  "notes": [
+    "frozen CT replay counted separately from fresh source compiler legs",
+    "invalid first BigDecimal source, wrong initial JADX entrypoint, incomplete addendum01 ledger and partial local runner are retained; none counted as successful original evidence",
+    "initial patrol summary compiled+ran four Jarde legs but these lose stdout; authoritative behavioral count is zero",
+    "root audit v1 verifier issues were corrected in v2 without altering evidence"
+  ]
+}

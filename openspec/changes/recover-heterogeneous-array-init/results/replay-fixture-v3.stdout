@@ -1,0 +1,4 @@
+fixture/factory/javac8 0 True True
+fixture/factory/javac23 0 True True
+fixture/direct/javac8 1 False False
+fixture/direct/javac23 1 False False

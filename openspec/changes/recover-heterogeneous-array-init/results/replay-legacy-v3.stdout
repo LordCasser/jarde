@@ -1,0 +1,158 @@
+[
+  {
+    "jdk": "javac8",
+    "side": "jarde",
+    "source_count": 1,
+    "compile_exit": 0,
+    "runtime": {
+      "label": "javac8-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/javac8-jarde-classes",
+        "V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-run.stdout",
+      "stderr": "logs/javac8-jarde-run.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original_run": {
+      "label": "javac8-original",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/original-classes",
+        "V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-original.stdout",
+      "stderr": "logs/javac8-original.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "accepted": true
+  },
+  {
+    "jdk": "javac8",
+    "side": "jadx",
+    "source_count": 1,
+    "compile_exit": 0,
+    "runtime": {
+      "label": "javac8-jadx-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/javac8-jadx-classes",
+        "defpackage.V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-run.stdout",
+      "stderr": "logs/javac8-jadx-run.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original_run": {
+      "label": "javac8-original",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/original-classes",
+        "V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-original.stdout",
+      "stderr": "logs/javac8-original.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "accepted": true
+  },
+  {
+    "jdk": "javac23",
+    "side": "jarde",
+    "source_count": 1,
+    "compile_exit": 0,
+    "runtime": {
+      "label": "javac23-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/javac23-jarde-classes",
+        "V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-run.stdout",
+      "stderr": "logs/javac23-jarde-run.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original_run": {
+      "label": "javac23-original",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/original-classes",
+        "V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-original.stdout",
+      "stderr": "logs/javac23-original.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "accepted": true
+  },
+  {
+    "jdk": "javac23",
+    "side": "jadx",
+    "source_count": 1,
+    "compile_exit": 0,
+    "runtime": {
+      "label": "javac23-jadx-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/javac23-jadx-classes",
+        "defpackage.V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-run.stdout",
+      "stderr": "logs/javac23-jadx-run.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original_run": {
+      "label": "javac23-original",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/legacy-v3-root/original-classes",
+        "V3"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-original.stdout",
+      "stderr": "logs/javac23-original.stderr",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "accepted": true
+  }
+]

@@ -1,0 +1,4 @@
+# Raw captured terminal streams retain their original bytes. Source/scripts remain checked.
+*.stdout -whitespace
+*.stderr -whitespace
+*.log -whitespace

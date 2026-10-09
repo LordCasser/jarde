@@ -1,0 +1,14 @@
+{
+  "schema": "root-candidate-v1-replay-v2-verification",
+  "manifest_sha256": "7f401c2534232dc66448868a9399448daab0e66a9d9d138ccde217b23a86f90e",
+  "commands": 82,
+  "files": 256,
+  "issues": [],
+  "baseline_accepted": 8,
+  "baseline_distinct": 18,
+  "fixture_accepted": 0,
+  "fixture_distinct": 4,
+  "driver_v1_aborted": "bad assumed addendum jar basename; source and partial output preserved; v2 paths from exact validated local-JADX input ledger",
+  "types_all_factory_target_methods_without_refusal": true,
+  "factory_observe_has_unrelated_arrayread_conditional_refusal": true
+}

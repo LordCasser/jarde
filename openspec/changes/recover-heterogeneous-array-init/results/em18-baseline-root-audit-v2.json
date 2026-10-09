@@ -1,0 +1,145 @@
+{
+  "schema": "root-em18-baseline-audit-v2",
+  "runner_sha256": "1dc4d5f92992c7af3cdf03f7adea432ef7edf00f07d0c7dc08a4c45c25e3287d",
+  "manifests": [
+    {
+      "manifest": "/private/tmp/jarde-em18-baseline-20261009/manifest.json",
+      "sha256": "16ca3cd8a08bce34b32d9f7a4bca6e6b44efb2abd94a23cf260b8f8388cc9705",
+      "files": 512,
+      "commands": 156
+    },
+    {
+      "manifest": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/manifest.json",
+      "sha256": "6276e7c987ade43de10340abad9bb3788f2d6f180d2fa51e499da0bff03fc02c",
+      "files": 111,
+      "commands": 36
+    },
+    {
+      "manifest": "/private/tmp/jarde-em18-baseline-20261009/jadx-runtime-recheck-manifest-v2.json",
+      "sha256": "598541a274b95e57c33a483dbee2e69ed199b827bb81b33f4e4108bf7bc0ff24",
+      "files": 0,
+      "commands": 22
+    }
+  ],
+  "issues": [],
+  "comparisons": [
+    {
+      "family": "ct-legacy",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "ct-legacy",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "boxed-number-six",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "boxed-number-six",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "string-builder-charsequence",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "string-builder-charsequence",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "arraylist-hashset-collection",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "arraylist-hashset-collection",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "exceptions-throwable",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "exceptions-throwable",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "nested-number-array",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "nested-number-array",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "same-jar-derived-base",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "same-jar-derived-base",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "ct-legacy-frozen",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "ct-legacy-frozen",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac8",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    },
+    {
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac23",
+      "jadx_matches_original": true,
+      "jarde_matches_original": false
+    }
+  ],
+  "valid_legs": 18,
+  "jadx_stream_matches": 18,
+  "jarde_stream_matches": 0,
+  "jadx_cli_is_homebrew_not_reference_checkout": true,
+  "notes": [
+    "v1 verifier wrongly applied compile-only flags to javac -version and mismatched addendum aliases; preserved v1 findings are verifier errors, corrected here",
+    "initial BigDecimal source failed compilation and is excluded; additive legal control used",
+    "original wrong JADX entrypoint failures retained; recheck actual package-derived entrypoint used",
+    "frozen CT legs are runtime replays of same bytes, distinct from fresh compiler legs"
+  ]
+}

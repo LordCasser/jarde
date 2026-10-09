@@ -1,0 +1,8 @@
+
+running 3 tests
+test every_bare_and_nested_position_presentation_is_byte_identical ... ok
+test the_patrol_anchors_present_the_varargs_array_argument ... ok
+test the_variant_chains_present_and_the_negatives_stay_quoted ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

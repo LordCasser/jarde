@@ -1,18 +1,17 @@
-## 1. 取证与基线（root 已完成大半）
+## 1. 取证与架构
 
-- [x] 1.0 判别（同构恢复/异构拒/jadx 有解/字节码事实 anewarray Number + Integer/Long 元素）——实测归档。（root 已完成）
-- [ ] 1.1 定位拒绝发出处：拒绝文本 "the array initializer element … while the array component" 的代码位置；确认组件类型与元素类型的现有事实载体；转录存证据。
-- [ ] 1.2 重验基线：主线二进制渲染 `CT`（`cov` 拒、`up`/`io`/`io2` 恢复）；负例探针（非法赋值方向）现状拒绝记录。
-- [ ] 1.3 冻结 fixture：`CT`（javac23 `--release 8` 腿）+ `CT8`（真 javac 8 腿）入 `tests/fixtures/`，README 记编译命令与 SHA。
+- [x] 1.0 历史巡查冻结 CT 的 anewarray Number 与 Integer/Long store 及同构锚；验证保留原始 Java/class/hash 证据，不把历史源码片段当作完整行为验收。
+- [x] 1.1 固化当前 producer/consumer、现有平台谓词、Runtime header walk、store SSA 与 JADX 效果边界审计；验证当前文件与报告相符，不使用过时 Atlas 行号。
+- [x] 1.2 归档双 javac 完整 baseline、合法修正版和冻结 CT.class additive 重放；root 校验全部文件/双流 hash、隔离 argv、完整 source 集及实际输出，不以 exit 0 计成功。
 
-## 2. 实现
+## 2. 实现与边界
 
-- [ ] 2.1 按 1.1 结论把元素-组件一致性判据改为**单向赋值兼容**（决策 1）：同型或组件为元素超类即接受；降向与无关节仍拒。
-- [ ] 2.2 呈现按仓库既有数组初始化约定（决策 3 的 Open Question 2），测试钉死。
+- [x] 2.1 初始化器复用所有现有标量/数组兼容事实并支持已知引用关系的等秩提升；focused 测试证明类型方向、primitive/rank 边界和无元素 cast，调用参数旧行为不变。
+- [x] 2.2 在同一 snapshot producer 为真实 aastore source/component 生成准确 BCI 证明，支持标量和等秩自有类数组，修正载体注释；验证 direct/两跳/interface、非零 stack prefix 与错位/缺失/深度/预算控制。
+- [x] 2.3 添加双 javac factory-element 完整正例与独立 direct-new 未覆盖控制，保留 CT 与所有自有辅助类；验证同型/null/Object 与效果次序/非法方向零回退，README 记命令及 SHA。
 
-## 3. 验证与验收
+## 3. 独立验收
 
-- [ ] 3.1 主锚：`cov` 恢复；整类渲染 `javac --release 8` exit 0、`main` 输出与原 class 一致（fixture 双腿）。
-- [ ] 3.2 零回退：`up`/`io`/`io2` 逐字节不变；负例（非法赋值方向）仍拒；corpus 双腿扫描差异类仅为异构初始化形。
-- [ ] 3.3 门禁全量（基线以合并态为准；flake 家族单测复跑两轮判定）+ fmt + CI-exact clippy + openspec strict + `git diff --check` + 再生 fingerprint。
-- [ ] 3.4 root 独立复核：判据方向正确（赋值兼容而非放宽）、零回退实测；关闭 summary.md 登记行。（留 root）
+- [x] 3.1 root 构建并冻结 candidate CLI/source/hash，在同一 baseline 输入上重放全部正例与负例；全部生成类隔离编译并 -Xverify:all 运行，与原程序/JADX 双流对比，所有实际失败保留。
+- [x] 3.2 完成双 seed workspace、MSRV、fmt、CI-exact clippy、必要 ignored gate、strict OpenSpec、fingerprint/P5预算与 diff check；每项保存实际 exit/双流，不因预计通过打勾。
+- [ ] 3.3 root 对抗性审查并核对所有上述契约后更新 EM-18 账本和 handoff，提交推送并确认确切 SHA 的实际 CI；完整家族未通过或缺证据时不得关闭登记行。

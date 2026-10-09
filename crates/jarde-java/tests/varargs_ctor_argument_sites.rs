@@ -220,12 +220,20 @@ fn the_variant_chains_present_and_the_negatives_stay_quoted() {
             "{name} presents the complete chain:\n{text}"
         );
     }
-    // The mixed-type varargs call keeps the refusal the bare positions keep: the array element
-    // compatibility boundary is `array@1`'s, not the argument position's.
+    // EM-18 now proves the heterogeneous Number[] initializer's platform assignment, completing
+    // this mixed-type varargs chain. The element and array proofs remain separate boundaries.
     let mixed = recovered_text(V3, "viaMixed", "()I", 0);
+    assert_eq!(
+        mixed,
+        "// @method viaMixed()I\n// @declaration a static method of `V3`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    return new java.util.ArrayList((java.util.Collection) java.util.Arrays.asList((java.lang.Object[]) new java.lang.Number[]{java.lang.Integer.valueOf(1), java.lang.Long.valueOf(2L), java.lang.Double.valueOf(0x1.8000000000000p1d)})).size();\n}\n"
+    );
     assert!(
-        mixed.contains("@bytecode") && mixed.contains("array component is `java.lang.Number`"),
-        "the mixed-boxing chain keeps its element-compatibility refusal:\n{mixed}"
+        !mixed.contains("@bytecode"),
+        "the whole mixed chain recovers:\n{mixed}"
+    );
+    assert!(
+        !mixed.contains("jarde_refused_body"),
+        "the whole mixed chain has no refusal marker:\n{mixed}"
     );
     // A store inside the element run and an array that escapes to a second purpose keep the
     // construction's refusal: the body quotes bytecode and writes no partial `new` expression.

@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "seconds": 1.989955186843872,
+  "free_bytes_before": 21042405376,
+  "free_bytes_after": 40667676672,
+  "target_exists_after": false,
+  "preserved_cli_sha256": "0ebf4e6189c02d1d84072c9aeacd380303e71e6885f95408e054e8f843154f79",
+  "streams": {
+    "stdout": {
+      "path": "cargo-clean-mid-gates.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "cargo-clean-mid-gates.stderr",
+      "sha256": "5e8ba3d30f885254a5d386eb08604540ca285ac9340ebeb59dca772c22d9e496"
+    }
+  }
+}

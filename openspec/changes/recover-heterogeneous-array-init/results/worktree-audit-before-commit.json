@@ -1,0 +1,142 @@
+{
+  "rows": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "4fba93438acd444c4ce0f5d916a05f9af72caa28",
+      "branch": "refs/heads/main",
+      "detached": false,
+      "status": " M crates/jarde-java/src/build.rs\n M crates/jarde-java/src/report.rs\n M crates/jarde-reader/src/classfile.rs\n M handoff.md\n M openspec/changes/recover-heterogeneous-array-init/design.md\n M openspec/changes/recover-heterogeneous-array-init/proposal.md\n M openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md\n M openspec/changes/recover-heterogeneous-array-init/tasks.md\n M openspec/changes/split-proved-reference-slot-lifetimes/tasks.md\n M openspec/changes/split-proved-reference-slot-lifetimes/verification-root.md\n M src/facade.rs\n M tests/fixtures/corpus-fingerprint.json\n?? openspec/changes/compose-constructed-reference-array-elements/\n?? openspec/changes/recover-heterogeneous-array-init/evidence/\n?? openspec/changes/recover-heterogeneous-array-init/results/\n?? openspec/changes/split-proved-reference-slot-lifetimes/results/ci-code-sha-4fba93438-success.json\n?? tests/fixtures/p3-heterogeneous-array-initializers-v3/\n?? tests/p3_heterogeneous_array_initializers.rs\n",
+      "main_ancestor": true,
+      "target_exists": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "main_ancestor": true,
+      "target_exists": false
+    }
+  ],
+  "auxiliary_count": 14,
+  "aux_all_detached_clean_ancestors_without_target": true,
+  "branches": "* main                4fba93438 fix(java): split proved reference-slot lifetimes\n  remotes/origin/HEAD -> origin/main\n  remotes/origin/main 4fba93438 fix(java): split proved reference-slot lifetimes\n"
+}

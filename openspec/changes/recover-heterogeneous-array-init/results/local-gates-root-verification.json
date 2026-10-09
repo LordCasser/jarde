@@ -1,0 +1,153 @@
+{
+  "scope": "Final successful local gates; retained first census failure explicitly excluded from acceptance",
+  "checks": [
+    {
+      "index": "focused-v1/index.json",
+      "name": "command-0",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "focused-v1/index.json",
+      "name": "command-1",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "focused-v1/index.json",
+      "name": "command-2",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "integration-census-v2/index.json",
+      "name": "focused-integration-v5",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "corpus-gates-v1/index.json",
+      "name": "reader-census-v2",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "corpus-gates-v1/index.json",
+      "name": "fingerprint-regenerate",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "corpus-gates-v1/index.json",
+      "name": "fingerprint-verify",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "corpus-gates-v1/index.json",
+      "name": "p5-benchmark-v1",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v2/index.json",
+      "name": "focused-varargs",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v2/index.json",
+      "name": "workspace-seed1",
+      "exit": 0,
+      "raw_stream_hashes_match": true,
+      "targets": 350,
+      "test_counts": [
+        3319,
+        0,
+        93
+      ]
+    },
+    {
+      "index": "gates-v2/index.json",
+      "name": "workspace-seed2",
+      "exit": 0,
+      "raw_stream_hashes_match": true,
+      "targets": 350,
+      "test_counts": [
+        3319,
+        0,
+        93
+      ]
+    },
+    {
+      "index": "gates-v3/index.json",
+      "name": "msrv-188",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v3/index.json",
+      "name": "fmt",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v3/index.json",
+      "name": "ci-clippy",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v3/index.json",
+      "name": "ignored-p3",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v3/index.json",
+      "name": "ignored-constructor",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v3/index.json",
+      "name": "strict-openspec",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    },
+    {
+      "index": "gates-v3/index.json",
+      "name": "diff-check",
+      "exit": 0,
+      "raw_stream_hashes_match": true
+    }
+  ],
+  "retained_historical_failures": [
+    {
+      "index": "integration-census-v2/index.json",
+      "name": "reader-census-v1",
+      "exit": 101,
+      "raw_stream_hashes_match": true
+    }
+  ],
+  "issues": [],
+  "hash_checked_streams": 38,
+  "required_stages": [
+    "ci-clippy",
+    "diff-check",
+    "fingerprint-regenerate",
+    "fingerprint-verify",
+    "fmt",
+    "focused-integration-v5",
+    "focused-varargs",
+    "ignored-constructor",
+    "ignored-p3",
+    "msrv-188",
+    "p5-benchmark-v1",
+    "reader-census-v2",
+    "strict-openspec",
+    "workspace-seed1",
+    "workspace-seed2"
+  ],
+  "missing_required_stages": []
+}

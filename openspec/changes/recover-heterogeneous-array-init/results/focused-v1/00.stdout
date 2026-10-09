@@ -1,0 +1,16 @@
+
+running 11 tests
+test build::tests::initializer_reference_widening_reuses_scalar_and_equal_rank_array_facts ... ok
+test build::tests::initializer_snapshot_widening_requires_the_exact_store_and_full_type_pair ... ok
+test emit::tests::a_deeply_nested_initializer_return_is_suppressed_at_every_depth ... ok
+test emit::tests::a_nested_return_is_suppressed_when_the_static_initializer_tail_is_projected ... ok
+test emit::tests::a_static_initializer_projection_keeps_budget_stop_atomic ... ok
+test emit::tests::a_static_initializer_tail_return_closes_the_block_and_keeps_its_origin ... ok
+test emit::tests::an_empty_static_initializer_has_no_statement_but_maps_its_terminator ... ok
+test emit::tests::an_initializer_return_with_a_value_stays_an_ordinary_statement ... ok
+test emit::tests::non_initializer_returns_are_not_projected ... ok
+test report::class_initializer_candidate_tests::candidate_expression_charging_includes_a_member_creation_qualifier ... ok
+test report::class_initializer_candidate_tests::candidate_expression_charging_stops_at_the_shared_value_depth_bound ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 299 filtered out; finished in 0.00s
+

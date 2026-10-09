@@ -1,0 +1,11 @@
+{
+  "archive": "openspec/changes/recover-heterogeneous-array-init/evidence/jadx-fixture-v3-reference.tar.gz",
+  "sha256": "7d828c23041fddbb9b895bd45c0683e6b3c06c17dde016ea6f3da24fcb6124fc",
+  "bytes": 78261,
+  "regular_files": 213,
+  "original_manifest_sha256": "8c080d22464974d4274f80bdd70962f3d89581a1a5dcef11cfb2c6cb1273e3f0",
+  "root_verification_sha256": "353a225a9894a6af2e812f8b1928957f70a87948160eb4e50ed63e4ecea6cf9c",
+  "syntax_observations": 72,
+  "full_semantic_accepted": 4,
+  "total_profile_legs": 8
+}

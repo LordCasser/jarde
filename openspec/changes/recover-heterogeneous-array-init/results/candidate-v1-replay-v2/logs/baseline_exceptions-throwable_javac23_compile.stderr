@@ -1,0 +1,13 @@
+警告: [options] 未与 -source 8 一起设置引导类路径
+  不设置引导类路径可能会导致类文件无法在 JDK 8 上运行
+    建议使用 --release 8 而不是 -source 8 -target 8，因为它会自动设置引导类路径
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/baseline/exceptions-throwable/javac23/sources/Main.java:39: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 Main
+1 个错误
+4 个警告

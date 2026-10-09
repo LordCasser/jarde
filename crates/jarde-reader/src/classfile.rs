@@ -12212,7 +12212,9 @@ mod tests {
             // The 2026-10-09 raw-receiver-field-selection standalone accessor guard adds one
             // class and three straight-line Code bodies; the other inputs are frozen jars.
             // Forty-two reference-slot lifetime fixtures add 132 bodies, one handler and 33 branches.
-            (1011, 4296, 457, 2693, 8),
+            // EM-18 v3 factory/direct families add 24 classes, 172 Code bodies and eight
+            // branch targets (the two complete observers per compiler), with no handlers.
+            (1035, 4468, 457, 2701, 8),
             "fixture population changed: re-measure these counts"
         );
     }

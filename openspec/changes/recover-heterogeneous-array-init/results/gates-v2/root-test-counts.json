@@ -1,0 +1,14 @@
+{
+  "workspace-seed1": {
+    "targets": 350,
+    "passed": 3319,
+    "failed": 0,
+    "ignored": 93
+  },
+  "workspace-seed2": {
+    "targets": 350,
+    "passed": 3319,
+    "failed": 0,
+    "ignored": 93
+  }
+}

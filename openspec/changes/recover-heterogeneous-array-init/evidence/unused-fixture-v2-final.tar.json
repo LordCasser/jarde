@@ -1,0 +1,7 @@
+{
+  "reason": "canonical Rust tests only use sibling v3; unused v2 was preserved before removal to avoid duplicate reader/fingerprint census",
+  "original_root": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers",
+  "archive": "openspec/changes/recover-heterogeneous-array-init/evidence/unused-fixture-v2-final.tar.gz",
+  "sha256": "27abdf2e8bd62122ad3ba0be5c42cec530ab3efa3553951fd8df3aae8dd41bdf",
+  "files": 117
+}

@@ -1,0 +1,3 @@
+# Preserve raw terminal streams; source and scripts retain whitespace checks.
+*.stdout -whitespace
+*.stderr -whitespace

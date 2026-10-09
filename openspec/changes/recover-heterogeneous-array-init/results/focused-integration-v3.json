@@ -1,0 +1,22 @@
+{
+  "exit": 101,
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "p3_heterogeneous_array_initializers",
+    "--locked",
+    "--",
+    "--nocapture"
+  ],
+  "streams": {
+    "stdout": {
+      "path": "focused-integration-v3.stdout",
+      "sha256": "970787660dafc3a7aaab6cfd6943edfeb64446808e88e557665c7cfca14c546e"
+    },
+    "stderr": {
+      "path": "focused-integration-v3.stderr",
+      "sha256": "26037e6e836f9192acabd02e5478fbe8b571047b8cf483e56a3b1de51249d545"
+    }
+  }
+}

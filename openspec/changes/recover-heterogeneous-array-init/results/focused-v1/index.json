@@ -1,0 +1,61 @@
+{
+  "runner_sha256": "f500097fa6cad49e311eb2c958cb35cfe6c1278a4f4b50b586a3e3bb1085e095",
+  "started_utc": "2026-10-09T10:34:03Z",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "initializer_",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 37.7551419169904,
+      "stdout": "00.stdout",
+      "stderr": "00.stderr",
+      "stdout_sha256": "5cd5a7ff27997a41b1dc957843715b601f9e9d7d6f69f1ce83749d937aded403",
+      "stderr_sha256": "58c0bb7f86a8d57d4348347dfa5b3b94fed74a82bded7cdd133528391ccac2a2"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--lib",
+        "snapshot_hierarchy_tests",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 48.86242633400252,
+      "stdout": "01.stdout",
+      "stderr": "01.stderr",
+      "stdout_sha256": "5dffe625477468723a463f1b99f28470c53b38644756fab04038b67d413c1489",
+      "stderr_sha256": "2009d612fef85fb1a51d6283abb5fa4d43d7b89fae6789287475703c2f8d5c18"
+    },
+    {
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 46.72988791699754,
+      "stdout": "02.stdout",
+      "stderr": "02.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3019a884214fd97fb97702865a04ef1449d3353813a375de032c93fdf92041e6"
+    }
+  ]
+}

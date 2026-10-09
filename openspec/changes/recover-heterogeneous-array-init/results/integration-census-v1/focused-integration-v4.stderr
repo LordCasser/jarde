@@ -1,0 +1,8 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.10s
+     Running tests/p3_heterogeneous_array_initializers.rs (target/debug/deps/p3_heterogeneous_array_initializers-6281094165746ea7)
+
+thread 'class_source_budget_and_cancellation_report_their_exact_stops' (11010533) panicked at tests/p3_heterogeneous_array_initializers.rs:912:5:
+the AnalysisSteps stop remains attached to a body
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `--test p3_heterogeneous_array_initializers`

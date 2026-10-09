@@ -1,0 +1,16 @@
+{
+  "schema": "root-local-jadx-em18-audit-v1",
+  "manifest_sha256": "61365ed13d9dd7e86ac513c9620c155f520ccf95e8aec058339df3a8a76a7524",
+  "files": 219,
+  "commands": 61,
+  "issues": [],
+  "summary": {
+    "distinct_legs": 18,
+    "jadx_exit0": 18,
+    "generated_sources_compile_exit0": 18,
+    "xverify_runtime_exit0": 18,
+    "stdout_exact_matches_original": 18,
+    "stderr_exact_matches_original": 18,
+    "behavioral_exact_stream_matches": 18
+  }
+}

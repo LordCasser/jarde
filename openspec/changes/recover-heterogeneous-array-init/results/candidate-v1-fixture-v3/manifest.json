@@ -1,0 +1,1583 @@
+{
+  "schema": "root-em18-candidate-v1-fixture-v3",
+  "runner_sha256": "bd703a780d5dbbdb00b57bdbeb5be52ae8bd56f68425736a52315ec1ee3b651d",
+  "cli_sha256": "0ebf4e6189c02d1d84072c9aeacd380303e71e6885f95408e054e8f843154f79",
+  "cases": [
+    {
+      "dataset": "fixture",
+      "family": "factory",
+      "leg": "javac8",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac8.jar",
+      "input_jar_sha256": "4e5cd1e4c3a9c2504087e811eb5ea25f9b51615d873b220d49ef22216067e2c6",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Base",
+          "source_sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac8_render-Base.stdout"
+        },
+        {
+          "class": "DerivedA",
+          "source_sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac8_render-DerivedA.stdout"
+        },
+        {
+          "class": "DerivedB",
+          "source_sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac8_render-DerivedB.stdout"
+        },
+        {
+          "class": "LocalInterface",
+          "source_sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac8_render-LocalInterface.stdout"
+        },
+        {
+          "class": "Main",
+          "source_sha256": "15cbcbd8cd0f4844c4735b8be922f0778f9d4f0456811f910b0ab4e209a9543e",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac8_render-Main.stdout"
+        },
+        {
+          "class": "Mid",
+          "source_sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac8_render-Mid.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "fixture/factory/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8",
+        "exit": 0,
+        "stdout": "logs/fixture_factory_javac8_run.stdout",
+        "stderr": "logs/fixture_factory_javac8_run.stderr",
+        "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "factory",
+      "leg": "javac23",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac23.jar",
+      "input_jar_sha256": "c990420122e6c7b38973e35700096e7fab8fc78becf9779ff97cfcbb52aec93d",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Base",
+          "source_sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac23_render-Base.stdout"
+        },
+        {
+          "class": "DerivedA",
+          "source_sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac23_render-DerivedA.stdout"
+        },
+        {
+          "class": "DerivedB",
+          "source_sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac23_render-DerivedB.stdout"
+        },
+        {
+          "class": "LocalInterface",
+          "source_sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac23_render-LocalInterface.stdout"
+        },
+        {
+          "class": "Main",
+          "source_sha256": "15cbcbd8cd0f4844c4735b8be922f0778f9d4f0456811f910b0ab4e209a9543e",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac23_render-Main.stdout"
+        },
+        {
+          "class": "Mid",
+          "source_sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_factory_javac23_render-Mid.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "fixture/factory/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23",
+        "exit": 0,
+        "stdout": "logs/fixture_factory_javac23_run.stdout",
+        "stderr": "logs/fixture_factory_javac23_run.stderr",
+        "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "direct",
+      "leg": "javac8",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac8.jar",
+      "input_jar_sha256": "78edae441cc1114e96c34feee027f862967adcf7bf606427e408bfbc0caf3788",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Base",
+          "source_sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac8_render-Base.stdout"
+        },
+        {
+          "class": "DerivedA",
+          "source_sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac8_render-DerivedA.stdout"
+        },
+        {
+          "class": "DerivedB",
+          "source_sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac8_render-DerivedB.stdout"
+        },
+        {
+          "class": "LocalInterface",
+          "source_sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac8_render-LocalInterface.stdout"
+        },
+        {
+          "class": "Main",
+          "source_sha256": "97fd0d547c73372dad5594b0345e79a3eb07c83cb67f81fa2185eade5b4eedcb",
+          "bytecode_marker": true,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac8_render-Main.stdout"
+        },
+        {
+          "class": "Mid",
+          "source_sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac8_render-Mid.stdout"
+        }
+      ],
+      "compile_exit": 1,
+      "runtime": null,
+      "matches_original_streams": false,
+      "all_sources_without_refusal": false,
+      "accepted": false
+    },
+    {
+      "dataset": "fixture",
+      "family": "direct",
+      "leg": "javac23",
+      "input_jar": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac23.jar",
+      "input_jar_sha256": "edfce48db43b09de0df8ded0d3b29dfe51d73e2714b8d2e6bdfc301614a8bf79",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Base",
+          "source_sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac23_render-Base.stdout"
+        },
+        {
+          "class": "DerivedA",
+          "source_sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac23_render-DerivedA.stdout"
+        },
+        {
+          "class": "DerivedB",
+          "source_sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac23_render-DerivedB.stdout"
+        },
+        {
+          "class": "LocalInterface",
+          "source_sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac23_render-LocalInterface.stdout"
+        },
+        {
+          "class": "Main",
+          "source_sha256": "97fd0d547c73372dad5594b0345e79a3eb07c83cb67f81fa2185eade5b4eedcb",
+          "bytecode_marker": true,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac23_render-Main.stdout"
+        },
+        {
+          "class": "Mid",
+          "source_sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/fixture_direct_javac23_render-Mid.stdout"
+        }
+      ],
+      "compile_exit": 1,
+      "runtime": null,
+      "matches_original_streams": false,
+      "all_sources_without_refusal": false,
+      "accepted": false
+    }
+  ],
+  "commands": [
+    {
+      "label": "fixture/factory/javac8/render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac8.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_render-Base.stdout",
+      "stderr": "logs/fixture_factory_javac8_render-Base.stderr",
+      "stdout_sha256": "b859ec8903f8764d51f00e91728ccd55cd1c58544c3aaa799d82e4c245794300",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac8/render-DerivedA",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac8.jar",
+        "--class",
+        "DerivedA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_render-DerivedA.stdout",
+      "stderr": "logs/fixture_factory_javac8_render-DerivedA.stderr",
+      "stdout_sha256": "09f816a116986fae25dbd5a72b4abd898a344f4d512c6b17f4de2757edd81e50",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac8/render-DerivedB",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac8.jar",
+        "--class",
+        "DerivedB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_render-DerivedB.stdout",
+      "stderr": "logs/fixture_factory_javac8_render-DerivedB.stderr",
+      "stdout_sha256": "1e764fc17b3b80d730b47677cd8265315efd95deb925ccda74186f037fbbd80e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac8/render-LocalInterface",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac8.jar",
+        "--class",
+        "LocalInterface",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_render-LocalInterface.stdout",
+      "stderr": "logs/fixture_factory_javac8_render-LocalInterface.stderr",
+      "stdout_sha256": "38ad48fcfeb801836bcc4b348270bb535f288ada97bc1ad038a239d588585916",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac8.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_render-Main.stdout",
+      "stderr": "logs/fixture_factory_javac8_render-Main.stderr",
+      "stdout_sha256": "b86c8b1d2da9f7f4933afd2ec4c6ba0c7382a7404450bba50d24c279a6af6e94",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac8/render-Mid",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac8.jar",
+        "--class",
+        "Mid",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_render-Mid.stdout",
+      "stderr": "logs/fixture_factory_javac8_render-Mid.stderr",
+      "stdout_sha256": "263dd41d76da97c8e428589204e6eba0739b888df927370f52c3be92b6964001",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/sources/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/sources/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/sources/Mid.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_compile.stdout",
+      "stderr": "logs/fixture_factory_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2860afcccdebb10c0193ad08409a3171da5371588075ab5d2e64bd043fe84261"
+    },
+    {
+      "label": "fixture/factory/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac8",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac8_run.stdout",
+      "stderr": "logs/fixture_factory_javac8_run.stderr",
+      "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac23/render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac23.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_render-Base.stdout",
+      "stderr": "logs/fixture_factory_javac23_render-Base.stderr",
+      "stdout_sha256": "4f186bd95e937cfdc573b4e6320acc1b24f607e42e6ade16d3aaf69a71f43529",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac23/render-DerivedA",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac23.jar",
+        "--class",
+        "DerivedA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_render-DerivedA.stdout",
+      "stderr": "logs/fixture_factory_javac23_render-DerivedA.stderr",
+      "stdout_sha256": "666b93db9384052fb0f73579448901a67942bcb7741eafb587a3f70d5202296a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac23/render-DerivedB",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac23.jar",
+        "--class",
+        "DerivedB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_render-DerivedB.stdout",
+      "stderr": "logs/fixture_factory_javac23_render-DerivedB.stderr",
+      "stdout_sha256": "855f3a5043404478dd946daa23053e68181b1ad434a12ecebebbec95caf38891",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac23/render-LocalInterface",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac23.jar",
+        "--class",
+        "LocalInterface",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_render-LocalInterface.stdout",
+      "stderr": "logs/fixture_factory_javac23_render-LocalInterface.stderr",
+      "stdout_sha256": "fd37eddb9fa647b8ace39e09a2c4ec8d6361531959165bdcde857e155f61b241",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac23.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_render-Main.stdout",
+      "stderr": "logs/fixture_factory_javac23_render-Main.stderr",
+      "stdout_sha256": "17a6e255cc98e3fcea4954bcf00238ec12e433d75d826fb45a7ad6eb2bef7357",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac23/render-Mid",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/factory-javac23.jar",
+        "--class",
+        "Mid",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_render-Mid.stdout",
+      "stderr": "logs/fixture_factory_javac23_render-Mid.stderr",
+      "stdout_sha256": "d3e8d9a1e5222760887e8e8d3827a7ea9207631556faa7352504eb005178776b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/factory/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/sources/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/sources/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/sources/Mid.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_compile.stdout",
+      "stderr": "logs/fixture_factory_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d62be494992cb6d5921f8f109923b12269c5f49443e1e172391322a9cf6bb163"
+    },
+    {
+      "label": "fixture/factory/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/factory/javac23",
+      "exit": 0,
+      "stdout": "logs/fixture_factory_javac23_run.stdout",
+      "stderr": "logs/fixture_factory_javac23_run.stderr",
+      "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac8/render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac8.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac8_render-Base.stdout",
+      "stderr": "logs/fixture_direct_javac8_render-Base.stderr",
+      "stdout_sha256": "fdab74c6c43804e0f8981247459ec29d079d8b4730ead8b450d23a296dad945d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac8/render-DerivedA",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac8.jar",
+        "--class",
+        "DerivedA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac8_render-DerivedA.stdout",
+      "stderr": "logs/fixture_direct_javac8_render-DerivedA.stderr",
+      "stdout_sha256": "9015430c4f694075cfc73381177f64a2d433600111cfeb2b00d02bc6d02b4b1e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac8/render-DerivedB",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac8.jar",
+        "--class",
+        "DerivedB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac8_render-DerivedB.stdout",
+      "stderr": "logs/fixture_direct_javac8_render-DerivedB.stderr",
+      "stdout_sha256": "34027d9a74e7bc37ee9de393c375eeb91a55adbc88eb88ac2de51b5091e69ebe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac8/render-LocalInterface",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac8.jar",
+        "--class",
+        "LocalInterface",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac8_render-LocalInterface.stdout",
+      "stderr": "logs/fixture_direct_javac8_render-LocalInterface.stderr",
+      "stdout_sha256": "25e21fa5567c50410d99e279e83d69f1907213a7bf1bef4bac0aea5da78bfec6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac8.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac8_render-Main.stdout",
+      "stderr": "logs/fixture_direct_javac8_render-Main.stderr",
+      "stdout_sha256": "5bae570f55f2ed971a071f344c0f101a30debbaebb5715b916ee0adb51d9df71",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac8/render-Mid",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac8.jar",
+        "--class",
+        "Mid",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac8_render-Mid.stdout",
+      "stderr": "logs/fixture_direct_javac8_render-Mid.stderr",
+      "stdout_sha256": "ca7bfa49c49e51eb35111855397382dbb04ea91d73d5b524391395dbb74ff383",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/sources/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/sources/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8/sources/Mid.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac8",
+      "exit": 1,
+      "stdout": "logs/fixture_direct_javac8_compile.stdout",
+      "stderr": "logs/fixture_direct_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2f513571e213e4abaaf286ea27b3a84b4c1074e17582072e1a14337b28c0c6fc"
+    },
+    {
+      "label": "fixture/direct/javac23/render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac23.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac23_render-Base.stdout",
+      "stderr": "logs/fixture_direct_javac23_render-Base.stderr",
+      "stdout_sha256": "ff3821d9e19e9e613e515f238dc106de98f319d803c1c2716926e2552c453bc5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac23/render-DerivedA",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac23.jar",
+        "--class",
+        "DerivedA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac23_render-DerivedA.stdout",
+      "stderr": "logs/fixture_direct_javac23_render-DerivedA.stderr",
+      "stdout_sha256": "04c6b138fa7221ab2c4efbf01c7b61bcc13b116f01bcb4e7e4bb619516ed077c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac23/render-DerivedB",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac23.jar",
+        "--class",
+        "DerivedB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac23_render-DerivedB.stdout",
+      "stderr": "logs/fixture_direct_javac23_render-DerivedB.stderr",
+      "stdout_sha256": "26e44d90c12b6afded2dbc80610280801d5baaedb4435f0a5449303f95b6ea6d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac23/render-LocalInterface",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac23.jar",
+        "--class",
+        "LocalInterface",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac23_render-LocalInterface.stdout",
+      "stderr": "logs/fixture_direct_javac23_render-LocalInterface.stderr",
+      "stdout_sha256": "6a5423f1d190d6a3d14aa20e0033e4a3490c3222b689fe2e55d7ec6de0772b4d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac23.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac23_render-Main.stdout",
+      "stderr": "logs/fixture_direct_javac23_render-Main.stderr",
+      "stdout_sha256": "a9cc66b2c5c7e1dff44ab35915fc48edab4ce44fb89075bebe6a39da18e54991",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac23/render-Mid",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/direct-javac23.jar",
+        "--class",
+        "Mid",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/fixture_direct_javac23_render-Mid.stdout",
+      "stderr": "logs/fixture_direct_javac23_render-Mid.stderr",
+      "stdout_sha256": "25d5449ee9abe7cbd9ca02d9667be2a47a266994cf4a369b18a6a72016846108",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fixture/direct/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/sources/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/sources/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23/sources/Mid.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/fixture/direct/javac23",
+      "exit": 1,
+      "stdout": "logs/fixture_direct_javac23_compile.stdout",
+      "stderr": "logs/fixture_direct_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "7c692439e00be9a6fdd13dc9f45ba34600e2d89d1dc636d0ebb85b1e1cf7adef"
+    }
+  ],
+  "files": [
+    {
+      "path": "direct-javac23.jar",
+      "sha256": "edfce48db43b09de0df8ded0d3b29dfe51d73e2714b8d2e6bdfc301614a8bf79",
+      "bytes": 6352
+    },
+    {
+      "path": "direct-javac8.jar",
+      "sha256": "78edae441cc1114e96c34feee027f862967adcf7bf606427e408bfbc0caf3788",
+      "bytes": 6355
+    },
+    {
+      "path": "factory-javac23.jar",
+      "sha256": "c990420122e6c7b38973e35700096e7fab8fc78becf9779ff97cfcbb52aec93d",
+      "bytes": 6270
+    },
+    {
+      "path": "factory-javac8.jar",
+      "sha256": "4e5cd1e4c3a9c2504087e811eb5ea25f9b51615d873b220d49ef22216067e2c6",
+      "bytes": 6273
+    },
+    {
+      "path": "fixture/direct/javac23/classes/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384",
+      "bytes": 220
+    },
+    {
+      "path": "fixture/direct/javac23/classes/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5",
+      "bytes": 112
+    },
+    {
+      "path": "fixture/direct/javac23/classes/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9",
+      "bytes": 113
+    },
+    {
+      "path": "fixture/direct/javac23/classes/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d",
+      "bytes": 88
+    },
+    {
+      "path": "fixture/direct/javac23/classes/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f",
+      "bytes": 108
+    },
+    {
+      "path": "fixture/direct/javac23/sources/Base.java",
+      "sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+      "bytes": 947
+    },
+    {
+      "path": "fixture/direct/javac23/sources/DerivedA.java",
+      "sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+      "bytes": 641
+    },
+    {
+      "path": "fixture/direct/javac23/sources/DerivedB.java",
+      "sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+      "bytes": 642
+    },
+    {
+      "path": "fixture/direct/javac23/sources/LocalInterface.java",
+      "sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+      "bytes": 531
+    },
+    {
+      "path": "fixture/direct/javac23/sources/Main.java",
+      "sha256": "97fd0d547c73372dad5594b0345e79a3eb07c83cb67f81fa2185eade5b4eedcb",
+      "bytes": 34146
+    },
+    {
+      "path": "fixture/direct/javac23/sources/Mid.java",
+      "sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+      "bytes": 616
+    },
+    {
+      "path": "fixture/direct/javac8/classes/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654",
+      "bytes": 220
+    },
+    {
+      "path": "fixture/direct/javac8/classes/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30",
+      "bytes": 112
+    },
+    {
+      "path": "fixture/direct/javac8/classes/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d",
+      "bytes": 113
+    },
+    {
+      "path": "fixture/direct/javac8/classes/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb",
+      "bytes": 88
+    },
+    {
+      "path": "fixture/direct/javac8/classes/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a",
+      "bytes": 108
+    },
+    {
+      "path": "fixture/direct/javac8/sources/Base.java",
+      "sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+      "bytes": 947
+    },
+    {
+      "path": "fixture/direct/javac8/sources/DerivedA.java",
+      "sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+      "bytes": 641
+    },
+    {
+      "path": "fixture/direct/javac8/sources/DerivedB.java",
+      "sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+      "bytes": 642
+    },
+    {
+      "path": "fixture/direct/javac8/sources/LocalInterface.java",
+      "sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+      "bytes": 531
+    },
+    {
+      "path": "fixture/direct/javac8/sources/Main.java",
+      "sha256": "97fd0d547c73372dad5594b0345e79a3eb07c83cb67f81fa2185eade5b4eedcb",
+      "bytes": 34146
+    },
+    {
+      "path": "fixture/direct/javac8/sources/Mid.java",
+      "sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+      "bytes": 616
+    },
+    {
+      "path": "fixture/factory/javac23/classes/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384",
+      "bytes": 220
+    },
+    {
+      "path": "fixture/factory/javac23/classes/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5",
+      "bytes": 112
+    },
+    {
+      "path": "fixture/factory/javac23/classes/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9",
+      "bytes": 113
+    },
+    {
+      "path": "fixture/factory/javac23/classes/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d",
+      "bytes": 88
+    },
+    {
+      "path": "fixture/factory/javac23/classes/Main.class",
+      "sha256": "91aff3e347d0c8a303dfaa28530c540b9545a14d0eeaabc294e81efc88a73b1a",
+      "bytes": 4777
+    },
+    {
+      "path": "fixture/factory/javac23/classes/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f",
+      "bytes": 108
+    },
+    {
+      "path": "fixture/factory/javac23/sources/Base.java",
+      "sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+      "bytes": 947
+    },
+    {
+      "path": "fixture/factory/javac23/sources/DerivedA.java",
+      "sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+      "bytes": 641
+    },
+    {
+      "path": "fixture/factory/javac23/sources/DerivedB.java",
+      "sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+      "bytes": 642
+    },
+    {
+      "path": "fixture/factory/javac23/sources/LocalInterface.java",
+      "sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+      "bytes": 531
+    },
+    {
+      "path": "fixture/factory/javac23/sources/Main.java",
+      "sha256": "15cbcbd8cd0f4844c4735b8be922f0778f9d4f0456811f910b0ab4e209a9543e",
+      "bytes": 15529
+    },
+    {
+      "path": "fixture/factory/javac23/sources/Mid.java",
+      "sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+      "bytes": 616
+    },
+    {
+      "path": "fixture/factory/javac8/classes/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654",
+      "bytes": 220
+    },
+    {
+      "path": "fixture/factory/javac8/classes/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30",
+      "bytes": 112
+    },
+    {
+      "path": "fixture/factory/javac8/classes/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d",
+      "bytes": 113
+    },
+    {
+      "path": "fixture/factory/javac8/classes/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb",
+      "bytes": 88
+    },
+    {
+      "path": "fixture/factory/javac8/classes/Main.class",
+      "sha256": "9571e74ae7e50b369ea7661d9ed83bd10b3a3ccc5be3666f64032f9f1a481abe",
+      "bytes": 4786
+    },
+    {
+      "path": "fixture/factory/javac8/classes/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a",
+      "bytes": 108
+    },
+    {
+      "path": "fixture/factory/javac8/sources/Base.java",
+      "sha256": "edd94e0b45944f5ba949a2d1554b2af25dca6f684b11061dab1ffb4158eeaaec",
+      "bytes": 947
+    },
+    {
+      "path": "fixture/factory/javac8/sources/DerivedA.java",
+      "sha256": "bb639153f5bef58b41c133ab1bb185cbe071a328ebf54482a18566520293246b",
+      "bytes": 641
+    },
+    {
+      "path": "fixture/factory/javac8/sources/DerivedB.java",
+      "sha256": "c6e950fa4363b5c8ac9fbca5946464c1e7fce2262ef013793960914a36a87eef",
+      "bytes": 642
+    },
+    {
+      "path": "fixture/factory/javac8/sources/LocalInterface.java",
+      "sha256": "ba560faa51ba694d635d516da27e1c398ca224d14c594962b2e88d6c2157aa8a",
+      "bytes": 531
+    },
+    {
+      "path": "fixture/factory/javac8/sources/Main.java",
+      "sha256": "15cbcbd8cd0f4844c4735b8be922f0778f9d4f0456811f910b0ab4e209a9543e",
+      "bytes": 15529
+    },
+    {
+      "path": "fixture/factory/javac8/sources/Mid.java",
+      "sha256": "83929b66340515577af5fae1d0494e2a480285905aef7889ebe8a30188c43560",
+      "bytes": 616
+    },
+    {
+      "path": "logs/fixture_direct_javac23_compile.stderr",
+      "sha256": "7c692439e00be9a6fdd13dc9f45ba34600e2d89d1dc636d0ebb85b1e1cf7adef",
+      "bytes": 2669
+    },
+    {
+      "path": "logs/fixture_direct_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-Base.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-Base.stdout",
+      "sha256": "ff3821d9e19e9e613e515f238dc106de98f319d803c1c2716926e2552c453bc5",
+      "bytes": 22600
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-DerivedA.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-DerivedA.stdout",
+      "sha256": "04c6b138fa7221ab2c4efbf01c7b61bcc13b116f01bcb4e7e4bb619516ed077c",
+      "bytes": 12405
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-DerivedB.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-DerivedB.stdout",
+      "sha256": "26e44d90c12b6afded2dbc80610280801d5baaedb4435f0a5449303f95b6ea6d",
+      "bytes": 12416
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-LocalInterface.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-LocalInterface.stdout",
+      "sha256": "6a5423f1d190d6a3d14aa20e0033e4a3490c3222b689fe2e55d7ec6de0772b4d",
+      "bytes": 5535
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-Main.stdout",
+      "sha256": "a9cc66b2c5c7e1dff44ab35915fc48edab4ce44fb89075bebe6a39da18e54991",
+      "bytes": 679294
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-Mid.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac23_render-Mid.stdout",
+      "sha256": "25d5449ee9abe7cbd9ca02d9667be2a47a266994cf4a369b18a6a72016846108",
+      "bytes": 12144
+    },
+    {
+      "path": "logs/fixture_direct_javac8_compile.stderr",
+      "sha256": "2f513571e213e4abaaf286ea27b3a84b4c1074e17582072e1a14337b28c0c6fc",
+      "bytes": 2176
+    },
+    {
+      "path": "logs/fixture_direct_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-Base.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-Base.stdout",
+      "sha256": "fdab74c6c43804e0f8981247459ec29d079d8b4730ead8b450d23a296dad945d",
+      "bytes": 22600
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-DerivedA.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-DerivedA.stdout",
+      "sha256": "9015430c4f694075cfc73381177f64a2d433600111cfeb2b00d02bc6d02b4b1e",
+      "bytes": 12405
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-DerivedB.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-DerivedB.stdout",
+      "sha256": "34027d9a74e7bc37ee9de393c375eeb91a55adbc88eb88ac2de51b5091e69ebe",
+      "bytes": 12416
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-LocalInterface.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-LocalInterface.stdout",
+      "sha256": "25e21fa5567c50410d99e279e83d69f1907213a7bf1bef4bac0aea5da78bfec6",
+      "bytes": 5535
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-Main.stdout",
+      "sha256": "5bae570f55f2ed971a071f344c0f101a30debbaebb5715b916ee0adb51d9df71",
+      "bytes": 679304
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-Mid.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_direct_javac8_render-Mid.stdout",
+      "sha256": "ca7bfa49c49e51eb35111855397382dbb04ea91d73d5b524391395dbb74ff383",
+      "bytes": 12144
+    },
+    {
+      "path": "logs/fixture_factory_javac23_compile.stderr",
+      "sha256": "d62be494992cb6d5921f8f109923b12269c5f49443e1e172391322a9cf6bb163",
+      "bytes": 768
+    },
+    {
+      "path": "logs/fixture_factory_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-Base.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-Base.stdout",
+      "sha256": "4f186bd95e937cfdc573b4e6320acc1b24f607e42e6ade16d3aaf69a71f43529",
+      "bytes": 22600
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-DerivedA.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-DerivedA.stdout",
+      "sha256": "666b93db9384052fb0f73579448901a67942bcb7741eafb587a3f70d5202296a",
+      "bytes": 12405
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-DerivedB.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-DerivedB.stdout",
+      "sha256": "855f3a5043404478dd946daa23053e68181b1ad434a12ecebebbec95caf38891",
+      "bytes": 12416
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-LocalInterface.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-LocalInterface.stdout",
+      "sha256": "fd37eddb9fa647b8ace39e09a2c4ec8d6361531959165bdcde857e155f61b241",
+      "bytes": 5535
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-Main.stdout",
+      "sha256": "17a6e255cc98e3fcea4954bcf00238ec12e433d75d826fb45a7ad6eb2bef7357",
+      "bytes": 555056
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-Mid.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_render-Mid.stdout",
+      "sha256": "d3e8d9a1e5222760887e8e8d3827a7ea9207631556faa7352504eb005178776b",
+      "bytes": 12144
+    },
+    {
+      "path": "logs/fixture_factory_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac23_run.stdout",
+      "sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "bytes": 237
+    },
+    {
+      "path": "logs/fixture_factory_javac8_compile.stderr",
+      "sha256": "2860afcccdebb10c0193ad08409a3171da5371588075ab5d2e64bd043fe84261",
+      "bytes": 284
+    },
+    {
+      "path": "logs/fixture_factory_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-Base.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-Base.stdout",
+      "sha256": "b859ec8903f8764d51f00e91728ccd55cd1c58544c3aaa799d82e4c245794300",
+      "bytes": 22606
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-DerivedA.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-DerivedA.stdout",
+      "sha256": "09f816a116986fae25dbd5a72b4abd898a344f4d512c6b17f4de2757edd81e50",
+      "bytes": 12405
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-DerivedB.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-DerivedB.stdout",
+      "sha256": "1e764fc17b3b80d730b47677cd8265315efd95deb925ccda74186f037fbbd80e",
+      "bytes": 12416
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-LocalInterface.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-LocalInterface.stdout",
+      "sha256": "38ad48fcfeb801836bcc4b348270bb535f288ada97bc1ad038a239d588585916",
+      "bytes": 5535
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-Main.stdout",
+      "sha256": "b86c8b1d2da9f7f4933afd2ec4c6ba0c7382a7404450bba50d24c279a6af6e94",
+      "bytes": 555133
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-Mid.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_render-Mid.stdout",
+      "sha256": "263dd41d76da97c8e428589204e6eba0739b888df927370f52c3be92b6964001",
+      "bytes": 12144
+    },
+    {
+      "path": "logs/fixture_factory_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/fixture_factory_javac8_run.stdout",
+      "sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "bytes": 237
+    }
+  ]
+}

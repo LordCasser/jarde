@@ -1,0 +1,36 @@
+{
+  "manifest_sha256": "fa8b3d79ecc477ffbc5477d9de98f9855c003082f49934dadcc4411d166871da",
+  "files_checked": 33,
+  "cases": [
+    {
+      "jdk": "javac8",
+      "side": "jarde",
+      "source_count": 1,
+      "compile_exit": 0,
+      "accepted": true
+    },
+    {
+      "jdk": "javac8",
+      "side": "jadx",
+      "source_count": 1,
+      "compile_exit": 0,
+      "accepted": true
+    },
+    {
+      "jdk": "javac23",
+      "side": "jarde",
+      "source_count": 1,
+      "compile_exit": 0,
+      "accepted": true
+    },
+    {
+      "jdk": "javac23",
+      "side": "jadx",
+      "source_count": 1,
+      "compile_exit": 0,
+      "accepted": true
+    }
+  ],
+  "issues": [],
+  "extra_fixture_not_in_original18_denominator": true
+}

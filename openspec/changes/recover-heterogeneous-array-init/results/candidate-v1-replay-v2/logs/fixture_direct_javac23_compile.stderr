@@ -1,0 +1,37 @@
+警告: [options] 未与 -source 8 一起设置引导类路径
+  不设置引导类路径可能会导致类文件无法在 JDK 8 上运行
+    建议使用 --release 8 而不是 -source 8 -target 8，因为它会自动设置引导类路径
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:258: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:285: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:313: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:340: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:371: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:403: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:430: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:457: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java:496: 错误: 缺少返回语句
+    }
+    ^
+注: /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/fixture/direct/javac23/sources/Main.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+9 个错误
+4 个警告

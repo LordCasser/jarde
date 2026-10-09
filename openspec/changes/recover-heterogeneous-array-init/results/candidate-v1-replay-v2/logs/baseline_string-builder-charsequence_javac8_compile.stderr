@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/baseline/string-builder-charsequence/javac8/sources/Main.java:35: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 Main
+1 个错误

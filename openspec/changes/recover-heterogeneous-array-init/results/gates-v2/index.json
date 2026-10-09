@@ -1,0 +1,83 @@
+{
+  "runner_sha256": "f8a18bd76458e6ec28105c90c253602b159d6a2a5e5b6c95f31537f8b1823c86",
+  "ci_yml_sha256": "392cc33befd4802ff57a71b277318404c708c36cc4047115284cb0c972f3bbd9",
+  "stages": [
+    {
+      "name": "focused-varargs",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "varargs_ctor_argument_sites",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:28:08.642393+00:00",
+      "exit": 0,
+      "stdout": "focused-varargs.stdout",
+      "stdout_sha256": "41ab50d070e87cb1bec7f1941845d845853bef758b20a5f982bf9fd2bb1fe3a2",
+      "stderr": "focused-varargs.stderr",
+      "stderr_sha256": "c212fc3ed0a3b5a409bb44115831585928cba74181f7bb6c2ef7335ca5244018",
+      "free_bytes_after": 27338203136
+    },
+    {
+      "name": "workspace-seed1",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--no-fail-fast"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "PROPTEST_RNG_SEED": "5350648285461741569"
+      },
+      "started_utc": "2026-10-09T11:28:33.640330+00:00",
+      "exit": 0,
+      "stdout": "workspace-seed1.stdout",
+      "stdout_sha256": "7e2d89a6482d3f1a3edb7c12387aea999918f60074d1bd3ddef7760b8e0db8a7",
+      "stderr": "workspace-seed1.stderr",
+      "stderr_sha256": "2c3b5c84f480a71a149c1dd86c9ba235f62d1df08660bea4caba0bc447f45ff4",
+      "free_bytes_after": 27167404032
+    },
+    {
+      "name": "workspace-seed2",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--no-fail-fast"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "PROPTEST_RNG_SEED": "5350648285461741570"
+      },
+      "started_utc": "2026-10-09T11:33:59.218825+00:00",
+      "exit": 0,
+      "stdout": "workspace-seed2.stdout",
+      "stdout_sha256": "9d5c258649a94a1a3b8a1bc8e4ecdfbee06b53ee3cdbe7f0f8508ff5b3c774f4",
+      "stderr": "workspace-seed2.stderr",
+      "stderr_sha256": "b1077c58b727dc96bc5e023dbca93468f2c0d575d7366bace0e75e252400452d",
+      "free_bytes_after": 21042581504
+    }
+  ]
+}

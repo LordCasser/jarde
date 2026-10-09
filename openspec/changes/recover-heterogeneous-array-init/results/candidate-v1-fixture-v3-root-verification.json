@@ -1,0 +1,41 @@
+{
+  "runner_sha256": "0560db0f56bc1a089c08c3be24ae9e2671576e906b9d9dc0bab1fa1573da3d89",
+  "fixture_manifest_sha256": "b63f60f00a2fd571436edaa1d5f2d8e1e653224f0a608118366dce93ca5237b3",
+  "candidate_manifest_sha256": "d3dd331861d79d32cc64b2fd2e2c3677606868d54767e157fa99e5db7f508b87",
+  "checked_hash_entries": 246,
+  "cases": [
+    {
+      "family": "factory",
+      "leg": "javac8",
+      "accepted": true,
+      "compile_exit": 0,
+      "mapped_store_count": 25
+    },
+    {
+      "family": "factory",
+      "leg": "javac23",
+      "accepted": true,
+      "compile_exit": 0,
+      "mapped_store_count": 25
+    },
+    {
+      "family": "direct",
+      "leg": "javac8",
+      "accepted": false,
+      "compile_exit": 1,
+      "mapped_store_count": 0
+    },
+    {
+      "family": "direct",
+      "leg": "javac23",
+      "accepted": false,
+      "compile_exit": 1,
+      "mapped_store_count": 0
+    }
+  ],
+  "issues": [],
+  "notes": [
+    "Both direct families remain unaccepted constructor composition controls.",
+    "Only initializer bodies are checked for added element casts; primitive conversions in separate factory helpers remain valid."
+  ]
+}

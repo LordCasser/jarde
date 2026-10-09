@@ -1,0 +1,77 @@
+{
+  "source_manifest_sha256": "8c080d22464974d4274f80bdd70962f3d89581a1a5dcef11cfb2c6cb1273e3f0",
+  "source_files_manifest_sha256": "09b5c0f08e3b9f77120fabd95fa8aa16d3e17a52cf7b673ddea5841a056c0594",
+  "files_checked": 211,
+  "runs": [
+    {
+      "key": "factory/javac8/default",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": false,
+      "full_leg_accepted": false,
+      "syntax_observations": 9
+    },
+    {
+      "key": "factory/javac8/rename-flags-none",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": true,
+      "full_leg_accepted": true,
+      "syntax_observations": 9
+    },
+    {
+      "key": "factory/javac23/default",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": false,
+      "full_leg_accepted": false,
+      "syntax_observations": 9
+    },
+    {
+      "key": "factory/javac23/rename-flags-none",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": true,
+      "full_leg_accepted": true,
+      "syntax_observations": 9
+    },
+    {
+      "key": "direct/javac8/default",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": false,
+      "full_leg_accepted": false,
+      "syntax_observations": 9
+    },
+    {
+      "key": "direct/javac8/rename-flags-none",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": true,
+      "full_leg_accepted": true,
+      "syntax_observations": 9
+    },
+    {
+      "key": "direct/javac23/default",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": false,
+      "full_leg_accepted": false,
+      "syntax_observations": 9
+    },
+    {
+      "key": "direct/javac23/rename-flags-none",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "raw_streams_match": true,
+      "full_leg_accepted": true,
+      "syntax_observations": 9
+    }
+  ],
+  "full_semantic_accepted": 4,
+  "syntax_observations": 72,
+  "issues": [],
+  "note": "Original initializer_methods_accepted_count names syntactic detection only; it is not complete semantic acceptance. Root recomputed acceptance from full source, isolated argv, exit and raw streams.",
+  "source_files_manifest_version": "v2",
+  "erratum_sha256": "99bcee11ce8c5526c6957fd668a5281a2acdb7028601419dc198f5fbc3a0704d"
+}

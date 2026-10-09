@@ -1,0 +1,927 @@
+{
+  "schema": "p3-heterogeneous-array-initializers-v3-final",
+  "created_utc": "2026-10-09T10:48:00Z",
+  "source_plan": "source-plan-v3.md",
+  "source_plan_sha256": "20899becf9429e6bce68c20da5750ea8158376f7b146c6069828e8f326de05e9",
+  "supersedes_manifest": "../evidence/heterogeneous-array-initializers-v3-pathfix/build-manifest-v3-pathfix.json",
+  "supersedes_manifest_sha256": "9002323d1cd5c2eddc47abb5da4e272235d60ef4df0d90cdf777a9d9e3db42b4",
+  "runner_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/build_fixture_v3_final.py",
+  "runner_sha256": "faac1b7a77f1fe4507fed2522374ba5bce5b6bac0b356892bc74afdd2b9c9675",
+  "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+  "families": {
+    "factory": {
+      "sources": [
+        {
+          "path": "Main.java",
+          "sha256": "1abb5f06dfddbcc2f1d009900d6e80dbf7a92de6daa1b2dcc99108eea607c39b",
+          "bytes": 4812
+        },
+        {
+          "path": "Base.java",
+          "sha256": "d32b225a5e129346a2bef89edfc9ab7388336af1d65c1c9f6a4286572c4d2df2",
+          "bytes": 177
+        },
+        {
+          "path": "Mid.java",
+          "sha256": "c6f88e2194880bedd5fff9bf2ef1757af27b7dd6b48efc239cf3ed16cfc1b770",
+          "bytes": 76
+        },
+        {
+          "path": "DerivedA.java",
+          "sha256": "d33f1ed9b05f59e5d5e077c34c2e056df286e2b63962ddac5c51be13ed9f9977",
+          "bytes": 91
+        },
+        {
+          "path": "DerivedB.java",
+          "sha256": "62ea0c550b93e2e50cfa97e079ef7036445c669929d6e0b485aa6bceb0b4c47c",
+          "bytes": 92
+        },
+        {
+          "path": "LocalInterface.java",
+          "sha256": "425f56e2492e46e3f32206b6e338f5faebd5fadb6dba2391a4048164f73cc621",
+          "bytes": 51
+        }
+      ],
+      "legs": {
+        "javac8": {
+          "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+          "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+          "javap_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+          "javac_version_stdout": "",
+          "javac_version_stderr": "javac 1.8.0_432",
+          "java_version_stderr": "openjdk version \"1.8.0_432\"\nOpenJDK Runtime Environment Corretto-8.432.06.1 (build 1.8.0_432-b06)\nOpenJDK 64-Bit Server VM Corretto-8.432.06.1 (build 25.432-b06, mixed mode)",
+          "compile_exit": 0,
+          "original_runtime_exit": 0,
+          "original_stdout": "factory/javac8/logs/factory_javac8_original-main.stdout",
+          "original_stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+          "original_stderr": "factory/javac8/logs/factory_javac8_original-main.stderr",
+          "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "class_files": [
+            {
+              "path": "Base.class",
+              "bytes": 220,
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            {
+              "path": "DerivedA.class",
+              "bytes": 112,
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            {
+              "path": "DerivedB.class",
+              "bytes": 113,
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            {
+              "path": "LocalInterface.class",
+              "bytes": 88,
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            {
+              "path": "Main.class",
+              "bytes": 5000,
+              "sha256": "d9f3a8b6894fe218b26cabbbf25d20b0843cf82fee5d69b416cfdf27a244cdff"
+            },
+            {
+              "path": "Mid.class",
+              "bytes": 108,
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          ],
+          "aastore_bcis_from_javap_main": {
+            "exactNumber": [
+              13
+            ],
+            "objectElement": [
+              13
+            ],
+            "nullElement": [
+              7
+            ],
+            "integerArray": [
+              10
+            ],
+            "longArray": [
+              11
+            ],
+            "listArray": [
+              10
+            ],
+            "setArray": [
+              10
+            ],
+            "derivedAArray": [
+              10
+            ],
+            "derivedBArray": [
+              10
+            ],
+            "boxedFactory": [
+              14,
+              24,
+              34,
+              44,
+              54,
+              65
+            ],
+            "sequenceFactory": [
+              13,
+              23
+            ],
+            "collectionFactory": [
+              10,
+              17
+            ],
+            "throwableFactory": [
+              10,
+              17
+            ],
+            "numberGridFactory": [
+              13,
+              23
+            ],
+            "collectionGridFactory": [
+              13,
+              23
+            ],
+            "ownTwoHopFactory": [
+              13,
+              23
+            ],
+            "ownInterfaceFactory": [
+              13,
+              23
+            ],
+            "ownGridFactory": [
+              13,
+              23
+            ]
+          },
+          "javap_stdout": "factory/javac8/logs/factory_javac8_javap-main.stdout",
+          "javap_stdout_sha256": "1702c8627a0fc6836a37865ca704fd919d630a889f8c1cb0cb6c71a7c238785e",
+          "javap_stderr": "factory/javac8/logs/factory_javac8_javap-main.stderr",
+          "javap_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "javac23": {
+          "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+          "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+          "javap_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+          "javac_version_stdout": "javac 23.0.1",
+          "javac_version_stderr": "",
+          "java_version_stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)",
+          "compile_exit": 0,
+          "original_runtime_exit": 0,
+          "original_stdout": "factory/javac23/logs/factory_javac23_original-main.stdout",
+          "original_stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+          "original_stderr": "factory/javac23/logs/factory_javac23_original-main.stderr",
+          "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "class_files": [
+            {
+              "path": "Base.class",
+              "bytes": 220,
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            {
+              "path": "DerivedA.class",
+              "bytes": 112,
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            {
+              "path": "DerivedB.class",
+              "bytes": 113,
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            {
+              "path": "LocalInterface.class",
+              "bytes": 88,
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            {
+              "path": "Main.class",
+              "bytes": 4997,
+              "sha256": "5d662d7b6b2f5e75228ce81774fcd6d5449643f06e286321b9a8a5745a904074"
+            },
+            {
+              "path": "Mid.class",
+              "bytes": 108,
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          ],
+          "aastore_bcis_from_javap_main": {
+            "exactNumber": [
+              13
+            ],
+            "objectElement": [
+              13
+            ],
+            "nullElement": [
+              7
+            ],
+            "integerArray": [
+              10
+            ],
+            "longArray": [
+              11
+            ],
+            "listArray": [
+              10
+            ],
+            "setArray": [
+              10
+            ],
+            "derivedAArray": [
+              10
+            ],
+            "derivedBArray": [
+              10
+            ],
+            "boxedFactory": [
+              14,
+              24,
+              34,
+              44,
+              54,
+              65
+            ],
+            "sequenceFactory": [
+              13,
+              23
+            ],
+            "collectionFactory": [
+              10,
+              17
+            ],
+            "throwableFactory": [
+              10,
+              17
+            ],
+            "numberGridFactory": [
+              13,
+              23
+            ],
+            "collectionGridFactory": [
+              13,
+              23
+            ],
+            "ownTwoHopFactory": [
+              13,
+              23
+            ],
+            "ownInterfaceFactory": [
+              13,
+              23
+            ],
+            "ownGridFactory": [
+              13,
+              23
+            ]
+          },
+          "javap_stdout": "factory/javac23/logs/factory_javac23_javap-main.stdout",
+          "javap_stdout_sha256": "399a266b9d85fbc2ac1fd05d07476d99a0ff53003bbc57ca5d2b0b00ea35a10c",
+          "javap_stderr": "factory/javac23/logs/factory_javac23_javap-main.stderr",
+          "javap_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "direct": {
+      "sources": [
+        {
+          "path": "Main.java",
+          "sha256": "e4e9189086f9417c523c4db0cadce69739c66f9e6c297ccc4a7914768f29a017",
+          "bytes": 5367
+        },
+        {
+          "path": "Base.java",
+          "sha256": "d32b225a5e129346a2bef89edfc9ab7388336af1d65c1c9f6a4286572c4d2df2",
+          "bytes": 177
+        },
+        {
+          "path": "Mid.java",
+          "sha256": "c6f88e2194880bedd5fff9bf2ef1757af27b7dd6b48efc239cf3ed16cfc1b770",
+          "bytes": 76
+        },
+        {
+          "path": "DerivedA.java",
+          "sha256": "d33f1ed9b05f59e5d5e077c34c2e056df286e2b63962ddac5c51be13ed9f9977",
+          "bytes": 91
+        },
+        {
+          "path": "DerivedB.java",
+          "sha256": "62ea0c550b93e2e50cfa97e079ef7036445c669929d6e0b485aa6bceb0b4c47c",
+          "bytes": 92
+        },
+        {
+          "path": "LocalInterface.java",
+          "sha256": "425f56e2492e46e3f32206b6e338f5faebd5fadb6dba2391a4048164f73cc621",
+          "bytes": 51
+        }
+      ],
+      "legs": {
+        "javac8": {
+          "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+          "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+          "javap_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+          "javac_version_stdout": "",
+          "javac_version_stderr": "javac 1.8.0_432",
+          "java_version_stderr": "openjdk version \"1.8.0_432\"\nOpenJDK Runtime Environment Corretto-8.432.06.1 (build 1.8.0_432-b06)\nOpenJDK 64-Bit Server VM Corretto-8.432.06.1 (build 25.432-b06, mixed mode)",
+          "compile_exit": 0,
+          "original_runtime_exit": 0,
+          "original_stdout": "direct/javac8/logs/direct_javac8_original-main.stdout",
+          "original_stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+          "original_stderr": "direct/javac8/logs/direct_javac8_original-main.stderr",
+          "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "class_files": [
+            {
+              "path": "Base.class",
+              "bytes": 220,
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            {
+              "path": "DerivedA.class",
+              "bytes": 112,
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            {
+              "path": "DerivedB.class",
+              "bytes": 113,
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            {
+              "path": "LocalInterface.class",
+              "bytes": 88,
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            {
+              "path": "Main.class",
+              "bytes": 5082,
+              "sha256": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677"
+            },
+            {
+              "path": "Mid.class",
+              "bytes": 108,
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          ],
+          "aastore_bcis_from_javap_main": {
+            "exactNumber": [
+              13
+            ],
+            "objectElement": [
+              13
+            ],
+            "nullElement": [
+              7
+            ],
+            "integerArray": [
+              10
+            ],
+            "longArray": [
+              11
+            ],
+            "listArray": [
+              10
+            ],
+            "setArray": [
+              10
+            ],
+            "derivedAArray": [
+              10
+            ],
+            "derivedBArray": [
+              10
+            ],
+            "boxedDirect": [
+              19,
+              34,
+              48,
+              63,
+              78,
+              94
+            ],
+            "sequenceDirect": [
+              20,
+              37
+            ],
+            "collectionDirect": [
+              23,
+              43
+            ],
+            "throwableDirect": [
+              20,
+              37
+            ],
+            "numberGridDirect": [
+              19,
+              20,
+              37,
+              38
+            ],
+            "collectionGridDirect": [
+              19,
+              20,
+              36,
+              37
+            ],
+            "ownTwoHopDirect": [
+              17,
+              31
+            ],
+            "ownInterfaceDirect": [
+              17,
+              31
+            ],
+            "ownGridDirect": [
+              23,
+              24,
+              44,
+              45
+            ]
+          },
+          "javap_stdout": "direct/javac8/logs/direct_javac8_javap-main.stdout",
+          "javap_stdout_sha256": "ae496a7fa34352d5cd68e49ce81e2e801b657752a76222785010b497aea24424",
+          "javap_stderr": "direct/javac8/logs/direct_javac8_javap-main.stderr",
+          "javap_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "javac23": {
+          "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+          "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+          "javap_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+          "javac_version_stdout": "javac 23.0.1",
+          "javac_version_stderr": "",
+          "java_version_stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)",
+          "compile_exit": 0,
+          "original_runtime_exit": 0,
+          "original_stdout": "direct/javac23/logs/direct_javac23_original-main.stdout",
+          "original_stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+          "original_stderr": "direct/javac23/logs/direct_javac23_original-main.stderr",
+          "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "class_files": [
+            {
+              "path": "Base.class",
+              "bytes": 220,
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            {
+              "path": "DerivedA.class",
+              "bytes": 112,
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            {
+              "path": "DerivedB.class",
+              "bytes": 113,
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            {
+              "path": "LocalInterface.class",
+              "bytes": 88,
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            {
+              "path": "Main.class",
+              "bytes": 5079,
+              "sha256": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726"
+            },
+            {
+              "path": "Mid.class",
+              "bytes": 108,
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          ],
+          "aastore_bcis_from_javap_main": {
+            "exactNumber": [
+              13
+            ],
+            "objectElement": [
+              13
+            ],
+            "nullElement": [
+              7
+            ],
+            "integerArray": [
+              10
+            ],
+            "longArray": [
+              11
+            ],
+            "listArray": [
+              10
+            ],
+            "setArray": [
+              10
+            ],
+            "derivedAArray": [
+              10
+            ],
+            "derivedBArray": [
+              10
+            ],
+            "boxedDirect": [
+              19,
+              34,
+              48,
+              63,
+              78,
+              94
+            ],
+            "sequenceDirect": [
+              20,
+              37
+            ],
+            "collectionDirect": [
+              23,
+              43
+            ],
+            "throwableDirect": [
+              20,
+              37
+            ],
+            "numberGridDirect": [
+              19,
+              20,
+              37,
+              38
+            ],
+            "collectionGridDirect": [
+              19,
+              20,
+              36,
+              37
+            ],
+            "ownTwoHopDirect": [
+              17,
+              31
+            ],
+            "ownInterfaceDirect": [
+              17,
+              31
+            ],
+            "ownGridDirect": [
+              23,
+              24,
+              44,
+              45
+            ]
+          },
+          "javap_stdout": "direct/javac23/logs/direct_javac23_javap-main.stdout",
+          "javap_stdout_sha256": "26fe4e5c64e66942e93fe9da460f9b1de44be63fd5221c6b2639e4666dbe11e8",
+          "javap_stderr": "direct/javac23/logs/direct_javac23_javap-main.stderr",
+          "javap_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  },
+  "commands": [
+    {
+      "label": "factory/javac8/javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac8/logs/factory_javac8_javac-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "factory/javac8/logs/factory_javac8_javac-version.stderr",
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "label": "factory/javac8/java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac8/logs/factory_javac8_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "factory/javac8/logs/factory_javac8_java-version.stderr",
+      "stderr_sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "label": "factory/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/LocalInterface.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac8/logs/factory_javac8_compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "factory/javac8/logs/factory_javac8_compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "factory/javac8/original-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac8/logs/factory_javac8_original-main.stdout",
+      "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "stderr": "factory/javac8/logs/factory_javac8_original-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "factory/javac8/javap-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes",
+        "-c",
+        "-p",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac8/logs/factory_javac8_javap-main.stdout",
+      "stdout_sha256": "1702c8627a0fc6836a37865ca704fd919d630a889f8c1cb0cb6c71a7c238785e",
+      "stderr": "factory/javac8/logs/factory_javac8_javap-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "factory/javac23/javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac23/logs/factory_javac23_javac-version.stdout",
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr": "factory/javac23/logs/factory_javac23_javac-version.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "factory/javac23/java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac23/logs/factory_javac23_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "factory/javac23/logs/factory_javac23_java-version.stderr",
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "label": "factory/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/LocalInterface.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac23/logs/factory_javac23_compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "factory/javac23/logs/factory_javac23_compile.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "factory/javac23/original-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac23/logs/factory_javac23_original-main.stdout",
+      "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "stderr": "factory/javac23/logs/factory_javac23_original-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "factory/javac23/javap-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes",
+        "-c",
+        "-p",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "factory/javac23/logs/factory_javac23_javap-main.stdout",
+      "stdout_sha256": "399a266b9d85fbc2ac1fd05d07476d99a0ff53003bbc57ca5d2b0b00ea35a10c",
+      "stderr": "factory/javac23/logs/factory_javac23_javap-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "direct/javac8/javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac8/logs/direct_javac8_javac-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "direct/javac8/logs/direct_javac8_javac-version.stderr",
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "label": "direct/javac8/java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac8/logs/direct_javac8_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "direct/javac8/logs/direct_javac8_java-version.stderr",
+      "stderr_sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "label": "direct/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/LocalInterface.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac8/logs/direct_javac8_compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "direct/javac8/logs/direct_javac8_compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "direct/javac8/original-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac8/logs/direct_javac8_original-main.stdout",
+      "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "stderr": "direct/javac8/logs/direct_javac8_original-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "direct/javac8/javap-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes",
+        "-c",
+        "-p",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac8/logs/direct_javac8_javap-main.stdout",
+      "stdout_sha256": "ae496a7fa34352d5cd68e49ce81e2e801b657752a76222785010b497aea24424",
+      "stderr": "direct/javac8/logs/direct_javac8_javap-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "direct/javac23/javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac23/logs/direct_javac23_javac-version.stdout",
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr": "direct/javac23/logs/direct_javac23_javac-version.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "direct/javac23/java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac23/logs/direct_javac23_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "direct/javac23/logs/direct_javac23_java-version.stderr",
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "label": "direct/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/empty-classpath-sourcepath-v3",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/LocalInterface.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac23/logs/direct_javac23_compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "direct/javac23/logs/direct_javac23_compile.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "direct/javac23/original-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac23/logs/direct_javac23_original-main.stdout",
+      "stdout_sha256": "fd3a20051507b79c6537ccc6fcc24a40fb1bb10e7fda4ea01ae06a08fdc0a71b",
+      "stderr": "direct/javac23/logs/direct_javac23_original-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "direct/javac23/javap-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes",
+        "-c",
+        "-p",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+      "exit": 0,
+      "stdout": "direct/javac23/logs/direct_javac23_javap-main.stdout",
+      "stdout_sha256": "26fe4e5c64e66942e93fe9da460f9b1de44be63fd5221c6b2639e4666dbe11e8",
+      "stderr": "direct/javac23/logs/direct_javac23_javap-main.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

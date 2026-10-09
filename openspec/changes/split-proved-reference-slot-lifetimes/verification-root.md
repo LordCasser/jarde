@@ -41,3 +41,7 @@ ArrayThenList/ListThenMap的独立真实SSA owner、类型、BCI与正常路径�
 完整门禁由 `results/run-local-gates-root-v3.py` 串行执行：两个固定seed各349targets、3311passed/0failed/93ignored；MSRV1.88、fmt、CI-exact Clippy、显式P3三测试及functional-constructor整类对照、strict OpenSpec、diff check全部exit0。实际argv/环境/双流hash/exit及空间检查在 `results/gates-v3/index.json`，root独立逐流核验和统计在 `local-gates-root-verification-v3.json`。本地显式Java检查使用已安装JDK；真实JDK25 oracle另由新提交的CI核对，不冒充本地已运行。
 
 Cargo清理日志与前后空间在 `results/cargo-clean-final-v1.json`；最终提交/推送后的实际main CI结果另行附验。
+
+## Actual CI acceptance — 2026-10-09
+
+Exact code SHA `4fba93438acd444c4ce0f5d916a05f9af72caa28` CI run [37915062977](https://github.com/LordCasser/jarde/actions/runs/37915062977) completed success in all four jobs. Stable job includes both workspace seeds, ignored JDK25 instruction-boundary oracle, ignored P3 Java8 comparison and functional-constructor complete-family comparison; every step succeeded. Raw jobs/steps JSON is `results/ci-code-sha-4fba93438-success.json`; this closes task3.3 for this slice only, not EM20/71-unit parity.

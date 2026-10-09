@@ -1,0 +1,503 @@
+public final class Main {
+  private static int trace;
+
+  public Main();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static int mark(int);
+    Code:
+       0: getstatic     #2                  // Field trace:I
+       3: bipush        10
+       5: imul
+       6: iload_0
+       7: iadd
+       8: putstatic     #2                  // Field trace:I
+      11: iload_0
+      12: ireturn
+
+  private static java.lang.Byte byteValue(int);
+    Code:
+       0: iload_0
+       1: i2b
+       2: invokestatic  #3                  // Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;
+       5: areturn
+
+  private static java.lang.Short shortValue(int);
+    Code:
+       0: iload_0
+       1: i2s
+       2: invokestatic  #4                  // Method java/lang/Short.valueOf:(S)Ljava/lang/Short;
+       5: areturn
+
+  private static java.lang.Integer integerValue(int);
+    Code:
+       0: iload_0
+       1: invokestatic  #5                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       4: areturn
+
+  private static java.lang.Long longValue(int);
+    Code:
+       0: iload_0
+       1: i2l
+       2: invokestatic  #6                  // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+       5: areturn
+
+  private static java.lang.Float floatValue(int);
+    Code:
+       0: iload_0
+       1: i2f
+       2: invokestatic  #7                  // Method java/lang/Float.valueOf:(F)Ljava/lang/Float;
+       5: areturn
+
+  private static java.lang.Double doubleValue(int);
+    Code:
+       0: iload_0
+       1: i2d
+       2: invokestatic  #8                  // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+       5: areturn
+
+  private static java.lang.Number numberValue(int);
+    Code:
+       0: iload_0
+       1: invokestatic  #5                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       4: areturn
+
+  private static java.lang.Object objectValue(int);
+    Code:
+       0: iload_0
+       1: invokestatic  #9                  // Method java/lang/String.valueOf:(I)Ljava/lang/String;
+       4: areturn
+
+  public static java.lang.Number[] exactNumber();
+    Code:
+       0: iconst_1
+       1: anewarray     #10                 // class java/lang/Number
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #12                 // Method numberValue:(I)Ljava/lang/Number;
+      13: aastore
+      14: areturn
+
+  public static java.lang.Object[] objectElement();
+    Code:
+       0: iconst_1
+       1: anewarray     #13                 // class java/lang/Object
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #14                 // Method objectValue:(I)Ljava/lang/Object;
+      13: aastore
+      14: areturn
+
+  public static java.lang.Object[] nullElement();
+    Code:
+       0: iconst_1
+       1: anewarray     #13                 // class java/lang/Object
+       4: dup
+       5: iconst_0
+       6: aconst_null
+       7: aastore
+       8: areturn
+
+  private static java.lang.String stringValue(int);
+    Code:
+       0: iload_0
+       1: invokestatic  #9                  // Method java/lang/String.valueOf:(I)Ljava/lang/String;
+       4: areturn
+
+  private static java.lang.StringBuilder builderValue(int);
+    Code:
+       0: new           #15                 // class java/lang/StringBuilder
+       3: dup
+       4: iload_0
+       5: invokestatic  #9                  // Method java/lang/String.valueOf:(I)Ljava/lang/String;
+       8: invokespecial #16                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      11: areturn
+
+  private static java.util.ArrayList<java.lang.Object> listValue(int);
+    Code:
+       0: new           #17                 // class java/util/ArrayList
+       3: dup
+       4: iload_0
+       5: invokestatic  #11                 // Method mark:(I)I
+       8: invokestatic  #5                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      11: invokestatic  #18                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+      14: invokespecial #19                 // Method java/util/ArrayList."<init>":(Ljava/util/Collection;)V
+      17: areturn
+
+  private static java.util.HashSet<java.lang.Object> setValue(int);
+    Code:
+       0: new           #20                 // class java/util/HashSet
+       3: dup
+       4: iload_0
+       5: invokestatic  #11                 // Method mark:(I)I
+       8: invokestatic  #5                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      11: invokestatic  #18                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+      14: invokespecial #21                 // Method java/util/HashSet."<init>":(Ljava/util/Collection;)V
+      17: areturn
+
+  private static java.lang.IllegalStateException stateFailure(int);
+    Code:
+       0: new           #22                 // class java/lang/IllegalStateException
+       3: dup
+       4: iload_0
+       5: invokestatic  #11                 // Method mark:(I)I
+       8: invokestatic  #9                  // Method java/lang/String.valueOf:(I)Ljava/lang/String;
+      11: invokespecial #23                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      14: areturn
+
+  private static java.lang.IllegalArgumentException argumentFailure(int);
+    Code:
+       0: new           #24                 // class java/lang/IllegalArgumentException
+       3: dup
+       4: iload_0
+       5: invokestatic  #11                 // Method mark:(I)I
+       8: invokestatic  #9                  // Method java/lang/String.valueOf:(I)Ljava/lang/String;
+      11: invokespecial #25                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      14: areturn
+
+  private static java.lang.Integer[] integerArray(int);
+    Code:
+       0: iconst_1
+       1: anewarray     #26                 // class java/lang/Integer
+       4: dup
+       5: iconst_0
+       6: iload_0
+       7: invokestatic  #5                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      10: aastore
+      11: areturn
+
+  private static java.lang.Long[] longArray(int);
+    Code:
+       0: iconst_1
+       1: anewarray     #27                 // class java/lang/Long
+       4: dup
+       5: iconst_0
+       6: iload_0
+       7: i2l
+       8: invokestatic  #6                  // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      11: aastore
+      12: areturn
+
+  private static java.util.ArrayList<?>[] listArray(int);
+    Code:
+       0: iconst_1
+       1: anewarray     #17                 // class java/util/ArrayList
+       4: dup
+       5: iconst_0
+       6: iload_0
+       7: invokestatic  #28                 // Method listValue:(I)Ljava/util/ArrayList;
+      10: aastore
+      11: areturn
+
+  private static java.util.HashSet<?>[] setArray(int);
+    Code:
+       0: iconst_1
+       1: anewarray     #20                 // class java/util/HashSet
+       4: dup
+       5: iconst_0
+       6: iload_0
+       7: invokestatic  #29                 // Method setValue:(I)Ljava/util/HashSet;
+      10: aastore
+      11: areturn
+
+  private static DerivedA derivedA(int);
+    Code:
+       0: new           #30                 // class DerivedA
+       3: dup
+       4: iload_0
+       5: invokespecial #31                 // Method DerivedA."<init>":(I)V
+       8: areturn
+
+  private static DerivedB derivedB(int);
+    Code:
+       0: new           #32                 // class DerivedB
+       3: dup
+       4: iload_0
+       5: invokespecial #33                 // Method DerivedB."<init>":(I)V
+       8: areturn
+
+  private static DerivedA[] derivedAArray(int);
+    Code:
+       0: iconst_1
+       1: anewarray     #30                 // class DerivedA
+       4: dup
+       5: iconst_0
+       6: iload_0
+       7: invokestatic  #34                 // Method derivedA:(I)LDerivedA;
+      10: aastore
+      11: areturn
+
+  private static DerivedB[] derivedBArray(int);
+    Code:
+       0: iconst_1
+       1: anewarray     #32                 // class DerivedB
+       4: dup
+       5: iconst_0
+       6: iload_0
+       7: invokestatic  #35                 // Method derivedB:(I)LDerivedB;
+      10: aastore
+      11: areturn
+
+  public static java.lang.Number[] boxedFactory();
+    Code:
+       0: bipush        6
+       2: anewarray     #10                 // class java/lang/Number
+       5: dup
+       6: iconst_0
+       7: iconst_1
+       8: invokestatic  #11                 // Method mark:(I)I
+      11: invokestatic  #36                 // Method byteValue:(I)Ljava/lang/Byte;
+      14: aastore
+      15: dup
+      16: iconst_1
+      17: iconst_2
+      18: invokestatic  #11                 // Method mark:(I)I
+      21: invokestatic  #37                 // Method shortValue:(I)Ljava/lang/Short;
+      24: aastore
+      25: dup
+      26: iconst_2
+      27: iconst_3
+      28: invokestatic  #11                 // Method mark:(I)I
+      31: invokestatic  #38                 // Method integerValue:(I)Ljava/lang/Integer;
+      34: aastore
+      35: dup
+      36: iconst_3
+      37: iconst_4
+      38: invokestatic  #11                 // Method mark:(I)I
+      41: invokestatic  #39                 // Method longValue:(I)Ljava/lang/Long;
+      44: aastore
+      45: dup
+      46: iconst_4
+      47: iconst_5
+      48: invokestatic  #11                 // Method mark:(I)I
+      51: invokestatic  #40                 // Method floatValue:(I)Ljava/lang/Float;
+      54: aastore
+      55: dup
+      56: iconst_5
+      57: bipush        6
+      59: invokestatic  #11                 // Method mark:(I)I
+      62: invokestatic  #41                 // Method doubleValue:(I)Ljava/lang/Double;
+      65: aastore
+      66: areturn
+
+  public static java.lang.CharSequence[] sequenceFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #42                 // class java/lang/CharSequence
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #43                 // Method stringValue:(I)Ljava/lang/String;
+      13: aastore
+      14: dup
+      15: iconst_1
+      16: iconst_2
+      17: invokestatic  #11                 // Method mark:(I)I
+      20: invokestatic  #44                 // Method builderValue:(I)Ljava/lang/StringBuilder;
+      23: aastore
+      24: areturn
+
+  public static java.util.Collection<?>[] collectionFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #45                 // class java/util/Collection
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #28                 // Method listValue:(I)Ljava/util/ArrayList;
+      10: aastore
+      11: dup
+      12: iconst_1
+      13: iconst_2
+      14: invokestatic  #29                 // Method setValue:(I)Ljava/util/HashSet;
+      17: aastore
+      18: areturn
+
+  public static java.lang.Throwable[] throwableFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #46                 // class java/lang/Throwable
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #47                 // Method stateFailure:(I)Ljava/lang/IllegalStateException;
+      10: aastore
+      11: dup
+      12: iconst_1
+      13: iconst_2
+      14: invokestatic  #48                 // Method argumentFailure:(I)Ljava/lang/IllegalArgumentException;
+      17: aastore
+      18: areturn
+
+  public static java.lang.Number[][] numberGridFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #49                 // class "[Ljava/lang/Number;"
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #50                 // Method integerArray:(I)[Ljava/lang/Integer;
+      13: aastore
+      14: dup
+      15: iconst_1
+      16: iconst_2
+      17: invokestatic  #11                 // Method mark:(I)I
+      20: invokestatic  #51                 // Method longArray:(I)[Ljava/lang/Long;
+      23: aastore
+      24: areturn
+
+  public static java.util.Collection<?>[][] collectionGridFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #52                 // class "[Ljava/util/Collection;"
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #53                 // Method listArray:(I)[Ljava/util/ArrayList;
+      13: aastore
+      14: dup
+      15: iconst_1
+      16: iconst_2
+      17: invokestatic  #11                 // Method mark:(I)I
+      20: invokestatic  #54                 // Method setArray:(I)[Ljava/util/HashSet;
+      23: aastore
+      24: areturn
+
+  public static Base[] ownTwoHopFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #55                 // class Base
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #34                 // Method derivedA:(I)LDerivedA;
+      13: aastore
+      14: dup
+      15: iconst_1
+      16: iconst_2
+      17: invokestatic  #11                 // Method mark:(I)I
+      20: invokestatic  #35                 // Method derivedB:(I)LDerivedB;
+      23: aastore
+      24: areturn
+
+  public static LocalInterface[] ownInterfaceFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #56                 // class LocalInterface
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #34                 // Method derivedA:(I)LDerivedA;
+      13: aastore
+      14: dup
+      15: iconst_1
+      16: iconst_2
+      17: invokestatic  #11                 // Method mark:(I)I
+      20: invokestatic  #35                 // Method derivedB:(I)LDerivedB;
+      23: aastore
+      24: areturn
+
+  public static Base[][] ownGridFactory();
+    Code:
+       0: iconst_2
+       1: anewarray     #57                 // class "[LBase;"
+       4: dup
+       5: iconst_0
+       6: iconst_1
+       7: invokestatic  #11                 // Method mark:(I)I
+      10: invokestatic  #58                 // Method derivedAArray:(I)[LDerivedA;
+      13: aastore
+      14: dup
+      15: iconst_1
+      16: iconst_2
+      17: invokestatic  #11                 // Method mark:(I)I
+      20: invokestatic  #59                 // Method derivedBArray:(I)[LDerivedB;
+      23: aastore
+      24: areturn
+
+  private static void observe(java.lang.Object[]);
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: aaload
+       3: astore_1
+       4: aload_1
+       5: ifnonnull     19
+       8: getstatic     #60                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      11: ldc           #61                 // String null
+      13: invokevirtual #62                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      16: goto          32
+      19: getstatic     #60                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      22: aload_1
+      23: invokevirtual #63                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      26: invokevirtual #64                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      29: invokevirtual #62                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      32: getstatic     #60                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      35: getstatic     #2                  // Field trace:I
+      38: invokevirtual #65                 // Method java/io/PrintStream.println:(I)V
+      41: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: iconst_0
+       1: putstatic     #2                  // Field trace:I
+       4: invokestatic  #66                 // Method boxedFactory:()[Ljava/lang/Number;
+       7: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      10: iconst_0
+      11: putstatic     #2                  // Field trace:I
+      14: invokestatic  #68                 // Method sequenceFactory:()[Ljava/lang/CharSequence;
+      17: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      20: iconst_0
+      21: putstatic     #2                  // Field trace:I
+      24: invokestatic  #69                 // Method collectionFactory:()[Ljava/util/Collection;
+      27: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      30: iconst_0
+      31: putstatic     #2                  // Field trace:I
+      34: invokestatic  #70                 // Method throwableFactory:()[Ljava/lang/Throwable;
+      37: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      40: iconst_0
+      41: putstatic     #2                  // Field trace:I
+      44: invokestatic  #71                 // Method numberGridFactory:()[[Ljava/lang/Number;
+      47: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      50: iconst_0
+      51: putstatic     #2                  // Field trace:I
+      54: invokestatic  #72                 // Method collectionGridFactory:()[[Ljava/util/Collection;
+      57: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      60: iconst_0
+      61: putstatic     #2                  // Field trace:I
+      64: invokestatic  #73                 // Method ownTwoHopFactory:()[LBase;
+      67: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      70: iconst_0
+      71: putstatic     #2                  // Field trace:I
+      74: invokestatic  #74                 // Method ownInterfaceFactory:()[LLocalInterface;
+      77: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      80: iconst_0
+      81: putstatic     #2                  // Field trace:I
+      84: invokestatic  #75                 // Method ownGridFactory:()[[LBase;
+      87: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+      90: iconst_0
+      91: putstatic     #2                  // Field trace:I
+      94: invokestatic  #76                 // Method exactNumber:()[Ljava/lang/Number;
+      97: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+     100: iconst_0
+     101: putstatic     #2                  // Field trace:I
+     104: invokestatic  #77                 // Method objectElement:()[Ljava/lang/Object;
+     107: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+     110: iconst_0
+     111: putstatic     #2                  // Field trace:I
+     114: invokestatic  #78                 // Method nullElement:()[Ljava/lang/Object;
+     117: invokestatic  #67                 // Method observe:([Ljava/lang/Object;)V
+     120: return
+}

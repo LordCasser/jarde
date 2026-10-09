@@ -1,0 +1,9 @@
+
+running 4 tests
+test facade::snapshot_hierarchy_tests::named_reference_classes_carry_both_spellings_and_no_arrays ... ok
+test facade::snapshot_hierarchy_tests::parameter_ordinals_count_values_not_slots ... ok
+test facade::snapshot_hierarchy_tests::snapshot_aastore_pair_requires_reference_array_index_and_matching_loader ... ok
+test facade::snapshot_hierarchy_tests::snapshot_reference_shapes_preserve_class_array_rank_and_reject_primitives ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 204 filtered out; finished in 0.00s
+

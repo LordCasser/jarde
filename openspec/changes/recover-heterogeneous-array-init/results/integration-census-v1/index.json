@@ -1,0 +1,31 @@
+{
+  "runner_sha256": "aed4715c8a81fee4a9d79365c81e9e3752411f4df0d373ccf45b832697c0279c",
+  "ci_yml_sha256": "392cc33befd4802ff57a71b277318404c708c36cc4047115284cb0c972f3bbd9",
+  "stages": [
+    {
+      "name": "focused-integration-v4",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_heterogeneous_array_initializers",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1"
+      },
+      "started_utc": "2026-10-09T11:08:35.180874+00:00",
+      "exit": 101,
+      "stdout": "focused-integration-v4.stdout",
+      "stdout_sha256": "9ad0b3082385e8872986b9a6ba841996e155e03edb85fc84d8cf72201bf52eb8",
+      "stderr": "focused-integration-v4.stderr",
+      "stderr_sha256": "f950785cc80ba045fcbe38f14818ee75a1a22685489515478cf7fc374b0ca242",
+      "free_bytes_after": 51272966144
+    }
+  ]
+}
