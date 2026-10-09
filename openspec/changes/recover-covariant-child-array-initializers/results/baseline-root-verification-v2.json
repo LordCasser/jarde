@@ -1,0 +1,42 @@
+{
+  "verification": "passed",
+  "checks": 2503,
+  "errors": [],
+  "audit_sha256": "2e2fa6698b2f52eb49761c7ba0b9bb523774048bf25fdaffb96c87b558226288",
+  "inventories": [
+    {
+      "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/legacy-regressions-root-v1/manifest.json",
+      "files": 304
+    },
+    {
+      "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-fixture-v3/manifest.json",
+      "files": 110
+    },
+    {
+      "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-heterogeneous-array-init/results/candidate-v1-replay-v2/manifest.json",
+      "files": 256
+    }
+  ],
+  "archive_files": 213,
+  "archive_payload_files": 211,
+  "jadx_direct_semantics": [
+    {
+      "key": "direct/javac8/default",
+      "matches_original": false
+    },
+    {
+      "key": "direct/javac8/rename-flags-none",
+      "matches_original": true
+    },
+    {
+      "key": "direct/javac23/default",
+      "matches_original": false
+    },
+    {
+      "key": "direct/javac23/rename-flags-none",
+      "matches_original": true
+    }
+  ],
+  "fresh_execution": false,
+  "scope": "Independent existing-byte verification; no original/JADX/Jarde rerun; exact prior code CI remains separate"
+}

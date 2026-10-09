@@ -1,0 +1,1049 @@
+{
+  "scope": "Exact existing javap instruction listings for all three target grids; no fresh execution",
+  "methods": [
+    {
+      "leg": "javac8",
+      "method": "numberGridDirect",
+      "javap_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_javap-main.stdout",
+      "javap_sha256": "ae496a7fa34352d5cd68e49ce81e2e801b657752a76222785010b497aea24424",
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "anewarray",
+          "operands_and_comment": "#51                 // class \"[Ljava/lang/Number;\""
+        },
+        {
+          "bci": 4,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 6,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 7,
+          "opcode": "anewarray",
+          "operands_and_comment": "#26                 // class java/lang/Integer"
+        },
+        {
+          "bci": 10,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 11,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 12,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 13,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#11                 // Method mark:(I)I"
+        },
+        {
+          "bci": 16,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#5                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;"
+        },
+        {
+          "bci": 19,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 20,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 21,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 22,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 23,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 24,
+          "opcode": "anewarray",
+          "operands_and_comment": "#27                 // class java/lang/Long"
+        },
+        {
+          "bci": 27,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 28,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 29,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 30,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#11                 // Method mark:(I)I"
+        },
+        {
+          "bci": 33,
+          "opcode": "i2l",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 34,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#6                  // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;"
+        },
+        {
+          "bci": 37,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 38,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 39,
+          "opcode": "areturn",
+          "operands_and_comment": ""
+        }
+      ],
+      "fresh_javap": false
+    },
+    {
+      "leg": "javac8",
+      "method": "collectionGridDirect",
+      "javap_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_javap-main.stdout",
+      "javap_sha256": "ae496a7fa34352d5cd68e49ce81e2e801b657752a76222785010b497aea24424",
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "anewarray",
+          "operands_and_comment": "#52                 // class \"[Ljava/util/Collection;\""
+        },
+        {
+          "bci": 4,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 6,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 7,
+          "opcode": "anewarray",
+          "operands_and_comment": "#17                 // class java/util/ArrayList"
+        },
+        {
+          "bci": 10,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 11,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 12,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 13,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#11                 // Method mark:(I)I"
+        },
+        {
+          "bci": 16,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#28                 // Method listValue:(I)Ljava/util/ArrayList;"
+        },
+        {
+          "bci": 19,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 20,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 21,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 22,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 23,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 24,
+          "opcode": "anewarray",
+          "operands_and_comment": "#20                 // class java/util/HashSet"
+        },
+        {
+          "bci": 27,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 28,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 29,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 30,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#11                 // Method mark:(I)I"
+        },
+        {
+          "bci": 33,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#29                 // Method setValue:(I)Ljava/util/HashSet;"
+        },
+        {
+          "bci": 36,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 37,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 38,
+          "opcode": "areturn",
+          "operands_and_comment": ""
+        }
+      ],
+      "fresh_javap": false
+    },
+    {
+      "leg": "javac8",
+      "method": "ownGridDirect",
+      "javap_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_javap-main.stdout",
+      "javap_sha256": "ae496a7fa34352d5cd68e49ce81e2e801b657752a76222785010b497aea24424",
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "anewarray",
+          "operands_and_comment": "#55                 // class \"[LBase;\""
+        },
+        {
+          "bci": 4,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 6,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 7,
+          "opcode": "anewarray",
+          "operands_and_comment": "#30                 // class DerivedA"
+        },
+        {
+          "bci": 10,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 11,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 12,
+          "opcode": "new",
+          "operands_and_comment": "#30                 // class DerivedA"
+        },
+        {
+          "bci": 15,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 16,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 17,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#11                 // Method mark:(I)I"
+        },
+        {
+          "bci": 20,
+          "opcode": "invokespecial",
+          "operands_and_comment": "#31                 // Method DerivedA.\"<init>\":(I)V"
+        },
+        {
+          "bci": 23,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 24,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 25,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 26,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 27,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 28,
+          "opcode": "anewarray",
+          "operands_and_comment": "#32                 // class DerivedB"
+        },
+        {
+          "bci": 31,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 32,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 33,
+          "opcode": "new",
+          "operands_and_comment": "#32                 // class DerivedB"
+        },
+        {
+          "bci": 36,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 37,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 38,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#11                 // Method mark:(I)I"
+        },
+        {
+          "bci": 41,
+          "opcode": "invokespecial",
+          "operands_and_comment": "#33                 // Method DerivedB.\"<init>\":(I)V"
+        },
+        {
+          "bci": 44,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 45,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 46,
+          "opcode": "areturn",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 0,
+          "opcode": "aload_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 2,
+          "opcode": "aaload",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 3,
+          "opcode": "astore_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 4,
+          "opcode": "aload_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "ifnonnull",
+          "operands_and_comment": "19"
+        },
+        {
+          "bci": 8,
+          "opcode": "getstatic",
+          "operands_and_comment": "#56                 // Field java/lang/System.out:Ljava/io/PrintStream;"
+        },
+        {
+          "bci": 11,
+          "opcode": "ldc",
+          "operands_and_comment": "#57                 // String null"
+        },
+        {
+          "bci": 13,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#58                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V"
+        },
+        {
+          "bci": 16,
+          "opcode": "goto",
+          "operands_and_comment": "32"
+        },
+        {
+          "bci": 19,
+          "opcode": "getstatic",
+          "operands_and_comment": "#56                 // Field java/lang/System.out:Ljava/io/PrintStream;"
+        },
+        {
+          "bci": 22,
+          "opcode": "aload_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 23,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#59                 // Method java/lang/Object.getClass:()Ljava/lang/Class;"
+        },
+        {
+          "bci": 26,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#60                 // Method java/lang/Class.getName:()Ljava/lang/String;"
+        },
+        {
+          "bci": 29,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#58                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V"
+        },
+        {
+          "bci": 32,
+          "opcode": "getstatic",
+          "operands_and_comment": "#56                 // Field java/lang/System.out:Ljava/io/PrintStream;"
+        },
+        {
+          "bci": 35,
+          "opcode": "getstatic",
+          "operands_and_comment": "#2                  // Field trace:I"
+        },
+        {
+          "bci": 38,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#61                 // Method java/io/PrintStream.println:(I)V"
+        },
+        {
+          "bci": 41,
+          "opcode": "return",
+          "operands_and_comment": ""
+        }
+      ],
+      "fresh_javap": false
+    },
+    {
+      "leg": "javac23",
+      "method": "numberGridDirect",
+      "javap_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_javap-main.stdout",
+      "javap_sha256": "26fe4e5c64e66942e93fe9da460f9b1de44be63fd5221c6b2639e4666dbe11e8",
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "anewarray",
+          "operands_and_comment": "#135                // class \"[Ljava/lang/Number;\""
+        },
+        {
+          "bci": 4,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 6,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 7,
+          "opcode": "anewarray",
+          "operands_and_comment": "#25                 // class java/lang/Integer"
+        },
+        {
+          "bci": 10,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 11,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 12,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 13,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#51                 // Method mark:(I)I"
+        },
+        {
+          "bci": 16,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#24                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;"
+        },
+        {
+          "bci": 19,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 20,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 21,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 22,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 23,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 24,
+          "opcode": "anewarray",
+          "operands_and_comment": "#30                 // class java/lang/Long"
+        },
+        {
+          "bci": 27,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 28,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 29,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 30,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#51                 // Method mark:(I)I"
+        },
+        {
+          "bci": 33,
+          "opcode": "i2l",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 34,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#29                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;"
+        },
+        {
+          "bci": 37,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 38,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 39,
+          "opcode": "areturn",
+          "operands_and_comment": ""
+        }
+      ],
+      "fresh_javap": false
+    },
+    {
+      "leg": "javac23",
+      "method": "collectionGridDirect",
+      "javap_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_javap-main.stdout",
+      "javap_sha256": "26fe4e5c64e66942e93fe9da460f9b1de44be63fd5221c6b2639e4666dbe11e8",
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "anewarray",
+          "operands_and_comment": "#137                // class \"[Ljava/util/Collection;\""
+        },
+        {
+          "bci": 4,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 6,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 7,
+          "opcode": "anewarray",
+          "operands_and_comment": "#68                 // class java/util/ArrayList"
+        },
+        {
+          "bci": 10,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 11,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 12,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 13,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#51                 // Method mark:(I)I"
+        },
+        {
+          "bci": 16,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#88                 // Method listValue:(I)Ljava/util/ArrayList;"
+        },
+        {
+          "bci": 19,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 20,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 21,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 22,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 23,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 24,
+          "opcode": "anewarray",
+          "operands_and_comment": "#79                 // class java/util/HashSet"
+        },
+        {
+          "bci": 27,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 28,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 29,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 30,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#51                 // Method mark:(I)I"
+        },
+        {
+          "bci": 33,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#92                 // Method setValue:(I)Ljava/util/HashSet;"
+        },
+        {
+          "bci": 36,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 37,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 38,
+          "opcode": "areturn",
+          "operands_and_comment": ""
+        }
+      ],
+      "fresh_javap": false
+    },
+    {
+      "leg": "javac23",
+      "method": "ownGridDirect",
+      "javap_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_javap-main.stdout",
+      "javap_sha256": "26fe4e5c64e66942e93fe9da460f9b1de44be63fd5221c6b2639e4666dbe11e8",
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "anewarray",
+          "operands_and_comment": "#143                // class \"[LBase;\""
+        },
+        {
+          "bci": 4,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 6,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 7,
+          "opcode": "anewarray",
+          "operands_and_comment": "#96                 // class DerivedA"
+        },
+        {
+          "bci": 10,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 11,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 12,
+          "opcode": "new",
+          "operands_and_comment": "#96                 // class DerivedA"
+        },
+        {
+          "bci": 15,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 16,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 17,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#51                 // Method mark:(I)I"
+        },
+        {
+          "bci": 20,
+          "opcode": "invokespecial",
+          "operands_and_comment": "#98                 // Method DerivedA.\"<init>\":(I)V"
+        },
+        {
+          "bci": 23,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 24,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 25,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 26,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 27,
+          "opcode": "iconst_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 28,
+          "opcode": "anewarray",
+          "operands_and_comment": "#101                // class DerivedB"
+        },
+        {
+          "bci": 31,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 32,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 33,
+          "opcode": "new",
+          "operands_and_comment": "#101                // class DerivedB"
+        },
+        {
+          "bci": 36,
+          "opcode": "dup",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 37,
+          "opcode": "iconst_2",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 38,
+          "opcode": "invokestatic",
+          "operands_and_comment": "#51                 // Method mark:(I)I"
+        },
+        {
+          "bci": 41,
+          "opcode": "invokespecial",
+          "operands_and_comment": "#103                // Method DerivedB.\"<init>\":(I)V"
+        },
+        {
+          "bci": 44,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 45,
+          "opcode": "aastore",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 46,
+          "opcode": "areturn",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 0,
+          "opcode": "aload_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 1,
+          "opcode": "iconst_0",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 2,
+          "opcode": "aaload",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 3,
+          "opcode": "astore_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 4,
+          "opcode": "aload_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 5,
+          "opcode": "ifnonnull",
+          "operands_and_comment": "19"
+        },
+        {
+          "bci": 8,
+          "opcode": "getstatic",
+          "operands_and_comment": "#145                // Field java/lang/System.out:Ljava/io/PrintStream;"
+        },
+        {
+          "bci": 11,
+          "opcode": "ldc",
+          "operands_and_comment": "#151                // String null"
+        },
+        {
+          "bci": 13,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#153                // Method java/io/PrintStream.println:(Ljava/lang/String;)V"
+        },
+        {
+          "bci": 16,
+          "opcode": "goto",
+          "operands_and_comment": "32"
+        },
+        {
+          "bci": 19,
+          "opcode": "getstatic",
+          "operands_and_comment": "#145                // Field java/lang/System.out:Ljava/io/PrintStream;"
+        },
+        {
+          "bci": 22,
+          "opcode": "aload_1",
+          "operands_and_comment": ""
+        },
+        {
+          "bci": 23,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#158                // Method java/lang/Object.getClass:()Ljava/lang/Class;"
+        },
+        {
+          "bci": 26,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#162                // Method java/lang/Class.getName:()Ljava/lang/String;"
+        },
+        {
+          "bci": 29,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#153                // Method java/io/PrintStream.println:(Ljava/lang/String;)V"
+        },
+        {
+          "bci": 32,
+          "opcode": "getstatic",
+          "operands_and_comment": "#145                // Field java/lang/System.out:Ljava/io/PrintStream;"
+        },
+        {
+          "bci": 35,
+          "opcode": "getstatic",
+          "operands_and_comment": "#7                  // Field trace:I"
+        },
+        {
+          "bci": 38,
+          "opcode": "invokevirtual",
+          "operands_and_comment": "#168                // Method java/io/PrintStream.println:(I)V"
+        },
+        {
+          "bci": 41,
+          "opcode": "return",
+          "operands_and_comment": ""
+        }
+      ],
+      "fresh_javap": false
+    }
+  ]
+}

@@ -5,3 +5,4 @@
 # root runner 使用无后缀双流；同样保留原始字节。
 stdout -whitespace
 stderr -whitespace
+bigdecimal-historical-provenance-v1/raw/*/jadx/resources/META-INF/MANIFEST.MF -whitespace

@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "checks": 228,
+  "errors": [],
+  "manifest_sha256": "850427a2b6cca0d99fde694f79ce0828a939ebae6bcea30c6ce61ad454e80658",
+  "payload_files": 52,
+  "payload_bytes": 126063,
+  "scope": "Independent root hash/closed-set/original-byte and recorded Java run chronology check only; no fresh execution",
+  "prior_attempt": "Inline v1 failed interpreting scope-notes authored-file sentinel created for this archive as an original filesystem path; did not finish or write a pass result. This v2 checks this exact sentinel separately."
+}

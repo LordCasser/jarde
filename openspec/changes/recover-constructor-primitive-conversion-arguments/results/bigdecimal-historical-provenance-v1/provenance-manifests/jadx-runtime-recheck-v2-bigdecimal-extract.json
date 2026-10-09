@@ -1,0 +1,59 @@
+{
+  "schema": "bigdecimal-historical-provenance-jadx-recheck-extract-v1",
+  "source_manifest_path": "/private/tmp/jarde-em18-baseline-20261009/jadx-runtime-recheck-manifest-v2.json",
+  "source_manifest_sha256": "598541a274b95e57c33a483dbee2e69ed199b827bb81b33f4e4108bf7bc0ff24",
+  "runner_path": "/private/tmp/jarde-em18-baseline-20261009/jadx-runtime-recheck-v2.py",
+  "runner_sha256": "cf8f751fdb1da53c9555e3b82cc69cf72b67ee937bd0de8560cace1371cd988b",
+  "parents": [
+    {
+      "label": "matrix",
+      "path": "/private/tmp/jarde-em18-baseline-20261009/manifest.json",
+      "sha256": "16ca3cd8a08bce34b32d9f7a4bca6e6b44efb2abd94a23cf260b8f8388cc9705"
+    },
+    {
+      "label": "addendum-01",
+      "path": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-01/manifest.json",
+      "sha256": "a11b8fc1aee719d2467b9a0426d9bf3ad94463b6535c4d80b94b554d633189c6"
+    },
+    {
+      "label": "addendum-02",
+      "path": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/manifest.json",
+      "sha256": "6276e7c987ade43de10340abad9bb3788f2d6f180d2fa51e499da0bff03fc02c"
+    }
+  ],
+  "commands": [
+    {
+      "label": "addendum-02/bigdecimal-control-corrected/javac8",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/jadx-classes",
+        "defpackage.Main"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "addendum-20261009-02/jadx-runtime-recheck-v2/bigdecimal-control-corrected/javac8/addendum-02_bigdecimal-control-corrected_javac8.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "addendum-20261009-02/jadx-runtime-recheck-v2/bigdecimal-control-corrected/javac8/addendum-02_bigdecimal-control-corrected_javac8.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum-02/bigdecimal-control-corrected/javac23",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/jadx-classes",
+        "defpackage.Main"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "addendum-20261009-02/jadx-runtime-recheck-v2/bigdecimal-control-corrected/javac23/addendum-02_bigdecimal-control-corrected_javac23.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "addendum-20261009-02/jadx-runtime-recheck-v2/bigdecimal-control-corrected/javac23/addendum-02_bigdecimal-control-corrected_javac23.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope_note": "Filtered to the two corrected BigDecimal addendum-02 runtime rechecks; preserves actual package-qualified Main entrypoint and raw-stream hashes."
+}

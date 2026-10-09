@@ -233,3 +233,9 @@ EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下�
 数值转换片完整两类两真实JDK基线已证：原程序2/2，旧Jarde拒绝且compile失败0/2；JADX none/default四腿compile/run0但删除long→float→long及long→double→long中间转换、舍入值错误，语义0/4。保留全部成员与原始双流，不为制造JADX成功缩小分母；Jarde以原程序和逐层转换语义为oracle。child-array协变已有独立架构审计，结构identity/ownership与Javaassignability呈现分层，不混入数值片。
 
 数值片本地门禁已完成：352 metadata目标双seed各3336passed/0failed/93ignored，213目标复用身份不变的两seed成功记录、139目标重新执行；MSRV1.88、CI-exact Clippy、fmt、显式Java对照、P5/指纹/OpenSpec strict/diff通过。当前代码提交及确切CI待验收，不借前片CI，也不将分区续跑冒称两次fresh全仓命令。
+
+## EM-18 数值片确切代码CI收尾 — 2026-10-10
+
+数值转换片现已7/7，产品a738a8941及属性文档修正8f624ea64推送main；确切8f624的CI37968418985四job/48steps全部success，包含双seed和真JDK25 oracle。冻结CLI/产品blob和原始CI JSON经root核对，见该片verification-root。旧失败、原始流与各实际分母保留；未来产品不能借这次CI。
+
+下一[recover-covariant-child-array-initializers](../../changes/recover-covariant-child-array-initializers/verification-root.md)规划4/4、任务2/7（前置CI/身份及历史完整六类基线），产品未实施。root历史基线2503checks/0errors；有效/无效JVM加载控制已实测且不执行目标方法，不算恢复成功。BigDecimal类型闭表与完整方法的拼接/字段拒绝另记，不混入子数组片。EM18仍部分已测，71单元分母及整单元分类不变。

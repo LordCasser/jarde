@@ -1,0 +1,2389 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/launcher-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/javac-compile-launcher",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_javac-compile-launcher.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_javac-compile-launcher.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/javac-version",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_javac-version.stderr",
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_javac-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/java-version",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_java-version.stderr",
+      "stderr_sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/verify-original",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-original.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-original.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/verify-index-swap",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-index-swap.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-index-swap.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/verify-dup-pop",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-dup-pop.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-dup-pop.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/verify-effect",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-effect.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-effect.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/verify-object-child",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-object-child.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-object-child.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return",
+        "invalid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac8/verify-invalid-return",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-invalid-return.stderr",
+      "stderr_sha256": "85a1b69288b75f4453cd25e54ac738c308f8011a46a73d35a232ccfdee1d2f01",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac8_verify-invalid-return.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/launcher-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/javac-compile-launcher",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_javac-compile-launcher.stderr",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_javac-compile-launcher.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/javac-version",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_javac-version.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_javac-version.stdout",
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/java-version",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_java-version.stderr",
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/verify-original",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-original.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-original.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/verify-index-swap",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-index-swap.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-index-swap.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/verify-dup-pop",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-dup-pop.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-dup-pop.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/verify-effect",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-effect.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-effect.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child",
+        "valid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/verify-object-child",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-object-child.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-object-child.stdout",
+      "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/launcher-classes",
+        "VerifyOnly",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return",
+        "invalid"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "environment_policy": {
+        "filtered_java_variables": [],
+        "inherited": true
+      },
+      "exit": 0,
+      "label": "javac23/verify-invalid-return",
+      "spawn_error": null,
+      "stderr": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-invalid-return.stderr",
+      "stderr_sha256": "9590073425cbdd0225698ec88a6df109f55aa4dac84dfd8e989ed34768f99ecf",
+      "stdout": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/logs/javac23_verify-invalid-return.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "created_utc": "2026-10-09T18:22:25.686015+00:00",
+  "failures": [],
+  "files": [
+    {
+      "bytes": 2193,
+      "path": "VerifyOnly.java",
+      "sha256": "8108c706c392051ddec991c2e20136129d86e7adc616f997e467269d2e423fce"
+    },
+    {
+      "bytes": 1464,
+      "path": "javac23/launcher-classes/VerifyOnly$VariantLoader.class",
+      "sha256": "5b14618fc70d79c51aa3886b1da261aec30e102b527cda1a7ec65cf5861e88c0"
+    },
+    {
+      "bytes": 1743,
+      "path": "javac23/launcher-classes/VerifyOnly.class",
+      "sha256": "ea05c78df1eecec8d29ba38445cd767aa1792677f26c0d1422e0b4a779fd778c"
+    },
+    {
+      "bytes": 220,
+      "path": "javac23/variants/dup-pop/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+    },
+    {
+      "bytes": 112,
+      "path": "javac23/variants/dup-pop/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+    },
+    {
+      "bytes": 113,
+      "path": "javac23/variants/dup-pop/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+    },
+    {
+      "bytes": 88,
+      "path": "javac23/variants/dup-pop/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+    },
+    {
+      "bytes": 5081,
+      "path": "javac23/variants/dup-pop/Main.class",
+      "sha256": "848afe7055142e50d02fc226d604b76cb1cc5d0ac78b8d9aea7d5835f5717233"
+    },
+    {
+      "bytes": 108,
+      "path": "javac23/variants/dup-pop/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+    },
+    {
+      "bytes": 220,
+      "path": "javac23/variants/effect/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+    },
+    {
+      "bytes": 112,
+      "path": "javac23/variants/effect/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+    },
+    {
+      "bytes": 113,
+      "path": "javac23/variants/effect/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+    },
+    {
+      "bytes": 88,
+      "path": "javac23/variants/effect/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+    },
+    {
+      "bytes": 5084,
+      "path": "javac23/variants/effect/Main.class",
+      "sha256": "33de68fdb16abe0357b2cb90e43d1b7acfbc3a1940b3ba46d55efff70646a8a3"
+    },
+    {
+      "bytes": 108,
+      "path": "javac23/variants/effect/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+    },
+    {
+      "bytes": 220,
+      "path": "javac23/variants/index-swap/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+    },
+    {
+      "bytes": 112,
+      "path": "javac23/variants/index-swap/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+    },
+    {
+      "bytes": 113,
+      "path": "javac23/variants/index-swap/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+    },
+    {
+      "bytes": 88,
+      "path": "javac23/variants/index-swap/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+    },
+    {
+      "bytes": 5079,
+      "path": "javac23/variants/index-swap/Main.class",
+      "sha256": "89d1f81610baa13f78ac50ff9f8eebffba367550bd4de4c3223083bcbfd14761"
+    },
+    {
+      "bytes": 108,
+      "path": "javac23/variants/index-swap/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+    },
+    {
+      "bytes": 220,
+      "path": "javac23/variants/invalid-return/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+    },
+    {
+      "bytes": 112,
+      "path": "javac23/variants/invalid-return/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+    },
+    {
+      "bytes": 113,
+      "path": "javac23/variants/invalid-return/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+    },
+    {
+      "bytes": 88,
+      "path": "javac23/variants/invalid-return/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+    },
+    {
+      "bytes": 5079,
+      "path": "javac23/variants/invalid-return/Main.class",
+      "sha256": "dc143816fc79521af59b690a205fdc5528d38571b1111666a684e57aa5330d3b"
+    },
+    {
+      "bytes": 108,
+      "path": "javac23/variants/invalid-return/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+    },
+    {
+      "bytes": 220,
+      "path": "javac23/variants/object-child/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+    },
+    {
+      "bytes": 112,
+      "path": "javac23/variants/object-child/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+    },
+    {
+      "bytes": 113,
+      "path": "javac23/variants/object-child/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+    },
+    {
+      "bytes": 88,
+      "path": "javac23/variants/object-child/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+    },
+    {
+      "bytes": 5079,
+      "path": "javac23/variants/object-child/Main.class",
+      "sha256": "782e1551d205bed5be41904a3e75c2fc799a314d9daab8fba1479e08b4b05a60"
+    },
+    {
+      "bytes": 108,
+      "path": "javac23/variants/object-child/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+    },
+    {
+      "bytes": 220,
+      "path": "javac23/variants/original/Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+    },
+    {
+      "bytes": 112,
+      "path": "javac23/variants/original/DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+    },
+    {
+      "bytes": 113,
+      "path": "javac23/variants/original/DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+    },
+    {
+      "bytes": 88,
+      "path": "javac23/variants/original/LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+    },
+    {
+      "bytes": 5079,
+      "path": "javac23/variants/original/Main.class",
+      "sha256": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726"
+    },
+    {
+      "bytes": 108,
+      "path": "javac23/variants/original/Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+    },
+    {
+      "bytes": 1467,
+      "path": "javac8/launcher-classes/VerifyOnly$VariantLoader.class",
+      "sha256": "52100be33a2fecace1065ba474d2a2ed6ccbe5e41ef9f1fed5a920a4b64247ff"
+    },
+    {
+      "bytes": 1859,
+      "path": "javac8/launcher-classes/VerifyOnly.class",
+      "sha256": "f1f9236e9bed055785594e053a923c8fbcdbe0d64048cd81de14ba66f8400947"
+    },
+    {
+      "bytes": 220,
+      "path": "javac8/variants/dup-pop/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+    },
+    {
+      "bytes": 112,
+      "path": "javac8/variants/dup-pop/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+    },
+    {
+      "bytes": 113,
+      "path": "javac8/variants/dup-pop/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+    },
+    {
+      "bytes": 88,
+      "path": "javac8/variants/dup-pop/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+    },
+    {
+      "bytes": 5084,
+      "path": "javac8/variants/dup-pop/Main.class",
+      "sha256": "2f3824ee3d64e98c219042c79157c93cd328af1bdd3a6c89c0d99061bd424db2"
+    },
+    {
+      "bytes": 108,
+      "path": "javac8/variants/dup-pop/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+    },
+    {
+      "bytes": 220,
+      "path": "javac8/variants/effect/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+    },
+    {
+      "bytes": 112,
+      "path": "javac8/variants/effect/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+    },
+    {
+      "bytes": 113,
+      "path": "javac8/variants/effect/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+    },
+    {
+      "bytes": 88,
+      "path": "javac8/variants/effect/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+    },
+    {
+      "bytes": 5087,
+      "path": "javac8/variants/effect/Main.class",
+      "sha256": "2c6577899a7d209dd3971a6f7abf706f870afed60443723b321357ffb9ed6313"
+    },
+    {
+      "bytes": 108,
+      "path": "javac8/variants/effect/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+    },
+    {
+      "bytes": 220,
+      "path": "javac8/variants/index-swap/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+    },
+    {
+      "bytes": 112,
+      "path": "javac8/variants/index-swap/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+    },
+    {
+      "bytes": 113,
+      "path": "javac8/variants/index-swap/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+    },
+    {
+      "bytes": 88,
+      "path": "javac8/variants/index-swap/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+    },
+    {
+      "bytes": 5082,
+      "path": "javac8/variants/index-swap/Main.class",
+      "sha256": "a501e9f685a151a831798bc86ad73eb76115e63cee80ca883bb7d1e958903073"
+    },
+    {
+      "bytes": 108,
+      "path": "javac8/variants/index-swap/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+    },
+    {
+      "bytes": 220,
+      "path": "javac8/variants/invalid-return/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+    },
+    {
+      "bytes": 112,
+      "path": "javac8/variants/invalid-return/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+    },
+    {
+      "bytes": 113,
+      "path": "javac8/variants/invalid-return/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+    },
+    {
+      "bytes": 88,
+      "path": "javac8/variants/invalid-return/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+    },
+    {
+      "bytes": 5082,
+      "path": "javac8/variants/invalid-return/Main.class",
+      "sha256": "4523b5a13eca9286510b45ab54e96929291d6ca7fc819b87736aea22852d1cc3"
+    },
+    {
+      "bytes": 108,
+      "path": "javac8/variants/invalid-return/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+    },
+    {
+      "bytes": 220,
+      "path": "javac8/variants/object-child/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+    },
+    {
+      "bytes": 112,
+      "path": "javac8/variants/object-child/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+    },
+    {
+      "bytes": 113,
+      "path": "javac8/variants/object-child/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+    },
+    {
+      "bytes": 88,
+      "path": "javac8/variants/object-child/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+    },
+    {
+      "bytes": 5082,
+      "path": "javac8/variants/object-child/Main.class",
+      "sha256": "1e74fa55610421bb1d469739b153f117b8ea8109869e157d399f866a20f879f3"
+    },
+    {
+      "bytes": 108,
+      "path": "javac8/variants/object-child/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+    },
+    {
+      "bytes": 220,
+      "path": "javac8/variants/original/Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+    },
+    {
+      "bytes": 112,
+      "path": "javac8/variants/original/DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+    },
+    {
+      "bytes": 113,
+      "path": "javac8/variants/original/DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+    },
+    {
+      "bytes": 88,
+      "path": "javac8/variants/original/LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+    },
+    {
+      "bytes": 5082,
+      "path": "javac8/variants/original/Main.class",
+      "sha256": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677"
+    },
+    {
+      "bytes": 108,
+      "path": "javac8/variants/original/Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+    },
+    {
+      "bytes": 152,
+      "path": "logs/javac23_java-version.stderr",
+      "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_java-version.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 483,
+      "path": "logs/javac23_javac-compile-launcher.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_javac-compile-launcher.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_javac-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13,
+      "path": "logs/javac23_javac-version.stdout",
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_verify-dup-pop.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac23_verify-dup-pop.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_verify-effect.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac23_verify-effect.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_verify-index-swap.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac23_verify-index-swap.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 1260,
+      "path": "logs/javac23_verify-invalid-return.stderr",
+      "sha256": "9590073425cbdd0225698ec88a6df109f55aa4dac84dfd8e989ed34768f99ecf"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_verify-invalid-return.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_verify-object-child.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac23_verify-object-child.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac23_verify-original.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac23_verify-original.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 174,
+      "path": "logs/javac8_java-version.stderr",
+      "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_java-version.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_javac-compile-launcher.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_javac-compile-launcher.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 16,
+      "path": "logs/javac8_javac-version.stderr",
+      "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_javac-version.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_verify-dup-pop.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac8_verify-dup-pop.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_verify-effect.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac8_verify-effect.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_verify-index-swap.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac8_verify-index-swap.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 1242,
+      "path": "logs/javac8_verify-invalid-return.stderr",
+      "sha256": "85a1b69288b75f4453cd25e54ac738c308f8011a46a73d35a232ccfdee1d2f01"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_verify-invalid-return.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_verify-object-child.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac8_verify-object-child.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 0,
+      "path": "logs/javac8_verify-original.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 32,
+      "path": "logs/javac8_verify-original.stdout",
+      "sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5"
+    },
+    {
+      "bytes": 34630,
+      "path": "prepare-child-jvm-controls-v1.py",
+      "sha256": "c02abceb328f451ec93a45d752dbeb94947615df32a2ca45a307b6b71574d103"
+    }
+  ],
+  "fixture_manifest": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/build-manifest-v3-final.json",
+  "fixture_root": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3",
+  "interpretation": "Only classfile verifier controls were checked. No target method was invoked; this is not evidence of Jarde candidate recovery or source acceptance. invalid-return is launcher/verifier self-test only.",
+  "legs": {
+    "javac23": {
+      "bci": {
+        "child_a_array": 7,
+        "child_a_element_store": 23,
+        "child_a_parent_store": 24,
+        "child_b_array": 28,
+        "child_b_element_store": 44,
+        "child_b_parent_store": 45,
+        "parent_index_a": 5,
+        "parent_index_b": 26,
+        "return": 46
+      },
+      "constant_pool": {
+        "child_a_array": {
+          "class_name": "DerivedA",
+          "index": 96,
+          "tag": 7
+        },
+        "child_b_array": {
+          "class_name": "DerivedB",
+          "index": 101,
+          "tag": 7
+        },
+        "mark_methodref": {
+          "descriptor": "(I)I",
+          "index": 51,
+          "name": "mark",
+          "owner": "Main",
+          "tag": 10
+        },
+        "object_class": {
+          "class_name": "java/lang/Object",
+          "index": 2,
+          "tag": 7
+        },
+        "parent_array": {
+          "class_name": "[LBase;",
+          "index": 143,
+          "tag": 7
+        }
+      },
+      "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "input_classes": {
+        "Base.class": {
+          "bytes": 220,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Base.class",
+          "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+        },
+        "DerivedA.class": {
+          "bytes": 112,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/DerivedA.class",
+          "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+        },
+        "DerivedB.class": {
+          "bytes": 113,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/DerivedB.class",
+          "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+        },
+        "LocalInterface.class": {
+          "bytes": 88,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/LocalInterface.class",
+          "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+        },
+        "Main.class": {
+          "bytes": 5079,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class",
+          "sha256": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726"
+        },
+        "Mid.class": {
+          "bytes": 108,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Mid.class",
+          "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+        }
+      },
+      "java": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javac": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "method": "ownGridDirect()[[LBase;",
+      "method_code": {
+        "code_attribute_length": 59,
+        "code_length": 47,
+        "exception_count": 0,
+        "max_locals": 0,
+        "max_stack": 9,
+        "subattribute_count": 0
+      },
+      "variants": {
+        "dup-pop": {
+          "changes": [
+            {
+              "after_hex": "5957",
+              "bci_after": 24,
+              "bci_before": 24,
+              "before_hex": "",
+              "description": "insert stack-neutral dup;pop after child A element store",
+              "file_offset": 4820,
+              "following_original_bci_delta": 2
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop/Base.class",
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop/DerivedA.class",
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop/DerivedB.class",
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop/LocalInterface.class",
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            "Main.class": {
+              "bytes": 5081,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop/Main.class",
+              "sha256": "848afe7055142e50d02fc226d604b76cb1cc5d0ac78b8d9aea7d5835f5717233"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop/Mid.class",
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          },
+          "code_attribute_length_after": 61,
+          "code_attribute_length_before": 59,
+          "code_length_after": 49,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 96,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 101,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 51,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 2,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 143,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/dup-pop/Main.class",
+          "main_class_bytes": 5081,
+          "main_class_sha256": "848afe7055142e50d02fc226d604b76cb1cc5d0ac78b8d9aea7d5835f5717233",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "max_stack_required_at_insertion": 4,
+          "name": "dup-pop",
+          "shifted_bcis": {
+            "24": 26,
+            "25": 27,
+            "26": 28,
+            "27": 29,
+            "28": 30,
+            "31": 33,
+            "32": 34,
+            "33": 35,
+            "36": 38,
+            "37": 39,
+            "38": 40,
+            "41": 43,
+            "44": 46,
+            "45": 47,
+            "46": 48
+          },
+          "verification": {
+            "command_label": "javac23/verify-dup-pop",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "effect": {
+          "changes": [
+            {
+              "after_hex": "04b8003357",
+              "bci_after": 24,
+              "bci_before": 24,
+              "before_hex": "",
+              "description": "insert iconst_1; invokestatic Main.mark:(I)I; pop after child A element store",
+              "file_offset": 4820,
+              "following_original_bci_delta": 5
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect/Base.class",
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect/DerivedA.class",
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect/DerivedB.class",
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect/LocalInterface.class",
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            "Main.class": {
+              "bytes": 5084,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect/Main.class",
+              "sha256": "33de68fdb16abe0357b2cb90e43d1b7acfbc3a1940b3ba46d55efff70646a8a3"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect/Mid.class",
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          },
+          "code_attribute_length_after": 64,
+          "code_attribute_length_before": 59,
+          "code_length_after": 52,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 96,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 101,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 51,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 2,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 143,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/effect/Main.class",
+          "main_class_bytes": 5084,
+          "main_class_sha256": "33de68fdb16abe0357b2cb90e43d1b7acfbc3a1940b3ba46d55efff70646a8a3",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "max_stack_required_at_insertion": 4,
+          "name": "effect",
+          "shifted_bcis": {
+            "24": 29,
+            "25": 30,
+            "26": 31,
+            "27": 32,
+            "28": 33,
+            "31": 36,
+            "32": 37,
+            "33": 38,
+            "36": 41,
+            "37": 42,
+            "38": 43,
+            "41": 46,
+            "44": 49,
+            "45": 50,
+            "46": 51
+          },
+          "verification": {
+            "command_label": "javac23/verify-effect",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "index-swap": {
+          "changes": [
+            {
+              "after_hex": "04",
+              "bci_after": 5,
+              "bci_before": 5,
+              "before_hex": "03",
+              "description": "swap first parent index 0 to 1",
+              "file_offset": 4801
+            },
+            {
+              "after_hex": "03",
+              "bci_after": 26,
+              "bci_before": 26,
+              "before_hex": "04",
+              "description": "swap second parent index 1 to 0",
+              "file_offset": 4822
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap/Base.class",
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap/DerivedA.class",
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap/DerivedB.class",
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap/LocalInterface.class",
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            "Main.class": {
+              "bytes": 5079,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap/Main.class",
+              "sha256": "89d1f81610baa13f78ac50ff9f8eebffba367550bd4de4c3223083bcbfd14761"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap/Mid.class",
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 96,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 101,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 51,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 2,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 143,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/index-swap/Main.class",
+          "main_class_bytes": 5079,
+          "main_class_sha256": "89d1f81610baa13f78ac50ff9f8eebffba367550bd4de4c3223083bcbfd14761",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "index-swap",
+          "verification": {
+            "command_label": "javac23/verify-index-swap",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "invalid-return": {
+          "changes": [
+            {
+              "after_hex": "ac",
+              "bci_after": 46,
+              "bci_before": 46,
+              "before_hex": "b0",
+              "description": "launcher calibration only: replace reference areturn with int ireturn",
+              "file_offset": 4842
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return/Base.class",
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return/DerivedA.class",
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return/DerivedB.class",
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return/LocalInterface.class",
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            "Main.class": {
+              "bytes": 5079,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return/Main.class",
+              "sha256": "dc143816fc79521af59b690a205fdc5528d38571b1111666a684e57aa5330d3b"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return/Mid.class",
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 96,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 101,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 51,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 2,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 143,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/invalid-return/Main.class",
+          "main_class_bytes": 5079,
+          "main_class_sha256": "dc143816fc79521af59b690a205fdc5528d38571b1111666a684e57aa5330d3b",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "invalid-return",
+          "verification": {
+            "command_label": "javac23/verify-invalid-return",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": true,
+            "status": "passed",
+            "stderr_sha256": "9590073425cbdd0225698ec88a6df109f55aa4dac84dfd8e989ed34768f99ecf",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "target_methods_invoked": false
+          }
+        },
+        "object-child": {
+          "changes": [
+            {
+              "after_hex": "0002",
+              "bci_after": 7,
+              "bci_before": 7,
+              "before_hex": "0060",
+              "cp_after": {
+                "class_name": "java/lang/Object",
+                "index": 2,
+                "tag": 7
+              },
+              "cp_before": {
+                "class_name": "DerivedA",
+                "index": 96,
+                "tag": 7
+              },
+              "description": "retarget child A anewarray from DerivedA to existing Object Class",
+              "file_offset": 4804
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child/Base.class",
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child/DerivedA.class",
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child/DerivedB.class",
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child/LocalInterface.class",
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            "Main.class": {
+              "bytes": 5079,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child/Main.class",
+              "sha256": "782e1551d205bed5be41904a3e75c2fc799a314d9daab8fba1479e08b4b05a60"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child/Mid.class",
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 96,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 101,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 51,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 2,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 143,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/object-child/Main.class",
+          "main_class_bytes": 5079,
+          "main_class_sha256": "782e1551d205bed5be41904a3e75c2fc799a314d9daab8fba1479e08b4b05a60",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "object-child",
+          "verification": {
+            "command_label": "javac23/verify-object-child",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "original": {
+          "changes": [],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original/Base.class",
+              "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original/DerivedA.class",
+              "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original/DerivedB.class",
+              "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original/LocalInterface.class",
+              "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d"
+            },
+            "Main.class": {
+              "bytes": 5079,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original/Main.class",
+              "sha256": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original/Mid.class",
+              "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 96,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 101,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 51,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 2,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 143,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac23/variants/original/Main.class",
+          "main_class_bytes": 5079,
+          "main_class_sha256": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "original",
+          "verification": {
+            "command_label": "javac23/verify-original",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        }
+      }
+    },
+    "javac8": {
+      "bci": {
+        "child_a_array": 7,
+        "child_a_element_store": 23,
+        "child_a_parent_store": 24,
+        "child_b_array": 28,
+        "child_b_element_store": 44,
+        "child_b_parent_store": 45,
+        "parent_index_a": 5,
+        "parent_index_b": 26,
+        "return": 46
+      },
+      "constant_pool": {
+        "child_a_array": {
+          "class_name": "DerivedA",
+          "index": 30,
+          "tag": 7
+        },
+        "child_b_array": {
+          "class_name": "DerivedB",
+          "index": 32,
+          "tag": 7
+        },
+        "mark_methodref": {
+          "descriptor": "(I)I",
+          "index": 11,
+          "name": "mark",
+          "owner": "Main",
+          "tag": 10
+        },
+        "object_class": {
+          "class_name": "java/lang/Object",
+          "index": 13,
+          "tag": 7
+        },
+        "parent_array": {
+          "class_name": "[LBase;",
+          "index": 55,
+          "tag": 7
+        }
+      },
+      "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "input_classes": {
+        "Base.class": {
+          "bytes": 220,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Base.class",
+          "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+        },
+        "DerivedA.class": {
+          "bytes": 112,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/DerivedA.class",
+          "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+        },
+        "DerivedB.class": {
+          "bytes": 113,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/DerivedB.class",
+          "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+        },
+        "LocalInterface.class": {
+          "bytes": 88,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/LocalInterface.class",
+          "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+        },
+        "Main.class": {
+          "bytes": 5082,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class",
+          "sha256": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677"
+        },
+        "Mid.class": {
+          "bytes": 108,
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Mid.class",
+          "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+        }
+      },
+      "java": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "method": "ownGridDirect()[[LBase;",
+      "method_code": {
+        "code_attribute_length": 59,
+        "code_length": 47,
+        "exception_count": 0,
+        "max_locals": 0,
+        "max_stack": 9,
+        "subattribute_count": 0
+      },
+      "variants": {
+        "dup-pop": {
+          "changes": [
+            {
+              "after_hex": "5957",
+              "bci_after": 24,
+              "bci_before": 24,
+              "before_hex": "",
+              "description": "insert stack-neutral dup;pop after child A element store",
+              "file_offset": 4823,
+              "following_original_bci_delta": 2
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop/Base.class",
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop/DerivedA.class",
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop/DerivedB.class",
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop/LocalInterface.class",
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            "Main.class": {
+              "bytes": 5084,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop/Main.class",
+              "sha256": "2f3824ee3d64e98c219042c79157c93cd328af1bdd3a6c89c0d99061bd424db2"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop/Mid.class",
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          },
+          "code_attribute_length_after": 61,
+          "code_attribute_length_before": 59,
+          "code_length_after": 49,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 30,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 32,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 11,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 13,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 55,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/dup-pop/Main.class",
+          "main_class_bytes": 5084,
+          "main_class_sha256": "2f3824ee3d64e98c219042c79157c93cd328af1bdd3a6c89c0d99061bd424db2",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "max_stack_required_at_insertion": 4,
+          "name": "dup-pop",
+          "shifted_bcis": {
+            "24": 26,
+            "25": 27,
+            "26": 28,
+            "27": 29,
+            "28": 30,
+            "31": 33,
+            "32": 34,
+            "33": 35,
+            "36": 38,
+            "37": 39,
+            "38": 40,
+            "41": 43,
+            "44": 46,
+            "45": 47,
+            "46": 48
+          },
+          "verification": {
+            "command_label": "javac8/verify-dup-pop",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "effect": {
+          "changes": [
+            {
+              "after_hex": "04b8000b57",
+              "bci_after": 24,
+              "bci_before": 24,
+              "before_hex": "",
+              "description": "insert iconst_1; invokestatic Main.mark:(I)I; pop after child A element store",
+              "file_offset": 4823,
+              "following_original_bci_delta": 5
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect/Base.class",
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect/DerivedA.class",
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect/DerivedB.class",
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect/LocalInterface.class",
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            "Main.class": {
+              "bytes": 5087,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect/Main.class",
+              "sha256": "2c6577899a7d209dd3971a6f7abf706f870afed60443723b321357ffb9ed6313"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect/Mid.class",
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          },
+          "code_attribute_length_after": 64,
+          "code_attribute_length_before": 59,
+          "code_length_after": 52,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 30,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 32,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 11,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 13,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 55,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/effect/Main.class",
+          "main_class_bytes": 5087,
+          "main_class_sha256": "2c6577899a7d209dd3971a6f7abf706f870afed60443723b321357ffb9ed6313",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "max_stack_required_at_insertion": 4,
+          "name": "effect",
+          "shifted_bcis": {
+            "24": 29,
+            "25": 30,
+            "26": 31,
+            "27": 32,
+            "28": 33,
+            "31": 36,
+            "32": 37,
+            "33": 38,
+            "36": 41,
+            "37": 42,
+            "38": 43,
+            "41": 46,
+            "44": 49,
+            "45": 50,
+            "46": 51
+          },
+          "verification": {
+            "command_label": "javac8/verify-effect",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "index-swap": {
+          "changes": [
+            {
+              "after_hex": "04",
+              "bci_after": 5,
+              "bci_before": 5,
+              "before_hex": "03",
+              "description": "swap first parent index 0 to 1",
+              "file_offset": 4804
+            },
+            {
+              "after_hex": "03",
+              "bci_after": 26,
+              "bci_before": 26,
+              "before_hex": "04",
+              "description": "swap second parent index 1 to 0",
+              "file_offset": 4825
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap/Base.class",
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap/DerivedA.class",
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap/DerivedB.class",
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap/LocalInterface.class",
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            "Main.class": {
+              "bytes": 5082,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap/Main.class",
+              "sha256": "a501e9f685a151a831798bc86ad73eb76115e63cee80ca883bb7d1e958903073"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap/Mid.class",
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 30,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 32,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 11,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 13,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 55,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/index-swap/Main.class",
+          "main_class_bytes": 5082,
+          "main_class_sha256": "a501e9f685a151a831798bc86ad73eb76115e63cee80ca883bb7d1e958903073",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "index-swap",
+          "verification": {
+            "command_label": "javac8/verify-index-swap",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "invalid-return": {
+          "changes": [
+            {
+              "after_hex": "ac",
+              "bci_after": 46,
+              "bci_before": 46,
+              "before_hex": "b0",
+              "description": "launcher calibration only: replace reference areturn with int ireturn",
+              "file_offset": 4845
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return/Base.class",
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return/DerivedA.class",
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return/DerivedB.class",
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return/LocalInterface.class",
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            "Main.class": {
+              "bytes": 5082,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return/Main.class",
+              "sha256": "4523b5a13eca9286510b45ab54e96929291d6ca7fc819b87736aea22852d1cc3"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return/Mid.class",
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 30,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 32,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 11,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 13,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 55,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/invalid-return/Main.class",
+          "main_class_bytes": 5082,
+          "main_class_sha256": "4523b5a13eca9286510b45ab54e96929291d6ca7fc819b87736aea22852d1cc3",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "invalid-return",
+          "verification": {
+            "command_label": "javac8/verify-invalid-return",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": true,
+            "status": "passed",
+            "stderr_sha256": "85a1b69288b75f4453cd25e54ac738c308f8011a46a73d35a232ccfdee1d2f01",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "target_methods_invoked": false
+          }
+        },
+        "object-child": {
+          "changes": [
+            {
+              "after_hex": "000d",
+              "bci_after": 7,
+              "bci_before": 7,
+              "before_hex": "001e",
+              "cp_after": {
+                "class_name": "java/lang/Object",
+                "index": 13,
+                "tag": 7
+              },
+              "cp_before": {
+                "class_name": "DerivedA",
+                "index": 30,
+                "tag": 7
+              },
+              "description": "retarget child A anewarray from DerivedA to existing Object Class",
+              "file_offset": 4807
+            }
+          ],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child/Base.class",
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child/DerivedA.class",
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child/DerivedB.class",
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child/LocalInterface.class",
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            "Main.class": {
+              "bytes": 5082,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child/Main.class",
+              "sha256": "1e74fa55610421bb1d469739b153f117b8ea8109869e157d399f866a20f879f3"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child/Mid.class",
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 30,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 32,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 11,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 13,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 55,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/object-child/Main.class",
+          "main_class_bytes": 5082,
+          "main_class_sha256": "1e74fa55610421bb1d469739b153f117b8ea8109869e157d399f866a20f879f3",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "object-child",
+          "verification": {
+            "command_label": "javac8/verify-object-child",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        },
+        "original": {
+          "changes": [],
+          "class_files": {
+            "Base.class": {
+              "bytes": 220,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original/Base.class",
+              "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654"
+            },
+            "DerivedA.class": {
+              "bytes": 112,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original/DerivedA.class",
+              "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30"
+            },
+            "DerivedB.class": {
+              "bytes": 113,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original/DerivedB.class",
+              "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d"
+            },
+            "LocalInterface.class": {
+              "bytes": 88,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original/LocalInterface.class",
+              "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb"
+            },
+            "Main.class": {
+              "bytes": 5082,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original/Main.class",
+              "sha256": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677"
+            },
+            "Mid.class": {
+              "bytes": 108,
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original/Mid.class",
+              "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a"
+            }
+          },
+          "code_attribute_length_after": 59,
+          "code_attribute_length_before": 59,
+          "code_length_after": 47,
+          "code_length_before": 47,
+          "constant_pool_items": {
+            "child_a_array": {
+              "class_name": "DerivedA",
+              "index": 30,
+              "tag": 7
+            },
+            "child_b_array": {
+              "class_name": "DerivedB",
+              "index": 32,
+              "tag": 7
+            },
+            "mark_methodref": {
+              "descriptor": "(I)I",
+              "index": 11,
+              "name": "mark",
+              "owner": "Main",
+              "tag": 10
+            },
+            "object_class": {
+              "class_name": "java/lang/Object",
+              "index": 13,
+              "tag": 7
+            },
+            "parent_array": {
+              "class_name": "[LBase;",
+              "index": 55,
+              "tag": 7
+            }
+          },
+          "directory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original",
+          "main_class": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1/javac8/variants/original/Main.class",
+          "main_class_bytes": 5082,
+          "main_class_sha256": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677",
+          "max_stack_after": 9,
+          "max_stack_before": 9,
+          "name": "original",
+          "verification": {
+            "command_label": "javac8/verify-original",
+            "exit": 0,
+            "invalid_return_is_launcher_self_test": false,
+            "status": "passed",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "d455d4f7649710ff815d12e15d13a7b549d60aab7ad6efd52771d0e419f3d0b5",
+            "target_methods_invoked": false
+          }
+        }
+      }
+    }
+  },
+  "manifest_self_excluded": true,
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/root-jvm-controls-v1",
+  "repo": "/Users/lordcasser/workspace/projects/jarde",
+  "runner_sha256": "c02abceb328f451ec93a45d752dbeb94947615df32a2ca45a307b6b71574d103",
+  "runner_source": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/prepare-child-jvm-controls-v1.py",
+  "schema": "jarde-child-jvm-controls-v1",
+  "status": "prepared-and-verified",
+  "target_execution": "none; no Main or target method is invoked",
+  "verify_source": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/VerifyOnly.java",
+  "verify_source_sha256": "8108c706c392051ddec991c2e20136129d86e7adc616f997e467269d2e423fce"
+}

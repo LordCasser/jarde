@@ -1,0 +1,37 @@
+{
+  "status": "accepted",
+  "ci_run": 37968418985,
+  "ci_url": "https://github.com/LordCasser/jarde/actions/runs/37968418985",
+  "ci_commit": "8f624ea64cd9d8e73810cc3a2384c773fa7f87bd",
+  "product_commit": "a738a8941",
+  "ci_json_sha256": "2b4a064bdc238ee5b97b28c6fd0d0c6196236dfabd95b8f80adec2d7a5e5cc54",
+  "jobs": 4,
+  "steps": 48,
+  "all_jobs_and_steps_success": true,
+  "candidate_cli_path": "/private/tmp/jarde-constructor-primitive-conversions-cli-v1",
+  "candidate_cli_sha256": "3e4b615e0131d041ecc47c72c0131a3bbd0f5fc9042d8f91b2aa21f26baf6a95",
+  "product_sources": [
+    {
+      "path": "crates/jarde-java/src/init.rs",
+      "ci_commit_blob_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "working_matches": true
+    },
+    {
+      "path": "crates/jarde-java/src/report.rs",
+      "ci_commit_blob_sha256": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2",
+      "working_matches": true
+    },
+    {
+      "path": "crates/jarde-java/src/build.rs",
+      "ci_commit_blob_sha256": "88fcd020ac4bf8acc8a0787a3c99cd5694f7dab2f281aae9b2b354daf7aa9c70",
+      "working_matches": true
+    },
+    {
+      "path": "Cargo.lock",
+      "ci_commit_blob_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "working_matches": true
+    }
+  ],
+  "main_and_origin_main_match_ci_commit": true,
+  "scope": "Exact committed product code and frozen CLI identity; subsequent docs do not reuse this CI for future product changes."
+}

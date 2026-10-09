@@ -12,4 +12,4 @@
 
 - [x] 3.1 root冻结candidate、全部生成源集隔离重编并在两真实JDK以-Xverify:all运行；原始exit/stdout/stderr匹配，五wrapper值/类型/trace与普通new链保真，旧direct剩余失败和Boolean/type正文拒绝分别记录，不能剥离失败成员。
 - [x] 3.2 完成两seed workspace、MSRV1.88、fmt、CI-exact clippy、显式Java对照、15opcode完整原语料、P5/指纹/strict/diff；原始失败、argv/streams/hash永久保留，20GiB停建线与root串行Cargo实际遵守。
-- [ ] 3.3 root对抗验收、更新71单元EM-18边界和handoff、提交推送并确认该代码SHA实际CI全成功；保留成员/statement、nested covariant child-array、BigDecimal及一般alias边界，不宣称整个EM18追平。
+- [x] 3.3 root对抗验收、更新71单元EM-18边界和handoff、提交推送并确认该代码SHA实际CI全成功；保留成员/statement、nested covariant child-array、BigDecimal及一般alias边界，不宣称整个EM18追平。

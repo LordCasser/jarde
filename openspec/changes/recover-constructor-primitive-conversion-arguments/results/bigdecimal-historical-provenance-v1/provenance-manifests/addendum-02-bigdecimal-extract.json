@@ -1,0 +1,439 @@
+{
+  "schema": "bigdecimal-historical-provenance-addendum-extract-v1",
+  "source_manifest_path": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/manifest.json",
+  "source_manifest_sha256": "6276e7c987ade43de10340abad9bb3788f2d6f180d2fa51e499da0bff03fc02c",
+  "parent_matrix_manifest": "/private/tmp/jarde-em18-baseline-20261009/manifest.json",
+  "parent_matrix_manifest_sha256": "16ca3cd8a08bce34b32d9f7a4bca6e6b44efb2abd94a23cf260b8f8388cc9705",
+  "created_utc": "2026-10-09T10:12:10Z",
+  "runner_path": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/run_addendum.py",
+  "runner_sha256": "db732d017ce63bf48445bc9b16ed721bb7cb72c13b710ad1a18bc4f735b79ef7",
+  "cli_path": "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+  "cli_sha256": "f2ad93f5f024a0e1ec7d74e916839b17cac0f8db6fdf8c1a1eb62051f6dde33b",
+  "jadx_path": "/opt/homebrew/bin/jadx",
+  "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+  "jdk_legs": {
+    "javac8": {
+      "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "jar_sha256": "46c8af190164ec5b1b8bb69f9abc594b52fb82410634f81b64c8668ca4e5fb31",
+      "java_version_stderr": "openjdk version \"1.8.0_432\"\nOpenJDK Runtime Environment Corretto-8.432.06.1 (build 1.8.0_432-b06)\nOpenJDK 64-Bit Server VM Corretto-8.432.06.1 (build 25.432-b06, mixed mode)",
+      "javac_version_stdout": ""
+    },
+    "javac23": {
+      "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "jar_sha256": "e5529066a9bd98758e6f6e385fa1f28c66900e34de3554d35b33b5ca642b1af6",
+      "java_version_stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)",
+      "javac_version_stdout": "javac 23.0.1"
+    }
+  },
+  "bigdecimal_case": {
+    "javac8": {
+      "source_sha256": "a03a516b64e5cd356c97e0b4f582cfe905bed3812b6b33f4d5efcecc41971f34",
+      "original_compile_exit": 0,
+      "original_runtime_exit": 0,
+      "jar_exit": 0,
+      "input_jar_sha256": "f42437404bb92d5f4680992482828871951b2ce395a61f6f000a06226f79d0dc",
+      "jadx_exit": 0,
+      "jadx_source_count": 1,
+      "jadx_compile_exit": 0,
+      "jadx_runtime_exit": 1,
+      "jarde_exit": 0,
+      "jarde_compile_exit": 1,
+      "jarde_runtime_exit": null
+    },
+    "javac23": {
+      "source_sha256": "a03a516b64e5cd356c97e0b4f582cfe905bed3812b6b33f4d5efcecc41971f34",
+      "original_compile_exit": 0,
+      "original_runtime_exit": 0,
+      "jar_exit": 0,
+      "input_jar_sha256": "f71d44a7315890d40ac5b28aafd55ffc739ab76b8590715b260a41bc5e696607",
+      "jadx_exit": 0,
+      "jadx_source_count": 1,
+      "jadx_compile_exit": 0,
+      "jadx_runtime_exit": 1,
+      "jarde_exit": 0,
+      "jarde_compile_exit": 1,
+      "jarde_runtime_exit": null
+    }
+  },
+  "commands": [
+    {
+      "label": "javac8/java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02",
+      "exit": 0,
+      "stdout": "logs/javac8_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8_java-version.stderr",
+      "stderr_sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "label": "javac8/javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02",
+      "exit": 0,
+      "stdout": "logs/javac8_javac-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8_javac-version.stderr",
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/original-classes",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/src/Main.java"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_original-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_original-javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/original-classes",
+        "Main"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_original-run.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_original-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/input.jar",
+        "-C",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/original-classes",
+        "."
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jar.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jar.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/jadx",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/jadx",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/input.jar"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jadx.stdout",
+      "stdout_sha256": "38e95c320b09723fdf29f46af6e0e047e2f8b558634781bec31f0f63e491e97d",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jadx.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/jadx-classes",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/jadx/sources/defpackage/Main.java"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jadx-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jadx-javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/jadx-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/jadx-classes",
+        "Main"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 1,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jadx-run.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jadx-run.stderr",
+      "stderr_sha256": "234e73468b73c25e96346ae4630aa363ce6b9fb4c186f110c94f613303a0311a"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/jarde",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jarde.stdout",
+      "stdout_sha256": "f9e41250294a4f24cd4de9e3d5a051b922736b310aa34bf5ce86335c5bb5b507",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jarde.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/bigdecimal-corrected/jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/jarde-classes",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/jarde-src/Main.java"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8",
+      "exit": 1,
+      "stdout": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jarde-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac8/logs/javac8_bigdecimal-corrected_jarde-javac.stderr",
+      "stderr_sha256": "b0fd6bb7510bc76dca8bd803010cdccc69c7b0cac574b55b2382029ac1a5f6e0"
+    },
+    {
+      "label": "javac23/java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02",
+      "exit": 0,
+      "stdout": "logs/javac23_java-version.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23_java-version.stderr",
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "label": "javac23/javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02",
+      "exit": 0,
+      "stdout": "logs/javac23_javac-version.stdout",
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr": "logs/javac23_javac-version.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/original-classes",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/src/Main.java"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_original-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_original-javac.stderr",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/original-classes",
+        "Main"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_original-run.stdout",
+      "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_original-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/jar",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/jar",
+        "cf",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/input.jar",
+        "-C",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/original-classes",
+        "."
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jar.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jar.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/jadx",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/jadx",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/input.jar"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jadx.stdout",
+      "stdout_sha256": "38e95c320b09723fdf29f46af6e0e047e2f8b558634781bec31f0f63e491e97d",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jadx.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/jadx-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/jadx-classes",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/jadx/sources/defpackage/Main.java"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jadx-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jadx-javac.stderr",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/jadx-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/jadx-classes",
+        "Main"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 1,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jadx-run.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jadx-run.stderr",
+      "stderr_sha256": "afc12028f89495aff22534a0d36f56926d6ce4fc654b7fe52f253f4ce1ab9239"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/jarde",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jarde.stdout",
+      "stdout_sha256": "d5d14a4023ba8cf562b647a161934eda0454d4faedf4ff784a89df865f56e4a8",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jarde.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/bigdecimal-corrected/jarde-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/empty",
+        "-d",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/jarde-classes",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/jarde-src/Main.java"
+      ],
+      "cwd": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23",
+      "exit": 1,
+      "stdout": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jarde-javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "bigdecimal-control-corrected/javac23/logs/javac23_bigdecimal-corrected_jarde-javac.stderr",
+      "stderr_sha256": "d2b0cc10dec8b706a8774649245c2dbbdba18753976418036293d870c27ee997"
+    }
+  ],
+  "scope_note": "Filtered to corrected BigDecimal plus JDK identity commands; unrelated CT family records omitted. Original source manifest is left unchanged."
+}

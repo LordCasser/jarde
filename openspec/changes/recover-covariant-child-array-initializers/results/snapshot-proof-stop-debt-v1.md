@@ -1,0 +1,7 @@
+# 既有snapshot类型证明的Stop转换策略
+
+只读核对当前src/facade.rs:25314-25324：snapshot_hierarchy_widenings_presented调用带本次Budget的prove_snapshot_hierarchy_widenings，却把BudgetExceeded/Cancelled转换为Ok(Vec::new())。它在class-source assembly context下调用（40798-40801），随后同一个Budget传入jarde_java正文恢复（40863之后）。这是当前已存在的策略，不是child-array协变引入的路径修改。
+
+空facts能使需要未知层级关系的initializer保持拒绝，但这个类型拒绝本身不能证明收集阶段原始Stop原因/位置被准确发布。随后阶段可能在共享Budget再次停止，也可能走类型拒绝；本审计没有执行全链预算控制，不将这项静态观测冒称全部公共API丢失Stop的实测结论。
+
+应另片审查proof收集、公共执行状态与正文恢复之间的Stop契约，并分别构造metadata/analysis预算与取消控制、保留最早停止来源及未发表结果。当前child-array片仅解除结构类型相等早拒，继续使用已有facts入口；不在这次改动混入facade策略重做。当前片的结构证明/共同提交和正文构建Stop须独立实测，缺类型facts的fallback只作为类型门证据。

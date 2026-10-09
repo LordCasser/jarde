@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "openspec/changes/recover-covariant-child-array-initializers/results/verify-baseline-root-v1.py"
+  ],
+  "exit": 1,
+  "note": "Captured repeat of the first uncaptured tool failure with unchanged verifier; relative stream path not resolved",
+  "script_sha256": "a1a7aae4a6b3724de9053d704b55c1ef35251258f4c0d746258d33347d31c657",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "cd67a2d76dc0eb8a0836434aa5b7412b96834bc5db5e79d62761f6d09e1805ea"
+}

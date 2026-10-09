@@ -1,0 +1,176 @@
+{
+  "scope": "Read-only audit after own cargo clean; next planning/current CI evidence remain WIP",
+  "prior_readonly_attempt": "v1 assertion expected two git branch -a rows but origin/HEAD symbolic alias adds third; no file written, no Git mutation; v2 checks exact refs including alias",
+  "main": "8f624ea64cd9d8e73810cc3a2384c773fa7f87bd",
+  "origin_main": "8f624ea64cd9d8e73810cc3a2384c773fa7f87bd",
+  "refs": [
+    "refs/heads/main ",
+    "refs/remotes/origin/HEAD refs/remotes/origin/main",
+    "refs/remotes/origin/main "
+  ],
+  "worktrees": [
+    {
+      "worktree": "/Users/lordcasser/workspace/projects/jarde",
+      "HEAD": "8f624ea64cd9d8e73810cc3a2384c773fa7f87bd",
+      "branch": "refs/heads/main",
+      "status_short": "?? openspec/changes/recover-constructor-primitive-conversion-arguments/results/root-clean-after-local-acceptance-v1/\n?? openspec/changes/recover-covariant-child-array-initializers/\n",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "HEAD": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_short": "",
+      "root_target_exists": false,
+      "fuzz_target_exists": false,
+      "ancestor_of_main": true
+    }
+  ],
+  "free_bytes": 21959364608,
+  "candidate_source_matches_committed_head": [
+    {
+      "path": "crates/jarde-java/src/init.rs",
+      "committed_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "frozen_cli_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "matches": true
+    },
+    {
+      "path": "crates/jarde-java/src/report.rs",
+      "committed_sha256": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2",
+      "frozen_cli_sha256": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2",
+      "matches": true
+    },
+    {
+      "path": "crates/jarde-java/src/build.rs",
+      "committed_sha256": "88fcd020ac4bf8acc8a0787a3c99cd5694f7dab2f281aae9b2b354daf7aa9c70",
+      "frozen_cli_sha256": "88fcd020ac4bf8acc8a0787a3c99cd5694f7dab2f281aae9b2b354daf7aa9c70",
+      "matches": true
+    },
+    {
+      "path": "Cargo.lock",
+      "committed_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "frozen_cli_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "matches": true
+    }
+  ],
+  "cli_exists": true
+}

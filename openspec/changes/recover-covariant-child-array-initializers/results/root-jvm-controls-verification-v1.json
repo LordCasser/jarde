@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "checks": 363,
+  "errors": [],
+  "manifest_sha256": "6ae2a01d72031b134027525bdd054831da47d2a21230d8e32c455ca02b630879",
+  "files": 114,
+  "commands": 18,
+  "valid_loading_checks": 10,
+  "invalid_return_verifier_self_checks": 2,
+  "scope": "Complete-class mutation, unchanged companions, closed evidence and exact raw Code VerifyError checked by root; no target methods invoked or Jarde recovery result claimed."
+}

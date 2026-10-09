@@ -1,0 +1,37 @@
+VERIFY_ERROR java.lang.VerifyError: Bad type on operand stack
+Exception Details:
+  Location:
+    Main.ownGridDirect()[[LBase; @46: ireturn
+  Reason:
+    Type '[[LBase;' (current frame, stack[0]) is not assignable to integer
+  Current Frame:
+    bci: @46
+    flags: { }
+    locals: { }
+    stack: { '[[LBase;' }
+  Bytecode:
+    0000000: 05bd 008f 5903 04bd 0060 5903 bb00 6059
+    0000010: 04b8 0033 b700 6253 5359 0404 bd00 6559
+    0000020: 03bb 0065 5905 b800 33b7 0067 5353 ac  
+
+java.lang.VerifyError: Bad type on operand stack
+Exception Details:
+  Location:
+    Main.ownGridDirect()[[LBase; @46: ireturn
+  Reason:
+    Type '[[LBase;' (current frame, stack[0]) is not assignable to integer
+  Current Frame:
+    bci: @46
+    flags: { }
+    locals: { }
+    stack: { '[[LBase;' }
+  Bytecode:
+    0000000: 05bd 008f 5903 04bd 0060 5903 bb00 6059
+    0000010: 04b8 0033 b700 6253 5359 0404 bd00 6559
+    0000020: 03bb 0065 5905 b800 33b7 0067 5353 ac  
+
+	at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3650)
+	at java.base/java.lang.Class.getDeclaredMethods(Class.java:2735)
+	at VerifyOnly$VariantLoader.loadResolveAndInspect(Unknown Source)
+	at VerifyOnly.main(Unknown Source)

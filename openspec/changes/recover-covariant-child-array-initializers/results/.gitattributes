@@ -1,0 +1,5 @@
+*.stdout -whitespace
+*.stderr -whitespace
+*.log -whitespace
+stdout -whitespace
+stderr -whitespace

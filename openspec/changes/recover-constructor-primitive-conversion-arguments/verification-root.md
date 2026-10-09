@@ -1,6 +1,6 @@
 # Root Verification — Constructor Primitive Conversion Arguments
 
-本片6/7任务：基线、限定实现、root完整语义对照及本地门禁已完成，当前代码提交与确切CI待验收。前置代码5a6264de的CI37947791151四job/48steps全部success，不能借前片CI判本片最终成功。实际基线对照允许在CI等待期完成，产品改动在前置CI全部成功后才开始。
+本片7/7任务：基线、限定实现、root完整语义对照、本地门禁及确切代码CI均已验收，产品a738a8941与属性文档修正8f624ea64已推送main。前置代码5a6264de的CI37947791151四job/48steps全部success，不能借前片CI判本片最终成功。实际基线对照允许在CI等待期完成，产品改动在前置CI全部成功后才开始。
 
 ## Frozen Complete Baseline
 
@@ -86,3 +86,17 @@ root-java-execution-comparison-v1实际exit0，P3显式ignored三项全部通过
 首次root-staged-diff-check-v1实际exit2，只报告Cargo原始stdout的终尾空行；此前git diff检查不覆盖当时未跟踪的日志。产品提交a738a894已本地创建但尚未推送。本片已有results/.gitattributes只匹配*.stdout/*.stderr，而root runner以stdout/stderr无后缀保存流；沿用相邻片的原始证据策略，只为这两个basename补充-whitespace，不改任何日志字节、hash或源码规则。完整相对前置f9c6f56d的diff检查须在补充后通过再推送；不把首次staged检查冒称成功。
 
 补充后root-full-diff-check-v3实际exit0，命令为git diff f9c6f56d69d8dc3d37da4584003af8e3c83b3453 --check，覆盖当前全部已提交产品/测试/fixture/证据及尚未提交的属性修正。原始streams未变化，旧失败保留。
+
+## Exact Committed CI Acceptance — 2026-10-10
+
+已推送产品a738a8941及属性文档修正8f624ea64cd9d8e73810cc3a2384c773fa7f87bd。确切8f624的CI37968418985四job、48steps全部success，含两个独立seed全仓命令、实际Temurin25 oracle、显式P3/functional-constructor完整Java对照、MSRV1.88、Clippy/fmt、supply chain/fuzz、OpenSpec strict和tracked-tree检查。原始gh JSON为results/ci-code-sha-v1.json（SHA 2b4a064bdc238ee5b97b28c6fd0d0c6196236dfabd95b8f80adec2d7a5e5cc54）。root独立核对实际状态、48steps及该commit四个产品/构建blob与冻结CLI，见results/ci-code-sha-root-verification-v1.json（SHA 9dfb2eb952ed9faf23273e76beced788a9ce59b5708daa867ebe6559a30fa682）。本片7/7，不能借本次CI验收未来产品改动。
+
+本项目cargo clean实际删除7681files/894.1MiB，root/fuzz/14辅助树当前无target；辅助树detached、干净且main祖先，没有遗留分支待合并。最新身份/清理见root-clean-after-local-acceptance-v1与worktree-audit-after-local-acceptance-v2.json。主机其它项目未操作。
+
+BigDecimal后续独立问题见results/next-bigdecimal-fact-audit-v1.md。历史原/JADX源码、类、原始双流及入口错误/重验记录已归档52files/126063bytes，manifest SHA 850427a2b6cca0d99fde694f79ce0828a939ebae6bcea30c6ce61ad454e80658；root核验228checks/0errors（bigdecimal-historical-provenance-root-verification-v2.json）。这是历史字节保全，不是fresh Java/JADX执行；旧0/18与当前16/18、legacy18/22分母分开记录。
+
+下一独立change recover-covariant-child-array-initializers规划4/4、前置及历史基线2/7；仅解除child ownership类型相等早截断，Builder继续用准确store/type证据。协变子数组、BigDecimal、member/statement与alias边界保留，本片成功不等于EM18整单元追平。
+
+文档收尾staged diff v1实际exit2：新归档JAR MANIFEST.MF的标准CRLF/终止空行及一份新写审计Markdown的额外EOF空行。仅为两份原始manifest路径添加-whitespace保全字节/hash；新写Markdown收掉额外EOF空行，不改原始流或任何类。旧失败结果保留，修正后须以v2实际检查通过。
+
+修正后root-acceptance-staged-diff-v2实际exit0，归档manifest原始hash未改变；OpenSpec strict收尾327passed/0failed。
