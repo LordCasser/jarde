@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "stdout": "staged-diff-before-baseline-commit.stdout",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr": "staged-diff-before-baseline-commit.stderr",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

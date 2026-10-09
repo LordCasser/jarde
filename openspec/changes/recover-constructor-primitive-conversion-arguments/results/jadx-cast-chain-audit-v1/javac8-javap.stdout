@@ -1,0 +1,671 @@
+public class ConstructorPrimitiveConversionControls {
+  public ConstructorPrimitiveConversionControls();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int markInt(java.lang.String, int);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: aload_0
+       4: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+       7: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      10: ldc           #4                  // String :
+      12: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      15: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      18: iload_1
+      19: invokevirtual #5                  // Method java/io/PrintStream.println:(I)V
+      22: iload_1
+      23: ireturn
+
+  static long markLong(java.lang.String, long);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: aload_0
+       4: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+       7: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      10: ldc           #4                  // String :
+      12: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      15: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      18: lload_1
+      19: invokevirtual #6                  // Method java/io/PrintStream.println:(J)V
+      22: lload_1
+      23: lreturn
+
+  static float markFloat(java.lang.String, float);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: aload_0
+       4: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+       7: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      10: ldc           #4                  // String :
+      12: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      15: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      18: fload_1
+      19: invokevirtual #7                  // Method java/io/PrintStream.println:(F)V
+      22: fload_1
+      23: freturn
+
+  static double markDouble(java.lang.String, double);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: aload_0
+       4: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+       7: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      10: ldc           #4                  // String :
+      12: invokevirtual #3                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      15: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      18: dload_1
+      19: invokevirtual #8                  // Method java/io/PrintStream.println:(D)V
+      22: dload_1
+      23: dreturn
+
+  static java.lang.Byte wrapperByte(int);
+    Code:
+       0: new           #9                  // class java/lang/Byte
+       3: dup
+       4: ldc           #10                 // String wrapper-byte
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2b
+      11: invokespecial #12                 // Method java/lang/Byte."<init>":(B)V
+      14: areturn
+
+  static java.lang.Short wrapperShort(int);
+    Code:
+       0: new           #13                 // class java/lang/Short
+       3: dup
+       4: ldc           #14                 // String wrapper-short
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2s
+      11: invokespecial #15                 // Method java/lang/Short."<init>":(S)V
+      14: areturn
+
+  static java.lang.Long wrapperLong(int);
+    Code:
+       0: new           #16                 // class java/lang/Long
+       3: dup
+       4: ldc           #17                 // String wrapper-long
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2l
+      11: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      14: areturn
+
+  static java.lang.Float wrapperFloat(long);
+    Code:
+       0: new           #19                 // class java/lang/Float
+       3: dup
+       4: ldc           #20                 // String wrapper-float
+       6: lload_0
+       7: invokestatic  #21                 // Method markLong:(Ljava/lang/String;J)J
+      10: l2f
+      11: invokespecial #22                 // Method java/lang/Float."<init>":(F)V
+      14: areturn
+
+  static java.lang.Double wrapperDouble(float);
+    Code:
+       0: new           #23                 // class java/lang/Double
+       3: dup
+       4: ldc           #24                 // String wrapper-double
+       6: fload_0
+       7: invokestatic  #25                 // Method markFloat:(Ljava/lang/String;F)F
+      10: f2d
+      11: invokespecial #26                 // Method java/lang/Double."<init>":(D)V
+      14: areturn
+
+  static java.lang.Integer integerContrast(int);
+    Code:
+       0: new           #27                 // class java/lang/Integer
+       3: dup
+       4: ldc           #28                 // String integer-contrast
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: invokespecial #29                 // Method java/lang/Integer."<init>":(I)V
+      13: areturn
+
+  static java.lang.Number[] boxedArray(int);
+    Code:
+       0: bipush        6
+       2: anewarray     #30                 // class java/lang/Number
+       5: dup
+       6: iconst_0
+       7: new           #9                  // class java/lang/Byte
+      10: dup
+      11: ldc           #31                 // String array-byte
+      13: iload_0
+      14: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      17: i2b
+      18: invokespecial #12                 // Method java/lang/Byte."<init>":(B)V
+      21: aastore
+      22: dup
+      23: iconst_1
+      24: new           #13                 // class java/lang/Short
+      27: dup
+      28: ldc           #32                 // String array-short
+      30: iload_0
+      31: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      34: i2s
+      35: invokespecial #15                 // Method java/lang/Short."<init>":(S)V
+      38: aastore
+      39: dup
+      40: iconst_2
+      41: new           #27                 // class java/lang/Integer
+      44: dup
+      45: ldc           #33                 // String array-integer
+      47: iload_0
+      48: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      51: invokespecial #29                 // Method java/lang/Integer."<init>":(I)V
+      54: aastore
+      55: dup
+      56: iconst_3
+      57: new           #16                 // class java/lang/Long
+      60: dup
+      61: ldc           #34                 // String array-long
+      63: iload_0
+      64: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      67: i2l
+      68: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      71: aastore
+      72: dup
+      73: iconst_4
+      74: new           #19                 // class java/lang/Float
+      77: dup
+      78: ldc           #35                 // String array-float
+      80: iload_0
+      81: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      84: i2f
+      85: invokespecial #22                 // Method java/lang/Float."<init>":(F)V
+      88: aastore
+      89: dup
+      90: iconst_5
+      91: new           #23                 // class java/lang/Double
+      94: dup
+      95: ldc           #36                 // String array-double
+      97: iload_0
+      98: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+     101: i2d
+     102: invokespecial #26                 // Method java/lang/Double."<init>":(D)V
+     105: aastore
+     106: areturn
+
+  static java.lang.Long ordinaryReturnNew(int);
+    Code:
+       0: new           #16                 // class java/lang/Long
+       3: dup
+       4: ldc           #37                 // String return-new
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2l
+      11: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      14: areturn
+
+  static PrimitiveLongPair storedLocalReuse(int);
+    Code:
+       0: ldc           #38                 // String stored-local
+       2: iload_0
+       3: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+       6: istore_1
+       7: new           #39                 // class PrimitiveLongPair
+      10: dup
+      11: iload_1
+      12: i2l
+      13: iload_1
+      14: i2l
+      15: invokespecial #40                 // Method PrimitiveLongPair."<init>":(JJ)V
+      18: areturn
+
+  static java.lang.Long intToLong(int);
+    Code:
+       0: new           #16                 // class java/lang/Long
+       3: dup
+       4: ldc           #41                 // String i2l
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2l
+      11: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      14: areturn
+
+  static java.lang.Float intToFloat(int);
+    Code:
+       0: new           #19                 // class java/lang/Float
+       3: dup
+       4: ldc           #42                 // String i2f
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2f
+      11: invokespecial #22                 // Method java/lang/Float."<init>":(F)V
+      14: areturn
+
+  static java.lang.Double intToDouble(int);
+    Code:
+       0: new           #23                 // class java/lang/Double
+       3: dup
+       4: ldc           #43                 // String i2d
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2d
+      11: invokespecial #26                 // Method java/lang/Double."<init>":(D)V
+      14: areturn
+
+  static java.lang.Byte intToByte(int);
+    Code:
+       0: new           #9                  // class java/lang/Byte
+       3: dup
+       4: ldc           #44                 // String i2b
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2b
+      11: invokespecial #12                 // Method java/lang/Byte."<init>":(B)V
+      14: areturn
+
+  static java.lang.Character intToCharacter(int);
+    Code:
+       0: new           #45                 // class java/lang/Character
+       3: dup
+       4: ldc           #46                 // String i2c
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2c
+      11: invokespecial #47                 // Method java/lang/Character."<init>":(C)V
+      14: areturn
+
+  static java.lang.Short intToShort(int);
+    Code:
+       0: new           #13                 // class java/lang/Short
+       3: dup
+       4: ldc           #48                 // String i2s
+       6: iload_0
+       7: invokestatic  #11                 // Method markInt:(Ljava/lang/String;I)I
+      10: i2s
+      11: invokespecial #15                 // Method java/lang/Short."<init>":(S)V
+      14: areturn
+
+  static java.lang.Integer longToInt(long);
+    Code:
+       0: new           #27                 // class java/lang/Integer
+       3: dup
+       4: ldc           #49                 // String l2i
+       6: lload_0
+       7: invokestatic  #21                 // Method markLong:(Ljava/lang/String;J)J
+      10: l2i
+      11: invokespecial #29                 // Method java/lang/Integer."<init>":(I)V
+      14: areturn
+
+  static java.lang.Float longToFloat(long);
+    Code:
+       0: new           #19                 // class java/lang/Float
+       3: dup
+       4: ldc           #50                 // String l2f
+       6: lload_0
+       7: invokestatic  #21                 // Method markLong:(Ljava/lang/String;J)J
+      10: l2f
+      11: invokespecial #22                 // Method java/lang/Float."<init>":(F)V
+      14: areturn
+
+  static java.lang.Double longToDouble(long);
+    Code:
+       0: new           #23                 // class java/lang/Double
+       3: dup
+       4: ldc           #51                 // String l2d
+       6: lload_0
+       7: invokestatic  #21                 // Method markLong:(Ljava/lang/String;J)J
+      10: l2d
+      11: invokespecial #26                 // Method java/lang/Double."<init>":(D)V
+      14: areturn
+
+  static java.lang.Integer floatToInt(float);
+    Code:
+       0: new           #27                 // class java/lang/Integer
+       3: dup
+       4: ldc           #52                 // String f2i
+       6: fload_0
+       7: invokestatic  #25                 // Method markFloat:(Ljava/lang/String;F)F
+      10: f2i
+      11: invokespecial #29                 // Method java/lang/Integer."<init>":(I)V
+      14: areturn
+
+  static java.lang.Long floatToLong(float);
+    Code:
+       0: new           #16                 // class java/lang/Long
+       3: dup
+       4: ldc           #53                 // String f2l
+       6: fload_0
+       7: invokestatic  #25                 // Method markFloat:(Ljava/lang/String;F)F
+      10: f2l
+      11: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      14: areturn
+
+  static java.lang.Double floatToDouble(float);
+    Code:
+       0: new           #23                 // class java/lang/Double
+       3: dup
+       4: ldc           #54                 // String f2d
+       6: fload_0
+       7: invokestatic  #25                 // Method markFloat:(Ljava/lang/String;F)F
+      10: f2d
+      11: invokespecial #26                 // Method java/lang/Double."<init>":(D)V
+      14: areturn
+
+  static java.lang.Integer doubleToInt(double);
+    Code:
+       0: new           #27                 // class java/lang/Integer
+       3: dup
+       4: ldc           #55                 // String d2i
+       6: dload_0
+       7: invokestatic  #56                 // Method markDouble:(Ljava/lang/String;D)D
+      10: d2i
+      11: invokespecial #29                 // Method java/lang/Integer."<init>":(I)V
+      14: areturn
+
+  static java.lang.Long doubleToLong(double);
+    Code:
+       0: new           #16                 // class java/lang/Long
+       3: dup
+       4: ldc           #57                 // String d2l
+       6: dload_0
+       7: invokestatic  #56                 // Method markDouble:(Ljava/lang/String;D)D
+      10: d2l
+      11: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      14: areturn
+
+  static java.lang.Float doubleToFloat(double);
+    Code:
+       0: new           #19                 // class java/lang/Float
+       3: dup
+       4: ldc           #58                 // String d2f
+       6: dload_0
+       7: invokestatic  #56                 // Method markDouble:(Ljava/lang/String;D)D
+      10: d2f
+      11: invokespecial #22                 // Method java/lang/Float."<init>":(F)V
+      14: areturn
+
+  static java.lang.Long longViaFloat(long);
+    Code:
+       0: new           #16                 // class java/lang/Long
+       3: dup
+       4: ldc           #59                 // String l2f-f2l
+       6: lload_0
+       7: invokestatic  #21                 // Method markLong:(Ljava/lang/String;J)J
+      10: l2f
+      11: f2l
+      12: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      15: areturn
+
+  static java.lang.Long longViaDouble(long);
+    Code:
+       0: new           #16                 // class java/lang/Long
+       3: dup
+       4: ldc           #60                 // String l2d-d2l
+       6: lload_0
+       7: invokestatic  #21                 // Method markLong:(Ljava/lang/String;J)J
+      10: l2d
+      11: d2l
+      12: invokespecial #18                 // Method java/lang/Long."<init>":(J)V
+      15: areturn
+
+  static java.lang.Double doubleViaFloat(double);
+    Code:
+       0: new           #23                 // class java/lang/Double
+       3: dup
+       4: ldc           #61                 // String d2f-f2d
+       6: dload_0
+       7: invokestatic  #56                 // Method markDouble:(Ljava/lang/String;D)D
+      10: d2f
+      11: f2d
+      12: invokespecial #26                 // Method java/lang/Double."<init>":(D)V
+      15: areturn
+
+  static void show(java.lang.Object, boolean);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: iload_1
+       4: invokevirtual #62                 // Method java/io/PrintStream.println:(Z)V
+       7: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      10: aload_0
+      11: invokevirtual #63                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+      14: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: sipush        130
+       3: invokestatic  #64                 // Method wrapperByte:(I)Ljava/lang/Byte;
+       6: astore_1
+       7: aload_1
+       8: aload_1
+       9: instanceof    #9                  // class java/lang/Byte
+      12: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+      15: ldc           #66                 // int 65537
+      17: invokestatic  #67                 // Method wrapperShort:(I)Ljava/lang/Short;
+      20: astore_2
+      21: aload_2
+      22: aload_2
+      23: instanceof    #13                 // class java/lang/Short
+      26: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+      29: bipush        7
+      31: invokestatic  #68                 // Method wrapperLong:(I)Ljava/lang/Long;
+      34: astore_3
+      35: aload_3
+      36: aload_3
+      37: instanceof    #16                 // class java/lang/Long
+      40: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+      43: ldc2_w        #69                 // long 16777217l
+      46: invokestatic  #71                 // Method wrapperFloat:(J)Ljava/lang/Float;
+      49: astore        4
+      51: aload         4
+      53: aload         4
+      55: instanceof    #19                 // class java/lang/Float
+      58: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+      61: ldc           #72                 // float 1.6777216E7f
+      63: invokestatic  #73                 // Method wrapperDouble:(F)Ljava/lang/Double;
+      66: astore        5
+      68: aload         5
+      70: aload         5
+      72: instanceof    #23                 // class java/lang/Double
+      75: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+      78: bipush        7
+      80: invokestatic  #74                 // Method integerContrast:(I)Ljava/lang/Integer;
+      83: astore        6
+      85: aload         6
+      87: aload         6
+      89: instanceof    #27                 // class java/lang/Integer
+      92: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+      95: sipush        130
+      98: invokestatic  #75                 // Method boxedArray:(I)[Ljava/lang/Number;
+     101: astore        7
+     103: aload         7
+     105: iconst_0
+     106: aaload
+     107: astore        8
+     109: aload         8
+     111: aload         8
+     113: instanceof    #9                  // class java/lang/Byte
+     116: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     119: aload         7
+     121: iconst_1
+     122: aaload
+     123: astore        9
+     125: aload         9
+     127: aload         9
+     129: instanceof    #13                 // class java/lang/Short
+     132: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     135: aload         7
+     137: iconst_2
+     138: aaload
+     139: astore        10
+     141: aload         10
+     143: aload         10
+     145: instanceof    #27                 // class java/lang/Integer
+     148: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     151: aload         7
+     153: iconst_3
+     154: aaload
+     155: astore        11
+     157: aload         11
+     159: aload         11
+     161: instanceof    #16                 // class java/lang/Long
+     164: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     167: aload         7
+     169: iconst_4
+     170: aaload
+     171: astore        12
+     173: aload         12
+     175: aload         12
+     177: instanceof    #19                 // class java/lang/Float
+     180: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     183: aload         7
+     185: iconst_5
+     186: aaload
+     187: astore        13
+     189: aload         13
+     191: aload         13
+     193: instanceof    #23                 // class java/lang/Double
+     196: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     199: bipush        9
+     201: invokestatic  #76                 // Method ordinaryReturnNew:(I)Ljava/lang/Long;
+     204: astore        14
+     206: aload         14
+     208: aload         14
+     210: instanceof    #16                 // class java/lang/Long
+     213: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     216: bipush        11
+     218: invokestatic  #77                 // Method storedLocalReuse:(I)LPrimitiveLongPair;
+     221: astore        15
+     223: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+     226: aload         15
+     228: getfield      #78                 // Field PrimitiveLongPair.left:J
+     231: invokevirtual #6                  // Method java/io/PrintStream.println:(J)V
+     234: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+     237: aload         15
+     239: getfield      #79                 // Field PrimitiveLongPair.right:J
+     242: invokevirtual #6                  // Method java/io/PrintStream.println:(J)V
+     245: sipush        130
+     248: invokestatic  #80                 // Method intToByte:(I)Ljava/lang/Byte;
+     251: astore        16
+     253: aload         16
+     255: aload         16
+     257: instanceof    #9                  // class java/lang/Byte
+     260: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     263: bipush        65
+     265: invokestatic  #81                 // Method intToCharacter:(I)Ljava/lang/Character;
+     268: astore        17
+     270: aload         17
+     272: aload         17
+     274: instanceof    #45                 // class java/lang/Character
+     277: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     280: ldc           #66                 // int 65537
+     282: invokestatic  #82                 // Method intToShort:(I)Ljava/lang/Short;
+     285: astore        18
+     287: aload         18
+     289: aload         18
+     291: instanceof    #13                 // class java/lang/Short
+     294: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     297: ldc           #83                 // int 16777217
+     299: invokestatic  #84                 // Method intToLong:(I)Ljava/lang/Long;
+     302: astore        19
+     304: aload         19
+     306: aload         19
+     308: instanceof    #16                 // class java/lang/Long
+     311: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     314: ldc           #83                 // int 16777217
+     316: invokestatic  #85                 // Method intToFloat:(I)Ljava/lang/Float;
+     319: astore        20
+     321: aload         20
+     323: aload         20
+     325: instanceof    #19                 // class java/lang/Float
+     328: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     331: ldc           #83                 // int 16777217
+     333: invokestatic  #86                 // Method intToDouble:(I)Ljava/lang/Double;
+     336: astore        21
+     338: aload         21
+     340: aload         21
+     342: instanceof    #23                 // class java/lang/Double
+     345: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     348: ldc2_w        #87                 // long 4294967297l
+     351: invokestatic  #89                 // Method longToInt:(J)Ljava/lang/Integer;
+     354: astore        22
+     356: aload         22
+     358: aload         22
+     360: instanceof    #27                 // class java/lang/Integer
+     363: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     366: ldc2_w        #69                 // long 16777217l
+     369: invokestatic  #90                 // Method longToFloat:(J)Ljava/lang/Float;
+     372: astore        23
+     374: aload         23
+     376: aload         23
+     378: instanceof    #19                 // class java/lang/Float
+     381: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     384: ldc2_w        #91                 // long 9007199254740993l
+     387: invokestatic  #93                 // Method longToDouble:(J)Ljava/lang/Double;
+     390: astore        24
+     392: aload         24
+     394: aload         24
+     396: instanceof    #23                 // class java/lang/Double
+     399: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     402: ldc           #94                 // float 3.75f
+     404: invokestatic  #95                 // Method floatToInt:(F)Ljava/lang/Integer;
+     407: astore        25
+     409: aload         25
+     411: aload         25
+     413: instanceof    #27                 // class java/lang/Integer
+     416: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     419: ldc           #94                 // float 3.75f
+     421: invokestatic  #96                 // Method floatToLong:(F)Ljava/lang/Long;
+     424: astore        26
+     426: aload         26
+     428: aload         26
+     430: instanceof    #16                 // class java/lang/Long
+     433: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     436: ldc           #72                 // float 1.6777216E7f
+     438: invokestatic  #97                 // Method floatToDouble:(F)Ljava/lang/Double;
+     441: astore        27
+     443: aload         27
+     445: aload         27
+     447: instanceof    #23                 // class java/lang/Double
+     450: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     453: ldc2_w        #98                 // double 3.75d
+     456: invokestatic  #100                // Method doubleToInt:(D)Ljava/lang/Integer;
+     459: astore        28
+     461: aload         28
+     463: aload         28
+     465: instanceof    #27                 // class java/lang/Integer
+     468: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     471: ldc2_w        #98                 // double 3.75d
+     474: invokestatic  #101                // Method doubleToLong:(D)Ljava/lang/Long;
+     477: astore        29
+     479: aload         29
+     481: aload         29
+     483: instanceof    #16                 // class java/lang/Long
+     486: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     489: ldc2_w        #102                // double 1.6777217E7d
+     492: invokestatic  #104                // Method doubleToFloat:(D)Ljava/lang/Float;
+     495: astore        30
+     497: aload         30
+     499: aload         30
+     501: instanceof    #19                 // class java/lang/Float
+     504: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     507: ldc2_w        #69                 // long 16777217l
+     510: invokestatic  #105                // Method longViaFloat:(J)Ljava/lang/Long;
+     513: astore        31
+     515: aload         31
+     517: aload         31
+     519: instanceof    #16                 // class java/lang/Long
+     522: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     525: ldc2_w        #91                 // long 9007199254740993l
+     528: invokestatic  #106                // Method longViaDouble:(J)Ljava/lang/Long;
+     531: astore        32
+     533: aload         32
+     535: aload         32
+     537: instanceof    #16                 // class java/lang/Long
+     540: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     543: ldc2_w        #102                // double 1.6777217E7d
+     546: invokestatic  #107                // Method doubleViaFloat:(D)Ljava/lang/Double;
+     549: astore        33
+     551: aload         33
+     553: aload         33
+     555: instanceof    #23                 // class java/lang/Double
+     558: invokestatic  #65                 // Method show:(Ljava/lang/Object;Z)V
+     561: return
+}

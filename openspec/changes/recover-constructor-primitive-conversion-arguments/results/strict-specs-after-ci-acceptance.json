@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "stdout": "strict-specs-after-ci-acceptance.stdout",
+  "stdout_sha256": "5b5309b86b5bb92a6bb65ab3646980287d11aedc586673b14577137e6a6a6a3b",
+  "stderr": "strict-specs-after-ci-acceptance.stderr",
+  "stderr_sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+}

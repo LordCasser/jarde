@@ -1,0 +1,167 @@
+{
+  "schema": "recover-constructor-primitive-conversion-baseline-root-verification-v1",
+  "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/manifest.json",
+  "manifest_sha256": "0afb246902e6a6b76c7ff17939313d22810dcc586eca63f2741f7e806aa5858d",
+  "comparison_legs_expected": 6,
+  "comparison_legs_verified": 6,
+  "comparisons": [
+    {
+      "leg": "javac8",
+      "profile": "jarde-cli2",
+      "stage_render_ok": true,
+      "markers": [
+        {
+          "class": "ConstructorPrimitiveConversionControls",
+          "bytecode": true,
+          "refused_body": false
+        },
+        {
+          "class": "PrimitiveLongPair",
+          "bytecode": false,
+          "refused_body": false
+        }
+      ],
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "runtime_exit0": false,
+      "rawstreams_equal": false,
+      "exit_equal": false,
+      "quality_ok": false,
+      "accepted_recomputed": false
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-none",
+      "stage_render_ok": true,
+      "markers": [
+        {
+          "source": "generated/javac8/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        },
+        {
+          "source": "generated/javac8/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        }
+      ],
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_exit0": true,
+      "rawstreams_equal": false,
+      "exit_equal": true,
+      "quality_ok": true,
+      "accepted_recomputed": false
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-default",
+      "stage_render_ok": true,
+      "markers": [
+        {
+          "source": "generated/javac8/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        },
+        {
+          "source": "generated/javac8/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        }
+      ],
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_exit0": true,
+      "rawstreams_equal": false,
+      "exit_equal": true,
+      "quality_ok": true,
+      "accepted_recomputed": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jarde-cli2",
+      "stage_render_ok": true,
+      "markers": [
+        {
+          "class": "ConstructorPrimitiveConversionControls",
+          "bytecode": true,
+          "refused_body": false
+        },
+        {
+          "class": "PrimitiveLongPair",
+          "bytecode": false,
+          "refused_body": false
+        }
+      ],
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "runtime_exit0": false,
+      "rawstreams_equal": false,
+      "exit_equal": false,
+      "quality_ok": false,
+      "accepted_recomputed": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-none",
+      "stage_render_ok": true,
+      "markers": [
+        {
+          "source": "generated/javac23/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        },
+        {
+          "source": "generated/javac23/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        }
+      ],
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_exit0": true,
+      "rawstreams_equal": false,
+      "exit_equal": true,
+      "quality_ok": true,
+      "accepted_recomputed": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-default",
+      "stage_render_ok": true,
+      "markers": [
+        {
+          "source": "generated/javac23/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        },
+        {
+          "source": "generated/javac23/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+          "bytecode": false,
+          "refused_body": false,
+          "unsupported_stub": false
+        }
+      ],
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_exit0": true,
+      "rawstreams_equal": false,
+      "exit_equal": true,
+      "quality_ok": true,
+      "accepted_recomputed": false
+    }
+  ],
+  "errors": [
+    "javac8/jarde-cli2: generated javac flags/order differ from run-003",
+    "javac8/jadx-none: generated javac flags/order differ from run-003",
+    "javac8/jadx-default: generated javac flags/order differ from run-003"
+  ],
+  "verified": false
+}

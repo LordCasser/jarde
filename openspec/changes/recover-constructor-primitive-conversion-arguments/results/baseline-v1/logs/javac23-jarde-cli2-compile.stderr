@@ -1,0 +1,83 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:63: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:76: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:89: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:102: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:115: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:181: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:194: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:207: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:220: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:233: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:246: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:259: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:272: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:285: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:298: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:311: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:324: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:337: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:350: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:363: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:376: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:389: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:402: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:415: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:428: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java:441: 错误: 缺少返回语句
+    }
+    ^
+26 个错误
+3 个警告

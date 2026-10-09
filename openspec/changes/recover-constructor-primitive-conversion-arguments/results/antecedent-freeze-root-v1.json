@@ -1,0 +1,51 @@
+{
+  "schema": "primitive-conversion-antecedent-freeze-v1",
+  "code_sha": "5a6264de1b3481e1cdbef4fd30361940bfac33cf",
+  "ci_acceptance_path": "openspec/changes/compose-constructed-reference-array-elements/results/ci-root-acceptance-5a6264de.json",
+  "ci_acceptance_sha256": "515498067353d8ecf8398649bd3140284c0e3a51d46f6e97baf5208b1a8f9b1a",
+  "ci_json_sha256": "f7ac30572c1c7b66c6375661c7c1176166c9b9f411f52baf6031865f917ff72e",
+  "cli_metadata_path": "openspec/changes/compose-constructed-reference-array-elements/results/candidate-cli-v2.json",
+  "cli_metadata_sha256": "162e376424726673d21d3efda5e3310bd56a206c02609c3a248b652331a6b45b",
+  "cli_sha256": "78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273",
+  "legacy_complete_family_manifest_path": "openspec/changes/compose-constructed-reference-array-elements/results/legacy-family-cli2-root-v1/manifest.json",
+  "legacy_complete_family_manifest_sha256": "b5418ee6cca10305de194dfa0e2491f5d7b92e93c13a09cfa6c6c0b39869138f",
+  "legacy_file_hash_checks": 110,
+  "legacy_hash_issues": 0,
+  "legacy_complete_case_results": [
+    {
+      "family": "factory",
+      "leg": "javac8",
+      "full_sources": 6,
+      "compile_exit": 0,
+      "accepted": true
+    },
+    {
+      "family": "factory",
+      "leg": "javac23",
+      "full_sources": 6,
+      "compile_exit": 0,
+      "accepted": true
+    },
+    {
+      "family": "direct",
+      "leg": "javac8",
+      "full_sources": 6,
+      "compile_exit": 1,
+      "accepted": false
+    },
+    {
+      "family": "direct",
+      "leg": "javac23",
+      "full_sources": 6,
+      "compile_exit": 1,
+      "accepted": false
+    }
+  ],
+  "physical_method_review_path": "baseline-method-review-v1.json",
+  "physical_method_review_sha256": "6318ff5e6ab4957093b816a33a19610f6e0b2030a2dcaaa8328718a134563a76",
+  "javap_conversion_bcis": [
+    10,
+    11
+  ],
+  "note": "旧direct完整六类两腿0/2，五wrapper与nested协变独立；不回写前片manifest或借局部成功。"
+}

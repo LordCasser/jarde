@@ -5,7 +5,8 @@ EM-18完整direct-new家族的五种wrapper构造参数含明确数值转换，�
 ## What Changes
 
 - 在现有普通构造参数闭合证明中，仅接纳属于实际参数依赖的PrimitiveConversion，继续由已有Builder证明一元operand、源类别和目标cast。
-- 保留转换链、真实constructor descriptor、求值次序与完整来源；不把结构事实当作正文呈现成功。
+- 保留转换链、真实constructor descriptor、求值次序与完整来源；不把结构事实当作正文呈现成功。基线已证JADX删除两种long经float/double往返的cast而改值，原程序为语义oracle。
+- 普通构造入口透传本次共享Budget，直接调用已有verify_metered并原子传播Stop；必要地补齐该入口既有漏计，不新增feature计费开关或预扫。
 - 对照双javac的完整wrapper家族及独立完整正例，复用15opcode数值回归，补共享reader、无关转换、Boolean及失败生产者控制。
 
 ## Capabilities
@@ -20,7 +21,7 @@ EM-18完整direct-new家族的五种wrapper构造参数含明确数值转换，�
 
 ## Impact
 
-`crates/jarde-java/src/init.rs`已有参数区间判据，既有decode、Cast、render_value及new_expr验证的复用，以及测试和完整源集对照。不引入crate、依赖、cast evaluator、pass或注册表。
+`crates/jarde-java/src/init.rs`已有参数区间判据与meter，`report.rs`单一生产调用点透传Budget/Stop，既有decode、Cast、render_value及new_expr验证的复用，以及测试和完整源集对照。不引入crate、依赖、cast evaluator、pass或注册表。
 
 ## Prerequisites and Non-Goals
 

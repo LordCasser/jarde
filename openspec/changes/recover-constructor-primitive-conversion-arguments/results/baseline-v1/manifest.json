@@ -1,0 +1,2056 @@
+{
+  "schema": "recover-constructor-primitive-conversion-baseline-root-v1",
+  "runner_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/replay-baseline-root-v1.py",
+  "runner_sha256": "6c76e8a237ea2e9acefa3d4e3d4676b4de976f2af33fc0f0c279f4c37acceb12",
+  "original_fixture_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/manifest.json",
+  "original_fixture_manifest_sha256": "98e8f014b4cb7f8a4efca50ff54e7fee992805f27387f95d4c76db1f9b5bc713",
+  "cli_path": "/private/tmp/jarde-em18-composition-cli-v2",
+  "cli_sha256": "78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273",
+  "cli_metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/candidate-cli-v2.json",
+  "cli_metadata_sha256": "162e376424726673d21d3efda5e3310bd56a206c02609c3a248b652331a6b45b",
+  "cli_metadata_cli_path": "/private/tmp/jarde-em18-composition-cli-v2",
+  "cli_metadata_cli_sha256": "78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273",
+  "jadx_path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+  "jadx_sha256": "5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3",
+  "source_closure": [
+    {
+      "path": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/draft-sources-v1/ConstructorPrimitiveConversionControls.java",
+      "bytes": 7811,
+      "sha256": "4e5aff3dced47b6493a3db64b8fe2998a0c9328fde22ce5c7fd745d1e03e2c1e"
+    },
+    {
+      "path": "openspec/changes/recover-constructor-primitive-conversion-arguments/results/draft-sources-v1/PrimitiveLongPair.java",
+      "bytes": 186,
+      "sha256": "904ecf774d469580f0afe716d82b1c12744fdee721274fe69e31f3507cb36e60"
+    }
+  ],
+  "jdk_legs": {
+    "javac8": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "compiler_flags_from_fixture_v1_run003": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ],
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/empty-classpath-sourcepath",
+      "original_sources": [
+        {
+          "path": "original/javac8/sources/ConstructorPrimitiveConversionControls.java",
+          "bytes": 7811,
+          "sha256": "4e5aff3dced47b6493a3db64b8fe2998a0c9328fde22ce5c7fd745d1e03e2c1e"
+        },
+        {
+          "path": "original/javac8/sources/PrimitiveLongPair.java",
+          "bytes": 186,
+          "sha256": "904ecf774d469580f0afe716d82b1c12744fdee721274fe69e31f3507cb36e60"
+        }
+      ],
+      "original_compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/sources/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/sources/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8",
+        "exit": 0,
+        "stdout": "logs/javac8-original-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac8-original-compile.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "original_compile_ok": true,
+      "original_class_set": [
+        "ConstructorPrimitiveConversionControls.class",
+        "PrimitiveLongPair.class"
+      ],
+      "original_classes": [
+        {
+          "path": "original/javac8/classes/ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+        },
+        {
+          "path": "original/javac8/classes/PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+        }
+      ],
+      "original_input_jar": {
+        "path": "inputs/javac8-original-two-class.jar",
+        "sha256": "ddd5508f8bb4bc48e2ab4b2205701c7ec519f5795729f9dabcf5f02660494191",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+          }
+        ]
+      },
+      "original_runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/classes",
+          "ConstructorPrimitiveConversionControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8",
+        "exit": 0,
+        "stdout": "logs/javac8-original-run.stdout",
+        "stdout_bytes": 864,
+        "stdout_sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418",
+        "stderr": "logs/javac8-original-run.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "original_runtime_ok": true
+    },
+    "javac23": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "compiler_flags_from_fixture_v1_run003": [
+        "--release",
+        "8"
+      ],
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/empty-classpath-sourcepath",
+      "original_sources": [
+        {
+          "path": "original/javac23/sources/ConstructorPrimitiveConversionControls.java",
+          "bytes": 7811,
+          "sha256": "4e5aff3dced47b6493a3db64b8fe2998a0c9328fde22ce5c7fd745d1e03e2c1e"
+        },
+        {
+          "path": "original/javac23/sources/PrimitiveLongPair.java",
+          "bytes": 186,
+          "sha256": "904ecf774d469580f0afe716d82b1c12744fdee721274fe69e31f3507cb36e60"
+        }
+      ],
+      "original_compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/sources/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/sources/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23",
+        "exit": 0,
+        "stdout": "logs/javac23-original-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac23-original-compile.stderr",
+        "stderr_bytes": 243,
+        "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "original_compile_ok": true,
+      "original_class_set": [
+        "ConstructorPrimitiveConversionControls.class",
+        "PrimitiveLongPair.class"
+      ],
+      "original_classes": [
+        {
+          "path": "original/javac23/classes/ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+        },
+        {
+          "path": "original/javac23/classes/PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+        }
+      ],
+      "original_input_jar": {
+        "path": "inputs/javac23-original-two-class.jar",
+        "sha256": "079bde6612c3ac269b38abaeb23e659421c266d77374407424556da0d915cf2c",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+          }
+        ]
+      },
+      "original_runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/classes",
+          "ConstructorPrimitiveConversionControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23",
+        "exit": 0,
+        "stdout": "logs/javac23-original-run.stdout",
+        "stdout_bytes": 864,
+        "stdout_sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418",
+        "stderr": "logs/javac23-original-run.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "original_runtime_ok": true
+    }
+  },
+  "commands": [
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/sources/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/sources/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8",
+      "exit": 0,
+      "stdout": "logs/javac8-original-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8-original-compile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8/classes",
+        "ConstructorPrimitiveConversionControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac8",
+      "exit": 0,
+      "stdout": "logs/javac8-original-run.stdout",
+      "stdout_bytes": 864,
+      "stdout_sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418",
+      "stderr": "logs/javac8-original-run.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar",
+        "--class",
+        "ConstructorPrimitiveConversionControls",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls.stdout",
+      "stdout_bytes": 855776,
+      "stdout_sha256": "6ee67c61166bcb53d8f9137645f32537cde2ff75957338a81db7677da099902c",
+      "stderr": "logs/javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-cli2-render-PrimitiveLongPair",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar",
+        "--class",
+        "PrimitiveLongPair",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-cli2-render-PrimitiveLongPair.stdout",
+      "stdout_bytes": 18490,
+      "stdout_sha256": "acb5cef44306035165106ed8ea583be084b71762b1b0ac0311a10a0bfa30ad14",
+      "stderr": "logs/javac8-jarde-cli2-render-PrimitiveLongPair.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-cli2-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/sources/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2",
+      "exit": 1,
+      "stdout": "logs/javac8-jarde-cli2-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8-jarde-cli2-compile.stderr",
+      "stderr_bytes": 6640,
+      "stderr_sha256": "751539e316dbf0867c453583aa4c2a7a817c4304f9596f392a8dcd85368d5700"
+    },
+    {
+      "label": "javac8-jadx-none-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/jadx-output",
+        "--rename-flags",
+        "none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-decompile.stdout",
+      "stdout_bytes": 148,
+      "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+      "stderr": "logs/javac8-jadx-none-decompile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/jadx-output/sources/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8-jadx-none-compile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/classes",
+        "ConstructorPrimitiveConversionControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-run.stdout",
+      "stdout_bytes": 864,
+      "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+      "stderr": "logs/javac8-jadx-none-run.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/jadx-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-decompile.stdout",
+      "stdout_bytes": 148,
+      "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+      "stderr": "logs/javac8-jadx-default-decompile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8-jadx-default-compile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/classes",
+        "defpackage.ConstructorPrimitiveConversionControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-run.stdout",
+      "stdout_bytes": 864,
+      "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+      "stderr": "logs/javac8-jadx-default-run.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/sources/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/sources/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23",
+      "exit": 0,
+      "stdout": "logs/javac23-original-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23-original-compile.stderr",
+      "stderr_bytes": 243,
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23/classes",
+        "ConstructorPrimitiveConversionControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/original/javac23",
+      "exit": 0,
+      "stdout": "logs/javac23-original-run.stdout",
+      "stdout_bytes": 864,
+      "stdout_sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418",
+      "stderr": "logs/javac23-original-run.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar",
+        "--class",
+        "ConstructorPrimitiveConversionControls",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls.stdout",
+      "stdout_bytes": 855759,
+      "stdout_sha256": "e8a9d6cb60ff1c65fad402e99cf0e22954ce1fb5e00d79b0b056d4009a12dfb6",
+      "stderr": "logs/javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-cli2-render-PrimitiveLongPair",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar",
+        "--class",
+        "PrimitiveLongPair",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-cli2-render-PrimitiveLongPair.stdout",
+      "stdout_bytes": 18490,
+      "stdout_sha256": "53b577747b669ee567b13a06c4b3e49a6049ac63663bd7949c934dc95551a249",
+      "stderr": "logs/javac23-jarde-cli2-render-PrimitiveLongPair.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-cli2-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2",
+      "exit": 1,
+      "stdout": "logs/javac23-jarde-cli2-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23-jarde-cli2-compile.stderr",
+      "stderr_bytes": 6909,
+      "stderr_sha256": "6a4d20c3d151ff2a55c79dbff567768e0b43eb65be3aa161c0d78223f8a110fc"
+    },
+    {
+      "label": "javac23-jadx-none-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/jadx-output",
+        "--rename-flags",
+        "none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-decompile.stdout",
+      "stdout_bytes": 148,
+      "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+      "stderr": "logs/javac23-jadx-none-decompile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/jadx-output/sources/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23-jadx-none-compile.stderr",
+      "stderr_bytes": 243,
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/classes",
+        "ConstructorPrimitiveConversionControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-run.stdout",
+      "stdout_bytes": 864,
+      "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+      "stderr": "logs/javac23-jadx-none-run.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/jadx-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-decompile.stdout",
+      "stdout_bytes": 148,
+      "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+      "stderr": "logs/javac23-jadx-default-decompile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23-jadx-default-compile.stderr",
+      "stderr_bytes": 243,
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/classes",
+        "defpackage.ConstructorPrimitiveConversionControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-run.stdout",
+      "stdout_bytes": 864,
+      "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+      "stderr": "logs/javac23-jadx-default-run.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cases": [
+    {
+      "leg": "javac8",
+      "profile": "jarde-cli2",
+      "input_jar": {
+        "path": "inputs/javac8-original-two-class.jar",
+        "sha256": "ddd5508f8bb4bc48e2ab4b2205701c7ec519f5795729f9dabcf5f02660494191",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+          }
+        ]
+      },
+      "input_class_set": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+        }
+      ],
+      "generated_source_set": [
+        {
+          "path": "generated/javac8/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+          "bytes": 36321,
+          "sha256": "17967666be5eaf25e1312c12acda0d552776ad75a1768559e399bff604feca77"
+        },
+        {
+          "path": "generated/javac8/jarde-cli2/sources/PrimitiveLongPair.java",
+          "bytes": 784,
+          "sha256": "65632958645da00be971c880219cdece08cc1e75af662df4ddc25b49a7efa686"
+        }
+      ],
+      "reports": [
+        {
+          "class": "ConstructorPrimitiveConversionControls",
+          "render_command": {
+            "label": "javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls",
+            "argv": [
+              "/private/tmp/jarde-em18-composition-cli-v2",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar",
+              "--class",
+              "ConstructorPrimitiveConversionControls",
+              "--policy",
+              "plain-jar",
+              "--format",
+              "json",
+              "--evidence",
+              "all",
+              "--release",
+              "8"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls.stdout",
+            "stdout_bytes": 855776,
+            "stdout_sha256": "6ee67c61166bcb53d8f9137645f32537cde2ff75957338a81db7677da099902c",
+            "stderr": "logs/javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "json_parsed": true,
+          "bytecode_marker": true,
+          "refused_body_marker": false,
+          "source_path": "generated/javac8/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+          "source_sha256": "17967666be5eaf25e1312c12acda0d552776ad75a1768559e399bff604feca77"
+        },
+        {
+          "class": "PrimitiveLongPair",
+          "render_command": {
+            "label": "javac8-jarde-cli2-render-PrimitiveLongPair",
+            "argv": [
+              "/private/tmp/jarde-em18-composition-cli-v2",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar",
+              "--class",
+              "PrimitiveLongPair",
+              "--policy",
+              "plain-jar",
+              "--format",
+              "json",
+              "--evidence",
+              "all",
+              "--release",
+              "8"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac8-jarde-cli2-render-PrimitiveLongPair.stdout",
+            "stdout_bytes": 18490,
+            "stdout_sha256": "acb5cef44306035165106ed8ea583be084b71762b1b0ac0311a10a0bfa30ad14",
+            "stderr": "logs/javac8-jarde-cli2-render-PrimitiveLongPair.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "json_parsed": true,
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "source_path": "generated/javac8/jarde-cli2/sources/PrimitiveLongPair.java",
+          "source_sha256": "65632958645da00be971c880219cdece08cc1e75af662df4ddc25b49a7efa686"
+        }
+      ],
+      "quality": {
+        "complete_expected_source_set": true,
+        "generated_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "expected_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "all_reports_without_bytecode_or_refused_body_markers": false,
+        "all_sources_without_decompiler_stubs": true,
+        "stage_render_ok": true
+      },
+      "quality_ok": false,
+      "stage_render_ok": true,
+      "compile": {
+        "label": "javac8-jarde-cli2-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2/sources/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jarde-cli2",
+        "exit": 1,
+        "stdout": "logs/javac8-jarde-cli2-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac8-jarde-cli2-compile.stderr",
+        "stderr_bytes": 6640,
+        "stderr_sha256": "751539e316dbf0867c453583aa4c2a7a817c4304f9596f392a8dcd85368d5700"
+      },
+      "compile_ok": false,
+      "original_compile_ok": true,
+      "original_runtime_ok": true,
+      "resolved_main_class": "ConstructorPrimitiveConversionControls",
+      "main_class_parse_error": null,
+      "runtime": null,
+      "candidate_runtime_exit0": false,
+      "rawstreams_match": false,
+      "exit_match": false,
+      "accepted": false
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-none",
+      "input_jar": {
+        "path": "inputs/javac8-original-two-class.jar",
+        "sha256": "ddd5508f8bb4bc48e2ab4b2205701c7ec519f5795729f9dabcf5f02660494191",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+          }
+        ]
+      },
+      "input_class_set": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+        }
+      ],
+      "generated_source_set": [
+        {
+          "path": "generated/javac8/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+          "bytes": 7765,
+          "sha256": "2eb7fa9a05ff182ead78a2e5617f01216ef8ad99ba6f91ee93d6ff38f0d9b4c9"
+        },
+        {
+          "path": "generated/javac8/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+          "bytes": 278,
+          "sha256": "f8861352a7bc64dc5cb2c3649af320a4773bb8acd8b399f0babe898664a8124c"
+        }
+      ],
+      "reports": [
+        {
+          "decompile_command": {
+            "label": "javac8-jadx-none-decompile",
+            "argv": [
+              "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+              "--no-res",
+              "-d",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/jadx-output",
+              "--rename-flags",
+              "none",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac8-jadx-none-decompile.stdout",
+            "stdout_bytes": 148,
+            "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+            "stderr": "logs/javac8-jadx-none-decompile.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "explicit_environment": {
+              "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+            }
+          },
+          "decompile_exit": 0,
+          "generated_source_set": [
+            {
+              "path": "generated/javac8/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+              "bytes": 7765,
+              "sha256": "2eb7fa9a05ff182ead78a2e5617f01216ef8ad99ba6f91ee93d6ff38f0d9b4c9"
+            },
+            {
+              "path": "generated/javac8/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+              "bytes": 278,
+              "sha256": "f8861352a7bc64dc5cb2c3649af320a4773bb8acd8b399f0babe898664a8124c"
+            }
+          ],
+          "unsupported_decompiler_stubs": []
+        }
+      ],
+      "quality": {
+        "complete_expected_source_set": true,
+        "generated_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "expected_source_stems": null,
+        "all_reports_without_bytecode_or_refused_body_markers": true,
+        "all_sources_without_decompiler_stubs": true,
+        "stage_render_ok": true
+      },
+      "quality_ok": true,
+      "stage_render_ok": true,
+      "compile": {
+        "label": "javac8-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/jadx-output/sources/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-none-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac8-jadx-none-compile.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "compile_ok": true,
+      "original_compile_ok": true,
+      "original_runtime_ok": true,
+      "resolved_main_class": "ConstructorPrimitiveConversionControls",
+      "main_class_parse_error": null,
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none/classes",
+          "ConstructorPrimitiveConversionControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-none-run.stdout",
+        "stdout_bytes": 864,
+        "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+        "stderr": "logs/javac8-jadx-none-run.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidate_runtime_exit0": true,
+      "rawstreams_match": false,
+      "exit_match": true,
+      "accepted": false
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-default",
+      "input_jar": {
+        "path": "inputs/javac8-original-two-class.jar",
+        "sha256": "ddd5508f8bb4bc48e2ab4b2205701c7ec519f5795729f9dabcf5f02660494191",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+          }
+        ]
+      },
+      "input_class_set": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+        }
+      ],
+      "generated_source_set": [
+        {
+          "path": "generated/javac8/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+          "bytes": 7766,
+          "sha256": "7240482f2254d08d3e9f2b373d05823698faf5529c1d5ca96b62da4956a73419"
+        },
+        {
+          "path": "generated/javac8/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+          "bytes": 279,
+          "sha256": "6b0346b01a3c703133616c884f73c4ad7bc4a0b5c96af1eb3d2a0b7ae7953599"
+        }
+      ],
+      "reports": [
+        {
+          "decompile_command": {
+            "label": "javac8-jadx-default-decompile",
+            "argv": [
+              "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+              "--no-res",
+              "-d",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/jadx-output",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac8-original-two-class.jar"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac8-jadx-default-decompile.stdout",
+            "stdout_bytes": 148,
+            "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+            "stderr": "logs/javac8-jadx-default-decompile.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "explicit_environment": {
+              "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+            }
+          },
+          "decompile_exit": 0,
+          "generated_source_set": [
+            {
+              "path": "generated/javac8/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+              "bytes": 7766,
+              "sha256": "7240482f2254d08d3e9f2b373d05823698faf5529c1d5ca96b62da4956a73419"
+            },
+            {
+              "path": "generated/javac8/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+              "bytes": 279,
+              "sha256": "6b0346b01a3c703133616c884f73c4ad7bc4a0b5c96af1eb3d2a0b7ae7953599"
+            }
+          ],
+          "unsupported_decompiler_stubs": []
+        }
+      ],
+      "quality": {
+        "complete_expected_source_set": true,
+        "generated_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "expected_source_stems": null,
+        "all_reports_without_bytecode_or_refused_body_markers": true,
+        "all_sources_without_decompiler_stubs": true,
+        "stage_render_ok": true
+      },
+      "quality_ok": true,
+      "stage_render_ok": true,
+      "compile": {
+        "label": "javac8-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-default-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac8-jadx-default-compile.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "compile_ok": true,
+      "original_compile_ok": true,
+      "original_runtime_ok": true,
+      "resolved_main_class": "defpackage.ConstructorPrimitiveConversionControls",
+      "main_class_parse_error": null,
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default/classes",
+          "defpackage.ConstructorPrimitiveConversionControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac8/jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-default-run.stdout",
+        "stdout_bytes": 864,
+        "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+        "stderr": "logs/javac8-jadx-default-run.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidate_runtime_exit0": true,
+      "rawstreams_match": false,
+      "exit_match": true,
+      "accepted": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jarde-cli2",
+      "input_jar": {
+        "path": "inputs/javac23-original-two-class.jar",
+        "sha256": "079bde6612c3ac269b38abaeb23e659421c266d77374407424556da0d915cf2c",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+          }
+        ]
+      },
+      "input_class_set": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+        }
+      ],
+      "generated_source_set": [
+        {
+          "path": "generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+          "bytes": 36321,
+          "sha256": "17967666be5eaf25e1312c12acda0d552776ad75a1768559e399bff604feca77"
+        },
+        {
+          "path": "generated/javac23/jarde-cli2/sources/PrimitiveLongPair.java",
+          "bytes": 784,
+          "sha256": "65632958645da00be971c880219cdece08cc1e75af662df4ddc25b49a7efa686"
+        }
+      ],
+      "reports": [
+        {
+          "class": "ConstructorPrimitiveConversionControls",
+          "render_command": {
+            "label": "javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls",
+            "argv": [
+              "/private/tmp/jarde-em18-composition-cli-v2",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar",
+              "--class",
+              "ConstructorPrimitiveConversionControls",
+              "--policy",
+              "plain-jar",
+              "--format",
+              "json",
+              "--evidence",
+              "all",
+              "--release",
+              "8"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls.stdout",
+            "stdout_bytes": 855759,
+            "stdout_sha256": "e8a9d6cb60ff1c65fad402e99cf0e22954ce1fb5e00d79b0b056d4009a12dfb6",
+            "stderr": "logs/javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "json_parsed": true,
+          "bytecode_marker": true,
+          "refused_body_marker": false,
+          "source_path": "generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+          "source_sha256": "17967666be5eaf25e1312c12acda0d552776ad75a1768559e399bff604feca77"
+        },
+        {
+          "class": "PrimitiveLongPair",
+          "render_command": {
+            "label": "javac23-jarde-cli2-render-PrimitiveLongPair",
+            "argv": [
+              "/private/tmp/jarde-em18-composition-cli-v2",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar",
+              "--class",
+              "PrimitiveLongPair",
+              "--policy",
+              "plain-jar",
+              "--format",
+              "json",
+              "--evidence",
+              "all",
+              "--release",
+              "8"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac23-jarde-cli2-render-PrimitiveLongPair.stdout",
+            "stdout_bytes": 18490,
+            "stdout_sha256": "53b577747b669ee567b13a06c4b3e49a6049ac63663bd7949c934dc95551a249",
+            "stderr": "logs/javac23-jarde-cli2-render-PrimitiveLongPair.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "json_parsed": true,
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "source_path": "generated/javac23/jarde-cli2/sources/PrimitiveLongPair.java",
+          "source_sha256": "65632958645da00be971c880219cdece08cc1e75af662df4ddc25b49a7efa686"
+        }
+      ],
+      "quality": {
+        "complete_expected_source_set": true,
+        "generated_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "expected_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "all_reports_without_bytecode_or_refused_body_markers": false,
+        "all_sources_without_decompiler_stubs": true,
+        "stage_render_ok": true
+      },
+      "quality_ok": false,
+      "stage_render_ok": true,
+      "compile": {
+        "label": "javac23-jarde-cli2-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2/sources/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jarde-cli2",
+        "exit": 1,
+        "stdout": "logs/javac23-jarde-cli2-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac23-jarde-cli2-compile.stderr",
+        "stderr_bytes": 6909,
+        "stderr_sha256": "6a4d20c3d151ff2a55c79dbff567768e0b43eb65be3aa161c0d78223f8a110fc"
+      },
+      "compile_ok": false,
+      "original_compile_ok": true,
+      "original_runtime_ok": true,
+      "resolved_main_class": "ConstructorPrimitiveConversionControls",
+      "main_class_parse_error": null,
+      "runtime": null,
+      "candidate_runtime_exit0": false,
+      "rawstreams_match": false,
+      "exit_match": false,
+      "accepted": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-none",
+      "input_jar": {
+        "path": "inputs/javac23-original-two-class.jar",
+        "sha256": "079bde6612c3ac269b38abaeb23e659421c266d77374407424556da0d915cf2c",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+          }
+        ]
+      },
+      "input_class_set": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+        }
+      ],
+      "generated_source_set": [
+        {
+          "path": "generated/javac23/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+          "bytes": 7766,
+          "sha256": "cfd1a63ae058ac1dcedf5db1ddc7b4649d477404f1e5ead0d3465d6eed6fa95c"
+        },
+        {
+          "path": "generated/javac23/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+          "bytes": 279,
+          "sha256": "f539def4a8bc29e66346f1ca3dab4e7ef0e1483cc817bb4f33188e36b325b45c"
+        }
+      ],
+      "reports": [
+        {
+          "decompile_command": {
+            "label": "javac23-jadx-none-decompile",
+            "argv": [
+              "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+              "--no-res",
+              "-d",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/jadx-output",
+              "--rename-flags",
+              "none",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac23-jadx-none-decompile.stdout",
+            "stdout_bytes": 148,
+            "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+            "stderr": "logs/javac23-jadx-none-decompile.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "explicit_environment": {
+              "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+            }
+          },
+          "decompile_exit": 0,
+          "generated_source_set": [
+            {
+              "path": "generated/javac23/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+              "bytes": 7766,
+              "sha256": "cfd1a63ae058ac1dcedf5db1ddc7b4649d477404f1e5ead0d3465d6eed6fa95c"
+            },
+            {
+              "path": "generated/javac23/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+              "bytes": 279,
+              "sha256": "f539def4a8bc29e66346f1ca3dab4e7ef0e1483cc817bb4f33188e36b325b45c"
+            }
+          ],
+          "unsupported_decompiler_stubs": []
+        }
+      ],
+      "quality": {
+        "complete_expected_source_set": true,
+        "generated_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "expected_source_stems": null,
+        "all_reports_without_bytecode_or_refused_body_markers": true,
+        "all_sources_without_decompiler_stubs": true,
+        "stage_render_ok": true
+      },
+      "quality_ok": true,
+      "stage_render_ok": true,
+      "compile": {
+        "label": "javac23-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/jadx-output/sources/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-none-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac23-jadx-none-compile.stderr",
+        "stderr_bytes": 243,
+        "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "compile_ok": true,
+      "original_compile_ok": true,
+      "original_runtime_ok": true,
+      "resolved_main_class": "ConstructorPrimitiveConversionControls",
+      "main_class_parse_error": null,
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none/classes",
+          "ConstructorPrimitiveConversionControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-none-run.stdout",
+        "stdout_bytes": 864,
+        "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+        "stderr": "logs/javac23-jadx-none-run.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidate_runtime_exit0": true,
+      "rawstreams_match": false,
+      "exit_match": true,
+      "accepted": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-default",
+      "input_jar": {
+        "path": "inputs/javac23-original-two-class.jar",
+        "sha256": "079bde6612c3ac269b38abaeb23e659421c266d77374407424556da0d915cf2c",
+        "class_entries": [
+          {
+            "name": "ConstructorPrimitiveConversionControls.class",
+            "bytes": 4696,
+            "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+          },
+          {
+            "name": "PrimitiveLongPair.class",
+            "bytes": 205,
+            "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+          }
+        ]
+      },
+      "input_class_set": [
+        {
+          "name": "ConstructorPrimitiveConversionControls.class",
+          "bytes": 4696,
+          "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+        },
+        {
+          "name": "PrimitiveLongPair.class",
+          "bytes": 205,
+          "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+        }
+      ],
+      "generated_source_set": [
+        {
+          "path": "generated/javac23/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+          "bytes": 7767,
+          "sha256": "735e9e8247e4f33f673897bfdf016cd8b685bce6474e84e272a5bdea016f8d48"
+        },
+        {
+          "path": "generated/javac23/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+          "bytes": 280,
+          "sha256": "1bdc767521becba1c47eaaa85b169027b499fb0ef9e1c4d8fb642a63569e57da"
+        }
+      ],
+      "reports": [
+        {
+          "decompile_command": {
+            "label": "javac23-jadx-default-decompile",
+            "argv": [
+              "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+              "--no-res",
+              "-d",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/jadx-output",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/inputs/javac23-original-two-class.jar"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "exit": 0,
+            "stdout": "logs/javac23-jadx-default-decompile.stdout",
+            "stdout_bytes": 148,
+            "stdout_sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5",
+            "stderr": "logs/javac23-jadx-default-decompile.stderr",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "explicit_environment": {
+              "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+            }
+          },
+          "decompile_exit": 0,
+          "generated_source_set": [
+            {
+              "path": "generated/javac23/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+              "bytes": 7767,
+              "sha256": "735e9e8247e4f33f673897bfdf016cd8b685bce6474e84e272a5bdea016f8d48"
+            },
+            {
+              "path": "generated/javac23/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+              "bytes": 280,
+              "sha256": "1bdc767521becba1c47eaaa85b169027b499fb0ef9e1c4d8fb642a63569e57da"
+            }
+          ],
+          "unsupported_decompiler_stubs": []
+        }
+      ],
+      "quality": {
+        "complete_expected_source_set": true,
+        "generated_source_stems": [
+          "ConstructorPrimitiveConversionControls",
+          "PrimitiveLongPair"
+        ],
+        "expected_source_stems": null,
+        "all_reports_without_bytecode_or_refused_body_markers": true,
+        "all_sources_without_decompiler_stubs": true,
+        "stage_render_ok": true
+      },
+      "quality_ok": true,
+      "stage_render_ok": true,
+      "compile": {
+        "label": "javac23-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-default-compile.stdout",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr": "logs/javac23-jadx-default-compile.stderr",
+        "stderr_bytes": 243,
+        "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+      },
+      "compile_ok": true,
+      "original_compile_ok": true,
+      "original_runtime_ok": true,
+      "resolved_main_class": "defpackage.ConstructorPrimitiveConversionControls",
+      "main_class_parse_error": null,
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default/classes",
+          "defpackage.ConstructorPrimitiveConversionControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-constructor-primitive-conversion-arguments/results/baseline-v1/generated/javac23/jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-default-run.stdout",
+        "stdout_bytes": 864,
+        "stdout_sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98",
+        "stderr": "logs/javac23-jadx-default-run.stderr",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidate_runtime_exit0": true,
+      "rawstreams_match": false,
+      "exit_match": true,
+      "accepted": false
+    }
+  ],
+  "scope_note": "original source and class-set inputs stay closed at two classes; each generated source set compiles and runs from its own isolated class directory; no stream normalization",
+  "files": [
+    {
+      "path": "generated/javac23/jadx-default/classes/defpackage/ConstructorPrimitiveConversionControls.class",
+      "bytes": 4725,
+      "sha256": "9b30fa5e273aca4dd5a4178e1b24ab0b968fd1ba6b0e13cfa2ddd4b6fcc105ee"
+    },
+    {
+      "path": "generated/javac23/jadx-default/classes/defpackage/PrimitiveLongPair.class",
+      "bytes": 216,
+      "sha256": "081f1492427feaf95638df717221cd8b6cc0efb8deaf52a143ee702cfc062c58"
+    },
+    {
+      "path": "generated/javac23/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+      "bytes": 7767,
+      "sha256": "735e9e8247e4f33f673897bfdf016cd8b685bce6474e84e272a5bdea016f8d48"
+    },
+    {
+      "path": "generated/javac23/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+      "bytes": 280,
+      "sha256": "1bdc767521becba1c47eaaa85b169027b499fb0ef9e1c4d8fb642a63569e57da"
+    },
+    {
+      "path": "generated/javac23/jadx-none/classes/ConstructorPrimitiveConversionControls.class",
+      "bytes": 4692,
+      "sha256": "da7deaa6a748c9629726baa43a666f38f0b6fc8f9600f40c478d2311bffb620c"
+    },
+    {
+      "path": "generated/javac23/jadx-none/classes/PrimitiveLongPair.class",
+      "bytes": 205,
+      "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+    },
+    {
+      "path": "generated/javac23/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+      "bytes": 7766,
+      "sha256": "cfd1a63ae058ac1dcedf5db1ddc7b4649d477404f1e5ead0d3465d6eed6fa95c"
+    },
+    {
+      "path": "generated/javac23/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+      "bytes": 279,
+      "sha256": "f539def4a8bc29e66346f1ca3dab4e7ef0e1483cc817bb4f33188e36b325b45c"
+    },
+    {
+      "path": "generated/javac23/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+      "bytes": 36321,
+      "sha256": "17967666be5eaf25e1312c12acda0d552776ad75a1768559e399bff604feca77"
+    },
+    {
+      "path": "generated/javac23/jarde-cli2/sources/PrimitiveLongPair.java",
+      "bytes": 784,
+      "sha256": "65632958645da00be971c880219cdece08cc1e75af662df4ddc25b49a7efa686"
+    },
+    {
+      "path": "generated/javac8/jadx-default/classes/defpackage/ConstructorPrimitiveConversionControls.class",
+      "bytes": 4725,
+      "sha256": "468fd0aad71d9f7415525adfb7fc4e06a6e0d0309ff1394df73a04609ae6498f"
+    },
+    {
+      "path": "generated/javac8/jadx-default/classes/defpackage/PrimitiveLongPair.class",
+      "bytes": 216,
+      "sha256": "5c4ef13bacb410416ec744cc486d73abdd36d91c6f73ed364d5cc39bef3b37dc"
+    },
+    {
+      "path": "generated/javac8/jadx-default/jadx-output/sources/defpackage/ConstructorPrimitiveConversionControls.java",
+      "bytes": 7766,
+      "sha256": "7240482f2254d08d3e9f2b373d05823698faf5529c1d5ca96b62da4956a73419"
+    },
+    {
+      "path": "generated/javac8/jadx-default/jadx-output/sources/defpackage/PrimitiveLongPair.java",
+      "bytes": 279,
+      "sha256": "6b0346b01a3c703133616c884f73c4ad7bc4a0b5c96af1eb3d2a0b7ae7953599"
+    },
+    {
+      "path": "generated/javac8/jadx-none/classes/ConstructorPrimitiveConversionControls.class",
+      "bytes": 4692,
+      "sha256": "cb1c55b08fc5b6ae3538f8a3e63f2b491faa0d1129aeb088236d9aaa7b59121a"
+    },
+    {
+      "path": "generated/javac8/jadx-none/classes/PrimitiveLongPair.class",
+      "bytes": 205,
+      "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+    },
+    {
+      "path": "generated/javac8/jadx-none/jadx-output/sources/ConstructorPrimitiveConversionControls.java",
+      "bytes": 7765,
+      "sha256": "2eb7fa9a05ff182ead78a2e5617f01216ef8ad99ba6f91ee93d6ff38f0d9b4c9"
+    },
+    {
+      "path": "generated/javac8/jadx-none/jadx-output/sources/PrimitiveLongPair.java",
+      "bytes": 278,
+      "sha256": "f8861352a7bc64dc5cb2c3649af320a4773bb8acd8b399f0babe898664a8124c"
+    },
+    {
+      "path": "generated/javac8/jarde-cli2/sources/ConstructorPrimitiveConversionControls.java",
+      "bytes": 36321,
+      "sha256": "17967666be5eaf25e1312c12acda0d552776ad75a1768559e399bff604feca77"
+    },
+    {
+      "path": "generated/javac8/jarde-cli2/sources/PrimitiveLongPair.java",
+      "bytes": 784,
+      "sha256": "65632958645da00be971c880219cdece08cc1e75af662df4ddc25b49a7efa686"
+    },
+    {
+      "path": "inputs/javac23-original-two-class.jar",
+      "bytes": 5209,
+      "sha256": "079bde6612c3ac269b38abaeb23e659421c266d77374407424556da0d915cf2c"
+    },
+    {
+      "path": "inputs/javac8-original-two-class.jar",
+      "bytes": 5209,
+      "sha256": "ddd5508f8bb4bc48e2ab4b2205701c7ec519f5795729f9dabcf5f02660494191"
+    },
+    {
+      "path": "logs/javac23-jadx-default-compile.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "logs/javac23-jadx-default-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-decompile.stdout",
+      "bytes": 148,
+      "sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5"
+    },
+    {
+      "path": "logs/javac23-jadx-default-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-run.stdout",
+      "bytes": 864,
+      "sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98"
+    },
+    {
+      "path": "logs/javac23-jadx-none-compile.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "logs/javac23-jadx-none-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-decompile.stdout",
+      "bytes": 148,
+      "sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5"
+    },
+    {
+      "path": "logs/javac23-jadx-none-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-run.stdout",
+      "bytes": 864,
+      "sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98"
+    },
+    {
+      "path": "logs/javac23-jarde-cli2-compile.stderr",
+      "bytes": 6909,
+      "sha256": "6a4d20c3d151ff2a55c79dbff567768e0b43eb65be3aa161c0d78223f8a110fc"
+    },
+    {
+      "path": "logs/javac23-jarde-cli2-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-cli2-render-ConstructorPrimitiveConversionControls.stdout",
+      "bytes": 855759,
+      "sha256": "e8a9d6cb60ff1c65fad402e99cf0e22954ce1fb5e00d79b0b056d4009a12dfb6"
+    },
+    {
+      "path": "logs/javac23-jarde-cli2-render-PrimitiveLongPair.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-cli2-render-PrimitiveLongPair.stdout",
+      "bytes": 18490,
+      "sha256": "53b577747b669ee567b13a06c4b3e49a6049ac63663bd7949c934dc95551a249"
+    },
+    {
+      "path": "logs/javac23-original-compile.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "logs/javac23-original-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-original-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-original-run.stdout",
+      "bytes": 864,
+      "sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418"
+    },
+    {
+      "path": "logs/javac8-jadx-default-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-decompile.stdout",
+      "bytes": 148,
+      "sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5"
+    },
+    {
+      "path": "logs/javac8-jadx-default-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-run.stdout",
+      "bytes": 864,
+      "sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98"
+    },
+    {
+      "path": "logs/javac8-jadx-none-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-decompile.stdout",
+      "bytes": 148,
+      "sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5"
+    },
+    {
+      "path": "logs/javac8-jadx-none-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-run.stdout",
+      "bytes": 864,
+      "sha256": "fc143b4eeb20165083d50fbf40b92c6d21bbebcc563c5d65d8b306ac75b92f98"
+    },
+    {
+      "path": "logs/javac8-jarde-cli2-compile.stderr",
+      "bytes": 6640,
+      "sha256": "751539e316dbf0867c453583aa4c2a7a817c4304f9596f392a8dcd85368d5700"
+    },
+    {
+      "path": "logs/javac8-jarde-cli2-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-cli2-render-ConstructorPrimitiveConversionControls.stdout",
+      "bytes": 855776,
+      "sha256": "6ee67c61166bcb53d8f9137645f32537cde2ff75957338a81db7677da099902c"
+    },
+    {
+      "path": "logs/javac8-jarde-cli2-render-PrimitiveLongPair.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-cli2-render-PrimitiveLongPair.stdout",
+      "bytes": 18490,
+      "sha256": "acb5cef44306035165106ed8ea583be084b71762b1b0ac0311a10a0bfa30ad14"
+    },
+    {
+      "path": "logs/javac8-original-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-original-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-original-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-original-run.stdout",
+      "bytes": 864,
+      "sha256": "227d39f9a3e3d7d417625b5abc74d5d6dff93c854acbe6f35aac10732ee4a418"
+    },
+    {
+      "path": "original/javac23/classes/ConstructorPrimitiveConversionControls.class",
+      "bytes": 4696,
+      "sha256": "b9c2e646a1bb31c4f2cadefc9e5980f331e4f52d4b707be746d27dd41d0bf5bf"
+    },
+    {
+      "path": "original/javac23/classes/PrimitiveLongPair.class",
+      "bytes": 205,
+      "sha256": "17e9ea6952e8a9c5e5e3edf1993c128a4c244b922a5163ecaf93e8817789a5b2"
+    },
+    {
+      "path": "original/javac23/sources/ConstructorPrimitiveConversionControls.java",
+      "bytes": 7811,
+      "sha256": "4e5aff3dced47b6493a3db64b8fe2998a0c9328fde22ce5c7fd745d1e03e2c1e"
+    },
+    {
+      "path": "original/javac23/sources/PrimitiveLongPair.java",
+      "bytes": 186,
+      "sha256": "904ecf774d469580f0afe716d82b1c12744fdee721274fe69e31f3507cb36e60"
+    },
+    {
+      "path": "original/javac8/classes/ConstructorPrimitiveConversionControls.class",
+      "bytes": 4696,
+      "sha256": "f9c141e7e65144c548ee1a95c3ad5238f9f0aea4eb6996174d4875292ebc8911"
+    },
+    {
+      "path": "original/javac8/classes/PrimitiveLongPair.class",
+      "bytes": 205,
+      "sha256": "6109f20f1521f4f5e5b0287b9e02187ef444c976f0d28addd330355388af8726"
+    },
+    {
+      "path": "original/javac8/sources/ConstructorPrimitiveConversionControls.java",
+      "bytes": 7811,
+      "sha256": "4e5aff3dced47b6493a3db64b8fe2998a0c9328fde22ce5c7fd745d1e03e2c1e"
+    },
+    {
+      "path": "original/javac8/sources/PrimitiveLongPair.java",
+      "bytes": 186,
+      "sha256": "904ecf774d469580f0afe716d82b1c12744fdee721274fe69e31f3507cb36e60"
+    }
+  ]
+}

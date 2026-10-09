@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "watch",
+    "37947791151",
+    "--exit-status",
+    "--interval",
+    "60"
+  ],
+  "exit": 0,
+  "stdout_sha256": "54f0e1819a357b00943ab4d5bcdd9d07ee8562e6ea7c046ce27a0f0d9ab96a64",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

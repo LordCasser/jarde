@@ -1,0 +1,1990 @@
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* fuzz smoke (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* fuzz smoke (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 6 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* fuzz smoke (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 7 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* fuzz smoke (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 8 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* fuzz smoke (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 9 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 10 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 11 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 13 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 14 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 15 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 16 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 17 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 18 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 19 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 20 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 21 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 22 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 23 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 24 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 25 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 26 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 27 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 28 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 29 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 30 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 31 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 32 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 34 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 35 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  ✓ Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 36 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  ✓ Run workspace tests with two fixed independent seeds (pass 2)
+  ✓ Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 37 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  ✓ Run workspace tests with two fixed independent seeds (pass 2)
+  ✓ Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 38 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  ✓ Run workspace tests with two fixed independent seeds (pass 2)
+  ✓ Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 60 seconds. Press Ctrl+C to quit.
+
+* main CI · 37947791151
+Triggered via push about 39 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  ✓ Run workspace tests with two fixed independent seeds (pass 2)
+  ✓ Run ignored JDK 25 instruction-boundary oracle
+  ✓ Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ main CI · 37947791151
+Triggered via push about 40 minutes ago
+
+JOBS
+✓ supply chain in 49s (ID 113878472847)
+  ✓ Set up job
+  ✓ Build EmbarkStudios/cargo-deny-action@v2.1.1
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m47s (ID 113878473150)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ stable / test and specification in 40m7s (ID 113878473247)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  ✓ Run workspace tests with two fixed independent seeds (pass 2)
+  ✓ Run ignored JDK 25 instruction-boundary oracle
+  ✓ Run the ignored P3 Java 8 compile-and-execute comparison
+  ✓ Run the functional-constructor full-class comparison
+  ✓ Run public API example
+  ✓ Check resolved feature tree
+  ✓ Check normal dependency tree boundary
+  ✓ Check layered crate dependency closure
+  ✓ Install OpenSpec 1.11.0
+  ✓ Validate OpenSpec strictly
+  ✓ Ensure tracked files remain unchanged
+  ✓ Post Install Node.js 22
+  ✓ Post Install Temurin 25.0.4+7
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ fuzz smoke in 8m43s (ID 113878473287)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job

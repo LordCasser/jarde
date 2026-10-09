@@ -1,0 +1,38 @@
+{
+  "schema": "constructed-array-exact-code-ci-acceptance-v1",
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "37947791151",
+    "--json",
+    "conclusion,databaseId,headSha,jobs,status,url"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "ci_json_path": "ci-code-sha-5a6264de-success.json",
+  "ci_json_sha256": "f7ac30572c1c7b66c6375661c7c1176166c9b9f411f52baf6031865f917ff72e",
+  "headSha": "5a6264de1b3481e1cdbef4fd30361940bfac33cf",
+  "conclusion": "success",
+  "jobs": 4,
+  "steps": 48,
+  "all_jobs_and_steps_success": true,
+  "products_match_frozen_cli2": [
+    {
+      "path": "crates/jarde-java/src/init.rs",
+      "sha256": "c7a79465370a6097ab03d7160ac07c5c8797ca35d786d94a778829fa9fe4921f",
+      "matches_exact_code_commit": true
+    },
+    {
+      "path": "crates/jarde-java/src/build.rs",
+      "sha256": "88fcd020ac4bf8acc8a0787a3c99cd5694f7dab2f281aae9b2b354daf7aa9c70",
+      "matches_exact_code_commit": true
+    },
+    {
+      "path": "crates/jarde-java/src/report.rs",
+      "sha256": "17c07d86e33acbd614f1449b122fbd1c836b5ab21b541bd6ff9879b8689be617",
+      "matches_exact_code_commit": true
+    }
+  ],
+  "cli_sha256": "78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273"
+}

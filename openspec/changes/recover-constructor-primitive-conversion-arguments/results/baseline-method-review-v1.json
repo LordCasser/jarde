@@ -1,0 +1,1700 @@
+{
+  "schema": "constructor-conversion-baseline-method-review-v1",
+  "manifest_sha256": "0afb246902e6a6b76c7ff17939313d22810dcc586eca63f2741f7e806aa5858d",
+  "legs": {
+    "javac8": [
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "<init>",
+        "descriptor": "()V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markInt",
+        "descriptor": "(Ljava/lang/String;I)I",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markLong",
+        "descriptor": "(Ljava/lang/String;J)J",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markFloat",
+        "descriptor": "(Ljava/lang/String;F)F",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markDouble",
+        "descriptor": "(Ljava/lang/String;D)D",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperByte",
+        "descriptor": "(I)Ljava/lang/Byte;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Byte",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Byte } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperShort",
+        "descriptor": "(I)Ljava/lang/Short;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Short",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Short } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperLong",
+        "descriptor": "(I)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperFloat",
+        "descriptor": "(J)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperDouble",
+        "descriptor": "(F)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "integerContrast",
+        "descriptor": "(I)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [
+              7
+            ],
+            "class": "java/lang/Integer",
+            "constructor": 10,
+            "dup": 3,
+            "head": 0,
+            "presented": true,
+            "refusal": null
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "boxedArray",
+        "descriptor": "(I)[Ljava/lang/Number;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Byte",
+            "constructor": null,
+            "dup": null,
+            "head": 7,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 7 was not presented: the instruction at BCI 17 is an PrimitiveConversion { source: Int, target: Byte } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Short",
+            "constructor": null,
+            "dup": null,
+            "head": 24,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 24 was not presented: the instruction at BCI 34 is an PrimitiveConversion { source: Int, target: Short } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 41,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_shape",
+              "message": "the construction at BCI 41 was not presented: the instance the allocation at BCI 41 builds is read only by instructions this build quotes (BCIs 54), so the construction has no place in the body",
+              "requirement": null,
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 57,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 57 was not presented: the instruction at BCI 67 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 74,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 74 was not presented: the instruction at BCI 84 is an PrimitiveConversion { source: Int, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 91,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 91 was not presented: the instruction at BCI 101 is an PrimitiveConversion { source: Int, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "ordinaryReturnNew",
+        "descriptor": "(I)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "storedLocalReuse",
+        "descriptor": "(I)LPrimitiveLongPair;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "PrimitiveLongPair",
+            "constructor": null,
+            "dup": null,
+            "head": 7,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 7 was not presented: the instruction at BCI 12 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToLong",
+        "descriptor": "(I)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToFloat",
+        "descriptor": "(I)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToDouble",
+        "descriptor": "(I)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToByte",
+        "descriptor": "(I)Ljava/lang/Byte;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Byte",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Byte } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToCharacter",
+        "descriptor": "(I)Ljava/lang/Character;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Character",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Char } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToShort",
+        "descriptor": "(I)Ljava/lang/Short;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Short",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Short } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longToInt",
+        "descriptor": "(J)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Int } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longToFloat",
+        "descriptor": "(J)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longToDouble",
+        "descriptor": "(J)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "floatToInt",
+        "descriptor": "(F)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Int } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "floatToLong",
+        "descriptor": "(F)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "floatToDouble",
+        "descriptor": "(F)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleToInt",
+        "descriptor": "(D)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Int } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleToLong",
+        "descriptor": "(D)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleToFloat",
+        "descriptor": "(D)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longViaFloat",
+        "descriptor": "(J)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longViaDouble",
+        "descriptor": "(J)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleViaFloat",
+        "descriptor": "(D)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "show",
+        "descriptor": "(Ljava/lang/Object;Z)V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "PrimitiveLongPair",
+        "method": "<init>",
+        "descriptor": "(JJ)V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      }
+    ],
+    "javac23": [
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "<init>",
+        "descriptor": "()V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markInt",
+        "descriptor": "(Ljava/lang/String;I)I",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markLong",
+        "descriptor": "(Ljava/lang/String;J)J",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markFloat",
+        "descriptor": "(Ljava/lang/String;F)F",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "markDouble",
+        "descriptor": "(Ljava/lang/String;D)D",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperByte",
+        "descriptor": "(I)Ljava/lang/Byte;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Byte",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Byte } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperShort",
+        "descriptor": "(I)Ljava/lang/Short;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Short",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Short } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperLong",
+        "descriptor": "(I)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperFloat",
+        "descriptor": "(J)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "wrapperDouble",
+        "descriptor": "(F)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "integerContrast",
+        "descriptor": "(I)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [
+              7
+            ],
+            "class": "java/lang/Integer",
+            "constructor": 10,
+            "dup": 3,
+            "head": 0,
+            "presented": true,
+            "refusal": null
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "boxedArray",
+        "descriptor": "(I)[Ljava/lang/Number;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Byte",
+            "constructor": null,
+            "dup": null,
+            "head": 7,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 7 was not presented: the instruction at BCI 17 is an PrimitiveConversion { source: Int, target: Byte } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Short",
+            "constructor": null,
+            "dup": null,
+            "head": 24,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 24 was not presented: the instruction at BCI 34 is an PrimitiveConversion { source: Int, target: Short } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 41,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_shape",
+              "message": "the construction at BCI 41 was not presented: the instance the allocation at BCI 41 builds is read only by instructions this build quotes (BCIs 54), so the construction has no place in the body",
+              "requirement": null,
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 57,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 57 was not presented: the instruction at BCI 67 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 74,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 74 was not presented: the instruction at BCI 84 is an PrimitiveConversion { source: Int, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          },
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 91,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 91 was not presented: the instruction at BCI 101 is an PrimitiveConversion { source: Int, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "ordinaryReturnNew",
+        "descriptor": "(I)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "storedLocalReuse",
+        "descriptor": "(I)LPrimitiveLongPair;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "PrimitiveLongPair",
+            "constructor": null,
+            "dup": null,
+            "head": 7,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 7 was not presented: the instruction at BCI 12 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToLong",
+        "descriptor": "(I)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToFloat",
+        "descriptor": "(I)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToDouble",
+        "descriptor": "(I)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToByte",
+        "descriptor": "(I)Ljava/lang/Byte;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Byte",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Byte } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToCharacter",
+        "descriptor": "(I)Ljava/lang/Character;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Character",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Char } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "intToShort",
+        "descriptor": "(I)Ljava/lang/Short;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Short",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Int, target: Short } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longToInt",
+        "descriptor": "(J)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Int } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longToFloat",
+        "descriptor": "(J)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longToDouble",
+        "descriptor": "(J)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "floatToInt",
+        "descriptor": "(F)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Int } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "floatToLong",
+        "descriptor": "(F)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "floatToDouble",
+        "descriptor": "(F)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Float, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleToInt",
+        "descriptor": "(D)Ljava/lang/Integer;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Integer",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Int } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleToLong",
+        "descriptor": "(D)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Long } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleToFloat",
+        "descriptor": "(D)Ljava/lang/Float;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Float",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longViaFloat",
+        "descriptor": "(J)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "longViaDouble",
+        "descriptor": "(J)Ljava/lang/Long;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Long",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Long, target: Double } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "doubleViaFloat",
+        "descriptor": "(D)Ljava/lang/Double;",
+        "method_body_contains_bytecode_marker": true,
+        "outcome": "recovered",
+        "new_records": [
+          {
+            "arguments": [],
+            "class": "java/lang/Double",
+            "constructor": null,
+            "dup": null,
+            "head": 0,
+            "presented": false,
+            "refusal": {
+              "code": "jre_new_interleaved_effect",
+              "message": "the construction at BCI 0 was not presented: the instruction at BCI 10 is an PrimitiveConversion { source: Double, target: Float } between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+              "requirement": "a test block whose every instruction is part of a value expression",
+              "rule": {
+                "rule": "new",
+                "version": "1"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "show",
+        "descriptor": "(Ljava/lang/Object;Z)V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "ConstructorPrimitiveConversionControls",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      },
+      {
+        "class": "PrimitiveLongPair",
+        "method": "<init>",
+        "descriptor": "(JJ)V",
+        "method_body_contains_bytecode_marker": false,
+        "outcome": "recovered",
+        "new_records": []
+      }
+    ]
+  }
+}

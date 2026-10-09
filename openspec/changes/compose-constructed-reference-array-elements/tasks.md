@@ -13,4 +13,4 @@
 
 - [x] 3.1 验证existing inline-array constructor arguments、nested/char[]/varargs和new/array模块零回退；预算/取消不发布半记录，实际费用进入P5账本。
 - [x] 3.2 root对抗审查并完成双seed workspace、MSRV、fmt、CI-exact clippy、ignored gates、strict specs、fingerprint及diff检查；所有真实exit/streams永久保留。
-- [ ] 3.3 根据完整结果更新EM-18待扩验边界与handoff，提交推送并检查确切SHA实际CI；原main外围失败不得谎称整个单元已追平。
+- [x] 3.3 根据完整结果更新EM-18待扩验边界与handoff，提交推送并检查确切SHA实际CI；原main外围失败不得谎称整个单元已追平。
