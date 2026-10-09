@@ -553,6 +553,8 @@ fn same_class_field_receiver_sites(
     request: &RecoveryRequest<'_>,
     names: &NameTable,
     reuse: &crate::reuse::Plan,
+    init_record: &InitRecord,
+    operations: &Operations,
     ssa: &SsaTable,
     budget: &mut Budget,
 ) -> Result<
@@ -733,6 +735,108 @@ fn same_class_field_receiver_sites(
             return Ok(None);
         }
         Ok(Some((slot, *load_bci, entry)))
+    }
+
+    fn initialized_this_value(
+        init: &InitRecord,
+        operations: &Operations,
+        member: &PhysicalMethodId,
+        class_internal: &[u8],
+        slot: u16,
+        local_value: jarde_jvm::method_ir::ValueId,
+        ssa: &SsaTable,
+        instructions: &std::collections::HashMap<
+            u32,
+            Option<&jarde_jvm::method_ir::SsaInstruction>,
+        >,
+        budget: &mut Budget,
+    ) -> Result<bool, StopReason> {
+        let Some(init_bci) = init.bci else {
+            return Ok(false);
+        };
+        crate::stop::poll(budget, Some(init_bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(init_bci),
+        )?;
+        if member.name.0.as_slice() != b"<init>"
+            || member.descriptor.0.is_empty()
+            || init.target != Some(crate::ast::ConstructorTarget::Super)
+            || init.class.as_deref() != Some("java/lang/Object")
+            || init.declared.as_deref() != std::str::from_utf8(class_internal).ok()
+            || !init.presented
+            || slot != 0
+        {
+            return Ok(false);
+        }
+        let Some(Operation::Invoke(target)) = operations.get(init_bci) else {
+            return Ok(false);
+        };
+        if target.kind() != crate::facts::InvokeKind::Special
+            || target.owner() != "java/lang/Object"
+            || target.name() != "<init>"
+            || target.descriptor() != "()V"
+            || target.is_interface_reference()
+        {
+            return Ok(false);
+        }
+        let Some(Some(initialize)) = instructions.get(&init_bci) else {
+            return Ok(false);
+        };
+        if initialize.opcode() != 0xb7 {
+            return Ok(false);
+        }
+        let [(Slot::Stack(0), receiver)] = initialize.reads() else {
+            return Ok(false);
+        };
+        let [(Slot::Local(0), initialized)] = initialize.writes() else {
+            return Ok(false);
+        };
+        if *initialized != local_value
+            || !matches!(
+                ssa.value(local_value).def(),
+                Definition::Instruction { bci, .. } if *bci == init_bci
+            )
+        {
+            return Ok(false);
+        }
+        let Definition::Instruction {
+            bci: receiver_load_bci,
+            ..
+        } = ssa.value(*receiver).def()
+        else {
+            return Ok(false);
+        };
+        if *receiver_load_bci >= init_bci {
+            return Ok(false);
+        }
+        let Some(Some(receiver_load)) = instructions.get(receiver_load_bci) else {
+            return Ok(false);
+        };
+        if !matches!(receiver_load.opcode(), 0x19 | 0x2a..=0x2d) {
+            return Ok(false);
+        }
+        let [(Slot::Local(0), entry_this)] = receiver_load.reads() else {
+            return Ok(false);
+        };
+        if !matches!(
+            ssa.value(*entry_this).def(),
+            Definition::Entry {
+                slot: Slot::Local(0),
+                ..
+            }
+        ) || !receiver_load
+            .writes()
+            .iter()
+            .any(|(write_slot, write_value)| {
+                matches!(write_slot, Slot::Stack(_)) && write_value == receiver
+            })
+        {
+            return Ok(false);
+        }
+        Ok(true)
     }
 
     let Some(declaration) = request.ir.declaration() else {
@@ -1027,16 +1131,29 @@ fn same_class_field_receiver_sites(
         }
         let local_definition = ssa.value(local_value).def();
 
-        let source = if local_name == "this"
-            && declaration.access_flags() & 0x0008 == 0
-            && slot == 0
-            && matches!(
-                local_definition,
-                Definition::Entry {
-                    slot: Slot::Local(0),
-                    ..
-                }
-            ) {
+        let is_this_source =
+            if local_name == "this" && declaration.access_flags() & 0x0008 == 0 && slot == 0 {
+                matches!(
+                    local_definition,
+                    Definition::Entry {
+                        slot: Slot::Local(0),
+                        ..
+                    }
+                ) || initialized_this_value(
+                    init_record,
+                    operations,
+                    &method,
+                    &class_internal,
+                    slot,
+                    local_value,
+                    ssa,
+                    &instructions,
+                    budget,
+                )?
+            } else {
+                false
+            };
+        let source = if is_this_source {
             Some(ClassSourceFieldReceiverSource::This)
         } else {
             crate::stop::poll(budget, Some(bci))?;
@@ -1217,6 +1334,233 @@ fn same_class_field_receiver_sites(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassSourceMethodAst {
     pub(crate) projection: std::sync::Arc<ClassSourceMethodAstSource>,
+}
+
+/// The exact invocation identity used to join retained AST nodes with this run's physical call
+/// census. The caller is the AST's own [`PhysicalMethodId`], so a BCI is never used without its
+/// method and class-file definition.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInvokeKey {
+    pub call_bci: u32,
+    pub opcode: u8,
+    pub target: crate::facts::CallTarget,
+}
+
+/// One physical anchor from a retained AST expression.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstAnchor {
+    pub bci: u32,
+    pub method: Option<PhysicalMethodId>,
+    pub provenance: crate::source_map::Provenance,
+}
+
+/// The small amount of AST information needed to join an expression with its physical value.
+/// This is a site descriptor, not a second AST or a source-type proof.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInvokeAstExpression {
+    pub primary: ClassSourceAstAnchor,
+    pub derived: Vec<ClassSourceAstAnchor>,
+    pub direct_local_name: Option<String>,
+    /// True only for the literal `null` AST node; this does not infer a reference type.
+    pub null_literal: bool,
+    pub shape: ClassSourceAstExpressionShape,
+    /// The type the existing AST emitter presents for this expression. This is auxiliary matching
+    /// evidence only; generic source types must come from a committed declaration and its source
+    /// consumers must be proved separately.
+    pub presented_type: Option<crate::ast::Type>,
+    /// A narrowly recognized descriptor-reference wrapper added by invocation argument
+    /// presentation for a target-typed call or `null` literal. Physical checkcasts never populate
+    /// this field.
+    pub presentation_wrapper: Option<ClassSourceAstPresentationWrapper>,
+}
+
+/// The source-only argument wrapper produced for an invocation's erased reference parameter.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstPresentationWrapper {
+    pub ty: crate::ast::Type,
+    pub child: Box<ClassSourceInvokeAstExpression>,
+}
+
+/// One requested invocation that has a unique matching node in a complete retained method AST.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInvokeAstSite {
+    pub caller: PhysicalMethodId,
+    pub key: ClassSourceInvokeKey,
+    pub ast_name: String,
+    pub receiver: Option<ClassSourceInvokeAstExpression>,
+    pub arguments: Vec<ClassSourceInvokeAstExpression>,
+}
+
+/// An AST field write target supplied by the same-run physical field census.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInvokeFieldTarget {
+    pub write_bci: u32,
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+}
+
+/// A finite classification of one direct AST use of an invocation result.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ClassSourceInvokeResultUseKind {
+    DirectReturn {
+        consumer_bci: u32,
+    },
+    DirectCallArgument {
+        consumer: Option<ClassSourceInvokeKey>,
+        argument_index: usize,
+    },
+    FieldWrite {
+        target: ClassSourceInvokeFieldTarget,
+    },
+    LocalStore {
+        write_bci: u32,
+        local_name: String,
+    },
+    Other {
+        consumer_bci: u32,
+    },
+}
+
+/// One result expression and the direct source position that consumes it.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInvokeResultUse {
+    pub producer: ClassSourceInvokeKey,
+    pub kind: ClassSourceInvokeResultUseKind,
+    pub expression: ClassSourceInvokeAstExpression,
+}
+
+/// One call-argument cast approved by the caller's completed source-type and overload proof.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInvokeArgumentCast {
+    pub call_bci: u32,
+    pub opcode: u8,
+    pub target: crate::facts::CallTarget,
+    pub argument_index: usize,
+    pub ty: crate::ast::Type,
+}
+
+/// Exact argument position whose proved `(Object)` source-presentation wrapper may be removed.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInvokeArgumentPresentationCast {
+    pub call_bci: u32,
+    pub opcode: u8,
+    pub target: crate::facts::CallTarget,
+    pub argument_index: usize,
+}
+
+/// One declaration the retained AST actually emits for a local variable.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstLocalDeclaration {
+    pub bci: u32,
+    pub name: String,
+    pub ty: crate::ast::Type,
+    pub source_type_name: Option<String>,
+    /// Statement anchors of enclosing lexical containers, outermost first.
+    pub scope_anchors: Vec<ClassSourceAstAnchor>,
+}
+
+/// A retained formal's emitted name tied to its physical JVM local slot.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceMethodFormalName {
+    pub slot: u16,
+    pub name: String,
+}
+
+/// The intentionally small set of expression forms a caller can classify without another AST.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ClassSourceAstExpressionShape {
+    Local,
+    Null,
+    New {
+        ty: String,
+        argument_count: usize,
+        qualified: bool,
+    },
+    Call {
+        name: String,
+        argument_count: usize,
+    },
+    BooleanNotLocal {
+        local_name: String,
+        primary: ClassSourceAstAnchor,
+        derived: Vec<ClassSourceAstAnchor>,
+        presented_type: Option<crate::ast::Type>,
+    },
+    Cast,
+    Literal,
+    StringLiteral,
+    Other,
+}
+
+/// One catch scope that can shadow an emitted formal name.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstCatchScope {
+    pub try_bci: u32,
+    pub exception_type: String,
+    pub local_name: String,
+}
+
+/// One actual expression consumer in a complete supported method body.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstBodyConsumer {
+    pub bci: u32,
+    pub expression: ClassSourceInvokeAstExpression,
+    pub catch_scopes: Vec<ClassSourceAstCatchScope>,
+}
+
+/// One actual field assignment statement's expressions, with its exact AST field spelling.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstFieldWriteConsumer {
+    pub bci: u32,
+    pub name: String,
+    pub op: crate::ast::AssignOp,
+    pub receiver: Option<ClassSourceInvokeAstExpression>,
+    pub value: ClassSourceInvokeAstExpression,
+    pub catch_scopes: Vec<ClassSourceAstCatchScope>,
+}
+
+/// One actual constructor invocation statement retained from the constructor body.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstConstructorCallConsumer {
+    pub bci: u32,
+    pub target: crate::ast::ConstructorTarget,
+    pub arguments: Vec<ClassSourceInvokeAstExpression>,
+    pub catch_scopes: Vec<ClassSourceAstCatchScope>,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceMethodBodyConsumers {
+    /// The constructor prologue decided by this same method run, retained independently of the
+    /// selected public rule-detail report. `None` means the run had no verified prologue.
+    pub init_record: Option<crate::init::InitRecord>,
+    pub returns: Vec<ClassSourceAstBodyConsumer>,
+    pub conditions: Vec<ClassSourceAstBodyConsumer>,
+    pub throws: Vec<ClassSourceAstBodyConsumer>,
+    /// Ordinary invocation expression statements admitted only when their AST call exactly joins
+    /// this method's unique same-run invocation target at the expression BCI.
+    pub invocation_statements: Vec<ClassSourceAstBodyConsumer>,
+    pub field_writes: Vec<ClassSourceAstFieldWriteConsumer>,
+    pub constructor_calls: Vec<ClassSourceAstConstructorCallConsumer>,
+    pub return_void_bcis: Vec<u32>,
 }
 
 #[doc(hidden)]
@@ -1543,6 +1887,1797 @@ pub fn class_source_method_first_instruction_bci(ast: &ClassSourceMethodAst) -> 
     } else {
         None
     }
+}
+
+/// Checks that the caller's complete physical same-owner invoke inventory matches the census
+/// supplied from the same class-file run. This validates inventory completeness only; callers
+/// still resolve each requested site against its AST with [`class_source_invoke_ast_sites`].
+///
+/// `owner` is the class-file internal name (for example `sample/Box`). A key's caller is implicit
+/// in `ast`, while every key target must name `owner`. Unknown opcodes, duplicate physical BCIs,
+/// incomplete Code, and any missing or additional same-owner call are ordinary refusals (`None`).
+#[doc(hidden)]
+pub fn class_source_same_class_invoke_inventory_matches(
+    ast: &ClassSourceMethodAst,
+    owner: &str,
+    expected_sites: &[ClassSourceInvokeKey],
+    budget: &mut Budget,
+) -> Result<Option<()>, crate::stop::StopReason> {
+    let source = &ast.projection;
+    if !source.complete_code || source.instruction_bcis.len() != source.instruction_count {
+        return Ok(None);
+    }
+
+    let scan_items = source
+        .instruction_bcis
+        .len()
+        .saturating_add(source.call_targets.len())
+        .saturating_add(expected_sites.len());
+    let sort_cost = source
+        .call_targets
+        .len()
+        .saturating_add(expected_sites.len())
+        .saturating_mul(
+            log2_upper_bound(
+                source
+                    .call_targets
+                    .len()
+                    .saturating_add(expected_sites.len()),
+            )
+            .saturating_add(1),
+        )
+        .saturating_add(
+            source
+                .instruction_bcis
+                .len()
+                .saturating_mul(log2_upper_bound(source.instruction_bcis.len()).saturating_add(1)),
+        );
+    charge_class_source_metadata(budget, scan_items.saturating_add(sort_cost), None)?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(scan_items).unwrap_or(u64::MAX),
+        source.instruction_bcis.first().copied(),
+    )?;
+
+    let mut instruction_bcis = source.instruction_bcis.clone();
+    instruction_bcis.sort_unstable();
+    if instruction_bcis.windows(2).any(|pair| pair[0] == pair[1]) {
+        return Ok(None);
+    }
+
+    let mut actual_sites = Vec::new();
+    let mut seen_call_bcis = std::collections::HashSet::with_capacity(source.call_targets.len());
+    for (bci, opcode, target) in &source.call_targets {
+        crate::stop::poll(budget, Some(*bci))?;
+        if !seen_call_bcis.insert(*bci)
+            || instruction_bcis.binary_search(bci).is_err()
+            || !class_source_invoke_opcode_matches_target(*opcode, target)
+        {
+            return Ok(None);
+        }
+        if target.owner() != owner {
+            continue;
+        }
+        actual_sites.push((*bci, *opcode, target));
+    }
+
+    let mut expected = Vec::with_capacity(expected_sites.len());
+    for key in expected_sites {
+        crate::stop::poll(budget, Some(key.call_bci))?;
+        if key.target.owner() != owner
+            || instruction_bcis.binary_search(&key.call_bci).is_err()
+            || !class_source_invoke_opcode_matches_target(key.opcode, &key.target)
+        {
+            return Ok(None);
+        }
+        expected.push((key.call_bci, key.opcode, &key.target));
+    }
+
+    actual_sites.sort_by_key(|site| site.0);
+    expected.sort_by_key(|site| site.0);
+    if actual_sites.len() != expected.len()
+        || expected.windows(2).any(|pair| pair[0].0 == pair[1].0)
+        || actual_sites
+            .iter()
+            .zip(&expected)
+            .any(|(actual, expected)| actual != expected)
+    {
+        return Ok(None);
+    }
+    Ok(Some(()))
+}
+
+fn class_source_invoke_opcode_matches_target(
+    opcode: u8,
+    target: &crate::facts::CallTarget,
+) -> bool {
+    matches!(
+        (opcode, target.kind()),
+        (0xb6, crate::facts::InvokeKind::Virtual)
+            | (0xb7, crate::facts::InvokeKind::Special)
+            | (0xb8, crate::facts::InvokeKind::Static)
+            | (0xb9, crate::facts::InvokeKind::Interface)
+    )
+}
+
+/// Resolves only the requested physical call sites against this retained AST. The full call census
+/// remains the caller's responsibility; a missing, duplicate, folded, or textually mismatched site
+/// is an ordinary refusal (`None`).
+#[doc(hidden)]
+pub fn class_source_invoke_ast_sites(
+    ast: &ClassSourceMethodAst,
+    required_sites: &[ClassSourceInvokeKey],
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassSourceInvokeAstSite>>, crate::stop::StopReason> {
+    use crate::ast::ExprKind;
+    let source = &ast.projection;
+    if !source.complete_code || source.instruction_bcis.len() != source.instruction_count {
+        return Ok(None);
+    }
+    if required_sites.is_empty() {
+        return Ok(Some(Vec::new()));
+    }
+    let site_index_cost = required_sites
+        .len()
+        .saturating_mul(log2_upper_bound(required_sites.len()).saturating_add(1));
+    charge_class_source_metadata(budget, site_index_cost, None)?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(required_sites.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let mut required_by_bci = std::collections::BTreeMap::<u32, &ClassSourceInvokeKey>::new();
+    for key in required_sites {
+        if required_by_bci.insert(key.call_bci, key).is_some() {
+            return Ok(None);
+        }
+    }
+    let mut result = Vec::with_capacity(required_sites.len());
+    for key in required_by_bci.values().copied() {
+        crate::stop::poll(budget, Some(key.call_bci))?;
+        charge_class_source_ast(source, budget)?;
+        charge_class_source_metadata(
+            budget,
+            source
+                .instruction_bcis
+                .len()
+                .saturating_add(source.call_targets.len()),
+            Some(key.call_bci),
+        )?;
+        if !source.instruction_bcis.contains(&key.call_bci) {
+            return Ok(None);
+        }
+        let target_matches: Vec<_> = source
+            .call_targets
+            .iter()
+            .filter(|(bci, _, _)| *bci == key.call_bci)
+            .collect();
+        if target_matches.len() != 1
+            || target_matches[0].1 != key.opcode
+            || target_matches[0].2 != key.target
+        {
+            return Ok(None);
+        }
+        let mut matches = Vec::new();
+        for_each_statement_expression(&source.program.stmts, &mut |expression| {
+            let ExprKind::Call {
+                name,
+                receiver: _,
+                args,
+            } = &expression.kind
+            else {
+                return;
+            };
+            if expression.origin.primary().bci() != key.call_bci
+                || expression
+                    .origin
+                    .primary()
+                    .method()
+                    .is_some_and(|method| method != &source.member)
+                || name != key.target.name()
+                || descriptor_parameter_count(key.target.descriptor()) != Some(args.len())
+            {
+                return;
+            }
+            matches.push(expression);
+        });
+        if matches.len() != 1 {
+            return Ok(None);
+        }
+        let expression = matches.pop().expect("one call-site match");
+        let ExprKind::Call {
+            name,
+            receiver,
+            args,
+        } = &expression.kind
+        else {
+            unreachable!("the matched node is a call")
+        };
+        let anchor_count = receiver
+            .iter()
+            .map(|receiver| class_source_invoke_ast_expression_anchor_count(receiver))
+            .chain(
+                args.iter()
+                    .map(class_source_invoke_ast_expression_anchor_count),
+            )
+            .fold(0usize, usize::saturating_add);
+        let call_expression = expression;
+        let wrapper_child_anchor_count = args
+            .iter()
+            .enumerate()
+            .filter_map(|(argument_index, argument)| {
+                class_source_exact_reference_presentation_wrapper(
+                    source,
+                    call_expression,
+                    key,
+                    argument_index,
+                    argument,
+                )
+                .map(|(_, child)| class_source_invoke_ast_expression_anchor_count(child))
+            })
+            .fold(0usize, usize::saturating_add);
+        charge_class_source_metadata(
+            budget,
+            anchor_count
+                .saturating_add(wrapper_child_anchor_count)
+                .saturating_add(key.target.descriptor().len().saturating_mul(args.len())),
+            Some(key.call_bci),
+        )?;
+        let arguments = args
+            .iter()
+            .enumerate()
+            .map(|(argument_index, argument)| {
+                class_source_invoke_ast_argument_expression(
+                    source,
+                    &source.member,
+                    call_expression,
+                    key,
+                    argument_index,
+                    argument,
+                )
+            })
+            .collect();
+        result.push(ClassSourceInvokeAstSite {
+            caller: source.member.clone(),
+            key: key.clone(),
+            ast_name: name.clone(),
+            receiver: receiver
+                .as_deref()
+                .map(|receiver| class_source_invoke_ast_expression(receiver, &source.member)),
+            arguments,
+        });
+    }
+    Ok(Some(result))
+}
+
+/// Lists every direct AST consumer of a selected call result. Callers join the returned positions
+/// with their same-run SSA use census; this function never infers a generic source type from that
+/// census or from `Expr::presented`.
+#[doc(hidden)]
+pub fn class_source_invoke_result_uses(
+    ast: &ClassSourceMethodAst,
+    producer: &ClassSourceInvokeKey,
+    field_targets: &[ClassSourceInvokeFieldTarget],
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassSourceInvokeResultUse>>, crate::stop::StopReason> {
+    use crate::ast::{Expr, ExprKind, Stmt};
+    use std::collections::HashMap;
+
+    let source = &ast.projection;
+    if !source.complete_code || source.instruction_bcis.len() != source.instruction_count {
+        return Ok(None);
+    }
+    let Some(producer_site) =
+        class_source_invoke_ast_sites(ast, std::slice::from_ref(producer), budget)?
+    else {
+        return Ok(None);
+    };
+    let _ = producer_site;
+    charge_class_source_ast(source, budget)?;
+    let mut expression_anchor_count = 0usize;
+    let mut descriptor_parse_cost = 0usize;
+    for_each_statement_expression(&source.program.stmts, &mut |expression| {
+        expression_anchor_count = expression_anchor_count
+            .saturating_add(class_source_invoke_ast_expression_anchor_count(expression));
+        let ExprKind::Call { name, args, .. } = &expression.kind else {
+            return;
+        };
+        let bci = expression.origin.primary().bci();
+        let target_index = source
+            .call_targets
+            .partition_point(|(call_bci, _, _)| *call_bci < bci);
+        if let Some((call_bci, _, target)) = source.call_targets.get(target_index)
+            && *call_bci == bci
+            && target.name() == name
+        {
+            descriptor_parse_cost = descriptor_parse_cost
+                .saturating_add(target.descriptor().len().saturating_mul(args.len()));
+        }
+    });
+    crate::stop::poll(budget, Some(producer.call_bci))?;
+    charge_class_source_metadata(
+        budget,
+        source
+            .call_targets
+            .len()
+            .saturating_add(field_targets.len())
+            .saturating_add(expression_anchor_count)
+            .saturating_add(descriptor_parse_cost)
+            .saturating_add(
+                usize::try_from(program_node_count(&source.program))
+                    .unwrap_or(usize::MAX)
+                    .saturating_mul(log2_upper_bound(source.call_targets.len()).saturating_add(1)),
+            ),
+        Some(producer.call_bci),
+    )?;
+    let mut field_targets_by_site = HashMap::with_capacity(field_targets.len());
+    for target in field_targets {
+        crate::stop::poll(budget, Some(target.write_bci))?;
+        if field_targets_by_site
+            .insert((target.write_bci, target.name.clone()), target.clone())
+            .is_some()
+        {
+            return Ok(None);
+        }
+    }
+    let mut result = Vec::new();
+
+    #[derive(Clone)]
+    enum Consumer {
+        Return(u32),
+        CallArgument(Option<ClassSourceInvokeKey>, usize),
+        FieldWrite(Option<ClassSourceInvokeFieldTarget>),
+        LocalStore(u32, String),
+        Other(u32),
+    }
+
+    fn matching_call_target(
+        source: &ClassSourceMethodAstSource,
+        expression: &Expr,
+    ) -> Option<ClassSourceInvokeKey> {
+        let ExprKind::Call { name, args, .. } = &expression.kind else {
+            return None;
+        };
+        let bci = expression.origin.primary().bci();
+        if expression
+            .origin
+            .primary()
+            .method()
+            .is_some_and(|method| method != &source.member)
+        {
+            return None;
+        }
+        let index = source
+            .call_targets
+            .partition_point(|(call_bci, _, _)| *call_bci < bci);
+        let (call_bci, opcode, target) = source.call_targets.get(index)?;
+        if *call_bci != bci
+            || source
+                .call_targets
+                .get(index + 1)
+                .is_some_and(|(next_bci, _, _)| *next_bci == bci)
+            || target.name() != name
+            || descriptor_parameter_count(target.descriptor()) != Some(args.len())
+        {
+            return None;
+        }
+        Some(ClassSourceInvokeKey {
+            call_bci: bci,
+            opcode: *opcode,
+            target: target.clone(),
+        })
+    }
+
+    fn visit_expression(
+        source: &ClassSourceMethodAstSource,
+        expression: &Expr,
+        consumer: Consumer,
+        producer: &ClassSourceInvokeKey,
+        result: &mut Vec<ClassSourceInvokeResultUse>,
+    ) {
+        use crate::ast::ExprKind;
+        if matches!(&expression.kind, ExprKind::Call { .. })
+            && expression.origin.primary().bci() == producer.call_bci
+            && matching_call_target(source, expression).as_ref() == Some(producer)
+        {
+            let kind = match &consumer {
+                Consumer::Return(consumer_bci) => ClassSourceInvokeResultUseKind::DirectReturn {
+                    consumer_bci: *consumer_bci,
+                },
+                Consumer::CallArgument(consumer, argument_index) => {
+                    ClassSourceInvokeResultUseKind::DirectCallArgument {
+                        consumer: consumer.clone(),
+                        argument_index: *argument_index,
+                    }
+                }
+                Consumer::FieldWrite(Some(target)) => ClassSourceInvokeResultUseKind::FieldWrite {
+                    target: target.clone(),
+                },
+                Consumer::FieldWrite(None) => ClassSourceInvokeResultUseKind::Other {
+                    consumer_bci: expression.origin.primary().bci(),
+                },
+                Consumer::LocalStore(write_bci, local_name) => {
+                    ClassSourceInvokeResultUseKind::LocalStore {
+                        write_bci: *write_bci,
+                        local_name: local_name.clone(),
+                    }
+                }
+                Consumer::Other(consumer_bci) => ClassSourceInvokeResultUseKind::Other {
+                    consumer_bci: *consumer_bci,
+                },
+            };
+            result.push(ClassSourceInvokeResultUse {
+                producer: producer.clone(),
+                kind,
+                expression: class_source_invoke_ast_expression(expression, &source.member),
+            });
+        }
+        match &expression.kind {
+            ExprKind::Call { receiver, args, .. } => {
+                if let Some(receiver) = receiver {
+                    visit_expression(
+                        source,
+                        receiver,
+                        Consumer::Other(expression.origin.primary().bci()),
+                        producer,
+                        result,
+                    );
+                }
+                let key = matching_call_target(source, expression);
+                for (index, argument) in args.iter().enumerate() {
+                    visit_expression(
+                        source,
+                        argument,
+                        Consumer::CallArgument(key.clone(), index),
+                        producer,
+                        result,
+                    );
+                }
+            }
+            ExprKind::New {
+                qualifier, args, ..
+            } => {
+                if let Some(qualifier) = qualifier {
+                    visit_expression(
+                        source,
+                        qualifier,
+                        Consumer::Other(expression.origin.primary().bci()),
+                        producer,
+                        result,
+                    );
+                }
+                for argument in args {
+                    visit_expression(
+                        source,
+                        argument,
+                        Consumer::Other(expression.origin.primary().bci()),
+                        producer,
+                        result,
+                    );
+                }
+            }
+            ExprKind::LocalAssign { value, .. }
+            | ExprKind::InstanceOf { value, .. }
+            | ExprKind::Lambda { body: value, .. }
+            | ExprKind::MethodReference {
+                qualifier: value, ..
+            }
+            | ExprKind::Field {
+                receiver: value, ..
+            }
+            | ExprKind::ArrayLength { array: value }
+            | ExprKind::PostfixUpdate { target: value, .. }
+            | ExprKind::Not { value }
+            | ExprKind::Neg { value } => visit_expression(
+                source,
+                value,
+                Consumer::Other(expression.origin.primary().bci()),
+                producer,
+                result,
+            ),
+            ExprKind::Cast { value, .. } => {
+                let transparent_consumer = match &consumer {
+                    Consumer::CallArgument(Some(key), argument_index) => {
+                        class_source_expression_reference_presentation_wrapper(
+                            source,
+                            key,
+                            *argument_index,
+                            expression,
+                        )
+                        .is_some()
+                    }
+                    _ => false,
+                };
+                visit_expression(
+                    source,
+                    value,
+                    if transparent_consumer {
+                        consumer.clone()
+                    } else {
+                        Consumer::Other(expression.origin.primary().bci())
+                    },
+                    producer,
+                    result,
+                );
+            }
+            ExprKind::Index { array, index }
+            | ExprKind::Binary {
+                left: array,
+                right: index,
+                ..
+            } => {
+                for value in [array.as_ref(), index.as_ref()] {
+                    visit_expression(
+                        source,
+                        value,
+                        Consumer::Other(expression.origin.primary().bci()),
+                        producer,
+                        result,
+                    );
+                }
+            }
+            ExprKind::NewArray {
+                lengths,
+                initializers,
+                ..
+            } => {
+                for value in lengths.iter().chain(initializers.iter().flatten()) {
+                    visit_expression(
+                        source,
+                        value,
+                        Consumer::Other(expression.origin.primary().bci()),
+                        producer,
+                        result,
+                    );
+                }
+            }
+            ExprKind::Conditional {
+                test,
+                when_true,
+                when_false,
+            } => {
+                for value in [test.as_ref(), when_true.as_ref(), when_false.as_ref()] {
+                    visit_expression(
+                        source,
+                        value,
+                        Consumer::Other(expression.origin.primary().bci()),
+                        producer,
+                        result,
+                    );
+                }
+            }
+            ExprKind::Concat { parts } => {
+                for part in parts {
+                    visit_expression(
+                        source,
+                        &part.value,
+                        Consumer::Other(expression.origin.primary().bci()),
+                        producer,
+                        result,
+                    );
+                }
+            }
+            ExprKind::Local(_)
+            | ExprKind::Integer(_)
+            | ExprKind::IntegerConstantName { .. }
+            | ExprKind::Boolean(_)
+            | ExprKind::Long(_)
+            | ExprKind::Float(_)
+            | ExprKind::Double(_)
+            | ExprKind::Str(_)
+            | ExprKind::Null
+            | ExprKind::ClassLiteral { .. }
+            | ExprKind::Path(_)
+            | ExprKind::QualifiedThis { .. }
+            | ExprKind::Super { .. } => {}
+        }
+    }
+
+    fn visit_statements(
+        source: &ClassSourceMethodAstSource,
+        statements: &[Stmt],
+        producer: &ClassSourceInvokeKey,
+        field_targets: &HashMap<(u32, String), ClassSourceInvokeFieldTarget>,
+        result: &mut Vec<ClassSourceInvokeResultUse>,
+    ) {
+        use crate::ast::StmtKind;
+        for statement in statements {
+            let bci = statement.origin.primary().bci();
+            match &statement.kind {
+                StmtKind::Return { value: Some(value) } => {
+                    visit_expression(source, value, Consumer::Return(bci), producer, result)
+                }
+                StmtKind::FieldAssign { name, value, .. } => {
+                    let target = field_targets.get(&(bci, name.clone())).cloned();
+                    visit_expression(
+                        source,
+                        value,
+                        Consumer::FieldWrite(target),
+                        producer,
+                        result,
+                    );
+                }
+                StmtKind::Declare {
+                    name,
+                    value: Some(value),
+                    ..
+                }
+                | StmtKind::Assign { name, value } => visit_expression(
+                    source,
+                    value,
+                    Consumer::LocalStore(bci, name.clone()),
+                    producer,
+                    result,
+                ),
+                StmtKind::Expr(value) | StmtKind::Throw { value } => {
+                    visit_expression(source, value, Consumer::Other(bci), producer, result)
+                }
+                StmtKind::Assert { cond, message } => {
+                    visit_expression(source, cond, Consumer::Other(bci), producer, result);
+                    if let Some(message) = message {
+                        visit_expression(source, message, Consumer::Other(bci), producer, result);
+                    }
+                }
+                StmtKind::IndexAssign {
+                    array,
+                    index,
+                    value,
+                    ..
+                } => {
+                    for value in [array, index, value] {
+                        visit_expression(source, value, Consumer::Other(bci), producer, result);
+                    }
+                }
+                StmtKind::ConstructorCall { args, .. } => {
+                    for argument in args {
+                        visit_expression(source, argument, Consumer::Other(bci), producer, result);
+                    }
+                }
+                StmtKind::Return { value: None }
+                | StmtKind::Break { .. }
+                | StmtKind::Continue { .. }
+                | StmtKind::Fallback { .. } => {}
+                StmtKind::If {
+                    cond,
+                    then_body,
+                    else_body,
+                } => {
+                    visit_expression(source, cond, Consumer::Other(bci), producer, result);
+                    visit_statements(source, then_body, producer, field_targets, result);
+                    visit_statements(source, else_body, producer, field_targets, result);
+                }
+                StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                    visit_expression(source, cond, Consumer::Other(bci), producer, result);
+                    visit_statements(source, body, producer, field_targets, result);
+                }
+                StmtKind::For {
+                    init,
+                    cond,
+                    update,
+                    body,
+                    ..
+                } => {
+                    visit_statements(
+                        source,
+                        std::slice::from_ref(init),
+                        producer,
+                        field_targets,
+                        result,
+                    );
+                    visit_expression(source, cond, Consumer::Other(bci), producer, result);
+                    visit_statements(
+                        source,
+                        std::slice::from_ref(update),
+                        producer,
+                        field_targets,
+                        result,
+                    );
+                    visit_statements(source, body, producer, field_targets, result);
+                }
+                StmtKind::ForEach { iterable, body, .. } => {
+                    visit_expression(source, iterable, Consumer::Other(bci), producer, result);
+                    visit_statements(source, body, producer, field_targets, result);
+                }
+                StmtKind::Switch { value, arms } => {
+                    visit_expression(source, value, Consumer::Other(bci), producer, result);
+                    for arm in arms {
+                        visit_statements(source, &arm.body, producer, field_targets, result);
+                    }
+                }
+                StmtKind::Try {
+                    resources,
+                    catches,
+                    body,
+                    finally_body,
+                } => {
+                    for resource in resources {
+                        visit_expression(
+                            source,
+                            &resource.value,
+                            Consumer::Other(bci),
+                            producer,
+                            result,
+                        );
+                    }
+                    visit_statements(source, body, producer, field_targets, result);
+                    for catch in catches {
+                        visit_statements(source, &catch.body, producer, field_targets, result);
+                    }
+                    if let Some(finally_body) = finally_body {
+                        visit_statements(source, finally_body, producer, field_targets, result);
+                    }
+                }
+                StmtKind::Synchronized { lock, body } => {
+                    visit_expression(source, lock, Consumer::Other(bci), producer, result);
+                    visit_statements(source, body, producer, field_targets, result);
+                }
+                StmtKind::Declare { value: None, .. } => {}
+            }
+        }
+    }
+
+    visit_statements(
+        source,
+        &source.program.stmts,
+        producer,
+        &field_targets_by_site,
+        &mut result,
+    );
+    Ok(Some(result))
+}
+
+/// Captures only return, condition, throw, direct invocation-statement, and field-write consumer
+/// positions the same-class generic proof can use. `None` explicitly refuses an unmodeled
+/// statement or try shape; this is not a second control-flow representation and it never replaces
+/// the original AST.
+#[doc(hidden)]
+pub fn class_source_method_body_consumers(
+    ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodBodyConsumers>, crate::stop::StopReason> {
+    use crate::ast::{Stmt, StmtKind};
+
+    if !ast.projection.complete_code
+        || ast.projection.instruction_bcis.len() != ast.projection.instruction_count
+        || ast.projection.program.ragged
+        || !ast.projection.program.field_increments.is_empty()
+        || !ast.projection.program.lambdas.is_empty()
+        || !ast.projection.program.accessors.is_empty()
+        || !ast.projection.program.array_constructor_sites.is_empty()
+        || !ast.projection.program.lambda_refusals.is_empty()
+        || !ast.projection.program.accessor_refusals.is_empty()
+    {
+        return Ok(None);
+    }
+    charge_class_source_ast(&ast.projection, budget)?;
+
+    fn append_consumer(
+        statement_bci: u32,
+        expression: &crate::ast::Expr,
+        member: &PhysicalMethodId,
+        catch_scopes: &[ClassSourceAstCatchScope],
+        output: &mut Vec<ClassSourceAstBodyConsumer>,
+        budget: &mut Budget,
+    ) -> Result<(), crate::stop::StopReason> {
+        charge_class_source_metadata(
+            budget,
+            class_source_invoke_ast_expression_anchor_count(expression)
+                .saturating_add(catch_scopes.len())
+                .saturating_add(1),
+            Some(statement_bci),
+        )?;
+        output.push(ClassSourceAstBodyConsumer {
+            bci: statement_bci,
+            expression: class_source_invoke_ast_expression(expression, member),
+            catch_scopes: catch_scopes.to_vec(),
+        });
+        Ok(())
+    }
+
+    fn is_exact_invocation_statement(
+        source: &ClassSourceMethodAstSource,
+        statement_bci: u32,
+        expression: &crate::ast::Expr,
+        budget: &mut Budget,
+    ) -> Result<bool, crate::stop::StopReason> {
+        let crate::ast::ExprKind::Call { name, args, .. } = &expression.kind else {
+            return Ok(false);
+        };
+        let call_bci = expression.origin.primary().bci();
+        if statement_bci != call_bci
+            || expression
+                .origin
+                .primary()
+                .method()
+                .is_some_and(|method| method != &source.member)
+        {
+            return Ok(false);
+        }
+        crate::stop::poll(budget, Some(call_bci))?;
+        charge_class_source_metadata(
+            budget,
+            source
+                .instruction_bcis
+                .len()
+                .saturating_add(source.call_targets.len()),
+            Some(call_bci),
+        )?;
+        if source
+            .instruction_bcis
+            .iter()
+            .filter(|bci| **bci == call_bci)
+            .count()
+            != 1
+        {
+            return Ok(false);
+        }
+        let mut target = None;
+        for (bci, opcode, candidate) in &source.call_targets {
+            if *bci == call_bci {
+                if target.is_some() {
+                    return Ok(false);
+                }
+                target = Some((*opcode, candidate));
+            }
+        }
+        let Some((opcode, target)) = target else {
+            return Ok(false);
+        };
+        let opcode_matches_kind = matches!(
+            (opcode, target.kind()),
+            (0xb6, crate::facts::InvokeKind::Virtual)
+                | (0xb7, crate::facts::InvokeKind::Special)
+                | (0xb8, crate::facts::InvokeKind::Static)
+                | (0xb9, crate::facts::InvokeKind::Interface)
+        );
+        Ok(opcode_matches_kind
+            && target.name() == name.as_str()
+            && descriptor_parameter_count(target.descriptor()) == Some(args.len()))
+    }
+
+    fn visit(
+        statements: &[Stmt],
+        source: &ClassSourceMethodAstSource,
+        member: &PhysicalMethodId,
+        catch_scopes: &mut Vec<ClassSourceAstCatchScope>,
+        result: &mut ClassSourceMethodBodyConsumers,
+        budget: &mut Budget,
+    ) -> Result<bool, crate::stop::StopReason> {
+        for statement in statements {
+            let bci = statement.origin.primary().bci();
+            charge_class_source_metadata(budget, 1, Some(bci))?;
+            match &statement.kind {
+                StmtKind::Return { value: Some(value) } => {
+                    append_consumer(
+                        bci,
+                        value,
+                        member,
+                        catch_scopes,
+                        &mut result.returns,
+                        budget,
+                    )?;
+                }
+                StmtKind::Return { value: None } => {
+                    charge_class_source_metadata(budget, 1, Some(bci))?;
+                    result.return_void_bcis.push(bci);
+                }
+                StmtKind::Throw { value } => {
+                    append_consumer(bci, value, member, catch_scopes, &mut result.throws, budget)?;
+                }
+                StmtKind::Expr(expression)
+                    if is_exact_invocation_statement(source, bci, expression, budget)? =>
+                {
+                    append_consumer(
+                        bci,
+                        expression,
+                        member,
+                        catch_scopes,
+                        &mut result.invocation_statements,
+                        budget,
+                    )?;
+                }
+                StmtKind::ConstructorCall { target, args } => {
+                    let arguments = args
+                        .iter()
+                        .map(class_source_invoke_ast_expression_anchor_count)
+                        .fold(0usize, usize::saturating_add);
+                    charge_class_source_metadata(
+                        budget,
+                        arguments
+                            .saturating_add(catch_scopes.len())
+                            .saturating_add(1),
+                        Some(bci),
+                    )?;
+                    result
+                        .constructor_calls
+                        .push(ClassSourceAstConstructorCallConsumer {
+                            bci,
+                            target: *target,
+                            arguments: args
+                                .iter()
+                                .map(|argument| {
+                                    class_source_invoke_ast_expression(argument, member)
+                                })
+                                .collect(),
+                            catch_scopes: catch_scopes.to_vec(),
+                        });
+                }
+                StmtKind::FieldAssign {
+                    receiver,
+                    name,
+                    op,
+                    value,
+                } => {
+                    let expression_anchors = receiver
+                        .iter()
+                        .map(class_source_invoke_ast_expression_anchor_count)
+                        .fold(
+                            class_source_invoke_ast_expression_anchor_count(value),
+                            usize::saturating_add,
+                        );
+                    charge_class_source_metadata(
+                        budget,
+                        expression_anchors
+                            .saturating_add(catch_scopes.len())
+                            .saturating_add(2),
+                        Some(bci),
+                    )?;
+                    result.field_writes.push(ClassSourceAstFieldWriteConsumer {
+                        bci,
+                        name: name.clone(),
+                        op: *op,
+                        receiver: receiver
+                            .as_ref()
+                            .map(|receiver| class_source_invoke_ast_expression(receiver, member)),
+                        value: class_source_invoke_ast_expression(value, member),
+                        catch_scopes: catch_scopes.to_vec(),
+                    });
+                }
+                StmtKind::If {
+                    cond,
+                    then_body,
+                    else_body,
+                } => {
+                    append_consumer(
+                        bci,
+                        cond,
+                        member,
+                        catch_scopes,
+                        &mut result.conditions,
+                        budget,
+                    )?;
+                    if !visit(then_body, source, member, catch_scopes, result, budget)?
+                        || !visit(else_body, source, member, catch_scopes, result, budget)?
+                    {
+                        return Ok(false);
+                    }
+                }
+                StmtKind::Try {
+                    resources,
+                    catches,
+                    body,
+                    finally_body,
+                } => {
+                    if !resources.is_empty() || finally_body.is_some() {
+                        return Ok(false);
+                    }
+                    if !visit(body, source, member, catch_scopes, result, budget)? {
+                        return Ok(false);
+                    }
+                    for catch in catches {
+                        charge_class_source_metadata(budget, 3, Some(bci))?;
+                        catch_scopes.push(ClassSourceAstCatchScope {
+                            try_bci: bci,
+                            exception_type: catch.ty.clone(),
+                            local_name: catch.name.clone(),
+                        });
+                        let supported =
+                            visit(&catch.body, source, member, catch_scopes, result, budget)?;
+                        catch_scopes.pop();
+                        if !supported {
+                            return Ok(false);
+                        }
+                    }
+                }
+                _ => return Ok(false),
+            }
+        }
+        Ok(true)
+    }
+
+    let mut result = ClassSourceMethodBodyConsumers {
+        init_record: {
+            if let Some(record) = &ast.projection.generic_call_init {
+                charge_class_source_metadata(
+                    budget,
+                    1usize
+                        .saturating_add(record.class.as_ref().map_or(0, String::len))
+                        .saturating_add(record.declared.as_ref().map_or(0, String::len)),
+                    record.bci,
+                )?;
+            }
+            ast.projection.generic_call_init.clone()
+        },
+        returns: Vec::new(),
+        conditions: Vec::new(),
+        throws: Vec::new(),
+        invocation_statements: Vec::new(),
+        field_writes: Vec::new(),
+        constructor_calls: Vec::new(),
+        return_void_bcis: Vec::new(),
+    };
+    if !visit(
+        &ast.projection.program.stmts,
+        &ast.projection,
+        &ast.projection.member,
+        &mut Vec::new(),
+        &mut result,
+        budget,
+    )? {
+        return Ok(None);
+    }
+    Ok(Some(result))
+}
+
+/// Applies only casts whose exact invocation and argument position the caller has proved. The
+/// outer cast presents its source target type; the original child keeps its own `presented` type
+/// and origins. This is a source-level upcast for overload selection, not a physical checkcast.
+#[doc(hidden)]
+pub fn project_class_source_invoke_argument_casts(
+    ast: &ClassSourceMethodAst,
+    edits: &[ClassSourceInvokeArgumentCast],
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
+    project_class_source_invoke_argument_edits(ast, &[], edits, budget)
+}
+
+/// Removes only explicitly selected descriptor-erasure reference presentation wrappers, then
+/// applies proved source upcasts in one AST clone and traversal.
+#[doc(hidden)]
+pub fn project_class_source_invoke_argument_edits(
+    ast: &ClassSourceMethodAst,
+    removals: &[ClassSourceInvokeArgumentPresentationCast],
+    edits: &[ClassSourceInvokeArgumentCast],
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
+    use crate::ast::{Expr, ExprKind, Type};
+    use std::sync::Arc;
+
+    if edits.is_empty() && removals.is_empty() {
+        return Ok(Some(ast.clone()));
+    }
+    let total_edits = edits.len().saturating_add(removals.len());
+    let grouping_cost = total_edits.saturating_mul(log2_upper_bound(total_edits).saturating_add(1));
+    charge_class_source_metadata(
+        budget,
+        grouping_cost,
+        edits
+            .first()
+            .map(|edit| edit.call_bci)
+            .or_else(|| removals.first().map(|edit| edit.call_bci)),
+    )?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(total_edits).unwrap_or(u64::MAX),
+        edits
+            .first()
+            .map(|edit| edit.call_bci)
+            .or_else(|| removals.first().map(|edit| edit.call_bci)),
+    )?;
+    if edits
+        .iter()
+        .any(|edit| !matches!(&edit.ty, Type::Reference(_)))
+    {
+        return Ok(None);
+    }
+
+    let mut sites_by_bci = std::collections::BTreeMap::new();
+    let mut edited_arguments = std::collections::HashSet::with_capacity(total_edits);
+    let mut removed_arguments = std::collections::HashSet::with_capacity(removals.len());
+    for removal in removals {
+        let key = ClassSourceInvokeKey {
+            call_bci: removal.call_bci,
+            opcode: removal.opcode,
+            target: removal.target.clone(),
+        };
+        if let Some(existing) = sites_by_bci.get(&removal.call_bci) {
+            if existing != &key {
+                return Ok(None);
+            }
+        } else {
+            sites_by_bci.insert(removal.call_bci, key);
+        }
+        if !removed_arguments.insert((removal.call_bci, removal.argument_index)) {
+            return Ok(None);
+        }
+    }
+    for edit in edits {
+        let key = ClassSourceInvokeKey {
+            call_bci: edit.call_bci,
+            opcode: edit.opcode,
+            target: edit.target.clone(),
+        };
+        if let Some(existing) = sites_by_bci.get(&edit.call_bci) {
+            if existing != &key {
+                return Ok(None);
+            }
+        } else {
+            sites_by_bci.insert(edit.call_bci, key);
+        }
+        if !edited_arguments.insert((edit.call_bci, edit.argument_index)) {
+            return Ok(None);
+        }
+    }
+    let sites: Vec<_> = sites_by_bci.values().cloned().collect();
+    if class_source_invoke_ast_sites(ast, &sites, budget)?.is_none() {
+        return Ok(None);
+    }
+    charge_class_source_ast(&ast.projection, budget)?;
+    let source_metadata_items = ast
+        .projection
+        .nested_class_members
+        .len()
+        .saturating_add(ast.projection.parameter_names.len())
+        .saturating_add(ast.projection.parameter_slots.len())
+        .saturating_add(ast.projection.instruction_bcis.len())
+        .saturating_add(ast.projection.call_targets.len())
+        .saturating_add(
+            ast.projection
+                .generic_call_init
+                .as_ref()
+                .map_or(0, |record| {
+                    1usize
+                        .saturating_add(record.class.as_ref().map_or(0, String::len))
+                        .saturating_add(record.declared.as_ref().map_or(0, String::len))
+                }),
+        )
+        .saturating_add(1);
+    charge_class_source_metadata(
+        budget,
+        source_metadata_items,
+        edits
+            .first()
+            .map(|edit| edit.call_bci)
+            .or_else(|| removals.first().map(|edit| edit.call_bci)),
+    )?;
+    let mut edits_by_bci = std::collections::HashMap::<u32, Vec<usize>>::new();
+    for (index, edit) in edits.iter().enumerate() {
+        edits_by_bci.entry(edit.call_bci).or_default().push(index);
+    }
+    let mut removals_by_bci = std::collections::HashMap::<u32, Vec<usize>>::new();
+    for (index, removal) in removals.iter().enumerate() {
+        removals_by_bci
+            .entry(removal.call_bci)
+            .or_default()
+            .push(index);
+    }
+    let mut program = ast.projection.program.clone();
+    let mut matched = vec![0usize; edits.len()];
+    let mut removed = vec![0usize; removals.len()];
+    for_each_statement_expression_mut(&mut program.stmts, &mut |expression| {
+        let ExprKind::Call { name, args, .. } = &mut expression.kind else {
+            return;
+        };
+        let bci = expression.origin.primary().bci();
+        if expression
+            .origin
+            .primary()
+            .method()
+            .is_some_and(|method| method != &ast.projection.member)
+        {
+            return;
+        }
+        let Some(site_key) = sites_by_bci.get(&bci) else {
+            return;
+        };
+        if name != site_key.target.name()
+            || descriptor_parameter_count(site_key.target.descriptor()) != Some(args.len())
+        {
+            return;
+        }
+        if let Some(indices) = removals_by_bci.get(&bci) {
+            for index in indices {
+                let removal = &removals[*index];
+                if site_key.opcode != removal.opcode
+                    || site_key.target != removal.target
+                    || removal.argument_index >= args.len()
+                {
+                    continue;
+                }
+                let argument = &mut args[removal.argument_index];
+                if class_source_expression_reference_presentation_wrapper(
+                    &ast.projection,
+                    site_key,
+                    removal.argument_index,
+                    argument,
+                )
+                .is_none()
+                {
+                    continue;
+                }
+                let original_origin = argument.origin.clone();
+                let old = std::mem::replace(argument, Expr::new(ExprKind::Null, original_origin));
+                let ExprKind::Cast { value, .. } = old.kind else {
+                    unreachable!("the wrapper predicate requires a cast")
+                };
+                *argument = *value;
+                removed[*index] += 1;
+            }
+        }
+        let Some(indices) = edits_by_bci.get(&bci) else {
+            return;
+        };
+        for index in indices {
+            let edit = &edits[*index];
+            if site_key.call_bci != bci
+                || site_key.opcode != edit.opcode
+                || site_key.target != edit.target
+                || name != edit.target.name()
+                || descriptor_parameter_count(edit.target.descriptor()) != Some(args.len())
+                || edit.argument_index >= args.len()
+            {
+                continue;
+            }
+            let argument = &mut args[edit.argument_index];
+            // Do not stack presentation casts on an already transformed/ambiguous source node.
+            if matches!(&argument.kind, ExprKind::Cast { .. }) {
+                matched[*index] = usize::MAX;
+                continue;
+            }
+            let original_origin = argument.origin.clone();
+            let old =
+                std::mem::replace(argument, Expr::new(ExprKind::Null, original_origin.clone()));
+            *argument = Expr::new(
+                ExprKind::Cast {
+                    ty: edit.ty.clone(),
+                    value: Box::new(old),
+                },
+                original_origin,
+            );
+            matched[*index] += 1;
+        }
+    });
+    if matched.iter().any(|count| *count != 1) || removed.iter().any(|count| *count != 1) {
+        return Ok(None);
+    }
+    let projection = ClassSourceMethodAstSource {
+        program,
+        member: ast.projection.member.clone(),
+        current_class: ast.projection.current_class.clone(),
+        nested_class_members: ast.projection.nested_class_members.clone(),
+        parameter_names: ast.projection.parameter_names.clone(),
+        parameter_slots: ast.projection.parameter_slots.clone(),
+        complete_code: ast.projection.complete_code,
+        has_exception_handlers: ast.projection.has_exception_handlers,
+        instruction_count: ast.projection.instruction_count,
+        instruction_bcis: ast.projection.instruction_bcis.clone(),
+        call_targets: ast.projection.call_targets.clone(),
+        anonymous_constructor_initializer_bci: ast
+            .projection
+            .anonymous_constructor_initializer_bci
+            .clone(),
+        generic_call_init: ast.projection.generic_call_init.clone(),
+    };
+    Ok(Some(ClassSourceMethodAst {
+        projection: Arc::new(projection),
+    }))
+}
+
+/// Lists real declarations from the retained AST, with the container anchors that distinguish
+/// same-named locals in different lexical scopes.
+#[doc(hidden)]
+pub fn class_source_local_declarations(
+    ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassSourceAstLocalDeclaration>>, crate::stop::StopReason> {
+    use crate::ast::{Stmt, StmtKind};
+
+    if !ast.projection.complete_code {
+        return Ok(None);
+    }
+    charge_class_source_ast(&ast.projection, budget)?;
+    fn visit(
+        statements: &[Stmt],
+        member: &PhysicalMethodId,
+        scopes: &mut Vec<ClassSourceAstAnchor>,
+        declarations: &mut Vec<ClassSourceAstLocalDeclaration>,
+        budget: &mut Budget,
+    ) -> Result<(), crate::stop::StopReason> {
+        for statement in statements {
+            let bci = statement.origin.primary().bci();
+            charge_class_source_metadata(budget, 1, Some(bci))?;
+            match &statement.kind {
+                StmtKind::Declare {
+                    ty,
+                    source_type_name,
+                    name,
+                    ..
+                } => {
+                    charge_class_source_metadata(
+                        budget,
+                        scopes.len().saturating_add(1),
+                        Some(bci),
+                    )?;
+                    declarations.push(ClassSourceAstLocalDeclaration {
+                        bci,
+                        name: name.clone(),
+                        ty: ty.clone(),
+                        source_type_name: source_type_name.clone(),
+                        scope_anchors: scopes.clone(),
+                    });
+                }
+                StmtKind::If {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                    visit(then_body, member, scopes, declarations, budget)?;
+                    visit(else_body, member, scopes, declarations, budget)?;
+                    scopes.pop();
+                }
+                StmtKind::While { body, .. }
+                | StmtKind::DoWhile { body, .. }
+                | StmtKind::Synchronized { body, .. } => {
+                    scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                    visit(body, member, scopes, declarations, budget)?;
+                    scopes.pop();
+                }
+                StmtKind::ForEach { ty, name, body, .. } => {
+                    charge_class_source_metadata(
+                        budget,
+                        scopes.len().saturating_add(1),
+                        Some(bci),
+                    )?;
+                    declarations.push(ClassSourceAstLocalDeclaration {
+                        bci,
+                        name: name.clone(),
+                        ty: ty.clone(),
+                        source_type_name: None,
+                        scope_anchors: scopes.clone(),
+                    });
+                    scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                    visit(body, member, scopes, declarations, budget)?;
+                    scopes.pop();
+                }
+                StmtKind::For {
+                    init, update, body, ..
+                } => {
+                    scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                    visit(
+                        std::slice::from_ref(init),
+                        member,
+                        scopes,
+                        declarations,
+                        budget,
+                    )?;
+                    visit(
+                        std::slice::from_ref(update),
+                        member,
+                        scopes,
+                        declarations,
+                        budget,
+                    )?;
+                    visit(body, member, scopes, declarations, budget)?;
+                    scopes.pop();
+                }
+                StmtKind::Switch { arms, .. } => {
+                    scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                    for arm in arms {
+                        visit(&arm.body, member, scopes, declarations, budget)?;
+                    }
+                    scopes.pop();
+                }
+                StmtKind::Try {
+                    resources,
+                    catches,
+                    body,
+                    finally_body,
+                } => {
+                    for resource in resources {
+                        charge_class_source_metadata(
+                            budget,
+                            scopes.len().saturating_add(1),
+                            Some(bci),
+                        )?;
+                        declarations.push(ClassSourceAstLocalDeclaration {
+                            bci,
+                            name: resource.name.clone(),
+                            ty: resource.ty.clone(),
+                            source_type_name: None,
+                            scope_anchors: scopes.clone(),
+                        });
+                    }
+                    scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                    visit(body, member, scopes, declarations, budget)?;
+                    for catch in catches {
+                        charge_class_source_metadata(
+                            budget,
+                            scopes.len().saturating_add(1),
+                            Some(bci),
+                        )?;
+                        declarations.push(ClassSourceAstLocalDeclaration {
+                            bci,
+                            name: catch.name.clone(),
+                            ty: crate::ast::Type::Reference(catch.ty.clone()),
+                            source_type_name: None,
+                            scope_anchors: scopes.clone(),
+                        });
+                        visit(&catch.body, member, scopes, declarations, budget)?;
+                    }
+                    if let Some(finally_body) = finally_body {
+                        visit(finally_body, member, scopes, declarations, budget)?;
+                    }
+                    scopes.pop();
+                }
+                _ => {}
+            }
+        }
+        Ok(())
+    }
+    let mut declarations = Vec::new();
+    visit(
+        &ast.projection.program.stmts,
+        &ast.projection.member,
+        &mut Vec::new(),
+        &mut declarations,
+        budget,
+    )?;
+    Ok(Some(declarations))
+}
+
+/// Returns only unambiguous emitted formal names with their physical local slots.
+#[doc(hidden)]
+pub fn class_source_method_formal_names(
+    ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassSourceMethodFormalName>>, crate::stop::StopReason> {
+    if ast.projection.parameter_slots.len() != ast.projection.parameter_names.len() {
+        return Ok(None);
+    }
+    charge_class_source_metadata(
+        budget,
+        ast.projection.parameter_slots.len(),
+        ast.projection.instruction_bcis.first().copied(),
+    )?;
+    Ok(Some(
+        ast.projection
+            .parameter_slots
+            .iter()
+            .copied()
+            .zip(ast.projection.parameter_names.iter())
+            .filter_map(|(slot, name)| {
+                name.as_ref().map(|name| ClassSourceMethodFormalName {
+                    slot,
+                    name: name.clone(),
+                })
+            })
+            .collect(),
+    ))
+}
+
+fn charge_class_source_ast(
+    source: &ClassSourceMethodAstSource,
+    budget: &mut Budget,
+) -> Result<(), crate::stop::StopReason> {
+    let first_bci = source
+        .program
+        .stmts
+        .first()
+        .map(|stmt| stmt.origin.primary().bci());
+    crate::stop::poll(budget, first_bci)?;
+    let node_count = program_node_count(&source.program);
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        node_count,
+        first_bci,
+    )?;
+    crate::stop::poll(budget, source.instruction_bcis.first().copied())
+}
+
+fn charge_class_source_metadata(
+    budget: &mut Budget,
+    items: usize,
+    bci: Option<u32>,
+) -> Result<(), crate::stop::StopReason> {
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(items).unwrap_or(u64::MAX),
+        bci,
+    )?;
+    crate::stop::poll(budget, bci)
+}
+
+fn log2_upper_bound(items: usize) -> usize {
+    if items <= 1 {
+        0
+    } else {
+        usize::BITS as usize - (items - 1).leading_zeros() as usize
+    }
+}
+
+fn class_source_invoke_ast_expression(
+    expression: &crate::ast::Expr,
+    member: &PhysicalMethodId,
+) -> ClassSourceInvokeAstExpression {
+    use crate::ast::ExprKind;
+
+    ClassSourceInvokeAstExpression {
+        primary: class_source_ast_anchor(expression.origin.primary(), member),
+        derived: expression
+            .origin
+            .derived()
+            .iter()
+            .map(|origin| class_source_ast_anchor(origin, member))
+            .collect(),
+        direct_local_name: match &expression.kind {
+            crate::ast::ExprKind::Local(name) => Some(name.clone()),
+            _ => None,
+        },
+        null_literal: matches!(&expression.kind, crate::ast::ExprKind::Null),
+        shape: match &expression.kind {
+            ExprKind::Local(_) => ClassSourceAstExpressionShape::Local,
+            ExprKind::Null => ClassSourceAstExpressionShape::Null,
+            ExprKind::New {
+                ty,
+                qualifier,
+                args,
+                ..
+            } => ClassSourceAstExpressionShape::New {
+                ty: ty.clone(),
+                argument_count: args.len(),
+                qualified: qualifier.is_some(),
+            },
+            ExprKind::Call { name, args, .. } => ClassSourceAstExpressionShape::Call {
+                name: name.clone(),
+                argument_count: args.len(),
+            },
+            ExprKind::Not { value } if let ExprKind::Local(local_name) = &value.kind => {
+                ClassSourceAstExpressionShape::BooleanNotLocal {
+                    local_name: local_name.clone(),
+                    primary: class_source_ast_anchor(value.origin.primary(), member),
+                    derived: value
+                        .origin
+                        .derived()
+                        .iter()
+                        .map(|origin| class_source_ast_anchor(origin, member))
+                        .collect(),
+                    presented_type: value.presented.clone(),
+                }
+            }
+            ExprKind::Cast { .. } => ClassSourceAstExpressionShape::Cast,
+            ExprKind::Integer(_)
+            | ExprKind::IntegerConstantName { .. }
+            | ExprKind::Boolean(_)
+            | ExprKind::Long(_)
+            | ExprKind::Float(_)
+            | ExprKind::Double(_)
+            | ExprKind::ClassLiteral { .. } => ClassSourceAstExpressionShape::Literal,
+            ExprKind::Str(_) => ClassSourceAstExpressionShape::StringLiteral,
+            _ => ClassSourceAstExpressionShape::Other,
+        },
+        presented_type: expression.presented.clone(),
+        presentation_wrapper: None,
+    }
+}
+
+fn class_source_invoke_ast_argument_expression(
+    source: &ClassSourceMethodAstSource,
+    member: &PhysicalMethodId,
+    call_expression: &crate::ast::Expr,
+    key: &ClassSourceInvokeKey,
+    argument_index: usize,
+    argument: &crate::ast::Expr,
+) -> ClassSourceInvokeAstExpression {
+    let mut fact = class_source_invoke_ast_expression(argument, member);
+    if let Some((ty, child)) = class_source_exact_reference_presentation_wrapper(
+        source,
+        call_expression,
+        key,
+        argument_index,
+        argument,
+    ) {
+        fact.presentation_wrapper = Some(ClassSourceAstPresentationWrapper {
+            ty: ty.clone(),
+            child: Box::new(class_source_invoke_ast_expression(child, member)),
+        });
+    }
+    fact
+}
+
+fn class_source_exact_reference_presentation_wrapper<'a>(
+    source: &ClassSourceMethodAstSource,
+    call_expression: &crate::ast::Expr,
+    key: &ClassSourceInvokeKey,
+    argument_index: usize,
+    argument: &'a crate::ast::Expr,
+) -> Option<(&'a crate::ast::Type, &'a crate::ast::Expr)> {
+    use crate::ast::{ExprKind, Type};
+    let ExprKind::Call { name, args, .. } = &call_expression.kind else {
+        return None;
+    };
+    if call_expression.origin.primary().bci() != key.call_bci
+        || call_expression
+            .origin
+            .primary()
+            .method()
+            .is_some_and(|method| method != &source.member)
+        || name != key.target.name()
+        || args
+            .get(argument_index)
+            .is_none_or(|candidate| !std::ptr::eq(candidate, argument))
+    {
+        return None;
+    }
+    let target_index = source
+        .call_targets
+        .partition_point(|(bci, _, _)| *bci < key.call_bci);
+    let (call_bci, opcode, target) = source.call_targets.get(target_index)?;
+    if *call_bci != key.call_bci || *opcode != key.opcode || target != &key.target {
+        return None;
+    }
+    let required_type =
+        class_source_descriptor_reference_parameter(target.descriptor(), argument_index)?;
+    let ExprKind::Cast { ty, value } = &argument.kind else {
+        return None;
+    };
+    if ty != &Type::Reference(required_type)
+        || argument.presented.as_ref() != Some(ty)
+        || !matches!(&value.kind, ExprKind::Call { .. } | ExprKind::Null)
+        || argument.origin.primary() != value.origin.primary()
+        || !class_source_origin_belongs_to_method(argument.origin.primary(), &source.member)
+        || argument.origin.derived().len() != value.origin.derived().len().saturating_add(1)
+        || &argument.origin.derived()[..value.origin.derived().len()] != value.origin.derived()
+    {
+        return None;
+    }
+    let wrapper_anchor = argument.origin.derived().last()?;
+    if wrapper_anchor.bci() != key.call_bci
+        || wrapper_anchor.provenance() != crate::source_map::Provenance::Derived
+        || wrapper_anchor.method().is_some()
+    {
+        return None;
+    }
+    if value.origin.derived().iter().any(|origin| {
+        origin.bci() == key.call_bci
+            || !class_source_origin_belongs_to_method(origin, &source.member)
+    }) {
+        return None;
+    }
+    Some((ty, value))
+}
+
+fn class_source_expression_reference_presentation_wrapper<'a>(
+    source: &ClassSourceMethodAstSource,
+    key: &ClassSourceInvokeKey,
+    argument_index: usize,
+    argument: &'a crate::ast::Expr,
+) -> Option<&'a crate::ast::Expr> {
+    use crate::ast::{ExprKind, Type};
+    if !source.instruction_bcis.contains(&key.call_bci) {
+        return None;
+    }
+    let target_index = source
+        .call_targets
+        .partition_point(|(bci, _, _)| *bci < key.call_bci);
+    let (call_bci, opcode, target) = source.call_targets.get(target_index)?;
+    if *call_bci != key.call_bci
+        || *opcode != key.opcode
+        || target != &key.target
+        || source
+            .call_targets
+            .get(target_index + 1)
+            .is_some_and(|(next_bci, _, _)| *next_bci == key.call_bci)
+    {
+        return None;
+    }
+    let ExprKind::Cast { ty, value } = &argument.kind else {
+        return None;
+    };
+    let required_type =
+        class_source_descriptor_reference_parameter(key.target.descriptor(), argument_index)?;
+    if ty != &Type::Reference(required_type)
+        || argument.presented.as_ref() != Some(ty)
+        || !matches!(&value.kind, ExprKind::Call { .. } | ExprKind::Null)
+        || argument.origin.primary() != value.origin.primary()
+        || !class_source_origin_belongs_to_method(argument.origin.primary(), &source.member)
+        || argument.origin.derived().len() != value.origin.derived().len().saturating_add(1)
+        || &argument.origin.derived()[..value.origin.derived().len()] != value.origin.derived()
+    {
+        return None;
+    }
+    let wrapper_anchor = argument.origin.derived().last()?;
+    if wrapper_anchor.bci() != key.call_bci
+        || wrapper_anchor.provenance() != crate::source_map::Provenance::Derived
+        || wrapper_anchor.method().is_some()
+    {
+        return None;
+    }
+    if value.origin.derived().iter().any(|origin| {
+        origin.bci() == key.call_bci
+            || !class_source_origin_belongs_to_method(origin, &source.member)
+    }) {
+        return None;
+    }
+    Some(value)
+}
+
+fn class_source_origin_belongs_to_method(
+    origin: &crate::source_map::Origin,
+    member: &PhysicalMethodId,
+) -> bool {
+    origin.method().is_none_or(|method| method == member)
+}
+
+fn class_source_descriptor_reference_parameter(
+    descriptor: &str,
+    argument_index: usize,
+) -> Option<String> {
+    use jarde_reader::classfile::Base;
+
+    let bytes = descriptor.as_bytes();
+    let facts = descriptor_facts(bytes, DescriptorKind::Method).ok()?;
+    let component = facts.parameters().get(argument_index)?;
+    let component_bytes = component.bytes(bytes)?;
+    let dimensions = usize::try_from(component.dimensions()).ok()?;
+    let base = match component.base() {
+        Base::Object(name) => {
+            let name = std::str::from_utf8(name.0.as_slice()).ok()?;
+            if name.is_empty() {
+                return None;
+            }
+            name.replace('/', ".")
+        }
+        Base::Primitive(primitive) if dimensions > 0 => match primitive {
+            jarde_reader::classfile::BaseType::Boolean => "boolean".to_owned(),
+            jarde_reader::classfile::BaseType::Byte => "byte".to_owned(),
+            jarde_reader::classfile::BaseType::Char => "char".to_owned(),
+            jarde_reader::classfile::BaseType::Short => "short".to_owned(),
+            jarde_reader::classfile::BaseType::Int => "int".to_owned(),
+            jarde_reader::classfile::BaseType::Long => "long".to_owned(),
+            jarde_reader::classfile::BaseType::Float => "float".to_owned(),
+            jarde_reader::classfile::BaseType::Double => "double".to_owned(),
+        },
+        Base::Primitive(_) => return None,
+    };
+    if component_bytes.is_empty() {
+        return None;
+    }
+    Some(format!("{base}{}", "[]".repeat(dimensions)))
+}
+
+fn class_source_invoke_ast_expression_anchor_count(expression: &crate::ast::Expr) -> usize {
+    let direct = expression.origin.derived().len().saturating_add(1);
+    match &expression.kind {
+        crate::ast::ExprKind::Not { value }
+            if matches!(&value.kind, crate::ast::ExprKind::Local(_)) =>
+        {
+            direct.saturating_add(value.origin.derived().len().saturating_add(1))
+        }
+        _ => direct,
+    }
+}
+
+fn class_source_ast_anchor(
+    origin: &crate::source_map::Origin,
+    member: &PhysicalMethodId,
+) -> ClassSourceAstAnchor {
+    let origin = origin.clone().in_body(Some(member));
+    ClassSourceAstAnchor {
+        bci: origin.bci(),
+        method: origin.method().cloned(),
+        provenance: origin.provenance(),
+    }
+}
+
+fn descriptor_parameter_count(descriptor: &str) -> Option<usize> {
+    let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method).ok()?;
+    Some(facts.parameters().len())
 }
 
 /// Emits the retained statements of one selected physical class-source method. The supplied
@@ -2780,6 +4915,8 @@ pub(crate) struct ClassSourceMethodAstSource {
     /// The presentation name assigned to each descriptor parameter slot, in descriptor order.
     /// `None` means a reused slot did not have one unambiguous whole-slot name.
     pub(crate) parameter_names: Vec<Option<String>>,
+    /// Physical local slot for each descriptor-order formal name.
+    pub(crate) parameter_slots: Vec<u16>,
     pub(crate) complete_code: bool,
     pub(crate) has_exception_handlers: bool,
     pub(crate) instruction_count: usize,
@@ -2787,9 +4924,12 @@ pub(crate) struct ClassSourceMethodAstSource {
     /// compares this exact set to the admitted AST anchors; a matching node count is insufficient.
     pub(crate) instruction_bcis: Vec<u32>,
     /// Decoded invocation targets, tied to their physical instruction BCIs.
-    pub(crate) call_targets: Vec<(u32, crate::facts::CallTarget)>,
+    pub(crate) call_targets: Vec<(u32, u8, crate::facts::CallTarget)>,
     pub(crate) anonymous_constructor_initializer_bci:
         Option<ClassSourceAnonymousConstructorInitializer>,
+    /// Same-run verified constructor prologue, retained only for generic-call proofs. The public
+    /// `RuleDetails` selection may omit this record even though the body and SSA were recovered.
+    pub(crate) generic_call_init: Option<crate::init::InitRecord>,
 }
 
 #[doc(hidden)]
@@ -2976,8 +5116,11 @@ pub enum GenericReturnValue {
     /// A complete, straight-line void body whose parameter locals are never reassigned. This is
     /// used only as same-run evidence for a source-level generic parameter projection: the body
     /// remains typed from its physical descriptor while the declaration may name a subtype
-    /// variable with the same proved erasure.
-    VoidBody,
+    /// variable with the same proved erasure. Slots in this list are physical parameter starts
+    /// that neither the SSA instruction reads nor the effects census says the body reads.
+    VoidBody {
+        unread_parameter_slots: Vec<u16>,
+    },
     /// The body is exactly an effect-free `aconst_null; areturn` sequence.
     NullLiteral,
     Parameter(u16),
@@ -5321,13 +7464,184 @@ impl RecoveryReport {
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
     recover_inner(
         request, budget, None, None, None, None, None, None, None, None, None, None, None, None,
-        None, false, true,
+        None, false, false, true,
     )
 }
 
-/// Capture only the body shape whose generic return type follows directly from unchanged
-/// parameter slots. Every local read is checked against its own SSA load; a write to any
-/// parameter slot makes the whole candidate unavailable.
+/// Collect unused physical parameter slots from one complete straight-line void body. Code, SSA
+/// and effects must agree on every instruction and local access before a slot can be called unread.
+fn generic_void_unread_parameter_slots(
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    ssa: &SsaTable,
+    parameter_slots: &std::collections::BTreeSet<u16>,
+    budget: &mut Budget,
+) -> Result<Option<Vec<u16>>, StopReason> {
+    let Some(block) = ssa.blocks().first() else {
+        return Ok(None);
+    };
+    let instructions = block.instructions();
+    let effects = ssa.effects().instructions();
+    let code_instructions = &code.instructions;
+    let code_operands = code.operands();
+    if ssa.blocks().len() != 1
+        || !ssa.phis().is_empty()
+        || code.stopped_at.is_some()
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+        || instructions.len() != code_instructions.len()
+        || code_operands.len() != code_instructions.len()
+        || effects.len() != code_instructions.len()
+    {
+        return Ok(None);
+    }
+
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(code_instructions.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(instructions.len().saturating_add(effects.len())).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let mut local_reads = std::collections::BTreeSet::new();
+    let mut parameter_writes = std::collections::BTreeSet::new();
+    for (((raw, operands), instruction), effect) in code_instructions
+        .iter()
+        .zip(code_operands)
+        .zip(instructions)
+        .zip(effects)
+    {
+        crate::stop::poll(budget, Some(raw.bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                instruction
+                    .reads()
+                    .len()
+                    .saturating_add(instruction.writes().len())
+                    .saturating_add(effect.locals_read().len())
+                    .saturating_add(effect.locals_written().len())
+                    .saturating_add(effect.handlers().len()),
+            )
+            .unwrap_or(u64::MAX),
+            Some(raw.bci),
+        )?;
+        let raw_opcode_matches = if raw.opcode == 0xc4 {
+            operands.local.is_some_and(|local| local.wide)
+        } else {
+            raw.opcode == operands.effective_opcode
+                && operands.local.is_none_or(|local| !local.wide)
+        };
+        if raw.bci != instruction.bci()
+            || raw.bci != effect.bci()
+            || effect.block() != block.block()
+            || !raw_opcode_matches
+            || operands.effective_opcode != instruction.opcode()
+            || operands.effective_opcode != effect.opcode()
+            || !effect.handlers().is_empty()
+        {
+            return Ok(None);
+        }
+
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(instruction.reads().len()).unwrap_or(u64::MAX),
+            Some(raw.bci),
+        )?;
+        let ssa_reads = instruction
+            .reads()
+            .iter()
+            .filter_map(|(slot, _)| match slot {
+                Slot::Local(index) => Some(*index),
+                Slot::Stack(_) => None,
+            })
+            .collect::<std::collections::BTreeSet<_>>();
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(effect.locals_read().len()).unwrap_or(u64::MAX),
+            Some(raw.bci),
+        )?;
+        let effect_reads = effect
+            .locals_read()
+            .iter()
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>();
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(instruction.writes().len()).unwrap_or(u64::MAX),
+            Some(raw.bci),
+        )?;
+        let ssa_writes = instruction
+            .writes()
+            .iter()
+            .filter_map(|(slot, _)| match slot {
+                Slot::Local(index) => Some(*index),
+                Slot::Stack(_) => None,
+            })
+            .collect::<std::collections::BTreeSet<_>>();
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(effect.locals_written().len()).unwrap_or(u64::MAX),
+            Some(raw.bci),
+        )?;
+        let effect_writes = effect
+            .locals_written()
+            .iter()
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>();
+        if ssa_reads != effect_reads || ssa_writes != effect_writes {
+            return Ok(None);
+        }
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(ssa_reads.len()).unwrap_or(u64::MAX),
+            Some(raw.bci),
+        )?;
+        local_reads.extend(ssa_reads);
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(ssa_writes.len()).unwrap_or(u64::MAX),
+            Some(raw.bci),
+        )?;
+        parameter_writes.extend(ssa_writes.intersection(parameter_slots).copied());
+    }
+    if !parameter_writes.is_empty() {
+        return Ok(None);
+    }
+
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(parameter_slots.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let mut unread = Vec::with_capacity(parameter_slots.len());
+    for slot in parameter_slots {
+        crate::stop::poll(budget, None)?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            None,
+        )?;
+        if !local_reads.contains(slot) {
+            unread.push(*slot);
+        }
+    }
+    Ok(Some(unread))
+}
+
 fn generic_return_candidate(
     program: &build::Program,
     names: &NameTable,
@@ -5414,12 +7728,10 @@ fn generic_return_candidate(
             value: GenericReturnValue::EmptyVoid,
         }));
     }
-    // A method-local type variable may replace a physical reference parameter in the source
-    // header only when the emitted body is itself complete and the parameter's physical local is
-    // immutable. Since T's first bound erases to the descriptor type, reads remain assignable to
-    // every context that accepted the erased reference; writes are refused because they would
-    // require a value of the unknown subtype T. The class-source layer additionally restricts this
-    // candidate to the exact one-variable `<T extends B> void set(T, boolean)` shape.
+    // This candidate records a complete straight-line void body and unchanged parameter locals.
+    // Its unread-slot list is a separate physical fact: declaration projection may use it for a
+    // parameter whose Signature is parameterized by a class variable, while read parameters still
+    // need the existing narrower source-assignability proof.
     if matches!(
         program.stmts.last().map(|statement| &statement.kind),
         Some(StmtKind::Return { value: None })
@@ -5434,17 +7746,23 @@ fn generic_return_candidate(
         && ssa.blocks()[0].instructions().len() == code.instructions.len()
         && ssa.effects().instructions().len() == code.instructions.len()
     {
+        crate::stop::poll(budget, None)?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(parameter_types.len()).unwrap_or(u64::MAX),
+            None,
+        )?;
         let parameter_slots: std::collections::BTreeSet<_> =
             parameter_types.keys().copied().collect();
-        if ssa.blocks()[0].instructions().iter().any(|instruction| {
-            instruction.writes().iter().any(
-                |(slot, _)| matches!(slot, Slot::Local(index) if parameter_slots.contains(index)),
-            )
-        }) {
+        let Some(unread_parameter_slots) =
+            generic_void_unread_parameter_slots(code, ssa, &parameter_slots, budget)?
+        else {
             return Ok(None);
-        }
+        };
         let mut parameters = Vec::with_capacity(parameter_types.len());
         for slot in parameter_types.keys() {
+            crate::stop::poll(budget, None)?;
             crate::stop::charge(
                 budget,
                 jarde_reader::budget::CountedBudgetDimension::IrItems,
@@ -5458,7 +7776,9 @@ fn generic_return_candidate(
         }
         return Ok(Some(GenericReturnCandidate {
             parameters,
-            value: GenericReturnValue::VoidBody,
+            value: GenericReturnValue::VoidBody {
+                unread_parameter_slots,
+            },
         }));
     }
     let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {
@@ -6742,6 +9062,7 @@ pub fn recover_for_class_source(
         collect_enum_constructor_candidates,
         false,
         false,
+        false,
     )
 }
 
@@ -6754,6 +9075,7 @@ pub fn recover_for_class_source_with_anonymous_ast(
     prove_generic_return: bool,
     collect_enum_constructor_candidates: bool,
     retain_all_method_asts: bool,
+    retain_generic_call_asts: bool,
     prove_empty_constructor: bool,
 ) -> ClassSourceRecovery {
     let is_clinit =
@@ -6816,6 +9138,7 @@ pub fn recover_for_class_source_with_anonymous_ast(
         Some(&mut field_receivers),
         Some(&mut field_write_accessors),
         retain_all_method_asts,
+        retain_generic_call_asts,
         false,
     );
     if !report.produced() || !matches!(&report.execution, ExecutionReport::Complete { .. }) {
@@ -6870,6 +9193,7 @@ fn recover_inner(
     mut field_receiver_sites: Option<&mut Option<Vec<ClassSourceFieldReceiverSite>>>,
     mut field_write_accessors: Option<&mut Option<Vec<ClassSourceFieldWriteAccessor>>>,
     retain_all_method_asts: bool,
+    retain_generic_call_asts: bool,
     allow_array_constructor_method_references: bool,
 ) -> RecoveryReport {
     let method = format!(
@@ -7356,6 +9680,7 @@ fn recover_inner(
     // initializer's field write is).
     if let Some(slot) = class_source_ast.as_deref_mut()
         && (retain_all_method_asts
+            || retain_generic_call_asts
             || class_source_anonymous_site(&program).is_some()
             || allocates_an_anonymous_child(request, anonymous_allocations.as_deref()))
         && let Some(member) = request
@@ -7363,18 +9688,52 @@ fn recover_inner(
             .declaration()
             .map(|member| member.identity().clone())
     {
-        let parameter_names: Vec<Option<String>> = request
-            .facts
-            .method()
-            .parameter_types()
-            .keys()
+        let parameter_slots = request
+            .ir
+            .declaration()
+            .and_then(|declaration| {
+                let descriptor = descriptor_facts(
+                    declaration.descriptor().0.as_slice(),
+                    DescriptorKind::Method,
+                )
+                .ok()?;
+                jarde_jvm::method_ir::parameter_positions(
+                    &descriptor,
+                    declaration.access_flags() & 0x0008 != 0,
+                )
+            })
+            .unwrap_or_default();
+        let parameter_names: Vec<Option<String>> = parameter_slots
+            .iter()
             .map(|slot| {
                 names
                     .whole(*slot)
                     .map(|rendered| rendered.text().to_owned())
             })
             .collect();
-        let instruction_bcis: Vec<u32> = if retain_all_method_asts {
+        let retain_complete_invocation_ast = retain_all_method_asts || retain_generic_call_asts;
+        if retain_complete_invocation_ast {
+            let scan_items = u64::try_from(code.instructions.len())
+                .unwrap_or(u64::MAX)
+                .saturating_mul(2);
+            if let Err(stop) = crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                scan_items,
+                code.instructions.first().map(|instruction| instruction.bci),
+            ) {
+                return stopped(method, profile.clone(), &selection, stop, budget);
+            }
+        }
+        let opcode_by_bci: std::collections::HashMap<u32, u8> = if retain_complete_invocation_ast {
+            code.instructions
+                .iter()
+                .map(|instruction| (instruction.bci, instruction.opcode))
+                .collect()
+        } else {
+            std::collections::HashMap::new()
+        };
+        let instruction_bcis: Vec<u32> = if retain_complete_invocation_ast {
             request
                 .ir
                 .code()
@@ -7388,18 +9747,22 @@ fn recover_inner(
         } else {
             Vec::new()
         };
-        let call_targets: Vec<(u32, crate::facts::CallTarget)> = if retain_all_method_asts {
-            operations
-                .iter()
-                .filter_map(|(bci, operation)| match operation {
-                    Operation::Invoke(target) => Some((*bci, target.clone())),
-                    _ => None,
-                })
-                .collect()
-        } else {
-            Vec::new()
-        };
-        let weight = if retain_all_method_asts {
+        let call_targets: Vec<(u32, u8, crate::facts::CallTarget)> =
+            if retain_complete_invocation_ast {
+                operations
+                    .iter()
+                    .filter_map(|(bci, operation)| match operation {
+                        Operation::Invoke(target) => {
+                            let opcode = *opcode_by_bci.get(bci)?;
+                            Some((*bci, opcode, target.clone()))
+                        }
+                        _ => None,
+                    })
+                    .collect()
+            } else {
+                Vec::new()
+            };
+        let weight = if retain_complete_invocation_ast {
             program_node_count(&program)
                 .saturating_add(u64::try_from(parameter_names.len()).unwrap_or(u64::MAX))
                 .saturating_add(u64::try_from(instruction_bcis.len()).unwrap_or(u64::MAX))
@@ -7428,6 +9791,29 @@ fn recover_inner(
         } else {
             None
         };
+        let generic_call_init = if retain_generic_call_asts
+            && request.facts.method().name() == "<init>"
+            && let Some(prologue) = prologues.prologue()
+        {
+            let record_cost = prologue
+                .class
+                .len()
+                .saturating_add(prologue.declared.len())
+                .saturating_add(1);
+            if let Err(stop) = crate::stop::poll(budget, Some(prologue.bci)).and_then(|()| {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(record_cost).unwrap_or(u64::MAX),
+                    Some(prologue.bci),
+                )
+            }) {
+                return stopped(method, profile.clone(), &selection, stop, budget);
+            }
+            Some(prologues.record())
+        } else {
+            None
+        };
         *slot = Some(ClassSourceMethodAst {
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program: program.clone(),
@@ -7444,6 +9830,7 @@ fn recover_inner(
                     .map(|declaring| declaring.inner_class_members().to_vec())
                     .unwrap_or_default(),
                 parameter_names,
+                parameter_slots,
                 complete_code: request.ir.code().is_some_and(|code| {
                     matches!(code.execution, ExecutionReport::Complete { .. })
                         && code.stopped_at.is_none()
@@ -7455,6 +9842,7 @@ fn recover_inner(
                 instruction_bcis,
                 call_targets,
                 anonymous_constructor_initializer_bci,
+                generic_call_init,
             }),
         });
     }
@@ -7687,6 +10075,27 @@ fn recover_inner(
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     if let Some(receiver_slot) = field_receiver_sites.as_deref_mut() {
+        // A non-constructor holds only the empty NotThisRule record. It has no owning
+        // initialization facts to copy, so it does not pay for this constructor-only handoff.
+        if prologues.answered() {
+            let init_record_cost = prologues
+                .prologue()
+                .map(|prologue| prologue.class.len().saturating_add(prologue.declared.len()))
+                .unwrap_or(0)
+                .saturating_add(1);
+            let charged = crate::stop::poll(budget, None).and_then(|()| {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(init_record_cost).unwrap_or(u64::MAX),
+                    None,
+                )
+            });
+            if let Err(stop) = charged {
+                return stopped(method, profile.clone(), &selection, stop, budget);
+            }
+        }
+        let init_record = prologues.record();
         match same_class_field_receiver_sites(
             &program,
             &fields,
@@ -7694,6 +10103,8 @@ fn recover_inner(
             &request,
             &names,
             &reuse,
+            &init_record,
+            &operations,
             ssa,
             budget,
         ) {
@@ -9160,6 +11571,1343 @@ fn content_of(emitted: &Emitted) -> RecoveryContent {
     }
 }
 
+#[cfg(test)]
+mod generic_call_ast_projection_tests {
+    use super::*;
+    use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+    use jarde_reader::budget::{Budget, CancellationToken, Limits};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalVariant, SnapshotId,
+    };
+    use std::collections::BTreeMap;
+
+    fn ast() -> (ClassSourceMethodAst, ClassSourceInvokeKey) {
+        let member = PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: SnapshotId("generic-call-report-test".to_owned()),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest("generic-call-report-test".to_owned()),
+                    length: 1,
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"relay".to_vec()),
+            descriptor: JvmBytes(b"(Ljava/lang/Number;)Ljava/lang/Object;".to_vec()),
+        };
+        let target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Virtual,
+            "sample/Box",
+            "pick",
+            "(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Object;",
+            false,
+        );
+        let key = ClassSourceInvokeKey {
+            call_bci: 3,
+            opcode: 0xb6,
+            target: target.clone(),
+        };
+        let argument = Expr::direct(ExprKind::Local("value".to_owned()), 2)
+            .presenting(Type::Reference("java.lang.Object".to_owned()));
+        let call = Expr::direct(
+            ExprKind::Call {
+                receiver: Some(Box::new(Expr::direct(
+                    ExprKind::Local("this".to_owned()),
+                    1,
+                ))),
+                name: "pick".to_owned(),
+                args: vec![argument.clone(), argument],
+            },
+            3,
+        );
+        let program = build::Program {
+            stmts: vec![Stmt::new(
+                StmtKind::Return { value: Some(call) },
+                OriginSet::new(crate::source_map::Origin::direct(3)),
+            )],
+            field_increments: BTreeMap::new(),
+            statements: 1,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+        let source = ClassSourceMethodAstSource {
+            program,
+            member,
+            current_class: Some("sample.Box".to_owned()),
+            nested_class_members: Vec::new(),
+            parameter_names: vec![Some("value".to_owned())],
+            parameter_slots: vec![1],
+            complete_code: true,
+            has_exception_handlers: false,
+            instruction_count: 1,
+            instruction_bcis: vec![3],
+            call_targets: vec![(3, 0xb6, target)],
+            anonymous_constructor_initializer_bci: None,
+            generic_call_init: None,
+        };
+        (
+            ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            },
+            key,
+        )
+    }
+
+    fn two_site_ast() -> (ClassSourceMethodAst, Vec<ClassSourceInvokeKey>) {
+        let (ast, first) = ast();
+        let mut source = (*ast.projection).clone();
+        let second_target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Virtual,
+            "sample/Box",
+            "other",
+            "(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Object;",
+            false,
+        );
+        let second = ClassSourceInvokeKey {
+            call_bci: 5,
+            opcode: 0xb6,
+            target: second_target.clone(),
+        };
+        let argument = Expr::direct(ExprKind::Local("value".to_owned()), 4)
+            .presenting(Type::Reference("java.lang.Object".to_owned()));
+        let call = Expr::direct(
+            ExprKind::Call {
+                receiver: Some(Box::new(Expr::direct(
+                    ExprKind::Local("this".to_owned()),
+                    4,
+                ))),
+                name: "other".to_owned(),
+                args: vec![argument.clone(), argument],
+            },
+            5,
+        );
+        source.program.stmts.push(Stmt::new(
+            StmtKind::Expr(call),
+            OriginSet::new(crate::source_map::Origin::direct(5)),
+        ));
+        source.instruction_count = 2;
+        source.instruction_bcis = vec![3, 5];
+        source.call_targets.push((5, 0xb6, second_target));
+        (
+            ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            },
+            vec![first, second],
+        )
+    }
+
+    fn object_presentation_wrapper_ast(
+        physical_cast: bool,
+    ) -> (
+        ClassSourceMethodAst,
+        ClassSourceInvokeKey,
+        ClassSourceInvokeKey,
+    ) {
+        let member = PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: SnapshotId("generic-call-wrapper-test".to_owned()),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest("generic-call-wrapper-test".to_owned()),
+                    length: 1,
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"relay".to_vec()),
+            descriptor: JvmBytes(b"()Ljava/lang/Object;".to_vec()),
+        };
+        let producer_target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Static,
+            "sample/Box",
+            "first",
+            "()Ljava/lang/Object;",
+            false,
+        );
+        let consumer_target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Static,
+            "sample/Box",
+            "consume",
+            "(Ljava/lang/Object;)Ljava/lang/Object;",
+            false,
+        );
+        let producer_key = ClassSourceInvokeKey {
+            call_bci: 2,
+            opcode: 0xb8,
+            target: producer_target.clone(),
+        };
+        let consumer_bci = if physical_cast { 4 } else { 3 };
+        let consumer_key = ClassSourceInvokeKey {
+            call_bci: consumer_bci,
+            opcode: 0xb8,
+            target: consumer_target.clone(),
+        };
+        let child = Expr::direct(
+            ExprKind::Call {
+                receiver: None,
+                name: "first".to_owned(),
+                args: Vec::new(),
+            },
+            2,
+        )
+        .presenting(Type::Reference("java.lang.Object".to_owned()));
+        let argument = if physical_cast {
+            Expr::direct(
+                ExprKind::Cast {
+                    ty: Type::Reference("java.lang.Object".to_owned()),
+                    value: Box::new(child.clone()),
+                },
+                3,
+            )
+        } else {
+            Expr::new(
+                ExprKind::Cast {
+                    ty: Type::Reference("java.lang.Object".to_owned()),
+                    value: Box::new(child.clone()),
+                },
+                OriginSet::new(crate::source_map::Origin::direct(2))
+                    .plus_derived(crate::source_map::Origin::derived(consumer_bci)),
+            )
+        };
+        let outer = Expr::direct(
+            ExprKind::Call {
+                receiver: None,
+                name: "consume".to_owned(),
+                args: vec![argument],
+            },
+            consumer_bci,
+        );
+        let program = build::Program {
+            stmts: vec![Stmt::new(
+                StmtKind::Return { value: Some(outer) },
+                OriginSet::new(crate::source_map::Origin::direct(consumer_bci)),
+            )],
+            field_increments: std::collections::BTreeMap::new(),
+            statements: 1,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+        let mut call_targets = vec![
+            (2, 0xb8, producer_target),
+            (consumer_bci, 0xb8, consumer_target),
+        ];
+        call_targets.sort_by_key(|(bci, _, _)| *bci);
+        let instruction_bcis = if physical_cast {
+            vec![2, 3, consumer_bci]
+        } else {
+            vec![2, consumer_bci]
+        };
+        let source = ClassSourceMethodAstSource {
+            program,
+            member,
+            current_class: Some("sample.Box".to_owned()),
+            nested_class_members: Vec::new(),
+            parameter_names: Vec::new(),
+            parameter_slots: Vec::new(),
+            complete_code: true,
+            has_exception_handlers: false,
+            instruction_count: instruction_bcis.len(),
+            instruction_bcis,
+            call_targets,
+            anonymous_constructor_initializer_bci: None,
+            generic_call_init: None,
+        };
+        (
+            ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            },
+            producer_key,
+            consumer_key,
+        )
+    }
+
+    fn fresh_budget() -> Budget {
+        Budget::new(Limits {
+            ir_items: 1000,
+            analysis_steps: 1000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+
+    #[test]
+    fn exact_object_presentation_wrapper_is_reported_transparent_and_removed_with_casts() {
+        let (ast, producer, consumer) = object_presentation_wrapper_ast(false);
+        let mut budget = fresh_budget();
+        let sites =
+            class_source_invoke_ast_sites(&ast, std::slice::from_ref(&consumer), &mut budget)
+                .unwrap()
+                .unwrap();
+        let wrapper = sites[0].arguments[0]
+            .presentation_wrapper
+            .as_ref()
+            .expect("descriptor-erasure wrapper is explicit in the AST facts");
+        assert_eq!(wrapper.ty, Type::Reference("java.lang.Object".to_owned()));
+        assert_eq!(wrapper.child.primary.bci, producer.call_bci);
+        assert_eq!(
+            sites[0].arguments[0].primary.method.as_ref(),
+            Some(&ast.projection.member)
+        );
+        assert_eq!(
+            wrapper.child.primary.method.as_ref(),
+            Some(&ast.projection.member)
+        );
+        assert!(matches!(
+            &wrapper.child.shape,
+            ClassSourceAstExpressionShape::Call { .. }
+        ));
+
+        let uses = class_source_invoke_result_uses(&ast, &producer, &[], &mut budget)
+            .unwrap()
+            .unwrap();
+        assert!(uses.iter().any(|use_site| {
+            use_site.kind
+                == ClassSourceInvokeResultUseKind::DirectCallArgument {
+                    consumer: Some(consumer.clone()),
+                    argument_index: 0,
+                }
+                && use_site.expression.primary.bci == producer.call_bci
+        }));
+
+        let projected = project_class_source_invoke_argument_edits(
+            &ast,
+            &[ClassSourceInvokeArgumentPresentationCast {
+                call_bci: consumer.call_bci,
+                opcode: consumer.opcode,
+                target: consumer.target.clone(),
+                argument_index: 0,
+            }],
+            &[ClassSourceInvokeArgumentCast {
+                call_bci: consumer.call_bci,
+                opcode: consumer.opcode,
+                target: consumer.target.clone(),
+                argument_index: 0,
+                ty: Type::Reference("java.lang.Number".to_owned()),
+            }],
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        let StmtKind::Return { value: Some(call) } = &projected.projection.program.stmts[0].kind
+        else {
+            panic!("wrapper is removed before the approved upcast is applied")
+        };
+        let ExprKind::Call { args, .. } = &call.kind else {
+            panic!("the projected consumer remains a call")
+        };
+        let [argument] = args.as_slice() else {
+            panic!("the consumer has one argument")
+        };
+        let ExprKind::Cast { ty, value } = &argument.kind else {
+            panic!("the approved source upcast remains")
+        };
+        assert_eq!(ty, &Type::Reference("java.lang.Number".to_owned()));
+        assert!(matches!(&value.kind, ExprKind::Call { .. }));
+        assert_eq!(value.origin.primary().bci(), producer.call_bci);
+    }
+
+    #[test]
+    fn null_object_wrapper_is_reported_but_physical_checkcast_is_not_removable() {
+        let (ast, _, consumer) = object_presentation_wrapper_ast(false);
+        let mut source = (*ast.projection).clone();
+        let StmtKind::Return {
+            value:
+                Some(Expr {
+                    kind: ExprKind::Call { args, .. },
+                    ..
+                }),
+        } = &mut source.program.stmts[0].kind
+        else {
+            panic!("fixture returns the consumer call")
+        };
+        let ExprKind::Cast { value, .. } = &mut args[0].kind else {
+            panic!("fixture argument is source-presentation cast")
+        };
+        *value = Box::new(Expr::direct(ExprKind::Null, 2));
+        let null_ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        let mut budget = fresh_budget();
+        let sites =
+            class_source_invoke_ast_sites(&null_ast, std::slice::from_ref(&consumer), &mut budget)
+                .unwrap()
+                .unwrap();
+        let child = &sites[0].arguments[0]
+            .presentation_wrapper
+            .as_ref()
+            .expect("null target type wrapper is recognized")
+            .child;
+        assert!(child.null_literal);
+        assert_eq!(child.presented_type, None);
+
+        let (physical_ast, physical_producer, physical_consumer) =
+            object_presentation_wrapper_ast(true);
+        let mut physical_budget = fresh_budget();
+        let physical_sites = class_source_invoke_ast_sites(
+            &physical_ast,
+            std::slice::from_ref(&physical_consumer),
+            &mut physical_budget,
+        )
+        .unwrap()
+        .unwrap();
+        assert!(
+            physical_sites[0].arguments[0]
+                .presentation_wrapper
+                .is_none()
+        );
+        let physical_uses = class_source_invoke_result_uses(
+            &physical_ast,
+            &physical_producer,
+            &[],
+            &mut physical_budget,
+        )
+        .unwrap()
+        .unwrap();
+        assert!(physical_uses.iter().any(|use_site| {
+            use_site.kind == ClassSourceInvokeResultUseKind::Other { consumer_bci: 3 }
+        }));
+        assert!(
+            project_class_source_invoke_argument_edits(
+                &physical_ast,
+                &[ClassSourceInvokeArgumentPresentationCast {
+                    call_bci: physical_consumer.call_bci,
+                    opcode: physical_consumer.opcode,
+                    target: physical_consumer.target,
+                    argument_index: 0,
+                }],
+                &[],
+                &mut physical_budget,
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn reference_wrapper_tracks_number_and_object_array_descriptors() {
+        for (source_type, descriptor_type) in [
+            ("java.lang.Number", "Ljava/lang/Number;"),
+            ("java.lang.Object[]", "[Ljava/lang/Object;"),
+        ] {
+            let (ast, _, mut consumer) = object_presentation_wrapper_ast(false);
+            let mut source = (*ast.projection).clone();
+            let producer_descriptor = format!("(){descriptor_type}");
+            let consumer_descriptor = format!("({descriptor_type})Ljava/lang/Object;");
+            let producer_target = crate::facts::CallTarget::new(
+                crate::facts::InvokeKind::Static,
+                "sample/Box",
+                "first",
+                producer_descriptor,
+                false,
+            );
+            let consumer_target = crate::facts::CallTarget::new(
+                crate::facts::InvokeKind::Static,
+                "sample/Box",
+                "consume",
+                consumer_descriptor,
+                false,
+            );
+            source.call_targets[0].2 = producer_target.clone();
+            source.call_targets[1].2 = consumer_target.clone();
+            consumer.target = consumer_target;
+            let StmtKind::Return {
+                value:
+                    Some(Expr {
+                        kind: ExprKind::Call { args, .. },
+                        ..
+                    }),
+            } = &mut source.program.stmts[0].kind
+            else {
+                panic!("fixture returns the consumer call")
+            };
+            let argument = &mut args[0];
+            let ExprKind::Cast { ty, value } = &mut argument.kind else {
+                panic!("fixture argument is source-presentation cast")
+            };
+            let source_type = Type::Reference(source_type.to_owned());
+            *ty = source_type.clone();
+            argument.presented = Some(source_type.clone());
+            value.presented = Some(source_type);
+            let typed_ast = ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            };
+            let mut budget = fresh_budget();
+            let sites = class_source_invoke_ast_sites(
+                &typed_ast,
+                std::slice::from_ref(&consumer),
+                &mut budget,
+            )
+            .unwrap()
+            .unwrap();
+            assert!(sites[0].arguments[0].presentation_wrapper.is_some());
+            let projected = project_class_source_invoke_argument_edits(
+                &typed_ast,
+                &[ClassSourceInvokeArgumentPresentationCast {
+                    call_bci: consumer.call_bci,
+                    opcode: consumer.opcode,
+                    target: consumer.target.clone(),
+                    argument_index: 0,
+                }],
+                &[],
+                &mut budget,
+            )
+            .unwrap()
+            .unwrap();
+            let StmtKind::Return { value: Some(call) } =
+                &projected.projection.program.stmts[0].kind
+            else {
+                panic!("only the presentation wrapper is removed")
+            };
+            let ExprKind::Call { args, .. } = &call.kind else {
+                panic!("the projected consumer remains a call")
+            };
+            let [argument] = args.as_slice() else {
+                panic!("the consumer has one argument")
+            };
+            assert!(matches!(&argument.kind, ExprKind::Call { .. }));
+        }
+    }
+
+    #[test]
+    fn presentation_wrapper_projection_propagates_budget_and_cancellation() {
+        let (ast, _, consumer) = object_presentation_wrapper_ast(false);
+        let removal = [ClassSourceInvokeArgumentPresentationCast {
+            call_bci: consumer.call_bci,
+            opcode: consumer.opcode,
+            target: consumer.target,
+            argument_index: 0,
+        }];
+        let limits = Limits {
+            ir_items: 0,
+            ..Limits::default()
+        };
+        let mut budget = Budget::new(limits);
+        assert!(matches!(
+            project_class_source_invoke_argument_edits(&ast, &removal, &[], &mut budget),
+            Err(crate::stop::StopReason::Budget { .. })
+        ));
+
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut budget = Budget::with_cancellation_token(
+            Limits {
+                ir_items: 1000,
+                analysis_steps: 1000,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            cancellation,
+        );
+        assert!(matches!(
+            project_class_source_invoke_argument_edits(&ast, &removal, &[], &mut budget),
+            Err(crate::stop::StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn exact_site_and_source_cast_preserve_the_child_anchor_and_presentation() {
+        let (ast, key) = ast();
+        let mut budget = fresh_budget();
+        let sites = class_source_invoke_ast_sites(&ast, std::slice::from_ref(&key), &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(sites.len(), 1);
+        assert_eq!(sites[0].caller, ast.projection.member);
+        assert_eq!(
+            sites[0].arguments[0].presented_type,
+            Some(Type::Reference("java.lang.Object".to_owned()))
+        );
+
+        let original = match &ast.projection.program.stmts[0].kind {
+            StmtKind::Return {
+                value:
+                    Some(Expr {
+                        kind: ExprKind::Call { args, .. },
+                        ..
+                    }),
+            } => args[0].clone(),
+            _ => panic!("fixture call is the return value"),
+        };
+        let projected = project_class_source_invoke_argument_casts(
+            &ast,
+            &[
+                ClassSourceInvokeArgumentCast {
+                    call_bci: key.call_bci,
+                    opcode: key.opcode,
+                    target: key.target.clone(),
+                    argument_index: 0,
+                    ty: Type::Reference("java.lang.Number".to_owned()),
+                },
+                ClassSourceInvokeArgumentCast {
+                    call_bci: key.call_bci,
+                    opcode: key.opcode,
+                    target: key.target.clone(),
+                    argument_index: 1,
+                    ty: Type::Reference("java.lang.Comparable".to_owned()),
+                },
+            ],
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        let ExprKind::Call { args, .. } = (match &projected.projection.program.stmts[0].kind {
+            StmtKind::Return { value: Some(value) } => &value.kind,
+            _ => panic!("projected call remains the return value"),
+        }) else {
+            panic!("call node remains a call")
+        };
+        let ExprKind::Cast { ty, value } = &args[0].kind else {
+            panic!("source upcast is projected around the argument")
+        };
+        assert_eq!(ty, &Type::Reference("java.lang.Number".to_owned()));
+        assert_eq!(
+            args[0].presented,
+            Some(Type::Reference("java.lang.Number".to_owned()))
+        );
+        assert_eq!(value.as_ref(), &original);
+        assert_eq!(value.origin, original.origin);
+        assert_eq!(value.presented, original.presented);
+        assert!(matches!(
+            &args[1].kind,
+            ExprKind::Cast { ty: Type::Reference(name), .. } if name == "java.lang.Comparable"
+        ));
+    }
+
+    #[test]
+    fn cast_mutation_skips_a_foreign_method_node_with_the_same_bci_and_name() {
+        let (ast, key) = ast();
+        let mut source = (*ast.projection).clone();
+        let foreign = PhysicalMethodId {
+            name: JvmBytes(b"other".to_vec()),
+            ..source.member.clone()
+        };
+        let call = Expr::new(
+            ExprKind::Call {
+                receiver: Some(Box::new(Expr::direct(
+                    ExprKind::Local("this".to_owned()),
+                    1,
+                ))),
+                name: "pick".to_owned(),
+                args: vec![Expr::direct(ExprKind::Local("value".to_owned()), 2)],
+            },
+            OriginSet::new(crate::source_map::Origin::direct(3).in_method(&foreign)),
+        );
+        source.program.stmts.push(Stmt::new(
+            StmtKind::Expr(call),
+            OriginSet::new(crate::source_map::Origin::direct(8)),
+        ));
+        source.instruction_count = 2;
+        source.instruction_bcis.push(8);
+        let ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        let mut budget = fresh_budget();
+        let projected = project_class_source_invoke_argument_casts(
+            &ast,
+            &[ClassSourceInvokeArgumentCast {
+                call_bci: key.call_bci,
+                opcode: key.opcode,
+                target: key.target,
+                argument_index: 0,
+                ty: Type::Reference("java.lang.Number".to_owned()),
+            }],
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        let StmtKind::Expr(Expr {
+            kind: ExprKind::Call { args, .. },
+            ..
+        }) = &projected.projection.program.stmts[1].kind
+        else {
+            panic!("foreign node remains in the AST")
+        };
+        assert!(matches!(&args[0].kind, ExprKind::Local(_)));
+    }
+
+    #[test]
+    fn body_consumers_report_actual_returns_and_catch_scope_or_refuse_unknown_statements() {
+        let (ast, _) = ast();
+        let mut source = (*ast.projection).clone();
+        let mut body = std::mem::take(&mut source.program.stmts);
+        body.push(Stmt::new(
+            StmtKind::FieldAssign {
+                receiver: Some(Expr::direct(ExprKind::Local("this".to_owned()), 6)),
+                name: "result".to_owned(),
+                op: crate::ast::AssignOp::Assign,
+                value: Expr::direct(ExprKind::Null, 6),
+            },
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        source.program.stmts = vec![Stmt::new(
+            StmtKind::Try {
+                resources: Vec::new(),
+                catches: vec![crate::ast::CatchClause {
+                    ty: "java.lang.Exception".to_owned(),
+                    name: "value".to_owned(),
+                    body,
+                }],
+                body: Vec::new(),
+                finally_body: None,
+            },
+            OriginSet::new(crate::source_map::Origin::direct(7)),
+        )];
+        source.instruction_count = 3;
+        source.instruction_bcis.extend([6, 7]);
+        let caught = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        let mut budget = fresh_budget();
+        let facts = class_source_method_body_consumers(&caught, &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(facts.returns.len(), 1);
+        assert_eq!(facts.returns[0].catch_scopes.len(), 1);
+        assert_eq!(facts.returns[0].catch_scopes[0].try_bci, 7);
+        assert_eq!(facts.returns[0].catch_scopes[0].local_name, "value");
+        assert!(matches!(
+            facts.returns[0].expression.shape,
+            ClassSourceAstExpressionShape::Call { .. }
+        ));
+        assert_eq!(facts.field_writes.len(), 1);
+        assert_eq!(facts.field_writes[0].name, "result");
+        assert_eq!(facts.field_writes[0].op, crate::ast::AssignOp::Assign);
+        assert_eq!(facts.field_writes[0].catch_scopes[0].local_name, "value");
+        assert!(facts.field_writes[0].value.null_literal);
+
+        let mut unsupported = (*ast.projection).clone();
+        unsupported.program.stmts.push(Stmt::new(
+            StmtKind::Assign {
+                name: "other".to_owned(),
+                value: Expr::direct(ExprKind::Integer(1), 9),
+            },
+            OriginSet::new(crate::source_map::Origin::direct(9)),
+        ));
+        unsupported.instruction_count = 2;
+        unsupported.instruction_bcis.push(9);
+        let unsupported = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(unsupported),
+        };
+        let mut unsupported_budget = fresh_budget();
+        assert!(
+            class_source_method_body_consumers(&unsupported, &mut unsupported_budget)
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn body_consumers_capture_only_exact_invocation_statements_and_their_catch_scope() {
+        fn call_statement_source(caught: bool) -> ClassSourceMethodAst {
+            let (ast, _) = ast();
+            let mut source = (*ast.projection).clone();
+            let statement = source.program.stmts.pop().expect("call return exists");
+            let StmtKind::Return { value: Some(call) } = statement.kind else {
+                panic!("fixture starts with a call return")
+            };
+            let invocation = Stmt::new(
+                StmtKind::Expr(call),
+                OriginSet::new(crate::source_map::Origin::direct(3)),
+            );
+            source.program.stmts = if caught {
+                source.instruction_count = 2;
+                source.instruction_bcis.push(4);
+                vec![Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        catches: vec![crate::ast::CatchClause {
+                            ty: "java.lang.RuntimeException".to_owned(),
+                            name: "shadow".to_owned(),
+                            body: vec![invocation],
+                        }],
+                        body: Vec::new(),
+                        finally_body: None,
+                    },
+                    OriginSet::new(crate::source_map::Origin::direct(4)),
+                )]
+            } else {
+                vec![invocation]
+            };
+            ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            }
+        }
+
+        let direct = call_statement_source(false);
+        let mut budget = fresh_budget();
+        let facts = class_source_method_body_consumers(&direct, &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(facts.invocation_statements.len(), 1);
+        assert_eq!(facts.invocation_statements[0].bci, 3);
+        assert!(facts.invocation_statements[0].catch_scopes.is_empty());
+        assert!(matches!(
+            &facts.invocation_statements[0].expression.shape,
+            ClassSourceAstExpressionShape::Call {
+                name,
+                argument_count: 2
+            } if name == "pick"
+        ));
+
+        let caught = call_statement_source(true);
+        let mut caught_budget = fresh_budget();
+        let facts = class_source_method_body_consumers(&caught, &mut caught_budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(facts.invocation_statements.len(), 1);
+        assert_eq!(facts.invocation_statements[0].catch_scopes.len(), 1);
+        assert_eq!(facts.invocation_statements[0].catch_scopes[0].try_bci, 4);
+        assert_eq!(
+            facts.invocation_statements[0].catch_scopes[0].local_name,
+            "shadow"
+        );
+
+        let mut mismatched = (*direct.projection).clone();
+        mismatched.call_targets[0].2 = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Virtual,
+            "sample/Box",
+            "other",
+            "(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Object;",
+            false,
+        );
+        let mismatched = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(mismatched),
+        };
+        let mut mismatch_budget = fresh_budget();
+        assert!(
+            class_source_method_body_consumers(&mismatched, &mut mismatch_budget)
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn body_consumers_capture_if_return_and_throw_expression_shapes() {
+        let (ast, _) = ast();
+        let mut source = (*ast.projection).clone();
+        source.program.stmts = vec![
+            Stmt::new(
+                StmtKind::ConstructorCall {
+                    target: crate::ast::ConstructorTarget::Super,
+                    args: Vec::new(),
+                },
+                OriginSet::new(crate::source_map::Origin::direct(1)),
+            ),
+            Stmt::new(
+                StmtKind::If {
+                    cond: Expr::direct(
+                        ExprKind::Not {
+                            value: Box::new(
+                                Expr::direct(ExprKind::Local("fail".to_owned()), 2)
+                                    .presenting(Type::Boolean),
+                            ),
+                        },
+                        2,
+                    ),
+                    then_body: vec![Stmt::new(
+                        StmtKind::Return {
+                            value: Some(
+                                Expr::direct(ExprKind::Local("value".to_owned()), 4)
+                                    .presenting(Type::Reference("java.lang.Object".to_owned())),
+                            ),
+                        },
+                        OriginSet::new(crate::source_map::Origin::direct(4)),
+                    )],
+                    else_body: vec![Stmt::new(
+                        StmtKind::Throw {
+                            value: Expr::direct(
+                                ExprKind::New {
+                                    ty: "java.lang.RuntimeException".to_owned(),
+                                    qualifier: None,
+                                    member_name: None,
+                                    diamond: false,
+                                    args: Vec::new(),
+                                },
+                                5,
+                            ),
+                        },
+                        OriginSet::new(crate::source_map::Origin::direct(5)),
+                    )],
+                },
+                OriginSet::new(crate::source_map::Origin::direct(2)),
+            ),
+        ];
+        source.instruction_count = 5;
+        source.instruction_bcis = vec![1, 2, 3, 4, 5];
+        let ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        let mut budget = fresh_budget();
+        let facts = class_source_method_body_consumers(&ast, &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(facts.conditions.len(), 1);
+        assert!(matches!(
+            &facts.conditions[0].expression.shape,
+            ClassSourceAstExpressionShape::BooleanNotLocal { local_name, presented_type: Some(Type::Boolean), .. }
+                if local_name == "fail"
+        ));
+        assert_eq!(facts.returns.len(), 1);
+        assert_eq!(
+            facts.returns[0].expression.direct_local_name.as_deref(),
+            Some("value")
+        );
+        assert_eq!(facts.throws.len(), 1);
+        assert!(matches!(
+            &facts.throws[0].expression.shape,
+            ClassSourceAstExpressionShape::New { ty, argument_count: 0, qualified: false }
+                if ty == "java.lang.RuntimeException"
+        ));
+        assert_eq!(facts.constructor_calls.len(), 1);
+        assert_eq!(facts.constructor_calls[0].bci, 1);
+        assert_eq!(
+            facts.constructor_calls[0].target,
+            crate::ast::ConstructorTarget::Super
+        );
+        assert!(facts.constructor_calls[0].arguments.is_empty());
+    }
+
+    #[test]
+    fn body_consumers_refuse_resource_finally_and_propagate_budget_and_cancel() {
+        let (ast, _) = ast();
+        for (resources, finally_body) in [
+            (
+                vec![crate::ast::ResourceDecl {
+                    ty: Type::Reference("java.lang.AutoCloseable".to_owned()),
+                    name: "resource".to_owned(),
+                    value: Expr::direct(ExprKind::Null, 8),
+                }],
+                None,
+            ),
+            (Vec::new(), Some(Vec::new())),
+        ] {
+            let mut source = (*ast.projection).clone();
+            let body = std::mem::take(&mut source.program.stmts);
+            source.program.stmts = vec![Stmt::new(
+                StmtKind::Try {
+                    resources,
+                    catches: Vec::new(),
+                    body,
+                    finally_body,
+                },
+                OriginSet::new(crate::source_map::Origin::direct(7)),
+            )];
+            source.instruction_count = 2;
+            source.instruction_bcis.push(7);
+            let ast = ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            };
+            let mut budget = fresh_budget();
+            assert!(
+                class_source_method_body_consumers(&ast, &mut budget)
+                    .unwrap()
+                    .is_none()
+            );
+        }
+
+        let mut exhausted = Budget::new(Limits {
+            ir_items: 0,
+            analysis_steps: 0,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            class_source_method_body_consumers(&ast, &mut exhausted),
+            Err(crate::stop::StopReason::Budget { .. })
+        ));
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), token);
+        assert!(matches!(
+            class_source_method_body_consumers(&ast, &mut cancelled),
+            Err(crate::stop::StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn result_use_is_return_and_wrong_or_ambiguous_site_keys_refuse() {
+        let (ast, key) = ast();
+        let mut budget = fresh_budget();
+        let uses = class_source_invoke_result_uses(&ast, &key, &[], &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(uses.len(), 1);
+        assert!(matches!(
+            uses[0].kind,
+            ClassSourceInvokeResultUseKind::DirectReturn { consumer_bci: 3 }
+        ));
+
+        let mut caught = (*ast.projection).clone();
+        let nested_return = std::mem::take(&mut caught.program.stmts);
+        caught.program.stmts = vec![Stmt::new(
+            StmtKind::Try {
+                resources: Vec::new(),
+                catches: vec![crate::ast::CatchClause {
+                    ty: "java.lang.Exception".to_owned(),
+                    name: "error".to_owned(),
+                    body: nested_return,
+                }],
+                body: Vec::new(),
+                finally_body: None,
+            },
+            OriginSet::new(crate::source_map::Origin::direct(7)),
+        )];
+        caught.instruction_count = 2;
+        caught.instruction_bcis.push(7);
+        let caught = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(caught),
+        };
+        let mut caught_budget = fresh_budget();
+        let caught_uses = class_source_invoke_result_uses(&caught, &key, &[], &mut caught_budget)
+            .unwrap()
+            .unwrap();
+        assert!(matches!(
+            caught_uses[0].kind,
+            ClassSourceInvokeResultUseKind::DirectReturn { consumer_bci: 3 }
+        ));
+
+        let mut wrong = key.clone();
+        wrong.opcode = 0xb8;
+        assert!(
+            class_source_invoke_ast_sites(&ast, &[wrong], &mut budget)
+                .unwrap()
+                .is_none()
+        );
+        assert!(
+            class_source_invoke_ast_sites(&ast, &[key.clone(), key], &mut budget)
+                .unwrap()
+                .is_none()
+        );
+
+        let mut duplicated = (*ast.projection).clone();
+        duplicated
+            .program
+            .stmts
+            .push(duplicated.program.stmts[0].clone());
+        let duplicated = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(duplicated),
+        };
+        let mut duplicate_budget = fresh_budget();
+        assert!(
+            class_source_invoke_ast_sites(
+                &duplicated,
+                &[uses[0].producer.clone()],
+                &mut duplicate_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn same_class_invoke_inventory_requires_complete_exact_sites() {
+        let (ast, keys) = two_site_ast();
+        let mut budget = fresh_budget();
+        assert_eq!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &keys,
+                &mut budget
+            )
+            .unwrap(),
+            Some(())
+        );
+
+        let mut omitted_one = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &keys[..1],
+                &mut omitted_one
+            )
+            .unwrap()
+            .is_none()
+        );
+        let mut omitted_all = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &[],
+                &mut omitted_all
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut wrong_target = keys.clone();
+        wrong_target[0].target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Virtual,
+            "sample/Box",
+            "different",
+            keys[0].target.descriptor(),
+            false,
+        );
+        let mut wrong_target_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &wrong_target,
+                &mut wrong_target_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut wrong_opcode = keys.clone();
+        wrong_opcode[0].opcode = 0xb8;
+        let mut wrong_opcode_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &wrong_opcode,
+                &mut wrong_opcode_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut foreign_owner = keys.clone();
+        foreign_owner[0].target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Virtual,
+            "sample/Other",
+            "pick",
+            keys[0].target.descriptor(),
+            false,
+        );
+        let mut foreign_owner_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &foreign_owner,
+                &mut foreign_owner_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut duplicate_expected = keys.clone();
+        duplicate_expected.push(keys[0].clone());
+        let mut duplicate_expected_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &duplicate_expected,
+                &mut duplicate_expected_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut duplicate_actual_source = (*ast.projection).clone();
+        let duplicate_entry = duplicate_actual_source.call_targets[0].clone();
+        duplicate_actual_source.call_targets.push(duplicate_entry);
+        let duplicate_actual = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(duplicate_actual_source),
+        };
+        let mut duplicate_actual_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &duplicate_actual,
+                "sample/Box",
+                &keys,
+                &mut duplicate_actual_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut unknown_opcode_source = (*ast.projection).clone();
+        unknown_opcode_source.call_targets[0].1 = 0xff;
+        let unknown_opcode = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(unknown_opcode_source),
+        };
+        let mut unknown_opcode_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &unknown_opcode,
+                "sample/Box",
+                &keys,
+                &mut unknown_opcode_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut incomplete_source = (*ast.projection).clone();
+        incomplete_source.complete_code = false;
+        let incomplete = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(incomplete_source),
+        };
+        let mut incomplete_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &incomplete,
+                "sample/Box",
+                &keys,
+                &mut incomplete_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut duplicate_bci_source = (*ast.projection).clone();
+        duplicate_bci_source.instruction_bcis.push(3);
+        duplicate_bci_source.instruction_count += 1;
+        let duplicate_bci = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(duplicate_bci_source),
+        };
+        let mut duplicate_bci_budget = fresh_budget();
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &duplicate_bci,
+                "sample/Box",
+                &keys,
+                &mut duplicate_bci_budget
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn same_class_invoke_inventory_accepts_complete_empty_inventory() {
+        let (ast, _) = ast();
+        let mut source = (*ast.projection).clone();
+        source.program.stmts.clear();
+        source.call_targets.clear();
+        source.instruction_bcis = vec![1];
+        source.instruction_count = 1;
+        let no_calls = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        let mut budget = fresh_budget();
+        assert_eq!(
+            class_source_same_class_invoke_inventory_matches(
+                &no_calls,
+                "sample/Box",
+                &[],
+                &mut budget
+            )
+            .unwrap(),
+            Some(())
+        );
+    }
+
+    #[test]
+    fn same_class_invoke_inventory_propagates_budget_and_cancellation() {
+        let (ast, keys) = two_site_ast();
+        let mut exhausted = Budget::new(Limits {
+            ir_items: 0,
+            analysis_steps: 0,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &keys,
+                &mut exhausted
+            ),
+            Err(crate::stop::StopReason::Budget { .. })
+        ));
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), token);
+        assert!(matches!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/Box",
+                &keys,
+                &mut cancelled
+            ),
+            Err(crate::stop::StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn invoke_site_resolver_refuses_zero_ast_match_and_foreign_caller() {
+        let (ast, key) = ast();
+        let mut no_call_source = (*ast.projection).clone();
+        no_call_source.program.stmts.clear();
+        let no_call_ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(no_call_source),
+        };
+        let mut no_call_budget = fresh_budget();
+        assert!(
+            class_source_invoke_ast_sites(&no_call_ast, &[key.clone()], &mut no_call_budget)
+                .unwrap()
+                .is_none()
+        );
+
+        let mut foreign_source = (*ast.projection).clone();
+        let foreign_method = PhysicalMethodId {
+            name: JvmBytes(b"foreign".to_vec()),
+            ..foreign_source.member.clone()
+        };
+        let StmtKind::Return { value: Some(call) } = &mut foreign_source.program.stmts[0].kind
+        else {
+            panic!("fixture call is the return value")
+        };
+        call.origin =
+            OriginSet::new(crate::source_map::Origin::direct(3).in_method(&foreign_method));
+        let foreign_ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(foreign_source),
+        };
+        let mut foreign_budget = fresh_budget();
+        assert!(
+            class_source_invoke_ast_sites(&foreign_ast, &[key], &mut foreign_budget)
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn required_site_scan_propagates_budget_stop_and_cancellation() {
+        let (ast, key) = ast();
+        let mut exhausted = Budget::new(Limits {
+            ir_items: 0,
+            analysis_steps: 0,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            class_source_invoke_ast_sites(&ast, &[key.clone()], &mut exhausted),
+            Err(crate::stop::StopReason::Budget { .. })
+        ));
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), token);
+        assert!(matches!(
+            class_source_invoke_ast_sites(&ast, &[key], &mut cancelled),
+            Err(crate::stop::StopReason::Cancelled { .. })
+        ));
+    }
+}
+
 /// The report of a run that stopped: no text, no segments, and an execution plane that says so.
 fn stopped(
     method: String,
@@ -9485,12 +13233,14 @@ mod lambda_helper_instruction_coverage_tests {
             current_class: None,
             nested_class_members: Vec::new(),
             parameter_names: Vec::new(),
+            parameter_slots: Vec::new(),
             complete_code: true,
             has_exception_handlers: false,
             instruction_count: instruction_bcis.len(),
             instruction_bcis,
             call_targets: Vec::new(),
             anonymous_constructor_initializer_bci: None,
+            generic_call_init: None,
         }
     }
 
@@ -9575,12 +13325,14 @@ mod anonymous_capture_projection_tests {
                 current_class: None,
                 nested_class_members: Vec::new(),
                 parameter_names: Vec::new(),
+                parameter_slots: Vec::new(),
                 complete_code: false,
                 has_exception_handlers: false,
                 instruction_count: 0,
                 instruction_bcis: Vec::new(),
                 call_targets: Vec::new(),
                 anonymous_constructor_initializer_bci: None,
+                generic_call_init: None,
             }),
         }
     }
@@ -9735,6 +13487,17 @@ mod raw_receiver_site_budget_tests {
             nested_depth: 16,
             dependency_depth: 8,
             elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn unpresented_init() -> InitRecord {
+        InitRecord {
+            bci: None,
+            target: None,
+            class: None,
+            declared: None,
+            presented: false,
+            refusal: None,
         }
     }
 
@@ -9901,6 +13664,8 @@ mod raw_receiver_site_budget_tests {
             &request,
             &names,
             &reuse,
+            &unpresented_init(),
+            &operations,
             ssa,
             &mut successful,
         )
@@ -9922,6 +13687,8 @@ mod raw_receiver_site_budget_tests {
             &request,
             &names,
             &reuse,
+            &unpresented_init(),
+            &operations,
             ssa,
             &mut Budget::new(limits()),
         )
@@ -9944,6 +13711,8 @@ mod raw_receiver_site_budget_tests {
             &request,
             &names,
             &reuse,
+            &unpresented_init(),
+            &operations,
             ssa,
             &mut Budget::new(limits()),
         )
@@ -9966,6 +13735,8 @@ mod raw_receiver_site_budget_tests {
             &request,
             &names,
             &reuse,
+            &unpresented_init(),
+            &operations,
             ssa,
             &mut constrained,
         )
@@ -9990,6 +13761,8 @@ mod raw_receiver_site_budget_tests {
             &request,
             &names,
             &reuse,
+            &unpresented_init(),
+            &operations,
             ssa,
             &mut cancelled,
         )

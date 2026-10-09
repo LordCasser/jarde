@@ -469,16 +469,14 @@ fn generic_instance_null_return_rejects_unproved_signatures_bodies_and_bindings(
 
 #[test]
 fn generic_instance_null_return_admits_an_arity_disjoint_same_class_overload() {
-    let report = compiled_source(
-        "GenericNullBindingProbe",
-        r#"
+    let original = r#"
             public class GenericNullBindingProbe {
                 public <T extends Number> T value() { return null; }
                 public Number value(Number input) { return input; }
                 public Number caller() { return value(); }
             }
-        "#,
-    );
+        "#;
+    let report = compiled_source("GenericNullBindingProbe", original);
     let generic = report
         .methods
         .iter()
@@ -504,6 +502,115 @@ fn generic_instance_null_return_admits_an_arity_disjoint_same_class_overload() {
             .declaration
             .as_deref()
             .is_some_and(|declaration| declaration.contains("java.lang.Number value("))
+    );
+    let runner = r#"
+        public class GenericReflectionRunner {
+            public static void main(String[] args) throws Exception {
+                GenericNullBindingProbe probe = new GenericNullBindingProbe();
+                java.lang.reflect.Method method = GenericNullBindingProbe.class.getDeclaredMethod("value");
+                java.lang.reflect.TypeVariable<?> variable = method.getTypeParameters()[0];
+                System.out.print((probe.caller() == null) + ":" + probe.value(Integer.valueOf(7)));
+                System.out.print(":" + variable.getGenericDeclaration().equals(method));
+                System.out.print(":" + method.getGenericReturnType().equals(variable));
+                System.out.print(":" + java.util.Arrays.toString(variable.getBounds()));
+            }
+        }
+    "#;
+    assert_eq!(
+        java_output("GenericNullBindingProbe", original, runner),
+        "true:7:true:true:[class java.lang.Number]"
+    );
+    assert_eq!(
+        java_output("GenericNullBindingProbe", &report.text, runner),
+        "true:7:true:true:[class java.lang.Number]"
+    );
+}
+
+#[test]
+fn generic_null_return_preserves_its_bound_in_wider_raw_return_contexts() {
+    for context in ["Object", "java.io.Serializable"] {
+        let original = format!(
+            r#"
+            public class GenericNullWiderContextProbe {{
+                public <T extends Number> T value() {{ return null; }}
+                public Number value(Number input) {{ return input; }}
+                public {context} caller() {{ return value(); }}
+            }}
+        "#
+        );
+        let report = compiled_source("GenericNullWiderContextProbe", &original);
+        assert!(
+            report
+                .text
+                .contains("<T extends java.lang.Number> T value()"),
+            "{context}: {}",
+            report.text
+        );
+        let runner = r#"
+            public class GenericReflectionRunner {
+                public static void main(String[] args) throws Exception {
+                    GenericNullWiderContextProbe probe = new GenericNullWiderContextProbe();
+                    java.lang.reflect.Method method = GenericNullWiderContextProbe.class.getDeclaredMethod("value");
+                    java.lang.reflect.TypeVariable<?> variable = method.getTypeParameters()[0];
+                    System.out.print((probe.caller() == null) + ":" + probe.value(Integer.valueOf(7)));
+                    System.out.print(":" + variable.getGenericDeclaration().equals(method));
+                    System.out.print(":" + method.getGenericReturnType().equals(variable));
+                    System.out.print(":" + java.util.Arrays.toString(variable.getBounds()));
+                }
+            }
+        "#;
+        let expected = "true:7:true:true:[class java.lang.Number]";
+        assert_eq!(
+            java_output("GenericNullWiderContextProbe", &original, runner),
+            expected
+        );
+        assert_eq!(
+            java_output("GenericNullWiderContextProbe", &report.text, runner),
+            expected
+        );
+    }
+}
+
+#[test]
+fn already_proved_abstract_method_contract_survives_a_raw_direct_parameter_receiver() {
+    let original = r#"
+        public abstract class GenericAbstractReceiverProbe {
+            public abstract <T extends Number> T target(T value);
+            public static Number call(GenericAbstractReceiverProbe value) {
+                return value.target(Integer.valueOf(7));
+            }
+            public Number own() { return this.target(Integer.valueOf(8)); }
+        }
+    "#;
+    let report = compiled_source("GenericAbstractReceiverProbe", original);
+    assert!(
+        report
+            .text
+            .contains("<T extends java.lang.Number> T target(T arg1);"),
+        "{}",
+        report.text
+    );
+    let runner = r#"
+        public class GenericReflectionRunner {
+            public static void main(String[] args) throws Exception {
+                java.lang.reflect.Method method = GenericAbstractReceiverProbe.class.getDeclaredMethod("target", Number.class);
+                java.lang.reflect.TypeVariable<?> variable = method.getTypeParameters()[0];
+                System.out.print(java.lang.reflect.Modifier.isAbstract(method.getModifiers()));
+                System.out.print(":" + variable.getGenericDeclaration().equals(method));
+                System.out.print(":" + method.getGenericReturnType().equals(variable));
+                System.out.print(":" + method.getGenericParameterTypes()[0].equals(variable));
+                System.out.print(":" + java.util.Arrays.toString(variable.getBounds()));
+            }
+        }
+    "#;
+    let expected = "true:true:true:true:[class java.lang.Number]";
+    assert_eq!(
+        java_output("GenericAbstractReceiverProbe", original, runner),
+        expected
+    );
+    assert_eq!(
+        java_output("GenericAbstractReceiverProbe", &report.text, runner),
+        expected
     );
 }
 
@@ -697,6 +804,7 @@ fn compile_class_bytes(name: &str, java: &str) -> Vec<u8> {
     fs::write(&path, java).unwrap();
     let output = Command::new("javac")
         .args(["--release", "8", "-g:none", "-Xlint:-options"])
+        .args(["-classpath", "", "-sourcepath", ""])
         .arg("-d")
         .arg(&dir)
         .arg(&path)
@@ -728,6 +836,7 @@ fn java_output(name: &str, java: &str, runner: &str) -> String {
     fs::write(&runner_path, runner).unwrap();
     let compile = Command::new("javac")
         .args(["--release", "8", "-g:none", "-Xlint:-options"])
+        .args(["-classpath", "", "-sourcepath", ""])
         .arg("-d")
         .arg(&dir)
         .arg(&class)
@@ -782,16 +891,14 @@ fn neighboring_overload_without_a_caller_does_not_block_the_proved_method() {
 
 #[test]
 fn same_class_caller_to_arity_disjoint_overload_proves_projection() {
-    let report = compiled_source(
-        "GenericCallerProbe",
-        r#"
+    let original = r#"
         public class GenericCallerProbe {
             public static <T extends Number> T choose(T a, T b, boolean first) { return first ? a : b; }
             public static Number choose(Number a, Number b) { return a; }
             public static Number call() { return choose(Integer.valueOf(1), Integer.valueOf(2), true); }
         }
-    "#,
-    );
+    "#;
+    let report = compiled_source("GenericCallerProbe", original);
     // The three-arity candidate's only same-class site names its exact descriptor, and the
     // two-arity sibling cannot apply at that site, so the binding is proved and the header
     // projects; the sibling keeps whatever its own proof supports.
@@ -806,6 +913,75 @@ fn same_class_caller_to_arity_disjoint_overload_proves_projection() {
         report.text.contains("same-class call binding proved"),
         "{}",
         report.text
+    );
+    let runner = r#"
+        public class GenericReflectionRunner {
+            public static void main(String[] args) throws Exception {
+                java.lang.reflect.Method method = GenericCallerProbe.class.getDeclaredMethod(
+                    "choose", Number.class, Number.class, boolean.class);
+                java.lang.reflect.TypeVariable<?> variable = method.getTypeParameters()[0];
+                System.out.print(GenericCallerProbe.call() + ":" + GenericCallerProbe.choose(3, 4, false));
+                System.out.print(":" + variable.getGenericDeclaration().equals(method));
+                System.out.print(":" + method.getGenericReturnType().equals(variable));
+                System.out.print(":" + method.getGenericParameterTypes()[0].equals(variable));
+                System.out.print(":" + method.getGenericParameterTypes()[1].equals(variable));
+                System.out.print(":" + java.util.Arrays.toString(variable.getBounds()));
+            }
+        }
+    "#;
+    let expected = "1:4:true:true:true:true:[class java.lang.Number]";
+    assert_eq!(
+        java_output("GenericCallerProbe", original, runner),
+        expected
+    );
+    assert_eq!(
+        java_output("GenericCallerProbe", &report.text, runner),
+        expected
+    );
+}
+
+#[test]
+fn raw_direct_return_uses_the_actual_method_bound_and_parameter_positions() {
+    let original = r#"
+        public class GenericBoundRawCallerProbe {
+            private static Exception make(String message) { return new Exception(message); }
+            public static <E extends Exception> E select(E left, E right, int marker, boolean first) {
+                return first ? left : right;
+            }
+            public static Exception call() { return select(make("left"), make("right"), 5, false); }
+        }
+    "#;
+    let report = compiled_source("GenericBoundRawCallerProbe", original);
+    assert!(
+        report
+            .text
+            .contains("<E extends java.lang.Exception> E select("),
+        "{}",
+        report.text
+    );
+    let runner = r#"
+        public class GenericReflectionRunner {
+            public static void main(String[] args) throws Exception {
+                java.lang.reflect.Method method = GenericBoundRawCallerProbe.class.getDeclaredMethod(
+                    "select", Exception.class, Exception.class, int.class, boolean.class);
+                java.lang.reflect.TypeVariable<?> variable = method.getTypeParameters()[0];
+                System.out.print(GenericBoundRawCallerProbe.call().getMessage());
+                System.out.print(":" + variable.getGenericDeclaration().equals(method));
+                System.out.print(":" + method.getGenericReturnType().equals(variable));
+                System.out.print(":" + method.getGenericParameterTypes()[0].equals(variable));
+                System.out.print(":" + method.getGenericParameterTypes()[1].equals(variable));
+                System.out.print(":" + java.util.Arrays.toString(variable.getBounds()));
+            }
+        }
+    "#;
+    let expected = "right:true:true:true:true:[class java.lang.Exception]";
+    assert_eq!(
+        java_output("GenericBoundRawCallerProbe", original, runner),
+        expected
+    );
+    assert_eq!(
+        java_output("GenericBoundRawCallerProbe", &report.text, runner),
+        expected
     );
 }
 
@@ -918,7 +1094,7 @@ fn direct_return_and_generic_throws_can_share_the_method_variable() {
 }
 
 #[test]
-fn body_assignment_and_call_without_type_variable_proof_are_refused() {
+fn body_assignment_without_type_variable_proof_is_refused() {
     let assignment = compiled_source(
         "GenericAssignmentProbe",
         r#"
@@ -936,21 +1112,56 @@ fn body_assignment_and_call_without_type_variable_proof_are_refused() {
         assignment.text
     );
     assert!(assignment.text.contains("generic_source_shape_unproved"));
+}
 
-    let call = compiled_source(
-        "GenericBodyCallProbe",
-        r#"
+#[test]
+fn method_local_relay_in_a_nongeneric_class_preserves_distinct_method_binders() {
+    let original = r#"
         public class GenericBodyCallProbe {
             public static <T extends Number> T pass(T value) { return helper(value); }
             private static <T extends Number> T helper(T value) { return value; }
         }
-    "#,
-    );
+    "#;
+    let call = compiled_source("GenericBodyCallProbe", original);
     let pass = call
         .methods
         .iter()
         .find(|method| method.item.name.raw().0 == b"pass")
         .unwrap();
-    assert!(!pass.text.contains("<T extends"), "{}", pass.text);
-    assert!(pass.text.contains("generic Signature projection refused"));
+    assert!(
+        pass.text.contains("<T extends java.lang.Number> T pass(T"),
+        "{}",
+        pass.text
+    );
+    let runner = r#"
+        public class GenericReflectionRunner {
+            public static void main(String[] args) throws Exception {
+                Integer value = Integer.valueOf(17);
+                java.lang.reflect.Method pass = GenericBodyCallProbe.class.getDeclaredMethod("pass", Number.class);
+                java.lang.reflect.Method helper = GenericBodyCallProbe.class.getDeclaredMethod("helper", Number.class);
+                java.lang.reflect.TypeVariable<?> callerVariable = pass.getTypeParameters()[0];
+                java.lang.reflect.TypeVariable<?> calleeVariable = helper.getTypeParameters()[0];
+                System.out.print((GenericBodyCallProbe.<Integer>pass(value) == value) + ":"
+                    + GenericBodyCallProbe.class.getTypeParameters().length);
+                System.out.print(":" + callerVariable.getGenericDeclaration().equals(pass));
+                System.out.print(":" + calleeVariable.getGenericDeclaration().equals(helper));
+                System.out.print(":" + !callerVariable.equals(calleeVariable));
+                System.out.print(":" + (pass.getGenericReturnType().equals(callerVariable)
+                    && pass.getGenericParameterTypes()[0].equals(callerVariable)));
+                System.out.print(":" + (helper.getGenericReturnType().equals(calleeVariable)
+                    && helper.getGenericParameterTypes()[0].equals(calleeVariable)));
+                System.out.print(":" + (callerVariable.getBounds()[0] == Number.class
+                    && calleeVariable.getBounds()[0] == Number.class));
+            }
+        }
+    "#;
+    let expected = "true:0:true:true:true:true:true:true";
+    assert_eq!(
+        java_output("GenericBodyCallProbe", original, runner),
+        expected
+    );
+    assert_eq!(
+        java_output("GenericBodyCallProbe", &call.text, runner),
+        expected
+    );
 }

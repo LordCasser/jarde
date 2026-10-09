@@ -481,6 +481,11 @@ pub struct ClassSourceMethod {
     /// Same-run source candidate retained for the final family writer only.
     #[serde(skip)]
     pub(crate) same_run_generic_return: Option<GenericReturnCandidate>,
+    /// A complete same-run AST/SSA proof for the method body under its generic Signature. This is
+    /// installed only inside the class transaction after every return, condition, throw and
+    /// incoming call source has been joined to the physical method and formal slots.
+    #[serde(skip)]
+    pub(crate) same_class_generic_body_proof: Option<SameClassGenericMethodBodyProof>,
     /// The physical method's ordinary Signature attempt refused. Family assembly may replace
     /// that one marker on a cloned writer record only after its separate proof succeeds.
     #[serde(skip)]
@@ -495,6 +500,359 @@ pub struct ClassSourceMethod {
     /// the VM-injected enum name and ordinal make its descriptor longer.
     #[serde(skip)]
     pub(crate) enum_constructor_signature_erasure_refused: bool,
+}
+
+/// The fields changed while proving and rendering one generic-call member. Keeping this overlay
+/// separate lets the class transaction stage a declaration without cloning its RecoveryReport.
+#[derive(Debug, Eq, PartialEq)]
+pub(crate) struct GenericCallProjectionState {
+    pub(crate) declaration: Option<String>,
+    pub(crate) text: String,
+    pub(crate) markers: Vec<String>,
+    pub(crate) same_class_generic_body_proof: Option<SameClassGenericMethodBodyProof>,
+    pub(crate) generic_signature_refused: bool,
+    pub(crate) generic_signature_projected: bool,
+    pub(crate) enum_constructor_source_tail: EnumConstructorSourceTail,
+    pub(crate) enum_constructor_signature_erasure_refused: bool,
+}
+
+impl ClassSourceMethod {
+    /// Save only the mutable projection fields before the ordinary per-member Signature attempt.
+    /// The RecoveryReport, annotations, and all other source facts remain in the original record.
+    pub(crate) fn generic_call_projection_state(
+        &self,
+        budget: &mut Budget,
+    ) -> Result<GenericCallProjectionState> {
+        budget.poll()?;
+        if self.same_class_generic_body_proof.is_some() {
+            return Err(Error::unsupported(
+                "generic_call_projection_state_unexpected_body_proof",
+                "the pre-transaction source snapshot already carries a staged body proof",
+            ));
+        }
+        let mut copied_bytes = u64::try_from(self.text.len()).unwrap_or(u64::MAX);
+        let mut copied_steps = 8u64;
+        if let Some(declaration) = &self.declaration {
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(declaration.len()).unwrap_or(u64::MAX));
+        }
+        copied_steps =
+            copied_steps.saturating_add(u64::try_from(self.markers.len()).unwrap_or(u64::MAX));
+        for marker in &self.markers {
+            budget.poll()?;
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(marker.len()).unwrap_or(u64::MAX));
+        }
+        budget.charge(CountedBudgetDimension::AnalysisSteps, copied_steps)?;
+        budget.charge(CountedBudgetDimension::OutputBytes, copied_bytes)?;
+        Ok(GenericCallProjectionState {
+            declaration: self.declaration.clone(),
+            text: self.text.clone(),
+            markers: self.markers.clone(),
+            same_class_generic_body_proof: None,
+            generic_signature_refused: self.generic_signature_refused,
+            generic_signature_projected: self.generic_signature_projected,
+            enum_constructor_source_tail: self.enum_constructor_source_tail,
+            enum_constructor_signature_erasure_refused: self
+                .enum_constructor_signature_erasure_refused,
+        })
+    }
+
+    /// Move a completed projection overlay onto its physical method record.
+    pub(crate) fn install_generic_call_projection_state(
+        &mut self,
+        state: GenericCallProjectionState,
+    ) {
+        self.declaration = state.declaration;
+        self.text = state.text;
+        self.markers = state.markers;
+        self.same_class_generic_body_proof = state.same_class_generic_body_proof;
+        self.generic_signature_refused = state.generic_signature_refused;
+        self.generic_signature_projected = state.generic_signature_projected;
+        self.enum_constructor_source_tail = state.enum_constructor_source_tail;
+        self.enum_constructor_signature_erasure_refused =
+            state.enum_constructor_signature_erasure_refused;
+    }
+
+    fn take_generic_call_projection_state(&mut self) -> GenericCallProjectionState {
+        GenericCallProjectionState {
+            declaration: self.declaration.take(),
+            text: std::mem::take(&mut self.text),
+            markers: std::mem::take(&mut self.markers),
+            same_class_generic_body_proof: self.same_class_generic_body_proof.take(),
+            generic_signature_refused: std::mem::take(&mut self.generic_signature_refused),
+            generic_signature_projected: std::mem::take(&mut self.generic_signature_projected),
+            enum_constructor_source_tail: std::mem::replace(
+                &mut self.enum_constructor_source_tail,
+                EnumConstructorSourceTail::Unrecognized,
+            ),
+            enum_constructor_signature_erasure_refused: std::mem::take(
+                &mut self.enum_constructor_signature_erasure_refused,
+            ),
+        }
+    }
+}
+
+impl GenericCallProjectionState {
+    /// Clone a raw pre-transaction overlay for one component's isolated staging area.
+    pub(crate) fn clone_raw_for_stage(&self, budget: &mut Budget) -> Result<Self> {
+        budget.poll()?;
+        if self.same_class_generic_body_proof.is_some() {
+            return Err(Error::unsupported(
+                "generic_call_projection_state_unexpected_body_proof",
+                "only the raw pre-transaction overlay can seed a component stage",
+            ));
+        }
+        let mut copied_bytes = u64::try_from(self.text.len()).unwrap_or(u64::MAX);
+        let mut copied_steps = 8u64;
+        if let Some(declaration) = &self.declaration {
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(declaration.len()).unwrap_or(u64::MAX));
+        }
+        copied_steps =
+            copied_steps.saturating_add(u64::try_from(self.markers.len()).unwrap_or(u64::MAX));
+        for marker in &self.markers {
+            budget.poll()?;
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(marker.len()).unwrap_or(u64::MAX));
+        }
+        budget.charge(CountedBudgetDimension::AnalysisSteps, copied_steps)?;
+        budget.charge(CountedBudgetDimension::OutputBytes, copied_bytes)?;
+        Ok(Self {
+            declaration: self.declaration.clone(),
+            text: self.text.clone(),
+            markers: self.markers.clone(),
+            same_class_generic_body_proof: None,
+            generic_signature_refused: self.generic_signature_refused,
+            generic_signature_projected: self.generic_signature_projected,
+            enum_constructor_source_tail: self.enum_constructor_source_tail,
+            enum_constructor_signature_erasure_refused: self
+                .enum_constructor_signature_erasure_refused,
+        })
+    }
+
+    pub(crate) fn project_generic(
+        &mut self,
+        record: &ClassSourceMethod,
+        declaration: String,
+        signature: &[u8],
+        proof: &str,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        let placed = match &record.outcome {
+            ClassSourceOutcome::Recovered { report, .. } => {
+                let Some(body) = artifact(&report.text) else {
+                    return Ok(());
+                };
+                Placed::Block(body)
+            }
+            ClassSourceOutcome::NoBody if record.no_body_kind.is_some() => Placed::Without,
+            _ => return Ok(()),
+        };
+        let marker = format!(
+            "// jarde: generic Signature `{}` projected after descriptor erasure and {proof}",
+            comment_text(&String::from_utf8_lossy(signature)),
+        );
+        let marker_bytes = u64::try_from(marker.len()).unwrap_or(u64::MAX);
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        budget.charge(CountedBudgetDimension::OutputBytes, marker_bytes)?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.markers.len()).unwrap_or(u64::MAX),
+        )?;
+        for _ in &self.markers {
+            budget.poll()?;
+        }
+        let mut markers = std::mem::take(&mut self.markers);
+        let old_marker_count = markers.len();
+        markers.push(marker);
+        let rendered_bytes = match &placed {
+            Placed::Without => {
+                declaration_member_text_bytes(&declaration, &markers, &record.annotations)
+            }
+            Placed::Block(body) => block_member_text_bytes(
+                &declaration,
+                body.envelope,
+                body.statements,
+                &markers,
+                &record.annotations,
+            ),
+            Placed::Quoted(_) => unreachable!("generic Signature body is a recovered block"),
+        };
+        if let Err(error) = budget.charge(CountedBudgetDimension::OutputBytes, rendered_bytes) {
+            markers.truncate(old_marker_count);
+            self.markers = markers;
+            return Err(error.into());
+        }
+        let text = prefix_method_annotations(
+            match placed {
+                Placed::Without => declaration_member(&declaration, &markers),
+                body => block_member(&declaration, body, &markers),
+            },
+            &record.annotations,
+        );
+        self.declaration = Some(declaration);
+        self.text = text;
+        self.markers = markers;
+        self.generic_signature_refused = false;
+        self.generic_signature_projected = true;
+        Ok(())
+    }
+
+    pub(crate) fn refuse_generic(
+        &mut self,
+        record: &ClassSourceMethod,
+        reason: &str,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        let marker = format!(
+            "// jarde: generic Signature projection refused for `{}`: {}",
+            label(&record.item),
+            comment_text(reason)
+        );
+        let marker_bytes = u64::try_from(marker.len()).unwrap_or(u64::MAX);
+        let text_bytes = u64::try_from(self.text.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(marker_bytes)
+            .saturating_add(5);
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        budget.charge(CountedBudgetDimension::OutputBytes, marker_bytes)?;
+        budget.charge(CountedBudgetDimension::OutputBytes, text_bytes)?;
+        let text = format!("    {marker}\n{}", self.text);
+        self.markers.push(marker);
+        self.text = text;
+        self.generic_signature_refused = true;
+        Ok(())
+    }
+
+    pub(crate) fn project_generic_call_arguments(
+        &mut self,
+        record: &ClassSourceMethod,
+        original_emission: &str,
+        projected_emission: &str,
+        markers: &[String],
+        budget: &mut Budget,
+    ) -> Result<bool> {
+        budget.poll()?;
+        let mut copied_bytes = 0u64;
+        for marker in &self.markers {
+            budget.poll()?;
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(marker.len()).unwrap_or(u64::MAX));
+        }
+        for marker in markers {
+            budget.poll()?;
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(marker.len()).unwrap_or(u64::MAX));
+        }
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(markers.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(u64::try_from(self.markers.len()).unwrap_or(u64::MAX))
+                .saturating_add(1),
+        )?;
+        budget.charge(CountedBudgetDimension::OutputBytes, copied_bytes)?;
+        let ClassSourceOutcome::Recovered { report, .. } = &record.outcome else {
+            return Ok(false);
+        };
+        let Some(original_artifact) = artifact(&report.text) else {
+            return Ok(false);
+        };
+        let Some(declaration) = self.declaration.as_deref() else {
+            return Ok(false);
+        };
+        let Some(original_text) = self.lambda_projection_text(record, &report.text, &[], budget)?
+        else {
+            return Ok(false);
+        };
+        let original_matches =
+            class_source_body_lines_match(original_emission, original_artifact.statements);
+        if original_text != self.text || !original_matches {
+            return Ok(false);
+        }
+        let mut all_markers = std::mem::take(&mut self.markers);
+        let old_marker_count = all_markers.len();
+        all_markers.extend(markers.iter().cloned());
+        let rendered_bytes = block_member_text_bytes(
+            declaration,
+            original_artifact.envelope,
+            projected_emission,
+            &all_markers,
+            &record.annotations,
+        );
+        if let Err(error) = budget.charge(CountedBudgetDimension::OutputBytes, rendered_bytes) {
+            all_markers.truncate(old_marker_count);
+            self.markers = all_markers;
+            return Err(error.into());
+        }
+        let text = prefix_method_annotations(
+            block_member(
+                declaration,
+                Placed::Block(Artifact {
+                    envelope: original_artifact.envelope,
+                    statements: projected_emission,
+                }),
+                &all_markers,
+            ),
+            &record.annotations,
+        );
+        self.text = text;
+        self.markers = all_markers;
+        Ok(true)
+    }
+
+    fn lambda_projection_text(
+        &self,
+        record: &ClassSourceMethod,
+        recovery_text: &str,
+        markers: &[String],
+        budget: &mut Budget,
+    ) -> Result<Option<String>> {
+        budget.poll()?;
+        let Some(declaration) = self.declaration.as_deref() else {
+            return Ok(None);
+        };
+        let Some(artifact) = artifact(recovery_text) else {
+            return Ok(None);
+        };
+        let mut copied_bytes = 0u64;
+        for marker in &self.markers {
+            budget.poll()?;
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(marker.len()).unwrap_or(u64::MAX));
+        }
+        for marker in markers {
+            budget.poll()?;
+            copied_bytes =
+                copied_bytes.saturating_add(u64::try_from(marker.len()).unwrap_or(u64::MAX));
+        }
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.markers.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(u64::try_from(markers.len()).unwrap_or(u64::MAX)),
+        )?;
+        budget.charge(CountedBudgetDimension::OutputBytes, copied_bytes)?;
+        budget.charge(
+            CountedBudgetDimension::OutputBytes,
+            block_member_text_bytes(
+                declaration,
+                artifact.envelope,
+                artifact.statements,
+                &self.markers,
+                &record.annotations,
+            ),
+        )?;
+        let mut all_markers = self.markers.clone();
+        all_markers.extend(markers.iter().cloned());
+        Ok(Some(prefix_method_annotations(
+            block_member(declaration, Placed::Block(artifact), &all_markers),
+            &record.annotations,
+        )))
+    }
 }
 
 /// The analysis half of one member's run, as this report publishes it.
@@ -2219,6 +2577,9 @@ pub(crate) enum SameClassBinding {
     /// Every actual same-class use site of the member is proved to keep binding its physical
     /// target, and no unreadable reference source names it.
     Proven,
+    /// Every non-overload binding fact is closed, but an actual same-arity source overload call
+    /// still needs the generic-call component's complete staged overload proof before commit.
+    OverloadPending,
     /// A use site, a competing same-name declaration, or a reference source is not proved; the
     /// member keeps its erased declaration and the existing refusal.
     Unproved,
@@ -2229,15 +2590,74 @@ pub(crate) enum SameClassBinding {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct SameClassInvokeUse {
     pub(crate) caller: String,
+    pub(crate) physical_caller: PhysicalMethodId,
     pub(crate) bci: u32,
     pub(crate) opcode: u8,
     pub(crate) owner: Vec<u8>,
     pub(crate) name: Vec<u8>,
     pub(crate) descriptor: Vec<u8>,
+    /// Physical SSA values aligned to descriptor parameter order. Empty is meaningful only when
+    /// `ssa_operands_complete` is true for a zero-argument call.
+    pub(crate) argument_values: Vec<jarde_jvm::method_ir::ValueId>,
+    pub(crate) receiver_value: Option<jarde_jvm::method_ir::ValueId>,
+    pub(crate) result_value: Option<jarde_jvm::method_ir::ValueId>,
+    pub(crate) argument_value_facts: Vec<SameClassInvokeValueFact>,
+    pub(crate) receiver_value_fact: Option<SameClassInvokeValueFact>,
+    pub(crate) result_value_fact: Option<SameClassInvokeValueFact>,
+    pub(crate) ssa_operands_complete: bool,
     /// For a constructor invocation, the receiver identity established by the same run's SSA.
     /// `None` means this is not a constructor invocation; `Unknown` stays local to this site and
     /// must not make unrelated same-class consumers incomplete.
     pub(crate) constructor_receiver: Option<SameClassConstructorReceiver>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassInvokeValueFact {
+    pub(crate) value: jarde_jvm::method_ir::ValueId,
+    pub(crate) definition: jarde_jvm::method_ir::Definition,
+    pub(crate) uses: Vec<Option<u32>>,
+    pub(crate) replaced_by: Option<jarde_jvm::method_ir::ValueId>,
+}
+
+/// One same-run SSA output at an AST expression's primary BCI. Generic body proofs retain only
+/// the load/result identities needed to close formal reads and return/condition/throw consumers.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassBodyValueSite {
+    pub(crate) bci: u32,
+    pub(crate) opcode: u8,
+    pub(crate) stack_reads: Vec<(u32, SameClassInvokeValueFact)>,
+    pub(crate) stack_writes: Vec<SameClassInvokeValueFact>,
+    pub(crate) local_reads: Vec<(u16, SameClassInvokeValueFact)>,
+    pub(crate) local_writes: Vec<(u16, SameClassInvokeValueFact)>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum SameClassGenericBodyReturnSource {
+    Parameter {
+        slot: u16,
+    },
+    Call {
+        bci: u32,
+        opcode: u8,
+        owner: Vec<u8>,
+        name: Vec<u8>,
+        descriptor: Vec<u8>,
+    },
+}
+
+/// The evidence retained by the emitter for an AST-shaped generic method body. It records actual
+/// physical formal identities and each return source; it is not a boolean saying that a body was
+/// merely seen or parsed.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassGenericMethodBodyProof {
+    pub(crate) method: PhysicalMethodId,
+    pub(crate) formal_names: Vec<(u16, String)>,
+    pub(crate) return_sources: Vec<SameClassGenericBodyReturnSource>,
+    pub(crate) condition_slots: Vec<u16>,
+    pub(crate) throw_sites: Vec<u32>,
+    pub(crate) field_write_sites: Vec<u32>,
+    pub(crate) constructor_call_bci: Option<u32>,
+    pub(crate) constructor_init: Option<jarde_java::init::InitRecord>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -2281,8 +2701,19 @@ pub(crate) enum SameClassFieldReceiverSource {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) enum SameClassFieldWriteSource {
     Null,
-    Parameter { method: PhysicalMethodId, slot: u16 },
-    RawAllocation { owner: Vec<u8> },
+    /// A same-run `ldc`/`ldc_w` String constant used once as a String field's physical RHS.
+    /// This fact is for the narrow method-body certificate only; generic field assignment proofs
+    /// deliberately do not treat it as evidence that a value satisfies a type variable.
+    StringConstant {
+        value_bci: u32,
+    },
+    Parameter {
+        method: PhysicalMethodId,
+        slot: u16,
+    },
+    RawAllocation {
+        owner: Vec<u8>,
+    },
 }
 
 /// The actual source parameter types and declared method bounds a completed same-class method
@@ -2317,6 +2748,1772 @@ pub(crate) struct SameClassUseFacts<'a> {
     pub(crate) invokes: &'a [SameClassInvokeUse],
     pub(crate) field_uses: &'a [SameClassFieldUse],
     pub(crate) member_refs: &'a [SameClassMemberRef],
+}
+
+/// One same-class generic caller dependency. Indices are physical method-table positions, never
+/// names or erased descriptors: overloads and method/class binders remain distinct.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct GenericCallDependency {
+    pub(crate) caller: usize,
+    pub(crate) callee: usize,
+}
+
+/// A connected set of candidate declarations that must stage or roll back together. `order` is
+/// callee-first; a cyclic component has no safe order and is rejected without retrying inference.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct GenericCallComponent {
+    pub(crate) members: Vec<usize>,
+    pub(crate) order: Option<Vec<usize>>,
+}
+
+/// The published generic contract read from one physical same-class method. The caller may use
+/// this only after the matching declaration has been staged from the same Signature and erasure
+/// proof; its physical identity keeps overloaded methods and method binders separate.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassGenericMethodContract {
+    pub(crate) method: PhysicalMethodId,
+    pub(crate) method_parameters: Vec<TypeParameter>,
+    pub(crate) parameters: Vec<SignatureType>,
+    pub(crate) result: Option<SignatureType>,
+}
+
+/// Source type proved at one invocation argument. Only a direct emitted parameter is admitted in
+/// overload selection; generic substitution can additionally receive an exact nested call result
+/// whose own callee and uses were proved first. Casts, aliases, unknown locals, and AST `presented`
+/// types do not create a source type.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassGenericArgumentSource {
+    pub(crate) caller: PhysicalMethodId,
+    pub(crate) origin: SameClassGenericArgumentOrigin,
+    pub(crate) source_type: SignatureType,
+    pub(crate) caller_method_parameters: Vec<TypeParameter>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum SameClassGenericArgumentOrigin {
+    Formal {
+        slot: u16,
+    },
+    NullLiteral,
+    NestedCall {
+        bci: u32,
+        opcode: u8,
+        owner: Vec<u8>,
+        name: Vec<u8>,
+        descriptor: Vec<u8>,
+    },
+}
+
+/// A consistent invocation substitution for the callee's method-level type variables.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassGenericSubstitution {
+    pub(crate) method_arguments: Vec<SignatureType>,
+    pub(crate) argument_sources: Vec<SameClassGenericArgumentSource>,
+}
+
+/// Prove direct type-variable substitution and all explicit bounds for one invocation. The
+/// caller's and callee's method binders are resolved before their shared class scope, so a method
+/// `T` shadowing class `T` cannot silently become the class variable. Only direct formal source
+/// types are accepted here; general expressions need their own source proof.
+pub(crate) fn prove_same_class_generic_substitution(
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    callee: &SameClassGenericMethodContract,
+    actuals: &[SameClassGenericArgumentSource],
+    budget: &mut Budget,
+) -> Result<Option<SameClassGenericSubstitution>> {
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(callee.parameters.len().saturating_add(actuals.len())).unwrap_or(u64::MAX),
+    )?;
+    if callee.parameters.len() != actuals.len() {
+        return Ok(None);
+    }
+    let mut method_arguments: Vec<Option<SignatureType>> =
+        vec![None; callee.method_parameters.len()];
+    for (parameter, actual) in callee.parameters.iter().zip(actuals) {
+        budget.poll()?;
+        if !same_class_call_type_matches(
+            parameter,
+            &actual.source_type,
+            class_scope,
+            class_parameters,
+            &callee.method_parameters,
+            &actual.caller_method_parameters,
+            &mut method_arguments,
+            budget,
+            0,
+        )? {
+            return Ok(None);
+        }
+    }
+    if method_arguments.iter().any(Option::is_none) {
+        // An unconstrained type variable cannot be inferred from a null, omitted, or otherwise
+        // unobserved argument. It must have one direct source at an actual parameter position.
+        return Ok(None);
+    }
+    Ok(Some(SameClassGenericSubstitution {
+        method_arguments: method_arguments.into_iter().flatten().collect(),
+        argument_sources: actuals.to_vec(),
+    }))
+}
+
+pub(crate) fn same_class_generic_result_matches(
+    class_scope: &[TypeParameterErasure],
+    caller_method_parameters: &[TypeParameter],
+    caller_result: &SignatureType,
+    callee: &SameClassGenericMethodContract,
+    substitution: &SameClassGenericSubstitution,
+    budget: &mut Budget,
+) -> Result<bool> {
+    let Some(callee_result) = callee.result.as_ref() else {
+        return Ok(false);
+    };
+    let Some(substituted) = substitute_same_class_method_result(
+        callee_result,
+        &callee.method_parameters,
+        &substitution.method_arguments,
+        budget,
+        0,
+    )?
+    else {
+        return Ok(false);
+    };
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    Ok(signature_types_same_generic_call_binding(
+        &substituted,
+        caller_result,
+        class_scope,
+        caller_method_parameters,
+    ))
+}
+
+pub(crate) fn same_class_generic_substituted_result(
+    callee: &SameClassGenericMethodContract,
+    substitution: &SameClassGenericSubstitution,
+    budget: &mut Budget,
+) -> Result<Option<SignatureType>> {
+    let Some(result) = callee.result.as_ref() else {
+        return Ok(None);
+    };
+    substitute_same_class_method_result(
+        result,
+        &callee.method_parameters,
+        &substitution.method_arguments,
+        budget,
+        0,
+    )
+}
+
+pub(crate) fn same_class_generic_source_assignable_to_descriptor(
+    source: &SignatureType,
+    caller_method_parameters: &[TypeParameter],
+    descriptor: &[u8],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    budget: &mut Budget,
+) -> Result<Option<bool>> {
+    let mut method_descriptor = Vec::with_capacity(descriptor.len().saturating_add(4));
+    method_descriptor.push(b'(');
+    method_descriptor.extend_from_slice(descriptor);
+    method_descriptor.extend_from_slice(b")V");
+    let parsed = match parse_method_signature(&method_descriptor, budget) {
+        Ok(parsed) => parsed,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+            return Err(error);
+        }
+        Err(_) => return Ok(None),
+    };
+    let [target] = parsed.parameters.as_slice() else {
+        return Ok(None);
+    };
+    overload_source_type_assignable(
+        source,
+        target,
+        caller_method_parameters,
+        class_scope,
+        class_parameters,
+        budget,
+        0,
+    )
+}
+
+fn substitute_same_class_method_result(
+    source: &SignatureType,
+    method_parameters: &[TypeParameter],
+    method_arguments: &[SignatureType],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<Option<SignatureType>> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if depth > 64 {
+        return Ok(None);
+    }
+    match source {
+        SignatureType::Base(_) => Ok(Some(source.clone())),
+        SignatureType::Array(component) => Ok(substitute_same_class_method_result(
+            component,
+            method_parameters,
+            method_arguments,
+            budget,
+            depth + 1,
+        )?
+        .map(|component| SignatureType::Array(Box::new(component)))),
+        SignatureType::TypeVariable(name) => {
+            let mut binders = method_parameters
+                .iter()
+                .enumerate()
+                .filter(|(_, binder)| binder.name == *name);
+            let Some((index, _)) = binders.next() else {
+                return Ok(Some(source.clone()));
+            };
+            if binders.next().is_some() {
+                return Ok(None);
+            }
+            Ok(method_arguments.get(index).cloned())
+        }
+        SignatureType::Class(class) => {
+            let mut result = class.clone();
+            for segment in &mut result.segments {
+                budget.poll()?;
+                for argument in &mut segment.arguments {
+                    let TypeArgument::Exact(source) = argument else {
+                        return Ok(None);
+                    };
+                    let Some(substituted) = substitute_same_class_method_result(
+                        source,
+                        method_parameters,
+                        method_arguments,
+                        budget,
+                        depth + 1,
+                    )?
+                    else {
+                        return Ok(None);
+                    };
+                    *source = substituted;
+                }
+            }
+            Ok(Some(SignatureType::Class(result)))
+        }
+    }
+}
+
+fn same_class_call_type_matches(
+    target: &SignatureType,
+    actual: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    callee_method_parameters: &[TypeParameter],
+    caller_method_parameters: &[TypeParameter],
+    substitutions: &mut [Option<SignatureType>],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if depth > 64 {
+        return Ok(false);
+    }
+    match (target, actual) {
+        (SignatureType::Base(left), SignatureType::Base(right)) => Ok(left == right),
+        (SignatureType::Array(left), SignatureType::Array(right)) => same_class_call_type_matches(
+            left,
+            right,
+            class_scope,
+            class_parameters,
+            callee_method_parameters,
+            caller_method_parameters,
+            substitutions,
+            budget,
+            depth + 1,
+        ),
+        (SignatureType::TypeVariable(target_name), _) => {
+            if let Some((index, binder)) = callee_method_parameters
+                .iter()
+                .enumerate()
+                .find(|(_, binder)| binder.name == *target_name)
+            {
+                if !same_class_call_type_satisfies_method_bounds(
+                    actual,
+                    binder,
+                    class_scope,
+                    class_parameters,
+                    caller_method_parameters,
+                    budget,
+                )? {
+                    return Ok(false);
+                }
+                let Some(previous) = substitutions.get_mut(index) else {
+                    return Ok(false);
+                };
+                if let Some(previous) = previous {
+                    Ok(signature_types_same_generic_call_binding(
+                        previous,
+                        actual,
+                        class_scope,
+                        caller_method_parameters,
+                    ))
+                } else {
+                    *previous = Some(actual.clone());
+                    Ok(true)
+                }
+            } else {
+                let Some((target_index, _)) = class_scope
+                    .iter()
+                    .enumerate()
+                    .find(|(_, binder)| binder.name == *target_name)
+                else {
+                    return Ok(false);
+                };
+                let SignatureType::TypeVariable(actual_name) = actual else {
+                    return Ok(false);
+                };
+                if caller_method_parameters
+                    .iter()
+                    .any(|binder| binder.name == *actual_name)
+                {
+                    return Ok(false);
+                }
+                Ok(class_scope
+                    .get(target_index)
+                    .is_some_and(|binder| binder.name == *actual_name))
+            }
+        }
+        (SignatureType::Class(target), SignatureType::Class(actual)) => {
+            if target.segments.len() != actual.segments.len() {
+                return Ok(false);
+            }
+            for (target, actual) in target.segments.iter().zip(&actual.segments) {
+                if target.binary_name != actual.binary_name
+                    || target.arguments.len() != actual.arguments.len()
+                {
+                    return Ok(false);
+                }
+                for (target_argument, actual_argument) in
+                    target.arguments.iter().zip(&actual.arguments)
+                {
+                    let (TypeArgument::Exact(target), TypeArgument::Exact(actual)) =
+                        (target_argument, actual_argument)
+                    else {
+                        return Ok(false);
+                    };
+                    if !same_class_call_type_matches(
+                        target,
+                        actual,
+                        class_scope,
+                        class_parameters,
+                        callee_method_parameters,
+                        caller_method_parameters,
+                        substitutions,
+                        budget,
+                        depth + 1,
+                    )? {
+                        return Ok(false);
+                    }
+                }
+            }
+            Ok(true)
+        }
+        _ => Ok(false),
+    }
+}
+
+/// Generic invocation equality uses binder identity within one physical caller. A method binder
+/// shadows a same-named class binder, while repeated references to the same method binder remain
+/// equivalent. The older field-writer comparison intentionally keeps its narrower semantics.
+fn signature_types_same_generic_call_binding(
+    left: &SignatureType,
+    right: &SignatureType,
+    class_scope: &[TypeParameterErasure],
+    method_binders: &[TypeParameter],
+) -> bool {
+    match (left, right) {
+        (SignatureType::Base(left), SignatureType::Base(right)) => left == right,
+        (SignatureType::Array(left), SignatureType::Array(right)) => {
+            signature_types_same_generic_call_binding(left, right, class_scope, method_binders)
+        }
+        (SignatureType::TypeVariable(left), SignatureType::TypeVariable(right)) => {
+            left == right
+                && (method_binders.iter().any(|binder| binder.name == *left)
+                    || (class_scope_variable(left, class_scope)
+                        && !method_binders.iter().any(|binder| binder.name == *left)))
+        }
+        (SignatureType::Class(left), SignatureType::Class(right)) => {
+            left.segments.len() == right.segments.len()
+                && left
+                    .segments
+                    .iter()
+                    .zip(&right.segments)
+                    .all(|(left, right)| {
+                        left.binary_name == right.binary_name
+                            && left.arguments.len() == right.arguments.len()
+                            && left
+                                .arguments
+                                .iter()
+                                .zip(&right.arguments)
+                                .all(|(left, right)| {
+                                    matches!((left, right),
+                                    (TypeArgument::Exact(left), TypeArgument::Exact(right))
+                                        if signature_types_same_generic_call_binding(
+                                            left, right, class_scope, method_binders
+                                        ))
+                                })
+                    })
+        }
+        _ => false,
+    }
+}
+
+fn same_class_call_type_satisfies_method_bounds(
+    actual: &SignatureType,
+    target: &TypeParameter,
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    caller_method_parameters: &[TypeParameter],
+    budget: &mut Budget,
+) -> Result<bool> {
+    let mut required = Vec::new();
+    if let Some(bound) = &target.class_bound {
+        required.push(bound);
+    }
+    required.extend(target.interface_bounds.iter());
+    if required.is_empty() {
+        return Ok(matches!(
+            actual,
+            SignatureType::TypeVariable(_) | SignatureType::Class(_)
+        ));
+    }
+    for bound in required {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let SignatureType::Class(required_class) = bound else {
+            return Ok(false);
+        };
+        let Some(required_segment) = required_class.segments.last() else {
+            return Ok(false);
+        };
+        if required_class
+            .segments
+            .iter()
+            .any(|segment| !segment.arguments.is_empty())
+        {
+            return Ok(false);
+        }
+        let required_name = required_segment.binary_name.as_slice();
+        if required_name == b"java/lang/Object" {
+            continue;
+        }
+        let actual_bound_matches = match actual {
+            SignatureType::Class(actual_class) => actual_class
+                .segments
+                .last()
+                .is_some_and(|segment| segment.binary_name.as_slice() == required_name),
+            SignatureType::TypeVariable(actual_name) => caller_method_parameters
+                .iter()
+                .find(|binder| binder.name == *actual_name)
+                .or_else(|| {
+                    class_scope
+                        .iter()
+                        .position(|binder| binder.name == *actual_name)
+                        .and_then(|index| class_parameters.get(index))
+                })
+                .is_some_and(|actual_binder| {
+                    std::iter::once(actual_binder.class_bound.as_ref())
+                        .flatten()
+                        .chain(actual_binder.interface_bounds.iter())
+                        .any(|bound| {
+                            matches!(bound, SignatureType::Class(class)
+                                if class.segments.last().is_some_and(|segment| segment.binary_name.as_slice() == required_name)
+                                    && class.segments.iter().all(|segment| segment.arguments.is_empty()))
+                        })
+                }),
+            SignatureType::Base(_) | SignatureType::Array(_) => false,
+        };
+        if !actual_bound_matches {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+// ---------------------------------------------------------------------------------------------
+// Closed same-class overload proof for a source cast at a generic call site
+// ---------------------------------------------------------------------------------------------
+
+/// One source argument admitted by the overload proof. A non-null argument retains the physical
+/// caller, its formal or nested-call origin, the Signature type, and the caller binder list that
+/// proved its source type. Null has no invented source type and cannot infer a callee method binder.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassOverloadActual {
+    pub(crate) source: Option<SameClassGenericArgumentSource>,
+    pub(crate) null_literal: bool,
+}
+
+/// One complete, source-writable same-class declaration that can participate in overload
+/// resolution. `owner` is the class-file internal name paired with the physical method identity;
+/// the caller supplies it from the same completed class inventory.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SameClassOverloadCandidate {
+    pub(crate) method: PhysicalMethodId,
+    pub(crate) owner: Vec<u8>,
+    pub(crate) descriptor: Vec<u8>,
+    pub(crate) access_flags: u16,
+    pub(crate) parameters: Vec<SignatureType>,
+    pub(crate) method_parameters: Vec<TypeParameter>,
+    pub(crate) source_writable: bool,
+}
+
+/// Prove that a source invocation remains pinned to its physical target after adding only
+/// explicit-bound reference upcasts. This is intentionally a finite proof: it accepts a complete
+/// same-class overload inventory on an `Object` subclass with no interfaces, excludes varargs,
+/// bridge and synthetic declarations, and resolves only the JDK reference relationships listed in
+/// `closed_jdk8_reference_relation`. An unknown relationship makes the whole proof unavailable;
+/// the positive-only widening helper is not used as a negative fact.
+pub(crate) fn prove_same_class_overload_argument_upcasts(
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    caller: &PhysicalMethodId,
+    target: &jarde_java::facts::CallTarget,
+    call_bci: u32,
+    overloads_complete: bool,
+    actuals: &[SameClassOverloadActual],
+    overloads: &[SameClassOverloadCandidate],
+    budget: &mut Budget,
+) -> Result<Option<Vec<jarde_java::report::ClassSourceInvokeArgumentCast>>> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if !overloads_complete
+        || class_superclass != Some(b"java/lang/Object".as_slice())
+        || !class_interfaces.is_empty()
+        || target.owner().as_bytes() != class_internal
+        || target.is_interface_reference()
+        || !matches!(
+            target.kind(),
+            jarde_java::facts::InvokeKind::Static
+                | jarde_java::facts::InvokeKind::Virtual
+                | jarde_java::facts::InvokeKind::Special
+        )
+        || target.name().starts_with('<')
+        // The closed candidate slice contains declarations from this class only. Object's
+        // inherited instance methods are additional source candidates even when this class has no
+        // interfaces, so their names are outside this proof.
+        || is_object_instance_method_name(target.name().as_bytes())
+        || overloads.is_empty()
+    {
+        return Ok(None);
+    }
+    let expected_static = target.kind() == jarde_java::facts::InvokeKind::Static;
+    let mut selected = None;
+    let mut seen_methods = std::collections::HashSet::new();
+    for (index, candidate) in overloads.iter().enumerate() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !candidate.source_writable
+            || candidate.owner != class_internal
+            || candidate.method.owner != caller.owner
+            || candidate.method.name.0.as_slice() != target.name().as_bytes()
+            || candidate.descriptor.as_slice() != candidate.method.descriptor.0.as_slice()
+            || candidate.access_flags & (ACC_VARARGS | 0x0040 | 0x1000) != 0
+            || (candidate.access_flags & ACC_STATIC != 0) != expected_static
+            || !seen_methods.insert(candidate.method.clone())
+        {
+            return Ok(None);
+        }
+        let Some(parameter_descriptors) = overload_parameter_descriptors(&candidate.descriptor)
+        else {
+            return Ok(None);
+        };
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(parameter_descriptors.len()).unwrap_or(u64::MAX),
+        )?;
+        if parameter_descriptors.len() != candidate.parameters.len() {
+            return Ok(None);
+        }
+        if candidate.method.name.0.as_slice() == target.name().as_bytes()
+            && candidate.descriptor.as_slice() == target.descriptor().as_bytes()
+            && target.owner().as_bytes() == candidate.owner
+        {
+            if selected.replace(index).is_some() {
+                return Ok(None);
+            }
+        }
+    }
+    let Some(selected) = selected else {
+        return Ok(None);
+    };
+    let caller_method_parameters = overload_actual_method_parameters(caller, actuals, budget)?;
+    if caller_method_parameters.is_none() && actuals.iter().any(|actual| actual.source.is_some()) {
+        return Ok(None);
+    }
+    let caller_method_parameters = caller_method_parameters.unwrap_or_default();
+    let mut actual_types = Vec::with_capacity(actuals.len());
+    for actual in actuals {
+        budget.poll()?;
+        match (&actual.source, actual.null_literal) {
+            (Some(source), false) if source.caller == *caller => {
+                actual_types.push(Some(source.source_type.clone()));
+            }
+            (None, true) => actual_types.push(None),
+            _ => return Ok(None),
+        }
+    }
+    let uncast_resolution = overload_target_is_unique_most_specific(
+        selected,
+        overloads,
+        &actual_types,
+        &caller_method_parameters,
+        class_scope,
+        class_parameters,
+        budget,
+    )?;
+    if uncast_resolution == Some(true) {
+        return Ok(Some(Vec::new()));
+    }
+
+    // A cast is considered only where the target's physical parameter descriptor is exactly one
+    // of this direct formal's explicit reference bounds. Every other argument keeps its proved
+    // source type. This prevents an erasure or `Object` type from being used to invent `T`.
+    let Some(selected_parameter_descriptors) =
+        overload_parameter_descriptors(&overloads[selected].descriptor)
+    else {
+        return Ok(None);
+    };
+    let mut cast_choices = Vec::new();
+    for (argument_index, actual) in actuals.iter().enumerate() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let Some(source) = &actual.source else {
+            continue;
+        };
+        let SignatureType::TypeVariable(name) = &source.source_type else {
+            continue;
+        };
+        let Some(parameter_descriptor) = selected_parameter_descriptors.get(argument_index) else {
+            return Ok(None);
+        };
+        let Some(target_name) = descriptor_reference_name(parameter_descriptor) else {
+            continue;
+        };
+        if !explicit_reference_bound_matches(
+            name,
+            &target_name,
+            &source.caller_method_parameters,
+            class_scope,
+            class_parameters,
+            budget,
+        )? {
+            continue;
+        }
+        let Ok(target_name) = std::str::from_utf8(&target_name) else {
+            continue;
+        };
+        let source_type = SignatureType::Class(jarde_reader::signature::ClassType {
+            segments: vec![jarde_reader::signature::ClassTypeSegment {
+                binary_name: target_name.as_bytes().to_vec(),
+                arguments: Vec::new(),
+            }],
+        });
+        cast_choices.push((
+            argument_index,
+            source_type,
+            jarde_java::ast::Type::Reference(target_name.replace('/', ".")),
+        ));
+    }
+    if cast_choices.is_empty() {
+        return Ok(None);
+    }
+
+    // Apply the closed set together, then remove each cast whose absence still leaves this target
+    // uniquely most-specific. This is polynomial in the descriptor arity and keeps only edits
+    // that the proof needs; there is no powerset search over JVM arguments.
+    let mut keep = vec![true; cast_choices.len()];
+    let mut candidate_actuals = actual_types.clone();
+    for (argument_index, source_type, _) in &cast_choices {
+        let Some(actual) = candidate_actuals.get_mut(*argument_index) else {
+            return Ok(None);
+        };
+        *actual = Some(source_type.clone());
+    }
+    let cast_resolution = overload_target_is_unique_most_specific(
+        selected,
+        overloads,
+        &candidate_actuals,
+        &caller_method_parameters,
+        class_scope,
+        class_parameters,
+        budget,
+    )?;
+    if cast_resolution != Some(true) {
+        return Ok(None);
+    }
+    loop {
+        let mut changed = false;
+        for (choice_index, (argument_index, _, _)) in cast_choices.iter().enumerate() {
+            if !keep[choice_index] {
+                continue;
+            }
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            let Some(original) = actual_types.get(*argument_index) else {
+                return Ok(None);
+            };
+            {
+                let Some(actual) = candidate_actuals.get_mut(*argument_index) else {
+                    return Ok(None);
+                };
+                *actual = original.clone();
+            }
+            if overload_target_is_unique_most_specific(
+                selected,
+                overloads,
+                &candidate_actuals,
+                &caller_method_parameters,
+                class_scope,
+                class_parameters,
+                budget,
+            )? == Some(true)
+            {
+                keep[choice_index] = false;
+                changed = true;
+            } else {
+                let Some(actual) = candidate_actuals.get_mut(*argument_index) else {
+                    return Ok(None);
+                };
+                *actual = Some(cast_choices[choice_index].1.clone());
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+    let solution: Vec<_> = keep
+        .iter()
+        .enumerate()
+        .filter_map(|(index, keep)| keep.then_some(index))
+        .collect();
+    if solution.is_empty() {
+        return Ok(None);
+    }
+    let opcode = match target.kind() {
+        jarde_java::facts::InvokeKind::Virtual => 0xb6,
+        jarde_java::facts::InvokeKind::Special => 0xb7,
+        jarde_java::facts::InvokeKind::Static => 0xb8,
+        jarde_java::facts::InvokeKind::Interface => return Ok(None),
+    };
+    Ok(Some(
+        solution
+            .into_iter()
+            .map(|choice| {
+                let (argument_index, _, ty) = &cast_choices[choice];
+                jarde_java::report::ClassSourceInvokeArgumentCast {
+                    call_bci,
+                    opcode,
+                    target: target.clone(),
+                    argument_index: *argument_index,
+                    ty: ty.clone(),
+                }
+            })
+            .collect(),
+    ))
+}
+
+fn overload_actual_method_parameters(
+    caller: &PhysicalMethodId,
+    actuals: &[SameClassOverloadActual],
+    budget: &mut Budget,
+) -> Result<Option<Vec<TypeParameter>>> {
+    let mut result: Option<Vec<TypeParameter>> = None;
+    for actual in actuals {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let Some(source) = &actual.source else {
+            continue;
+        };
+        if source.caller != *caller {
+            return Ok(None);
+        }
+        if result
+            .as_ref()
+            .is_some_and(|parameters| parameters != &source.caller_method_parameters)
+        {
+            return Ok(None);
+        }
+        result.get_or_insert_with(|| source.caller_method_parameters.clone());
+    }
+    Ok(result)
+}
+
+fn overload_parameter_descriptors(descriptor: &[u8]) -> Option<Vec<Vec<u8>>> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
+    facts
+        .parameters()
+        .iter()
+        .map(|parameter| parameter.bytes(descriptor).map(<[u8]>::to_vec))
+        .collect()
+}
+
+fn descriptor_reference_name(descriptor: &[u8]) -> Option<Vec<u8>> {
+    if descriptor.first() != Some(&b'L') || descriptor.last() != Some(&b';') {
+        return None;
+    }
+    let name = descriptor.get(1..descriptor.len().checked_sub(1)?)?;
+    (!name.is_empty() && !name.contains(&b'[')).then(|| name.to_vec())
+}
+
+fn explicit_reference_bound_matches(
+    variable: &[u8],
+    target: &[u8],
+    caller_method_parameters: &[TypeParameter],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            caller_method_parameters
+                .len()
+                .saturating_add(class_scope.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    let mut method_matches = caller_method_parameters
+        .iter()
+        .filter(|parameter| parameter.name == variable);
+    let binder = if let Some(parameter) = method_matches.next() {
+        if method_matches.next().is_some() {
+            return Ok(false);
+        }
+        parameter
+    } else {
+        let mut matches = class_scope
+            .iter()
+            .enumerate()
+            .filter(|(_, parameter)| parameter.name == variable);
+        let Some((index, _)) = matches.next() else {
+            return Ok(false);
+        };
+        if matches.next().is_some() {
+            return Ok(false);
+        }
+        let Some(parameter) = class_parameters.get(index) else {
+            return Ok(false);
+        };
+        parameter
+    };
+    for bound in std::iter::once(binder.class_bound.as_ref())
+        .flatten()
+        .chain(binder.interface_bounds.iter())
+    {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if matches!(bound, SignatureType::Class(class)
+            if signature_class_erasure(bound) == Some(target)
+                && !class.segments.is_empty())
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn overload_target_is_unique_most_specific(
+    selected: usize,
+    overloads: &[SameClassOverloadCandidate],
+    actuals: &[Option<SignatureType>],
+    caller_method_parameters: &[TypeParameter],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    budget: &mut Budget,
+) -> Result<Option<bool>> {
+    let mut applicable = Vec::new();
+    for (index, candidate) in overloads.iter().enumerate() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let applicability = overload_candidate_applicability(
+            candidate,
+            actuals,
+            caller_method_parameters,
+            class_scope,
+            class_parameters,
+            budget,
+        )?;
+        match applicability {
+            Some(Some(parameters)) => applicable.push((index, parameters)),
+            Some(None) => {}
+            None => return Ok(None),
+        }
+    }
+    let Some(selected_parameters) = applicable
+        .iter()
+        .find(|(index, _)| *index == selected)
+        .map(|(_, parameters)| parameters.clone())
+    else {
+        return Ok(Some(false));
+    };
+    for (index, parameters) in applicable {
+        budget.poll()?;
+        if index == selected {
+            continue;
+        }
+        let mut strict = false;
+        for (selected_type, other_type) in selected_parameters.iter().zip(&parameters) {
+            let selected_to_other = overload_source_type_assignable(
+                selected_type,
+                other_type,
+                caller_method_parameters,
+                class_scope,
+                class_parameters,
+                budget,
+                0,
+            )?;
+            let other_to_selected = overload_source_type_assignable(
+                other_type,
+                selected_type,
+                caller_method_parameters,
+                class_scope,
+                class_parameters,
+                budget,
+                0,
+            )?;
+            match (selected_to_other, other_to_selected) {
+                (Some(true), Some(false)) => strict = true,
+                (Some(true), Some(true)) => {}
+                (Some(false), _) | (_, Some(false)) => return Ok(Some(false)),
+                _ => return Ok(None),
+            }
+        }
+        if !strict {
+            return Ok(Some(false));
+        }
+    }
+    Ok(Some(true))
+}
+
+fn overload_candidate_applicability(
+    candidate: &SameClassOverloadCandidate,
+    actuals: &[Option<SignatureType>],
+    caller_method_parameters: &[TypeParameter],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    budget: &mut Budget,
+) -> Result<Option<Option<Vec<SignatureType>>>> {
+    if candidate.parameters.len() != actuals.len() {
+        return Ok(Some(None));
+    }
+    if !overload_candidate_binders_are_closed(candidate, budget)? {
+        return Ok(None);
+    }
+    let mut method_arguments: Vec<Option<SignatureType>> =
+        vec![None; candidate.method_parameters.len()];
+    for (parameter, actual) in candidate.parameters.iter().zip(actuals) {
+        budget.poll()?;
+        match actual {
+            Some(actual) => {
+                if !overload_infer_method_arguments(
+                    parameter,
+                    actual,
+                    &candidate.method_parameters,
+                    &mut method_arguments,
+                    class_scope,
+                    caller_method_parameters,
+                    budget,
+                    0,
+                )? {
+                    return Ok(Some(None));
+                }
+            }
+            None if !candidate.method_parameters.is_empty()
+                && overload_type_mentions_method_binder(
+                    parameter,
+                    &candidate.method_parameters,
+                    budget,
+                )? =>
+            {
+                // A generic invocation with a null argument can infer from target typing or other
+                // constraints. This proof does not model those constraints, so it cannot use null
+                // to declare the overload inapplicable.
+                return Ok(None);
+            }
+            None => {}
+        }
+    }
+    if method_arguments.iter().any(Option::is_none) {
+        return Ok(Some(None));
+    }
+    let method_arguments: Vec<_> = method_arguments.into_iter().flatten().collect();
+    for (index, argument) in method_arguments.iter().enumerate() {
+        let Some(binder) = candidate.method_parameters.get(index) else {
+            return Ok(Some(None));
+        };
+        match overload_method_argument_satisfies_bounds(
+            argument,
+            binder,
+            &candidate.method_parameters,
+            &method_arguments,
+            class_scope,
+            class_parameters,
+            caller_method_parameters,
+            budget,
+        )? {
+            Some(true) => {}
+            Some(false) => return Ok(Some(None)),
+            None => return Ok(None),
+        }
+    }
+    let mut instantiated = Vec::with_capacity(candidate.parameters.len());
+    for (parameter, actual) in candidate.parameters.iter().zip(actuals) {
+        let Some(parameter) = substitute_same_class_method_result(
+            parameter,
+            &candidate.method_parameters,
+            &method_arguments,
+            budget,
+            0,
+        )?
+        else {
+            return Ok(Some(None));
+        };
+        if let Some(actual) = actual {
+            match overload_source_type_assignable(
+                actual,
+                &parameter,
+                caller_method_parameters,
+                class_scope,
+                class_parameters,
+                budget,
+                0,
+            )? {
+                Some(true) => {}
+                Some(false) => return Ok(Some(None)),
+                None => return Ok(None),
+            }
+        } else if !overload_reference_type(&parameter) {
+            return Ok(Some(None));
+        }
+        instantiated.push(parameter);
+    }
+    Ok(Some(Some(instantiated)))
+}
+
+/// The overload proof models method inference only when each method binder occurs once as a
+/// complete formal parameter. Repeated/nested inference constraints can choose a common type or
+/// depend on target typing; treating those shapes as inapplicable would be an unsafe negative.
+fn overload_candidate_binders_are_closed(
+    candidate: &SameClassOverloadCandidate,
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            candidate
+                .parameters
+                .len()
+                .saturating_add(candidate.method_parameters.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    let mut names = std::collections::HashSet::new();
+    for binder in &candidate.method_parameters {
+        budget.poll()?;
+        if !names.insert(binder.name.as_slice()) {
+            return Ok(false);
+        }
+        let mut direct_count = 0;
+        for parameter in &candidate.parameters {
+            budget.poll()?;
+            if overload_type_mentions_method_binder(
+                parameter,
+                &candidate.method_parameters,
+                budget,
+            )? {
+                if matches!(parameter, SignatureType::TypeVariable(name) if name == &binder.name) {
+                    direct_count += 1;
+                } else {
+                    // The broad predicate identifies at least one method binder. A direct binder
+                    // can coexist with other independent parameters, but nested forms are opaque.
+                    let mentions_this =
+                        overload_type_mentions_one_method_binder(parameter, &binder.name, budget)?;
+                    if mentions_this {
+                        return Ok(false);
+                    }
+                }
+            }
+        }
+        if direct_count != 1 {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+fn overload_type_mentions_one_method_binder(
+    ty: &SignatureType,
+    name: &[u8],
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    match ty {
+        SignatureType::TypeVariable(candidate) => Ok(candidate == name),
+        SignatureType::Array(component) => {
+            overload_type_mentions_one_method_binder(component, name, budget)
+        }
+        SignatureType::Class(class) => {
+            for segment in &class.segments {
+                budget.poll()?;
+                for argument in &segment.arguments {
+                    let present = match argument {
+                        TypeArgument::Exact(ty)
+                        | TypeArgument::Extends(ty)
+                        | TypeArgument::Super(ty) => {
+                            overload_type_mentions_one_method_binder(ty, name, budget)?
+                        }
+                        TypeArgument::Any => false,
+                    };
+                    if present {
+                        return Ok(true);
+                    }
+                }
+            }
+            Ok(false)
+        }
+        SignatureType::Base(_) => Ok(false),
+    }
+}
+
+fn overload_method_argument_satisfies_bounds(
+    actual: &SignatureType,
+    binder: &TypeParameter,
+    method_parameters: &[TypeParameter],
+    method_arguments: &[SignatureType],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    caller_method_parameters: &[TypeParameter],
+    budget: &mut Budget,
+) -> Result<Option<bool>> {
+    let mut bounds = Vec::new();
+    for bound in std::iter::once(binder.class_bound.as_ref())
+        .flatten()
+        .chain(binder.interface_bounds.iter())
+    {
+        let Some(bound) = substitute_same_class_method_result(
+            bound,
+            method_parameters,
+            method_arguments,
+            budget,
+            0,
+        )?
+        else {
+            return Ok(None);
+        };
+        bounds.push(bound);
+    }
+    if bounds.is_empty() {
+        return Ok(overload_reference_type(actual).then_some(true));
+    }
+    let mut unknown = false;
+    for bound in &bounds {
+        match overload_source_type_assignable(
+            actual,
+            bound,
+            caller_method_parameters,
+            class_scope,
+            class_parameters,
+            budget,
+            0,
+        )? {
+            Some(true) => {}
+            Some(false) => return Ok(Some(false)),
+            None => unknown = true,
+        }
+    }
+    Ok((!unknown).then_some(true))
+}
+
+fn overload_infer_method_arguments(
+    parameter: &SignatureType,
+    actual: &SignatureType,
+    method_parameters: &[TypeParameter],
+    substitutions: &mut [Option<SignatureType>],
+    class_scope: &[TypeParameterErasure],
+    caller_method_parameters: &[TypeParameter],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if depth > 64 {
+        return Ok(false);
+    }
+    if let SignatureType::TypeVariable(name) = parameter {
+        let mut binders = method_parameters
+            .iter()
+            .enumerate()
+            .filter(|(_, binder)| binder.name == *name);
+        if let Some((index, _)) = binders.next() {
+            if binders.next().is_some() {
+                return Ok(false);
+            }
+            let Some(slot) = substitutions.get_mut(index) else {
+                return Ok(false);
+            };
+            if let Some(previous) = slot {
+                return Ok(signature_types_same_generic_call_binding(
+                    previous,
+                    actual,
+                    class_scope,
+                    caller_method_parameters,
+                ));
+            }
+            *slot = Some(actual.clone());
+            return Ok(true);
+        }
+    }
+    match (parameter, actual) {
+        (SignatureType::Array(parameter), SignatureType::Array(actual)) => {
+            overload_infer_method_arguments(
+                parameter,
+                actual,
+                method_parameters,
+                substitutions,
+                class_scope,
+                caller_method_parameters,
+                budget,
+                depth + 1,
+            )
+        }
+        (SignatureType::Class(parameter), SignatureType::Class(actual))
+            if parameter.segments.len() == actual.segments.len() =>
+        {
+            for (parameter, actual) in parameter.segments.iter().zip(&actual.segments) {
+                if parameter.binary_name != actual.binary_name
+                    || parameter.arguments.len() != actual.arguments.len()
+                {
+                    return Ok(true);
+                }
+                for (parameter, actual) in parameter.arguments.iter().zip(&actual.arguments) {
+                    let (TypeArgument::Exact(parameter), TypeArgument::Exact(actual)) =
+                        (parameter, actual)
+                    else {
+                        return Ok(false);
+                    };
+                    if !overload_infer_method_arguments(
+                        parameter,
+                        actual,
+                        method_parameters,
+                        substitutions,
+                        class_scope,
+                        caller_method_parameters,
+                        budget,
+                        depth + 1,
+                    )? {
+                        return Ok(false);
+                    }
+                }
+            }
+            Ok(true)
+        }
+        _ => Ok(true),
+    }
+}
+
+fn overload_type_mentions_method_binder(
+    ty: &SignatureType,
+    method_parameters: &[TypeParameter],
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    match ty {
+        SignatureType::TypeVariable(name) => Ok(method_parameters
+            .iter()
+            .any(|parameter| parameter.name == *name)),
+        SignatureType::Array(component) => {
+            overload_type_mentions_method_binder(component, method_parameters, budget)
+        }
+        SignatureType::Class(class) => {
+            for segment in &class.segments {
+                budget.poll()?;
+                for argument in &segment.arguments {
+                    let mentioned = match argument {
+                        TypeArgument::Exact(ty) => {
+                            overload_type_mentions_method_binder(ty, method_parameters, budget)?
+                        }
+                        TypeArgument::Any | TypeArgument::Extends(_) | TypeArgument::Super(_) => {
+                            true
+                        }
+                    };
+                    if mentioned {
+                        return Ok(true);
+                    }
+                }
+            }
+            Ok(false)
+        }
+        SignatureType::Base(_) => Ok(false),
+    }
+}
+
+fn overload_reference_type(ty: &SignatureType) -> bool {
+    matches!(
+        ty,
+        SignatureType::TypeVariable(_) | SignatureType::Class(_) | SignatureType::Array(_)
+    )
+}
+
+/// `Some(true/false)` is a closed answer; `None` means the finite hierarchy does not decide it.
+fn overload_source_type_assignable(
+    source: &SignatureType,
+    target: &SignatureType,
+    caller_method_parameters: &[TypeParameter],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &[TypeParameter],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<Option<bool>> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if depth > 64 {
+        return Ok(None);
+    }
+    if overload_shared_shadowed_binder_name(
+        source,
+        target,
+        caller_method_parameters,
+        class_scope,
+        budget,
+    )? {
+        // The same spelling can denote a caller method binder on one side and the class binder
+        // on the other. Without preserving those two binder identities through the candidate
+        // projection, equality would turn a shadowed `T` into a false overload match.
+        return Ok(None);
+    }
+    if signature_types_same_generic_call_binding(
+        source,
+        target,
+        class_scope,
+        caller_method_parameters,
+    ) {
+        return Ok(Some(true));
+    }
+    match (source, target) {
+        (SignatureType::Base(source), SignatureType::Base(target)) if source == target => {
+            Ok(Some(true))
+        }
+        // Primitive widening, boxing and unboxing affect JLS applicability. They are outside this
+        // reference-upcast proof, so an unequal/base-reference pair is unknown rather than a
+        // negative applicability fact.
+        (SignatureType::Base(_), _) | (_, SignatureType::Base(_)) => Ok(None),
+        (SignatureType::Array(source), SignatureType::Array(target)) => {
+            overload_source_type_assignable(
+                source,
+                target,
+                caller_method_parameters,
+                class_scope,
+                class_parameters,
+                budget,
+                depth + 1,
+            )
+        }
+        (SignatureType::Array(_), SignatureType::Class(target)) => Ok(signature_class_erasure(
+            &SignatureType::Class(target.clone()),
+        )
+        .map(|name| {
+            name == b"java/lang/Object"
+                || name == b"java/lang/Cloneable"
+                || name == b"java/io/Serializable"
+        })),
+        (SignatureType::Class(source), SignatureType::Class(target)) => {
+            if source == target {
+                return Ok(Some(true));
+            }
+            let source_signature = SignatureType::Class(source.clone());
+            let Some(source_name) = signature_class_erasure(&source_signature) else {
+                return Ok(None);
+            };
+            let target_signature = SignatureType::Class(target.clone());
+            let Some(target_name) = signature_class_erasure(&target_signature) else {
+                return Ok(None);
+            };
+            if target_name == b"java/lang/Object" {
+                return Ok(Some(true));
+            }
+            // The one parameterized JDK edge in this closed proof is String's actual Java 8
+            // `Comparable<String>` header. Wildcard conversions remain unknown below.
+            if source_name == b"java/lang/String"
+                && target_name == b"java/lang/Comparable"
+                && target.segments.last().is_some_and(|segment| {
+                    matches!(
+                        segment.arguments.as_slice(),
+                        [TypeArgument::Exact(SignatureType::Class(string))]
+                            if signature_class_erasure(&SignatureType::Class(string.clone()))
+                                == Some(b"java/lang/String".as_slice())
+                                && string.segments.iter().all(|segment| segment.arguments.is_empty())
+                    )
+                })
+            {
+                return Ok(Some(true));
+            }
+            if source_name == target_name {
+                if target
+                    .segments
+                    .iter()
+                    .all(|segment| segment.arguments.is_empty())
+                {
+                    return Ok(Some(true));
+                }
+                if target.segments.iter().any(|segment| {
+                    segment.arguments.iter().any(|argument| {
+                        matches!(
+                            argument,
+                            TypeArgument::Any | TypeArgument::Extends(_) | TypeArgument::Super(_)
+                        )
+                    })
+                }) {
+                    return Ok(None);
+                }
+                return Ok(Some(false));
+            }
+            let raw_relation = closed_jdk8_reference_relation(source_name, target_name);
+            if source
+                .segments
+                .iter()
+                .any(|segment| !segment.arguments.is_empty())
+                || target
+                    .segments
+                    .iter()
+                    .any(|segment| !segment.arguments.is_empty())
+            {
+                return Ok(match raw_relation {
+                    Some(false) => Some(false),
+                    Some(true) | None => None,
+                });
+            }
+            Ok(raw_relation)
+        }
+        (SignatureType::TypeVariable(name), SignatureType::Class(target)) => {
+            let target = SignatureType::Class(target.clone());
+            if signature_class_erasure(&target).as_deref() == Some(b"java/lang/Object") {
+                return Ok(Some(true));
+            }
+            let Some(binder) = overload_find_binder(
+                name,
+                caller_method_parameters,
+                class_scope,
+                class_parameters,
+                budget,
+            )?
+            else {
+                return Ok(None);
+            };
+            let mut bounds = Vec::new();
+            bounds.extend(binder.class_bound.iter());
+            bounds.extend(binder.interface_bounds.iter());
+            if bounds.is_empty() {
+                return Ok(Some(false));
+            }
+            let mut unknown = false;
+            for bound in bounds {
+                let relation = overload_source_type_assignable(
+                    bound,
+                    &target,
+                    caller_method_parameters,
+                    class_scope,
+                    class_parameters,
+                    budget,
+                    depth + 1,
+                )?;
+                match relation {
+                    Some(true) => return Ok(Some(true)),
+                    Some(false) => {}
+                    None => unknown = true,
+                }
+            }
+            Ok((!unknown).then_some(false))
+        }
+        (SignatureType::TypeVariable(_), SignatureType::Array(_)) => Ok(Some(false)),
+        // Different variables can still be related through their bounds (for example
+        // `U extends T`). This helper does not close variable-to-variable bounds, so it cannot
+        // use this pair as negative overload-applicability evidence.
+        (SignatureType::TypeVariable(_), SignatureType::TypeVariable(_)) => Ok(None),
+        (SignatureType::Class(_), SignatureType::Array(_)) => Ok(Some(false)),
+        (SignatureType::Array(_), SignatureType::TypeVariable(_)) => Ok(Some(false)),
+        (SignatureType::Class(_), SignatureType::TypeVariable(_)) => Ok(Some(false)),
+    }
+}
+
+fn overload_shared_shadowed_binder_name(
+    source: &SignatureType,
+    target: &SignatureType,
+    caller_method_parameters: &[TypeParameter],
+    class_scope: &[TypeParameterErasure],
+    budget: &mut Budget,
+) -> Result<bool> {
+    let mut source_names = std::collections::HashSet::new();
+    let mut target_names = std::collections::HashSet::new();
+    overload_collect_type_variables(source, &mut source_names, budget)?;
+    overload_collect_type_variables(target, &mut target_names, budget)?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(source_names.len()).unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    Ok(source_names.iter().any(|name| {
+        target_names.contains(name)
+            && caller_method_parameters
+                .iter()
+                .any(|parameter| parameter.name.as_slice() == *name)
+            && class_scope
+                .iter()
+                .any(|parameter| parameter.name.as_slice() == *name)
+    }))
+}
+
+fn overload_collect_type_variables<'a>(
+    ty: &'a SignatureType,
+    names: &mut std::collections::HashSet<&'a [u8]>,
+    budget: &mut Budget,
+) -> Result<()> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    match ty {
+        SignatureType::TypeVariable(name) => {
+            names.insert(name);
+        }
+        SignatureType::Array(component) => {
+            overload_collect_type_variables(component, names, budget)?;
+        }
+        SignatureType::Class(class) => {
+            for segment in &class.segments {
+                budget.poll()?;
+                for argument in &segment.arguments {
+                    match argument {
+                        TypeArgument::Exact(ty)
+                        | TypeArgument::Extends(ty)
+                        | TypeArgument::Super(ty) => {
+                            overload_collect_type_variables(ty, names, budget)?;
+                        }
+                        TypeArgument::Any => {}
+                    }
+                }
+            }
+        }
+        SignatureType::Base(_) => {}
+    }
+    Ok(())
+}
+
+fn overload_find_binder<'a>(
+    name: &[u8],
+    caller_method_parameters: &'a [TypeParameter],
+    class_scope: &[TypeParameterErasure],
+    class_parameters: &'a [TypeParameter],
+    budget: &mut Budget,
+) -> Result<Option<&'a TypeParameter>> {
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            caller_method_parameters
+                .len()
+                .saturating_add(class_scope.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    let mut method = caller_method_parameters
+        .iter()
+        .filter(|parameter| parameter.name == name);
+    if let Some(parameter) = method.next() {
+        return Ok(method.next().is_none().then_some(parameter));
+    }
+    let mut class = class_scope
+        .iter()
+        .enumerate()
+        .filter(|(_, parameter)| parameter.name == name);
+    let Some((index, _)) = class.next() else {
+        return Ok(None);
+    };
+    if class.next().is_some() {
+        return Ok(None);
+    }
+    Ok(class_parameters.get(index))
+}
+
+/// Closed Java 8 header facts used by this proof: `Number` implements `Serializable` but not
+/// `Comparable`; `String` implements `Serializable`, `Comparable` and `CharSequence`; all four
+/// types inherit from `Object`. The caller's Java source dialect is Java 8, so later JDK interfaces
+/// such as `Constable` and `ConstantDesc` are deliberately absent. `None` is unknown, never a
+/// negative assignability claim.
+fn closed_jdk8_reference_relation(source: &[u8], target: &[u8]) -> Option<bool> {
+    const OBJECT: &[u8] = b"java/lang/Object";
+    const NUMBER: &[u8] = b"java/lang/Number";
+    const STRING: &[u8] = b"java/lang/String";
+    const COMPARABLE: &[u8] = b"java/lang/Comparable";
+    const SERIALIZABLE: &[u8] = b"java/io/Serializable";
+    const CHAR_SEQUENCE: &[u8] = b"java/lang/CharSequence";
+    if source == target || target == OBJECT {
+        return Some(true);
+    }
+    let closed = [
+        OBJECT,
+        NUMBER,
+        STRING,
+        COMPARABLE,
+        SERIALIZABLE,
+        CHAR_SEQUENCE,
+    ];
+    if !closed.contains(&source) || !closed.contains(&target) {
+        return None;
+    }
+    let assignable = match source {
+        NUMBER => target == SERIALIZABLE,
+        STRING => matches!(target, COMPARABLE | SERIALIZABLE | CHAR_SEQUENCE),
+        COMPARABLE | SERIALIZABLE | CHAR_SEQUENCE => false,
+        OBJECT => false,
+        _ => false,
+    };
+    Some(assignable)
+}
+
+/// Split generic candidates into undirected dependency components and topologically order each
+/// acyclic component with callees before callers. This is a bounded DAG pass, not a type fixpoint:
+/// candidates outside a dependency component remain independent and can still publish.
+pub(crate) fn generic_call_components(
+    candidates: &[usize],
+    dependencies: &[GenericCallDependency],
+    budget: &mut Budget,
+) -> Result<Vec<GenericCallComponent>> {
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(candidates.len().saturating_add(dependencies.len())).unwrap_or(u64::MAX),
+    )?;
+    let mut candidate_set = std::collections::BTreeSet::new();
+    for candidate in candidates {
+        budget.poll()?;
+        if !candidate_set.insert(*candidate) {
+            return Err(Error::invalid_input(
+                "generic_call_candidate_duplicate",
+                "one physical method was staged more than once",
+            ));
+        }
+    }
+    let mut adjacency = std::collections::BTreeMap::<usize, Vec<usize>>::new();
+    let mut callee_dependencies = std::collections::BTreeMap::<usize, Vec<usize>>::new();
+    for candidate in &candidate_set {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        adjacency.entry(*candidate).or_default();
+        callee_dependencies.entry(*candidate).or_default();
+    }
+    for edge in dependencies {
+        budget.poll()?;
+        if !candidate_set.contains(&edge.caller) || !candidate_set.contains(&edge.callee) {
+            continue;
+        }
+        adjacency.entry(edge.caller).or_default().push(edge.callee);
+        adjacency.entry(edge.callee).or_default().push(edge.caller);
+        callee_dependencies
+            .entry(edge.caller)
+            .or_default()
+            .push(edge.callee);
+    }
+    for neighbors in adjacency.values_mut() {
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(neighbors.len()).unwrap_or(u64::MAX),
+        )?;
+        neighbors.sort_unstable();
+        neighbors.dedup();
+    }
+    for dependencies in callee_dependencies.values_mut() {
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(dependencies.len()).unwrap_or(u64::MAX),
+        )?;
+        dependencies.sort_unstable();
+        dependencies.dedup();
+    }
+
+    let mut remaining = candidate_set;
+    let mut components = Vec::new();
+    while let Some(start) = remaining.first().copied() {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let mut pending = vec![start];
+        let mut members = Vec::new();
+        remaining.remove(&start);
+        while let Some(member) = pending.pop() {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            members.push(member);
+            if let Some(neighbors) = adjacency.get(&member) {
+                for neighbor in neighbors {
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if remaining.remove(neighbor) {
+                        pending.push(*neighbor);
+                    }
+                }
+            }
+        }
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(members.len()).unwrap_or(u64::MAX),
+        )?;
+        members.sort_unstable();
+
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(members.len()).unwrap_or(u64::MAX),
+        )?;
+        let mut indegree = std::collections::BTreeMap::new();
+        let member_set: std::collections::BTreeSet<_> = members.iter().copied().collect();
+        for member in &members {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            let mut count = 0usize;
+            for callee in callee_dependencies.get(member).into_iter().flatten() {
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                if member_set.contains(callee) {
+                    count += 1;
+                }
+            }
+            indegree.insert(*member, count);
+        }
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(indegree.len()).unwrap_or(u64::MAX),
+        )?;
+        let mut ready: std::collections::BTreeSet<usize> = indegree
+            .iter()
+            .filter_map(|(member, count)| (*count == 0).then_some(*member))
+            .collect();
+        let mut order = Vec::with_capacity(members.len());
+        while let Some(callee) = ready.pop_first() {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            order.push(callee);
+            for caller in adjacency.get(&callee).into_iter().flatten() {
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                let depends_on = callee_dependencies
+                    .get(caller)
+                    .is_some_and(|callees| callees.binary_search(&callee).is_ok());
+                if !depends_on {
+                    continue;
+                }
+                let Some(count) = indegree.get_mut(caller) else {
+                    continue;
+                };
+                *count = count.saturating_sub(1);
+                if *count == 0 {
+                    ready.insert(*caller);
+                }
+            }
+        }
+        let order = (order.len() == members.len()).then_some(order);
+        components.push(GenericCallComponent { members, order });
+    }
+    Ok(components)
 }
 
 /// Find a same-class constructor call whose receiver is this object's uninitialized `this`, or
@@ -2364,13 +4561,12 @@ fn descriptor_parameter_count(descriptor: &[u8]) -> Option<usize> {
 /// The proof is deliberately bounded to what the selected class alone can close: the class's own
 /// physical parent is `java/lang/Object` and it implements no interfaces (no external same-name
 /// candidate can compete), the name is not one of `Object`'s own instance methods, and every
-/// same-name overload the class declares is arities apart from the candidate so no call site's
-/// applicability can move between them (variable-arity members are excluded outright because a
-/// varargs member applies at every arity). Under those conditions the descriptor a call site's
-/// pool entry states *is* the physical target — the reader proved the projected header erases to
-/// exactly that descriptor — so every site naming the candidate stays bound, and a pool entry no
-/// supported source consumed blocks nothing. A site, a sibling, or a source outside these shapes
-/// keeps the existing refusal.
+/// same-name declaration is represented uniquely and can be named in source. With no same-arity
+/// sibling, the physical descriptor closes binding directly. A real invoke to any member of the
+/// closed same-arity set yields [`SameClassBinding::OverloadPending`], including for a generic
+/// sibling that has no direct incoming invoke of its own; only the complete staged overload proof
+/// may promote it before the component commits. Variable-arity/bridge members, unexplained sites,
+/// non-body references, or incomplete inventories remain refused.
 pub(crate) fn prove_same_class_method_binding(
     class_internal: &[u8],
     class_superclass: Option<&[u8]>,
@@ -2382,7 +4578,13 @@ pub(crate) fn prove_same_class_method_binding(
 ) -> Result<SameClassBinding> {
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    let member = &method_headers[member_index];
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(method_headers.len()).unwrap_or(u64::MAX),
+    )?;
+    let Some(member) = method_headers.get(member_index) else {
+        return Ok(SameClassBinding::Unproved);
+    };
     let name = member.name.raw().0.as_slice();
     let descriptor = member.descriptor.raw().0.as_slice();
     // The visible candidate set closes only over the selected class and the platform root.
@@ -2392,58 +4594,124 @@ pub(crate) fn prove_same_class_method_binding(
     {
         return Ok(SameClassBinding::Unproved);
     }
-    // A same-name sibling competes for source overload resolution; this slice admits one only
-    // when the declared arities cannot overlap.
-    let arity = descriptor_parameter_count(descriptor);
-    for (index, sibling) in method_headers.iter().enumerate() {
-        if index == member_index || sibling.name.raw().0.as_slice() != name {
-            continue;
-        }
-        let sibling_descriptor = sibling.descriptor.raw().0.as_slice();
-        if sibling_descriptor == descriptor {
-            return Ok(SameClassBinding::Unproved);
-        }
-        if sibling.access_flags & ACC_VARARGS != 0 || member.access_flags & ACC_VARARGS != 0 {
-            return Ok(SameClassBinding::Unproved);
-        }
-        if arity.is_none() || descriptor_parameter_count(sibling_descriptor) == arity {
-            return Ok(SameClassBinding::Unproved);
-        }
+    if name != b"<init>" && !std::str::from_utf8(name).is_ok_and(is_java_identifier) {
+        return Ok(SameClassBinding::Unproved);
     }
     if !facts.complete {
         return Ok(SameClassBinding::Unproved);
     }
     budget.charge(
         CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(facts.invokes.len() + facts.member_refs.len()).unwrap_or(u64::MAX),
+        u64::try_from(method_headers.len())
+            .unwrap_or(u64::MAX)
+            .saturating_mul(u64::try_from(method_headers.len()).unwrap_or(u64::MAX)),
     )?;
-    budget.poll()?;
-    for use_site in facts.invokes {
-        if use_site.owner != class_internal || use_site.name != name {
+
+    // A source overload set cannot contain bytecode-only bridge/synthetic declarations or
+    // variable-arity members: either can affect applicability without a source declaration that
+    // the final staged set can faithfully represent. Also require every descriptor to be valid
+    // and unique, so an invoke can be joined to exactly one physical header.
+    let mut overload_competition = false;
+    let arity = descriptor_parameter_count(descriptor);
+    for (index, sibling) in method_headers.iter().enumerate() {
+        budget.poll()?;
+        if sibling.name.raw().0.as_slice() != name {
             continue;
         }
-        if use_site.descriptor == descriptor {
-            continue;
-        }
-        // A site of the same name but another descriptor targets a sibling; a descriptor no
-        // declared sibling explains is a source this inventory cannot account for.
-        let explained = method_headers.iter().enumerate().any(|(index, header)| {
-            index != member_index
-                && header.name.raw().0.as_slice() == name
-                && header.descriptor.raw().0.as_slice() == use_site.descriptor
-        });
-        if !explained {
-            return Ok(SameClassBinding::Unproved);
-        }
-    }
-    for reference in facts.member_refs {
-        if reference.method
-            && reference.owner == class_internal
-            && reference.name == name
-            && reference.descriptor == descriptor
+        let sibling_descriptor = sibling.descriptor.raw().0.as_slice();
+        if sibling.access_flags & (ACC_VARARGS | 0x0040 | 0x1000) != 0
+            || descriptor_parameter_count(sibling_descriptor).is_none()
         {
             return Ok(SameClassBinding::Unproved);
         }
+        if method_headers[..index].iter().any(|prior| {
+            prior.name.raw().0.as_slice() == name
+                && prior.descriptor.raw().0.as_slice() == sibling_descriptor
+        }) {
+            return Ok(SameClassBinding::Unproved);
+        }
+        if index != member_index && descriptor_parameter_count(sibling_descriptor) == arity {
+            overload_competition = true;
+        }
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(facts.invokes.len() + facts.member_refs.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(
+                u64::try_from(facts.invokes.len())
+                    .unwrap_or(u64::MAX)
+                    .saturating_mul(u64::try_from(method_headers.len()).unwrap_or(u64::MAX)),
+            )
+            .saturating_add(
+                u64::try_from(facts.member_refs.len())
+                    .unwrap_or(u64::MAX)
+                    .saturating_mul(u64::try_from(method_headers.len()).unwrap_or(u64::MAX)),
+            ),
+    )?;
+    budget.poll()?;
+    let mut same_arity_invokes = 0usize;
+    for use_site in facts.invokes {
+        budget.poll()?;
+        if use_site.name != name {
+            continue;
+        }
+        if use_site.owner != class_internal {
+            if overload_competition {
+                return Ok(SameClassBinding::Unproved);
+            }
+            continue;
+        }
+        let mut matched = method_headers.iter().filter(|header| {
+            header.name.raw().0.as_slice() == name
+                && header.descriptor.raw().0.as_slice() == use_site.descriptor
+        });
+        let Some(target_header) = matched.next() else {
+            return Ok(SameClassBinding::Unproved);
+        };
+        if matched.next().is_some() {
+            return Ok(SameClassBinding::Unproved);
+        }
+        let opcode_matches = if is_static(target_header.access_flags) {
+            use_site.opcode == 0xb8
+        } else {
+            matches!(use_site.opcode, 0xb6 | 0xb7)
+        };
+        if !opcode_matches {
+            return Ok(SameClassBinding::Unproved);
+        }
+        if descriptor_parameter_count(use_site.descriptor.as_slice()) == arity {
+            same_arity_invokes = same_arity_invokes.saturating_add(1);
+        }
+    }
+    for reference in facts.member_refs {
+        budget.poll()?;
+        if !reference.method || reference.name != name {
+            continue;
+        }
+        if reference.owner != class_internal {
+            if overload_competition {
+                return Ok(SameClassBinding::Unproved);
+            }
+            continue;
+        }
+        let mut matched = method_headers.iter().filter(|header| {
+            header.name.raw().0.as_slice() == name
+                && header.descriptor.raw().0.as_slice() == reference.descriptor
+        });
+        if matched.next().is_none() || matched.next().is_some() {
+            return Ok(SameClassBinding::Unproved);
+        }
+        // Method handles/bootstrap references are not an invoke site whose source overload can
+        // be checked by the generic-call transaction.
+        return Ok(SameClassBinding::Unproved);
+    }
+    if overload_competition {
+        return Ok(if same_arity_invokes > 0 {
+            SameClassBinding::OverloadPending
+        } else {
+            SameClassBinding::Unproved
+        });
     }
     Ok(SameClassBinding::Proven)
 }
@@ -2534,7 +4802,7 @@ fn class_scope_variable(name: &[u8], class_scope: &[TypeParameterErasure]) -> bo
     class_scope.iter().any(|parameter| parameter.name == name)
 }
 
-fn charge_signature_type_proof(ty: &SignatureType, budget: &mut Budget) -> Result<u64> {
+pub(crate) fn charge_signature_type_proof(ty: &SignatureType, budget: &mut Budget) -> Result<u64> {
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
     match ty {
@@ -2576,6 +4844,9 @@ fn charge_field_write_source_proof(
     let target_variables = charge_signature_type_proof(target, budget)?;
     match source {
         SameClassFieldWriteSource::Null => {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        }
+        SameClassFieldWriteSource::StringConstant { .. } => {
             budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         }
         SameClassFieldWriteSource::RawAllocation { owner } => {
@@ -2937,6 +5208,7 @@ fn raw_field_write_source_assignable(
     )?;
     match source {
         SameClassFieldWriteSource::Null => Ok(true),
+        SameClassFieldWriteSource::StringConstant { .. } => Ok(false),
         SameClassFieldWriteSource::RawAllocation { owner } => {
             budget.charge(
                 CountedBudgetDimension::AnalysisSteps,
@@ -3035,6 +5307,7 @@ fn field_write_source_assignable(
 ) -> bool {
     match source {
         SameClassFieldWriteSource::Null => true,
+        SameClassFieldWriteSource::StringConstant { .. } => false,
         SameClassFieldWriteSource::RawAllocation { owner } => {
             if !matches!(target, SignatureType::Class(_)) || !class_type_arguments_present(target) {
                 return false;
@@ -3167,6 +5440,69 @@ pub(crate) fn project_method_signature(
         return project_member_inner_descriptor_path(record, candidate, budget)
             .map(|()| SignatureProjection::Settled);
     }
+    let mut projection = record.take_generic_call_projection_state();
+    let previous_constructor_tail = projection.enum_constructor_source_tail;
+    let previous_constructor_erasure_refused =
+        projection.enum_constructor_signature_erasure_refused;
+    let result = project_method_signature_with_state(
+        record,
+        &mut projection,
+        member,
+        attributes,
+        candidate,
+        constructor_candidate,
+        physical_fields,
+        bytes,
+        pool,
+        class_internal,
+        class_flags,
+        class_superclass,
+        class_interfaces,
+        class_scope,
+        class_signature_present,
+        resolved_inner_classes,
+        same_class,
+        unproved_this_delegate_bci,
+        budget,
+    );
+    if result.is_err() {
+        projection.enum_constructor_source_tail = previous_constructor_tail;
+        projection.enum_constructor_signature_erasure_refused =
+            previous_constructor_erasure_refused;
+    }
+    record.install_generic_call_projection_state(projection);
+    result
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn project_method_signature_with_state(
+    record: &ClassSourceMethod,
+    projection: &mut GenericCallProjectionState,
+    member: &MemberHeader,
+    attributes: &MemberAttributes,
+    candidate: Option<&GenericReturnCandidate>,
+    constructor_candidate: Option<&GenericConstructorCandidate>,
+    physical_fields: &[MemberHeader],
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    class_internal: &[u8],
+    class_flags: u16,
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    class_scope: &[TypeParameterErasure],
+    class_signature_present: bool,
+    resolved_inner_classes: &[ResolvedInnerClass],
+    same_class: SameClassBinding,
+    unproved_this_delegate_bci: Option<u32>,
+    budget: &mut Budget,
+) -> Result<SignatureProjection> {
+    let shells = attribute_shells(member, b"Signature");
+    if shells.is_empty() {
+        return Err(Error::unsupported(
+            "generic_call_projection_state_requires_signature",
+            "a generic-call overlay can only project a member with a Signature attribute",
+        ));
+    }
     /// The closure's own two answers: a projection to publish, or a same-class entry this call
     /// must hold for the class-level proof.
     enum MethodProjection {
@@ -3186,7 +5522,7 @@ pub(crate) fn project_method_signature(
             .0;
         let parsed = parse_method_signature(&raw, budget)?;
         let name = &member.name.raw().0;
-        record.enum_constructor_source_tail = if shells.len() == 1
+        projection.enum_constructor_source_tail = if shells.len() == 1
             && name.as_slice() == b"<init>"
             && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;II)V"
             && parsed.type_parameters.is_empty()
@@ -3245,7 +5581,13 @@ pub(crate) fn project_method_signature(
             && parsed.type_parameters.is_empty()
             && class_signature_present
             && !class_scope.is_empty()
-            && constructor_candidate.is_some();
+            && (constructor_candidate.is_some()
+                || projection
+                    .same_class_generic_body_proof
+                    .as_ref()
+                    .is_some_and(|proof| {
+                        proof.constructor_call_bci.is_some() && proof.constructor_init.is_some()
+                    }));
         let generic_constructor =
             name == b"<init>" && (!parsed.type_parameters.is_empty() || class_scope_constructor);
         if no_body_generic {
@@ -3289,7 +5631,7 @@ pub(crate) fn project_method_signature(
             && attributes.throws_raw.is_empty()
             && matches!(candidate, Some(GenericReturnCandidate {
                 parameters,
-                value: GenericReturnValue::VoidBody,
+                value: GenericReturnValue::VoidBody { .. },
             }) if !parameters.is_empty());
         let body_ordinary_parameterized_null_return = matches!(
             record.outcome,
@@ -3335,6 +5677,9 @@ pub(crate) fn project_method_signature(
                     return Ok(MethodProjection::Deferred);
                 }
                 SameClassBinding::Proven => {}
+                SameClassBinding::OverloadPending => {
+                    return Ok(MethodProjection::Deferred);
+                }
                 SameClassBinding::Unproved => {
                     return Err(Error::unsupported("generic_call_binding_unproved", "a same-class Methodref names this method or an adjacent overload"));
                 }
@@ -3352,10 +5697,12 @@ pub(crate) fn project_method_signature(
             (
                 generic_constructor_declaration(
                     record,
+                    projection,
                     attributes,
                     &parsed,
                     &erasure.type_parameters,
                     constructor_candidate,
+                    projection.same_class_generic_body_proof.as_ref(),
                     physical_fields,
                     class_internal,
                     class_flags,
@@ -3368,8 +5715,13 @@ pub(crate) fn project_method_signature(
                 if class_scope_constructor
                     && constructor_candidate
                         .is_some_and(|candidate| !candidate.field_writes.is_empty())
+                    || class_scope_constructor
+                        && projection
+                            .same_class_generic_body_proof
+                            .as_ref()
+                            .is_some_and(|proof| !proof.field_write_sites.is_empty())
                 {
-                    "same-run AST/Code/SSA direct field-initializer proof"
+                    "same-run AST/Code/SSA constructor body proof"
                 } else if class_scope_constructor {
                     "same-run AST/Code/SSA empty Object-constructor proof"
                 } else {
@@ -3379,6 +5731,7 @@ pub(crate) fn project_method_signature(
         } else if no_body_generic {
             let declaration = no_body_generic_method_declaration(
                 record,
+                projection,
                 attributes,
                 &parsed,
                 &erasure.type_parameters,
@@ -3389,6 +5742,7 @@ pub(crate) fn project_method_signature(
         } else if body_method_local_generic_throws {
             let declaration = body_method_local_generic_throws_declaration(
                 record,
+                projection,
                 attributes,
                 &parsed,
                 candidate,
@@ -3407,6 +5761,7 @@ pub(crate) fn project_method_signature(
         } else if body_generic_null_return {
             let declaration = generic_null_instance_method_declaration(
                 record,
+                projection,
                 attributes,
                 &parsed,
                 candidate,
@@ -3425,6 +5780,7 @@ pub(crate) fn project_method_signature(
         } else if body_generic_void {
             let declaration = generic_void_body_declaration(
                 record,
+                projection,
                 attributes,
                 &parsed,
                 candidate,
@@ -3440,6 +5796,7 @@ pub(crate) fn project_method_signature(
         } else if body_ordinary_parameterized_null_return {
             let declaration = ordinary_parameterized_declaration(
                 record,
+                Some(projection),
                 attributes,
                 &parsed,
                 candidate,
@@ -3458,6 +5815,7 @@ pub(crate) fn project_method_signature(
         } else if static_method_local_generic_throws {
             let declaration = static_method_local_generic_throws_declaration(
                 record,
+                projection,
                 attributes,
                 &parsed,
                 candidate,
@@ -3486,6 +5844,7 @@ pub(crate) fn project_method_signature(
             );
             let declaration = ordinary_parameterized_declaration(
                 record,
+                Some(projection),
                 attributes,
                 &parsed,
                 candidate,
@@ -3510,16 +5869,31 @@ pub(crate) fn project_method_signature(
                     "same-run direct Code/SSA/Program and LambdaMetafactory target proof"
                 } else if matches!(
                     candidate.map(|candidate| &candidate.value),
-                    Some(GenericReturnValue::VoidBody)
+                    Some(GenericReturnValue::VoidBody { .. })
                 ) {
                     "same-run AST/Code/SSA straight-line void body proof"
                 } else {
                     "same-run AST/SSA parameter-return proof"
                 },
             )
+        } else if let Some(body_proof) = projection.same_class_generic_body_proof.as_ref() {
+            (
+                generic_method_body_declaration(
+                    record,
+                    projection,
+                    attributes,
+                    &parsed,
+                    body_proof,
+                    class_scope,
+                    budget,
+                )?,
+                "same-run complete AST/Code/SSA formal and return-consumer proof",
+            )
         } else {
             (
-                generic_method_declaration(record, attributes, &parsed, candidate, false, None)?,
+                generic_method_declaration(
+                    record, projection, attributes, &parsed, candidate, false, None,
+                )?,
                 "same-run AST/SSA parameter-return proof",
             )
         };
@@ -3533,24 +5907,115 @@ pub(crate) fn project_method_signature(
             } else {
                 proof.to_owned()
             };
-            record
-                .project_generic(declaration, &signature, &proof, budget)
+            projection
+                .project_generic(record, declaration, &signature, &proof, budget)
                 .map(|()| SignatureProjection::Settled)
         }
         Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
         Err(error) => {
-            record.enum_constructor_signature_erasure_refused =
-                record.enum_constructor_source_tail.is_recognized()
+            projection.enum_constructor_signature_erasure_refused =
+                projection.enum_constructor_source_tail.is_recognized()
                     && matches!(
                         &error,
                         Error::InvalidInput { code, .. }
                             if code == "jvm_signature_erasure_mismatch"
                     );
-            record
-                .refuse_generic(&error.to_string(), budget)
+            projection
+                .refuse_generic(record, &error.to_string(), budget)
                 .map(|()| SignatureProjection::Settled)
         }
     }
+}
+
+pub(crate) fn staged_same_class_generic_method_contract_with_state(
+    record: &ClassSourceMethod,
+    state: &GenericCallProjectionState,
+    member: &MemberHeader,
+    attributes: &MemberAttributes,
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    class_scope: &[TypeParameterErasure],
+    budget: &mut Budget,
+) -> Result<Option<SameClassGenericMethodContract>> {
+    staged_same_class_generic_method_contract_facts(
+        record,
+        state.generic_signature_projected,
+        state.declaration.is_some(),
+        member,
+        attributes,
+        bytes,
+        pool,
+        class_scope,
+        budget,
+    )
+}
+
+fn staged_same_class_generic_method_contract_facts(
+    record: &ClassSourceMethod,
+    generic_signature_projected: bool,
+    declaration_present: bool,
+    member: &MemberHeader,
+    attributes: &MemberAttributes,
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    class_scope: &[TypeParameterErasure],
+    budget: &mut Budget,
+) -> Result<Option<SameClassGenericMethodContract>> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if !generic_signature_projected
+        || record.item.identity.name.0 != member.name.raw().0
+        || record.item.identity.descriptor.0 != member.descriptor.raw().0
+        || !declaration_present
+        || !matches!(
+            &record.outcome,
+            ClassSourceOutcome::Recovered { .. } | ClassSourceOutcome::NoBody
+        )
+    {
+        return Ok(None);
+    }
+    same_class_generic_method_contract_from_signature(
+        record.item.identity.clone(),
+        member,
+        attributes,
+        bytes,
+        pool,
+        class_scope,
+        budget,
+    )
+}
+
+pub(crate) fn same_class_generic_method_contract_from_signature(
+    method: PhysicalMethodId,
+    member: &MemberHeader,
+    attributes: &MemberAttributes,
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    class_scope: &[TypeParameterErasure],
+    budget: &mut Budget,
+) -> Result<Option<SameClassGenericMethodContract>> {
+    let shells = attribute_shells(member, b"Signature");
+    if shells.len() != 1 {
+        return Ok(None);
+    }
+    let facts = attribute_facts(bytes, &shells, pool, budget)?;
+    let Some(raw) = facts.signature.map(|signature| signature.0) else {
+        return Ok(None);
+    };
+    let parsed = parse_method_signature(&raw, budget)?;
+    prove_method_signature_erasure_with_class_scope(
+        &parsed,
+        &member.descriptor.raw().0,
+        &attributes.throws_raw,
+        class_scope,
+        budget,
+    )?;
+    Ok(Some(SameClassGenericMethodContract {
+        method,
+        method_parameters: parsed.type_parameters,
+        parameters: parsed.parameters,
+        result: parsed.result,
+    }))
 }
 
 /// Project the two method Signatures that close the first generic enclosing-member family slice.
@@ -3677,6 +6142,7 @@ pub(crate) fn project_member_family_generic_signature(
         staged.markers.clear();
         ordinary_parameterized_declaration(
             &staged,
+            None,
             attributes,
             &parsed,
             Some(candidate),
@@ -3710,10 +6176,12 @@ pub(crate) fn project_member_family_generic_signature(
 #[allow(clippy::too_many_arguments)]
 fn generic_constructor_declaration(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     method_scope: &[TypeParameterErasure],
     candidate: Option<&GenericConstructorCandidate>,
+    body_proof: Option<&SameClassGenericMethodBodyProof>,
     physical_fields: &[MemberHeader],
     class_internal: &[u8],
     class_flags: u16,
@@ -3726,9 +6194,9 @@ fn generic_constructor_declaration(
     let refused = |why| Error::unsupported("generic_constructor_source_unproved", why);
     let item = &record.item;
     if item.name.raw().0 != b"<init>"
-        || record.declaration.is_none()
+        || projection.declaration.is_none()
         || !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-        || !record.markers.is_empty()
+        || !projection.markers.is_empty()
         || item.access_flags & !(ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED) != 0
         || attributes.default.is_some()
         || !attributes.throws_raw.is_empty()
@@ -3749,15 +6217,42 @@ fn generic_constructor_declaration(
             "constructor flags, throws, annotations, nesting, or class hierarchy lack a faithful source position",
         ));
     }
-    let candidate = candidate.ok_or_else(|| {
-        refused("same-run AST/SSA does not prove the empty Object constructor body")
-    })?;
+    let (parameters, init, forwarded_parameter_slots, field_writes) =
+        if let Some(candidate) = candidate {
+            (
+                candidate.parameters.as_slice(),
+                &candidate.init,
+                candidate.forwarded_parameter_slots.as_slice(),
+                candidate.field_writes.as_slice(),
+            )
+        } else {
+            let proof = body_proof.filter(|proof| {
+                proof.method == item.identity
+                    && proof.constructor_call_bci.is_some()
+                    && proof
+                        .constructor_init
+                        .as_ref()
+                        .is_some_and(|init| init.bci == proof.constructor_call_bci)
+                    && parsed.type_parameters.is_empty()
+                    && method_scope.is_empty()
+                    && !class_scope.is_empty()
+                    && class_signature_present
+            });
+            let proof = proof
+                .ok_or_else(|| refused("same-run AST/SSA does not prove the constructor body"))?;
+            (
+                proof.formal_names.as_slice(),
+                proof.constructor_init.as_ref().unwrap(),
+                &[][..],
+                &[][..],
+            )
+        };
     let this_class = std::str::from_utf8(class_internal)
         .map_err(|_| refused("constructor owner has no source UTF-8"))?;
-    if !candidate.init.presented
-        || candidate.init.target != Some(jarde_java::ast::ConstructorTarget::Super)
-        || candidate.init.class.as_deref() != Some("java/lang/Object")
-        || candidate.init.declared.as_deref() != Some(this_class)
+    if !init.presented
+        || init.target != Some(jarde_java::ast::ConstructorTarget::Super)
+        || init.class.as_deref() != Some("java/lang/Object")
+        || init.declared.as_deref() != Some(this_class)
     {
         return Err(refused(
             "same-run InitRecord does not prove Object() for this class",
@@ -3767,13 +6262,13 @@ fn generic_constructor_declaration(
         .ok_or_else(|| refused("physical constructor descriptor cannot be spelled"))?;
     let class_scope_constructor = parsed.type_parameters.is_empty();
     if signature.parameters.len() != parsed.parameters.len()
-        || signature.parameters.len() != candidate.parameters.len()
+        || signature.parameters.len() != parameters.len()
         || (class_scope_constructor
-            && (!candidate.forwarded_parameter_slots.is_empty()
+            && (!forwarded_parameter_slots.is_empty()
                 || !method_scope.is_empty()
                 || class_scope.is_empty()
                 || !class_signature_present))
-        || (!class_scope_constructor && !candidate.field_writes.is_empty())
+        || (!class_scope_constructor && !field_writes.is_empty())
     {
         return Err(refused(
             "constructor Signature, physical parameter positions, and same-run body proof differ",
@@ -3810,9 +6305,7 @@ fn generic_constructor_declaration(
     for parameter in &parsed.parameters {
         parameter_types.push(spell_ordinary_signature_type(parameter, &scope, budget, 0)?);
     }
-    for ((_, slot), (candidate_slot, name)) in
-        signature.parameters.iter().zip(&candidate.parameters)
-    {
+    for ((_, slot), (candidate_slot, name)) in signature.parameters.iter().zip(parameters) {
         if slot != candidate_slot || !is_java_identifier(name) {
             return Err(refused(
                 "same-run constructor parameter slot or name is unproved",
@@ -3825,20 +6318,18 @@ fn generic_constructor_declaration(
     if class_scope_constructor {
         budget.charge(
             CountedBudgetDimension::AnalysisSteps,
-            u64::try_from(candidate.parameters.len())
+            u64::try_from(parameters.len())
                 .unwrap_or(u64::MAX)
                 .saturating_add(
-                    u64::try_from(candidate.field_writes.len())
+                    u64::try_from(field_writes.len())
                         .unwrap_or(u64::MAX)
-                        .saturating_mul(
-                            u64::try_from(candidate.parameters.len()).unwrap_or(u64::MAX),
-                        ),
+                        .saturating_mul(u64::try_from(parameters.len()).unwrap_or(u64::MAX)),
                 ),
         )?;
-        for write in &candidate.field_writes {
+        for write in field_writes {
             budget.poll()?;
             let mut parameter_found = false;
-            for (slot, _) in &candidate.parameters {
+            for (slot, _) in parameters {
                 budget.poll()?;
                 parameter_found |= *slot == write.parameter_slot;
             }
@@ -3863,8 +6354,7 @@ fn generic_constructor_declaration(
     if !is_java_identifier(&class_name) || class_name.contains('$') {
         return Err(refused("class name has no faithful constructor spelling"));
     }
-    let args = candidate
-        .parameters
+    let args = parameters
         .iter()
         .zip(&signature.parameters)
         .map(|((_, name), (ty, _))| format!("{ty} {name}"))
@@ -4211,6 +6701,7 @@ fn prove_body_generic_throws_shape(
 #[allow(clippy::too_many_arguments)]
 fn prove_body_method_local_generic_throws_shape(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
     class_internal: &[u8],
@@ -4224,8 +6715,8 @@ fn prove_body_method_local_generic_throws_shape(
     let refused = |why| Error::unsupported("body_method_local_generic_throws_source_unproved", why);
     let item = &record.item;
     if !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-        || record.declaration.is_none()
-        || !record.markers.is_empty()
+        || projection.declaration.is_none()
+        || !projection.markers.is_empty()
         || !record.annotations.refusals.is_empty()
         || !record.parameter_annotations.refusals.is_empty()
         || !record.type_annotations.attributes.is_empty()
@@ -4313,6 +6804,7 @@ fn prove_body_method_local_generic_throws_shape(
 #[allow(clippy::too_many_arguments)]
 fn body_method_local_generic_throws_declaration(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
@@ -4326,6 +6818,7 @@ fn body_method_local_generic_throws_declaration(
 ) -> Result<String> {
     prove_body_method_local_generic_throws_shape(
         record,
+        projection,
         parsed,
         candidate,
         class_internal,
@@ -4385,6 +6878,7 @@ fn body_method_local_generic_throws_declaration(
 #[allow(clippy::too_many_arguments)]
 fn static_method_local_generic_throws_declaration(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
@@ -4464,11 +6958,14 @@ fn static_method_local_generic_throws_declaration(
     }
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(record, attributes, parsed, candidate, true, None)
+    generic_method_declaration(
+        record, projection, attributes, parsed, candidate, true, None,
+    )
 }
 
 fn no_body_generic_method_declaration(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     method_scope: &[TypeParameterErasure],
@@ -4477,7 +6974,7 @@ fn no_body_generic_method_declaration(
 ) -> Result<String> {
     let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
     let item = &record.item;
-    if record.declaration.is_none()
+    if projection.declaration.is_none()
         || !matches!(record.no_body_kind, Some(NoBodyKind::Abstract))
         || matches!(item.name.raw().0.as_slice(), b"<init>" | b"<clinit>")
         || item.access_flags
@@ -4680,6 +7177,7 @@ fn format_generic_method_header(
 /// names; no-body members have no Program and use descriptor slot names.
 fn ordinary_parameterized_declaration(
     record: &ClassSourceMethod,
+    projection: Option<&GenericCallProjectionState>,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
@@ -4703,8 +7201,9 @@ fn ordinary_parameterized_declaration(
         class_superclass,
         class_interfaces,
     );
-    if record.declaration.is_none()
-        || matches!(item.name.raw().0.as_slice(), b"<init>" | b"<clinit>")
+    if projection.map_or(record.declaration.is_none(), |state| {
+        state.declaration.is_none()
+    }) || matches!(item.name.raw().0.as_slice(), b"<init>" | b"<clinit>")
         || item.access_flags
             & !(ACC_PUBLIC
                 | ACC_PRIVATE
@@ -4728,7 +7227,8 @@ fn ordinary_parameterized_declaration(
         ));
     }
     match &record.outcome {
-        ClassSourceOutcome::Recovered { .. } if record.markers.is_empty() => {}
+        ClassSourceOutcome::Recovered { .. }
+            if projection.map_or(record.markers.is_empty(), |state| state.markers.is_empty()) => {}
         ClassSourceOutcome::NoBody if record.no_body_kind.is_some() => {}
         _ => {
             return Err(refused(
@@ -4853,141 +7353,236 @@ fn ordinary_parameterized_declaration(
         generic_throws
     };
     if let ClassSourceOutcome::Recovered { .. } = &record.outcome {
-        let candidate = candidate.ok_or_else(|| {
-            refused("same-run Program/SSA cannot prove the body under parameterized types")
-        })?;
-        if candidate.parameters.len() != signature.parameters.len() {
-            return Err(refused("same-run parameter count differs from descriptor"));
-        }
-        for ((_, slot), (candidate_slot, name)) in
-            signature.parameters.iter().zip(&candidate.parameters)
+        let returned = if let Some(proof) = projection
+            .and_then(|state| state.same_class_generic_body_proof.as_ref())
+            .or(record.same_class_generic_body_proof.as_ref())
         {
-            if slot != candidate_slot || !is_java_identifier(name) {
+            if proof.method != item.identity
+                || proof.formal_names.len() != signature.parameters.len()
+                || (parsed.result.is_some() && proof.return_sources.is_empty())
+                || (proof.constructor_call_bci.is_some() != (item.identity.name.0 == b"<init>"))
+                || proof
+                    .field_write_sites
+                    .iter()
+                    .collect::<std::collections::HashSet<_>>()
+                    .len()
+                    != proof.field_write_sites.len()
+            {
                 return Err(refused(
-                    "same-run parameter slot or source name is unproved",
+                    "same-run generic body proof has different method formals",
                 ));
             }
-        }
-        let returned = match &candidate.value {
-            GenericReturnValue::EmptyVoid
-                if parsed.result.is_none()
-                    && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]) =>
+            for ((_, slot), (proof_slot, proof_name)) in
+                signature.parameters.iter().zip(&proof.formal_names)
             {
-                Some(Vec::new())
-            }
-            GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
-            GenericReturnValue::EmptyVoid => None,
-            // A complete straight-line void body whose parameters are only read keeps compiling
-            // when a class-scope variable replaces the erased parameter spelling: the reader
-            // proved the variable's erasure is that parameter, so every read stays assignable to
-            // the context that accepted the erased reference. The same-run candidate refused any
-            // reassignment of the parameter locals, which is the write side this proof refuses.
-            GenericReturnValue::VoidBody
-                if parsed.result.is_none()
-                    && parsed.throws.is_empty()
-                    && parsed
-                        .parameters
-                        .iter()
-                        .all(|parameter| matches!(parameter, SignatureType::TypeVariable(_))) =>
-            {
-                Some(Vec::new())
-            }
-            GenericReturnValue::VoidBody => None,
-            GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
-            GenericReturnValue::NullLiteral => None,
-            GenericReturnValue::Parameter(slot) => signature
-                .parameters
-                .iter()
-                .position(|(_, at)| *at == *slot)
-                .map(|position| vec![position]),
-            GenericReturnValue::Conditional {
-                test,
-                when_true,
-                when_false,
-            } => {
-                let test_position = signature.parameters.iter().position(|(_, at)| *at == *test);
-                let true_position = signature
-                    .parameters
-                    .iter()
-                    .position(|(_, at)| *at == *when_true);
-                let false_position = signature
-                    .parameters
-                    .iter()
-                    .position(|(_, at)| *at == *when_false);
-                match (test_position, true_position, false_position) {
-                    (Some(test_position), Some(true_position), Some(false_position))
-                        if parsed.parameters[test_position] == SignatureType::Base(b'Z') =>
-                    {
-                        Some(vec![true_position, false_position])
-                    }
-                    _ => None,
+                if slot != proof_slot || !is_java_identifier(proof_name) {
+                    return Err(refused(
+                        "same-run generic body proof has different formal identity",
+                    ));
                 }
             }
-            GenericReturnValue::MemberCreation {
-                target,
-                qualifier_slot,
-            } => {
-                let qualifier_position = signature
+            let mut returned_positions = Vec::new();
+            for source in &proof.return_sources {
+                if let SameClassGenericBodyReturnSource::Parameter { slot } = source {
+                    let Some(position) = signature.parameters.iter().position(|(_, at)| at == slot)
+                    else {
+                        return Err(refused("generic return source is not a physical formal"));
+                    };
+                    if parsed.result.as_ref() != Some(&parsed.parameters[position]) {
+                        return Err(refused(
+                            "generic return formal differs from the Signature result",
+                        ));
+                    }
+                    returned_positions.push(position);
+                }
+            }
+            Some(returned_positions)
+        } else {
+            let candidate = candidate.ok_or_else(|| {
+                refused("same-run Program/SSA cannot prove the body under parameterized types")
+            })?;
+            if candidate.parameters.len() != signature.parameters.len() {
+                return Err(refused("same-run parameter count differs from descriptor"));
+            }
+            for ((_, slot), (candidate_slot, name)) in
+                signature.parameters.iter().zip(&candidate.parameters)
+            {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                if slot != candidate_slot || !is_java_identifier(name) {
+                    return Err(refused(
+                        "same-run parameter slot or source name is unproved",
+                    ));
+                }
+            }
+            let void_body_parameters_proved = if let GenericReturnValue::VoidBody {
+                unread_parameter_slots,
+            } = &candidate.value
+            {
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(
+                        parsed
+                            .parameters
+                            .len()
+                            .saturating_add(unread_parameter_slots.len()),
+                    )
+                    .unwrap_or(u64::MAX),
+                )?;
+                let mut proved = unread_parameter_slots
+                    .windows(2)
+                    .all(|slots| slots[0] < slots[1]);
+                for slot in unread_parameter_slots {
+                    budget.poll()?;
+                    proved &= signature
+                        .parameters
+                        .binary_search_by_key(slot, |(_, physical_slot)| *physical_slot)
+                        .is_ok();
+                }
+                for (position, parameter) in parsed.parameters.iter().enumerate() {
+                    budget.poll()?;
+                    let physical = signature.parameters.get(position);
+                    let preserved = physical.is_some_and(|(physical_type, slot)| {
+                        matches!(parameter, SignatureType::TypeVariable(_))
+                            || parameter_types.get(position) == Some(physical_type)
+                            || unread_parameter_slots.binary_search(slot).is_ok()
+                    });
+                    proved &= preserved;
+                }
+                proved
+            } else {
+                false
+            };
+            match &candidate.value {
+                GenericReturnValue::EmptyVoid
+                    if parsed.result.is_none()
+                        && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]) =>
+                {
+                    Some(Vec::new())
+                }
+                GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
+                GenericReturnValue::EmptyVoid => None,
+                // A complete straight-line void body whose parameters are only read keeps compiling
+                // when a class-scope variable replaces the erased parameter spelling: the reader
+                // proved the variable's erasure is that parameter, so every read stays assignable to
+                // the context that accepted the erased reference. The same-run candidate refused any
+                // reassignment of the parameter locals, which is the write side this proof refuses.
+                GenericReturnValue::VoidBody {
+                    unread_parameter_slots,
+                } if parsed.result.is_none()
+                    && parsed.throws.is_empty()
+                    && void_body_parameters_proved =>
+                {
+                    Some(Vec::new())
+                }
+                GenericReturnValue::VoidBody { .. } => None,
+                GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
+                GenericReturnValue::NullLiteral => None,
+                GenericReturnValue::Parameter(slot) => signature
                     .parameters
                     .iter()
-                    .position(|(_, slot)| *slot == *qualifier_slot);
-                qualifier_position
-                    .is_some_and(|position| {
-                        let parameter_matches = parsed.parameters.get(position).is_some_and(|ty| {
-                            member_signature_class_matches(
-                                ty,
-                                &target.outer,
-                                &target.source_type_path,
-                                false,
-                            )
-                        });
-                        parameter_matches
-                            && parsed.result.as_ref().is_some_and(|ty| {
-                                signature_result_matches_member_creation(ty, target)
-                            })
+                    .position(|(_, at)| *at == *slot)
+                    .map(|position| vec![position]),
+                GenericReturnValue::Conditional {
+                    test,
+                    when_true,
+                    when_false,
+                } => {
+                    let test_position =
+                        signature.parameters.iter().position(|(_, at)| *at == *test);
+                    let true_position = signature
+                        .parameters
+                        .iter()
+                        .position(|(_, at)| *at == *when_true);
+                    let false_position = signature
+                        .parameters
+                        .iter()
+                        .position(|(_, at)| *at == *when_false);
+                    match (test_position, true_position, false_position) {
+                        (Some(test_position), Some(true_position), Some(false_position))
+                            if parsed.parameters[test_position] == SignatureType::Base(b'Z') =>
+                        {
+                            Some(vec![true_position, false_position])
+                        }
+                        _ => None,
+                    }
+                }
+                GenericReturnValue::MemberCreation {
+                    target,
+                    qualifier_slot,
+                } => {
+                    let qualifier_position = signature
+                        .parameters
+                        .iter()
+                        .position(|(_, slot)| *slot == *qualifier_slot);
+                    qualifier_position
+                        .is_some_and(|position| {
+                            let parameter_matches =
+                                parsed.parameters.get(position).is_some_and(|ty| {
+                                    member_signature_class_matches(
+                                        ty,
+                                        &target.outer,
+                                        &target.source_type_path,
+                                        false,
+                                    )
+                                });
+                            parameter_matches
+                                && parsed.result.as_ref().is_some_and(|ty| {
+                                    signature_result_matches_member_creation(ty, target)
+                                })
+                        })
+                        .then_some(Vec::new())
+                }
+                GenericReturnValue::StaticMemberCreation { target, .. } => parsed
+                    .result
+                    .as_ref()
+                    .is_some_and(|ty| {
+                        member_signature_class_matches(
+                            ty,
+                            &target.owner,
+                            &target.source_type_path,
+                            false,
+                        )
                     })
-                    .then_some(Vec::new())
+                    .then_some(Vec::new()),
+                GenericReturnValue::TypedFunctional { target } => {
+                    let expected = match target.kind {
+                        TypedFunctionalKind::FunctionStringInteger => {
+                            "java.util.function.Function<java.lang.String, java.lang.Integer>"
+                        }
+                        TypedFunctionalKind::SupplierString => {
+                            "java.util.function.Supplier<java.lang.String>"
+                        }
+                    };
+                    (parsed.parameters.is_empty() && result.as_deref() == Some(expected))
+                        .then_some(Vec::new())
+                }
             }
-            GenericReturnValue::StaticMemberCreation { target, .. } => parsed
-                .result
-                .as_ref()
-                .is_some_and(|ty| {
-                    member_signature_class_matches(
-                        ty,
-                        &target.owner,
-                        &target.source_type_path,
-                        false,
-                    )
-                })
-                .then_some(Vec::new()),
-            GenericReturnValue::TypedFunctional { target } => {
-                let expected = match target.kind {
-                    TypedFunctionalKind::FunctionStringInteger => {
-                        "java.util.function.Function<java.lang.String, java.lang.Integer>"
-                    }
-                    TypedFunctionalKind::SupplierString => {
-                        "java.util.function.Supplier<java.lang.String>"
-                    }
-                };
-                (parsed.parameters.is_empty() && result.as_deref() == Some(expected))
-                    .then_some(Vec::new())
-            }
-        };
-        let returned = returned.ok_or_else(|| {
+        }
+        .ok_or_else(|| {
             refused("return source is not a proven parameter value or selected member creation")
         })?;
-        if !matches!(
-            candidate.value,
-            GenericReturnValue::MemberCreation { .. }
-                | GenericReturnValue::StaticMemberCreation { .. }
-                | GenericReturnValue::TypedFunctional { .. }
-        ) && returned
-            .iter()
-            .any(|position| parsed.result.as_ref() != Some(&parsed.parameters[*position]))
+        if projection
+            .and_then(|state| state.same_class_generic_body_proof.as_ref())
+            .or(record.same_class_generic_body_proof.as_ref())
+            .is_none()
         {
-            return Err(refused(
-                "returned parameter has a different generic source type",
-            ));
+            let Some(candidate) = candidate else {
+                return Err(refused("generic return candidate is missing"));
+            };
+            if !matches!(
+                candidate.value,
+                GenericReturnValue::MemberCreation { .. }
+                    | GenericReturnValue::StaticMemberCreation { .. }
+                    | GenericReturnValue::TypedFunctional { .. }
+            ) && returned
+                .iter()
+                .any(|position| parsed.result.as_ref() != Some(&parsed.parameters[*position]))
+            {
+                return Err(refused(
+                    "returned parameter has a different generic source type",
+                ));
+            }
         }
     }
     for ((spelling, _), ty) in signature.parameters.iter_mut().zip(parameter_types) {
@@ -5021,7 +7616,11 @@ fn ordinary_parameterized_declaration(
     if is_default_member(class_flags, item) {
         words.push("default");
     }
-    let names = candidate.map(|candidate| candidate.parameters.as_slice());
+    let names = projection
+        .and_then(|state| state.same_class_generic_body_proof.as_ref())
+        .or(record.same_class_generic_body_proof.as_ref())
+        .map(|proof| proof.formal_names.as_slice())
+        .or_else(|| candidate.map(|candidate| candidate.parameters.as_slice()));
     let mut arguments = Vec::new();
     for (position, (ty, slot)) in signature.parameters.iter().enumerate() {
         let name = names
@@ -5456,6 +8055,7 @@ fn signature_result_matches_member_creation(
 
 fn generic_void_body_declaration(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
@@ -5495,7 +8095,9 @@ fn generic_void_body_declaration(
         || !attributes.throws_raw.is_empty()
         || !matches!(candidate, Some(GenericReturnCandidate {
             parameters,
-            value: GenericReturnValue::VoidBody,
+            value: GenericReturnValue::VoidBody {
+                unread_parameter_slots: _,
+            },
         }) if parameters.len() == 2)
     {
         return Err(refused(
@@ -5527,6 +8129,7 @@ fn generic_void_body_declaration(
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
     generic_method_declaration(
         record,
+        projection,
         attributes,
         parsed,
         candidate,
@@ -5588,8 +8191,306 @@ fn selected_nested_sibling_bound_spelling(
     Ok(physical_parameter_spelling.to_owned())
 }
 
+fn spell_generic_body_signature_type(
+    ty: &jarde_reader::signature::SignatureType,
+    method_variables: &[(Vec<u8>, String, String)],
+    class_scope: &[TypeParameterErasure],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<String> {
+    use jarde_reader::signature::SignatureType;
+
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if depth > 128 {
+        return Err(Error::unsupported(
+            "generic_source_shape_unproved",
+            "generic method type nesting exceeds source projection depth",
+        ));
+    }
+    match ty {
+        SignatureType::TypeVariable(name) => method_variables
+            .iter()
+            .find(|(candidate, _, _)| candidate == name)
+            .map(|(_, spelling, _)| spelling.clone())
+            .or_else(|| {
+                class_scope
+                    .iter()
+                    .find(|candidate| candidate.name == *name)
+                    .and_then(|candidate| std::str::from_utf8(&candidate.name).ok())
+                    .filter(|name| is_java_identifier(name))
+                    .map(str::to_owned)
+            })
+            .ok_or_else(|| {
+                Error::unsupported(
+                    "generic_source_shape_unproved",
+                    "type variable is outside the emitted method and class scopes",
+                )
+            }),
+        SignatureType::Array(element) => Ok(format!(
+            "{}[]",
+            spell_generic_body_signature_type(
+                element,
+                method_variables,
+                class_scope,
+                budget,
+                depth + 1,
+            )?
+        )),
+        _ => spell_ordinary_signature_type(ty, class_scope, budget, depth),
+    }
+}
+
+fn generic_method_body_declaration(
+    record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
+    attributes: &MemberAttributes,
+    parsed: &jarde_reader::signature::MethodSignature,
+    proof: &SameClassGenericMethodBodyProof,
+    class_scope: &[TypeParameterErasure],
+    budget: &mut Budget,
+) -> Result<String> {
+    use jarde_reader::signature::SignatureType;
+
+    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
+    let item = &record.item;
+    let is_static = item.access_flags & ACC_STATIC != 0;
+    if proof.method != item.identity
+        || item.name.raw().0 == b"<init>"
+        || item.access_flags
+            & !(ACC_PUBLIC
+                | ACC_PRIVATE
+                | ACC_PROTECTED
+                | ACC_STATIC
+                | ACC_FINAL
+                | ACC_SYNCHRONIZED
+                | ACC_STRICT)
+            != 0
+        || !record.annotations.attributes.is_empty()
+        || !record.parameter_annotations.attributes.is_empty()
+        || !record.type_annotations.attributes.is_empty()
+        || !projection.markers.is_empty()
+    {
+        return Err(refused(
+            "body certificate does not match a preservable generic method declaration",
+        ));
+    }
+    if parsed.type_parameters.is_empty() {
+        return Err(refused("method has no local type parameters"));
+    }
+    let formal_count = proof.formal_names.len();
+    let signature_type_count = parsed
+        .parameters
+        .len()
+        .saturating_add(usize::from(parsed.result.is_some()))
+        .saturating_add(parsed.throws.len());
+    let bound_count = parsed
+        .type_parameters
+        .iter()
+        .map(|parameter| {
+            parameter
+                .class_bound
+                .iter()
+                .count()
+                .saturating_add(parameter.interface_bounds.len())
+        })
+        .fold(0usize, usize::saturating_add);
+    let proof_work = formal_count
+        .saturating_mul(formal_count)
+        .saturating_add(signature_type_count.saturating_mul(parsed.type_parameters.len()))
+        .saturating_add(formal_count)
+        .saturating_add(proof.return_sources.len())
+        .saturating_add(bound_count)
+        .saturating_add(parsed.type_parameters.len())
+        .saturating_add(parsed.throws.len());
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(proof_work).unwrap_or(u64::MAX),
+    )?;
+    let mut variables = Vec::with_capacity(parsed.type_parameters.len());
+    for parameter in &parsed.type_parameters {
+        budget.poll()?;
+        let variable = std::str::from_utf8(&parameter.name)
+            .map_err(|_| refused("type variable name is not source UTF-8"))?;
+        if !is_java_identifier(variable) {
+            return Err(refused("type variable has no Java source spelling"));
+        }
+        let mut bounds = Vec::new();
+        for bound in parameter
+            .class_bound
+            .iter()
+            .chain(parameter.interface_bounds.iter())
+        {
+            budget.poll()?;
+            let SignatureType::Class(class) = bound else {
+                return Err(refused("type-variable bound is unsupported"));
+            };
+            let [segment] = class.segments.as_slice() else {
+                return Err(refused("nested bounds are unsupported"));
+            };
+            if !segment.arguments.is_empty() {
+                return Err(refused("parameterized bounds are unsupported"));
+            }
+            bounds.push(simple_generic_class_name(&segment.binary_name)?);
+        }
+        if bounds.is_empty() {
+            bounds.push("java.lang.Object".to_owned());
+        }
+        variables.push((
+            parameter.name.clone(),
+            variable.to_owned(),
+            bounds.join(" & "),
+        ));
+    }
+
+    let signature = method_descriptor(&item.descriptor.raw().0, is_static, false)
+        .ok_or_else(|| refused("physical descriptor cannot be spelled"))?;
+    let Some(slots) = jarde_jvm::method_ir::parameter_positions(
+        &descriptor_facts(&item.descriptor.raw().0, DescriptorKind::Method)?,
+        is_static,
+    ) else {
+        return Err(refused("physical parameter slots are unavailable"));
+    };
+    if slots.len() != parsed.parameters.len()
+        || proof.formal_names.len() != slots.len()
+        || signature.parameters.len() != slots.len()
+        || proof
+            .formal_names
+            .iter()
+            .map(|(slot, _)| *slot)
+            .collect::<std::collections::BTreeSet<_>>()
+            .len()
+            != slots.len()
+    {
+        return Err(refused(
+            "body formal identities do not match physical parameters",
+        ));
+    }
+    let mut arguments = Vec::with_capacity(slots.len());
+    let mut parameter_types = Vec::with_capacity(slots.len());
+    for (position, slot) in slots.iter().enumerate() {
+        budget.poll()?;
+        let Some((_, name)) = proof
+            .formal_names
+            .iter()
+            .find(|(formal_slot, _)| formal_slot == slot)
+        else {
+            return Err(refused("body certificate omits a physical formal"));
+        };
+        if !is_java_identifier(name) {
+            return Err(refused("formal name has no Java source spelling"));
+        }
+        let ty = spell_generic_body_signature_type(
+            &parsed.parameters[position],
+            &variables,
+            class_scope,
+            budget,
+            0,
+        )?;
+        parameter_types.push(parsed.parameters[position].clone());
+        arguments.push(format!("{ty} {name}"));
+    }
+    let result_name = match parsed.result.as_ref() {
+        None => {
+            if !proof.return_sources.is_empty() {
+                return Err(refused("void method body has value-return sources"));
+            }
+            "void".to_owned()
+        }
+        Some(result) => {
+            if proof.return_sources.is_empty() {
+                return Err(refused(
+                    "value-returning method has no certified return source",
+                ));
+            }
+            for source in &proof.return_sources {
+                budget.poll()?;
+                match source {
+                    SameClassGenericBodyReturnSource::Parameter { slot } => {
+                        let Some(position) = slots.iter().position(|formal| formal == slot) else {
+                            return Err(refused(
+                                "return source is outside the physical formal slots",
+                            ));
+                        };
+                        if parameter_types.get(position) != Some(result) {
+                            return Err(refused(
+                                "return source formal does not have the Signature result type",
+                            ));
+                        }
+                    }
+                    SameClassGenericBodyReturnSource::Call { .. } => {}
+                }
+            }
+            spell_generic_body_signature_type(result, &variables, class_scope, budget, 0)?
+        }
+    };
+    let throws = parsed
+        .throws
+        .iter()
+        .map(|exception| match exception {
+            SignatureType::Class(class) => {
+                budget.poll()?;
+                let [segment] = class.segments.as_slice() else {
+                    return Err(refused("nested throws type is unsupported"));
+                };
+                if !segment.arguments.is_empty() {
+                    return Err(refused("parameterized throws type is unsupported"));
+                }
+                simple_generic_class_name(&segment.binary_name)
+            }
+            SignatureType::TypeVariable(_) => {
+                spell_generic_body_signature_type(exception, &variables, class_scope, budget, 0)
+            }
+            _ => Err(refused(
+                "method-local generic throws type lacks a body proof",
+            )),
+        })
+        .collect::<Result<Vec<_>>>()?;
+    if throws != attributes.throws {
+        return Err(refused(
+            "generic throws Signature differs from physical Exceptions",
+        ));
+    }
+    let (name, aliased) = written_name(&item.name.raw().0);
+    if aliased || !is_java_identifier(&name) {
+        return Err(refused("method name has no faithful source spelling"));
+    }
+    let mut words = Vec::new();
+    words.extend(visibility(item.access_flags));
+    if is_static {
+        words.push("static");
+    }
+    if item.access_flags & ACC_FINAL != 0 {
+        words.push("final");
+    }
+    if item.access_flags & ACC_SYNCHRONIZED != 0 {
+        words.push("synchronized");
+    }
+    if item.access_flags & ACC_STRICT != 0 {
+        words.push("strictfp");
+    }
+    Ok(format!(
+        "{}<{}> {} {}({}){}",
+        if words.is_empty() {
+            String::new()
+        } else {
+            format!("{} ", words.join(" "))
+        },
+        variables
+            .iter()
+            .map(|(_, name, bound)| format!("{name} extends {bound}"))
+            .collect::<Vec<_>>()
+            .join(", "),
+        result_name,
+        name,
+        arguments.join(", "),
+        throws_clause(&throws),
+    ))
+}
+
 fn generic_method_declaration(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
@@ -5600,10 +8501,10 @@ fn generic_method_declaration(
     let candidate = candidate
         .ok_or_else(|| refused("the recovered AST/SSA body is not a direct parameter return"))?;
     let item = &record.item;
-    let void_body = matches!(candidate.value, GenericReturnValue::VoidBody);
+    let void_body = matches!(&candidate.value, GenericReturnValue::VoidBody { .. });
     let null_instance_return = matches!(candidate.value, GenericReturnValue::NullLiteral);
     let is_static = item.access_flags & ACC_STATIC != 0;
-    if record.declaration.is_none()
+    if projection.declaration.is_none()
         || (void_body && is_static)
         || (!void_body && is_static == null_instance_return)
         || item.access_flags
@@ -5618,7 +8519,7 @@ fn generic_method_declaration(
         || !record.annotations.attributes.is_empty()
         || !record.parameter_annotations.attributes.is_empty()
         || !record.type_annotations.attributes.is_empty()
-        || !record.markers.is_empty()
+        || !projection.markers.is_empty()
     {
         return Err(refused(
             "method flags, annotations, or existing source refusals cannot be preserved in this generic shape",
@@ -5762,7 +8663,7 @@ fn generic_method_declaration(
     }
     let return_proved = match candidate.value {
         GenericReturnValue::EmptyVoid => false,
-        GenericReturnValue::VoidBody => void_body && parsed.result.is_none(),
+        GenericReturnValue::VoidBody { .. } => void_body && parsed.result.is_none(),
         GenericReturnValue::NullLiteral => null_instance_return && parsed.parameters.is_empty(),
         GenericReturnValue::Parameter(slot) => result_slots.contains(&slot),
         GenericReturnValue::Conditional {
@@ -5841,6 +8742,7 @@ fn generic_method_declaration(
 #[allow(clippy::too_many_arguments)]
 fn generic_null_instance_method_declaration(
     record: &ClassSourceMethod,
+    projection: &GenericCallProjectionState,
     attributes: &MemberAttributes,
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
@@ -5900,7 +8802,9 @@ fn generic_null_instance_method_declaration(
     }
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(record, attributes, parsed, candidate, false, None)
+    generic_method_declaration(
+        record, projection, attributes, parsed, candidate, false, None,
+    )
 }
 
 fn simple_generic_class_name(raw: &[u8]) -> Result<String> {
@@ -6825,6 +9729,12 @@ pub(crate) fn project_field_signature(
                     return Ok(FieldProjection::Deferred);
                 }
                 SameClassBinding::Proven => {}
+                SameClassBinding::OverloadPending => {
+                    return Err(Error::unsupported(
+                        "field_generic_binding_unproved",
+                        "overload-pending binding applies only to methods",
+                    ));
+                }
                 SameClassBinding::Unproved => {
                     return Err(Error::unsupported(
                         "field_generic_body_unproved",
@@ -7121,6 +10031,71 @@ fn block_member(declaration: &str, placed: Placed<'_>, markers: &[String]) -> St
     }
     out.push_str("    }\n");
     out
+}
+
+/// Exact byte length of one already-known block rendering, used to reserve output budget before
+/// allocating the projection text.
+fn indented_text_bytes(text: &str, depth: usize) -> u64 {
+    let pad = u64::try_from(depth.saturating_mul(4)).unwrap_or(u64::MAX);
+    text.split_inclusive('\n').fold(0u64, |total, line| {
+        let line_bytes = u64::try_from(line.len()).unwrap_or(u64::MAX);
+        let indentation = if line.trim_end_matches('\n').is_empty() {
+            0
+        } else {
+            pad
+        };
+        total.saturating_add(line_bytes).saturating_add(indentation)
+    })
+}
+
+fn block_member_text_bytes(
+    declaration: &str,
+    envelope: &str,
+    statements: &str,
+    markers: &[String],
+    annotations: &MemberAnnotationUses,
+) -> u64 {
+    let marker_bytes = markers.iter().fold(0u64, |total, marker| {
+        total
+            .saturating_add(indented_text_bytes(marker, 2))
+            .saturating_add(1)
+    });
+    let annotation_bytes = annotations.uses.iter().fold(0u64, |total, annotation| {
+        total
+            .saturating_add(4)
+            .saturating_add(u64::try_from(annotation.len()).unwrap_or(u64::MAX))
+            .saturating_add(1)
+    });
+    4u64.saturating_add(u64::try_from(declaration.len()).unwrap_or(u64::MAX))
+        .saturating_add(3) // ` {\n`
+        .saturating_add(marker_bytes)
+        .saturating_add(indented_text_bytes(envelope, 2))
+        .saturating_add(indented_text_bytes(statements, 1))
+        .saturating_add(6) // `    }\n`
+        .saturating_add(annotation_bytes)
+}
+
+fn declaration_member_text_bytes(
+    declaration: &str,
+    markers: &[String],
+    annotations: &MemberAnnotationUses,
+) -> u64 {
+    let marker_bytes = markers.iter().fold(0u64, |total, marker| {
+        total
+            .saturating_add(indented_text_bytes(marker, 1))
+            .saturating_add(1)
+    });
+    let annotation_bytes = annotations.uses.iter().fold(0u64, |total, annotation| {
+        total
+            .saturating_add(4)
+            .saturating_add(u64::try_from(annotation.len()).unwrap_or(u64::MAX))
+            .saturating_add(1)
+    });
+    marker_bytes
+        .saturating_add(4)
+        .saturating_add(u64::try_from(declaration.len()).unwrap_or(u64::MAX))
+        .saturating_add(2) // `;\n`
+        .saturating_add(annotation_bytes)
 }
 
 /// One member written as a declaration and a `;`, which is how Java spells a member that declares no
@@ -8366,23 +11341,6 @@ impl ClassSourceMethod {
         Ok(())
     }
 
-    pub(crate) fn refuse_generic(&mut self, reason: &str, budget: &mut Budget) -> Result<()> {
-        let marker = format!(
-            "// jarde: generic Signature projection refused for `{}`: {}",
-            label(&self.item),
-            comment_text(reason)
-        );
-        let text = format!("    {marker}\n{}", self.text);
-        budget.charge(
-            CountedBudgetDimension::OutputBytes,
-            u64::try_from(text.len()).unwrap_or(u64::MAX),
-        )?;
-        self.markers.push(marker);
-        self.text = text;
-        self.generic_signature_refused = true;
-        Ok(())
-    }
-
     /// A typed-only method reference cannot be left under a raw descriptor header if its
     /// class-source Signature transaction failed (including an output-budget stop). Retain the
     /// physical report for inspection, but publish only an explicit incomplete-source marker.
@@ -8821,6 +11779,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::NoBody,
             same_run_generic_return: None,
+            same_class_generic_body_proof: None,
             generic_signature_refused: false,
             generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
@@ -8843,6 +11802,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::Unspelled,
             same_run_generic_return: None,
+            same_class_generic_body_proof: None,
             generic_signature_refused: false,
             generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
@@ -8882,6 +11842,7 @@ impl ClassSourceMethod {
                 diagnostics,
             },
             same_run_generic_return: None,
+            same_class_generic_body_proof: None,
             generic_signature_refused: false,
             generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
@@ -8925,6 +11886,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::Recovered { report, analysis },
             same_run_generic_return,
+            same_class_generic_body_proof: None,
             generic_signature_refused: false,
             generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
@@ -8969,6 +11931,13 @@ impl ClassSourceMethod {
 }
 
 /// The markers one spelling carries, as the vector the member record publishes.
+fn class_source_body_lines_match(left: &str, right: &str) -> bool {
+    left.lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .eq(right.lines().map(str::trim).filter(|line| !line.is_empty()))
+}
+
 fn markers_of(spelled: &Spelled) -> Vec<String> {
     let mut markers = spelled.marker.clone().into_iter().collect::<Vec<_>>();
     markers.extend(spelled.annotations.refusals.iter().map(|reason| {
@@ -11661,6 +14630,7 @@ mod tests {
             markers: Vec::new(),
             outcome: ClassSourceOutcome::NoBody,
             same_run_generic_return: None,
+            same_class_generic_body_proof: None,
             generic_signature_refused: false,
             generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
@@ -11692,7 +14662,9 @@ mod tests {
         };
         let candidate = GenericReturnCandidate {
             parameters: vec![(1, "arg1".to_owned()), (2, "arg2".to_owned())],
-            value: GenericReturnValue::VoidBody,
+            value: GenericReturnValue::VoidBody {
+                unread_parameter_slots: vec![],
+            },
         };
         let erasures = vec![jarde_reader::signature::TypeParameterErasure {
             name: b"T".to_vec(),
@@ -11704,13 +14676,35 @@ mod tests {
     #[test]
     fn void_generic_signature_stops_before_publishing_on_cancel_or_analysis_budget() {
         let (record, attributes, parsed, candidate, erasures) = generic_void_probe();
-        let before = record.clone();
+        let mut detached_record = record.clone();
+        let projection = detached_record.take_generic_call_projection_state();
+        assert!(detached_record.declaration.is_none());
+        assert!(detached_record.text.is_empty());
+        assert!(detached_record.markers.is_empty());
+        let before = detached_record.clone();
+
+        let mut success_budget = Budget::new(unlimited_annotation_test_limits());
+        let declaration = generic_void_body_declaration(
+            &detached_record,
+            &projection,
+            &attributes,
+            &parsed,
+            Some(&candidate),
+            &erasures,
+            b"probe/Setter",
+            &[],
+            &mut success_budget,
+        )
+        .expect("state-aware generic void proof reads the retained overlay");
+        assert!(declaration.contains("<T extends probe.Bound> void set(T arg1, boolean arg2)"));
+
         let cancelled = jarde_reader::budget::CancellationToken::new();
         cancelled.cancel();
         let mut cancelled_budget =
             Budget::with_cancellation_token(unlimited_annotation_test_limits(), cancelled);
         let error = generic_void_body_declaration(
-            &record,
+            &detached_record,
+            &projection,
             &attributes,
             &parsed,
             Some(&candidate),
@@ -11721,13 +14715,14 @@ mod tests {
         )
         .expect_err("pre-cancellation stops the void Signature proof");
         assert!(matches!(error, Error::Cancelled { .. }));
-        assert_eq!(record, before);
+        assert_eq!(detached_record, before);
 
         let mut limits = unlimited_annotation_test_limits();
         limits.analysis_steps = 0;
         let mut exhausted = Budget::new(limits);
         let error = generic_void_body_declaration(
-            &record,
+            &detached_record,
+            &projection,
             &attributes,
             &parsed,
             Some(&candidate),
@@ -11738,7 +14733,99 @@ mod tests {
         )
         .expect_err("an exhausted analysis budget stops the void Signature proof");
         assert!(matches!(error, Error::BudgetExceeded { .. }));
-        assert_eq!(record, before);
+        assert_eq!(detached_record, before);
+    }
+
+    #[test]
+    fn generic_call_projection_state_stops_atomically_and_clones_with_metering() {
+        let (mut record, _, _, _, _) = generic_void_probe();
+        record.no_body_kind = Some(NoBodyKind::Abstract);
+        let old_marker = "// jarde: preexisting generic signature refusal".to_owned();
+        record.markers.push(old_marker.clone());
+        record.text = format!("    {old_marker}\n{}", record.text);
+
+        let mut snapshot_budget = Budget::new(unlimited_annotation_test_limits());
+        let mut state = record
+            .generic_call_projection_state(&mut snapshot_budget)
+            .expect("the pre-attempt projection state is retained");
+        let mut raw_clone_budget = Budget::new(unlimited_annotation_test_limits());
+        let before = state
+            .clone_raw_for_stage(&mut raw_clone_budget)
+            .expect("the raw state snapshot is metered");
+        let before_record = record.clone();
+
+        let signature = b"<T:Lprobe/Bound;>(TT;Z)V";
+        let proof = "same-run AST/Code/SSA void-body proof";
+        let marker = format!(
+            "// jarde: generic Signature `{}` projected after descriptor erasure and {proof}",
+            comment_text(&String::from_utf8_lossy(signature)),
+        );
+        let mut limits = unlimited_annotation_test_limits();
+        limits.output_bytes = u64::try_from(marker.len()).unwrap_or(u64::MAX);
+        let mut output_budget = Budget::new(limits);
+        let error = state
+            .project_generic(
+                &record,
+                "public <T extends probe.Bound> void set(T arg1, boolean arg2)".to_owned(),
+                signature,
+                proof,
+                &mut output_budget,
+            )
+            .expect_err("rendered member bytes exceed the remaining output budget");
+        assert!(matches!(error, Error::BudgetExceeded { .. }));
+        assert_eq!(state, before);
+        assert_eq!(record, before_record);
+
+        let cancellation = crate::CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), cancellation);
+        let error = state
+            .project_generic(
+                &record,
+                "public <T extends probe.Bound> void set(T arg1, boolean arg2)".to_owned(),
+                signature,
+                proof,
+                &mut cancelled,
+            )
+            .expect_err("pre-cancellation stops before mutating the staged overlay");
+        assert!(matches!(error, Error::Cancelled { .. }));
+        assert_eq!(state, before);
+        assert_eq!(record, before_record);
+
+        let mut no_analysis_limits = unlimited_annotation_test_limits();
+        no_analysis_limits.analysis_steps = 0;
+        let mut no_analysis = Budget::new(no_analysis_limits);
+        assert!(matches!(
+            state.clone_raw_for_stage(&mut no_analysis),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+        assert_eq!(state, before);
+        assert_eq!(record, before_record);
+
+        let mut no_output_limits = unlimited_annotation_test_limits();
+        no_output_limits.output_bytes = 0;
+        let mut no_output = Budget::new(no_output_limits);
+        assert!(matches!(
+            state.clone_raw_for_stage(&mut no_output),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::OutputBytes,
+                ..
+            })
+        ));
+        assert_eq!(state, before);
+        assert_eq!(record, before_record);
+
+        let mut metered_copy_budget = Budget::new(unlimited_annotation_test_limits());
+        let copy = state
+            .clone_raw_for_stage(&mut metered_copy_budget)
+            .expect("a funded raw-state clone succeeds");
+        assert_eq!(copy, state);
+        assert_eq!(state, before);
+        assert_eq!(record, before_record);
     }
 
     #[test]
@@ -12618,6 +15705,25 @@ mod tests {
             name: b"T".to_vec(),
             descriptor: b"Ljava/lang/Object;".to_vec(),
         }];
+        let string_literal = SameClassFieldWriteSource::StringConstant { value_bci: 7 };
+        let mut literal_budget = Budget::new(unlimited_annotation_test_limits());
+        assert!(!field_write_source_assignable(
+            &string_literal,
+            &field,
+            &class_scope,
+            &[],
+            8,
+        ));
+        assert!(
+            !raw_field_write_source_assignable(
+                &string_literal,
+                b"Ljava/lang/String;",
+                &[],
+                8,
+                &mut literal_budget,
+            )
+            .expect("string constant is deliberately excluded from generic field proofs")
+        );
         let published_method = SameClassPublishedMethodParameters {
             method: method_identity.clone(),
             parameter_slots: vec![1],
@@ -13065,13 +16171,35 @@ mod tests {
             receiver: Option<SameClassConstructorReceiver>,
             bci: u32,
         ) -> SameClassInvokeUse {
+            let physical_owner = crate::PhysicalDefinitionId {
+                location: jarde_reader::model::PhysicalClassLocation::StandaloneRoot {
+                    snapshot: jarde_reader::model::SnapshotId("generic-call-invoke".to_owned()),
+                },
+                class_bytes: jarde_reader::model::ClassBytesId {
+                    digest: jarde_reader::model::Digest("generic-call-invoke".to_owned()),
+                    length: 0,
+                },
+                variant: jarde_reader::model::PhysicalVariant::Base,
+            };
             SameClassInvokeUse {
                 caller: "caller()V".to_owned(),
+                physical_caller: PhysicalMethodId {
+                    owner: physical_owner,
+                    name: crate::JvmBytes(b"caller".to_vec()),
+                    descriptor: crate::JvmBytes(b"()V".to_vec()),
+                },
                 bci,
                 opcode: 0xb7,
                 owner: owner.to_vec(),
                 name: b"<init>".to_vec(),
                 descriptor: descriptor.to_vec(),
+                argument_values: Vec::new(),
+                receiver_value: None,
+                result_value: None,
+                argument_value_facts: Vec::new(),
+                receiver_value_fact: None,
+                result_value_fact: None,
+                ssa_operands_complete: false,
                 constructor_receiver: receiver,
             }
         }
@@ -13126,6 +16254,1285 @@ mod tests {
             unproved_same_class_this_delegate_bci(b"pkg/Hold", &target, &facts, &mut budget,)
                 .expect("bounded invocation scan succeeds"),
             None,
+        );
+    }
+
+    #[test]
+    fn generic_call_components_are_callee_first_and_cycles_are_rejected() {
+        let candidates = [0, 1, 2, 3];
+        let dependencies = [
+            GenericCallDependency {
+                caller: 0,
+                callee: 1,
+            },
+            GenericCallDependency {
+                caller: 1,
+                callee: 2,
+            },
+            GenericCallDependency {
+                caller: 2,
+                callee: 1,
+            },
+        ];
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let components = generic_call_components(&candidates, &dependencies, &mut budget)
+            .expect("finite graph planning is bounded");
+        assert_eq!(components.len(), 2);
+        assert_eq!(components[0].members, [0, 1, 2]);
+        assert_eq!(components[0].order, None);
+        assert_eq!(components[1].members, [3]);
+        assert_eq!(components[1].order.as_deref(), Some([3].as_slice()));
+
+        let dependencies = [
+            GenericCallDependency {
+                caller: 0,
+                callee: 1,
+            },
+            GenericCallDependency {
+                caller: 1,
+                callee: 2,
+            },
+        ];
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let components = generic_call_components(&candidates, &dependencies, &mut budget)
+            .expect("finite graph planning is bounded");
+        assert_eq!(components[0].order.as_deref(), Some([2, 1, 0].as_slice()));
+    }
+
+    #[test]
+    fn generic_call_components_meter_dense_fan_in_and_honor_cancellation() {
+        let callee_count = 8usize;
+        let caller_count = 8usize;
+        let candidates = (0..callee_count + caller_count).collect::<Vec<_>>();
+        let dependencies = (callee_count..callee_count + caller_count)
+            .flat_map(|caller| {
+                (0..callee_count).map(move |callee| GenericCallDependency { caller, callee })
+            })
+            .collect::<Vec<_>>();
+
+        let mut constrained_limits = unlimited_annotation_test_limits();
+        // The input-manifest precharge alone cannot also fund the graph's processing passes.
+        constrained_limits.analysis_steps =
+            u64::try_from(candidates.len().saturating_add(dependencies.len())).unwrap_or(u64::MAX);
+        let mut constrained_budget = Budget::new(constrained_limits);
+        assert!(matches!(
+            generic_call_components(&candidates, &dependencies, &mut constrained_budget),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let components = generic_call_components(&candidates, &dependencies, &mut budget)
+            .expect("a fully budgeted dense fan-in graph is ordered");
+        assert_eq!(components.len(), 1);
+        let expected_order = (0..callee_count + caller_count).collect::<Vec<_>>();
+        assert_eq!(
+            components[0].order.as_deref(),
+            Some(expected_order.as_slice())
+        );
+
+        let cancellation = crate::CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled_budget =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), cancellation);
+        assert!(matches!(
+            generic_call_components(&candidates, &dependencies, &mut cancelled_budget),
+            Err(Error::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn generic_call_substitution_preserves_binders_bounds_and_arrays() {
+        use jarde_reader::signature::{ClassType, ClassTypeSegment};
+
+        let class_parameters = vec![TypeParameter {
+            name: b"T".to_vec(),
+            class_bound: Some(SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/lang/Number".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })),
+            interface_bounds: vec![SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/lang/Runnable".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })],
+        }];
+        let class_scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Number;".to_vec(),
+        }];
+        let owner = PhysicalDefinitionId {
+            location: jarde_reader::model::PhysicalClassLocation::StandaloneRoot {
+                snapshot: jarde_reader::model::SnapshotId("generic-call-binder".to_owned()),
+            },
+            class_bytes: jarde_reader::model::ClassBytesId {
+                digest: jarde_reader::model::Digest("generic-call-binder".to_owned()),
+                length: 0,
+            },
+            variant: jarde_reader::model::PhysicalVariant::Base,
+        };
+        let identity = PhysicalMethodId {
+            owner: owner.clone(),
+            name: crate::JvmBytes(b"identity".to_vec()),
+            descriptor: crate::JvmBytes(b"(Ljava/lang/Number;)Ljava/lang/Number;".to_vec()),
+        };
+        let caller = PhysicalMethodId {
+            owner,
+            name: crate::JvmBytes(b"relay".to_vec()),
+            descriptor: crate::JvmBytes(b"(Ljava/lang/Number;)Ljava/lang/Number;".to_vec()),
+        };
+        let bound = |name: &[u8]| TypeParameter {
+            name: name.to_vec(),
+            class_bound: Some(SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/lang/Number".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })),
+            interface_bounds: vec![SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/lang/Runnable".to_vec(),
+                    arguments: Vec::new(),
+                }],
+            })],
+        };
+        let callee = SameClassGenericMethodContract {
+            method: identity.clone(),
+            method_parameters: vec![bound(b"U")],
+            parameters: vec![SignatureType::TypeVariable(b"U".to_vec())],
+            result: Some(SignatureType::TypeVariable(b"U".to_vec())),
+        };
+        let actual = SameClassGenericArgumentSource {
+            caller: caller.clone(),
+            origin: SameClassGenericArgumentOrigin::Formal { slot: 1 },
+            source_type: SignatureType::TypeVariable(b"T".to_vec()),
+            caller_method_parameters: Vec::new(),
+        };
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        let substitution = prove_same_class_generic_substitution(
+            &class_scope,
+            &class_parameters,
+            &callee,
+            &[actual],
+            &mut budget,
+        )
+        .expect("the direct binder proof is bounded")
+        .expect("the matching class intersection bounds satisfy U");
+        assert_eq!(
+            substitution.method_arguments,
+            [SignatureType::TypeVariable(b"T".to_vec())]
+        );
+
+        let shadowed = SameClassGenericArgumentSource {
+            caller: caller.clone(),
+            origin: SameClassGenericArgumentOrigin::Formal { slot: 1 },
+            source_type: SignatureType::TypeVariable(b"T".to_vec()),
+            caller_method_parameters: vec![bound(b"T")],
+        };
+        let class_target = SameClassGenericMethodContract {
+            method: identity.clone(),
+            method_parameters: Vec::new(),
+            parameters: vec![SignatureType::TypeVariable(b"T".to_vec())],
+            result: Some(SignatureType::TypeVariable(b"T".to_vec())),
+        };
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        assert!(
+            prove_same_class_generic_substitution(
+                &class_scope,
+                &class_parameters,
+                &class_target,
+                &[shadowed],
+                &mut budget,
+            )
+            .expect("the binder mismatch is an ordinary refusal")
+            .is_none()
+        );
+
+        let array_contract = SameClassGenericMethodContract {
+            method: identity,
+            method_parameters: Vec::new(),
+            parameters: vec![SignatureType::Array(Box::new(SignatureType::TypeVariable(
+                b"T".to_vec(),
+            )))],
+            result: Some(SignatureType::Array(Box::new(SignatureType::TypeVariable(
+                b"T".to_vec(),
+            )))),
+        };
+        let array_source = SameClassGenericArgumentSource {
+            caller,
+            origin: SameClassGenericArgumentOrigin::Formal { slot: 1 },
+            source_type: SignatureType::Array(Box::new(SignatureType::TypeVariable(b"T".to_vec()))),
+            caller_method_parameters: Vec::new(),
+        };
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        assert!(
+            prove_same_class_generic_substitution(
+                &class_scope,
+                &class_parameters,
+                &array_contract,
+                &[array_source],
+                &mut budget,
+            )
+            .expect("array binder proof is bounded")
+            .is_some()
+        );
+    }
+}
+
+#[cfg(test)]
+mod same_class_overload_proof_tests {
+    use super::*;
+    use jarde_java::facts::{CallTarget, InvokeKind};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, PhysicalClassLocation, PhysicalVariant, SnapshotId,
+    };
+    use jarde_reader::signature::{ClassType, ClassTypeSegment};
+
+    fn unlimited_annotation_test_limits() -> Limits {
+        Limits {
+            input_bytes: u64::MAX,
+            archive_entries: u64::MAX,
+            entry_bytes: u64::MAX,
+            read_bytes: u64::MAX,
+            class_bytes: u64::MAX,
+            attribute_bytes: u64::MAX,
+            code_bytes: u64::MAX,
+            result_items: u64::MAX,
+            output_bytes: u64::MAX,
+            class_headers: u64::MAX,
+            method_bodies: u64::MAX,
+            ir_items: u64::MAX,
+            ir_edges: u64::MAX,
+            analysis_steps: u64::MAX,
+            normalization_clones: u64::MAX,
+            nested_depth: u64::MAX,
+            dependency_depth: u64::MAX,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn owner() -> PhysicalDefinitionId {
+        PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: SnapshotId("gc07-overload-proof".to_owned()),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest("gc07-overload-proof".to_owned()),
+                length: 0,
+            },
+            variant: PhysicalVariant::Base,
+        }
+    }
+
+    fn method_header(name: &[u8], descriptor: &[u8], access_flags: u16) -> MemberHeader {
+        let jvm_string = |raw: &[u8]| {
+            serde_json::from_value::<jarde_reader::model::JvmString>(serde_json::json!({
+                "raw": raw,
+                "utf16": raw.iter().map(|byte| *byte as u16).collect::<Vec<_>>(),
+                "escaped": String::from_utf8_lossy(raw),
+            }))
+            .expect("test JVM string is valid")
+        };
+        MemberHeader {
+            name: jvm_string(name),
+            descriptor: jvm_string(descriptor),
+            access_flags,
+            attributes: Vec::new(),
+        }
+    }
+
+    fn invoke_use(
+        caller: &PhysicalMethodId,
+        owner: &[u8],
+        name: &[u8],
+        descriptor: &[u8],
+    ) -> SameClassInvokeUse {
+        SameClassInvokeUse {
+            caller: "relay(Ljava/lang/Number;)V".to_owned(),
+            physical_caller: caller.clone(),
+            bci: 7,
+            opcode: 0xb6,
+            owner: owner.to_vec(),
+            name: name.to_vec(),
+            descriptor: descriptor.to_vec(),
+            argument_values: Vec::new(),
+            receiver_value: None,
+            result_value: None,
+            argument_value_facts: Vec::new(),
+            receiver_value_fact: None,
+            result_value_fact: None,
+            ssa_operands_complete: false,
+            constructor_receiver: None,
+        }
+    }
+
+    #[test]
+    fn same_class_binding_defers_only_closed_same_arity_overload_competition() {
+        let owner_id = owner();
+        let caller = caller(&owner_id);
+        let class = b"p/Bound".to_vec();
+        let methods = [
+            method_header(b"pick", b"(Ljava/lang/Object;)V", ACC_PUBLIC),
+            method_header(b"pick", b"(Ljava/lang/String;)V", ACC_PUBLIC),
+        ];
+        let invoke = invoke_use(&caller, &class, b"pick", b"(Ljava/lang/Object;)V");
+        let complete = SameClassUseFacts {
+            complete: true,
+            invokes: std::slice::from_ref(&invoke),
+            field_uses: &[],
+            member_refs: &[],
+        };
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                0,
+                &complete,
+                &mut budget,
+            )
+            .expect("closed overload competition is a deferred proof"),
+            SameClassBinding::OverloadPending,
+        );
+
+        let no_incoming = SameClassUseFacts {
+            complete: true,
+            invokes: &[],
+            field_uses: &[],
+            member_refs: &[],
+        };
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                0,
+                &no_incoming,
+                &mut budget,
+            )
+            .expect("unused overload has no call-site proof"),
+            SameClassBinding::Unproved,
+        );
+
+        let incomplete = SameClassUseFacts {
+            complete: false,
+            invokes: std::slice::from_ref(&invoke),
+            field_uses: &[],
+            member_refs: &[],
+        };
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                0,
+                &incomplete,
+                &mut budget,
+            )
+            .expect("incomplete inventory remains a refusal"),
+            SameClassBinding::Unproved,
+        );
+
+        let unresolved = invoke_use(&caller, &class, b"pick", b"(Ljava/lang/Number;)V");
+        let unknown_use = SameClassUseFacts {
+            complete: true,
+            invokes: std::slice::from_ref(&unresolved),
+            field_uses: &[],
+            member_refs: &[],
+        };
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                0,
+                &unknown_use,
+                &mut budget,
+            )
+            .expect("unexplained sibling target remains a refusal"),
+            SameClassBinding::Unproved,
+        );
+    }
+
+    #[test]
+    fn same_class_binding_defers_unreferenced_generic_sibling_for_real_same_arity_target() {
+        let owner_id = owner();
+        let caller = caller(&owner_id);
+        let class = b"p/BoundOverload".to_vec();
+        let methods = [
+            method_header(b"pick", b"(Ljava/lang/Number;)V", ACC_PUBLIC),
+            method_header(b"pick", b"(Ljava/lang/Comparable;)V", ACC_PUBLIC),
+        ];
+        // The real bytecode target is pick(Number). The generic sibling erases to Comparable
+        // and has no direct invoke, but it still participates in source overload resolution.
+        let invoked = invoke_use(&caller, &class, b"pick", b"(Ljava/lang/Number;)V");
+        let facts = SameClassUseFacts {
+            complete: true,
+            invokes: std::slice::from_ref(&invoked),
+            field_uses: &[],
+            member_refs: &[],
+        };
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                1,
+                &facts,
+                &mut budget,
+            )
+            .expect("closed competing header is deferred for the overload proof"),
+            SameClassBinding::OverloadPending,
+        );
+    }
+
+    #[test]
+    fn same_class_binding_keeps_unclosed_overload_inventories_unproved() {
+        let owner_id = owner();
+        let caller = caller(&owner_id);
+        let class = b"p/BoundOverload".to_vec();
+        let methods = [
+            method_header(b"pick", b"(Ljava/lang/Number;)V", ACC_PUBLIC),
+            method_header(b"pick", b"(Ljava/lang/Comparable;)V", ACC_PUBLIC),
+        ];
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+
+        let no_same_name_invoke = SameClassUseFacts {
+            complete: true,
+            invokes: &[],
+            field_uses: &[],
+            member_refs: &[],
+        };
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                1,
+                &no_same_name_invoke,
+                &mut budget,
+            )
+            .expect("an unused overload set is refused"),
+            SameClassBinding::Unproved,
+        );
+
+        let invoked = invoke_use(&caller, &class, b"pick", b"(Ljava/lang/Number;)V");
+        let closed_calls = SameClassUseFacts {
+            complete: true,
+            invokes: std::slice::from_ref(&invoked),
+            field_uses: &[],
+            member_refs: &[],
+        };
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Number"),
+                &[],
+                &methods,
+                1,
+                &closed_calls,
+                &mut budget,
+            )
+            .expect("a non-Object parent leaves external overloads open"),
+            SameClassBinding::Unproved,
+        );
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[b"java/io/Serializable".to_vec()],
+                &methods,
+                1,
+                &closed_calls,
+                &mut budget,
+            )
+            .expect("implemented interfaces leave external overloads open"),
+            SameClassBinding::Unproved,
+        );
+        let member_ref = SameClassMemberRef {
+            owner: class.clone(),
+            name: b"pick".to_vec(),
+            descriptor: b"(Ljava/lang/Number;)V".to_vec(),
+            method: true,
+        };
+        let non_body_reference = SameClassUseFacts {
+            complete: true,
+            invokes: std::slice::from_ref(&invoked),
+            field_uses: &[],
+            member_refs: std::slice::from_ref(&member_ref),
+        };
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                1,
+                &non_body_reference,
+                &mut budget,
+            )
+            .expect("non-body method references are not source overload proof"),
+            SameClassBinding::Unproved,
+        );
+
+        for (owner, descriptor, opcode) in [
+            (&class[..], &b"(Ljava/io/Serializable;)V"[..], 0xb6),
+            (&b"p/Foreign"[..], &b"(Ljava/lang/Number;)V"[..], 0xb6),
+            (&class[..], &b"(Ljava/lang/Number;)V"[..], 0xb8),
+        ] {
+            let mut invoke = invoke_use(&caller, owner, b"pick", descriptor);
+            invoke.opcode = opcode;
+            let facts = SameClassUseFacts {
+                complete: true,
+                invokes: std::slice::from_ref(&invoke),
+                field_uses: &[],
+                member_refs: &[],
+            };
+            assert_eq!(
+                prove_same_class_method_binding(
+                    &class,
+                    Some(b"java/lang/Object"),
+                    &[],
+                    &methods,
+                    1,
+                    &facts,
+                    &mut budget,
+                )
+                .expect("unexplained, foreign, or opcode-inconsistent use is refused"),
+                SameClassBinding::Unproved,
+            );
+        }
+
+        let duplicate = [
+            method_header(b"pick", b"(Ljava/lang/Number;)V", ACC_PUBLIC),
+            method_header(b"pick", b"(Ljava/lang/Comparable;)V", ACC_PUBLIC),
+            method_header(b"pick", b"(Ljava/lang/Comparable;)V", ACC_PUBLIC),
+        ];
+        let invoked = invoke_use(&caller, &class, b"pick", b"(Ljava/lang/Number;)V");
+        let facts = SameClassUseFacts {
+            complete: true,
+            invokes: std::slice::from_ref(&invoked),
+            field_uses: &[],
+            member_refs: &[],
+        };
+        assert_eq!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &duplicate,
+                1,
+                &facts,
+                &mut budget,
+            )
+            .expect("ambiguous physical declaration is refused"),
+            SameClassBinding::Unproved,
+        );
+
+        for bad_flags in [ACC_PUBLIC | ACC_VARARGS, ACC_PUBLIC | 0x0040] {
+            let bad = [
+                method_header(b"pick", b"(Ljava/lang/Number;)V", ACC_PUBLIC),
+                method_header(b"pick", b"(Ljava/lang/Comparable;)V", bad_flags),
+            ];
+            assert_eq!(
+                prove_same_class_method_binding(
+                    &class,
+                    Some(b"java/lang/Object"),
+                    &[],
+                    &bad,
+                    1,
+                    &facts,
+                    &mut budget,
+                )
+                .expect("varargs and bridge competitors are refused"),
+                SameClassBinding::Unproved,
+            );
+        }
+    }
+
+    #[test]
+    fn same_class_binding_propagates_budget_and_cancellation() {
+        let owner_id = owner();
+        let caller = caller(&owner_id);
+        let class = b"p/BoundOverload".to_vec();
+        let methods = [
+            method_header(b"pick", b"(Ljava/lang/Number;)V", ACC_PUBLIC),
+            method_header(b"pick", b"(Ljava/lang/Comparable;)V", ACC_PUBLIC),
+        ];
+        let invoked = invoke_use(&caller, &class, b"pick", b"(Ljava/lang/Number;)V");
+        let facts = SameClassUseFacts {
+            complete: true,
+            invokes: std::slice::from_ref(&invoked),
+            field_uses: &[],
+            member_refs: &[],
+        };
+        let mut limits = unlimited_annotation_test_limits();
+        limits.analysis_steps = 0;
+        let mut exhausted = Budget::new(limits);
+        assert!(matches!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                1,
+                &facts,
+                &mut exhausted,
+            ),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+
+        let token = crate::CancellationToken::new();
+        token.cancel();
+        let mut cancelled =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), token);
+        assert!(matches!(
+            prove_same_class_method_binding(
+                &class,
+                Some(b"java/lang/Object"),
+                &[],
+                &methods,
+                1,
+                &facts,
+                &mut cancelled,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
+    }
+
+    fn class_type(name: &[u8]) -> SignatureType {
+        SignatureType::Class(ClassType {
+            segments: vec![ClassTypeSegment {
+                binary_name: name.to_vec(),
+                arguments: Vec::new(),
+            }],
+        })
+    }
+
+    fn number_comparable_parameter(name: &[u8]) -> TypeParameter {
+        TypeParameter {
+            name: name.to_vec(),
+            class_bound: Some(class_type(b"java/lang/Number")),
+            interface_bounds: vec![SignatureType::Class(ClassType {
+                segments: vec![ClassTypeSegment {
+                    binary_name: b"java/lang/Comparable".to_vec(),
+                    arguments: vec![TypeArgument::Exact(SignatureType::TypeVariable(
+                        name.to_vec(),
+                    ))],
+                }],
+            })],
+        }
+    }
+
+    fn number_parameter(name: &[u8]) -> TypeParameter {
+        TypeParameter {
+            name: name.to_vec(),
+            class_bound: Some(class_type(b"java/lang/Number")),
+            interface_bounds: Vec::new(),
+        }
+    }
+
+    fn caller(owner: &PhysicalDefinitionId) -> PhysicalMethodId {
+        PhysicalMethodId {
+            owner: owner.clone(),
+            name: crate::JvmBytes(b"relay".to_vec()),
+            descriptor: crate::JvmBytes(b"(Ljava/lang/Number;)V".to_vec()),
+        }
+    }
+
+    fn candidate(
+        owner: &PhysicalDefinitionId,
+        name: &[u8],
+        descriptor: &[u8],
+        parameters: Vec<SignatureType>,
+        method_parameters: Vec<TypeParameter>,
+    ) -> SameClassOverloadCandidate {
+        SameClassOverloadCandidate {
+            method: PhysicalMethodId {
+                owner: owner.clone(),
+                name: crate::JvmBytes(name.to_vec()),
+                descriptor: crate::JvmBytes(descriptor.to_vec()),
+            },
+            owner: b"p/Bound".to_vec(),
+            descriptor: descriptor.to_vec(),
+            access_flags: ACC_PUBLIC,
+            parameters,
+            method_parameters,
+            source_writable: true,
+        }
+    }
+
+    fn source(
+        caller: &PhysicalMethodId,
+        variable: &[u8],
+        binders: Vec<TypeParameter>,
+    ) -> SameClassOverloadActual {
+        SameClassOverloadActual {
+            source: Some(SameClassGenericArgumentSource {
+                caller: caller.clone(),
+                origin: SameClassGenericArgumentOrigin::Formal { slot: 1 },
+                source_type: SignatureType::TypeVariable(variable.to_vec()),
+                caller_method_parameters: binders,
+            }),
+            null_literal: false,
+        }
+    }
+
+    fn primitive_source(
+        caller: &PhysicalMethodId,
+        slot: u16,
+        descriptor: u8,
+    ) -> SameClassOverloadActual {
+        SameClassOverloadActual {
+            source: Some(SameClassGenericArgumentSource {
+                caller: caller.clone(),
+                origin: SameClassGenericArgumentOrigin::Formal { slot },
+                source_type: SignatureType::Base(descriptor),
+                caller_method_parameters: Vec::new(),
+            }),
+            null_literal: false,
+        }
+    }
+
+    fn invoke(
+        caller: &PhysicalMethodId,
+        class_parameters: &[TypeParameter],
+        class_scope: &[TypeParameterErasure],
+        target_descriptor: &str,
+        actuals: &[SameClassOverloadActual],
+        overloads: &[SameClassOverloadCandidate],
+        complete: bool,
+    ) -> Option<Vec<jarde_java::report::ClassSourceInvokeArgumentCast>> {
+        let target = CallTarget::new(
+            InvokeKind::Virtual,
+            "p/Bound",
+            "pick",
+            target_descriptor,
+            false,
+        );
+        prove_same_class_overload_argument_upcasts(
+            b"p/Bound",
+            Some(b"java/lang/Object"),
+            &[],
+            class_scope,
+            class_parameters,
+            caller,
+            &target,
+            17,
+            complete,
+            actuals,
+            overloads,
+            &mut Budget::new(unlimited_annotation_test_limits()),
+        )
+        .expect("the overload proof is bounded")
+    }
+
+    #[test]
+    fn bound_overload_casts_only_to_the_physical_targets_explicit_number_bound() {
+        let owner = owner();
+        let caller = caller(&owner);
+        let parameter = number_comparable_parameter(b"T");
+        let scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Number;".to_vec(),
+        }];
+        let target = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Number;)V",
+            vec![class_type(b"java/lang/Number")],
+            Vec::new(),
+        );
+        let comparable = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Comparable;)V",
+            vec![class_type(b"java/lang/Comparable")],
+            Vec::new(),
+        );
+        let object = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Object;)V",
+            vec![class_type(b"java/lang/Object")],
+            Vec::new(),
+        );
+        let actuals = [source(&caller, b"T", Vec::new())];
+        let overloads = [target, comparable, object];
+        let edits = invoke(
+            &caller,
+            &[parameter],
+            &scope,
+            "(Ljava/lang/Number;)V",
+            &actuals,
+            &overloads,
+            true,
+        )
+        .expect("the complete closed overload set is provable");
+        assert_eq!(edits.len(), 1);
+        assert_eq!(edits[0].call_bci, 17);
+        assert_eq!(edits[0].argument_index, 0);
+        assert_eq!(edits[0].opcode, 0xb6);
+        assert_eq!(
+            edits[0].ty,
+            jarde_java::ast::Type::Reference("java.lang.Number".to_owned())
+        );
+    }
+
+    #[test]
+    fn wide_second_argument_keeps_its_descriptor_position_when_casting_first() {
+        let owner = owner();
+        let caller = PhysicalMethodId {
+            owner: owner.clone(),
+            name: crate::JvmBytes(b"relay".to_vec()),
+            descriptor: crate::JvmBytes(b"(Ljava/lang/Number;J)V".to_vec()),
+        };
+        let parameter = number_comparable_parameter(b"T");
+        let scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Number;".to_vec(),
+        }];
+        let number_long = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Number;J)V",
+            vec![class_type(b"java/lang/Number"), SignatureType::Base(b'J')],
+            Vec::new(),
+        );
+        let comparable_long = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Comparable;J)V",
+            vec![
+                class_type(b"java/lang/Comparable"),
+                SignatureType::Base(b'J'),
+            ],
+            Vec::new(),
+        );
+        let object_long = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Object;J)V",
+            vec![class_type(b"java/lang/Object"), SignatureType::Base(b'J')],
+            Vec::new(),
+        );
+        let actuals = [
+            source(&caller, b"T", Vec::new()),
+            primitive_source(&caller, 2, b'J'),
+        ];
+        let edits = invoke(
+            &caller,
+            &[parameter],
+            &scope,
+            "(Ljava/lang/Number;J)V",
+            &actuals,
+            &[number_long, comparable_long, object_long],
+            true,
+        )
+        .expect("both descriptor parameters close the same physical call");
+        assert_eq!(edits.len(), 1);
+        assert_eq!(edits[0].argument_index, 0);
+    }
+
+    #[test]
+    fn plain_upper_bound_is_already_unique_and_same_name_string_is_closed_negative() {
+        let owner = owner();
+        let caller = caller(&owner);
+        let parameter = number_parameter(b"T");
+        let scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Number;".to_vec(),
+        }];
+        let number = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Number;)V",
+            vec![class_type(b"java/lang/Number")],
+            Vec::new(),
+        );
+        let object = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Object;)V",
+            vec![class_type(b"java/lang/Object")],
+            Vec::new(),
+        );
+        let actuals = [source(&caller, b"T", Vec::new())];
+        assert_eq!(
+            invoke(
+                &caller,
+                &[parameter.clone()],
+                &scope,
+                "(Ljava/lang/Number;)V",
+                &actuals,
+                &[number.clone(), object.clone()],
+                true,
+            ),
+            Some(Vec::new())
+        );
+
+        let string = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/String;)V",
+            vec![class_type(b"java/lang/String")],
+            Vec::new(),
+        );
+        assert_eq!(
+            invoke(
+                &caller,
+                &[parameter],
+                &scope,
+                "(Ljava/lang/Number;)V",
+                &actuals,
+                &[number, string, object],
+                true,
+            ),
+            Some(Vec::new())
+        );
+    }
+
+    #[test]
+    fn same_name_overload_uses_unbounded_typevar_and_does_not_narrow_to_string() {
+        let owner = owner();
+        let caller = caller(&owner);
+        let parameter = TypeParameter {
+            name: b"T".to_vec(),
+            class_bound: Some(class_type(b"java/lang/Object")),
+            interface_bounds: Vec::new(),
+        };
+        let scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Object;".to_vec(),
+        }];
+        let object = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Object;)V",
+            vec![class_type(b"java/lang/Object")],
+            Vec::new(),
+        );
+        let string = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/String;)V",
+            vec![class_type(b"java/lang/String")],
+            Vec::new(),
+        );
+        assert_eq!(
+            invoke(
+                &caller,
+                &[parameter],
+                &scope,
+                "(Ljava/lang/Object;)V",
+                &[source(&caller, b"T", Vec::new())],
+                &[object, string],
+                true,
+            ),
+            Some(Vec::new()),
+            "an unbounded T widens to Object and is not assignable to String"
+        );
+    }
+
+    #[test]
+    fn unknown_typevar_bound_is_not_negative_evidence_for_an_overload() {
+        let owner = owner();
+        let caller = caller(&owner);
+        let parameter = TypeParameter {
+            name: b"T".to_vec(),
+            class_bound: Some(class_type(b"foreign/Unknown")),
+            interface_bounds: Vec::new(),
+        };
+        let scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Lforeign/Unknown;".to_vec(),
+        }];
+        let object = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Object;)V",
+            vec![class_type(b"java/lang/Object")],
+            Vec::new(),
+        );
+        let other = candidate(
+            &owner,
+            b"pick",
+            b"(Lforeign/MaybeNumber;)V",
+            vec![class_type(b"foreign/MaybeNumber")],
+            Vec::new(),
+        );
+        assert_eq!(
+            invoke(
+                &caller,
+                &[parameter],
+                &scope,
+                "(Ljava/lang/Object;)V",
+                &[source(&caller, b"T", Vec::new())],
+                &[object, other],
+                true,
+            ),
+            None,
+            "an unresolved bound/candidate relation cannot be called inapplicable"
+        );
+    }
+
+    #[test]
+    fn distinct_type_variables_are_not_assumed_incompatible() {
+        let method_parameters = [TypeParameter {
+            name: b"U".to_vec(),
+            class_bound: Some(SignatureType::TypeVariable(b"T".to_vec())),
+            interface_bounds: Vec::new(),
+        }];
+        let class_parameters = [TypeParameter {
+            name: b"T".to_vec(),
+            class_bound: Some(class_type(b"java/lang/Object")),
+            interface_bounds: Vec::new(),
+        }];
+        let class_scope = [TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Object;".to_vec(),
+        }];
+        let mut budget = Budget::new(unlimited_annotation_test_limits());
+        assert_eq!(
+            overload_source_type_assignable(
+                &SignatureType::TypeVariable(b"U".to_vec()),
+                &SignatureType::TypeVariable(b"T".to_vec()),
+                &method_parameters,
+                &class_scope,
+                &class_parameters,
+                &mut budget,
+                0,
+            )
+            .expect("bounded type-variable comparison is charged"),
+            None,
+            "U extends T is related by its bound and cannot be called inapplicable"
+        );
+    }
+
+    #[test]
+    fn overload_proof_propagates_budget_exhaustion_and_cancellation() {
+        let owner = owner();
+        let caller = caller(&owner);
+        let target = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Number;)V",
+            vec![class_type(b"java/lang/Number")],
+            Vec::new(),
+        );
+        let actuals = [source(&caller, b"T", Vec::new())];
+        let parameters = [number_parameter(b"T")];
+        let scope = [TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Number;".to_vec(),
+        }];
+        let mut limits = unlimited_annotation_test_limits();
+        limits.analysis_steps = 0;
+        let mut exhausted = Budget::new(limits);
+        assert!(matches!(
+            prove_same_class_overload_argument_upcasts(
+                b"p/Bound",
+                Some(b"java/lang/Object"),
+                &[],
+                &scope,
+                &parameters,
+                &caller,
+                &CallTarget::new(
+                    InvokeKind::Virtual,
+                    "p/Bound",
+                    "pick",
+                    "(Ljava/lang/Number;)V",
+                    false,
+                ),
+                17,
+                true,
+                &actuals,
+                &[target.clone()],
+                &mut exhausted,
+            ),
+            Err(Error::BudgetExceeded { .. })
+        ));
+
+        let token = jarde_reader::budget::CancellationToken::new();
+        token.cancel();
+        let mut cancelled =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), token);
+        assert!(matches!(
+            prove_same_class_overload_argument_upcasts(
+                b"p/Bound",
+                Some(b"java/lang/Object"),
+                &[],
+                &scope,
+                &parameters,
+                &caller,
+                &CallTarget::new(
+                    InvokeKind::Virtual,
+                    "p/Bound",
+                    "pick",
+                    "(Ljava/lang/Number;)V",
+                    false,
+                ),
+                17,
+                true,
+                &actuals,
+                &[target],
+                &mut cancelled,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn callee_method_binder_is_substituted_and_unknown_user_hierarchy_refuses() {
+        let owner = owner();
+        let caller = caller(&owner);
+        let class_parameter = number_parameter(b"T");
+        let scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Number;".to_vec(),
+        }];
+        let generic_target = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Number;)V",
+            vec![SignatureType::TypeVariable(b"U".to_vec())],
+            vec![number_parameter(b"U")],
+        );
+        let object = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Object;)V",
+            vec![class_type(b"java/lang/Object")],
+            Vec::new(),
+        );
+        let actuals = [source(&caller, b"T", Vec::new())];
+        assert_eq!(
+            invoke(
+                &caller,
+                &[class_parameter.clone()],
+                &scope,
+                "(Ljava/lang/Number;)V",
+                &actuals,
+                &[generic_target.clone(), object.clone()],
+                true,
+            ),
+            Some(Vec::new())
+        );
+
+        let unknown = candidate(
+            &owner,
+            b"pick",
+            b"(Lforeign/MaybeNumber;)V",
+            vec![class_type(b"foreign/MaybeNumber")],
+            Vec::new(),
+        );
+        assert_eq!(
+            invoke(
+                &caller,
+                &[class_parameter],
+                &scope,
+                "(Ljava/lang/Number;)V",
+                &actuals,
+                &[generic_target, object, unknown],
+                true,
+            ),
+            None,
+            "unknown hierarchy facts cannot be treated as a negative applicability result"
+        );
+    }
+
+    #[test]
+    fn incomplete_or_foreign_physical_inventories_never_pin_a_target() {
+        let owner = owner();
+        let caller = caller(&owner);
+        let parameter = number_parameter(b"T");
+        let scope = vec![TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Ljava/lang/Number;".to_vec(),
+        }];
+        let target = candidate(
+            &owner,
+            b"pick",
+            b"(Ljava/lang/Number;)V",
+            vec![class_type(b"java/lang/Number")],
+            Vec::new(),
+        );
+        let actuals = [source(&caller, b"T", Vec::new())];
+        assert_eq!(
+            invoke(
+                &caller,
+                &[parameter.clone()],
+                &scope,
+                "(Ljava/lang/Number;)V",
+                &actuals,
+                &[target.clone()],
+                false,
+            ),
+            None
+        );
+
+        let mut foreign = target;
+        foreign.owner = b"q/Other".to_vec();
+        assert_eq!(
+            invoke(
+                &caller,
+                &[parameter],
+                &scope,
+                "(Ljava/lang/Number;)V",
+                &actuals,
+                &[foreign],
+                true,
+            ),
+            None
+        );
+
+        let object_named_target = CallTarget::new(
+            InvokeKind::Virtual,
+            "p/Bound",
+            "equals",
+            "(Ljava/lang/Number;)V",
+            false,
+        );
+        assert!(
+            prove_same_class_overload_argument_upcasts(
+                b"p/Bound",
+                Some(b"java/lang/Object"),
+                &[],
+                &scope,
+                &[number_parameter(b"T")],
+                &caller,
+                &object_named_target,
+                17,
+                true,
+                &actuals,
+                &[candidate(
+                    &owner,
+                    b"equals",
+                    b"(Ljava/lang/Number;)V",
+                    vec![class_type(b"java/lang/Number")],
+                    Vec::new(),
+                )],
+                &mut Budget::new(unlimited_annotation_test_limits()),
+            )
+            .expect("Object method names are an ordinary refusal")
+            .is_none(),
+            "Object's inherited equals(Object) belongs to the source overload set"
         );
     }
 }

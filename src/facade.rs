@@ -6845,6 +6845,7 @@ impl Engine {
             Option<jarde_java::report::GenericReturnCandidate>,
             Option<jarde_java::report::GenericConstructorCandidate>,
         )> = Vec::new();
+        let mut generic_call_projection_inputs = Vec::<GenericCallProjectionInput>::new();
         // This only avoids scanning unrelated classes. A header-level synthetic lambda helper is
         // not proof of a projection; all eligibility still comes from same-run Code/CP/AST facts.
         let array_helper_census_needed = read.facts.methods.iter().any(|member| {
@@ -6938,6 +6939,29 @@ impl Engine {
                     )
                 })
             };
+        let generic_call_asts_needed = read.facts.methods.iter().any(|member| {
+            member.name.raw().0 != b"<init>"
+                && !member.name.raw().0.starts_with(b"<")
+                && class_source::declares_signature(member)
+                && code_shell(member).is_some()
+        }) || (read.facts.methods.iter().any(|member| {
+            member.name.raw().0 != b"<init>"
+                && !member.name.raw().0.starts_with(b"<")
+                && class_source::declares_signature(member)
+        }) && pool.iter().any(|entry| {
+            matches!(
+                &entry.kind,
+                CpEntryKind::MethodRef { owner, name, .. }
+                | CpEntryKind::InterfaceMethodRef { owner, name, .. }
+                    if owner.0.as_slice() == read.facts.this_class.raw().0.as_slice()
+                        && !name.0.starts_with(b"<")
+                        && read.facts.methods.iter().any(|member| {
+                            member.name.raw().0 == name.0
+                                && !member.name.raw().0.starts_with(b"<")
+                                && class_source::declares_signature(member)
+                        })
+            )
+        }));
         // Class nesting is an assembly fact, not method IR. Decode the two already recognized
         // class attributes once from the selected read and keep them in a private handoff for the
         // source assembler. In particular, do not re-slice these attributes from a sibling class
@@ -7436,39 +7460,68 @@ impl Engine {
                 let mut record =
                     ClassSourceMethod::no_body(item, no_body_kind(member.access_flags), spelled);
                 let mut stops = Vec::new();
-                match class_source::project_method_signature(
-                    &mut record,
-                    member,
-                    &attributes,
-                    None,
-                    None,
-                    &read.facts.fields,
-                    &read.bytes,
-                    &pool,
-                    &read.facts.this_class.raw().0,
-                    read.facts.access_flags,
-                    read.facts
-                        .super_class
-                        .as_ref()
-                        .map(|name| name.raw().0.as_slice()),
-                    &physical_interfaces_raw,
-                    class_scope
-                        .as_ref()
-                        .map(|proof| proof.type_parameters.as_slice())
-                        .unwrap_or(&[]),
-                    class_signature_present,
-                    &assembly_context.resolved_inner_classes,
-                    class_source::SameClassBinding::Pending,
-                    None,
-                    budget,
-                ) {
-                    Ok(class_source::SignatureProjection::Settled) => {}
-                    Ok(class_source::SignatureProjection::DeferredSameClass) => {
-                        deferred_methods.push((index, attributes, None, None));
+                if generic_call_asts_needed && class_source::declares_signature(member) {
+                    match generic_call_signature_needs_transaction(
+                        member,
+                        &read.bytes,
+                        &pool,
+                        budget,
+                    ) {
+                        Ok(true) => match record.generic_call_projection_state(budget) {
+                            Ok(projection_state) => {
+                                generic_call_projection_inputs.push(GenericCallProjectionInput {
+                                    index,
+                                    attributes: attributes.clone(),
+                                    projection_state: Some(projection_state),
+                                });
+                            }
+                            Err(error) => {
+                                stops.push(stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            }
+                        },
+                        Ok(false) => {}
+                        Err(error) => {
+                            stops.push(stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        }
                     }
-                    Err(error) => {
-                        stops.push(stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                }
+                if !stops.iter().any(ends_the_request) {
+                    match class_source::project_method_signature(
+                        &mut record,
+                        member,
+                        &attributes,
+                        None,
+                        None,
+                        &read.facts.fields,
+                        &read.bytes,
+                        &pool,
+                        &read.facts.this_class.raw().0,
+                        read.facts.access_flags,
+                        read.facts
+                            .super_class
+                            .as_ref()
+                            .map(|name| name.raw().0.as_slice()),
+                        &physical_interfaces_raw,
+                        class_scope
+                            .as_ref()
+                            .map(|proof| proof.type_parameters.as_slice())
+                            .unwrap_or(&[]),
+                        class_signature_present,
+                        &assembly_context.resolved_inner_classes,
+                        class_source::SameClassBinding::Pending,
+                        None,
+                        budget,
+                    ) {
+                        Ok(class_source::SignatureProjection::Settled) => {}
+                        Ok(class_source::SignatureProjection::DeferredSameClass) => {
+                            deferred_methods.push((index, attributes, None, None));
+                        }
+                        Err(error) => {
+                            stops.push(stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        }
                     }
                 }
                 let ends = stops.iter().any(ends_the_request);
@@ -7507,8 +7560,15 @@ impl Engine {
                                 capture_assert_asts,
                                 capture_integer_constant_asts: !integer_constant_candidates
                                     .is_empty(),
-                                capture_member_uses: same_class_census_needed,
+                                // Generic call publication needs a closed same-run inventory even
+                                // when this class has no constant-pool Methodref naming its own
+                                // methods (for example, an independently generic empty sink).
+                                // Keep the broader scan conditional on that demand so ordinary
+                                // classes retain the existing census cost.
+                                capture_member_uses: same_class_census_needed
+                                    || generic_call_asts_needed,
                                 capture_member_use_bootstrap: member_use_scans.is_empty(),
+                                retain_generic_call_asts: generic_call_asts_needed,
                                 static_member_target: static_target.as_ref(),
                             },
                             budget,
@@ -7526,7 +7586,7 @@ impl Engine {
                                 member_uses: member_use_scan,
                                 field_receivers,
                                 field_write_accessor_sites,
-                                generic_return,
+                                mut generic_return,
                                 typed_functional_target,
                                 generic_constructor,
                                 anonymous_allocations,
@@ -7601,61 +7661,156 @@ impl Engine {
                                 let (_, report, _) = recovered.into_parts();
                                 let mut stops =
                                     vec![analysis.execution.clone(), report.execution.clone()];
-                                let mut record = ClassSourceMethod::recovered(
-                                    item,
-                                    spelled,
-                                    Box::new(report),
-                                    analysis,
-                                    generic_return.clone(),
-                                );
-                                let signature_candidate =
-                                        generic_return.as_ref().filter(|candidate| {
-                                            !matches!(
-                                                &candidate.value,
-                                                jarde_java::report::GenericReturnValue::StaticMemberCreation { .. }
-                                            )
-                                        });
-                                match class_source::project_method_signature(
-                                    &mut record,
-                                    member,
-                                    &attributes,
-                                    signature_candidate,
-                                    generic_constructor.as_ref(),
-                                    &read.facts.fields,
-                                    &read.bytes,
-                                    &pool,
-                                    &read.facts.this_class.raw().0,
-                                    read.facts.access_flags,
-                                    read.facts
-                                        .super_class
-                                        .as_ref()
-                                        .map(|name| name.raw().0.as_slice()),
-                                    &physical_interfaces_raw,
-                                    class_scope
-                                        .as_ref()
-                                        .map(|proof| proof.type_parameters.as_slice())
-                                        .unwrap_or(&[]),
-                                    class_signature_present,
-                                    &assembly_context.resolved_inner_classes,
-                                    class_source::SameClassBinding::Pending,
-                                    None,
-                                    budget,
-                                ) {
-                                    Ok(class_source::SignatureProjection::Settled) => {}
-                                    Ok(class_source::SignatureProjection::DeferredSameClass) => {
-                                        deferred_methods.push((
-                                            index,
-                                            attributes.clone(),
-                                            signature_candidate.cloned(),
-                                            generic_constructor.clone(),
-                                        ));
-                                    }
-                                    Err(error) => {
+                                if let Some(jarde_java::report::GenericReturnValue::VoidBody {
+                                    unread_parameter_slots,
+                                }) = generic_return.as_ref().map(|candidate| &candidate.value)
+                                {
+                                    let result = budget.poll().and_then(|()| {
+                                        budget.charge(
+                                            CountedBudgetDimension::IrItems,
+                                            u64::try_from(unread_parameter_slots.len())
+                                                .unwrap_or(u64::MAX),
+                                        )
+                                    });
+                                    if let Err(error) = result {
                                         stops.push(stop_execution(&error, budget));
                                         diagnostics.push(stop_diagnostic(
                                             &error,
                                             class_provenance.clone(),
                                         ));
+                                    }
+                                }
+                                let record_generic_return = if stops.iter().any(ends_the_request) {
+                                    generic_return.take()
+                                } else {
+                                    generic_return.clone()
+                                };
+                                let mut record = ClassSourceMethod::recovered(
+                                    item,
+                                    spelled,
+                                    Box::new(report),
+                                    analysis,
+                                    record_generic_return,
+                                );
+                                if !stops.iter().any(ends_the_request)
+                                    && generic_call_asts_needed
+                                    && class_source::declares_signature(member)
+                                {
+                                    match generic_call_signature_needs_transaction(
+                                        member,
+                                        &read.bytes,
+                                        &pool,
+                                        budget,
+                                    ) {
+                                        Ok(true) => {
+                                            match record.generic_call_projection_state(budget) {
+                                                Ok(projection_state) => {
+                                                    generic_call_projection_inputs.push(
+                                                        GenericCallProjectionInput {
+                                                            index,
+                                                            attributes: attributes.clone(),
+                                                            projection_state: Some(
+                                                                projection_state,
+                                                            ),
+                                                        },
+                                                    );
+                                                }
+                                                Err(error) => {
+                                                    stops.push(stop_execution(&error, budget));
+                                                    diagnostics.push(stop_diagnostic(
+                                                        &error,
+                                                        class_provenance.clone(),
+                                                    ));
+                                                }
+                                            }
+                                        }
+                                        Ok(false) => {}
+                                        Err(error) => {
+                                            stops.push(stop_execution(&error, budget));
+                                            diagnostics.push(stop_diagnostic(
+                                                &error,
+                                                class_provenance.clone(),
+                                            ));
+                                        }
+                                    }
+                                }
+                                let signature_candidate = generic_return.as_ref().filter(
+                                    |candidate| {
+                                        !matches!(
+                                            &candidate.value,
+                                            jarde_java::report::GenericReturnValue::StaticMemberCreation { .. }
+                                        )
+                                    },
+                                );
+                                if !stops.iter().any(ends_the_request) {
+                                    match class_source::project_method_signature(
+                                        &mut record,
+                                        member,
+                                        &attributes,
+                                        signature_candidate,
+                                        generic_constructor.as_ref(),
+                                        &read.facts.fields,
+                                        &read.bytes,
+                                        &pool,
+                                        &read.facts.this_class.raw().0,
+                                        read.facts.access_flags,
+                                        read.facts
+                                            .super_class
+                                            .as_ref()
+                                            .map(|name| name.raw().0.as_slice()),
+                                        &physical_interfaces_raw,
+                                        class_scope
+                                            .as_ref()
+                                            .map(|proof| proof.type_parameters.as_slice())
+                                            .unwrap_or(&[]),
+                                        class_signature_present,
+                                        &assembly_context.resolved_inner_classes,
+                                        class_source::SameClassBinding::Pending,
+                                        None,
+                                        budget,
+                                    ) {
+                                        Ok(class_source::SignatureProjection::Settled) => {}
+                                        Ok(
+                                            class_source::SignatureProjection::DeferredSameClass,
+                                        ) => {
+                                            if let Some(
+                                                jarde_java::report::GenericReturnValue::VoidBody {
+                                                    unread_parameter_slots,
+                                                },
+                                            ) = signature_candidate
+                                                .map(|candidate| &candidate.value)
+                                            {
+                                                let result = budget.poll().and_then(|()| {
+                                                    budget.charge(
+                                                        CountedBudgetDimension::IrItems,
+                                                        u64::try_from(unread_parameter_slots.len())
+                                                            .unwrap_or(u64::MAX),
+                                                    )
+                                                });
+                                                if let Err(error) = result {
+                                                    stops.push(stop_execution(&error, budget));
+                                                    diagnostics.push(stop_diagnostic(
+                                                        &error,
+                                                        class_provenance.clone(),
+                                                    ));
+                                                }
+                                            }
+                                            if !stops.iter().any(ends_the_request) {
+                                                deferred_methods.push((
+                                                    index,
+                                                    attributes.clone(),
+                                                    signature_candidate.cloned(),
+                                                    generic_constructor.clone(),
+                                                ));
+                                            }
+                                        }
+                                        Err(error) => {
+                                            stops.push(stop_execution(&error, budget));
+                                            diagnostics.push(stop_diagnostic(
+                                                &error,
+                                                class_provenance.clone(),
+                                            ));
+                                        }
                                     }
                                 }
                                 if typed_functional_target.is_some_and(|target| {
@@ -7722,7 +7877,10 @@ impl Engine {
         // when every body this presentation would run was decoded and scanned without a stop and
         // the class's shared bootstrap table was read; anything less keeps every held member on its
         // erased declaration with the existing refusal, so an unread body can never read as "no use".
-        if !(deferred_fields.is_empty() && deferred_methods.is_empty()) {
+        if !(deferred_fields.is_empty()
+            && deferred_methods.is_empty()
+            && generic_call_projection_inputs.is_empty())
+        {
             let inventory_complete = structure_complete
                 && !ended
                 && methods.len() == read.facts.methods.len()
@@ -7747,6 +7905,23 @@ impl Engine {
                         .filter(|header| class_source_runs_body(header))
                         .count()
                         == 0);
+            let generic_projection_inventory_ready = generic_call_projection_inputs.is_empty()
+                || (inventory_complete && (!class_signature_present || class_scope.is_some()));
+            if !generic_projection_inventory_ready {
+                for input in &mut generic_call_projection_inputs {
+                    if input.index < methods.len() {
+                        if methods[input.index].generic_signature_refused
+                            && !methods[input.index].generic_signature_projected
+                        {
+                            continue;
+                        }
+                        if let Some(state) = input.projection_state.take() {
+                            methods[input.index].install_generic_call_projection_state(state);
+                        }
+                    }
+                }
+                generic_call_projection_inputs.clear();
+            }
             let invokes: Vec<class_source::SameClassInvokeUse> = member_use_scans
                 .iter()
                 .flat_map(|scan| scan.invokes.iter().cloned())
@@ -7868,74 +8043,190 @@ impl Engine {
                 field_uses: &field_uses,
                 member_refs: &member_refs,
             };
-            for (index, attributes, candidate, constructor_candidate) in deferred_methods {
-                let binding = match class_source::prove_same_class_method_binding(
-                    &read.facts.this_class.raw().0,
-                    read.facts
-                        .super_class
-                        .as_ref()
-                        .map(|name| name.raw().0.as_slice()),
-                    &physical_interfaces_raw,
-                    &read.facts.methods,
-                    index,
-                    &facts,
-                    budget,
-                ) {
-                    Ok(binding) => binding,
-                    Err(error) => {
-                        merge_execution(&mut execution, stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        ended = true;
-                        break;
+            if generic_projection_inventory_ready {
+                for (index, attributes, candidate, constructor_candidate) in deferred_methods {
+                    let binding = match class_source::prove_same_class_method_binding(
+                        &read.facts.this_class.raw().0,
+                        read.facts
+                            .super_class
+                            .as_ref()
+                            .map(|name| name.raw().0.as_slice()),
+                        &physical_interfaces_raw,
+                        &read.facts.methods,
+                        index,
+                        &facts,
+                        budget,
+                    ) {
+                        Ok(binding) => binding,
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            ended = true;
+                            break;
+                        }
+                    };
+                    let this_delegate_bci =
+                        match class_source::unproved_same_class_this_delegate_bci(
+                            &read.facts.this_class.raw().0,
+                            &read.facts.methods[index],
+                            &facts,
+                            budget,
+                        ) {
+                            Ok(bci) => bci,
+                            Err(error) => {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                ended = true;
+                                break;
+                            }
+                        };
+                    match class_source::project_method_signature(
+                        &mut methods[index],
+                        &read.facts.methods[index],
+                        &attributes,
+                        candidate.as_ref(),
+                        constructor_candidate.as_ref(),
+                        &read.facts.fields,
+                        &read.bytes,
+                        &pool,
+                        &read.facts.this_class.raw().0,
+                        read.facts.access_flags,
+                        read.facts
+                            .super_class
+                            .as_ref()
+                            .map(|name| name.raw().0.as_slice()),
+                        &physical_interfaces_raw,
+                        class_scope
+                            .as_ref()
+                            .map(|proof| proof.type_parameters.as_slice())
+                            .unwrap_or(&[]),
+                        class_signature_present,
+                        &assembly_context.resolved_inner_classes,
+                        binding,
+                        this_delegate_bci,
+                        budget,
+                    ) {
+                        Ok(_) => {}
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            ended = true;
+                            break;
+                        }
                     }
-                };
-                let this_delegate_bci = match class_source::unproved_same_class_this_delegate_bci(
-                    &read.facts.this_class.raw().0,
-                    &read.facts.methods[index],
-                    &facts,
-                    budget,
-                ) {
-                    Ok(bci) => bci,
-                    Err(error) => {
-                        merge_execution(&mut execution, stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        ended = true;
-                        break;
+                }
+            }
+            // A generic-call component can only commit against a closed class inventory. If a
+            // member stop or incomplete scan prevents that proof, discard first-pass generic
+            // headers from this class-local cohort before the independent field pass can observe
+            // them. These are owned pre-projection records, so restoration needs no clone or
+            // additional budget and preserves the exact erased body and metadata.
+            if generic_projection_inventory_ready && ended {
+                for input in &mut generic_call_projection_inputs {
+                    if input.index < methods.len() {
+                        if methods[input.index].generic_signature_refused
+                            && !methods[input.index].generic_signature_projected
+                        {
+                            continue;
+                        }
+                        if let Some(state) = input.projection_state.take() {
+                            methods[input.index].install_generic_call_projection_state(state);
+                        }
                     }
-                };
-                match class_source::project_method_signature(
-                    &mut methods[index],
-                    &read.facts.methods[index],
-                    &attributes,
-                    candidate.as_ref(),
-                    constructor_candidate.as_ref(),
-                    &read.facts.fields,
-                    &read.bytes,
-                    &pool,
-                    &read.facts.this_class.raw().0,
-                    read.facts.access_flags,
-                    read.facts
-                        .super_class
-                        .as_ref()
-                        .map(|name| name.raw().0.as_slice()),
-                    &physical_interfaces_raw,
-                    class_scope
-                        .as_ref()
-                        .map(|proof| proof.type_parameters.as_slice())
-                        .unwrap_or(&[]),
-                    class_signature_present,
-                    &assembly_context.resolved_inner_classes,
-                    binding,
-                    this_delegate_bci,
-                    budget,
-                ) {
-                    Ok(_) => {}
-                    Err(error) => {
-                        merge_execution(&mut execution, stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        ended = true;
-                        break;
+                }
+                generic_call_projection_inputs.clear();
+            }
+            if !ended
+                && inventory_complete
+                && !generic_call_projection_inputs.is_empty()
+                && (!class_signature_present || class_scope.is_some())
+            {
+                let mut pending_inputs = std::mem::take(&mut generic_call_projection_inputs);
+                let transaction = (|| -> Result<()> {
+                    let class_parameters = if class_signature_present {
+                        let shells = read
+                            .facts
+                            .attributes
+                            .iter()
+                            .filter(|attribute| attribute.name.raw().0 == b"Signature")
+                            .cloned()
+                            .collect::<Vec<_>>();
+                        if shells.len() == 1 {
+                            attribute_facts(&read.bytes, &shells, &pool, budget)?
+                                .signature
+                                .map(|signature| {
+                                    jarde_reader::signature::parse_class_signature(
+                                        &signature.0,
+                                        budget,
+                                    )
+                                    .map(|parsed| parsed.type_parameters)
+                                })
+                                .transpose()?
+                                .unwrap_or_default()
+                        } else {
+                            Vec::new()
+                        }
+                    } else {
+                        Vec::new()
+                    };
+                    project_generic_call_components(
+                        std::mem::take(&mut pending_inputs),
+                        &mut methods,
+                        &read.facts.methods,
+                        &invokes,
+                        &field_uses,
+                        &member_use_scans,
+                        &method_asts,
+                        &read.facts.this_class.raw().0,
+                        class_scope
+                            .as_ref()
+                            .map(|proof| proof.type_parameters.as_slice())
+                            .unwrap_or(&[]),
+                        &class_parameters,
+                        class_signature_present,
+                        read.facts.access_flags,
+                        read.facts
+                            .super_class
+                            .as_ref()
+                            .map(|name| name.raw().0.as_slice()),
+                        &physical_interfaces_raw,
+                        &assembly_context.resolved_inner_classes,
+                        &read.facts.fields,
+                        &read.bytes,
+                        &pool,
+                        facts,
+                        budget,
+                    )
+                })();
+                if let Err(error) = transaction {
+                    // Preparation can stop before ownership enters the component transaction.
+                    // Restore only this unsubmitted cohort by moving its saved overlays; the
+                    // component transaction itself handles its consumed inputs and preserves
+                    // groups it already committed before a later stop.
+                    for input in &mut pending_inputs {
+                        if input.index < methods.len() {
+                            if matches!(
+                                methods[input.index].outcome,
+                                class_source::ClassSourceOutcome::NoBody
+                            ) && methods[input.index].no_body_kind == Some(NoBodyKind::Abstract)
+                                && methods[input.index].generic_signature_projected
+                                && methods[input.index].declaration.is_some()
+                            {
+                                continue;
+                            }
+                            if methods[input.index].generic_signature_refused
+                                && !methods[input.index].generic_signature_projected
+                            {
+                                continue;
+                            }
+                            if let Some(state) = input.projection_state.take() {
+                                methods[input.index].install_generic_call_projection_state(state);
+                            }
+                        }
                     }
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    ended = true;
                 }
             }
             if !ended {
@@ -11547,7 +11838,5047 @@ struct MemberUseScan {
     invokes: Vec<class_source::SameClassInvokeUse>,
     field_uses: Vec<class_source::SameClassFieldUse>,
     member_refs: Vec<class_source::SameClassMemberRef>,
+    body_values: Vec<class_source::SameClassBodyValueSite>,
+    allocations: Vec<(u32, Vec<u8>)>,
     bootstrap_captured: bool,
+}
+
+/// Inputs for a later class-local call transaction, captured before ordinary per-member
+/// publication can settle or refuse a Signature independently of its incoming invoke sites.
+struct GenericCallProjectionInput {
+    index: usize,
+    attributes: class_source::MemberAttributes,
+    projection_state: Option<class_source::GenericCallProjectionState>,
+}
+
+/// Only Signatures that mention a class or method binder need the same-class generic-call
+/// transaction. Concrete parameterized declarations keep the ordinary/deferred projection path;
+/// a constructor's own method binders likewise stay on its established constructor route.
+fn generic_call_signature_needs_transaction(
+    member: &MemberHeader,
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(member.attributes.len()).unwrap_or(u64::MAX),
+    )?;
+    let mut shells = member
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0 == b"Signature");
+    let Some(shell) = shells.next() else {
+        return Ok(false);
+    };
+    if shells.next().is_some() {
+        return Ok(false);
+    }
+    let facts = match attribute_facts(bytes, std::slice::from_ref(shell), pool, budget) {
+        Ok(facts) => facts,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+            return Err(error);
+        }
+        Err(_) => return Ok(false),
+    };
+    let Some(signature) = facts.signature else {
+        return Ok(false);
+    };
+    let parsed = match jarde_reader::signature::parse_method_signature(&signature.0, budget) {
+        Ok(parsed) => parsed,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+            return Err(error);
+        }
+        Err(_) => return Ok(false),
+    };
+    if member.name.raw().0 == b"<init>" && !parsed.type_parameters.is_empty() {
+        return Ok(false);
+    }
+    if !parsed.type_parameters.is_empty() {
+        return Ok(true);
+    }
+    for ty in parsed
+        .parameters
+        .iter()
+        .chain(parsed.result.iter())
+        .chain(parsed.throws.iter())
+    {
+        if class_source::charge_signature_type_proof(ty, budget)? != 0 {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct GenericCallSiteProof {
+    direct_return: bool,
+    result_type: Option<jarde_reader::signature::SignatureType>,
+    presentation_removals: Vec<jarde_java::report::ClassSourceInvokeArgumentPresentationCast>,
+}
+
+fn generic_call_ast_key(
+    invoke: &class_source::SameClassInvokeUse,
+) -> Option<jarde_java::report::ClassSourceInvokeKey> {
+    Some(jarde_java::report::ClassSourceInvokeKey {
+        call_bci: invoke.bci,
+        opcode: invoke.opcode,
+        target: jarde_java::facts::CallTarget::new(
+            match invoke.opcode {
+                0xb6 => jarde_java::facts::InvokeKind::Virtual,
+                0xb7 => jarde_java::facts::InvokeKind::Special,
+                0xb8 => jarde_java::facts::InvokeKind::Static,
+                0xb9 => jarde_java::facts::InvokeKind::Interface,
+                _ => return None,
+            },
+            String::from_utf8(invoke.owner.clone()).ok()?,
+            String::from_utf8(invoke.name.clone()).ok()?,
+            String::from_utf8(invoke.descriptor.clone()).ok()?,
+            invoke.opcode == 0xb9,
+        ),
+    })
+}
+
+fn generic_call_ast_inventory_matches(
+    ast: &jarde_java::report::ClassSourceMethodAst,
+    caller: &PhysicalMethodId,
+    invokes: &[class_source::SameClassInvokeUse],
+    class_internal: &[u8],
+    budget: &mut Budget,
+) -> Result<bool> {
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(invokes.len()).unwrap_or(u64::MAX),
+    )?;
+    let Some(owner) = std::str::from_utf8(class_internal).ok() else {
+        return Ok(false);
+    };
+    let mut expected_count = 0u64;
+    let mut expected_bytes = 0u64;
+    for invoke in invokes {
+        budget.poll()?;
+        if invoke.physical_caller != *caller || invoke.owner.as_slice() != class_internal {
+            continue;
+        }
+        if !matches!(invoke.opcode, 0xb6 | 0xb7 | 0xb8 | 0xb9)
+            || std::str::from_utf8(&invoke.name).is_err()
+            || std::str::from_utf8(&invoke.descriptor).is_err()
+        {
+            return Ok(false);
+        }
+        expected_count = expected_count.saturating_add(1);
+        expected_bytes = expected_bytes
+            .saturating_add(u64::try_from(invoke.owner.len()).unwrap_or(u64::MAX))
+            .saturating_add(u64::try_from(invoke.name.len()).unwrap_or(u64::MAX))
+            .saturating_add(u64::try_from(invoke.descriptor.len()).unwrap_or(u64::MAX));
+    }
+    budget.charge(CountedBudgetDimension::IrItems, expected_count)?;
+    budget.charge(CountedBudgetDimension::OutputBytes, expected_bytes)?;
+    let Ok(expected_capacity) = usize::try_from(expected_count) else {
+        return Ok(false);
+    };
+    let mut expected = Vec::with_capacity(expected_capacity);
+    for invoke in invokes {
+        budget.poll()?;
+        if invoke.physical_caller != *caller || invoke.owner.as_slice() != class_internal {
+            continue;
+        }
+        let Some(key) = generic_call_ast_key(invoke) else {
+            return Ok(false);
+        };
+        expected.push(key);
+    }
+    #[cfg(test)]
+    apply_generic_call_inventory_test_fault(owner.as_bytes(), caller, &mut expected);
+    let inventory = jarde_java::report::class_source_same_class_invoke_inventory_matches(
+        ast, owner, &expected, budget,
+    )
+    .map_err(|stop| {
+        enum_projection_stop_error(
+            stop,
+            "same-class generic caller invoke inventory",
+            "generic_call_ast_missing",
+        )
+    })?;
+    Ok(inventory.is_some())
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy)]
+enum GenericCallInventoryTestFaultKind {
+    DropOneExpected,
+    DropAllExpected,
+}
+
+#[cfg(test)]
+struct GenericCallInventoryTestFault {
+    owner: Vec<u8>,
+    caller_name: Vec<u8>,
+    kind: GenericCallInventoryTestFaultKind,
+    hits: std::rc::Rc<std::cell::Cell<usize>>,
+}
+
+#[cfg(test)]
+thread_local! {
+    static GENERIC_CALL_INVENTORY_TEST_FAULT:
+        std::cell::RefCell<Option<GenericCallInventoryTestFault>> = const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(test)]
+struct GenericCallInventoryTestFaultGuard {
+    hits: std::rc::Rc<std::cell::Cell<usize>>,
+}
+
+#[cfg(test)]
+impl GenericCallInventoryTestFaultGuard {
+    fn install(owner: &[u8], caller_name: &[u8], kind: GenericCallInventoryTestFaultKind) -> Self {
+        let hits = std::rc::Rc::new(std::cell::Cell::new(0));
+        GENERIC_CALL_INVENTORY_TEST_FAULT.with(|slot| {
+            let mut slot = slot.borrow_mut();
+            assert!(slot.is_none(), "inventory fault hooks do not nest");
+            *slot = Some(GenericCallInventoryTestFault {
+                owner: owner.to_vec(),
+                caller_name: caller_name.to_vec(),
+                kind,
+                hits: std::rc::Rc::clone(&hits),
+            });
+        });
+        Self { hits }
+    }
+
+    fn hits(&self) -> usize {
+        self.hits.get()
+    }
+}
+
+#[cfg(test)]
+impl Drop for GenericCallInventoryTestFaultGuard {
+    fn drop(&mut self) {
+        GENERIC_CALL_INVENTORY_TEST_FAULT.with(|slot| {
+            slot.replace(None);
+        });
+    }
+}
+
+#[cfg(test)]
+fn apply_generic_call_inventory_test_fault(
+    owner: &[u8],
+    caller: &PhysicalMethodId,
+    expected: &mut Vec<jarde_java::report::ClassSourceInvokeKey>,
+) {
+    GENERIC_CALL_INVENTORY_TEST_FAULT.with(|slot| {
+        let mut slot = slot.borrow_mut();
+        let Some(fault) = slot.as_mut() else {
+            return;
+        };
+        if fault.owner.as_slice() != owner || fault.caller_name.as_slice() != caller.name.0 {
+            return;
+        }
+        match fault.kind {
+            GenericCallInventoryTestFaultKind::DropOneExpected => {
+                expected.pop();
+            }
+            GenericCallInventoryTestFaultKind::DropAllExpected => expected.clear(),
+        }
+        fault.hits.set(fault.hits.get().saturating_add(1));
+    });
+}
+
+#[cfg(test)]
+mod same_class_generic_call_inventory_tests {
+    use super::*;
+    use std::io::Read;
+    use std::process::Command;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    const SOURCE: &str = "public class IndependentChains<T> {\n\
+        public T identity(T value) { return value; }\n\
+        public T relay(T value) { return identity(identity(value)); }\n\
+        public T untouched(T value) { return value; }\n\
+    }\n";
+
+    struct TempDirectory(std::path::PathBuf);
+
+    impl Drop for TempDirectory {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+
+    fn compile_fixture() -> Vec<u8> {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("the clock is after the Unix epoch")
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!(
+            "jarde-generic-call-inventory-{}-{nonce}",
+            std::process::id()
+        ));
+        std::fs::create_dir_all(&directory).expect("the fixture directory is created");
+        let _directory = TempDirectory(directory.clone());
+        let empty_path = directory.join("empty");
+        std::fs::create_dir(&empty_path).expect("the empty Java lookup path is created");
+        let source_path = directory.join("IndependentChains.java");
+        std::fs::write(&source_path, SOURCE).expect("the fixture source is written");
+        let compiled = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-Xlint:-options", "-classpath"])
+            .arg(&empty_path)
+            .arg("-sourcepath")
+            .arg(&empty_path)
+            .arg(&source_path)
+            .current_dir(&directory)
+            .output()
+            .expect("javac runs");
+        assert!(
+            compiled.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let mut bytes = Vec::new();
+        std::fs::File::open(directory.join("IndependentChains.class"))
+            .expect("the class file is written")
+            .read_to_end(&mut bytes)
+            .expect("the class file is read");
+        bytes
+    }
+
+    fn recover(bytes: Vec<u8>) -> ClassSourceReport {
+        let engine = Engine::new();
+        let mut budget = Budget::new(task_limits(&[]).expect("task limits are valid"));
+        let snapshot = engine
+            .open(ArtifactInput::bytes(bytes), &mut budget)
+            .expect("the class file opens");
+        let request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("IndependentChains"),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::SingleClass,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: crate::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".to_owned()),
+            },
+        };
+        match engine
+            .class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
+            .expect("class-source recovery runs")
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("the fixture produces one class-source report: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn incomplete_expected_inventory_rolls_back_only_its_call_component() {
+        let bytes = compile_fixture();
+        let baseline = recover(bytes.clone());
+        for method in ["identity", "relay", "untouched"] {
+            assert!(
+                baseline
+                    .text
+                    .contains(&format!("public T {method}(T arg1)")),
+                "the unfaulted source projects {method}"
+            );
+        }
+        for (fault_kind, expected_hits) in [
+            (GenericCallInventoryTestFaultKind::DropOneExpected, 1),
+            (GenericCallInventoryTestFaultKind::DropAllExpected, 1),
+        ] {
+            let fault = GenericCallInventoryTestFaultGuard::install(
+                b"IndependentChains",
+                b"relay",
+                fault_kind,
+            );
+            let report = recover(bytes.clone());
+            assert!(
+                fault.hits() >= expected_hits,
+                "the requested fault is applied"
+            );
+            drop(fault);
+
+            assert!(
+                report
+                    .text
+                    .contains("public java.lang.Object identity(java.lang.Object arg1)"),
+                "the affected callee is restored to its erased header"
+            );
+            assert!(
+                report
+                    .text
+                    .contains("public java.lang.Object relay(java.lang.Object arg1)"),
+                "the affected caller is restored with the same transaction"
+            );
+            assert!(
+                report.text.contains("public T untouched(T arg1)"),
+                "the independent leaf stays projected"
+            );
+            for method in ["identity", "relay"] {
+                assert!(
+                    report.methods.iter().any(|method_record| {
+                        method_record.markers.iter().any(|marker| {
+                            marker.contains(&format!(
+                                "generic Signature projection refused for `{method}"
+                            ))
+                        })
+                    }),
+                    "the rollback records a refusal for {method}"
+                );
+            }
+        }
+    }
+}
+
+fn prove_raw_same_class_void_incoming(
+    invoke: &class_source::SameClassInvokeUse,
+    caller: &PhysicalMethodId,
+    caller_header: &MemberHeader,
+    caller_ast: &jarde_java::report::ClassSourceMethodAst,
+    body_values: &[class_source::SameClassBodyValueSite],
+    invokes: &[class_source::SameClassInvokeUse],
+    method_headers: &[MemberHeader],
+    callee: &class_source::SameClassGenericMethodContract,
+    class_internal: &[u8],
+    budget: &mut Budget,
+) -> Result<bool> {
+    use jarde_java::ast::Type;
+    use jarde_java::report::ClassSourceAstExpressionShape as Shape;
+    use jarde_jvm::method_ir::Definition;
+
+    macro_rules! reject_raw_call {
+        () => {{
+            return Ok(false);
+        }};
+    }
+
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(method_headers.len().saturating_add(body_values.len())).unwrap_or(u64::MAX),
+    )?;
+    if invoke.physical_caller != *caller
+        || invoke.owner.as_slice() != class_internal
+        || !invoke.ssa_operands_complete
+        || callee.method.name.0 != invoke.name
+        || callee.method.descriptor.0 != invoke.descriptor
+        || callee.result.is_some()
+        || !matches!(invoke.opcode, 0xb6 | 0xb7)
+        || caller_header.access_flags & 0x0008 != 0 && invoke.receiver_value_fact.is_none()
+    {
+        reject_raw_call!();
+    }
+    let target_headers = method_headers.iter().filter(|header| {
+        header.name.raw().0 == invoke.name
+            && header.descriptor.raw().0 == invoke.descriptor
+            && header.access_flags & 0x0008 == 0
+    });
+    let mut target_headers = target_headers;
+    if target_headers.next().is_none() || target_headers.next().is_some() {
+        reject_raw_call!();
+    }
+    let Some(target_descriptor) = descriptor_facts(&invoke.descriptor, DescriptorKind::Method).ok()
+    else {
+        reject_raw_call!();
+    };
+    let target_arity = target_descriptor.parameters().len();
+    let mut same_arity = 0usize;
+    for header in method_headers {
+        budget.poll()?;
+        if header.name.raw().0 != invoke.name {
+            continue;
+        }
+        if header.access_flags & (0x0080 | 0x0040 | 0x1000) != 0 {
+            reject_raw_call!();
+        }
+        let Ok(descriptor) = descriptor_facts(&header.descriptor.raw().0, DescriptorKind::Method)
+        else {
+            reject_raw_call!();
+        };
+        if descriptor.parameters().len() == target_arity {
+            same_arity = same_arity.saturating_add(1);
+        }
+    }
+    if same_arity != 1 {
+        reject_raw_call!();
+    }
+    let Some(key) = generic_call_ast_key(invoke) else {
+        reject_raw_call!();
+    };
+    let Some(sites) = jarde_java::report::class_source_invoke_ast_sites(
+        caller_ast,
+        std::slice::from_ref(&key),
+        budget,
+    )
+    .map_err(|stop| {
+        enum_projection_stop_error(
+            stop,
+            "same-class raw receiver AST proof",
+            "generic_call_ast_missing",
+        )
+    })?
+    else {
+        reject_raw_call!();
+    };
+    let Some(site) = sites.first() else {
+        reject_raw_call!();
+    };
+    if sites.len() != 1
+        || site.caller != *caller
+        || site.key != key
+        || site.ast_name.as_bytes() != invoke.name
+        || !generic_call_ast_inventory_matches(caller_ast, caller, invokes, class_internal, budget)?
+    {
+        reject_raw_call!();
+    }
+    let Some(receiver) = site.receiver.as_ref() else {
+        reject_raw_call!();
+    };
+    if !matches!(receiver.shape, Shape::Local) || receiver.primary.method.as_ref() != Some(caller) {
+        reject_raw_call!();
+    }
+    let Some(receiver_name) = receiver.direct_local_name.as_deref() else {
+        reject_raw_call!();
+    };
+    let Some(receiver_fact) = invoke.receiver_value_fact.as_ref() else {
+        reject_raw_call!();
+    };
+    let Some((load_bci, (slot, local_read))) =
+        generic_call_load_source(body_values, receiver_fact, invoke.bci)
+    else {
+        reject_raw_call!();
+    };
+    if load_bci != receiver.primary.bci
+        || local_read.replaced_by.is_some()
+        || receiver_fact.uses.as_slice() != [Some(invoke.bci)]
+    {
+        reject_raw_call!();
+    }
+    let Some(declarations) = jarde_java::report::class_source_local_declarations(
+        caller_ast, budget,
+    )
+    .map_err(|stop| {
+        enum_projection_stop_error(
+            stop,
+            "same-class raw receiver local proof",
+            "generic_call_ast_missing",
+        )
+    })?
+    else {
+        reject_raw_call!();
+    };
+    let mut matching_declarations = declarations
+        .iter()
+        .filter(|declaration| declaration.name == receiver_name);
+    let Some(declaration) = matching_declarations.next() else {
+        reject_raw_call!();
+    };
+    if matching_declarations.next().is_some()
+        || !declaration.scope_anchors.is_empty()
+        || declaration.bci >= load_bci
+        || !generic_call_local_definition_matches_declaration(
+            body_values,
+            local_read,
+            *slot,
+            declaration.bci,
+            load_bci,
+        )
+    {
+        reject_raw_call!();
+    }
+    let expected_full = std::str::from_utf8(class_internal)
+        .ok()
+        .map(|name| name.replace(['/', '$'], "."));
+    let expected_simple = std::str::from_utf8(class_internal)
+        .ok()
+        .and_then(|name| name.rsplit('/').next())
+        .map(|name| name.replace('$', "."));
+    let raw_name = declaration
+        .source_type_name
+        .as_deref()
+        .or(match &declaration.ty {
+            Type::Reference(name) => Some(name.as_str()),
+            _ => None,
+        });
+    if !raw_name.is_some_and(|name| {
+        Some(name) == expected_full.as_deref() || Some(name) == expected_simple.as_deref()
+    }) {
+        reject_raw_call!();
+    }
+    let Some(formals) = jarde_java::report::class_source_method_formal_names(caller_ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class raw receiver formal scope",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        reject_raw_call!();
+    };
+    if formals.iter().any(|formal| formal.name == receiver_name) {
+        reject_raw_call!();
+    }
+    let caller_descriptor = match descriptor_facts(&caller.descriptor.0, DescriptorKind::Method) {
+        Ok(descriptor) => descriptor,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => reject_raw_call!(),
+    };
+    let formal_slots = jarde_jvm::method_ir::parameter_positions(
+        &caller_descriptor,
+        caller_header.access_flags & 0x0008 != 0,
+    );
+    let Some(formal_slots) = formal_slots else {
+        reject_raw_call!();
+    };
+    if formal_slots.contains(slot)
+        || site.arguments.len() != target_arity
+        || invoke.argument_value_facts.len() != target_arity
+    {
+        reject_raw_call!();
+    }
+    for (position, (argument, fact)) in site
+        .arguments
+        .iter()
+        .zip(&invoke.argument_value_facts)
+        .enumerate()
+    {
+        budget.poll()?;
+        if fact.replaced_by.is_some() || fact.uses.as_slice() != [Some(invoke.bci)] {
+            reject_raw_call!();
+        }
+        let Some(parameter) = target_descriptor.parameters().get(position) else {
+            reject_raw_call!();
+        };
+        let Some(raw_descriptor) = parameter.bytes(&invoke.descriptor) else {
+            reject_raw_call!();
+        };
+        let expected = match raw_descriptor {
+            b"Z" => Type::Boolean,
+            b"B" => Type::Byte,
+            b"C" => Type::Char,
+            b"S" => Type::Short,
+            b"I" => Type::Int,
+            b"J" => Type::Long,
+            b"F" => Type::Float,
+            b"D" => Type::Double,
+            _ => generic_call_reference_type_from_descriptor(raw_descriptor)
+                .unwrap_or_else(|| Type::Reference(String::new())),
+        };
+        if matches!(&expected, Type::Reference(name) if name.is_empty()) {
+            reject_raw_call!();
+        }
+        let source_expression = if let Some(wrapper) = &argument.presentation_wrapper {
+            if wrapper.ty != expected {
+                reject_raw_call!();
+            }
+            wrapper.child.as_ref()
+        } else {
+            if argument.presented_type.as_ref() != Some(&expected) {
+                reject_raw_call!();
+            }
+            argument
+        };
+        if source_expression.primary.method.as_ref() != Some(caller)
+            || source_expression.primary.bci == invoke.bci
+        {
+            reject_raw_call!();
+        }
+        match source_expression.shape {
+            Shape::Local => {
+                let Some(local_name) = source_expression.direct_local_name.as_deref() else {
+                    reject_raw_call!();
+                };
+                let Some((argument_load_bci, (argument_slot, argument_local_read))) =
+                    generic_call_load_source(body_values, fact, invoke.bci)
+                else {
+                    reject_raw_call!();
+                };
+                let formal_slot = formals
+                    .iter()
+                    .find(|formal| formal.name == local_name)
+                    .map(|formal| formal.slot);
+                let local_decl = declarations
+                    .iter()
+                    .filter(|declaration| declaration.name == local_name)
+                    .collect::<Vec<_>>();
+                let source_name = local_decl.first().and_then(|declaration| {
+                    declaration
+                        .source_type_name
+                        .as_deref()
+                        .or(match &declaration.ty {
+                            Type::Reference(name) => Some(name.as_str()),
+                            _ => None,
+                        })
+                });
+                let source_type_matches = source_name
+                    .zip(source_expression.presented_type.as_ref())
+                    .is_some_and(|(name, ty)| ty == &Type::Reference(name.to_owned()));
+                if argument_load_bci != source_expression.primary.bci
+                    || match formal_slot {
+                        Some(slot) => {
+                            !generic_call_load_matches_formal(body_values, fact, slot, invoke.bci)
+                        }
+                        None => {
+                            local_decl.len() != 1
+                                || local_decl[0].scope_anchors.len() != 0
+                                || local_decl[0].bci >= argument_load_bci
+                                || !source_type_matches
+                                || !generic_call_local_definition_matches_declaration(
+                                    body_values,
+                                    argument_local_read,
+                                    *argument_slot,
+                                    local_decl[0].bci,
+                                    argument_load_bci,
+                                )
+                        }
+                    }
+                {
+                    reject_raw_call!();
+                }
+            }
+            _ => {
+                let Definition::Instruction { bci, .. } = &fact.definition else {
+                    reject_raw_call!();
+                };
+                if *bci != source_expression.primary.bci
+                    || body_values.iter().filter(|site| site.bci == *bci).count() != 1
+                    || !body_values
+                        .iter()
+                        .find(|site| site.bci == *bci)
+                        .is_some_and(|site| {
+                            site.stack_writes.iter().any(|write| {
+                                write.value == fact.value
+                                    && write.definition == fact.definition
+                                    && write.replaced_by.is_none()
+                                    && write.uses.as_slice() == [Some(invoke.bci)]
+                            })
+                        })
+                {
+                    reject_raw_call!();
+                }
+            }
+        }
+    }
+    Ok(true)
+}
+
+/// Proves a narrow result-bearing raw caller from a same-run body-return certificate or an
+/// already-published abstract no-body declaration: a bounded conditional returned from exact raw
+/// arguments, an exact null return, or the no-body method's declared generic contract.
+#[allow(clippy::too_many_arguments)]
+fn prove_raw_same_class_direct_return_incoming(
+    invoke: &class_source::SameClassInvokeUse,
+    caller: &PhysicalMethodId,
+    caller_header: &MemberHeader,
+    caller_ast: &jarde_java::report::ClassSourceMethodAst,
+    body_values: &[class_source::SameClassBodyValueSite],
+    invokes: &[class_source::SameClassInvokeUse],
+    method_headers: &[MemberHeader],
+    callee: &class_source::SameClassGenericMethodContract,
+    callee_record: &ClassSourceMethod,
+    callee_attributes: &class_source::MemberAttributes,
+    caller_record: &ClassSourceMethod,
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    caller_init_record: Option<&jarde_java::init::InitRecord>,
+    budget: &mut Budget,
+) -> Result<bool> {
+    use jarde_java::ast::Type;
+    use jarde_java::report::{
+        ClassSourceAstExpressionShape as Shape, ClassSourceInvokeResultUseKind as ResultUse,
+        GenericReturnValue,
+    };
+    use jarde_jvm::method_ir::{Definition, parameter_positions};
+    use jarde_reader::signature::{SignatureType, TypeParameter};
+
+    macro_rules! reject_raw_result_call {
+        () => {{
+            return Ok(false);
+        }};
+    }
+
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            method_headers
+                .len()
+                .saturating_add(callee.parameters.len())
+                .saturating_add(callee.method_parameters.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    let no_body_declaration_leaf = matches!(
+        callee_record.outcome,
+        class_source::ClassSourceOutcome::NoBody
+    ) && callee_record.no_body_kind == Some(NoBodyKind::Abstract)
+        && callee_record.generic_signature_projected
+        && !callee_record.generic_signature_refused
+        && callee_record.declaration.is_some()
+        && callee_record.same_run_generic_return.is_none()
+        && callee_attributes.throws_raw.is_empty();
+    let candidate = callee_record.same_run_generic_return.as_ref();
+    if candidate.is_none() && !no_body_declaration_leaf {
+        reject_raw_result_call!();
+    }
+    if invoke.physical_caller != *caller
+        || invoke.owner.as_slice() != class_internal
+        || !invoke.ssa_operands_complete
+        || callee.method.name.0 != invoke.name
+        || callee.method.descriptor.0 != invoke.descriptor
+        || invoke.argument_value_facts.len() != callee.parameters.len()
+        || invoke.argument_values.len() != callee.parameters.len()
+    {
+        reject_raw_result_call!();
+    }
+
+    // This deliberately accepts only one method-local variable with one ordinary, non-generic
+    // class bound. Its physical erasure is the source target type for both the callee result and
+    // every use proved below; class variables, interface bounds, and parameterized bounds stay
+    // outside this narrow raw-caller proof.
+    let Some(TypeParameter {
+        name: variable,
+        class_bound: Some(bound_signature @ SignatureType::Class(bound)),
+        interface_bounds,
+    }) = callee.method_parameters.as_slice().first()
+    else {
+        reject_raw_result_call!();
+    };
+    let Some(bound_segment) = bound.segments.first() else {
+        reject_raw_result_call!();
+    };
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(bound_segment.binary_name.len()).unwrap_or(u64::MAX),
+    )?;
+    let bound_is_plain_class = bound.segments.len() == 1 && bound_segment.arguments.is_empty();
+    let mut bound_descriptor = Vec::with_capacity(bound_segment.binary_name.len() + 2);
+    bound_descriptor.push(b'L');
+    bound_descriptor.extend_from_slice(&bound_segment.binary_name);
+    bound_descriptor.push(b';');
+    if callee.method_parameters.len() != 1
+        || !interface_bounds.is_empty()
+        || !bound_is_plain_class
+        || callee.result.as_ref() != Some(&SignatureType::TypeVariable(variable.clone()))
+    {
+        reject_raw_result_call!();
+    }
+
+    let is_null_return = candidate.is_some_and(|candidate| {
+        matches!(&candidate.value, GenericReturnValue::NullLiteral)
+            && candidate.parameters.is_empty()
+    }) && callee.parameters.is_empty();
+    let is_value_return = no_body_declaration_leaf
+        || candidate.is_some_and(|candidate| {
+            matches!(
+                &candidate.value,
+                GenericReturnValue::Parameter(_) | GenericReturnValue::Conditional { .. }
+            )
+        });
+    if !is_null_return && !is_value_return {
+        reject_raw_result_call!();
+    }
+
+    let is_static_target = invoke.opcode == 0xb8;
+    if is_static_target {
+        if invoke.receiver_value_fact.is_some() || invoke.receiver_value.is_some() {
+            reject_raw_result_call!();
+        }
+    } else {
+        if !matches!(invoke.opcode, 0xb6 | 0xb7)
+            || invoke.receiver_value_fact.is_none()
+            || invoke.receiver_value.is_none()
+        {
+            reject_raw_result_call!();
+        }
+    }
+
+    let descriptor = match descriptor_facts(&invoke.descriptor, DescriptorKind::Method) {
+        Ok(descriptor) => descriptor,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => reject_raw_result_call!(),
+    };
+    let Some(result_descriptor) = descriptor
+        .result()
+        .and_then(|result| result.bytes(&invoke.descriptor))
+    else {
+        reject_raw_result_call!();
+    };
+    let caller_descriptor =
+        match descriptor_facts(&caller_header.descriptor.raw().0, DescriptorKind::Method) {
+            Ok(descriptor) => descriptor,
+            Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                return Err(error);
+            }
+            Err(_) => reject_raw_result_call!(),
+        };
+    let Some(caller_result_descriptor) = caller_descriptor
+        .result()
+        .and_then(|result| result.bytes(&caller_header.descriptor.raw().0))
+    else {
+        reject_raw_result_call!();
+    };
+    if descriptor.parameters().len() != callee.parameters.len()
+        || result_descriptor != bound_descriptor.as_slice()
+        || class_source::same_class_generic_source_assignable_to_descriptor(
+            bound_signature,
+            &[],
+            caller_result_descriptor,
+            &[],
+            &[],
+            budget,
+        )? != Some(true)
+    {
+        reject_raw_result_call!();
+    }
+    for (formal, descriptor_component) in callee.parameters.iter().zip(descriptor.parameters()) {
+        budget.poll()?;
+        let erased = match formal {
+            SignatureType::TypeVariable(name) if name == variable => bound_descriptor.as_slice(),
+            SignatureType::Base(base) => std::slice::from_ref(base),
+            SignatureType::Class(class)
+                if class.segments.len() == 1 && class.segments[0].arguments.is_empty() =>
+            {
+                // The JVM descriptor view is already parsed and validated; this path only admits
+                // the non-parameterized class form whose erasure is its binary name.
+                let segment = &class.segments[0];
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(segment.binary_name.len()).unwrap_or(u64::MAX),
+                )?;
+                let mut descriptor = Vec::with_capacity(segment.binary_name.len() + 2);
+                descriptor.push(b'L');
+                descriptor.extend_from_slice(&segment.binary_name);
+                descriptor.push(b';');
+                let Some(actual) = descriptor_component.bytes(&invoke.descriptor) else {
+                    reject_raw_result_call!();
+                };
+                if actual != descriptor.as_slice() {
+                    reject_raw_result_call!();
+                }
+                continue;
+            }
+            _ => reject_raw_result_call!(),
+        };
+        if descriptor_component.bytes(&invoke.descriptor) != Some(erased) {
+            reject_raw_result_call!();
+        }
+    }
+    let Some(key) = generic_call_ast_key(invoke) else {
+        reject_raw_result_call!();
+    };
+    let Some(sites) = jarde_java::report::class_source_invoke_ast_sites(
+        caller_ast,
+        std::slice::from_ref(&key),
+        budget,
+    )
+    .map_err(|stop| {
+        enum_projection_stop_error(
+            stop,
+            "same-class raw result AST proof",
+            "generic_call_ast_missing",
+        )
+    })?
+    else {
+        reject_raw_result_call!();
+    };
+    if sites.len() != 1
+        || !generic_call_ast_inventory_matches(caller_ast, caller, invokes, class_internal, budget)?
+    {
+        reject_raw_result_call!();
+    }
+    let site = &sites[0];
+    if site.caller != *caller
+        || site.key != key
+        || site.ast_name.as_bytes() != invoke.name
+        || site.arguments.len() != callee.parameters.len()
+    {
+        reject_raw_result_call!();
+    }
+
+    // The callee census is a closed same-name/arity inventory. This makes the exact raw call a
+    // binding proof only when no same-arity sibling can consume it and no synthetic member can
+    // obscure the physical target.
+    let mut target_headers = 0usize;
+    let mut same_arity = 0usize;
+    for header in method_headers {
+        budget.poll()?;
+        if header.name.raw().0 != invoke.name {
+            continue;
+        }
+        if header.access_flags & (0x0080 | 0x0040 | 0x1000) != 0 {
+            reject_raw_result_call!();
+        }
+        let Ok(header_descriptor) =
+            descriptor_facts(&header.descriptor.raw().0, DescriptorKind::Method)
+        else {
+            reject_raw_result_call!();
+        };
+        if header.name.raw().0 == invoke.name
+            && header.descriptor.raw().0 == invoke.descriptor
+            && (header.access_flags & 0x0008 != 0) == is_static_target
+        {
+            target_headers = target_headers.saturating_add(1);
+        }
+        if header_descriptor.parameters().len() == descriptor.parameters().len() {
+            same_arity = same_arity.saturating_add(1);
+        }
+    }
+    if target_headers != 1 || same_arity != 1 {
+        reject_raw_result_call!();
+    }
+
+    let caller_formals = if is_null_return {
+        None
+    } else {
+        let Some(formals) = jarde_java::report::class_source_method_formal_names(
+            caller_ast, budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class raw result caller formals",
+                "generic_call_ast_missing",
+            )
+        })?
+        else {
+            reject_raw_result_call!();
+        };
+        Some(formals)
+    };
+    let caller_slots = if is_null_return {
+        None
+    } else {
+        let Some(slots) =
+            parameter_positions(&caller_descriptor, caller_header.access_flags & 0x0008 != 0)
+        else {
+            reject_raw_result_call!();
+        };
+        Some(slots)
+    };
+
+    if is_static_target {
+        if site.receiver.is_some()
+            || invoke.receiver_value_fact.is_some()
+            || invoke.receiver_value.is_some()
+        {
+            reject_raw_result_call!();
+        }
+    } else {
+        let Some(receiver_fact) = invoke.receiver_value_fact.as_ref() else {
+            reject_raw_result_call!();
+        };
+        if invoke.receiver_value.is_none() {
+            reject_raw_result_call!();
+        }
+        let mut direct_raw_formal_receiver = false;
+        if no_body_declaration_leaf
+            && site
+                .receiver
+                .as_ref()
+                .is_some_and(|receiver| receiver.direct_local_name.as_deref() != Some("this"))
+        {
+            if let Some(receiver) = site.receiver.as_ref() {
+                if receiver.primary.method.as_ref() != Some(caller)
+                    || !matches!(receiver.shape, Shape::Local)
+                {
+                    reject_raw_result_call!();
+                }
+                let Some(name) = receiver.direct_local_name.as_deref() else {
+                    reject_raw_result_call!();
+                };
+                let (Some(formals), Some(slots)) = (caller_formals.as_ref(), caller_slots.as_ref())
+                else {
+                    reject_raw_result_call!();
+                };
+                let mut formal = None;
+                for candidate in formals {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if candidate.name == name {
+                        if formal.is_some() {
+                            reject_raw_result_call!();
+                        }
+                        formal = Some(candidate);
+                    }
+                }
+                let Some(formal) = formal else {
+                    reject_raw_result_call!();
+                };
+                let mut formal_position = None;
+                for (position, slot) in slots.iter().enumerate() {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if *slot == formal.slot {
+                        if formal_position.is_some() {
+                            reject_raw_result_call!();
+                        }
+                        formal_position = Some(position);
+                    }
+                }
+                let Some(formal_position) = formal_position else {
+                    reject_raw_result_call!();
+                };
+                let Some(parameter) = caller_descriptor.parameters().get(formal_position) else {
+                    reject_raw_result_call!();
+                };
+                let Some(parameter_bytes) = parameter.bytes(&caller_header.descriptor.raw().0)
+                else {
+                    reject_raw_result_call!();
+                };
+                let mut own_class_descriptor = Vec::with_capacity(class_internal.len() + 2);
+                own_class_descriptor.push(b'L');
+                own_class_descriptor.extend_from_slice(class_internal);
+                own_class_descriptor.push(b';');
+                if parameter_bytes != own_class_descriptor.as_slice() {
+                    reject_raw_result_call!();
+                }
+                if caller_record.generic_signature_projected {
+                    let caller_attributes = match class_source::declared_member_attributes(
+                        bytes,
+                        caller_header,
+                        pool,
+                        budget,
+                    ) {
+                        Ok(attributes) => attributes,
+                        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                            return Err(error);
+                        }
+                        Err(_) => reject_raw_result_call!(),
+                    };
+                    let caller_contract =
+                        match class_source::same_class_generic_method_contract_from_signature(
+                            caller_record.item.identity.clone(),
+                            caller_header,
+                            &caller_attributes,
+                            bytes,
+                            pool,
+                            class_scope,
+                            budget,
+                        ) {
+                            Ok(contract) => contract,
+                            Err(
+                                error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. }),
+                            ) => {
+                                return Err(error);
+                            }
+                            Err(_) => reject_raw_result_call!(),
+                        };
+                    let Some(caller_contract) = caller_contract else {
+                        reject_raw_result_call!();
+                    };
+                    if !matches!(
+                        caller_contract.parameters.get(formal_position),
+                        Some(SignatureType::Class(class))
+                            if class.segments.len() == 1
+                                && class.segments[0].binary_name == class_internal
+                                && class.segments[0].arguments.is_empty()
+                    ) {
+                        reject_raw_result_call!();
+                    }
+                }
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(
+                        body_values
+                            .len()
+                            .saturating_mul(2)
+                            .saturating_add(invokes.len()),
+                    )
+                    .unwrap_or(u64::MAX),
+                )?;
+                let Some((receiver_load_bci, (receiver_slot, receiver_read))) =
+                    generic_call_load_source(body_values, receiver_fact, invoke.bci)
+                else {
+                    reject_raw_result_call!();
+                };
+                if receiver_load_bci != receiver.primary.bci
+                    || *receiver_slot != formal.slot
+                    || receiver_read.replaced_by.is_some()
+                    || !generic_call_load_matches_formal(
+                        body_values,
+                        receiver_fact,
+                        formal.slot,
+                        invoke.bci,
+                    )
+                {
+                    reject_raw_result_call!();
+                }
+                direct_raw_formal_receiver = true;
+            }
+        }
+        if !direct_raw_formal_receiver {
+            if let Some(receiver) = site.receiver.as_ref() {
+                if receiver.primary.method.as_ref() != Some(caller)
+                    || receiver.direct_local_name.as_deref() != Some("this")
+                    || !matches!(receiver.shape, Shape::Local)
+                {
+                    reject_raw_result_call!();
+                }
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(
+                        body_values
+                            .len()
+                            .saturating_mul(2)
+                            .saturating_add(invokes.len()),
+                    )
+                    .unwrap_or(u64::MAX),
+                )?;
+                let Some((receiver_load_bci, _)) =
+                    generic_call_load_source(body_values, receiver_fact, invoke.bci)
+                else {
+                    reject_raw_result_call!();
+                };
+                if receiver_load_bci != receiver.primary.bci {
+                    reject_raw_result_call!();
+                }
+            } else {
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(body_values.len().saturating_add(invokes.len()))
+                        .unwrap_or(u64::MAX),
+                )?;
+            }
+            if !generic_call_receiver_is_initialized_this(
+                invoke,
+                receiver_fact,
+                caller_header,
+                class_internal,
+                class_superclass,
+                caller_init_record,
+                body_values,
+                invokes,
+            ) {
+                reject_raw_result_call!();
+            }
+        }
+    }
+    if !is_null_return {
+        let (Some(formal_names), Some(caller_slots)) =
+            (caller_formals.as_ref(), caller_slots.as_ref())
+        else {
+            reject_raw_result_call!();
+        };
+        budget.poll()?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                formal_names
+                    .len()
+                    .saturating_add(caller_slots.len())
+                    .saturating_mul(site.arguments.len()),
+            )
+            .unwrap_or(u64::MAX),
+        )?;
+        for (position, (argument, fact)) in site
+            .arguments
+            .iter()
+            .zip(&invoke.argument_value_facts)
+            .enumerate()
+        {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if fact.replaced_by.is_some() || fact.uses.as_slice() != [Some(invoke.bci)] {
+                reject_raw_result_call!();
+            }
+            let Some(parameter) = descriptor.parameters().get(position) else {
+                reject_raw_result_call!();
+            };
+            let Some(raw_type) = parameter.bytes(&invoke.descriptor) else {
+                reject_raw_result_call!();
+            };
+            let expected = match raw_type {
+                b"Z" => Type::Boolean,
+                b"B" => Type::Byte,
+                b"C" => Type::Char,
+                b"S" => Type::Short,
+                b"I" => Type::Int,
+                b"J" => Type::Long,
+                b"F" => Type::Float,
+                b"D" => Type::Double,
+                _ => generic_call_reference_type_from_descriptor(raw_type)
+                    .unwrap_or_else(|| Type::Reference(String::new())),
+            };
+            if matches!(&expected, Type::Reference(name) if name.is_empty()) {
+                reject_raw_result_call!();
+            }
+            let source = if let Some(wrapper) = &argument.presentation_wrapper {
+                if wrapper.ty != expected {
+                    reject_raw_result_call!();
+                }
+                wrapper.child.as_ref()
+            } else {
+                if argument.presented_type.as_ref() != Some(&expected) {
+                    reject_raw_result_call!();
+                }
+                argument
+            };
+            if source.primary.method.as_ref() != Some(caller) || source.primary.bci == invoke.bci {
+                reject_raw_result_call!();
+            }
+            let Definition::Instruction { bci, .. } = &fact.definition else {
+                reject_raw_result_call!();
+            };
+            match source.shape {
+                Shape::Local => {
+                    let Some(name) = source.direct_local_name.as_deref() else {
+                        reject_raw_result_call!();
+                    };
+                    let mut formal = None;
+                    for candidate in formal_names {
+                        budget.poll()?;
+                        if candidate.name == name {
+                            if formal.is_some() {
+                                reject_raw_result_call!();
+                            }
+                            formal = Some(candidate);
+                        }
+                    }
+                    let Some(formal) = formal else {
+                        reject_raw_result_call!();
+                    };
+                    let mut caller_position = None;
+                    for (position, slot) in caller_slots.iter().enumerate() {
+                        budget.poll()?;
+                        if *slot == formal.slot {
+                            caller_position = Some(position);
+                            break;
+                        }
+                    }
+                    let Some(caller_position) = caller_position else {
+                        reject_raw_result_call!();
+                    };
+                    let Some(caller_parameter) =
+                        caller_descriptor.parameters().get(caller_position)
+                    else {
+                        reject_raw_result_call!();
+                    };
+                    if caller_parameter.bytes(&caller_header.descriptor.raw().0) != Some(raw_type) {
+                        reject_raw_result_call!();
+                    }
+                    budget.poll()?;
+                    budget.charge(
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(body_values.len().saturating_mul(2)).unwrap_or(u64::MAX),
+                    )?;
+                    let Some((load_bci, (slot, read))) =
+                        generic_call_load_source(body_values, fact, invoke.bci)
+                    else {
+                        reject_raw_result_call!();
+                    };
+                    if load_bci != source.primary.bci
+                        || *slot != formal.slot
+                        || read.replaced_by.is_some()
+                        || !generic_call_load_matches_formal(
+                            body_values,
+                            fact,
+                            formal.slot,
+                            invoke.bci,
+                        )
+                    {
+                        reject_raw_result_call!();
+                    }
+                }
+                Shape::Literal if argument.presentation_wrapper.is_none() => {
+                    if !matches!(
+                        raw_type,
+                        b"Z" | b"B" | b"C" | b"S" | b"I" | b"J" | b"F" | b"D"
+                    ) {
+                        reject_raw_result_call!();
+                    }
+                }
+                Shape::Call { .. } if argument.presentation_wrapper.is_some() => {}
+                Shape::Null if argument.presentation_wrapper.is_some() => {
+                    budget.poll()?;
+                    budget.charge(
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(body_values.len()).unwrap_or(u64::MAX),
+                    )?;
+                    if !generic_call_null_matches(body_values, fact, source, invoke.bci) {
+                        reject_raw_result_call!();
+                    }
+                }
+                _ => reject_raw_result_call!(),
+            }
+            if *bci != source.primary.bci {
+                reject_raw_result_call!();
+            }
+            let mut matching_sites = 0usize;
+            for body_site in body_values {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                if body_site.bci != *bci {
+                    continue;
+                }
+                let mut matched_write = false;
+                for write in &body_site.stack_writes {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if write.value == fact.value
+                        && write.definition == fact.definition
+                        && write.replaced_by.is_none()
+                        && write.uses.as_slice() == [Some(invoke.bci)]
+                    {
+                        matched_write = true;
+                        break;
+                    }
+                }
+                if matched_write {
+                    matching_sites = matching_sites.saturating_add(1);
+                }
+            }
+            if matching_sites != 1 {
+                reject_raw_result_call!();
+            }
+        }
+    }
+
+    let Some(result_fact) = invoke.result_value_fact.as_ref() else {
+        reject_raw_result_call!();
+    };
+    if result_fact.replaced_by.is_some()
+        || !matches!(result_fact.definition, Definition::Instruction { bci, .. } if bci == invoke.bci)
+    {
+        reject_raw_result_call!();
+    }
+    let Some(result_uses) =
+        jarde_java::report::class_source_invoke_result_uses(caller_ast, &key, &[], budget)
+            .map_err(|stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "same-class raw result consumer proof",
+                    "generic_call_ast_missing",
+                )
+            })?
+    else {
+        reject_raw_result_call!();
+    };
+    if result_uses.len() != 1 {
+        reject_raw_result_call!();
+    }
+    let ResultUse::DirectReturn { consumer_bci } = &result_uses[0].kind else {
+        reject_raw_result_call!();
+    };
+    if result_fact.uses.as_slice() != [Some(*consumer_bci)] {
+        reject_raw_result_call!();
+    }
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(body_values.len()).unwrap_or(u64::MAX),
+    )?;
+    let mut return_site = None;
+    for body_site in body_values {
+        budget.poll()?;
+        if body_site.bci == *consumer_bci {
+            if return_site.is_some() {
+                reject_raw_result_call!();
+            }
+            return_site = Some(body_site);
+        }
+    }
+    let Some(return_site) = return_site else {
+        reject_raw_result_call!();
+    };
+    if return_site.opcode != 0xb0
+        || return_site.stack_reads.len() != 1
+        || return_site.stack_reads[0].1.value != result_fact.value
+        || return_site.stack_reads[0].1.replaced_by.is_some()
+        || return_site.stack_reads[0].1.uses.as_slice() != [Some(*consumer_bci)]
+    {
+        reject_raw_result_call!();
+    }
+    Ok(true)
+}
+
+fn generic_call_cast_marker(
+    cast: &jarde_java::report::ClassSourceInvokeArgumentCast,
+    budget: &mut Budget,
+) -> Result<String> {
+    let jarde_java::ast::Type::Reference(type_name) = &cast.ty else {
+        return Err(Error::unsupported(
+            "generic_call_cast_marker_non_reference",
+            "a generic call marker requires the already-proved reference upcast type",
+        ));
+    };
+    let digits = |mut value: u64| {
+        let mut count = 1u64;
+        while value >= 10 {
+            value /= 10;
+            count += 1;
+        }
+        count
+    };
+    let bytes = "// jarde: same-class call at BCI ".len() as u64
+        + digits(u64::from(cast.call_bci))
+        + " pins argument ".len() as u64
+        + digits(u64::try_from(cast.argument_index).unwrap_or(u64::MAX))
+        + " to source type `".len() as u64
+        + u64::try_from(type_name.len()).unwrap_or(u64::MAX)
+        + 1;
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    budget.charge(CountedBudgetDimension::OutputBytes, bytes)?;
+    Ok(format!(
+        "// jarde: same-class call at BCI {} pins argument {} to source type `{}`",
+        cast.call_bci, cast.argument_index, type_name
+    ))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn prove_generic_call_site_from_ast(
+    invoke: &class_source::SameClassInvokeUse,
+    caller_contract: &class_source::SameClassGenericMethodContract,
+    callee_contract: &class_source::SameClassGenericMethodContract,
+    caller_ast: &jarde_java::report::ClassSourceMethodAst,
+    method_header: &MemberHeader,
+    caller_init_record: Option<&jarde_java::init::InitRecord>,
+    field_uses: &[class_source::SameClassFieldUse],
+    body_values: &[class_source::SameClassBodyValueSite],
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    class_parameters: &[jarde_reader::signature::TypeParameter],
+    fields: &[MemberHeader],
+    invokes: &[class_source::SameClassInvokeUse],
+    nested_call_sources: &[class_source::SameClassGenericArgumentSource],
+    budget: &mut Budget,
+) -> Result<Option<GenericCallSiteProof>> {
+    use jarde_java::report::{ClassSourceInvokeFieldTarget, class_source_invoke_ast_sites};
+    let Some(key) = generic_call_ast_key(invoke) else {
+        return Ok(None);
+    };
+    let Some(sites) = class_source_invoke_ast_sites(caller_ast, std::slice::from_ref(&key), budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class generic invocation AST projection",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        return Ok(None);
+    };
+    let Some(site) = sites.first() else {
+        return Ok(None);
+    };
+    let Some(formals) = jarde_java::report::class_source_method_formal_names(caller_ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class generic formal source proof",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        return Ok(None);
+    };
+    let Some(_locals) = jarde_java::report::class_source_local_declarations(caller_ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class generic local source proof",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        return Ok(None);
+    };
+    let field_targets = field_uses
+        .iter()
+        .filter(|site| site.physical_method == invoke.physical_caller && site.opcode == 0xb5)
+        .map(|site| ClassSourceInvokeFieldTarget {
+            write_bci: site.bci,
+            owner: String::from_utf8_lossy(&site.owner).into_owned(),
+            name: String::from_utf8_lossy(&site.name).into_owned(),
+            descriptor: String::from_utf8_lossy(&site.descriptor).into_owned(),
+        })
+        .collect::<Vec<_>>();
+    let body_consumers = jarde_java::report::class_source_method_body_consumers(caller_ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class generic caller scope proof",
+                "generic_call_ast_missing",
+            )
+        })?;
+    let Some(body) = body_consumers else {
+        return Ok(None);
+    };
+    if !generic_call_site_avoids_catch_shadow(&body, site, invoke.bci) {
+        return Ok(None);
+    }
+    prove_generic_call_source_site(
+        invoke,
+        site,
+        caller_contract,
+        callee_contract,
+        class_scope,
+        class_parameters,
+        class_internal,
+        class_superclass,
+        &formals,
+        method_header,
+        caller_init_record.or(body.init_record.as_ref()),
+        body_values,
+        fields,
+        &field_targets,
+        caller_ast,
+        invokes,
+        nested_call_sources,
+        budget,
+    )
+}
+
+fn generic_call_site_avoids_catch_shadow(
+    body: &jarde_java::report::ClassSourceMethodBodyConsumers,
+    site: &jarde_java::report::ClassSourceInvokeAstSite,
+    call_bci: u32,
+) -> bool {
+    let shadows =
+        |scopes: &[jarde_java::report::ClassSourceAstCatchScope],
+         expressions: &[&jarde_java::report::ClassSourceInvokeAstExpression]| {
+            expressions.iter().any(|expression| {
+                expression.primary.bci == call_bci
+                    || expression
+                        .derived
+                        .iter()
+                        .any(|anchor| anchor.bci == call_bci)
+            }) && scopes.iter().any(|scope| {
+                site.arguments.iter().any(|argument| {
+                    argument.direct_local_name.as_deref() == Some(scope.local_name.as_str())
+                })
+            })
+        };
+    !body
+        .returns
+        .iter()
+        .chain(&body.conditions)
+        .chain(&body.throws)
+        .chain(&body.invocation_statements)
+        .any(|consumer| shadows(&consumer.catch_scopes, &[&consumer.expression]))
+        && !body.field_writes.iter().any(|consumer| {
+            let mut expressions = vec![&consumer.value];
+            if let Some(receiver) = &consumer.receiver {
+                expressions.push(receiver);
+            }
+            shadows(&consumer.catch_scopes, &expressions)
+        })
+        && !body.constructor_calls.iter().any(|consumer| {
+            shadows(
+                &consumer.catch_scopes,
+                &consumer.arguments.iter().collect::<Vec<_>>(),
+            )
+        })
+}
+
+fn generic_call_load_source<'a>(
+    body_values: &'a [class_source::SameClassBodyValueSite],
+    value: &class_source::SameClassInvokeValueFact,
+    consumer_bci: u32,
+) -> Option<(u32, &'a (u16, class_source::SameClassInvokeValueFact))> {
+    use jarde_jvm::method_ir::Definition;
+
+    let Definition::Instruction { bci: load_bci, .. } = &value.definition else {
+        return None;
+    };
+    let load_bci = *load_bci;
+    if value.replaced_by.is_some() || value.uses.as_slice() != [Some(consumer_bci)] {
+        return None;
+    }
+    let mut sites = body_values.iter().filter(|site| site.bci == load_bci);
+    let site = sites.next()?;
+    if sites.next().is_some()
+        || !matches!(site.opcode, 0x15..=0x19 | 0x1a..=0x2d)
+        || site.stack_writes.len() != 1
+    {
+        return None;
+    }
+    let written = &site.stack_writes[0];
+    if written.value != value.value
+        || written.definition != value.definition
+        || written.uses != value.uses
+        || written.replaced_by != value.replaced_by
+    {
+        return None;
+    }
+    let mut local_reads = site.local_reads.iter();
+    let read = local_reads.next()?;
+    if local_reads.next().is_some() || !read.1.uses.contains(&Some(load_bci)) {
+        return None;
+    }
+    Some((load_bci, read))
+}
+
+fn generic_call_local_definition_matches_declaration(
+    body_values: &[class_source::SameClassBodyValueSite],
+    local_read: &class_source::SameClassInvokeValueFact,
+    local_slot: u16,
+    declaration_bci: u32,
+    load_bci: u32,
+) -> bool {
+    use jarde_jvm::method_ir::Definition;
+
+    let Definition::Instruction {
+        bci: definition_bci,
+        ..
+    } = &local_read.definition
+    else {
+        return false;
+    };
+    if *definition_bci < declaration_bci || *definition_bci >= load_bci {
+        return false;
+    }
+    let mut sites = body_values
+        .iter()
+        .filter(|site| site.bci == *definition_bci);
+    let Some(site) = sites.next() else {
+        return false;
+    };
+    if sites.next().is_some() {
+        return false;
+    }
+    let mut writes = site.local_writes.iter().filter(|(slot, fact)| {
+        *slot == local_slot && fact == local_read && fact.replaced_by.is_none()
+    });
+    writes.next().is_some() && writes.next().is_none()
+}
+
+fn generic_call_load_matches_formal(
+    body_values: &[class_source::SameClassBodyValueSite],
+    value: &class_source::SameClassInvokeValueFact,
+    slot: u16,
+    consumer_bci: u32,
+) -> bool {
+    use jarde_jvm::method_ir::{Definition, Slot};
+
+    let Some((_, (read_slot, read))) = generic_call_load_source(body_values, value, consumer_bci)
+    else {
+        return false;
+    };
+    *read_slot == slot
+        && read.replaced_by.is_none()
+        && matches!(read.definition, Definition::Entry { slot: Slot::Local(actual), .. } if actual == slot)
+}
+
+fn generic_call_null_matches(
+    body_values: &[class_source::SameClassBodyValueSite],
+    value: &class_source::SameClassInvokeValueFact,
+    expression: &jarde_java::report::ClassSourceInvokeAstExpression,
+    consumer_bci: u32,
+) -> bool {
+    use jarde_jvm::method_ir::Definition;
+
+    if !expression.null_literal
+        || !matches!(value.definition, Definition::Instruction { bci, .. } if bci == expression.primary.bci)
+        || value.replaced_by.is_some()
+        || value.uses.as_slice() != [Some(consumer_bci)]
+    {
+        return false;
+    }
+    let mut sites = body_values
+        .iter()
+        .filter(|site| site.bci == expression.primary.bci && site.opcode == 0x01);
+    let Some(site) = sites.next() else {
+        return false;
+    };
+    sites.next().is_none()
+        && site.stack_writes.len() == 1
+        && site.stack_writes[0].value == value.value
+        && site.stack_writes[0].definition == value.definition
+        && site.stack_writes[0].uses == value.uses
+        && site.stack_writes[0].replaced_by.is_none()
+}
+
+fn generic_call_reference_type_from_descriptor(descriptor: &[u8]) -> Option<jarde_java::ast::Type> {
+    use jarde_java::ast::Type;
+
+    let dimensions = descriptor.iter().take_while(|byte| **byte == b'[').count();
+    let component = descriptor.get(dimensions..)?;
+    let mut name = match component {
+        [b'L', internal @ .., b';'] if !internal.is_empty() => {
+            std::str::from_utf8(internal).ok()?.replace('/', ".")
+        }
+        [primitive] if dimensions != 0 => match primitive {
+            b'Z' => "boolean".to_owned(),
+            b'B' => "byte".to_owned(),
+            b'C' => "char".to_owned(),
+            b'S' => "short".to_owned(),
+            b'I' => "int".to_owned(),
+            b'J' => "long".to_owned(),
+            b'F' => "float".to_owned(),
+            b'D' => "double".to_owned(),
+            _ => return None,
+        },
+        _ => return None,
+    };
+    for _ in 0..dimensions {
+        name.push_str("[]");
+    }
+    Some(Type::Reference(name))
+}
+
+fn generic_call_method_init_record(
+    method: &ClassSourceMethod,
+) -> Option<&jarde_java::init::InitRecord> {
+    match &method.outcome {
+        class_source::ClassSourceOutcome::Recovered { report, .. } => report.init.as_ref(),
+        _ => None,
+    }
+}
+
+fn generic_call_receiver_is_initialized_this(
+    invoke: &class_source::SameClassInvokeUse,
+    receiver: &class_source::SameClassInvokeValueFact,
+    caller_header: &MemberHeader,
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    init_record: Option<&jarde_java::init::InitRecord>,
+    body_values: &[class_source::SameClassBodyValueSite],
+    invokes: &[class_source::SameClassInvokeUse],
+) -> bool {
+    generic_call_receiver_is_initialized_this_at(
+        invoke.bci,
+        &invoke.physical_caller,
+        receiver,
+        caller_header,
+        class_internal,
+        class_superclass,
+        init_record,
+        body_values,
+        invokes,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn generic_call_receiver_is_initialized_this_at(
+    consumer_bci: u32,
+    caller_method: &PhysicalMethodId,
+    receiver: &class_source::SameClassInvokeValueFact,
+    caller_header: &MemberHeader,
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    init_record: Option<&jarde_java::init::InitRecord>,
+    body_values: &[class_source::SameClassBodyValueSite],
+    invokes: &[class_source::SameClassInvokeUse],
+) -> bool {
+    use jarde_jvm::method_ir::{Definition, Slot};
+
+    let Some((load_bci, (read_slot, read))) =
+        generic_call_load_source(body_values, receiver, consumer_bci)
+    else {
+        return false;
+    };
+    if caller_header.name.raw().0 != b"<init>" {
+        return caller_header.access_flags & 0x0008 == 0
+            && *read_slot == 0
+            && read.replaced_by.is_none()
+            && matches!(
+                read.definition,
+                Definition::Entry {
+                    slot: Slot::Local(0),
+                    ..
+                }
+            );
+    }
+    let Some(init) = init_record else {
+        return false;
+    };
+    let Some(init_bci) = init.bci else {
+        return false;
+    };
+    if !init.presented
+        || init.target != Some(jarde_java::ast::ConstructorTarget::Super)
+        || init.declared.as_deref() != std::str::from_utf8(class_internal).ok()
+        || class_superclass != Some(b"java/lang/Object".as_slice())
+        || init.class.as_deref() != Some("java/lang/Object")
+        || !matches!(
+            read.definition,
+            Definition::Instruction { bci, .. } if bci == init_bci
+        )
+        || *read_slot != 0
+        || read.replaced_by.is_some()
+        || !read.uses.contains(&Some(load_bci))
+    {
+        return false;
+    }
+    let alias_write = body_values
+        .iter()
+        .filter(|site| site.bci == init_bci && site.opcode == 0xb7)
+        .flat_map(|site| site.local_writes.iter())
+        .filter(|(slot, fact)| {
+            *slot == 0
+                && fact.value == read.value
+                && fact.replaced_by.is_none()
+                && matches!(fact.definition, Definition::Instruction { bci, .. } if bci == init_bci)
+        })
+        .count()
+        == 1;
+    alias_write
+        && invokes.iter().any(|initialization| {
+            initialization.physical_caller == *caller_method
+                && initialization.bci == init_bci
+                && initialization.opcode == 0xb7
+                && initialization.owner == b"java/lang/Object"
+                && initialization.name == b"<init>"
+                && initialization.descriptor == b"()V"
+                && initialization.constructor_receiver
+                    == Some(class_source::SameClassConstructorReceiver::UninitializedThis)
+        })
+}
+
+#[allow(clippy::too_many_arguments)]
+fn prove_generic_call_overload_site(
+    invoke: &class_source::SameClassInvokeUse,
+    caller: &class_source::SameClassGenericMethodContract,
+    caller_ast: &jarde_java::report::ClassSourceMethodAst,
+    caller_header: &MemberHeader,
+    constructor_candidate: Option<&jarde_java::report::GenericConstructorCandidate>,
+    body_values: &[class_source::SameClassBodyValueSite],
+    methods: &[ClassSourceMethod],
+    method_headers: &[MemberHeader],
+    staged: &std::collections::BTreeMap<usize, class_source::GenericCallProjectionState>,
+    raw_inputs: &std::collections::BTreeMap<usize, GenericCallProjectionInput>,
+    invokes: &[class_source::SameClassInvokeUse],
+    nested_call_sources: &[class_source::SameClassGenericArgumentSource],
+    class_internal: &[u8],
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    class_parameters: &[jarde_reader::signature::TypeParameter],
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    inventory_complete: bool,
+    budget: &mut Budget,
+) -> Result<Option<Vec<jarde_java::report::ClassSourceInvokeArgumentCast>>> {
+    use jarde_java::facts::InvokeKind;
+    use jarde_java::report::{
+        ClassSourceAstExpressionShape as Shape, class_source_invoke_ast_sites,
+    };
+    use jarde_jvm::method_ir::Definition;
+    let init_record = methods
+        .iter()
+        .find(|method| method.item.identity == caller.method)
+        .and_then(generic_call_method_init_record)
+        .or_else(|| constructor_candidate.map(|candidate| &candidate.init));
+
+    macro_rules! reject_overload_none {
+        () => {{
+            return Ok(None);
+        }};
+    }
+
+    let Some(key) = generic_call_ast_key(invoke) else {
+        reject_overload_none!();
+    };
+
+    if invoke.owner.as_slice() != class_internal
+        || invoke.name.starts_with(b"<")
+        || !inventory_complete
+        || methods.len() != method_headers.len()
+        || !invoke.ssa_operands_complete
+        || caller.method != invoke.physical_caller
+        || caller.method.name.0 != caller_header.name.raw().0
+        || caller.method.descriptor.0 != caller_header.descriptor.raw().0
+    {
+        reject_overload_none!();
+    }
+    let Some(sites) = class_source_invoke_ast_sites(caller_ast, std::slice::from_ref(&key), budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class overload AST projection",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        reject_overload_none!();
+    };
+    let Some(site) = sites.first() else {
+        reject_overload_none!();
+    };
+    if site.caller != invoke.physical_caller
+        || site.key != key
+        || site.ast_name.as_bytes() != invoke.name
+    {
+        reject_overload_none!();
+    }
+    let Some(body) = jarde_java::report::class_source_method_body_consumers(caller_ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class overload caller scope proof",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        reject_overload_none!();
+    };
+    let init_record = init_record.or(body.init_record.as_ref());
+    if !generic_call_site_avoids_catch_shadow(&body, site, invoke.bci) {
+        reject_overload_none!();
+    }
+    let Some(formals) = jarde_java::report::class_source_method_formal_names(caller_ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class overload formal proof",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        reject_overload_none!();
+    };
+    let formal_by_name = formals
+        .iter()
+        .map(|formal| (formal.name.as_str(), formal.slot))
+        .collect::<std::collections::HashMap<_, _>>();
+    if formal_by_name.len() != formals.len() {
+        reject_overload_none!();
+    }
+    let descriptor = descriptor_facts(&caller.method.descriptor.0, DescriptorKind::Method)?;
+    let Some(formal_slots) = jarde_jvm::method_ir::parameter_positions(
+        &descriptor,
+        caller_header.access_flags & 0x0008 != 0,
+    ) else {
+        reject_overload_none!();
+    };
+    if caller.parameters.len() != formal_slots.len()
+        || site.arguments.len() != invoke.argument_value_facts.len()
+    {
+        reject_overload_none!();
+    }
+
+    // An implicit or explicit instance receiver still has to be the physical initialized `this`,
+    // or an exact same-class parameterized formal. The AST's omitted receiver is not evidence.
+    match key.target.kind() {
+        InvokeKind::Static => {
+            if site.receiver.is_some() || invoke.receiver_value_fact.is_some() {
+                reject_overload_none!();
+            }
+        }
+        InvokeKind::Virtual | InvokeKind::Special => {
+            let Some(receiver_fact) = invoke.receiver_value_fact.as_ref() else {
+                reject_overload_none!();
+            };
+            if let Some(receiver) = &site.receiver {
+                if receiver.primary.method.as_ref() != Some(&caller.method)
+                    || !matches!(receiver.shape, Shape::Local)
+                {
+                    reject_overload_none!();
+                }
+                if receiver.direct_local_name.as_deref() == Some("this") {
+                    if !generic_call_receiver_is_initialized_this(
+                        invoke,
+                        receiver_fact,
+                        caller_header,
+                        class_internal,
+                        class_superclass,
+                        init_record,
+                        body_values,
+                        invokes,
+                    ) {
+                        reject_overload_none!();
+                    }
+                } else {
+                    if caller_header.access_flags & 0x0008 != 0
+                        || receiver_fact.replaced_by.is_some()
+                        || receiver_fact.uses.as_slice() != [Some(invoke.bci)]
+                    {
+                        reject_overload_none!();
+                    }
+                    let Some(slot) = receiver
+                        .direct_local_name
+                        .as_deref()
+                        .and_then(|name| formal_by_name.get(name).copied())
+                    else {
+                        reject_overload_none!();
+                    };
+                    if !generic_call_load_matches_formal(
+                        body_values,
+                        receiver_fact,
+                        slot,
+                        invoke.bci,
+                    ) {
+                        reject_overload_none!();
+                    }
+                    let Some(position) = formal_slots.iter().position(|formal| *formal == slot)
+                    else {
+                        reject_overload_none!();
+                    };
+                    if !same_class_parameterized_receiver(
+                        &caller.parameters[position],
+                        class_internal,
+                        class_scope,
+                        &caller.method_parameters,
+                        budget,
+                    )? {
+                        reject_overload_none!();
+                    }
+                }
+            } else if !generic_call_receiver_is_initialized_this(
+                invoke,
+                receiver_fact,
+                caller_header,
+                class_internal,
+                class_superclass,
+                init_record,
+                body_values,
+                invokes,
+            ) {
+                reject_overload_none!();
+            }
+        }
+        InvokeKind::Interface => reject_overload_none!(),
+    }
+
+    let mut actuals = Vec::with_capacity(site.arguments.len());
+    let target_descriptor = descriptor_facts(&invoke.descriptor, DescriptorKind::Method)?;
+    for (argument_index, (outer_expression, fact)) in site
+        .arguments
+        .iter()
+        .zip(&invoke.argument_value_facts)
+        .enumerate()
+    {
+        budget.poll()?;
+        let expression = if let Some(wrapper) = &outer_expression.presentation_wrapper {
+            let Some(required) = target_descriptor
+                .parameters()
+                .get(argument_index)
+                .and_then(|parameter| parameter.bytes(&invoke.descriptor))
+                .and_then(generic_call_reference_type_from_descriptor)
+            else {
+                reject_overload_none!();
+            };
+            if wrapper.ty != required {
+                reject_overload_none!();
+            }
+            wrapper.child.as_ref()
+        } else {
+            outer_expression
+        };
+        if expression.primary.method.as_ref() != Some(&caller.method)
+            || fact.replaced_by.is_some()
+            || fact.uses.as_slice() != [Some(invoke.bci)]
+        {
+            reject_overload_none!();
+        }
+        if expression.null_literal {
+            if !generic_call_null_matches(body_values, fact, expression, invoke.bci) {
+                reject_overload_none!();
+            }
+            actuals.push(class_source::SameClassOverloadActual {
+                source: None,
+                null_literal: true,
+            });
+            continue;
+        }
+        if matches!(expression.shape, Shape::Local) {
+            let Some(name) = expression.direct_local_name.as_deref() else {
+                reject_overload_none!();
+            };
+            let Some(slot) = formal_by_name.get(name).copied() else {
+                reject_overload_none!();
+            };
+            if !generic_call_load_matches_formal(body_values, fact, slot, invoke.bci) {
+                reject_overload_none!();
+            }
+            let Some(position) = formal_slots.iter().position(|formal| *formal == slot) else {
+                reject_overload_none!();
+            };
+            actuals.push(class_source::SameClassOverloadActual {
+                source: Some(class_source::SameClassGenericArgumentSource {
+                    caller: caller.method.clone(),
+                    origin: class_source::SameClassGenericArgumentOrigin::Formal { slot },
+                    source_type: caller.parameters[position].clone(),
+                    caller_method_parameters: caller.method_parameters.clone(),
+                }),
+                null_literal: false,
+            });
+        } else {
+            let Shape::Call {
+                name,
+                argument_count,
+            } = &expression.shape
+            else {
+                reject_overload_none!();
+            };
+            let Some(producer) = invokes.iter().find(|producer| {
+                producer.physical_caller == caller.method && producer.bci == expression.primary.bci
+            }) else {
+                reject_overload_none!();
+            };
+            let Some(source) = nested_call_sources.iter().find(|source| {
+                source.caller == caller.method
+                    && matches!(
+                        &source.origin,
+                        class_source::SameClassGenericArgumentOrigin::NestedCall {
+                            bci, opcode, owner, name: source_name, descriptor,
+                        } if *bci == producer.bci
+                            && *opcode == producer.opcode
+                            && *owner == producer.owner
+                            && *source_name == producer.name
+                            && *descriptor == producer.descriptor
+                    )
+            }) else {
+                reject_overload_none!();
+            };
+            let Some(producer_key) = generic_call_ast_key(producer) else {
+                reject_overload_none!();
+            };
+            let Some(producer_sites) = class_source_invoke_ast_sites(
+                caller_ast,
+                std::slice::from_ref(&producer_key),
+                budget,
+            )
+            .map_err(|stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "nested overload producer AST projection",
+                    "generic_call_ast_missing",
+                )
+            })?
+            else {
+                reject_overload_none!();
+            };
+            let Some(producer_site) = producer_sites.first() else {
+                reject_overload_none!();
+            };
+            let Some(producer_result) = producer.result_value_fact.as_ref() else {
+                reject_overload_none!();
+            };
+            if expression.primary.method.as_ref() != Some(&caller.method)
+                || name.as_bytes() != producer.name
+                || usize::try_from(*argument_count).ok() != Some(producer_site.arguments.len())
+                || fact.replaced_by.is_some()
+                || fact.uses.as_slice() != [Some(invoke.bci)]
+                || fact.value != producer_result.value
+                || !matches!(fact.definition, Definition::Instruction { bci, .. } if bci == producer.bci)
+            {
+                reject_overload_none!();
+            }
+            actuals.push(class_source::SameClassOverloadActual {
+                source: Some(source.clone()),
+                null_literal: false,
+            });
+        }
+    }
+
+    let Some(overloads) = same_class_overload_candidates(
+        methods,
+        method_headers,
+        staged,
+        raw_inputs,
+        &invoke.name,
+        class_internal,
+        class_scope,
+        bytes,
+        pool,
+        budget,
+    )?
+    else {
+        reject_overload_none!();
+    };
+
+    if class_superclass != Some(b"java/lang/Object".as_slice())
+        || !class_interfaces.is_empty()
+        || key.target.owner().as_bytes() != class_internal
+        || key.target.is_interface_reference()
+        || key.target.kind() == InvokeKind::Interface
+    {
+        reject_overload_none!();
+    }
+    let Some(target_candidate) = overloads.iter().find(|candidate| {
+        candidate.owner == class_internal
+            && candidate.method.name.0 == key.target.name().as_bytes()
+            && candidate.descriptor == key.target.descriptor().as_bytes()
+    }) else {
+        reject_overload_none!();
+    };
+    if !target_candidate.source_writable
+        || target_candidate.method.owner != caller.method.owner
+        || (target_candidate.access_flags & 0x0008 != 0) != (invoke.opcode == 0xb8)
+        || overloads
+            .iter()
+            .any(|candidate| candidate.access_flags & (0x0040 | 0x1000 | 0x0080) != 0)
+    {
+        reject_overload_none!();
+    }
+    let same_arity = overloads
+        .iter()
+        .filter(|candidate| candidate.parameters.len() == actuals.len())
+        .collect::<Vec<_>>();
+    if !same_arity
+        .iter()
+        .any(|candidate| candidate.descriptor == key.target.descriptor().as_bytes())
+    {
+        reject_overload_none!();
+    }
+    if same_arity.len() == 1 {
+        return Ok(Some(Vec::new()));
+    }
+    let result = class_source::prove_same_class_overload_argument_upcasts(
+        class_internal,
+        class_superclass,
+        class_interfaces,
+        class_scope,
+        class_parameters,
+        &caller.method,
+        &key.target,
+        invoke.bci,
+        true,
+        &actuals,
+        &overloads,
+        budget,
+    )?;
+
+    Ok(result)
+}
+
+fn same_class_overload_candidates(
+    methods: &[ClassSourceMethod],
+    method_headers: &[MemberHeader],
+    staged: &std::collections::BTreeMap<usize, class_source::GenericCallProjectionState>,
+    raw_inputs: &std::collections::BTreeMap<usize, GenericCallProjectionInput>,
+    name: &[u8],
+    class_internal: &[u8],
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<Option<Vec<class_source::SameClassOverloadCandidate>>> {
+    use jarde_reader::signature::parse_method_signature;
+    macro_rules! reject_candidate_none {
+        () => {{
+            return Ok(None);
+        }};
+    }
+
+    let mut candidates = Vec::new();
+    for (index, header) in method_headers.iter().enumerate() {
+        budget.poll()?;
+        if header.name.raw().0 != name {
+            continue;
+        }
+        let Some(record) = methods.get(index) else {
+            reject_candidate_none!();
+        };
+        let projection = staged.get(&index).or_else(|| {
+            raw_inputs
+                .get(&index)
+                .and_then(|input| input.projection_state.as_ref())
+        });
+        let generic_signature_projected = projection
+            .map(|state| state.generic_signature_projected)
+            .unwrap_or(record.generic_signature_projected);
+        let declaration_present = projection
+            .map(|state| state.declaration.is_some())
+            .unwrap_or(record.declaration.is_some());
+        let signature_shells = header
+            .attributes
+            .iter()
+            .filter(|attribute| attribute.name.raw().0 == b"Signature")
+            .cloned()
+            .collect::<Vec<_>>();
+        if generic_signature_projected && signature_shells.len() != 1 {
+            reject_candidate_none!();
+        }
+        let (parameters, method_parameters, source_contract_valid) = if !generic_signature_projected
+        {
+            // Overload resolution sees the declaration this report will actually emit. If a
+            // generic Signature was refused, that declaration is the erased descriptor form;
+            // using the unpublished Signature here would make the candidate set disagree with
+            // the source text and could either reject a safe target or prove the wrong overload.
+            let parsed = match parse_method_signature(&header.descriptor.raw().0, budget) {
+                Ok(parsed) => parsed,
+                Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                    return Err(error);
+                }
+                Err(_) => reject_candidate_none!(),
+            };
+            (parsed.parameters, Vec::new(), declaration_present)
+        } else {
+            let attributes =
+                match class_source::declared_member_attributes(bytes, header, pool, budget) {
+                    Ok(attributes) => attributes,
+                    Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                        return Err(error);
+                    }
+                    Err(_) => reject_candidate_none!(),
+                };
+            let contract = if let Some(state) = projection {
+                let contract_result =
+                    class_source::staged_same_class_generic_method_contract_with_state(
+                        record,
+                        state,
+                        header,
+                        &attributes,
+                        bytes,
+                        pool,
+                        class_scope,
+                        budget,
+                    );
+                match contract_result {
+                    Ok(contract) => contract,
+                    Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                        return Err(error);
+                    }
+                    Err(_) => reject_candidate_none!(),
+                }
+            } else if record.generic_signature_projected
+                && !record.generic_signature_refused
+                && declaration_present
+            {
+                match class_source::same_class_generic_method_contract_from_signature(
+                    record.item.identity.clone(),
+                    header,
+                    &attributes,
+                    bytes,
+                    pool,
+                    class_scope,
+                    budget,
+                ) {
+                    Ok(contract) => contract,
+                    Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                        return Err(error);
+                    }
+                    Err(_) => reject_candidate_none!(),
+                }
+            } else {
+                reject_candidate_none!();
+            };
+            let Some(contract) = contract else {
+                reject_candidate_none!();
+            };
+            if !declaration_present {
+                reject_candidate_none!();
+            }
+            (contract.parameters, contract.method_parameters, true)
+        };
+        candidates.push(class_source::SameClassOverloadCandidate {
+            method: record.item.identity.clone(),
+            owner: class_internal.to_vec(),
+            descriptor: header.descriptor.raw().0.clone(),
+            access_flags: header.access_flags,
+            parameters,
+            method_parameters,
+            source_writable: source_contract_valid,
+        });
+    }
+    if candidates.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(candidates))
+    }
+}
+
+/// Publish connected same-class generic call candidates as one class-local transaction. Every
+/// call into a member in a component is checked against its exact physical AST/SSA site before
+/// any staged record is installed; any missing caller, opaque consumer, cycle, or failed final
+/// Signature projection restores the component's pre-projection erased records.
+#[allow(clippy::too_many_arguments)]
+fn project_generic_call_components(
+    mut inputs: Vec<GenericCallProjectionInput>,
+    methods: &mut [ClassSourceMethod],
+    method_headers: &[MemberHeader],
+    invokes: &[class_source::SameClassInvokeUse],
+    field_uses: &[class_source::SameClassFieldUse],
+    member_use_scans: &[MemberUseScan],
+    method_asts: &[(
+        PhysicalMethodId,
+        jarde_java::report::ClassSourceMethodAst,
+        Option<jarde_java::report::GenericConstructorCandidate>,
+        Option<jarde_java::report::AnonymousAllocationScan>,
+    )],
+    class_internal: &[u8],
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    class_parameters: &[jarde_reader::signature::TypeParameter],
+    class_signature_present: bool,
+    class_flags: u16,
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    resolved_inner_classes: &[class_source::ResolvedInnerClass],
+    physical_fields: &[MemberHeader],
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    use_facts: class_source::SameClassUseFacts<'_>,
+    budget: &mut Budget,
+) -> Result<()> {
+    if inputs.is_empty() {
+        return Ok(());
+    }
+    let preflight = budget.poll().and_then(|()| {
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                inputs
+                    .len()
+                    .saturating_add(invokes.len())
+                    .saturating_add(method_asts.len()),
+            )
+            .unwrap_or(u64::MAX),
+        )
+    });
+    if let Err(stop) = preflight {
+        for input in &mut inputs {
+            if input.index < methods.len() {
+                if matches!(
+                    methods[input.index].outcome,
+                    class_source::ClassSourceOutcome::NoBody
+                ) && methods[input.index].no_body_kind == Some(NoBodyKind::Abstract)
+                    && methods[input.index].generic_signature_projected
+                    && methods[input.index].declaration.is_some()
+                {
+                    continue;
+                }
+                if methods[input.index].generic_signature_refused
+                    && !methods[input.index].generic_signature_projected
+                {
+                    continue;
+                }
+                if let Some(state) = input.projection_state.take() {
+                    methods[input.index].install_generic_call_projection_state(state);
+                }
+            }
+        }
+        return Err(stop.into());
+    }
+    // Identify every input that can participate in this transaction before the first metered
+    // graph operation. The invokes and AST inventory are already captured, so this is a narrow
+    // index over existing facts rather than a second analysis. Raw projection overlays stay owned
+    // by their inputs until an entire component is ready to install.
+    let mut input_by_method = std::collections::HashMap::new();
+    let mut input_by_target = std::collections::HashMap::new();
+    for input in &inputs {
+        if input.index >= methods.len() || input.index >= method_headers.len() {
+            continue;
+        }
+        let Some(method) = methods.get(input.index) else {
+            continue;
+        };
+        let identity = &method.item.identity;
+        input_by_method.insert(identity, input.index);
+        input_by_target.insert((&identity.name.0, &identity.descriptor.0), input.index);
+    }
+    let ast_members = method_asts
+        .iter()
+        .map(|(method, _, _, _)| method)
+        .collect::<std::collections::HashSet<_>>();
+    let mut transaction_members = std::collections::BTreeSet::new();
+    for input in &inputs {
+        if input.index < methods.len()
+            && !methods[input.index].generic_signature_projected
+            && ast_members.contains(&&methods[input.index].item.identity)
+        {
+            transaction_members.insert(input.index);
+        }
+    }
+    for invoke in invokes {
+        if invoke.owner.as_slice() != class_internal {
+            continue;
+        }
+        if let Some(index) = input_by_target.get(&(&invoke.name, &invoke.descriptor)) {
+            transaction_members.insert(*index);
+        }
+        if let Some(index) = input_by_method.get(&&invoke.physical_caller) {
+            transaction_members.insert(*index);
+        }
+    }
+    drop(input_by_method);
+    drop(input_by_target);
+    drop(ast_members);
+    if let Err(stop) = budget.poll() {
+        for input in &mut inputs {
+            if input.index < methods.len() {
+                if matches!(
+                    methods[input.index].outcome,
+                    class_source::ClassSourceOutcome::NoBody
+                ) && methods[input.index].no_body_kind == Some(NoBodyKind::Abstract)
+                    && methods[input.index].generic_signature_projected
+                    && methods[input.index].declaration.is_some()
+                {
+                    continue;
+                }
+                if methods[input.index].generic_signature_refused
+                    && !methods[input.index].generic_signature_projected
+                {
+                    continue;
+                }
+                if let Some(state) = input.projection_state.take() {
+                    methods[input.index].install_generic_call_projection_state(state);
+                }
+            }
+        }
+        return Err(stop.into());
+    }
+    if !use_facts.complete {
+        for input in &mut inputs {
+            if transaction_members.contains(&input.index)
+                && !(matches!(
+                    methods[input.index].outcome,
+                    class_source::ClassSourceOutcome::NoBody
+                ) && methods[input.index].no_body_kind == Some(NoBodyKind::Abstract)
+                    && methods[input.index].generic_signature_projected
+                    && methods[input.index].declaration.is_some())
+                && !(methods[input.index].generic_signature_refused
+                    && !methods[input.index].generic_signature_projected)
+                && let Some(state) = input.projection_state.take()
+            {
+                methods[input.index].install_generic_call_projection_state(state);
+            }
+        }
+        return Ok(());
+    }
+    let mut input_by_index = std::collections::BTreeMap::new();
+    for input in inputs {
+        if input.index >= methods.len() || input.index >= method_headers.len() {
+            continue;
+        }
+        input_by_index.insert(input.index, input);
+    }
+    let mut committed_members = std::collections::BTreeSet::new();
+    let transaction_result = (|| -> Result<()> {
+        let candidates = input_by_index.keys().copied().collect::<Vec<_>>();
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(methods.len())
+                .unwrap_or(u64::MAX)
+                .saturating_mul(u64::try_from(method_asts.len()).unwrap_or(u64::MAX)),
+        )?;
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            u64::try_from(method_asts.len()).unwrap_or(u64::MAX),
+        )?;
+        let mut method_indexes = std::collections::HashMap::with_capacity(method_asts.len());
+        for (identity, _, _, _) in method_asts {
+            budget.poll()?;
+            let mut index = None;
+            for (method_index, method) in methods.iter().enumerate() {
+                budget.poll()?;
+                if method.item.identity == *identity {
+                    index = Some(method_index);
+                    break;
+                }
+            }
+            if let Some(index) = index {
+                method_indexes.entry(identity).or_insert(index);
+            }
+        }
+        let index_for_method = |method: &PhysicalMethodId| method_indexes.get(&method).copied();
+        let mut dependencies = Vec::new();
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(invokes.len())
+                .unwrap_or(u64::MAX)
+                .saturating_mul(u64::try_from(input_by_index.len()).unwrap_or(u64::MAX)),
+        )?;
+        for invoke in invokes {
+            budget.poll()?;
+            if invoke.owner.as_slice() != class_internal || invoke.name.starts_with(b"<") {
+                continue;
+            }
+            let Some(arity) = descriptor_facts(&invoke.descriptor, DescriptorKind::Method)
+                .ok()
+                .map(|descriptor| descriptor.parameters().len())
+            else {
+                continue;
+            };
+            let Some(caller) = index_for_method(&invoke.physical_caller)
+                .filter(|caller| input_by_index.contains_key(caller))
+            else {
+                continue;
+            };
+            for callee in input_by_index.keys() {
+                budget.poll()?;
+                let header = &method_headers[*callee];
+                if header.name.raw().0 != invoke.name
+                    || descriptor_facts(&header.descriptor.raw().0, DescriptorKind::Method)
+                        .ok()
+                        .is_none_or(|descriptor| descriptor.parameters().len() != arity)
+                {
+                    continue;
+                }
+                // Every pending same-arity sibling is part of overload selection, so a caller
+                // waits for that sibling's header. The caller's own sibling identity is not a
+                // dependency unless the bytecode actually invokes that same physical method;
+                // otherwise this would invent a self-cycle for a call to another overload.
+                let is_physical_self_call = methods[caller].item.identity.name.0 == invoke.name
+                    && methods[caller].item.identity.descriptor.0 == invoke.descriptor;
+                if *callee != caller || is_physical_self_call {
+                    dependencies.push(class_source::GenericCallDependency {
+                        caller,
+                        callee: *callee,
+                    });
+                }
+            }
+        }
+        let components = class_source::generic_call_components(&candidates, &dependencies, budget)?;
+        for component in components {
+            budget.poll()?;
+            let mut group_closed = component.order.is_some();
+            macro_rules! reject_generic_call_component {
+                () => {{
+                    group_closed = false;
+                }};
+            }
+            macro_rules! staged_generic_contract {
+                ($record:expr, $state:expr, $header:expr, $attributes:expr) => {{
+                    match class_source::staged_same_class_generic_method_contract_with_state(
+                        $record,
+                        $state,
+                        $header,
+                        $attributes,
+                        bytes,
+                        pool,
+                        class_scope,
+                        budget,
+                    ) {
+                        Ok(contract) => contract,
+                        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                            return Err(error);
+                        }
+                        Err(_) => None,
+                    }
+                }};
+            }
+            macro_rules! published_generic_contract {
+                ($index:expr) => {{
+                    let index = $index;
+                    let record = &methods[index];
+                    if !record.generic_signature_projected
+                        || record.generic_signature_refused
+                        || record.declaration.is_none()
+                    {
+                        None
+                    } else {
+                        let attributes = match class_source::declared_member_attributes(
+                            bytes,
+                            &method_headers[index],
+                            pool,
+                            budget,
+                        ) {
+                            Ok(attributes) => Some(attributes),
+                            Err(
+                                error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. }),
+                            ) => {
+                                return Err(error);
+                            }
+                            Err(_) => None,
+                        };
+                        if let Some(attributes) = attributes {
+                            match class_source::same_class_generic_method_contract_from_signature(
+                                record.item.identity.clone(),
+                                &method_headers[index],
+                                &attributes,
+                                bytes,
+                                pool,
+                                class_scope,
+                                budget,
+                            ) {
+                                Ok(contract) => contract,
+                                Err(
+                                    error
+                                    @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. }),
+                                ) => {
+                                    return Err(error);
+                                }
+                                Err(_) => None,
+                            }
+                        } else {
+                            None
+                        }
+                    }
+                }};
+            }
+
+            // Component members are sorted physical method-table indices. Keep this inventory
+            // predicate explicit so each bounded scan remains cancellable and charged; `any`
+            // chains used to hide work over dependencies, invokes, and the AST inventory.
+            let mut has_edge = false;
+            for edge in &dependencies {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                if component.members.binary_search(&edge.caller).is_ok()
+                    && component.members.binary_search(&edge.callee).is_ok()
+                {
+                    has_edge = true;
+                    break;
+                }
+            }
+            if !has_edge {
+                'target_invokes: for invoke in invokes {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if invoke.owner.as_slice() != class_internal {
+                        continue;
+                    }
+                    for index in &component.members {
+                        budget.poll()?;
+                        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                        let header = &method_headers[*index];
+                        if header.name.raw().0 == invoke.name
+                            && header.descriptor.raw().0 == invoke.descriptor
+                        {
+                            has_edge = true;
+                            break 'target_invokes;
+                        }
+                    }
+                }
+            }
+            if !has_edge {
+                for invoke in invokes {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if invoke.owner.as_slice() == class_internal
+                        && !invoke.name.starts_with(b"<")
+                        && index_for_method(&invoke.physical_caller)
+                            .is_some_and(|caller| component.members.binary_search(&caller).is_ok())
+                    {
+                        has_edge = true;
+                        break;
+                    }
+                }
+            }
+            if !has_edge {
+                'member_asts: for index in &component.members {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if methods[*index].generic_signature_projected
+                        || !input_by_index.contains_key(index)
+                    {
+                        continue;
+                    }
+                    let identity = &methods[*index].item.identity;
+                    for (method, _, _, _) in method_asts {
+                        budget.poll()?;
+                        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                        if method == identity {
+                            has_edge = true;
+                            break 'member_asts;
+                        }
+                    }
+                }
+            }
+            if !has_edge {
+                continue;
+            }
+            let mut staged =
+                std::collections::BTreeMap::<usize, class_source::GenericCallProjectionState>::new(
+                );
+            let mut staged_call_casts = std::collections::BTreeMap::<
+                usize,
+                Vec<jarde_java::report::ClassSourceInvokeArgumentCast>,
+            >::new();
+            let mut staged_presentation_removals = std::collections::BTreeMap::<
+                usize,
+                Vec<jarde_java::report::ClassSourceInvokeArgumentPresentationCast>,
+            >::new();
+            if group_closed {
+                let order = component.order.as_deref().unwrap_or_default();
+                if order.len() != component.members.len() {
+                    reject_generic_call_component!();
+                } else {
+                    for index in order {
+                        budget.poll()?;
+                        budget.charge(
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(
+                                method_asts
+                                    .len()
+                                    .saturating_add(member_use_scans.len())
+                                    .saturating_add(invokes.len()),
+                            )
+                            .unwrap_or(u64::MAX),
+                        )?;
+
+                        let Some(input) = input_by_index.get(index) else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        let record = &methods[*index];
+                        if matches!(record.outcome, class_source::ClassSourceOutcome::NoBody)
+                            && record.no_body_kind == Some(NoBodyKind::Abstract)
+                            && record.generic_signature_projected
+                            && record.declaration.is_some()
+                            && !record.generic_signature_refused
+                        {
+                            let projection_state = record.generic_call_projection_state(budget)?;
+                            if staged_generic_contract!(
+                                record,
+                                &projection_state,
+                                &method_headers[*index],
+                                &input.attributes
+                            )
+                            .is_none()
+                            {
+                                reject_generic_call_component!();
+                                break;
+                            }
+                            // The published no-body declaration is a callee leaf, not a body
+                            // candidate. Its complete incoming set is still revalidated below.
+                            staged.insert(*index, projection_state);
+                            continue;
+                        }
+                        let Some(mut projection_state) = input
+                            .projection_state
+                            .as_ref()
+                            .map(|state| state.clone_raw_for_stage(budget))
+                            .transpose()?
+                        else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        let caller_contract =
+                            match class_source::same_class_generic_method_contract_from_signature(
+                                record.item.identity.clone(),
+                                &method_headers[*index],
+                                &input.attributes,
+                                bytes,
+                                pool,
+                                class_scope,
+                                budget,
+                            ) {
+                                Ok(contract) => contract,
+                                Err(
+                                    error
+                                    @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. }),
+                                ) => {
+                                    return Err(error);
+                                }
+                                Err(_) => {
+                                    reject_generic_call_component!();
+                                    break;
+                                }
+                            };
+                        let Some(caller_contract) = caller_contract else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        let mut caller_ast = None;
+                        let mut caller_constructor_candidate = None;
+                        for (method, ast, constructor_candidate, _) in method_asts {
+                            budget.poll()?;
+                            if method == &record.item.identity {
+                                caller_ast = Some(ast);
+                                caller_constructor_candidate = constructor_candidate.as_ref();
+                                break;
+                            }
+                        }
+                        let (Some(caller_ast), caller_constructor_candidate) =
+                            (caller_ast, caller_constructor_candidate)
+                        else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        if !generic_call_ast_inventory_matches(
+                            caller_ast,
+                            &record.item.identity,
+                            invokes,
+                            class_internal,
+                            budget,
+                        )? {
+                            reject_generic_call_component!();
+                            break;
+                        }
+                        let signature_candidate = record.same_run_generic_return.as_ref().filter(
+                        |candidate| {
+                            !matches!(
+                                &candidate.value,
+                                jarde_java::report::GenericReturnValue::StaticMemberCreation { .. }
+                            )
+                        },
+                    );
+                        let caller_init_record =
+                            generic_call_method_init_record(&record).or_else(|| {
+                                caller_constructor_candidate
+                                    .as_ref()
+                                    .map(|candidate| &candidate.init)
+                            });
+                        let mut body_scan = None;
+                        for scan in member_use_scans {
+                            budget.poll()?;
+                            if scan.member.as_ref() == Some(&record.item.identity) {
+                                body_scan = Some(scan);
+                                break;
+                            }
+                        }
+                        let Some(body_scan) = body_scan else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        let mut validated_return_calls = Vec::new();
+                        let mut validated_call_bcis = Vec::new();
+                        let mut validated_overload_call_bcis = Vec::new();
+                        let mut call_casts = Vec::new();
+                        let mut presentation_removals = Vec::new();
+                        let mut nested_call_sources = Vec::new();
+                        let mut caller_invokes = Vec::new();
+                        for invoke in invokes {
+                            budget.poll()?;
+                            if invoke.physical_caller == record.item.identity
+                                && invoke.owner.as_slice() == class_internal
+                            {
+                                caller_invokes.push(invoke);
+                            }
+                        }
+                        caller_invokes.sort_by_key(|invoke| invoke.bci);
+
+                        for invoke in caller_invokes {
+                            budget.poll()?;
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                            if !invoke.name.starts_with(b"<") {
+                                let overload_proof = prove_generic_call_overload_site(
+                                    invoke,
+                                    &caller_contract,
+                                    caller_ast,
+                                    &method_headers[*index],
+                                    caller_constructor_candidate,
+                                    &body_scan.body_values,
+                                    methods,
+                                    method_headers,
+                                    &staged,
+                                    &input_by_index,
+                                    invokes,
+                                    &nested_call_sources,
+                                    class_internal,
+                                    class_scope,
+                                    class_parameters,
+                                    class_superclass,
+                                    class_interfaces,
+                                    bytes,
+                                    pool,
+                                    use_facts.complete,
+                                    budget,
+                                )?;
+
+                                let Some(casts) = overload_proof else {
+                                    reject_generic_call_component!();
+                                    break;
+                                };
+                                call_casts.extend(casts);
+                                validated_overload_call_bcis.push(invoke.bci);
+                            }
+                            let mut callee_index = None;
+                            for callee in &component.members {
+                                budget.poll()?;
+                                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                                if method_headers[*callee].name.raw().0 == invoke.name
+                                    && method_headers[*callee].descriptor.raw().0
+                                        == invoke.descriptor
+                                {
+                                    callee_index = Some(*callee);
+                                    break;
+                                }
+                            }
+                            let callee_contract = if let Some(callee_index) = callee_index {
+                                let Some(callee_record) = staged.get(&callee_index) else {
+                                    reject_generic_call_component!();
+                                    break;
+                                };
+                                let Some(callee_input) = input_by_index.get(&callee_index) else {
+                                    reject_generic_call_component!();
+                                    break;
+                                };
+                                staged_generic_contract!(
+                                    &methods[callee_index],
+                                    callee_record,
+                                    &method_headers[callee_index],
+                                    &callee_input.attributes
+                                )
+                            } else if invoke.name.starts_with(b"<") {
+                                continue;
+                            } else {
+                                let mut published_index = None;
+                                let mut duplicate = false;
+                                for (candidate_index, header) in method_headers.iter().enumerate() {
+                                    budget.poll()?;
+                                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                                    if header.name.raw().0 == invoke.name
+                                        && header.descriptor.raw().0 == invoke.descriptor
+                                    {
+                                        if published_index.replace(candidate_index).is_some() {
+                                            duplicate = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if duplicate {
+                                    reject_generic_call_component!();
+                                    break;
+                                }
+                                let Some(published_index) = published_index else {
+                                    continue;
+                                };
+                                if input_by_index.contains_key(&published_index) {
+                                    reject_generic_call_component!();
+                                    break;
+                                }
+                                let published_record = &methods[published_index];
+                                if !published_record.generic_signature_projected
+                                    || published_record.generic_signature_refused
+                                    || published_record.declaration.is_none()
+                                {
+                                    continue;
+                                }
+                                published_generic_contract!(published_index)
+                            };
+                            let Some(callee_contract) = callee_contract else {
+                                reject_generic_call_component!();
+                                break;
+                            };
+                            let Some(direct_return) = prove_generic_call_site_from_ast(
+                                invoke,
+                                &caller_contract,
+                                &callee_contract,
+                                caller_ast,
+                                &method_headers[*index],
+                                caller_init_record,
+                                field_uses,
+                                &body_scan.body_values,
+                                class_internal,
+                                class_superclass,
+                                class_scope,
+                                class_parameters,
+                                physical_fields,
+                                invokes,
+                                &nested_call_sources,
+                                budget,
+                            )?
+                            else {
+                                reject_generic_call_component!();
+                                break;
+                            };
+                            presentation_removals.extend(direct_return.presentation_removals);
+                            validated_call_bcis.push(invoke.bci);
+                            if direct_return.direct_return {
+                                validated_return_calls.push(
+                                    class_source::SameClassGenericBodyReturnSource::Call {
+                                        bci: invoke.bci,
+                                        opcode: invoke.opcode,
+                                        owner: invoke.owner.clone(),
+                                        name: invoke.name.clone(),
+                                        descriptor: invoke.descriptor.clone(),
+                                    },
+                                );
+                            }
+                            if let Some(result_type) = direct_return.result_type {
+                                nested_call_sources
+                                    .push(class_source::SameClassGenericArgumentSource {
+                                    caller: caller_contract.method.clone(),
+                                    origin:
+                                        class_source::SameClassGenericArgumentOrigin::NestedCall {
+                                            bci: invoke.bci,
+                                            opcode: invoke.opcode,
+                                            owner: invoke.owner.clone(),
+                                            name: invoke.name.clone(),
+                                            descriptor: invoke.descriptor.clone(),
+                                        },
+                                    source_type: result_type,
+                                    caller_method_parameters: caller_contract
+                                        .method_parameters
+                                        .clone(),
+                                });
+                            }
+                        }
+                        if !group_closed {
+                            break;
+                        }
+                        {
+                            let body_ast = caller_ast;
+                            let Some(body_summary) =
+                                jarde_java::report::class_source_method_body_consumers(
+                                    body_ast, budget,
+                                )
+                                .map_err(|stop| {
+                                    enum_projection_stop_error(
+                                        stop,
+                                        "same-class generic method body proof",
+                                        "generic_call_ast_missing",
+                                    )
+                                })?
+                            else {
+                                // A narrower existing typed candidate may still prove this body; a
+                                // call-derived return cannot use an incomplete body summary.
+                                if !validated_return_calls.is_empty() {
+                                    reject_generic_call_component!();
+                                    break;
+                                }
+                                let binding = class_source::prove_same_class_method_binding(
+                                    class_internal,
+                                    class_superclass,
+                                    class_interfaces,
+                                    method_headers,
+                                    *index,
+                                    &use_facts,
+                                    budget,
+                                )?;
+                                let binding = match binding {
+                                    class_source::SameClassBinding::OverloadPending
+                                        if projection_state
+                                            .same_class_generic_body_proof
+                                            .as_ref()
+                                            .is_some_and(|proof| {
+                                                proof.method == record.item.identity
+                                            })
+                                            || signature_candidate.is_some()
+                                            || caller_constructor_candidate.is_some() =>
+                                    {
+                                        class_source::SameClassBinding::Proven
+                                    }
+                                    binding => binding,
+                                };
+                                let this_delegate_bci =
+                                    class_source::unproved_same_class_this_delegate_bci(
+                                        class_internal,
+                                        &method_headers[*index],
+                                        &use_facts,
+                                        budget,
+                                    )?;
+                                let projection = class_source::project_method_signature_with_state(
+                                    record,
+                                    &mut projection_state,
+                                    &method_headers[*index],
+                                    &input.attributes,
+                                    signature_candidate,
+                                    caller_constructor_candidate,
+                                    physical_fields,
+                                    bytes,
+                                    pool,
+                                    class_internal,
+                                    class_flags,
+                                    class_superclass,
+                                    class_interfaces,
+                                    class_scope,
+                                    class_signature_present,
+                                    resolved_inner_classes,
+                                    binding,
+                                    this_delegate_bci,
+                                    budget,
+                                )?;
+                                if !projection_state.generic_signature_projected
+                                    || projection
+                                        == class_source::SignatureProjection::DeferredSameClass
+                                {
+                                    reject_generic_call_component!();
+                                    break;
+                                }
+                                staged_call_casts.insert(*index, call_casts);
+                                staged_presentation_removals.insert(*index, presentation_removals);
+                                staged.insert(*index, projection_state);
+                                continue;
+                            };
+                            let Some(formals) =
+                                jarde_java::report::class_source_method_formal_names(
+                                    body_ast, budget,
+                                )
+                                .map_err(|stop| {
+                                    enum_projection_stop_error(
+                                        stop,
+                                        "same-class generic method formals",
+                                        "generic_call_ast_missing",
+                                    )
+                                })?
+                            else {
+                                reject_generic_call_component!();
+                                break;
+                            };
+                            let body_proof = prove_generic_method_body(
+                                &record.item.identity,
+                                &caller_contract,
+                                &formals,
+                                &body_summary,
+                                &body_scan.body_values,
+                                &body_scan.allocations,
+                                &validated_return_calls,
+                                &validated_call_bcis,
+                                &validated_overload_call_bcis,
+                                field_uses,
+                                invokes,
+                                physical_fields,
+                                class_internal,
+                                class_scope,
+                                class_parameters,
+                                caller_constructor_candidate,
+                                caller_init_record.or(body_summary.init_record.as_ref()),
+                                class_superclass,
+                                &method_headers[*index],
+                                budget,
+                            )?;
+
+                            projection_state.same_class_generic_body_proof = body_proof;
+                            if !validated_return_calls.is_empty()
+                                && projection_state.same_class_generic_body_proof.is_none()
+                            {
+                                reject_generic_call_component!();
+                                break;
+                            }
+                        }
+                        let binding = class_source::prove_same_class_method_binding(
+                            class_internal,
+                            class_superclass,
+                            class_interfaces,
+                            method_headers,
+                            *index,
+                            &use_facts,
+                            budget,
+                        )?;
+                        let binding = match binding {
+                            class_source::SameClassBinding::OverloadPending
+                                if projection_state
+                                    .same_class_generic_body_proof
+                                    .as_ref()
+                                    .is_some_and(|proof| proof.method == record.item.identity)
+                                    || (signature_candidate.is_some()
+                                        || caller_constructor_candidate.is_some()) =>
+                            {
+                                // This record remains local to the generic-call transaction. Its
+                                // new complete-body certificate or existing same-run body candidate
+                                // is still passed through the ordinary Signature erasure, flags,
+                                // names, and body-spelling gate below. The resulting header may serve
+                                // callers only inside this stage; final closure revalidates every
+                                // incoming call and every source overload before installation.
+                                class_source::SameClassBinding::Proven
+                            }
+                            binding => binding,
+                        };
+                        let this_delegate_bci =
+                            class_source::unproved_same_class_this_delegate_bci(
+                                class_internal,
+                                &method_headers[*index],
+                                &use_facts,
+                                budget,
+                            )?;
+                        let projection = class_source::project_method_signature_with_state(
+                            record,
+                            &mut projection_state,
+                            &method_headers[*index],
+                            &input.attributes,
+                            signature_candidate,
+                            caller_constructor_candidate,
+                            physical_fields,
+                            bytes,
+                            pool,
+                            class_internal,
+                            class_flags,
+                            class_superclass,
+                            class_interfaces,
+                            class_scope,
+                            class_signature_present,
+                            resolved_inner_classes,
+                            binding,
+                            this_delegate_bci,
+                            budget,
+                        )?;
+
+                        if !projection_state.generic_signature_projected
+                            || projection == class_source::SignatureProjection::DeferredSameClass
+                        {
+                            reject_generic_call_component!();
+                            break;
+                        }
+                        if !call_casts.is_empty() || !presentation_removals.is_empty() {
+                            let original_ast = caller_ast;
+                            let original_emitted =
+                                jarde_java::report::emit_class_source_method_ast(
+                                    original_ast,
+                                    4,
+                                    budget,
+                                )
+                                .map_err(|stop| {
+                                    enum_projection_stop_error(
+                                        stop,
+                                        "same-class overload source-body check",
+                                        "generic_call_ast_missing",
+                                    )
+                                })?;
+                            let Some(projected_ast) =
+                                jarde_java::report::project_class_source_invoke_argument_edits(
+                                    original_ast,
+                                    &presentation_removals,
+                                    &call_casts,
+                                    budget,
+                                )
+                                .map_err(|stop| {
+                                    enum_projection_stop_error(
+                                        stop,
+                                        "same-class overload cast projection",
+                                        "generic_call_ast_missing",
+                                    )
+                                })?
+                            else {
+                                reject_generic_call_component!();
+                                break;
+                            };
+                            let emitted = jarde_java::report::emit_class_source_method_ast(
+                                &projected_ast,
+                                4,
+                                budget,
+                            )
+                            .map_err(|stop| {
+                                enum_projection_stop_error(
+                                    stop,
+                                    "same-class overload cast emission",
+                                    "generic_call_ast_missing",
+                                )
+                            })?;
+                            budget.poll()?;
+                            budget.charge(
+                                CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(call_casts.len()).unwrap_or(u64::MAX),
+                            )?;
+                            let markers = call_casts
+                                .iter()
+                                .map(|cast| generic_call_cast_marker(cast, budget))
+                                .collect::<Result<Vec<_>>>()?;
+                            if !projection_state.project_generic_call_arguments(
+                                record,
+                                &original_emitted,
+                                &emitted,
+                                &markers,
+                                budget,
+                            )? {
+                                reject_generic_call_component!();
+                                break;
+                            }
+                        }
+                        staged_call_casts.insert(*index, call_casts);
+                        staged_presentation_removals.insert(*index, presentation_removals);
+                        staged.insert(*index, projection_state);
+                    }
+                }
+            }
+            if group_closed {
+                for index in &component.members {
+                    let Some(input) = input_by_index.get(index) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    let Some(record) = staged.get(index) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    if staged_generic_contract!(
+                        &methods[*index],
+                        record,
+                        &method_headers[*index],
+                        &input.attributes
+                    )
+                    .is_none()
+                    {
+                        reject_generic_call_component!();
+                        break;
+                    }
+                }
+            }
+            if group_closed {
+                // Recompute every overload site from the complete staged component. The edit set
+                // emitted by the topo pass is valid only when these final headers choose the same
+                // physical target with exactly the same source upcasts.
+                for index in &component.members {
+                    budget.poll()?;
+                    budget.charge(
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(
+                            method_asts
+                                .len()
+                                .saturating_add(member_use_scans.len())
+                                .saturating_add(invokes.len()),
+                        )
+                        .unwrap_or(u64::MAX),
+                    )?;
+                    let Some(input) = input_by_index.get(index) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    let expected_method = &methods[*index].item.identity;
+                    let Some(record) = staged.get(index) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    if matches!(
+                        methods[*index].outcome,
+                        class_source::ClassSourceOutcome::NoBody
+                    ) {
+                        // The earlier component pass checked the staged contract. No-Code
+                        // declarations have no outgoing sites whose overload or body proof can
+                        // be recomputed here.
+                        continue;
+                    }
+                    let mut caller_ast = None;
+                    let mut caller_constructor_candidate = None;
+                    for (method, ast, constructor_candidate, _) in method_asts {
+                        budget.poll()?;
+                        if method == expected_method {
+                            caller_ast = Some(ast);
+                            caller_constructor_candidate = constructor_candidate.as_ref();
+                            break;
+                        }
+                    }
+                    let mut body_scan = None;
+                    for scan in member_use_scans {
+                        budget.poll()?;
+                        if scan.member.as_ref() == Some(expected_method) {
+                            body_scan = Some(scan);
+                            break;
+                        }
+                    }
+                    let (Some(caller_ast), Some(body_scan)) = (caller_ast, body_scan) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    let caller_init_record = generic_call_method_init_record(&methods[*index])
+                        .or_else(|| {
+                            caller_constructor_candidate
+                                .as_ref()
+                                .map(|candidate| &candidate.init)
+                        });
+                    let Some(caller_contract) = staged_generic_contract!(
+                        &methods[*index],
+                        record,
+                        &method_headers[*index],
+                        &input.attributes
+                    ) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    let mut final_casts = Vec::new();
+                    let mut final_presentation_removals = Vec::new();
+                    let mut nested_call_sources = Vec::new();
+                    let mut caller_invokes = Vec::new();
+                    for invoke in invokes {
+                        budget.poll()?;
+                        if invoke.physical_caller == *expected_method
+                            && invoke.owner.as_slice() == class_internal
+                        {
+                            caller_invokes.push(invoke);
+                        }
+                    }
+                    caller_invokes.sort_by_key(|invoke| invoke.bci);
+                    for invoke in caller_invokes {
+                        budget.poll()?;
+                        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                        if !invoke.name.starts_with(b"<") {
+                            let Some(casts) = prove_generic_call_overload_site(
+                                invoke,
+                                &caller_contract,
+                                caller_ast,
+                                &method_headers[*index],
+                                caller_constructor_candidate,
+                                &body_scan.body_values,
+                                methods,
+                                method_headers,
+                                &staged,
+                                &input_by_index,
+                                invokes,
+                                &nested_call_sources,
+                                class_internal,
+                                class_scope,
+                                class_parameters,
+                                class_superclass,
+                                class_interfaces,
+                                bytes,
+                                pool,
+                                use_facts.complete,
+                                budget,
+                            )?
+                            else {
+                                reject_generic_call_component!();
+                                break;
+                            };
+                            final_casts.extend(casts);
+                        }
+                        let mut callee_index = None;
+                        let mut duplicate = false;
+                        for (candidate_index, header) in method_headers.iter().enumerate() {
+                            budget.poll()?;
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                            if header.name.raw().0 == invoke.name
+                                && header.descriptor.raw().0 == invoke.descriptor
+                            {
+                                if callee_index.replace(candidate_index).is_some() {
+                                    duplicate = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if duplicate {
+                            reject_generic_call_component!();
+                            break;
+                        }
+                        let Some(callee_index) = callee_index else {
+                            continue;
+                        };
+                        let callee_contract =
+                            if component.members.binary_search(&callee_index).is_ok() {
+                                let Some(callee_input) = input_by_index.get(&callee_index) else {
+                                    reject_generic_call_component!();
+                                    break;
+                                };
+                                let Some(callee_record) = staged.get(&callee_index) else {
+                                    reject_generic_call_component!();
+                                    break;
+                                };
+                                let Some(callee_contract) = staged_generic_contract!(
+                                    &methods[callee_index],
+                                    callee_record,
+                                    &method_headers[callee_index],
+                                    &callee_input.attributes
+                                ) else {
+                                    reject_generic_call_component!();
+                                    break;
+                                };
+                                callee_contract
+                            } else if invoke.name.starts_with(b"<") {
+                                continue;
+                            } else {
+                                if input_by_index.contains_key(&callee_index) {
+                                    reject_generic_call_component!();
+                                    break;
+                                }
+                                let published_record = &methods[callee_index];
+                                if !published_record.generic_signature_projected
+                                    || published_record.generic_signature_refused
+                                    || published_record.declaration.is_none()
+                                {
+                                    continue;
+                                }
+                                let Some(callee_contract) =
+                                    published_generic_contract!(callee_index)
+                                else {
+                                    reject_generic_call_component!();
+                                    break;
+                                };
+                                callee_contract
+                            };
+                        let Some(proof) = prove_generic_call_site_from_ast(
+                            invoke,
+                            &caller_contract,
+                            &callee_contract,
+                            caller_ast,
+                            &method_headers[*index],
+                            caller_init_record,
+                            field_uses,
+                            &body_scan.body_values,
+                            class_internal,
+                            class_superclass,
+                            class_scope,
+                            class_parameters,
+                            physical_fields,
+                            invokes,
+                            &nested_call_sources,
+                            budget,
+                        )?
+                        else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        final_presentation_removals.extend(proof.presentation_removals);
+                        let mut return_source_matches = false;
+                        if proof.direct_return {
+                            if let Some(body) = record.same_class_generic_body_proof.as_ref() {
+                                budget.charge(
+                                    CountedBudgetDimension::AnalysisSteps,
+                                    u64::try_from(body.return_sources.len()).unwrap_or(u64::MAX),
+                                )?;
+                                for source in &body.return_sources {
+                                    budget.poll()?;
+                                    if matches!(source,
+                                    class_source::SameClassGenericBodyReturnSource::Call { bci, .. }
+                                        if *bci == invoke.bci)
+                                    {
+                                        return_source_matches = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if proof.direct_return && !return_source_matches {
+                            reject_generic_call_component!();
+                            break;
+                        }
+                        if let Some(result_type) = proof.result_type {
+                            nested_call_sources.push(
+                                class_source::SameClassGenericArgumentSource {
+                                    caller: caller_contract.method.clone(),
+                                    origin:
+                                        class_source::SameClassGenericArgumentOrigin::NestedCall {
+                                            bci: invoke.bci,
+                                            opcode: invoke.opcode,
+                                            owner: invoke.owner.clone(),
+                                            name: invoke.name.clone(),
+                                            descriptor: invoke.descriptor.clone(),
+                                        },
+                                    source_type: result_type,
+                                    caller_method_parameters: caller_contract
+                                        .method_parameters
+                                        .clone(),
+                                },
+                            );
+                        }
+                    }
+                    if !group_closed
+                        || staged_call_casts.get(index) != Some(&final_casts)
+                        || staged_presentation_removals.get(index)
+                            != Some(&final_presentation_removals)
+                    {
+                        reject_generic_call_component!();
+                        break;
+                    }
+                }
+            }
+            if group_closed {
+                // Revalidate every incoming edge after the complete component has real staged
+                // declarations. The earlier topo pass only let a caller consume a callee that had
+                // already projected; this pass closes the set and rejects raw or unknown callers.
+                for invoke in invokes {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if invoke.owner.as_slice() != class_internal {
+                        continue;
+                    }
+                    let mut callee_index = None;
+                    for index in &component.members {
+                        budget.poll()?;
+                        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                        if method_headers[*index].name.raw().0 == invoke.name
+                            && method_headers[*index].descriptor.raw().0 == invoke.descriptor
+                        {
+                            callee_index = Some(*index);
+                            break;
+                        }
+                    }
+                    let Some(callee_index) = callee_index else {
+                        continue;
+                    };
+                    let Some(caller_index) = index_for_method(&invoke.physical_caller) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    let (Some(callee_input), Some(callee_record)) =
+                        (input_by_index.get(&callee_index), staged.get(&callee_index))
+                    else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    let Some(callee_contract) = staged_generic_contract!(
+                        &methods[callee_index],
+                        callee_record,
+                        &method_headers[callee_index],
+                        &callee_input.attributes
+                    ) else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if component.members.binary_search(&caller_index).is_err() {
+                        let expected_caller = &methods[caller_index].item.identity;
+                        let mut caller_ast = None;
+                        for (method, ast, _, _) in method_asts {
+                            budget.poll()?;
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                            if method == expected_caller {
+                                caller_ast = Some(ast);
+                                break;
+                            }
+                        }
+                        let mut caller_scan = None;
+                        for scan in member_use_scans {
+                            budget.poll()?;
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                            if scan.member.as_ref() == Some(expected_caller) {
+                                caller_scan = Some(scan);
+                                break;
+                            }
+                        }
+                        let (Some(caller_ast), Some(caller_scan)) = (caller_ast, caller_scan)
+                        else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        let incoming_proved = if callee_contract.result.is_none() {
+                            prove_raw_same_class_void_incoming(
+                                invoke,
+                                expected_caller,
+                                &method_headers[caller_index],
+                                caller_ast,
+                                &caller_scan.body_values,
+                                invokes,
+                                method_headers,
+                                &callee_contract,
+                                class_internal,
+                                budget,
+                            )?
+                        } else {
+                            prove_raw_same_class_direct_return_incoming(
+                                invoke,
+                                expected_caller,
+                                &method_headers[caller_index],
+                                caller_ast,
+                                &caller_scan.body_values,
+                                invokes,
+                                method_headers,
+                                &callee_contract,
+                                &methods[callee_index],
+                                &callee_input.attributes,
+                                &methods[caller_index],
+                                class_internal,
+                                class_superclass,
+                                class_scope,
+                                bytes,
+                                pool,
+                                generic_call_method_init_record(&methods[caller_index]),
+                                budget,
+                            )?
+                        };
+                        if !incoming_proved {
+                            reject_generic_call_component!();
+                            break;
+                        }
+                        continue;
+                    }
+                    let (Some(caller_input), Some(caller_record)) =
+                        (input_by_index.get(&caller_index), staged.get(&caller_index))
+                    else {
+                        reject_generic_call_component!();
+                        break;
+                    };
+                    if staged_generic_contract!(
+                        &methods[caller_index],
+                        caller_record,
+                        &method_headers[caller_index],
+                        &caller_input.attributes
+                    )
+                    .is_none()
+                        || staged_generic_contract!(
+                            &methods[callee_index],
+                            callee_record,
+                            &method_headers[callee_index],
+                            &callee_input.attributes
+                        )
+                        .is_none()
+                    {
+                        reject_generic_call_component!();
+                        break;
+                    }
+                }
+            }
+            if group_closed {
+                for (index, state) in staged {
+                    methods[index].install_generic_call_projection_state(state);
+                }
+                committed_members.extend(component.members.iter().copied());
+            } else {
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(component.members.len()).unwrap_or(u64::MAX),
+                )?;
+                let mut rollback_records = Vec::with_capacity(component.members.len());
+                for index in component.members {
+                    if let Some(input) = input_by_index.get(&index) {
+                        if matches!(
+                            methods[index].outcome,
+                            class_source::ClassSourceOutcome::NoBody
+                        ) && methods[index].no_body_kind == Some(NoBodyKind::Abstract)
+                            && methods[index].generic_signature_projected
+                            && methods[index].declaration.is_some()
+                        {
+                            // Keep this independently published declaration if a new caller edge
+                            // fails; the caller itself still rolls back to its ordinary raw source.
+                            continue;
+                        }
+                        if methods[index].generic_signature_refused
+                            && !methods[index].generic_signature_projected
+                        {
+                            committed_members.insert(index);
+                            continue;
+                        }
+                        let Some(mut rollback) = input
+                            .projection_state
+                            .as_ref()
+                            .map(|state| state.clone_raw_for_stage(budget))
+                            .transpose()?
+                        else {
+                            continue;
+                        };
+                        rollback.refuse_generic(
+                        &methods[index],
+                        "same-class generic call dependency did not close over every incoming use",
+                        budget,
+                    )?;
+                        rollback_records.push((index, rollback));
+                    }
+                }
+                for (index, rollback) in rollback_records {
+                    methods[index].install_generic_call_projection_state(rollback);
+                    committed_members.insert(index);
+                }
+            }
+        }
+        Ok(())
+    })();
+    if let Err(error) = transaction_result {
+        for index in &transaction_members {
+            if committed_members.contains(index) {
+                continue;
+            }
+            if matches!(
+                methods[*index].outcome,
+                class_source::ClassSourceOutcome::NoBody
+            ) && methods[*index].no_body_kind == Some(NoBodyKind::Abstract)
+                && methods[*index].generic_signature_projected
+                && methods[*index].declaration.is_some()
+            {
+                continue;
+            }
+            if methods[*index].generic_signature_refused
+                && !methods[*index].generic_signature_projected
+            {
+                continue;
+            }
+            if let Some(input) = input_by_index.get_mut(index)
+                && let Some(state) = input.projection_state.take()
+            {
+                methods[*index].install_generic_call_projection_state(state);
+            }
+        }
+        return Err(error);
+    }
+    Ok(())
+}
+
+/// Proves one physical call and every direct AST use of its result from the final caller and
+/// callee Signatures. The returned boolean says that this call is the caller's returned source.
+#[allow(clippy::too_many_arguments)]
+fn prove_generic_call_source_site(
+    invoke: &class_source::SameClassInvokeUse,
+    ast_site: &jarde_java::report::ClassSourceInvokeAstSite,
+    caller: &class_source::SameClassGenericMethodContract,
+    callee: &class_source::SameClassGenericMethodContract,
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    class_parameters: &[jarde_reader::signature::TypeParameter],
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    formal_names: &[jarde_java::report::ClassSourceMethodFormalName],
+    caller_header: &MemberHeader,
+    caller_init_record: Option<&jarde_java::init::InitRecord>,
+    body_values: &[class_source::SameClassBodyValueSite],
+    fields: &[MemberHeader],
+    field_targets: &[jarde_java::report::ClassSourceInvokeFieldTarget],
+    caller_ast: &jarde_java::report::ClassSourceMethodAst,
+    invokes: &[class_source::SameClassInvokeUse],
+    nested_call_sources: &[class_source::SameClassGenericArgumentSource],
+    budget: &mut Budget,
+) -> Result<Option<GenericCallSiteProof>> {
+    macro_rules! reject_generic_call_site {
+        () => {{
+            return Ok(None);
+        }};
+    }
+    use jarde_java::facts::InvokeKind;
+    use jarde_java::report::ClassSourceInvokeResultUseKind as Use;
+    use jarde_jvm::method_ir::Definition;
+    use jarde_reader::signature::SignatureType;
+
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+
+    let target_owner = invoke.owner.as_slice();
+    if !invoke.ssa_operands_complete
+        || ast_site.caller != invoke.physical_caller
+        || ast_site.key.call_bci != invoke.bci
+        || ast_site.key.opcode != invoke.opcode
+        || ast_site.key.target.owner().as_bytes() != target_owner
+        || ast_site.key.target.name().as_bytes() != invoke.name
+        || ast_site.key.target.descriptor().as_bytes() != invoke.descriptor
+        || caller.method != invoke.physical_caller
+        || callee.method.name.0 != invoke.name
+        || callee.method.descriptor.0 != invoke.descriptor
+        || target_owner != class_internal
+    {
+        reject_generic_call_site!();
+    }
+    let is_static = invoke.opcode == 0xb8;
+    if ast_site.key.target.kind()
+        != match invoke.opcode {
+            0xb6 => InvokeKind::Virtual,
+            0xb7 => InvokeKind::Special,
+            0xb8 => InvokeKind::Static,
+            0xb9 => InvokeKind::Interface,
+            _ => return Ok(None),
+        }
+    {
+        reject_generic_call_site!();
+    }
+    let descriptor = descriptor_facts(&caller.method.descriptor.0, DescriptorKind::Method)?;
+    let callee_descriptor = descriptor_facts(&callee.method.descriptor.0, DescriptorKind::Method)?;
+    let caller_is_static = caller_header.access_flags & 0x0008 != 0;
+    let formal_slots = jarde_jvm::method_ir::parameter_positions(&descriptor, caller_is_static);
+    let Some(formal_slots) = formal_slots else {
+        reject_generic_call_site!();
+    };
+    if caller.parameters.len() != formal_slots.len()
+        || ast_site.arguments.len() != callee.parameters.len()
+        || invoke.argument_value_facts.len() != callee.parameters.len()
+    {
+        reject_generic_call_site!();
+    }
+    let formal_by_name: std::collections::HashMap<&str, u16> = formal_names
+        .iter()
+        .map(|formal| (formal.name.as_str(), formal.slot))
+        .collect();
+    if formal_by_name.len() != formal_names.len() {
+        reject_generic_call_site!();
+    }
+    if is_static {
+        if ast_site.receiver.is_some() || invoke.receiver_value.is_some() {
+            reject_generic_call_site!();
+        }
+    } else {
+        let Some(receiver_fact) = invoke.receiver_value_fact.as_ref() else {
+            reject_generic_call_site!();
+        };
+        if ast_site.receiver.is_none() {
+            // An unqualified instance call has no receiver expression in this AST. Its
+            // implicit receiver is still required to be the physical initialized `this`.
+            if !generic_call_receiver_is_initialized_this(
+                invoke,
+                receiver_fact,
+                caller_header,
+                class_internal,
+                class_superclass,
+                caller_init_record,
+                body_values,
+                invokes,
+            ) {
+                reject_generic_call_site!();
+            }
+        } else {
+            let receiver = ast_site.receiver.as_ref().expect("checked above");
+            let receiver_slot = receiver
+                .direct_local_name
+                .as_deref()
+                .and_then(|name| formal_by_name.get(name).copied());
+            if receiver.direct_local_name.as_deref() == Some("this") {
+                if receiver.primary.method.as_ref() != Some(&caller.method)
+                    || !generic_call_receiver_is_initialized_this(
+                        invoke,
+                        receiver_fact,
+                        caller_header,
+                        class_internal,
+                        class_superclass,
+                        caller_init_record,
+                        body_values,
+                        invokes,
+                    )
+                {
+                    reject_generic_call_site!();
+                }
+            } else {
+                let Some(slot) = receiver_slot else {
+                    reject_generic_call_site!();
+                };
+                if !generic_call_load_matches_formal(body_values, receiver_fact, slot, invoke.bci) {
+                    reject_generic_call_site!();
+                }
+                let Some(position) = formal_slots.iter().position(|formal| *formal == slot) else {
+                    reject_generic_call_site!();
+                };
+                if !same_class_parameterized_receiver(
+                    &caller.parameters[position],
+                    class_internal,
+                    class_scope,
+                    &caller.method_parameters,
+                    budget,
+                )? {
+                    reject_generic_call_site!();
+                }
+            }
+        }
+    }
+
+    let mut actuals = Vec::with_capacity(callee.parameters.len());
+    let mut presentation_removals = Vec::new();
+    for (position, (outer_expression, value_fact)) in ast_site
+        .arguments
+        .iter()
+        .zip(&invoke.argument_value_facts)
+        .enumerate()
+    {
+        budget.poll()?;
+        let expression = if let Some(wrapper) = &outer_expression.presentation_wrapper {
+            let Some(required) = callee_descriptor
+                .parameters()
+                .get(position)
+                .and_then(|parameter| parameter.bytes(&callee.method.descriptor.0))
+                .and_then(generic_call_reference_type_from_descriptor)
+            else {
+                reject_generic_call_site!();
+            };
+            if wrapper.ty != required {
+                reject_generic_call_site!();
+            }
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            presentation_removals.push(
+                jarde_java::report::ClassSourceInvokeArgumentPresentationCast {
+                    call_bci: ast_site.key.call_bci,
+                    opcode: ast_site.key.opcode,
+                    target: ast_site.key.target.clone(),
+                    argument_index: position,
+                },
+            );
+            wrapper.child.as_ref()
+        } else {
+            outer_expression
+        };
+        let (source_type, origin) = if expression.null_literal {
+            if !callee.method_parameters.is_empty()
+                || matches!(callee.parameters[position], SignatureType::Base(_))
+                || !generic_call_null_matches(body_values, value_fact, expression, invoke.bci)
+            {
+                reject_generic_call_site!();
+            }
+            (
+                callee.parameters[position].clone(),
+                class_source::SameClassGenericArgumentOrigin::NullLiteral,
+            )
+        } else if matches!(
+            expression.shape,
+            jarde_java::report::ClassSourceAstExpressionShape::Local
+        ) {
+            if expression.primary.method.as_ref() != Some(&caller.method) {
+                reject_generic_call_site!();
+            }
+            let Some(local_name) = expression.direct_local_name.as_deref() else {
+                reject_generic_call_site!();
+            };
+            let Some(slot) = formal_by_name.get(local_name).copied() else {
+                reject_generic_call_site!();
+            };
+            if !generic_call_load_matches_formal(body_values, value_fact, slot, invoke.bci) {
+                reject_generic_call_site!();
+            }
+            let Some(caller_position) = formal_slots.iter().position(|formal| *formal == slot)
+            else {
+                reject_generic_call_site!();
+            };
+            (
+                caller.parameters[caller_position].clone(),
+                class_source::SameClassGenericArgumentOrigin::Formal { slot },
+            )
+        } else {
+            let jarde_java::report::ClassSourceAstExpressionShape::Call { argument_count, .. } =
+                &expression.shape
+            else {
+                reject_generic_call_site!();
+            };
+            let producer_bci = expression.primary.bci;
+            let Some(producer) = invokes.iter().find(|producer| {
+                producer.physical_caller == caller.method && producer.bci == producer_bci
+            }) else {
+                reject_generic_call_site!();
+            };
+            let Some(producer_key) = generic_call_ast_key(producer) else {
+                reject_generic_call_site!();
+            };
+            let Some(source) = nested_call_sources.iter().find(|source| {
+                source.caller == caller.method
+                    && matches!(
+                        &source.origin,
+                        class_source::SameClassGenericArgumentOrigin::NestedCall {
+                            bci, opcode, owner, name, descriptor,
+                        } if *bci == producer.bci
+                            && *opcode == producer.opcode
+                            && *owner == producer.owner
+                            && *name == producer.name
+                            && *descriptor == producer.descriptor
+                    )
+            }) else {
+                reject_generic_call_site!();
+            };
+            if expression.primary.method.as_ref() != Some(&caller.method)
+                || usize::try_from(*argument_count).ok()
+                    != Some(producer.argument_value_facts.len())
+                || value_fact.replaced_by.is_some()
+                || value_fact.uses.as_slice() != [Some(invoke.bci)]
+                || !matches!(value_fact.definition, Definition::Instruction { bci, .. } if bci == producer.bci)
+                || source.origin
+                    != (class_source::SameClassGenericArgumentOrigin::NestedCall {
+                        bci: producer_key.call_bci,
+                        opcode: producer_key.opcode,
+                        owner: producer.owner.clone(),
+                        name: producer.name.clone(),
+                        descriptor: producer.descriptor.clone(),
+                    })
+            {
+                reject_generic_call_site!();
+            }
+            (source.source_type.clone(), source.origin.clone())
+        };
+        actuals.push(class_source::SameClassGenericArgumentSource {
+            caller: caller.method.clone(),
+            origin,
+            source_type,
+            caller_method_parameters: caller.method_parameters.clone(),
+        });
+    }
+    let Some(substitution) = class_source::prove_same_class_generic_substitution(
+        class_scope,
+        class_parameters,
+        callee,
+        &actuals,
+        budget,
+    )?
+    else {
+        reject_generic_call_site!();
+    };
+
+    let result_uses = if callee.result.is_some() {
+        let Some(value_fact) = invoke.result_value_fact.as_ref() else {
+            reject_generic_call_site!();
+        };
+        if value_fact.replaced_by.is_some()
+            || !matches!(value_fact.definition, Definition::Instruction { bci, .. } if bci == invoke.bci)
+        {
+            reject_generic_call_site!();
+        }
+        let Some(uses) = jarde_java::report::class_source_invoke_result_uses(
+            caller_ast,
+            &ast_site.key,
+            field_targets,
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "same-class generic call consumer proof",
+                "generic_call_ast_missing",
+            )
+        })?
+        else {
+            reject_generic_call_site!();
+        };
+        if uses.is_empty() || value_fact.uses.iter().any(Option::is_none) {
+            reject_generic_call_site!();
+        }
+        let mut ast_use_bcis = Vec::with_capacity(uses.len());
+        let mut direct_return = false;
+        for usage in &uses {
+            budget.poll()?;
+            let bci = match &usage.kind {
+                Use::DirectReturn { consumer_bci } => {
+                    let Some(result) = caller.result.as_ref() else {
+                        reject_generic_call_site!();
+                    };
+                    let mut consumers = body_values.iter().filter(|site| site.bci == *consumer_bci);
+                    let Some(consumer_site) = consumers.next() else {
+                        reject_generic_call_site!();
+                    };
+                    if consumers.next().is_some()
+                        || consumer_site.stack_reads.len() != 1
+                        || consumer_site.stack_reads[0].1.value != value_fact.value
+                        || consumer_site.stack_reads[0].1.replaced_by.is_some()
+                        || consumer_site.stack_reads[0].1.uses.as_slice() != [Some(*consumer_bci)]
+                    {
+                        reject_generic_call_site!();
+                    }
+                    if !class_source::same_class_generic_result_matches(
+                        class_scope,
+                        &caller.method_parameters,
+                        result,
+                        callee,
+                        &substitution,
+                        budget,
+                    )? {
+                        reject_generic_call_site!();
+                    }
+                    direct_return = true;
+                    *consumer_bci
+                }
+                Use::FieldWrite { target } => {
+                    if target.owner.as_bytes() != class_internal {
+                        reject_generic_call_site!();
+                    }
+                    let mut consumers = body_values
+                        .iter()
+                        .filter(|site| site.bci == target.write_bci && site.opcode == 0xb5);
+                    let Some(consumer_site) = consumers.next() else {
+                        reject_generic_call_site!();
+                    };
+                    if consumers.next().is_some()
+                        || consumer_site.stack_reads.len() != 2
+                        || consumer_site.stack_reads[1].1.value != value_fact.value
+                        || consumer_site.stack_reads[1].1.replaced_by.is_some()
+                        || consumer_site.stack_reads[1].1.uses.as_slice()
+                            != [Some(target.write_bci)]
+                    {
+                        reject_generic_call_site!();
+                    }
+                    let matching = fields.iter().enumerate().filter(|(_, field)| {
+                        field.name.raw().0 == target.name.as_bytes()
+                            && field.descriptor.raw().0 == target.descriptor.as_bytes()
+                    });
+                    let mut matching = matching;
+                    let Some((_, field)) = matching.next() else {
+                        reject_generic_call_site!();
+                    };
+                    if matching.next().is_some() || target.owner.as_bytes() != class_internal {
+                        reject_generic_call_site!();
+                    }
+                    let Some(result_type) = class_source::same_class_generic_substituted_result(
+                        callee,
+                        &substitution,
+                        budget,
+                    )?
+                    else {
+                        reject_generic_call_site!();
+                    };
+                    if class_source::same_class_generic_source_assignable_to_descriptor(
+                        &result_type,
+                        &caller.method_parameters,
+                        &field.descriptor.raw().0,
+                        class_scope,
+                        class_parameters,
+                        budget,
+                    )? != Some(true)
+                    {
+                        reject_generic_call_site!();
+                    }
+                    target.write_bci
+                }
+                Use::DirectCallArgument {
+                    consumer: Some(consumer_key),
+                    argument_index,
+                } => {
+                    if consumer_key.target.owner().as_bytes() != class_internal
+                        || consumer_key.call_bci <= invoke.bci
+                    {
+                        reject_generic_call_site!();
+                    }
+                    let Some(consumer) = invokes.iter().find(|consumer| {
+                        consumer.physical_caller == invoke.physical_caller
+                            && generic_call_ast_key(consumer).as_ref() == Some(consumer_key)
+                    }) else {
+                        reject_generic_call_site!();
+                    };
+                    let Some(argument_fact) = consumer.argument_value_facts.get(*argument_index)
+                    else {
+                        reject_generic_call_site!();
+                    };
+                    if argument_fact.value != value_fact.value {
+                        reject_generic_call_site!();
+                    }
+                    if !matches!(
+                        usage.expression.shape,
+                        jarde_java::report::ClassSourceAstExpressionShape::Call { .. }
+                    ) || usage.expression.primary.method.as_ref()
+                        != Some(&invoke.physical_caller)
+                        || usage.expression.primary.bci != invoke.bci
+                    {
+                        reject_generic_call_site!();
+                    }
+                    let Some(consumer_sites) = jarde_java::report::class_source_invoke_ast_sites(
+                        caller_ast,
+                        std::slice::from_ref(consumer_key),
+                        budget,
+                    )
+                    .map_err(|stop| {
+                        enum_projection_stop_error(
+                            stop,
+                            "nested generic call AST projection",
+                            "generic_call_ast_missing",
+                        )
+                    })?
+                    else {
+                        reject_generic_call_site!();
+                    };
+                    let Some(consumer_site) = consumer_sites.first() else {
+                        reject_generic_call_site!();
+                    };
+                    let Some(argument) = consumer_site.arguments.get(*argument_index) else {
+                        reject_generic_call_site!();
+                    };
+                    let argument = argument
+                        .presentation_wrapper
+                        .as_ref()
+                        .map_or(argument, |wrapper| wrapper.child.as_ref());
+                    if !matches!(
+                        &argument.shape,
+                        jarde_java::report::ClassSourceAstExpressionShape::Call { .. }
+                    ) || argument.primary.bci != invoke.bci
+                        || argument.primary.method.as_ref() != Some(&invoke.physical_caller)
+                    {
+                        reject_generic_call_site!();
+                    }
+                    consumer_key.call_bci
+                }
+                Use::DirectCallArgument { .. } | Use::LocalStore { .. } | Use::Other { .. } => {
+                    reject_generic_call_site!();
+                }
+            };
+            ast_use_bcis.push(Some(bci));
+        }
+        ast_use_bcis.sort_unstable();
+        let mut ssa_use_bcis = value_fact.uses.clone();
+        ssa_use_bcis.sort_unstable();
+        if ast_use_bcis != ssa_use_bcis {
+            reject_generic_call_site!();
+        }
+        Some(direct_return)
+    } else {
+        if invoke.result_value.is_some() {
+            reject_generic_call_site!();
+        }
+        None
+    };
+    let direct_return = result_uses.unwrap_or(false);
+    let result_type = if callee.result.is_some() {
+        class_source::same_class_generic_substituted_result(callee, &substitution, budget)?
+    } else {
+        None
+    };
+    Ok(Some(GenericCallSiteProof {
+        direct_return,
+        result_type,
+        presentation_removals,
+    }))
+}
+
+fn same_class_parameterized_receiver(
+    source: &jarde_reader::signature::SignatureType,
+    class_internal: &[u8],
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    method_parameters: &[jarde_reader::signature::TypeParameter],
+    budget: &mut Budget,
+) -> Result<bool> {
+    use jarde_reader::signature::{SignatureType, TypeArgument};
+
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    let SignatureType::Class(class) = source else {
+        return Ok(false);
+    };
+    if class.segments.len() != 1 || class.segments[0].binary_name != class_internal {
+        return Ok(false);
+    }
+    let arguments = &class.segments[0].arguments;
+    if arguments.len() != class_scope.len() {
+        return Ok(false);
+    }
+    for (argument, variable) in arguments.iter().zip(class_scope) {
+        budget.poll()?;
+        if method_parameters
+            .iter()
+            .any(|method| method.name == variable.name)
+            || !matches!(argument, TypeArgument::Exact(SignatureType::TypeVariable(name)) if name == &variable.name)
+        {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+/// Certify the narrow complete body shapes accepted by generic-call Signature publication. Every
+/// local read must be a unique same-method SSA load from a physical entry slot; the proof retains
+/// each return source so a caller cannot publish a Signature from a presence bit alone.
+fn generic_exception_new_receiver_matches(
+    body_values: &[class_source::SameClassBodyValueSite],
+    allocation_bci: u32,
+    constructor_bci: u32,
+    receiver: &class_source::SameClassInvokeValueFact,
+) -> bool {
+    use jarde_jvm::method_ir::Definition;
+
+    let mut allocations = body_values
+        .iter()
+        .filter(|site| site.bci == allocation_bci && site.opcode == 0xbb);
+    let Some(allocation) = allocations.next() else {
+        return false;
+    };
+    if allocations.next().is_some() {
+        return false;
+    }
+    let expected_allocation_consumer = match receiver.definition {
+        Definition::Instruction { bci, .. } if bci != allocation_bci => bci,
+        _ => constructor_bci,
+    };
+    let mut allocation_writes = allocation.stack_writes.iter().filter(|write| {
+        matches!(write.definition, Definition::Instruction { bci, .. } if bci == allocation_bci)
+            && write.replaced_by.is_none()
+            && write.uses.as_slice() == [Some(expected_allocation_consumer)]
+    });
+    let Some(allocation_value) = allocation_writes.next() else {
+        return false;
+    };
+    if allocation_writes.next().is_some() {
+        return false;
+    }
+    if receiver.value == allocation_value.value
+        && receiver.definition == allocation_value.definition
+        && receiver.replaced_by.is_none()
+        && receiver.uses.as_slice() == [Some(constructor_bci)]
+    {
+        return true;
+    }
+    let Definition::Instruction { bci: dup_bci, .. } = receiver.definition else {
+        return false;
+    };
+    let mut dup_sites = body_values
+        .iter()
+        .filter(|site| site.bci == dup_bci && site.opcode == 0x59);
+    let Some(dup) = dup_sites.next() else {
+        return false;
+    };
+    if dup_sites.next().is_some() || dup.stack_reads.len() != 1 {
+        return false;
+    }
+    let dup_source = &dup.stack_reads[0].1;
+    let mut dup_writes = dup.stack_writes.iter().filter(|write| {
+        write.value == receiver.value
+            && write.definition == receiver.definition
+            && write.replaced_by.is_none()
+            && write.uses.as_slice() == [Some(constructor_bci)]
+    });
+    let Some(_dup_receiver) = dup_writes.next() else {
+        return false;
+    };
+    dup_writes.next().is_none()
+        && dup_source.value == allocation_value.value
+        && dup_source.definition == allocation_value.definition
+        && dup_source.replaced_by.is_none()
+        && dup_source.uses.as_slice() == [Some(dup_bci)]
+        && allocation_value.uses.as_slice() == [Some(dup_bci)]
+}
+
+fn prove_generic_method_body(
+    method: &PhysicalMethodId,
+    contract: &class_source::SameClassGenericMethodContract,
+    formal_names: &[jarde_java::report::ClassSourceMethodFormalName],
+    body: &jarde_java::report::ClassSourceMethodBodyConsumers,
+    body_values: &[class_source::SameClassBodyValueSite],
+    allocations: &[(u32, Vec<u8>)],
+    validated_return_calls: &[class_source::SameClassGenericBodyReturnSource],
+    validated_call_bcis: &[u32],
+    validated_overload_call_bcis: &[u32],
+    field_uses: &[class_source::SameClassFieldUse],
+    invokes: &[class_source::SameClassInvokeUse],
+    physical_fields: &[MemberHeader],
+    class_internal: &[u8],
+    class_scope: &[jarde_reader::signature::TypeParameterErasure],
+    class_parameters: &[jarde_reader::signature::TypeParameter],
+    constructor_candidate: Option<&jarde_java::report::GenericConstructorCandidate>,
+    init_record: Option<&jarde_java::init::InitRecord>,
+    class_superclass: Option<&[u8]>,
+    header: &MemberHeader,
+    budget: &mut Budget,
+) -> Result<Option<class_source::SameClassGenericMethodBodyProof>> {
+    macro_rules! reject_generic_method_body {
+        () => {{
+            return Ok(None);
+        }};
+    }
+    use jarde_java::report::ClassSourceAstExpressionShape as Shape;
+    use jarde_jvm::method_ir::Definition;
+    use jarde_reader::signature::SignatureType;
+
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            body.returns
+                .len()
+                .saturating_add(body.conditions.len())
+                .saturating_add(body.throws.len())
+                .saturating_add(body.field_writes.len())
+                .saturating_add(body.constructor_calls.len())
+                .saturating_add(body.invocation_statements.len())
+                .saturating_add(body.return_void_bcis.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    if contract.method != *method {
+        reject_generic_method_body!();
+    }
+    let descriptor = descriptor_facts(&header.descriptor.raw().0, DescriptorKind::Method)?;
+    let Some(slots) =
+        jarde_jvm::method_ir::parameter_positions(&descriptor, header.access_flags & 0x0008 != 0)
+    else {
+        reject_generic_method_body!();
+    };
+    if formal_names.len() != slots.len() || contract.parameters.len() != slots.len() {
+        reject_generic_method_body!();
+    }
+    let names_by_slot = formal_names
+        .iter()
+        .map(|formal| (formal.slot, formal.name.as_str()))
+        .collect::<std::collections::HashMap<_, _>>();
+    if names_by_slot.len() != formal_names.len()
+        || slots.iter().any(|slot| !names_by_slot.contains_key(slot))
+    {
+        reject_generic_method_body!();
+    }
+    for statement in &body.invocation_statements {
+        budget.poll()?;
+        let Shape::Call { name, .. } = &statement.expression.shape else {
+            reject_generic_method_body!();
+        };
+        if statement.expression.primary.method.as_ref() != Some(method)
+            || statement.expression.primary.bci != statement.bci
+            || validated_overload_call_bcis
+                .iter()
+                .filter(|bci| **bci == statement.bci)
+                .count()
+                != 1
+            || invokes
+                .iter()
+                .filter(|invoke| {
+                    invoke.physical_caller == *method
+                        && invoke.bci == statement.bci
+                        && invoke.owner == class_internal
+                        && invoke.name == name.as_bytes()
+                })
+                .count()
+                != 1
+        {
+            reject_generic_method_body!();
+        }
+    }
+    let unique_formal_source =
+        |name: &str, expression_bci: u32, consumer_bci: u32| -> Option<(u16, usize)> {
+            let formal = formal_names.iter().find(|formal| formal.name == name)?;
+            let position = slots.iter().position(|slot| *slot == formal.slot)?;
+            let site = body_values
+                .iter()
+                .filter(|site| site.bci == expression_bci)
+                .next()?;
+            if body_values
+                .iter()
+                .filter(|candidate| candidate.bci == expression_bci)
+                .count()
+                != 1
+            {
+                return None;
+            }
+            let mut facts = site
+                .stack_writes
+                .iter()
+                .filter(|fact| fact.uses.as_slice() == [Some(consumer_bci)]);
+            let fact = facts.next()?;
+            if facts.next().is_some()
+                || !generic_call_load_matches_formal(body_values, fact, formal.slot, consumer_bci)
+            {
+                return None;
+            }
+            Some((formal.slot, position))
+        };
+    let mut formal_pairs = Vec::with_capacity(formal_names.len());
+    for formal in formal_names {
+        budget.poll()?;
+        formal_pairs.push((formal.slot, formal.name.clone()));
+    }
+    let mut constructor_init = None;
+    let constructor_call_bci = if header.name.raw().0 == b"<init>" {
+        let init_record =
+            init_record.or_else(|| constructor_candidate.map(|candidate| &candidate.init));
+        let Some(init_record) = init_record else {
+            reject_generic_method_body!();
+        };
+        let Some(init_bci) = init_record.bci else {
+            reject_generic_method_body!();
+        };
+        if init_record.target != Some(jarde_java::ast::ConstructorTarget::Super)
+            || !init_record.presented
+            || init_record.declared.as_deref() != std::str::from_utf8(class_internal).ok()
+            || init_record.class.as_deref() != Some("java/lang/Object")
+            || class_superclass != Some(b"java/lang/Object".as_slice())
+            || body.constructor_calls.len() != 1
+        {
+            reject_generic_method_body!();
+        }
+        let call = &body.constructor_calls[0];
+        if call.bci != init_bci
+            || call.target != jarde_java::ast::ConstructorTarget::Super
+            || !call.arguments.is_empty()
+            || !call.catch_scopes.is_empty()
+        {
+            reject_generic_method_body!();
+        }
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            1_u64
+                .saturating_add(
+                    u64::try_from(init_record.class.as_ref().map_or(0, String::len))
+                        .unwrap_or(u64::MAX),
+                )
+                .saturating_add(
+                    u64::try_from(init_record.declared.as_ref().map_or(0, String::len))
+                        .unwrap_or(u64::MAX),
+                ),
+        )?;
+        constructor_init = Some(init_record.clone());
+        Some(init_bci)
+    } else {
+        if !body.constructor_calls.is_empty() {
+            reject_generic_method_body!();
+        }
+        None
+    };
+    let mut field_write_sites = Vec::with_capacity(body.field_writes.len());
+    for write in &body.field_writes {
+        budget.poll()?;
+        if write.op != jarde_java::ast::AssignOp::Assign
+            || write.value.primary.method.as_ref() != Some(method)
+        {
+            reject_generic_method_body!();
+        }
+        let Some(receiver) = write.receiver.as_ref() else {
+            reject_generic_method_body!();
+        };
+        if receiver.primary.method.as_ref() != Some(method)
+            || receiver.direct_local_name.as_deref() != Some("this")
+            || !matches!(receiver.shape, Shape::Local)
+        {
+            reject_generic_method_body!();
+        }
+        let mut body_sites = body_values
+            .iter()
+            .filter(|site| site.bci == write.bci && site.opcode == 0xb5);
+        let Some(body_site) = body_sites.next() else {
+            reject_generic_method_body!();
+        };
+        if body_sites.next().is_some() || body_site.stack_reads.len() != 2 {
+            reject_generic_method_body!();
+        }
+        let receiver_fact = &body_site.stack_reads[0].1;
+        let Some((receiver_load_bci, _)) =
+            generic_call_load_source(body_values, receiver_fact, write.bci)
+        else {
+            reject_generic_method_body!();
+        };
+        if receiver_load_bci != receiver.primary.bci
+            || !generic_call_receiver_is_initialized_this_at(
+                write.bci,
+                method,
+                receiver_fact,
+                header,
+                class_internal,
+                class_superclass,
+                init_record,
+                body_values,
+                invokes,
+            )
+        {
+            reject_generic_method_body!();
+        }
+        let mut matching = field_uses.iter().filter(|field_use| {
+            field_use.physical_method == *method
+                && field_use.bci == write.bci
+                && field_use.opcode == 0xb5
+                && field_use.owner == class_internal
+                && field_use.name == write.name.as_bytes()
+        });
+        let Some(field_use) = matching.next() else {
+            reject_generic_method_body!();
+        };
+        if matching.next().is_some() {
+            reject_generic_method_body!();
+        }
+        let mut declarations = physical_fields.iter().filter(|field| {
+            field.name.raw().0 == field_use.name && field.descriptor.raw().0 == field_use.descriptor
+        });
+        let Some(field) = declarations.next() else {
+            reject_generic_method_body!();
+        };
+        if declarations.next().is_some() {
+            reject_generic_method_body!();
+        }
+        match &field_use.write_source {
+            Some(class_source::SameClassFieldWriteSource::Null) => {
+                if !field_use.source_complete
+                    || !write.value.null_literal
+                    || !matches!(field_use.descriptor.first().copied(), Some(b'L' | b'['))
+                    || !generic_call_null_matches(
+                        body_values,
+                        &body_site.stack_reads[1].1,
+                        &write.value,
+                        write.bci,
+                    )
+                {
+                    reject_generic_method_body!();
+                }
+            }
+            Some(class_source::SameClassFieldWriteSource::Parameter {
+                method: source_method,
+                slot,
+            }) => {
+                if !field_use.source_complete
+                    || source_method != method
+                    || !matches!(&write.value.shape, Shape::Local)
+                    || write.value.direct_local_name.as_deref() != names_by_slot.get(slot).copied()
+                {
+                    reject_generic_method_body!();
+                }
+                let Some(position) = slots.iter().position(|formal| formal == slot) else {
+                    reject_generic_method_body!();
+                };
+                let mut source_type = &contract.parameters[position];
+                let parameterized_class_source = loop {
+                    budget.poll()?;
+                    match source_type {
+                        SignatureType::Array(component) => {
+                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                            source_type = component;
+                        }
+                        SignatureType::Class(class) => {
+                            budget.charge(
+                                CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(class.segments.len()).unwrap_or(u64::MAX),
+                            )?;
+                            let mut parameterized = false;
+                            for segment in &class.segments {
+                                budget.poll()?;
+                                parameterized |= !segment.arguments.is_empty();
+                            }
+                            break parameterized;
+                        }
+                        SignatureType::Base(_) | SignatureType::TypeVariable(_) => break false,
+                    }
+                };
+                if parameterized_class_source {
+                    reject_generic_method_body!();
+                }
+                if unique_formal_source(
+                    names_by_slot.get(slot).copied().unwrap_or_default(),
+                    write.value.primary.bci,
+                    write.bci,
+                ) != Some((*slot, position))
+                    || !body_values
+                        .iter()
+                        .find(|site| site.bci == write.value.primary.bci)
+                        .is_some_and(|source_site| {
+                            source_site.stack_writes.iter().any(|source| {
+                                source.uses.as_slice() == [Some(write.bci)]
+                                    && source.value == body_site.stack_reads[1].1.value
+                            })
+                        })
+                    || class_source::same_class_generic_source_assignable_to_descriptor(
+                        &contract.parameters[position],
+                        &contract.method_parameters,
+                        &field_use.descriptor,
+                        class_scope,
+                        class_parameters,
+                        budget,
+                    )? != Some(true)
+                {
+                    reject_generic_method_body!();
+                }
+            }
+            Some(class_source::SameClassFieldWriteSource::StringConstant { value_bci }) => {
+                let rhs = &body_site.stack_reads[1].1;
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(body_values.len()).unwrap_or(u64::MAX),
+                )?;
+                let mut constants = body_values.iter().filter(|site| site.bci == *value_bci);
+                let Some(constant_site) = constants.next() else {
+                    reject_generic_method_body!();
+                };
+                if !field_use.source_complete
+                    || field_use.descriptor != b"Ljava/lang/String;"
+                    || !matches!(write.value.shape, Shape::StringLiteral)
+                    || write.value.primary.method.as_ref() != Some(method)
+                    || write.value.primary.bci != *value_bci
+                    || constants.next().is_some()
+                    || !matches!(constant_site.opcode, 0x12 | 0x13)
+                    || constant_site.stack_writes.len() != 1
+                    || constant_site.stack_writes[0].value != rhs.value
+                    || constant_site.stack_writes[0].definition != rhs.definition
+                    || constant_site.stack_writes[0].replaced_by.is_some()
+                    || constant_site.stack_writes[0].uses.as_slice() != [Some(write.bci)]
+                    || !matches!(rhs.definition, Definition::Instruction { bci, .. } if bci == *value_bci)
+                    || rhs.replaced_by.is_some()
+                    || rhs.uses.as_slice() != [Some(write.bci)]
+                {
+                    reject_generic_method_body!();
+                }
+            }
+            _ if matches!(&write.value.shape, Shape::Call { .. })
+                && validated_call_bcis.contains(&write.value.primary.bci)
+                && matches!(
+                    body_site.stack_reads[1].1.definition,
+                    jarde_jvm::method_ir::Definition::Instruction { bci, .. }
+                        if bci == write.value.primary.bci
+                )
+                && body_site.stack_reads[1].1.replaced_by.is_none()
+                && body_site.stack_reads[1].1.uses.as_slice() == [Some(write.bci)] => {}
+            _ => reject_generic_method_body!(),
+        }
+        field_write_sites.push(write.bci);
+        let _ = field;
+    }
+    let mut return_sources = Vec::with_capacity(body.returns.len());
+    for returned in &body.returns {
+        budget.poll()?;
+        if returned.expression.primary.method.as_ref() != Some(method) {
+            reject_generic_method_body!();
+        }
+        if returned.catch_scopes.iter().any(|scope| {
+            scope.local_name
+                == returned
+                    .expression
+                    .direct_local_name
+                    .as_deref()
+                    .unwrap_or_default()
+        }) {
+            reject_generic_method_body!();
+        }
+        match &returned.expression.shape {
+            Shape::Local => {
+                let Some(name) = returned.expression.direct_local_name.as_deref() else {
+                    reject_generic_method_body!();
+                };
+                let Some((slot, position)) =
+                    unique_formal_source(name, returned.expression.primary.bci, returned.bci)
+                else {
+                    reject_generic_method_body!();
+                };
+                if contract.result.as_ref() != contract.parameters.get(position) {
+                    reject_generic_method_body!();
+                }
+                return_sources
+                    .push(class_source::SameClassGenericBodyReturnSource::Parameter { slot });
+            }
+            Shape::Call { .. } => {
+                let Some(source) = validated_return_calls.iter().find(|source| {
+                    matches!(source,
+                        class_source::SameClassGenericBodyReturnSource::Call { bci, .. }
+                            if *bci == returned.expression.primary.bci)
+                }) else {
+                    reject_generic_method_body!();
+                };
+                return_sources.push(source.clone());
+            }
+            _ => reject_generic_method_body!(),
+        }
+    }
+    let mut condition_slots = Vec::with_capacity(body.conditions.len());
+    for condition in &body.conditions {
+        budget.poll()?;
+        let (name, expression_bci) = match &condition.expression.shape {
+            Shape::Local => {
+                let Some(name) = condition.expression.direct_local_name.as_deref() else {
+                    reject_generic_method_body!();
+                };
+                (name, condition.expression.primary.bci)
+            }
+            Shape::BooleanNotLocal {
+                local_name,
+                primary,
+                ..
+            } => (local_name.as_str(), primary.bci),
+            _ => reject_generic_method_body!(),
+        };
+        if condition.expression.primary.method.as_ref() != Some(method) {
+            reject_generic_method_body!();
+        }
+        if condition
+            .catch_scopes
+            .iter()
+            .any(|scope| scope.local_name == name)
+        {
+            reject_generic_method_body!();
+        }
+        let Some((slot, position)) = unique_formal_source(name, expression_bci, condition.bci)
+        else {
+            reject_generic_method_body!();
+        };
+        if contract.parameters.get(position) != Some(&SignatureType::Base(b'Z')) {
+            reject_generic_method_body!();
+        }
+        condition_slots.push(slot);
+    }
+    let mut throw_sites = Vec::with_capacity(body.throws.len());
+    for thrown in &body.throws {
+        budget.poll()?;
+        if thrown.expression.primary.method.as_ref() != Some(method) {
+            reject_generic_method_body!();
+        }
+        let exception_shape = matches!(
+            &thrown.expression.shape,
+            Shape::New { ty, argument_count: 0, qualified: false }
+                if ty == "java.lang.RuntimeException" || ty == "RuntimeException"
+        );
+        let expression_bcis = std::iter::once(thrown.expression.primary.bci)
+            .chain(thrown.expression.derived.iter().map(|anchor| anchor.bci))
+            .collect::<std::collections::BTreeSet<_>>();
+        let allocation_bcis = allocations
+            .iter()
+            .filter(|(bci, owner)| {
+                owner == b"java/lang/RuntimeException" && expression_bcis.contains(bci)
+            })
+            .map(|(bci, _)| *bci)
+            .collect::<Vec<_>>();
+        let constructor_sites = invokes
+            .iter()
+            .filter(|invoke| {
+                invoke.physical_caller == *method
+                    && invoke.owner == b"java/lang/RuntimeException"
+                    && invoke.name == b"<init>"
+                    && expression_bcis.contains(&invoke.bci)
+            })
+            .collect::<Vec<_>>();
+        if !exception_shape
+            || allocation_bcis.len() != 1
+            || !constructor_sites.iter().any(|invoke| {
+                invoke.opcode == 0xb7
+                    && invoke.descriptor == b"()V"
+                    && invoke.argument_values.is_empty()
+                    && invoke.ssa_operands_complete
+                    && invoke.constructor_receiver
+                        == Some(class_source::SameClassConstructorReceiver::NewObject)
+                    && invoke.receiver_value_fact.as_ref().is_some_and(|receiver| {
+                        generic_exception_new_receiver_matches(
+                            body_values,
+                            allocation_bcis[0],
+                            invoke.bci,
+                            receiver,
+                        )
+                    })
+            })
+        {
+            reject_generic_method_body!();
+        }
+        throw_sites.push(thrown.bci);
+    }
+    if contract.result.is_some() && return_sources.is_empty() {
+        reject_generic_method_body!();
+    }
+    Ok(Some(class_source::SameClassGenericMethodBodyProof {
+        method: method.clone(),
+        formal_names: formal_pairs,
+        return_sources,
+        condition_slots,
+        throw_sites,
+        field_write_sites,
+        constructor_call_bci,
+        constructor_init,
+    }))
 }
 
 /// One same-read consumer's verdict for a field value under a projected (parameterized) type.
@@ -11931,6 +17262,7 @@ fn field_write_source(
     ir: &jarde_jvm::method_ir::MethodIr,
     code: &jarde_reader::classfile::MethodCodeFacts,
     instruction_index: usize,
+    target_descriptor: &[u8],
     ssa: &jarde_jvm::method_ir::SsaTable,
     ssa_by_bci: &std::collections::HashMap<u32, &jarde_jvm::method_ir::SsaInstruction>,
     code_by_bci: &std::collections::HashMap<u32, &InstructionFact>,
@@ -11976,6 +17308,65 @@ fn field_write_source(
             && value.uses()[0].bci() == Some(instruction.bci)
         {
             return Ok(Some(Source::Null));
+        }
+        return Ok(None);
+    }
+
+    // Admit one constant source shape for method-body certificates: the physical RHS is the
+    // result of one `ldc`/`ldc_w` String constant and the actual PUTFIELD/PUTSTATIC descriptor is
+    // String. Generic field-signature assignment proofs keep this source conservative below.
+    if target_descriptor == b"Ljava/lang/String;"
+        && let Definition::Instruction { bci, .. } = value.def()
+        && let Some(load) = code_by_bci.get(bci)
+        && matches!(load.opcode, 0x12 | 0x13)
+        && value.uses().len() == 1
+        && value.uses()[0].bci() == Some(instruction.bci)
+    {
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
+        )?;
+        let mut matching_loads = code
+            .instructions
+            .iter()
+            .enumerate()
+            .filter(|(_, candidate)| candidate.bci == *bci);
+        let Some((load_index, _)) = matching_loads.next() else {
+            return Ok(None);
+        };
+        if matching_loads.next().is_some() {
+            return Ok(None);
+        }
+        let Some(load_ssa) = ssa_by_bci.get(bci) else {
+            return Ok(None);
+        };
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(load_ssa.writes().len()).unwrap_or(u64::MAX),
+        )?;
+        if load_ssa
+            .writes()
+            .iter()
+            .filter(|(slot, written)| matches!(slot, Slot::Stack(_)) && *written == *rhs)
+            .count()
+            != 1
+        {
+            return Ok(None);
+        }
+        let Some(constant_pool_index) = code
+            .operands()
+            .get(load_index)
+            .and_then(|operand| operand.constant_pool_index)
+        else {
+            return Ok(None);
+        };
+        let Ok(constant) =
+            jarde_reader::classfile::cp_entry(ir.constant_pool(), constant_pool_index)
+        else {
+            return Ok(None);
+        };
+        if matches!(constant.kind, K::String { .. }) {
+            return Ok(Some(Source::StringConstant { value_bci: *bci }));
         }
         return Ok(None);
     }
@@ -12115,9 +17506,29 @@ fn field_write_source(
 /// array-helper census beside it: physical instructions, their pool entries, the readable
 /// non-body sources, and a completeness flag that turns any stop or unresolvable source into "not
 /// proven" at the class level.
+fn same_class_invoke_value_fact(
+    ssa: &jarde_jvm::method_ir::SsaTable,
+    value: jarde_jvm::method_ir::ValueId,
+    budget: &mut Budget,
+) -> Result<class_source::SameClassInvokeValueFact> {
+    budget.poll()?;
+    let source = ssa.value(value);
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(source.uses().len()).unwrap_or(u64::MAX),
+    )?;
+    Ok(class_source::SameClassInvokeValueFact {
+        value,
+        definition: source.def().clone(),
+        uses: source.uses().iter().map(|usage| usage.bci()).collect(),
+        replaced_by: source.replaced_by(),
+    })
+}
+
 fn scan_member_uses(
     ir: &jarde_jvm::method_ir::MethodIr,
     capture_bootstrap: bool,
+    capture_generic_call_values: bool,
     budget: &mut Budget,
 ) -> Result<Option<MemberUseScan>> {
     use jarde_reader::classfile::CpEntryKind as K;
@@ -12187,6 +17598,58 @@ fn scan_member_uses(
     {
         budget.poll()?;
         let opcode = operands.effective_opcode;
+        if capture_generic_call_values
+            && let (Some(ssa), Some(ssa_instruction)) = (ssa, ssa_by_bci.get(&instruction.bci))
+            && ssa_bci_is_unique
+            && ssa_instruction.opcode() == opcode
+        {
+            let mut stack_writes = Vec::new();
+            let mut stack_reads = Vec::new();
+            let mut local_reads = Vec::new();
+            let mut local_writes = Vec::new();
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(
+                    ssa_instruction
+                        .reads()
+                        .len()
+                        .saturating_add(ssa_instruction.writes().len()),
+                )
+                .unwrap_or(u64::MAX),
+            )?;
+            for (slot, value) in ssa_instruction.reads() {
+                budget.poll()?;
+                match slot {
+                    jarde_jvm::method_ir::Slot::Local(slot) => local_reads
+                        .push((*slot, same_class_invoke_value_fact(ssa, *value, budget)?)),
+                    jarde_jvm::method_ir::Slot::Stack(depth) => stack_reads
+                        .push((*depth, same_class_invoke_value_fact(ssa, *value, budget)?)),
+                }
+            }
+            stack_reads.sort_by_key(|(depth, _)| *depth);
+            for (slot, value) in ssa_instruction.writes() {
+                budget.poll()?;
+                let fact = same_class_invoke_value_fact(ssa, *value, budget)?;
+                match slot {
+                    jarde_jvm::method_ir::Slot::Stack(_) => stack_writes.push(fact),
+                    jarde_jvm::method_ir::Slot::Local(slot) => local_writes.push((*slot, fact)),
+                }
+            }
+            if !stack_reads.is_empty()
+                || !stack_writes.is_empty()
+                || !local_reads.is_empty()
+                || !local_writes.is_empty()
+            {
+                scan.body_values.push(class_source::SameClassBodyValueSite {
+                    bci: instruction.bci,
+                    opcode,
+                    stack_reads,
+                    stack_writes,
+                    local_reads,
+                    local_writes,
+                });
+            }
+        }
         let Some(index) = operands.constant_pool_index else {
             continue;
         };
@@ -12197,9 +17660,18 @@ fn scan_member_uses(
                 continue;
             }
         };
+        if opcode == 0xbb {
+            match &entry.kind {
+                K::Class { name, .. } => {
+                    scan.allocations.push((instruction.bci, name.0.clone()));
+                }
+                _ => scan.complete = false,
+            }
+        }
         if (0xb6..=0xb9).contains(&opcode) {
             match method_reference_identity(pool, index) {
                 Some(target) => {
+                    let physical_caller = scan.member.clone();
                     let constructor_receiver = if target.name.0 == b"<init>" {
                         budget.poll()?;
                         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
@@ -12235,13 +17707,130 @@ fn scan_member_uses(
                     } else {
                         None
                     };
+                    let (argument_values, receiver_value, result_value, ssa_operands_complete) =
+                        if capture_generic_call_values {
+                            match (
+                                descriptor_facts(&target.descriptor.0, DescriptorKind::Method).ok(),
+                                ssa_by_bci.get(&instruction.bci),
+                                ssa_bci_is_unique,
+                            ) {
+                                (Some(descriptor), Some(ssa_instruction), true)
+                                    if ssa_instruction.opcode() == opcode =>
+                                {
+                                    budget.charge(
+                                        CountedBudgetDimension::AnalysisSteps,
+                                        u64::try_from(
+                                            ssa_instruction
+                                                .reads()
+                                                .len()
+                                                .saturating_add(ssa_instruction.writes().len()),
+                                        )
+                                        .unwrap_or(u64::MAX),
+                                    )?;
+                                    let mut stack_reads = ssa_instruction
+                                        .reads()
+                                        .iter()
+                                        .filter_map(|(slot, value)| match slot {
+                                            jarde_jvm::method_ir::Slot::Stack(depth) => {
+                                                Some((*depth, *value))
+                                            }
+                                            jarde_jvm::method_ir::Slot::Local(_) => None,
+                                        })
+                                        .collect::<Vec<_>>();
+                                    stack_reads.sort_by_key(|(depth, _)| *depth);
+                                    let has_receiver = opcode != 0xb8;
+                                    let expected_reads = descriptor
+                                        .parameters()
+                                        .len()
+                                        .saturating_add(usize::from(has_receiver));
+                                    let reads_complete = stack_reads.len() == expected_reads
+                                        && ssa_instruction.reads().len() == expected_reads;
+                                    let receiver = has_receiver
+                                        .then(|| stack_reads.first().map(|(_, value)| *value))
+                                        .flatten();
+                                    let argument_start = usize::from(has_receiver);
+                                    let arguments = if reads_complete {
+                                        stack_reads
+                                            .get(argument_start..)
+                                            .unwrap_or_default()
+                                            .iter()
+                                            .map(|(_, value)| *value)
+                                            .collect::<Vec<_>>()
+                                    } else {
+                                        Vec::new()
+                                    };
+                                    let has_result = descriptor.result().is_some();
+                                    let stack_writes = ssa_instruction
+                                        .writes()
+                                        .iter()
+                                        .filter_map(|(slot, value)| match slot {
+                                            jarde_jvm::method_ir::Slot::Stack(_) => Some(*value),
+                                            jarde_jvm::method_ir::Slot::Local(_) => None,
+                                        })
+                                        .collect::<Vec<_>>();
+                                    let result = match (has_result, stack_writes.as_slice()) {
+                                        (false, []) => None,
+                                        (true, [value]) => Some(*value),
+                                        _ => None,
+                                    };
+                                    let complete = reads_complete
+                                        && arguments.len() == descriptor.parameters().len()
+                                        && (!has_result || result.is_some());
+                                    (arguments, receiver, result, complete)
+                                }
+                                _ => (Vec::new(), None, None, false),
+                            }
+                        } else {
+                            (Vec::new(), None, None, false)
+                        };
+                    let mut argument_value_facts = Vec::with_capacity(argument_values.len());
+                    let mut complete_value_facts = capture_generic_call_values && ssa.is_some();
+                    for value in &argument_values {
+                        budget.poll()?;
+                        if let Some(ssa) = ssa {
+                            argument_value_facts
+                                .push(same_class_invoke_value_fact(ssa, *value, budget)?);
+                        } else {
+                            complete_value_facts = false;
+                        }
+                    }
+                    let receiver_value_fact = match (ssa, receiver_value) {
+                        (Some(ssa), Some(value)) => {
+                            Some(same_class_invoke_value_fact(ssa, value, budget)?)
+                        }
+                        _ => None,
+                    };
+                    let result_value_fact = match (ssa, result_value) {
+                        (Some(ssa), Some(value)) => {
+                            Some(same_class_invoke_value_fact(ssa, value, budget)?)
+                        }
+                        _ => None,
+                    };
+                    let ssa_operands_complete = ssa_operands_complete
+                        && capture_generic_call_values
+                        && complete_value_facts
+                        && argument_value_facts.len() == argument_values.len()
+                        && (receiver_value.is_none() || receiver_value_fact.is_some())
+                        && (result_value.is_none() || result_value_fact.is_some());
+                    let Some(physical_caller) = physical_caller else {
+                        scan.complete = false;
+                        continue;
+                    };
                     scan.invokes.push(class_source::SameClassInvokeUse {
                         caller: caller.clone(),
+                        physical_caller,
                         bci: instruction.bci,
                         opcode,
                         owner: target.owner.0.clone(),
                         name: target.name.0.clone(),
                         descriptor: target.descriptor.0.clone(),
+                        argument_values,
+                        receiver_value,
+                        result_value,
+                        argument_value_facts,
+                        receiver_value_fact,
+                        result_value_fact,
+                        ssa_operands_complete,
                         constructor_receiver,
                     });
                 }
@@ -12275,6 +17864,7 @@ fn scan_member_uses(
                         ir,
                         code,
                         instruction_index,
+                        descriptor.0.as_slice(),
                         ssa,
                         &ssa_by_bci,
                         &code_by_bci,
@@ -13727,6 +19317,7 @@ struct PreparedMemberOptions<'a> {
     capture_integer_constant_asts: bool,
     capture_member_uses: bool,
     capture_member_use_bootstrap: bool,
+    retain_generic_call_asts: bool,
     static_member_target: Option<&'a jarde_java::report::ProvedStaticMemberTarget>,
 }
 
@@ -13782,7 +19373,12 @@ fn recover_prepared_member(
         None
     };
     let member_uses = if options.capture_member_uses {
-        scan_member_uses(analyzed.ir(), options.capture_member_use_bootstrap, budget)?
+        scan_member_uses(
+            analyzed.ir(),
+            options.capture_member_use_bootstrap,
+            options.retain_generic_call_asts,
+            budget,
+        )?
     } else {
         None
     };
@@ -13838,6 +19434,7 @@ fn recover_prepared_member(
             || options.array_helper_census_needed
             || options.capture_assert_asts
             || integer_switch_ast,
+        options.retain_generic_call_asts,
         budget,
     )?;
     // The constructor AST is an evidence handoff from this exact run. The ordinary method report
@@ -27930,6 +33527,7 @@ mod member_inner_target_tests {
                     false,
                     false,
                     false,
+                    false,
                 )
                 .unwrap();
             assert!(matches!(
@@ -34516,6 +40114,7 @@ fn recovery_presented_for_class_source(
     prove_generic_return: bool,
     capture_enum_constructor_ast: bool,
     capture_anonymous_child_asts: bool,
+    retain_generic_call_asts: bool,
     budget: &mut Budget,
 ) -> Result<(
     RecoveredMethod,
@@ -34548,6 +40147,7 @@ fn recovery_presented_for_class_source(
         prove_generic_return,
         capture_enum_constructor_ast,
         capture_anonymous_child_asts,
+        retain_generic_call_asts,
         false,
     )
 }
@@ -34664,6 +40264,7 @@ fn rerun_pool_spelled_structural_reads(
             false,
             false,
             false,
+            false,
             true,
         ) {
             Ok((rerun, ..)) => rerun,
@@ -34751,6 +40352,7 @@ fn recovery_from(
         false,
         false,
         false,
+        false,
     )
     .map(|(recovered, _, _, _, _, _, _, _, _, _, _, _, _, _)| recovered)
 }
@@ -34770,6 +40372,7 @@ fn recovery_from_with_class_candidates(
     prove_generic_return: bool,
     capture_enum_constructor_ast: bool,
     retain_all_method_asts: bool,
+    retain_generic_call_asts: bool,
     pool_spelled_members: bool,
 ) -> Result<(
     RecoveredMethod,
@@ -34946,6 +40549,7 @@ fn recovery_from_with_class_candidates(
                     || static_member_target.is_some(),
                 capture_enum_constructor_ast,
                 retain_all_method_asts,
+                retain_generic_call_asts,
                 prove_anonymous_constructor,
             );
             (
@@ -34974,6 +40578,7 @@ fn recovery_from_with_class_candidates(
                     || static_member_target.is_some(),
                 capture_enum_constructor_ast,
                 retain_all_method_asts,
+                retain_generic_call_asts,
                 prove_anonymous_constructor,
             );
             (

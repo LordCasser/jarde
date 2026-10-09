@@ -1019,6 +1019,7 @@ fn method_local_body_throws_budget_stop_and_cancellation_never_publish_a_partial
     };
     let mut limits = task_limits(&[]).unwrap();
     limits.analysis_steps = baseline.usage.analysis_steps.saturating_sub(1);
+    let analysis_steps_limit = limits.analysis_steps;
     let stopped = engine
         .class_source(
             std::slice::from_ref(&snapshot),
@@ -1027,14 +1028,46 @@ fn method_local_body_throws_budget_stop_and_cancellation_never_publish_a_partial
         )
         .unwrap();
     match stopped {
-        OperationOutcome::Incomplete(_) => {}
-        OperationOutcome::Performed(report) => assert!(
-            !report
-                .text
-                .contains("public <X extends java.lang.Exception> void run() throws X"),
-            "{}",
-            report.text
-        ),
+        OperationOutcome::Performed(report) => {
+            let ExecutionReport::Partial {
+                reason:
+                    TerminationReason::BudgetExceeded {
+                        dimension: BudgetDimension::AnalysisSteps,
+                    },
+                usage,
+            } = &report.execution
+            else {
+                panic!("the class report must state the AnalysisSteps stop: {report:#?}");
+            };
+            assert_eq!(usage, &report.usage);
+            assert!(report.usage.analysis_steps <= analysis_steps_limit);
+            assert!(
+                report
+                    .diagnostics
+                    .iter()
+                    .any(|diagnostic| { diagnostic.code == "budget_exceeded_analysis_steps" })
+            );
+
+            let run = report
+                .methods
+                .iter()
+                .find(|method| method.item.identity.name.0.as_slice() == b"run")
+                .expect("the physical run method remains in the class report");
+            let projection_marker = run.markers.iter().find(|marker| {
+                marker.contains("generic Signature `") && marker.contains("projected after")
+            });
+            if let Some(marker) = projection_marker {
+                assert_eq!(
+                    run.declaration.as_deref(),
+                    Some("public <X extends java.lang.Exception> void run() throws X"),
+                );
+                assert!(marker.contains("method-local Signature scope/erasure proof"));
+            } else {
+                assert_eq!(run.declaration.as_deref(), Some("public void run()"));
+                assert!(!run.text.contains("<X extends java.lang.Exception>"));
+                assert!(!run.text.contains("throws X"));
+            }
+        }
         other => panic!("unexpected budget-stopped result: {other:?}"),
     }
 
