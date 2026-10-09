@@ -1,0 +1,7 @@
+--- original-api
++++ candidate-api
+@@ -1,3 +1,3 @@
+ value=[]
+ classvars=1
+-fieldGenericType=T
++fieldGenericType=java.lang.Object

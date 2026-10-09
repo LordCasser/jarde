@@ -1,0 +1,52 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/permanent-original-inputs/javac8/RawBoundWriter/RawBoundWriter.jar!/RawBoundWriter.class
+  Last modified 2026-10-9; size 350 bytes
+  MD5 checksum 7d8f0f095acf96ab5c9e9d95af7af13f
+public class RawBoundWriter
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#15         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#16         // RawBoundWriter.v:Ljava/util/Map;
+   #3 = Class              #17            // RawBoundWriter
+   #4 = Class              #18            // java/lang/Object
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/util/Map;
+   #7 = Utf8               Signature
+   #8 = Utf8               Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               put
+  #13 = Utf8               (Ljava/util/HashMap;Z)V
+  #14 = Utf8               <R:Ljava/util/HashMap;>(TR;Z)V
+  #15 = NameAndType        #9:#10         // "<init>":()V
+  #16 = NameAndType        #5:#6          // v:Ljava/util/Map;
+  #17 = Utf8               RawBoundWriter
+  #18 = Utf8               java/lang/Object
+{
+  public java.util.Map<java.lang.String, java.lang.String> v;
+    descriptor: Ljava/util/Map;
+    flags: ACC_PUBLIC
+    Signature: #8                           // Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+
+  public RawBoundWriter();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public <R extends java.util.HashMap> void put(R, boolean);
+    descriptor: (Ljava/util/HashMap;Z)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: putfield      #2                  // Field v:Ljava/util/Map;
+         5: return
+    Signature: #14                          // <R:Ljava/util/HashMap;>(TR;Z)V
+}

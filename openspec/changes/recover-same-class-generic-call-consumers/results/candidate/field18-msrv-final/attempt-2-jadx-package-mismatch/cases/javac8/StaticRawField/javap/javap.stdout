@@ -1,0 +1,49 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/permanent-original-inputs/javac8/StaticRawField/StaticRawField.jar!/StaticRawField.class
+  Last modified 2026-10-9; size 288 bytes
+  MD5 checksum 2b63441a866f795f5ad19c58192a4aea
+public class StaticRawField
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#14         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#15         // StaticRawField.v:Ljava/util/List;
+   #3 = Class              #16            // StaticRawField
+   #4 = Class              #17            // java/lang/Object
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/util/List;
+   #7 = Utf8               Signature
+   #8 = Utf8               Ljava/util/List<Ljava/lang/String;>;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               put
+  #13 = Utf8               (Ljava/util/List;)V
+  #14 = NameAndType        #9:#10         // "<init>":()V
+  #15 = NameAndType        #5:#6          // v:Ljava/util/List;
+  #16 = Utf8               StaticRawField
+  #17 = Utf8               java/lang/Object
+{
+  public static java.util.List<java.lang.String> v;
+    descriptor: Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Signature: #8                           // Ljava/util/List<Ljava/lang/String;>;
+
+  public StaticRawField();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void put(java.util.List);
+    descriptor: (Ljava/util/List;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: putstatic     #2                  // Field v:Ljava/util/List;
+         4: return
+}

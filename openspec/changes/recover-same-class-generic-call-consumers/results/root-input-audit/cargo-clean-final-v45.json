@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "log_sha256": "a9fcc3580da46e947aa3de1dc71a37176dbe1e7ba90b1efc045c5279d65b000b",
+  "free_bytes_before": 55339757568,
+  "free_bytes_after": 56574349312,
+  "target_exists": false,
+  "fuzz_target_exists": false,
+  "unix_ns": 1791524636142048000
+}

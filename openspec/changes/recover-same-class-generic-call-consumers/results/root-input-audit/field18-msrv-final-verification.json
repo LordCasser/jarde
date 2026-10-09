@@ -1,0 +1,34 @@
+{
+  "status": "verified",
+  "scope": "18 field source-rebuilt temporary-JAR inputs only",
+  "candidate_cli_sha256": "5bb2fcfdcf958839f0b1e060a2e55114510c6115cb225ec3279d7d7adf95e006",
+  "baseline_cli_sha256": "3f75dab495c9753ec2c3f1bd0ac91665ed42f8b877eea65cb7c69a6879448f70",
+  "source_archive_sha256": "fc4220ac5eb6906a786340a6ef5f8dd840ccbc14790df7bcee115f7c9f78fce8",
+  "cases": 18,
+  "checked_manifest_files": 979,
+  "checked_actual_commands_and_stream_pairs": 274,
+  "historical_class_hash_matches": 18,
+  "historical_jar_byte_hash_matches": 0,
+  "compile_success": {
+    "original": 18,
+    "jadx": 14,
+    "baseline": 18,
+    "candidate": 18
+  },
+  "behavior_match": {
+    "original": 18,
+    "jadx": 14,
+    "baseline": 18,
+    "candidate": 18
+  },
+  "api_output_match": {
+    "original": 18,
+    "jadx": 14,
+    "baseline": 10,
+    "candidate": 12
+  },
+  "limitations": [
+    "Original temporary ZIP JARs were absent; their JAR byte identity is not established. All 18 class hashes match recorded CLI8 class hashes.",
+    "JADX isolated compilation failed for ListWrong and ParamReassigned under each JDK (4 cases); preserved stderr is evidence of the failures."
+  ]
+}

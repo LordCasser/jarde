@@ -1,0 +1,110 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524386847461000,
+    "exit": 0,
+    "finished_unix_ns": 1791524389609487000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524389611324000,
+    "exit": 0,
+    "finished_unix_ns": 1791524389898938000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "argv": [
+      "rustup",
+      "run",
+      "1.88.0",
+      "cargo",
+      "check",
+      "--workspace",
+      "--all-targets",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524389900680000,
+    "exit": 0,
+    "finished_unix_ns": 1791524446866552000,
+    "log_sha256": "5d121bbf4b8c15d6c2594b8a9f8b500917a75e10f0879925f10a2ceb6ad578d3",
+    "source_unchanged": true
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-java",
+      "--lib",
+      "report::tests",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524446870710000,
+    "exit": 0,
+    "finished_unix_ns": 1791524482166328000,
+    "log_sha256": "520386fae1f6fb71626bab9f4f218cc71d4f9d9d2876b1cb88338a4437f50582",
+    "source_unchanged": true
+  },
+  {
+    "argv": [
+      "cargo",
+      "build",
+      "-p",
+      "jarde-cli",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524482170407000,
+    "exit": 0,
+    "finished_unix_ns": 1791524527529703000,
+    "log_sha256": "99b73b483604f9dbc1d586f89dc78196ccc53f667fc9a116e3acdc953b161bff",
+    "source_unchanged": true
+  }
+]

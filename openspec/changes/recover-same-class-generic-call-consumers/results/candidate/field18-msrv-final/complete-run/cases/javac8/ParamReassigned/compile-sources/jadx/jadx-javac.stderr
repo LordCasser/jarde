@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/cases/javac8/ParamReassigned/compile-sources/jadx/ParamReassigned.java:9: 错误: 不兼容的类型: Object无法转换为T
+        this.v = obj;
+                 ^
+  其中, T是类型变量:
+    T扩展已在类 ParamReassigned中声明的Object
+1 个错误

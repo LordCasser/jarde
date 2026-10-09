@@ -1,0 +1,25 @@
+{
+  "source_archive_sha256": "fc4220ac5eb6906a786340a6ef5f8dd840ccbc14790df7bcee115f7c9f78fce8",
+  "checks": [
+    {
+      "name": "msrv-v43",
+      "passed": true,
+      "log_sha256": "5d121bbf4b8c15d6c2594b8a9f8b500917a75e10f0879925f10a2ceb6ad578d3"
+    },
+    {
+      "name": "candidate-cli-v9-build-v43",
+      "passed": true,
+      "log_sha256": "99b73b483604f9dbc1d586f89dc78196ccc53f667fc9a116e3acdc953b161bff"
+    },
+    {
+      "name": "java-lib-tests-v44",
+      "passed": true,
+      "log_sha256": "10b18614a0125d968ce63eea55e2478198ed9fd3da1643f8b3bc6f9cab50c551"
+    }
+  ],
+  "java_lib_tests": 308,
+  "report_v43_zero_tests_not_counted": true,
+  "source_unchanged": true,
+  "errors": [],
+  "passed": true
+}

@@ -1,0 +1,10 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/cases/javac23/ListWrong/compile-sources/jadx/ListWrong.java:11: 错误: 不兼容的类型: List<String>无法转换为List<T>
+        this.v = list;
+                 ^
+  其中, T是类型变量:
+    T扩展已在类 ListWrong中声明的Object
+1 个错误
+3 个警告

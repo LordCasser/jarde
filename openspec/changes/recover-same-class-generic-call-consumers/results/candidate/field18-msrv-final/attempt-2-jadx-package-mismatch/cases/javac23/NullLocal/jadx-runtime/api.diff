@@ -1,0 +1,6 @@
+--- original-api
++++ jadx-api
+@@ -1,3 +0,0 @@
+-value=null
+-classvars=1
+-fieldGenericType=T

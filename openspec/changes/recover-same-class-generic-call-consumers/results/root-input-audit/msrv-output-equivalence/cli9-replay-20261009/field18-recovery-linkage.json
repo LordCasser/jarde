@@ -1,0 +1,635 @@
+{
+  "field18_not_covered_by_this_replay": 18,
+  "records": [
+    {
+      "family": "RawBoundWriter",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/RawBoundWriter/RawBoundWriter.jar",
+      "expected_jar_sha256": "9a1bb691ef1ad8bc3900895767f42f6abc6d602ce2cebe1bda7a2c2c5be67049",
+      "class_sha256": {
+        "RawBoundWriter.class": "5ee650ab80c7542914d7d44698d143646bc4e8d4126fe99cf08998dc3deeee9f"
+      },
+      "source": {
+        "family": "RawBoundWriter",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-anchors/RawBoundWriter.java",
+        "sha256": "da9e3356ac409b416693775b586cc0c63d39748d858761ecd210ef914b828564"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/RawBoundWriter/RawBoundWriter.jar",
+        "--class",
+        "RawBoundWriter",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "9c1c997135d7e867eb9e472489552ac777ae88d9ffe54c3a68e44332450111ea",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "SCGBCompat",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/SCGBCompat/SCGBCompat.jar",
+      "expected_jar_sha256": "e37f93d6aa939e83a4fc9129ee778acfa2ac1ba11cdf9c74ab6f7d1c90bf87e7",
+      "class_sha256": {
+        "SCGBCompat.class": "fc13742b23c40d10495ccc09b046296bd33cca2f23b8ce29847a2233fc23ab69"
+      },
+      "source": {
+        "family": "SCGBCompat",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-anchors/SCGBCompat.java",
+        "sha256": "ccca9c1baed50a3e63e417b57a1a1c382ab41f9b0940f256e2eb5608203fbbb7"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/SCGBCompat/SCGBCompat.jar",
+        "--class",
+        "SCGBCompat",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "dd8272e5bc2e1e07f125c6f40e471a2a657366b53df0ab32c69efc2c93eb9873",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "ListWrong",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/ListWrong/ListWrong.jar",
+      "expected_jar_sha256": "62906597cf99c77b3c59c3ad5727447181cfdc32df4ab96e93fef444b23d6215",
+      "class_sha256": {
+        "ListWrong.class": "1ee0c6c3e5107c32067a552cd55af4558019c587f6433008b348f66f4e7c96d1"
+      },
+      "source": {
+        "family": "ListWrong",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ListWrong/ListWrong.java",
+        "sha256": "bea5862c35d24ab8fe32fbf99d2a78759b58bb36b941aa18b60b9d61f01c6db8"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/ListWrong/ListWrong.jar",
+        "--class",
+        "ListWrong",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "36ed3a265dc0f980369356c99e47b3f3e8da149c72025d96b527ae692531a4d9",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "NullLocal",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/NullLocal/NullLocal.jar",
+      "expected_jar_sha256": "bfee31ba5cdd56a10e77b4dec91c7cc6369065b0893a8f236cd8a4ab9c2ec2cf",
+      "class_sha256": {
+        "NullLocal.class": "603024d41ba5e857d7ba2ef3e7b25b84d1cdd079993f968cafbc826d5848882e"
+      },
+      "source": {
+        "family": "NullLocal",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/NullLocal/NullLocal.java",
+        "sha256": "3b71ec690eb5060e9b81cea9cfac5864d41b5b9f6b9e43b8ac1407ac99e2f58e"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/NullLocal/NullLocal.jar",
+        "--class",
+        "NullLocal",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "7e9773208b1620749667e5a55c12c679179a459a11d17cc622c8f290ba2f1c82",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "ParamReassigned",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/ParamReassigned/ParamReassigned.jar",
+      "expected_jar_sha256": "3cb64d4c394076ad8f6107978ecb65edf0f49460f79a087c11c169c86c7531d5",
+      "class_sha256": {
+        "ParamReassigned.class": "5c66c480a1b7548a454b0be9593a8e34fa6cc022f17845a68eaaa40a4742a74f"
+      },
+      "source": {
+        "family": "ParamReassigned",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParamReassigned/ParamReassigned.java",
+        "sha256": "d2dfd55cd938a39a7aedcd775e5ff270f39d8b69223bccaa6ea56453d6943217"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/ParamReassigned/ParamReassigned.jar",
+        "--class",
+        "ParamReassigned",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "3ff3a868859964908b3f534fa64448efa4150f9093d8607119e850206a4a031b",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "ParameterShift",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/ParameterShift/ParameterShift.jar",
+      "expected_jar_sha256": "207c3406c64aa905c33f49940c2862c0a6f13323b3621e97f539b2f93ced14a2",
+      "class_sha256": {
+        "ParameterShift.class": "ec17cc71f28c8724f1ed7ce319938fd1ee0b9127b4182f3ecd9e3558275fd7bd"
+      },
+      "source": {
+        "family": "ParameterShift",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParameterShift/ParameterShift.java",
+        "sha256": "719558f4f965803d0d7207be47d131a473f11e6e698fb6f9f0344f0cb08a85b9"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/ParameterShift/ParameterShift.jar",
+        "--class",
+        "ParameterShift",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "2b5f7d8bdd53eb90dba2c19730878d4fb91ebbc48ed54c0b56550641dfde3d04",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "RawAllocationVariable",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/RawAllocationVariable/RawAllocationVariable.jar",
+      "expected_jar_sha256": "28c5f2eca30e705e8b77a81446fc8a3f1a034ace1a34e3b31251b57379185c67",
+      "class_sha256": {
+        "RawAllocationVariable.class": "1d67ff42a6d09b547b2e03f720a66ef672bf7b61d31336fd8233f806a0d9c6da"
+      },
+      "source": {
+        "family": "RawAllocationVariable",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawAllocationVariable/RawAllocationVariable.java",
+        "sha256": "e0641e0c13e4aad7d06531f3d70cb9b30a5bf38195974c579daa1bafbf76d1d1"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/RawAllocationVariable/RawAllocationVariable.jar",
+        "--class",
+        "RawAllocationVariable",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "d2823cae9a5a0312e60e4407c2621a1af0dc203b7202b065e664923ab9d30b53",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "RawParamArray",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/RawParamArray/RawParamArray.jar",
+      "expected_jar_sha256": "0d3c458f40c95e023bbafc4b0f08d39656d33e00cc23ce585f488c609de0ca1d",
+      "class_sha256": {
+        "RawParamArray.class": "bdc866de0b9eb592c2473f0a4c768d730cc038eae11ada279e5e6d25723cf644"
+      },
+      "source": {
+        "family": "RawParamArray",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawParamArray/RawParamArray.java",
+        "sha256": "d8ff774f56ed6f5c64df935e00c80bb54c0c2f3c2026b238b858ac20dfd64fb1"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/RawParamArray/RawParamArray.jar",
+        "--class",
+        "RawParamArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "23a09877b08e44494e1b696bbad0261a86e5073110784d7e44066959dace24a1",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "StaticRawField",
+      "leg": "javac8",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/StaticRawField/StaticRawField.jar",
+      "expected_jar_sha256": "09aab9994956e9352c884afd8cdbdfea4b135014efe723a46784f3a556733e3b",
+      "class_sha256": {
+        "StaticRawField.class": "665a3e53c00bc07b54d8a2f0fc075badb919f5846e1cb62fe8ecebd936b92d37"
+      },
+      "source": {
+        "family": "StaticRawField",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/StaticRawField/StaticRawField.java",
+        "sha256": "c4c142bfc0c911bb449bff34e5420e41ce6bfeb6512ade104b1f4294f6d3ffdb"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-gaymncfu/StaticRawField/StaticRawField.jar",
+        "--class",
+        "StaticRawField",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "6ce141a0c8e8bd63da70fd0983cae9faa4d3952b16b46308ed27cdf0ea164513",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "RawBoundWriter",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/RawBoundWriter/RawBoundWriter.jar",
+      "expected_jar_sha256": "dc58b81b1daafdfc9a6f29a299976678c96258cdf762f0c69b497cf0275eab20",
+      "class_sha256": {
+        "RawBoundWriter.class": "b38a66db97302bce8e75f539528b0fc9e9ef5fefcbb469d70eb37890f7b0d615"
+      },
+      "source": {
+        "family": "RawBoundWriter",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-anchors/RawBoundWriter.java",
+        "sha256": "da9e3356ac409b416693775b586cc0c63d39748d858761ecd210ef914b828564"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/RawBoundWriter/RawBoundWriter.jar",
+        "--class",
+        "RawBoundWriter",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "ac37307fc93935df4d263c2baa86c2b96f4c71badcdde0a021bd59c2cf84bf0d",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "SCGBCompat",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/SCGBCompat/SCGBCompat.jar",
+      "expected_jar_sha256": "fcf7eba4cd357f51c3a5e6f0fee4890acfd40a021decdd9e99b7a4f20ee85c0e",
+      "class_sha256": {
+        "SCGBCompat.class": "b3182c1d7a235438835b118bad27d31a5c7695cea75fe7afe0a6f5dda48fc880"
+      },
+      "source": {
+        "family": "SCGBCompat",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-anchors/SCGBCompat.java",
+        "sha256": "ccca9c1baed50a3e63e417b57a1a1c382ab41f9b0940f256e2eb5608203fbbb7"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/SCGBCompat/SCGBCompat.jar",
+        "--class",
+        "SCGBCompat",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "4b8b778b8bc626081018d2d65a908047a554bc6e705bbde74ec9f851ef072702",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "ListWrong",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/ListWrong/ListWrong.jar",
+      "expected_jar_sha256": "0c690ab5cb594c72d3bde596f6f25de1dcb7b79e9d0b3f301debf2b97d33b39c",
+      "class_sha256": {
+        "ListWrong.class": "83b6c5f5db06cead06e43b2370b99bdd753d8b6c062f028c6c4e3eb6c38905e1"
+      },
+      "source": {
+        "family": "ListWrong",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ListWrong/ListWrong.java",
+        "sha256": "bea5862c35d24ab8fe32fbf99d2a78759b58bb36b941aa18b60b9d61f01c6db8"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/ListWrong/ListWrong.jar",
+        "--class",
+        "ListWrong",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "e56ef7081401989e8b38cdf0b3f467c749dea980f9f704f4cefdc7d35e146188",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "NullLocal",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/NullLocal/NullLocal.jar",
+      "expected_jar_sha256": "05cc2560a0479696cafa6ed34167200b713073a538244b523cc3357bbec504f4",
+      "class_sha256": {
+        "NullLocal.class": "aa5bc07921c74019f91a7c9a14dbb2691cbae0a16fae5e2a84cf58a33920d57f"
+      },
+      "source": {
+        "family": "NullLocal",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/NullLocal/NullLocal.java",
+        "sha256": "3b71ec690eb5060e9b81cea9cfac5864d41b5b9f6b9e43b8ac1407ac99e2f58e"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/NullLocal/NullLocal.jar",
+        "--class",
+        "NullLocal",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "8ed723feee3aed0ea00fbbf0920e6ea52cd342256e9111788436b9e063cf3b9c",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "ParamReassigned",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/ParamReassigned/ParamReassigned.jar",
+      "expected_jar_sha256": "69c08fd03f4d96453300386cd01ffc0883cb48a64c0a5e547a164e6314230002",
+      "class_sha256": {
+        "ParamReassigned.class": "3f4e3ab59fe6cdeab993be3c950a4803f6148fcd7a73fb78035a04243d22b7ed"
+      },
+      "source": {
+        "family": "ParamReassigned",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParamReassigned/ParamReassigned.java",
+        "sha256": "d2dfd55cd938a39a7aedcd775e5ff270f39d8b69223bccaa6ea56453d6943217"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/ParamReassigned/ParamReassigned.jar",
+        "--class",
+        "ParamReassigned",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "43952d245910539c62dba910e562fffaa7fbe92677ca26bc7a7a4566efa580c9",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "ParameterShift",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/ParameterShift/ParameterShift.jar",
+      "expected_jar_sha256": "3c3b091058a783d88e4fb6a6a38a270da837a156d3b59b35605ce57deed5133e",
+      "class_sha256": {
+        "ParameterShift.class": "0fffd1dd0cec68b0cbf23d526c7c4ee0967c6c66215e30275773b44f07ab28af"
+      },
+      "source": {
+        "family": "ParameterShift",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParameterShift/ParameterShift.java",
+        "sha256": "719558f4f965803d0d7207be47d131a473f11e6e698fb6f9f0344f0cb08a85b9"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/ParameterShift/ParameterShift.jar",
+        "--class",
+        "ParameterShift",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "c1d8dcfcde6b20c82d0290e8292e5ae4a5186279021e5386cd6970cd0864a81a",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "RawAllocationVariable",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/RawAllocationVariable/RawAllocationVariable.jar",
+      "expected_jar_sha256": "18a9f1e7b65560a634803fcb55baec95133ee0443bb177db2078561e895f76a6",
+      "class_sha256": {
+        "RawAllocationVariable.class": "3198cb1475c3b92bb0b5dd0d2fdf5c33e0c2fd2db410e3fdb587a2634ad92801"
+      },
+      "source": {
+        "family": "RawAllocationVariable",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawAllocationVariable/RawAllocationVariable.java",
+        "sha256": "e0641e0c13e4aad7d06531f3d70cb9b30a5bf38195974c579daa1bafbf76d1d1"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/RawAllocationVariable/RawAllocationVariable.jar",
+        "--class",
+        "RawAllocationVariable",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "3331c8b184e68c78a873cb6a80c184f17595a445d962e55210810b032ff92ec7",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "RawParamArray",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/RawParamArray/RawParamArray.jar",
+      "expected_jar_sha256": "014dac5dec3dab1ff15fd7bcfffc07b5c5aa21a00b0a7b210b7c58ef80d74da2",
+      "class_sha256": {
+        "RawParamArray.class": "b0ae21d2c62e4ae70ffc2eff15b87758e0841fcd79e57ee0101a86e72de121c1"
+      },
+      "source": {
+        "family": "RawParamArray",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawParamArray/RawParamArray.java",
+        "sha256": "d8ff774f56ed6f5c64df935e00c80bb54c0c2f3c2026b238b858ac20dfd64fb1"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/RawParamArray/RawParamArray.jar",
+        "--class",
+        "RawParamArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "d8446e095eade11a0ba02a7b827baea866fddc0be2cea6661888ae1f6039fa82",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    },
+    {
+      "family": "StaticRawField",
+      "leg": "javac23",
+      "kind": "source-rebuilt-temp-jar",
+      "original_temp_input_path": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/StaticRawField/StaticRawField.jar",
+      "expected_jar_sha256": "2b3e0275492093a07ec9f9b30bc69d7f2dc586a968c36d13d929da06877f8d61",
+      "class_sha256": {
+        "StaticRawField.class": "7160d0c7d1dd36c4b631d7c28a830f75497eea00a2cea66c0f10c5d636ef6bff"
+      },
+      "source": {
+        "family": "StaticRawField",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prove-generic-field-write-source-types/results/root-probes/StaticRawField/StaticRawField.java",
+        "sha256": "c4c142bfc0c911bb449bff34e5420e41ce6bfeb6512ade104b1f4294f6d3ffdb"
+      },
+      "candidate_v8_command": [
+        "/private/tmp/jarde-generic-calls-candidate-v8-cli",
+        "class-source",
+        "--input",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-field-root-lf7te3po/StaticRawField/StaticRawField.jar",
+        "--class",
+        "StaticRawField",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "candidate_v8_exit": 0,
+      "candidate_v8_stdout_sha256": "4c765d8859ae9dc2b098f89090761eb0c0ec38c7a34d719ecee0e5c6c458f072",
+      "candidate_v8_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason_cli9_not_run": "source-rebuilt-temp-jar no longer exists; separately assigned GC09 field18 full original/baseline/JADX/CLI9 recovery and comparison"
+    }
+  ]
+}

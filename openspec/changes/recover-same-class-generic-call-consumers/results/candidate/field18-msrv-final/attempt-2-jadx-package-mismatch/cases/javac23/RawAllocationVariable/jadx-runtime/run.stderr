@@ -1,0 +1,8 @@
+Exception in thread "main" java.lang.ClassNotFoundException: RawAllocationVariable
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:528)
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:462)
+	at java.base/java.lang.Class.forName(Class.java:453)
+	at ProbeDriver.main(Unknown Source)

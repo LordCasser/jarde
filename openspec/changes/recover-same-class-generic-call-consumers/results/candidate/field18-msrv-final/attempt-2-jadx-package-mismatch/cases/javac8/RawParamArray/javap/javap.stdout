@@ -1,0 +1,52 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/permanent-original-inputs/javac8/RawParamArray/RawParamArray.jar!/RawParamArray.class
+  Last modified 2026-10-9; size 327 bytes
+  MD5 checksum ca13e212a36931a254f7adeea44867b0
+public class RawParamArray<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#15         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#16         // RawParamArray.v:[Ljava/util/List;
+   #3 = Class              #17            // RawParamArray
+   #4 = Class              #18            // java/lang/Object
+   #5 = Utf8               v
+   #6 = Utf8               [Ljava/util/List;
+   #7 = Utf8               Signature
+   #8 = Utf8               [Ljava/util/List<TT;>;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               put
+  #13 = Utf8               ([Ljava/util/List;)V
+  #14 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #15 = NameAndType        #9:#10         // "<init>":()V
+  #16 = NameAndType        #5:#6          // v:[Ljava/util/List;
+  #17 = Utf8               RawParamArray
+  #18 = Utf8               java/lang/Object
+{
+  public java.util.List<T>[] v;
+    descriptor: [Ljava/util/List;
+    flags: ACC_PUBLIC
+    Signature: #8                           // [Ljava/util/List<TT;>;
+
+  public RawParamArray();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void put(java.util.List[]);
+    descriptor: ([Ljava/util/List;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #2                  // Field v:[Ljava/util/List;
+         5: return
+}
+Signature: #14                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

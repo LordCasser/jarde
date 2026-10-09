@@ -1,0 +1,1 @@
+Attempt 1 stopped after the first family because the runtime output directory name `original-runtime` collided with the original-input runtime directory. The original JAR, class files, raw commands and partial outputs are preserved here. The complete authoritative replay is in ../complete-run; it uses a distinct `original-recompiled-runtime` path and completed all 18 cases.

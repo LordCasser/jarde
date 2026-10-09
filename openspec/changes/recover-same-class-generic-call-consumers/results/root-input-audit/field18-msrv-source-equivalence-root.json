@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "family": "RawBoundWriter",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "SCGBCompat",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "ListWrong",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "NullLocal",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "ParamReassigned",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "ParameterShift",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "RawAllocationVariable",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "RawParamArray",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "StaticRawField",
+      "leg": "javac8",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "RawBoundWriter",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "SCGBCompat",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "ListWrong",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "NullLocal",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "ParamReassigned",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "ParameterShift",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "RawAllocationVariable",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "RawParamArray",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    },
+    {
+      "family": "StaticRawField",
+      "leg": "javac23",
+      "complete_text_equal_to_cli8": true,
+      "zip_class_hashes_match_cli8": true
+    }
+  ],
+  "passed": true
+}

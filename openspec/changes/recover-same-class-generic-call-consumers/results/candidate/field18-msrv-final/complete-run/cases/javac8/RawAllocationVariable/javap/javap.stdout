@@ -1,0 +1,56 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/permanent-original-inputs/javac8/RawAllocationVariable/RawAllocationVariable.jar!/RawAllocationVariable.class
+  Last modified 2026-10-9; size 330 bytes
+  MD5 checksum 6413b670ac83655f188644e571cd0e89
+public class RawAllocationVariable<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#16         // java/lang/Object."<init>":()V
+   #2 = Class              #17            // java/util/ArrayList
+   #3 = Methodref          #2.#16         // java/util/ArrayList."<init>":()V
+   #4 = Fieldref           #5.#18         // RawAllocationVariable.v:Ljava/lang/Object;
+   #5 = Class              #19            // RawAllocationVariable
+   #6 = Class              #20            // java/lang/Object
+   #7 = Utf8               v
+   #8 = Utf8               Ljava/lang/Object;
+   #9 = Utf8               Signature
+  #10 = Utf8               TT;
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Utf8               Code
+  #14 = Utf8               put
+  #15 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #16 = NameAndType        #11:#12        // "<init>":()V
+  #17 = Utf8               java/util/ArrayList
+  #18 = NameAndType        #7:#8          // v:Ljava/lang/Object;
+  #19 = Utf8               RawAllocationVariable
+  #20 = Utf8               java/lang/Object
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #10                          // TT;
+
+  public RawAllocationVariable();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void put();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: new           #2                  // class java/util/ArrayList
+         4: dup
+         5: invokespecial #3                  // Method java/util/ArrayList."<init>":()V
+         8: putfield      #4                  // Field v:Ljava/lang/Object;
+        11: return
+}
+Signature: #15                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

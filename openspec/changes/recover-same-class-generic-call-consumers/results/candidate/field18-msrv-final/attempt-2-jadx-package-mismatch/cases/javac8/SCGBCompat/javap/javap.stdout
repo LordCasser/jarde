@@ -1,0 +1,119 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/permanent-original-inputs/javac8/SCGBCompat/SCGBCompat.jar!/SCGBCompat.class
+  Last modified 2026-10-9; size 735 bytes
+  MD5 checksum f8b2b9ae12a2e28d4582704c14d4b536
+public class SCGBCompat<T extends java.lang.Comparable<T>> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #14.#28        // java/lang/Object."<init>":()V
+   #2 = Class              #29            // java/util/HashMap
+   #3 = Methodref          #2.#28         // java/util/HashMap."<init>":()V
+   #4 = Fieldref           #5.#30         // SCGBCompat.index:Ljava/util/Map;
+   #5 = Class              #31            // SCGBCompat
+   #6 = Methodref          #5.#28         // SCGBCompat."<init>":()V
+   #7 = Fieldref           #32.#33        // java/lang/System.out:Ljava/io/PrintStream;
+   #8 = String             #34            // index:true
+   #9 = Methodref          #35.#36        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #10 = String             #37            // index:false
+  #11 = Class              #38            // java/util/Map
+  #12 = String             #39            // read:true
+  #13 = String             #40            // read:false
+  #14 = Class              #41            // java/lang/Object
+  #15 = Utf8               index
+  #16 = Utf8               Ljava/util/Map;
+  #17 = Utf8               Signature
+  #18 = Utf8               Ljava/util/Map<Ljava/lang/String;Ljava/util/List<TT;>;>;
+  #19 = Utf8               <init>
+  #20 = Utf8               ()V
+  #21 = Utf8               Code
+  #22 = Utf8               main
+  #23 = Utf8               ([Ljava/lang/String;)V
+  #24 = Utf8               StackMapTable
+  #25 = Class              #31            // SCGBCompat
+  #26 = Class              #41            // java/lang/Object
+  #27 = Utf8               <T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;
+  #28 = NameAndType        #19:#20        // "<init>":()V
+  #29 = Utf8               java/util/HashMap
+  #30 = NameAndType        #15:#16        // index:Ljava/util/Map;
+  #31 = Utf8               SCGBCompat
+  #32 = Class              #42            // java/lang/System
+  #33 = NameAndType        #43:#44        // out:Ljava/io/PrintStream;
+  #34 = Utf8               index:true
+  #35 = Class              #45            // java/io/PrintStream
+  #36 = NameAndType        #46:#47        // println:(Ljava/lang/String;)V
+  #37 = Utf8               index:false
+  #38 = Utf8               java/util/Map
+  #39 = Utf8               read:true
+  #40 = Utf8               read:false
+  #41 = Utf8               java/lang/Object
+  #42 = Utf8               java/lang/System
+  #43 = Utf8               out
+  #44 = Utf8               Ljava/io/PrintStream;
+  #45 = Utf8               java/io/PrintStream
+  #46 = Utf8               println
+  #47 = Utf8               (Ljava/lang/String;)V
+{
+  private java.util.Map<java.lang.String, java.util.List<T>> index;
+    descriptor: Ljava/util/Map;
+    flags: ACC_PRIVATE
+    Signature: #18                          // Ljava/util/Map<Ljava/lang/String;Ljava/util/List<TT;>;>;
+
+  public SCGBCompat();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: new           #2                  // class java/util/HashMap
+         8: dup
+         9: invokespecial #3                  // Method java/util/HashMap."<init>":()V
+        12: putfield      #4                  // Field index:Ljava/util/Map;
+        15: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: new           #5                  // class SCGBCompat
+         3: dup
+         4: invokespecial #6                  // Method "<init>":()V
+         7: astore_1
+         8: aload_1
+         9: getfield      #4                  // Field index:Ljava/util/Map;
+        12: ifnull        26
+        15: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        18: ldc           #8                  // String index:true
+        20: invokevirtual #9                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        23: goto          34
+        26: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        29: ldc           #10                 // String index:false
+        31: invokevirtual #9                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        34: aload_1
+        35: getfield      #4                  // Field index:Ljava/util/Map;
+        38: astore_2
+        39: aload_2
+        40: instanceof    #11                 // class java/util/Map
+        43: ifeq          57
+        46: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        49: ldc           #12                 // String read:true
+        51: invokevirtual #9                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        54: goto          65
+        57: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        60: ldc           #13                 // String read:false
+        62: invokevirtual #9                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        65: return
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 26
+          locals = [ class SCGBCompat ]
+        frame_type = 7 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 22
+          locals = [ class java/lang/Object ]
+        frame_type = 7 /* same */
+}
+Signature: #27                          // <T::Ljava/lang/Comparable<TT;>;>Ljava/lang/Object;

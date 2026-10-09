@@ -1,0 +1,143 @@
+{
+  "worktrees": [
+    {
+      "worktree": "/Users/lordcasser/workspace/projects/jarde",
+      "HEAD": "276a1c31137858e58b8226f8454766d46c5bc320",
+      "branch": "refs/heads/main",
+      "status": "?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/candidate-cli-v9-build-v43-command.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/candidate-cli-v9-build-v43-result.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/candidate-cli-v9-build-v43.log\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/candidate-cli-v9.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/java-lib-tests-v44-command.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/java-lib-tests-v44-result.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/java-lib-tests-v44.log\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/msrv-supplement-v43-index.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/msrv-supplement-v44-index.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/msrv-supplement-v44-runner.py\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/report-v43-command.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/report-v43-result.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/local-gates/report-v43.log\n?? openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/cargo-clean-final-v45.json\n?? openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/cargo-clean-final-v45.log\n",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "HEAD": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "worktree": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "HEAD": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": "",
+      "ancestor_of_main": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    }
+  ],
+  "branches": "* main                276a1c31 fix: preserve Rust 1.88 compatibility in AST query\n  remotes/origin/HEAD -> origin/main\n  remotes/origin/main 276a1c31 fix: preserve Rust 1.88 compatibility in AST query\n",
+  "main": "276a1c31137858e58b8226f8454766d46c5bc320",
+  "origin_main": "276a1c31137858e58b8226f8454766d46c5bc320",
+  "all_auxiliary_detached_clean_ancestors": true
+}

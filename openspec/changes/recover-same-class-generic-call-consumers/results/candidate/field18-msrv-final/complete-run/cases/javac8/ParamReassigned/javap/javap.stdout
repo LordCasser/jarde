@@ -1,0 +1,56 @@
+Classfile jar:file:/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/permanent-original-inputs/javac8/ParamReassigned/ParamReassigned.jar!/ParamReassigned.class
+  Last modified 2026-10-9; size 367 bytes
+  MD5 checksum 4df7f43117459133a47d50c7ee3945fc
+public class ParamReassigned<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#16         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#17         // ParamReassigned.v:Ljava/lang/Object;
+   #3 = Class              #18            // ParamReassigned
+   #4 = Class              #19            // java/lang/Object
+   #5 = Utf8               v
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Utf8               Signature
+   #8 = Utf8               TT;
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               put
+  #13 = Utf8               (Ljava/lang/Object;Ljava/lang/Object;)V
+  #14 = Utf8               (TT;Ljava/lang/Object;)V
+  #15 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #16 = NameAndType        #9:#10         // "<init>":()V
+  #17 = NameAndType        #5:#6          // v:Ljava/lang/Object;
+  #18 = Utf8               ParamReassigned
+  #19 = Utf8               java/lang/Object
+{
+  public T v;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #8                           // TT;
+
+  public ParamReassigned();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void put(T, java.lang.Object);
+    descriptor: (Ljava/lang/Object;Ljava/lang/Object;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_2
+         1: astore_1
+         2: aload_0
+         3: aload_1
+         4: putfield      #2                  // Field v:Ljava/lang/Object;
+         7: return
+    Signature: #14                          // (TT;Ljava/lang/Object;)V
+}
+Signature: #15                          // <T:Ljava/lang/Object;>Ljava/lang/Object;

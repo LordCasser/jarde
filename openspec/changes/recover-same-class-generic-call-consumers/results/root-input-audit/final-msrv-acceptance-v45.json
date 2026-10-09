@@ -1,0 +1,41 @@
+{
+  "scope": "MSRV syntax-only final source accepted locally. Original CLI8 full fixtures remain; CLI9 has 324 frozen-input calls with matching sources/reports/exits except elapsed_millis, plus 18 permanently recovered equal-class inputs with complete source equality and independent full comparison. Latest main CI still a separate pending delivery gate.",
+  "candidate_cli_sha256": "5bb2fcfdcf958839f0b1e060a2e55114510c6115cb225ec3279d7d7adf95e006",
+  "source_archive_sha256": "fc4220ac5eb6906a786340a6ef5f8dd840ccbc14790df7bcee115f7c9f78fce8",
+  "source_unchanged": true,
+  "checks": [
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/final-candidate-acceptance-v41.json",
+      "sha256": "eb4b1c0148f56afc337b95203b974e5f6945ce9dd79e2dac0326858be3bf846b"
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/msrv-local-root-v45.json",
+      "sha256": "7937f75e55c9a0ae4bf5560a3ca9946cea36d2343d6ef506cc57374ea4083ad3"
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/msrv-output-equivalence/root-verification-v2.json",
+      "sha256": "59b8ff08b1a4b99be14b259a881bf821c058baadac488e7f4aeb4df8c24709bb"
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/field18-msrv-final-verification.json",
+      "sha256": "f3bc8ceef78aef527de7fa496e8bf52c689a40c1406bc72dc2ceeb454506ea17"
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/field18-msrv-source-equivalence-root.json",
+      "sha256": "189f869ed5f3e1995a13a7a4c69979fe4e821ff4f2837e747d0ecf91c2084b88"
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/cargo-clean-final-v45.json",
+      "sha256": "94b996172f00e6ab5b38f9b490f24f757125928204ba1bd9cc76e705f89eae0c"
+    },
+    {
+      "path": "openspec/changes/recover-same-class-generic-call-consumers/results/root-input-audit/worktrees-pre-delivery-v45.json",
+      "sha256": "6891027f00034838aeaa8e862b23f40538307f3e2e3f32856d97a3a1c4082c3e"
+    }
+  ],
+  "old_missing_temporary_field_jars": 18,
+  "rebuilt_zip_identity_claimed": false,
+  "all_342_candidate_calls_accounted_for": true,
+  "passed_local_acceptance": true,
+  "remote_ci_complete_claimed": false
+}

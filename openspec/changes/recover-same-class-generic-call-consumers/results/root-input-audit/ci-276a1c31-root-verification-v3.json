@@ -1,0 +1,30 @@
+{
+  "run_id": 37889792696,
+  "head_sha": "276a1c31137858e58b8226f8454766d46c5bc320",
+  "all_four_jobs_success": true,
+  "required_steps_success": [
+    "Run workspace tests with two fixed independent seeds (pass 1)",
+    "Run workspace tests with two fixed independent seeds (pass 2)",
+    "Install Temurin 25.0.4+7",
+    "Run ignored JDK 25 instruction-boundary oracle",
+    "Validate OpenSpec strictly"
+  ],
+  "actual_jdk25_oracle_ok_in_log": true,
+  "actual_seed_log_totals": {
+    "1": {
+      "passed": 3304,
+      "failed": 0,
+      "ignored": 93,
+      "targets": 348
+    },
+    "2": {
+      "passed": 3304,
+      "failed": 0,
+      "ignored": 93,
+      "targets": 348
+    }
+  },
+  "metadata_sha256": "c869f2256908168a6c57e406f32d52e675983c2860c7c84127ccaf8ff6125a9d",
+  "stable_log_sha256": "29661fca7dac1cd875914238825a4012132931522cbfe5b941bcb8cd3dba6271",
+  "seed_attribution": "Actual distinct Run cargo test --workspace group boundaries; GitHub step API truncates seconds, so timestamp-only intervals are not used."
+}

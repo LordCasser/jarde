@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-same-class-generic-call-consumers/results/candidate/field18-msrv-final/complete-run/cases/javac8/ListWrong/compile-sources/jadx/ListWrong.java:11: 错误: 不兼容的类型: List<String>无法转换为List<T>
+        this.v = list;
+                 ^
+  其中, T是类型变量:
+    T扩展已在类 ListWrong中声明的Object
+1 个错误
