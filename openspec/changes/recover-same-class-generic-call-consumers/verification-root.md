@@ -1,6 +1,10 @@
 # root 阶段验收：同类泛型调用消费位
 
-本片实施未完成。固定 CLI4 已完成候选完整类对照，当前更新后的源码尚未完成全门禁或远端交付。当前 main/origin/main 为 d158989b；该主线 CI 37836010542 四项成功不代表本工作区新实现已通过。本文件按实际证据补记，任务完成状况以 tasks.md 为准。
+当前权威状态：CLI8/v41本地完整验收已提交到7172fdcb，任务8/9；远端MSRV暴露语法兼容问题，修复及最终交付仍在核验。下面各旧版本节只保留历史，不代表当前状态。
+
+## MSRV收尾
+
+实际CI 37888959808 的MSRV1.88 job失败于report.rs的if-let match guard（E0658）。唯一生产改动为等价内层match：Local内容原样，其他子表达式仍Other；MSRV及CI门禁不变。v42真实源码tar记录修复，v43实际通过 `rustup run 1.88.0 cargo check --workspace --all-targets --locked`。v42本机Homebrew cargo不接受+toolchain的入口错误保留，未冒充源码失败。报告单测/CLI9等价输出与最新HEAD四job CI尚待确认。见 results/root-input-audit/ci-7172fdcb-msrv-failure.json 与 results/local-gates/msrv-v43-result.json。
 
 ## 最终本地验收：CLI8/v41，8/9任务完成，等待远端交付
 

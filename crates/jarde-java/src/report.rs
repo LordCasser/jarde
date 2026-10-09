@@ -3437,8 +3437,8 @@ fn class_source_invoke_ast_expression(
                 name: name.clone(),
                 argument_count: args.len(),
             },
-            ExprKind::Not { value } if let ExprKind::Local(local_name) = &value.kind => {
-                ClassSourceAstExpressionShape::BooleanNotLocal {
+            ExprKind::Not { value } => match &value.kind {
+                ExprKind::Local(local_name) => ClassSourceAstExpressionShape::BooleanNotLocal {
                     local_name: local_name.clone(),
                     primary: class_source_ast_anchor(value.origin.primary(), member),
                     derived: value
@@ -3448,8 +3448,9 @@ fn class_source_invoke_ast_expression(
                         .map(|origin| class_source_ast_anchor(origin, member))
                         .collect(),
                     presented_type: value.presented.clone(),
-                }
-            }
+                },
+                _ => ClassSourceAstExpressionShape::Other,
+            },
             ExprKind::Cast { .. } => ClassSourceAstExpressionShape::Cast,
             ExprKind::Integer(_)
             | ExprKind::IntegerConstantName { .. }
