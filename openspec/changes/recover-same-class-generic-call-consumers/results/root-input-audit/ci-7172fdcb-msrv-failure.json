@@ -1,0 +1,8 @@
+{
+  "head": "7172fdcb360616c4e9274f4772acd2eac00e5b30",
+  "run_id": 37888959808,
+  "job_id": 113685284309,
+  "log_sha256": "1b5f3e782f2aa6e344a715ca1047d384f86ff978c0943a1195edf068e8d4fe3a",
+  "actual_error": "E0658 if let guards are experimental on Rust 1.88.0",
+  "repair": "Equivalent nested match; preserve Local fields and Other fallback; do not change MSRV or CI checks."
+}

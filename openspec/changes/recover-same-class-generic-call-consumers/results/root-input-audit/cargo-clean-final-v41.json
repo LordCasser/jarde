@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "started_unix_ns": 1791523873901463000,
+  "finished_unix_ns": 1791523876663039000,
+  "before_available_bytes": 37774901248,
+  "after_available_bytes": 59117113344,
+  "log_sha256": "e9d2ce003213e612b1d1bcc2b7bf8dc8b5419aa18cb7bac0c0c0cc2d8fff7533",
+  "target_exists": false,
+  "fuzz_target_exists": false,
+  "scope": "Root-only Jarde Cargo cleanup after all local gates and candidate acceptance; other projects and protected detached copies untouched."
+}

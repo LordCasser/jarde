@@ -1,0 +1,16 @@
+{
+  "archive": "source-snapshot-v42.tar.gz",
+  "archive_sha256": "fc4220ac5eb6906a786340a6ef5f8dd840ccbc14790df7bcee115f7c9f78fce8",
+  "files": {
+    "src/class_source.rs": "242f95288f10dd57ce078006c0fd6377f4a573d13667a6cc1afc876cc32f7759",
+    "src/facade.rs": "f8737b3f0f6f9de137a263544c1f62feb21cca161bf77454f9328f76a03b24c6",
+    "crates/jarde-java/src/report.rs": "1af8be8a4f9c1c490f8e6c93254d2bc3315f708b7f5149a8c42a6ff4c18fa004",
+    "tests/same_class_generic_call_consumers.rs": "31c1ad4ecbb1d35551830f33aa39ec11f0e64c0de9171379e5b3cf810ec30eea",
+    "tests/class_scope_constructor_projection.rs": "db50946fbfb3604a66f6ee0c933bcb30f9f2f122fed2c20e78509617b7913659",
+    "tests/same_class_generic_binding.rs": "8997feb96e259060df75051d7cba91f58f532e1dd20055d01f3f8fe132e86fb2",
+    "tests/generic_method_projection.rs": "5264c5bebf39c4d4b718eb303a1a2e81839897127c7930560ce14b3cab533989",
+    "tests/generic_throws_projection.rs": "7102442211ded320bff8d883899df1897671ad938894316241a627a32fc5c935"
+  },
+  "git_head": "7172fdcb360616c4e9274f4772acd2eac00e5b30",
+  "scope": "Only equivalent nested-match MSRV1.88 syntax replacement in report.rs; no recovery semantics or test changes."
+}

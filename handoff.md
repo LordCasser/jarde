@@ -13,7 +13,7 @@ gh run list --workflow CI --commit "$(git rev-parse HEAD)" --limit 3
 
 ## 当前交付状态
 
-CLI8/v41实现与独立对照、本地门禁均已完成，OpenSpec8/9；本次提交包含全部生产、测试、spec和冻结证据。两个固定seed各3304passed/0failed/93ignored，显式ignored P3/constructor/bound receiver与strict OpenSpec全部通过。提交推送后仍需确认最新HEAD四个CI job含真正JDK25 oracle；最后清理主仓Cargo并提交完成交接。暂不把当前状态写成已完成远端交付。
+CLI8/v41完整对照与本地门禁已验收，OpenSpec8/9，全部代码和证据已提交到 `7172fdcb`。该提交实际CI的MSRV1.88失败：`report.rs`用了1.88不支持的if-let match guard。当前仅改为等价内层match；本地真实 `rustup run 1.88.0 cargo check --workspace --all-targets --locked` 已通过。报告单测、新CLI输出等价核验及修复后的最新HEAD四job CI仍需完成。失败日志与v42本机Cargo入口失败均保留，不能写成已完成远端交付。
 
 多轮接续历史保留在本片 `results/handoff-history-before-clean-v41.md` 与 `verification-root.md`，历史失败不覆盖最新验收。本地完整命令、日志和exit见 `results/local-gates/final-gates-v41-index.json`。
 

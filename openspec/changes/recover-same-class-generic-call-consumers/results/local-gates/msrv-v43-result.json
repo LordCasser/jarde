@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "rustup",
+    "run",
+    "1.88.0",
+    "cargo",
+    "check",
+    "--workspace",
+    "--all-targets",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_snapshot": "source-snapshot-v42.json",
+  "started_unix_ns": 1791524389900680000,
+  "exit": 0,
+  "finished_unix_ns": 1791524446866552000,
+  "log_sha256": "5d121bbf4b8c15d6c2594b8a9f8b500917a75e10f0879925f10a2ceb6ad578d3",
+  "source_unchanged": true
+}

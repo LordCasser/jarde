@@ -1,0 +1,64 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524237781342000,
+    "exit": 0,
+    "finished_unix_ns": 1791524240323879000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524240325702000,
+    "exit": 0,
+    "finished_unix_ns": 1791524240502144000,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_unchanged": true
+  },
+  {
+    "argv": [
+      "cargo",
+      "+1.88.0",
+      "check",
+      "--workspace",
+      "--all-targets",
+      "--locked"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "RUST_TEST_THREADS": "1"
+    },
+    "source_snapshot": "source-snapshot-v42.json",
+    "started_unix_ns": 1791524240503929000,
+    "exit": 101,
+    "finished_unix_ns": 1791524240517891000,
+    "log_sha256": "feed1ec375a6f712471b3f280a6034d6fd1e7b429bfe4838364992ea9dbc41dc",
+    "source_unchanged": true
+  }
+]
