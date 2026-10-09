@@ -1,0 +1,3 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 0.49s
+     Running tests/p3_local_postfix_array_elements.rs (target/debug/deps/p3_local_postfix_array_elements-50309bc2857d296a)

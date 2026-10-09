@@ -1,0 +1,1688 @@
+{
+  "schema": "complete-construction-array-family-root-v1",
+  "runner_sha256": "6c62b2a6655f3a36b92c83344154d5c94828e8272c7f933c50377d8b1fef9550",
+  "original_manifest_sha256": "98e8f014b4cb7f8a4efca50ff54e7fee992805f27387f95d4c76db1f9b5bc713",
+  "cli": "/private/tmp/jarde-em18-candidate-v1-cli",
+  "cli_sha256": "0ebf4e6189c02d1d84072c9aeacd380303e71e6885f95408e054e8f843154f79",
+  "jadx_script_sha256": "5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3",
+  "cases": [
+    {
+      "leg": "javac8",
+      "profile": "jarde",
+      "input_jar": "javac8.jar",
+      "input_jar_sha256": "d91d11738a1f4dbdfe2ce9356d1a2764a6282bdd47ab338f54dcbffe35ac545b",
+      "input_class_set": [
+        "Base.class",
+        "DirectA.class",
+        "DirectB.class",
+        "LocalInterface.class",
+        "Main.class",
+        "Mid.class",
+        "TwoHop.class"
+      ],
+      "generated_source_set": [
+        "javac8-jarde/sources/Base.java",
+        "javac8-jarde/sources/DirectA.java",
+        "javac8-jarde/sources/DirectB.java",
+        "javac8-jarde/sources/LocalInterface.java",
+        "javac8-jarde/sources/Main.java",
+        "javac8-jarde/sources/Mid.java",
+        "javac8-jarde/sources/TwoHop.java"
+      ],
+      "reports": [
+        {
+          "class": "Base",
+          "report_stdout": "logs/javac8-jarde-render-Base.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "DirectA",
+          "report_stdout": "logs/javac8-jarde-render-DirectA.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "DirectB",
+          "report_stdout": "logs/javac8-jarde-render-DirectB.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "LocalInterface",
+          "report_stdout": "logs/javac8-jarde-render-LocalInterface.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "Main",
+          "report_stdout": "logs/javac8-jarde-render-Main.stdout",
+          "bytecode_marker": true,
+          "refused_body_marker": false
+        },
+        {
+          "class": "Mid",
+          "report_stdout": "logs/javac8-jarde-render-Mid.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "TwoHop",
+          "report_stdout": "logs/javac8-jarde-render-TwoHop.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        }
+      ],
+      "compile_exit": 1,
+      "runtime": null,
+      "matches_original_streams": false,
+      "all_sources_without_refusal": false,
+      "accepted": false
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-none",
+      "input_jar": "javac8.jar",
+      "input_jar_sha256": "d91d11738a1f4dbdfe2ce9356d1a2764a6282bdd47ab338f54dcbffe35ac545b",
+      "input_class_set": [
+        "Base.class",
+        "DirectA.class",
+        "DirectB.class",
+        "LocalInterface.class",
+        "Main.class",
+        "Mid.class",
+        "TwoHop.class"
+      ],
+      "generated_source_set": [
+        "javac8-jadx-none/jadx-output/sources/Base.java",
+        "javac8-jadx-none/jadx-output/sources/DirectA.java",
+        "javac8-jadx-none/jadx-output/sources/DirectB.java",
+        "javac8-jadx-none/jadx-output/sources/LocalInterface.java",
+        "javac8-jadx-none/jadx-output/sources/Main.java",
+        "javac8-jadx-none/jadx-output/sources/Mid.java",
+        "javac8-jadx-none/jadx-output/sources/TwoHop.java"
+      ],
+      "reports": [],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-none-run.stdout",
+        "stderr": "logs/javac8-jadx-none-run.stderr",
+        "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-default",
+      "input_jar": "javac8.jar",
+      "input_jar_sha256": "d91d11738a1f4dbdfe2ce9356d1a2764a6282bdd47ab338f54dcbffe35ac545b",
+      "input_class_set": [
+        "Base.class",
+        "DirectA.class",
+        "DirectB.class",
+        "LocalInterface.class",
+        "Main.class",
+        "Mid.class",
+        "TwoHop.class"
+      ],
+      "generated_source_set": [
+        "javac8-jadx-default/jadx-output/sources/defpackage/Base.java",
+        "javac8-jadx-default/jadx-output/sources/defpackage/DirectA.java",
+        "javac8-jadx-default/jadx-output/sources/defpackage/DirectB.java",
+        "javac8-jadx-default/jadx-output/sources/defpackage/LocalInterface.java",
+        "javac8-jadx-default/jadx-output/sources/defpackage/Main.java",
+        "javac8-jadx-default/jadx-output/sources/defpackage/Mid.java",
+        "javac8-jadx-default/jadx-output/sources/defpackage/TwoHop.java"
+      ],
+      "reports": [],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/classes",
+          "defpackage.Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-default-run.stdout",
+        "stderr": "logs/javac8-jadx-default-run.stderr",
+        "stdout_sha256": "ea9dd9c2732caa6489be0401a6710d71cb3ae1226436932d376a645dddec7bb7",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": false,
+      "all_sources_without_refusal": true,
+      "accepted": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jarde",
+      "input_jar": "javac23.jar",
+      "input_jar_sha256": "91911b66813ad833423082a494cb7228b72a4bc2ee2c3fc12375a11439a76e1d",
+      "input_class_set": [
+        "Base.class",
+        "DirectA.class",
+        "DirectB.class",
+        "LocalInterface.class",
+        "Main.class",
+        "Mid.class",
+        "TwoHop.class"
+      ],
+      "generated_source_set": [
+        "javac23-jarde/sources/Base.java",
+        "javac23-jarde/sources/DirectA.java",
+        "javac23-jarde/sources/DirectB.java",
+        "javac23-jarde/sources/LocalInterface.java",
+        "javac23-jarde/sources/Main.java",
+        "javac23-jarde/sources/Mid.java",
+        "javac23-jarde/sources/TwoHop.java"
+      ],
+      "reports": [
+        {
+          "class": "Base",
+          "report_stdout": "logs/javac23-jarde-render-Base.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "DirectA",
+          "report_stdout": "logs/javac23-jarde-render-DirectA.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "DirectB",
+          "report_stdout": "logs/javac23-jarde-render-DirectB.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "LocalInterface",
+          "report_stdout": "logs/javac23-jarde-render-LocalInterface.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "Main",
+          "report_stdout": "logs/javac23-jarde-render-Main.stdout",
+          "bytecode_marker": true,
+          "refused_body_marker": false
+        },
+        {
+          "class": "Mid",
+          "report_stdout": "logs/javac23-jarde-render-Mid.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        },
+        {
+          "class": "TwoHop",
+          "report_stdout": "logs/javac23-jarde-render-TwoHop.stdout",
+          "bytecode_marker": false,
+          "refused_body_marker": false
+        }
+      ],
+      "compile_exit": 1,
+      "runtime": null,
+      "matches_original_streams": false,
+      "all_sources_without_refusal": false,
+      "accepted": false
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-none",
+      "input_jar": "javac23.jar",
+      "input_jar_sha256": "91911b66813ad833423082a494cb7228b72a4bc2ee2c3fc12375a11439a76e1d",
+      "input_class_set": [
+        "Base.class",
+        "DirectA.class",
+        "DirectB.class",
+        "LocalInterface.class",
+        "Main.class",
+        "Mid.class",
+        "TwoHop.class"
+      ],
+      "generated_source_set": [
+        "javac23-jadx-none/jadx-output/sources/Base.java",
+        "javac23-jadx-none/jadx-output/sources/DirectA.java",
+        "javac23-jadx-none/jadx-output/sources/DirectB.java",
+        "javac23-jadx-none/jadx-output/sources/LocalInterface.java",
+        "javac23-jadx-none/jadx-output/sources/Main.java",
+        "javac23-jadx-none/jadx-output/sources/Mid.java",
+        "javac23-jadx-none/jadx-output/sources/TwoHop.java"
+      ],
+      "reports": [],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-none-run.stdout",
+        "stderr": "logs/javac23-jadx-none-run.stderr",
+        "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-default",
+      "input_jar": "javac23.jar",
+      "input_jar_sha256": "91911b66813ad833423082a494cb7228b72a4bc2ee2c3fc12375a11439a76e1d",
+      "input_class_set": [
+        "Base.class",
+        "DirectA.class",
+        "DirectB.class",
+        "LocalInterface.class",
+        "Main.class",
+        "Mid.class",
+        "TwoHop.class"
+      ],
+      "generated_source_set": [
+        "javac23-jadx-default/jadx-output/sources/defpackage/Base.java",
+        "javac23-jadx-default/jadx-output/sources/defpackage/DirectA.java",
+        "javac23-jadx-default/jadx-output/sources/defpackage/DirectB.java",
+        "javac23-jadx-default/jadx-output/sources/defpackage/LocalInterface.java",
+        "javac23-jadx-default/jadx-output/sources/defpackage/Main.java",
+        "javac23-jadx-default/jadx-output/sources/defpackage/Mid.java",
+        "javac23-jadx-default/jadx-output/sources/defpackage/TwoHop.java"
+      ],
+      "reports": [],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/classes",
+          "defpackage.Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-default-run.stdout",
+        "stderr": "logs/javac23-jadx-default-run.stderr",
+        "stdout_sha256": "ea9dd9c2732caa6489be0401a6710d71cb3ae1226436932d376a645dddec7bb7",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": false,
+      "all_sources_without_refusal": true,
+      "accepted": false
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8-jarde-render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render-Base.stdout",
+      "stderr": "logs/javac8-jarde-render-Base.stderr",
+      "stdout_sha256": "6022fb501b3c7abdb2e6be43ecb5aa8f3d8e9bba15f7b763f3ced48cd444387c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-render-DirectA",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar",
+        "--class",
+        "DirectA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render-DirectA.stdout",
+      "stderr": "logs/javac8-jarde-render-DirectA.stderr",
+      "stdout_sha256": "fe85edd59268bee11d880a38d0160075c78b925d6b4cb37528c4f88963559988",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-render-DirectB",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar",
+        "--class",
+        "DirectB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render-DirectB.stdout",
+      "stderr": "logs/javac8-jarde-render-DirectB.stderr",
+      "stdout_sha256": "a963aab04edee0e2bba487fb20c002edf65e6cb3e9f89d50f0f50134f09ed5ab",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-render-LocalInterface",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar",
+        "--class",
+        "LocalInterface",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render-LocalInterface.stdout",
+      "stderr": "logs/javac8-jarde-render-LocalInterface.stderr",
+      "stdout_sha256": "81d624406f4c7de8547c24da303004056c68c2017abe19cab38b099c662975c8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render-Main.stdout",
+      "stderr": "logs/javac8-jarde-render-Main.stderr",
+      "stdout_sha256": "efcc30b988ef391b0d3506a589b1f64a6ce13c500e78fd02b3126852bbf7fa9f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-render-Mid",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar",
+        "--class",
+        "Mid",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render-Mid.stdout",
+      "stderr": "logs/javac8-jarde-render-Mid.stderr",
+      "stdout_sha256": "5f9fd1a6c40b84e68f086ce717962622732894687cb1c7322b307d42df48a607",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-render-TwoHop",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar",
+        "--class",
+        "TwoHop",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render-TwoHop.stdout",
+      "stderr": "logs/javac8-jarde-render-TwoHop.stderr",
+      "stdout_sha256": "1d4f2abd64ca207177a0adaed48994530582344952bbd9735f9a6e0d844f5ff8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/TwoHop.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde",
+      "exit": 1,
+      "stdout": "logs/javac8-jarde-compile.stdout",
+      "stderr": "logs/javac8-jarde-compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6653f5c6d7fbcbf31e2c45193f504a2644c602e80a4d0884f98eab3ab01bb1dd"
+    },
+    {
+      "label": "javac8-jadx-none-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output",
+        "--rename-flags",
+        "none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-decompile.stdout",
+      "stderr": "logs/javac8-jadx-none-decompile.stderr",
+      "stdout_sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output/sources/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output/sources/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output/sources/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/jadx-output/sources/TwoHop.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-compile.stdout",
+      "stderr": "logs/javac8-jadx-none-compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "1ca99f4abf4a713a045a480c5d5117be7c3584389af28d0e15f6005f763b95af"
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-run.stdout",
+      "stderr": "logs/javac8-jadx-none-run.stderr",
+      "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-decompile.stdout",
+      "stderr": "logs/javac8-jadx-default-decompile.stderr",
+      "stdout_sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output/sources/defpackage/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output/sources/defpackage/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output/sources/defpackage/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output/sources/defpackage/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output/sources/defpackage/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output/sources/defpackage/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/jadx-output/sources/defpackage/TwoHop.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-compile.stdout",
+      "stderr": "logs/javac8-jadx-default-compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "155e80f369712667d0dcbf81c33d9b2811fa3ba81c73c6bda574a907860d6fa7"
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default/classes",
+        "defpackage.Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-run.stdout",
+      "stderr": "logs/javac8-jadx-default-run.stderr",
+      "stdout_sha256": "ea9dd9c2732caa6489be0401a6710d71cb3ae1226436932d376a645dddec7bb7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render-Base.stdout",
+      "stderr": "logs/javac23-jarde-render-Base.stderr",
+      "stdout_sha256": "c160078da4c8e45d5f80dd817a537255337193a41170410fde37ec48387732a5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render-DirectA",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar",
+        "--class",
+        "DirectA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render-DirectA.stdout",
+      "stderr": "logs/javac23-jarde-render-DirectA.stderr",
+      "stdout_sha256": "c82381f89892282a648ac04f8b8f7816cd10a214acbc2fafd7a4fd4dae855ff4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render-DirectB",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar",
+        "--class",
+        "DirectB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render-DirectB.stdout",
+      "stderr": "logs/javac23-jarde-render-DirectB.stderr",
+      "stdout_sha256": "d87f56a075748a08d28a2c9a49762ecbcf7121bbfeaf10ba9cdada62f933f4e6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render-LocalInterface",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar",
+        "--class",
+        "LocalInterface",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render-LocalInterface.stdout",
+      "stderr": "logs/javac23-jarde-render-LocalInterface.stderr",
+      "stdout_sha256": "939e958e75f4d0749293c4442c9cc6a3e11d50ff40d58e4fc182ff053c711a0c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render-Main.stdout",
+      "stderr": "logs/javac23-jarde-render-Main.stderr",
+      "stdout_sha256": "48be94c74914ece2fa6f985716580960d0e7cedd10a0d083ff797e610528aea2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render-Mid",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar",
+        "--class",
+        "Mid",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render-Mid.stdout",
+      "stderr": "logs/javac23-jarde-render-Mid.stderr",
+      "stdout_sha256": "41f779e35493ce447841b99cfb6baac656420af54755c83d46d4944bdef84c05",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render-TwoHop",
+      "argv": [
+        "/private/tmp/jarde-em18-candidate-v1-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar",
+        "--class",
+        "TwoHop",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render-TwoHop.stdout",
+      "stderr": "logs/javac23-jarde-render-TwoHop.stderr",
+      "stdout_sha256": "cb66f023e5b9716fd265c4a285f8a574445a3c511f59b79b9838e93763fd51e5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/sources/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/sources/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/sources/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde/sources/TwoHop.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jarde",
+      "exit": 1,
+      "stdout": "logs/javac23-jarde-compile.stdout",
+      "stderr": "logs/javac23-jarde-compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4a3596352b8b3abff72fdb3f8f8931cfd515f78270d4708018b317caffd3dfca"
+    },
+    {
+      "label": "javac23-jadx-none-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output",
+        "--rename-flags",
+        "none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-decompile.stdout",
+      "stderr": "logs/javac23-jadx-none-decompile.stderr",
+      "stdout_sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output/sources/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output/sources/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output/sources/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output/sources/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/jadx-output/sources/TwoHop.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-compile.stdout",
+      "stderr": "logs/javac23-jadx-none-compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "db5604f456cf97f740d1146edeaaf36ec21b7649a123219e2e46439fa5f19669"
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-run.stdout",
+      "stderr": "logs/javac23-jadx-none-run.stderr",
+      "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-decompile.stdout",
+      "stderr": "logs/javac23-jadx-default-decompile.stderr",
+      "stdout_sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "explicit_environment": {
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output/sources/defpackage/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output/sources/defpackage/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output/sources/defpackage/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output/sources/defpackage/LocalInterface.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output/sources/defpackage/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output/sources/defpackage/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/jadx-output/sources/defpackage/TwoHop.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-compile.stdout",
+      "stderr": "logs/javac23-jadx-default-compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8001bb6055b5bf556d9b3045c91474429e326d0d1fffc7d242e5397e727107bc"
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default/classes",
+        "defpackage.Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac23-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-run.stdout",
+      "stderr": "logs/javac23-jadx-default-run.stderr",
+      "stdout_sha256": "ea9dd9c2732caa6489be0401a6710d71cb3ae1226436932d376a645dddec7bb7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "files": [
+    {
+      "path": "javac23-jadx-default/classes/defpackage/Base.class",
+      "bytes": 256,
+      "sha256": "67c869e83cc50423194a2e347a21e1f7e990d014c85888ba9a5195360b6df008"
+    },
+    {
+      "path": "javac23-jadx-default/classes/defpackage/DirectA.class",
+      "bytes": 289,
+      "sha256": "f29105550df29d353dcec7551d705abc21c30c6a991292d8b1132fd0a8c145a7"
+    },
+    {
+      "path": "javac23-jadx-default/classes/defpackage/DirectB.class",
+      "bytes": 256,
+      "sha256": "05085349493345fef7dec0829f946b29d3cd544fc87819f8a67e8ce976d3d69e"
+    },
+    {
+      "path": "javac23-jadx-default/classes/defpackage/LocalInterface.class",
+      "bytes": 77,
+      "sha256": "0709df14a49e6c3baaa9c3c83b9e0246ac71bed5ced705aa2033b1de681a0ae9"
+    },
+    {
+      "path": "javac23-jadx-default/classes/defpackage/Main.class",
+      "bytes": 2417,
+      "sha256": "88ef79b21184c4d53b21fae4db921b056385a0cf48c18b1039983864261c2ad4"
+    },
+    {
+      "path": "javac23-jadx-default/classes/defpackage/Mid.class",
+      "bytes": 248,
+      "sha256": "1867aef57b31b093fd8c2885c0a0babe435acc8f8d826640d3be510ad3db0b5f"
+    },
+    {
+      "path": "javac23-jadx-default/classes/defpackage/TwoHop.class",
+      "bytes": 286,
+      "sha256": "71f59d4996a1024f491f1403094865ff8504e82ea9fc14c0c3d6581c8fccda22"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/Base.java",
+      "bytes": 170,
+      "sha256": "7f9efb1cf28483f6148ce26ae4f93bac947d710ff47f4e0fa7b07e8fb8887191"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/DirectA.java",
+      "bytes": 241,
+      "sha256": "5d1de4a0062fd14b60a3066a573018edd40e0c93a40cb585d3d4fa4ae29d9542"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/DirectB.java",
+      "bytes": 215,
+      "sha256": "9352e34eef581923364db2638d8ad29831f397ff8295c8e780a3246679928284"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/LocalInterface.java",
+      "bytes": 120,
+      "sha256": "afbc39147343808d01012c669b186b7e5b23804cda66d49646aee17e1c9c319f"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/Main.java",
+      "bytes": 2154,
+      "sha256": "06f0dd8dfa48eee47d660ec66180f1e0afaa65abe13e21b78a335a5cab27db74"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/Mid.java",
+      "bytes": 199,
+      "sha256": "6e8ffe2b3eb1062d7cf7e26f4d5b1c651d48dcddba5ef6fca2aef5f8d67fdc45"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/TwoHop.java",
+      "bytes": 236,
+      "sha256": "0f2f1a0dfe068e73048fe99414e345283e85a5fae32dcd05884eb97d217c9677"
+    },
+    {
+      "path": "javac23-jadx-none/classes/Base.class",
+      "bytes": 234,
+      "sha256": "d1ed75e2021529df7051bcab98d29c733ade49ccb938572dd45ccec4453c2be5"
+    },
+    {
+      "path": "javac23-jadx-none/classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "c611e33d00be7f81c0d2ead8185afd99ca22262a1330a6d65dd64b9b88c35e53"
+    },
+    {
+      "path": "javac23-jadx-none/classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "3cca715c309bd1b35a654d49ac0f1d8712f6e945806e158675ce2cc6dac088e7"
+    },
+    {
+      "path": "javac23-jadx-none/classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "6becaf10034efd71d3c3c34aa2dc475dbb1e56564871e5f50e1d24dc16bc0654"
+    },
+    {
+      "path": "javac23-jadx-none/classes/Main.class",
+      "bytes": 2329,
+      "sha256": "27328a86654a0d836664ec6d0700edd2cba9daa82671ac562bd5c502de7f7c44"
+    },
+    {
+      "path": "javac23-jadx-none/classes/Mid.class",
+      "bytes": 215,
+      "sha256": "7a142cfce88dac1a1ca36a744ca89b8117abc19591dc3bb48978c127ff9c25fb"
+    },
+    {
+      "path": "javac23-jadx-none/classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "d150683e6fa9ec389417666c1db37a696a87dbd58c8f4d6ef747377fc5b5ce81"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/Base.java",
+      "bytes": 169,
+      "sha256": "3c20744a1f85168f1d4ab52363583aad845b270e35e3aec06389f1c47f817ae8"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/DirectA.java",
+      "bytes": 240,
+      "sha256": "62b5b60603bf7eddd5f5370e4248a9790a27d835253cd017f73149ae1198941a"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/DirectB.java",
+      "bytes": 214,
+      "sha256": "4c5e848405d02aa6e148f4179e2d3891062ef05894ab2691157e2f73f88057a3"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/LocalInterface.java",
+      "bytes": 119,
+      "sha256": "a01591fbc62e91e878a07122bf4c2ab14ae02aa66250c21b41e2bc7b5e36616d"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/Main.java",
+      "bytes": 2153,
+      "sha256": "fdbd74faa9f7ffa83c51809ec256b06bcb99a2f1f3245c9345d036dac3d824f1"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/Mid.java",
+      "bytes": 198,
+      "sha256": "82aa16c6af9b16a47b53f96861ef91176c5c82dc90a2b8d062739b32b186b63c"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/TwoHop.java",
+      "bytes": 235,
+      "sha256": "62af5aef69c5eb719cf08c0023463a6a006eb75b2109411040dafbdb589895fb"
+    },
+    {
+      "path": "javac23-jarde/classes/Base.class",
+      "bytes": 234,
+      "sha256": "d1ed75e2021529df7051bcab98d29c733ade49ccb938572dd45ccec4453c2be5"
+    },
+    {
+      "path": "javac23-jarde/classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "c611e33d00be7f81c0d2ead8185afd99ca22262a1330a6d65dd64b9b88c35e53"
+    },
+    {
+      "path": "javac23-jarde/classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "3cca715c309bd1b35a654d49ac0f1d8712f6e945806e158675ce2cc6dac088e7"
+    },
+    {
+      "path": "javac23-jarde/classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "6becaf10034efd71d3c3c34aa2dc475dbb1e56564871e5f50e1d24dc16bc0654"
+    },
+    {
+      "path": "javac23-jarde/sources/Base.java",
+      "bytes": 697,
+      "sha256": "77e08c37cc02cc6a0c6ff412e50b3794efd3a44b367e5f56abef140231c8ddb3"
+    },
+    {
+      "path": "javac23-jarde/sources/DirectA.java",
+      "bytes": 730,
+      "sha256": "417bc8f97ba597f9cb9623808752782ee48a7d3e95d0c8a0b4e42809a561ab9e"
+    },
+    {
+      "path": "javac23-jarde/sources/DirectB.java",
+      "bytes": 704,
+      "sha256": "5ae98d6e080ac3f1c6500f7a745b5680dd90d9ce87577a3867a19994c66c2664"
+    },
+    {
+      "path": "javac23-jarde/sources/LocalInterface.java",
+      "bytes": 386,
+      "sha256": "a1e5f79decafef2000790de25ec2dc531084fd9ad9252c36f21a8b6e8fd06231"
+    },
+    {
+      "path": "javac23-jarde/sources/Main.java",
+      "bytes": 14809,
+      "sha256": "14f302b0997a3602b9f2597b0a4ce6093affe6f98a05aab77b1b6add4f45973f"
+    },
+    {
+      "path": "javac23-jarde/sources/Mid.java",
+      "bytes": 684,
+      "sha256": "764ec789b713706c680655d20ecbc63a5a0528a2a7203c6a6af14b9f473b8000"
+    },
+    {
+      "path": "javac23-jarde/sources/TwoHop.java",
+      "bytes": 724,
+      "sha256": "72228174fbdbb5b730d16de5e175f064e27a4a54b0701de86030320bb343bab4"
+    },
+    {
+      "path": "javac23.jar",
+      "bytes": 4282,
+      "sha256": "91911b66813ad833423082a494cb7228b72a4bc2ee2c3fc12375a11439a76e1d"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/Base.class",
+      "bytes": 256,
+      "sha256": "b10aed223c6450c3432a7d8289865fd1dea26aab2d832325d6c608f26cbfb6c7"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/DirectA.class",
+      "bytes": 289,
+      "sha256": "23eb2f5bbc8704acd5eec9cc4ef625789d79e383a9f46190c36303d30aa4d3e4"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/DirectB.class",
+      "bytes": 256,
+      "sha256": "e5b395544804b876148361b8decb28373c6d96cdce72206c6ce8fa55b3e0a4fc"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/LocalInterface.class",
+      "bytes": 77,
+      "sha256": "db616caeb7289b2a7a4fbac63e164a1f3580e5a0a3c27fb6e0b0e8d85797cafc"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/Main.class",
+      "bytes": 2420,
+      "sha256": "ad3eb950ce6480f9ae1265802eca20ace622ed573196cc658db0d216dd8d3060"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/Mid.class",
+      "bytes": 248,
+      "sha256": "2bf66a5295c547ab5f366a3e609ea659d810e9949a29190fb8da8c02235bf92f"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/TwoHop.class",
+      "bytes": 286,
+      "sha256": "5dcce92a39a3c117a28e7fdd1887f17da0ae45fc61973d42369aacf18dfd69be"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/Base.java",
+      "bytes": 169,
+      "sha256": "de72b025b48e28c57ee2bc8545575a077fbb13bd5a35587aa6389ca6ab2cafd2"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/DirectA.java",
+      "bytes": 240,
+      "sha256": "88ce738b4b13a42d9139527e3f13d7d33e0b089981fce4379972de688859ab7e"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/DirectB.java",
+      "bytes": 214,
+      "sha256": "838c25ad7a2d8e048a7ae19ae69c00862f34d302cf75c0ba259c30d0d882ec93"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/LocalInterface.java",
+      "bytes": 119,
+      "sha256": "e4c331ab48d6f95037d8a207b263db4906cc3395eefdc293f2b2f312cd297f07"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/Main.java",
+      "bytes": 2153,
+      "sha256": "2e42002bbb4a72fce5224db00164e5c9df30a17273138bc60dbfd22b993399f0"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/Mid.java",
+      "bytes": 198,
+      "sha256": "bb7c8a2bba5b7ec02035a66621a12a2123fb3cab4b2ed5896bed133e2b4c4bee"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/TwoHop.java",
+      "bytes": 235,
+      "sha256": "404e910926316b89446accb0ac0e849f34395cbdb71160e587dc546021ff3d31"
+    },
+    {
+      "path": "javac8-jadx-none/classes/Base.class",
+      "bytes": 234,
+      "sha256": "409013f8c80ee540f8fb9db02908c5c1ce71c659a301a44e3eddce79ea576a1f"
+    },
+    {
+      "path": "javac8-jadx-none/classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "0642a6d4673dfc3d1d6946d293b2f617be0d665c9d3bdc379a975f7e317f1405"
+    },
+    {
+      "path": "javac8-jadx-none/classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "4e08bbc71ad1f73a9a39ad745feafaffea766cb2da510630aeeea7987d7bcf25"
+    },
+    {
+      "path": "javac8-jadx-none/classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "458be3d94118ac7daf045325634d8da5cd45f3c7c34649c9862f5696cd5b02d4"
+    },
+    {
+      "path": "javac8-jadx-none/classes/Main.class",
+      "bytes": 2332,
+      "sha256": "13549120c523c044fec6d5810723ff434feb53584886c525c184dd3211e9d75e"
+    },
+    {
+      "path": "javac8-jadx-none/classes/Mid.class",
+      "bytes": 215,
+      "sha256": "398ee87169937068a370cd40054e80e71774d971915837cab4107860aaef41ab"
+    },
+    {
+      "path": "javac8-jadx-none/classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "a54f405d3def556658c61b6ae0207cc89171fc80ba3fb67e4c07d8ec9195ed08"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/Base.java",
+      "bytes": 168,
+      "sha256": "fca749acbad6cde6eefce9afe9eeca2f0253fb04216173b3cd71516e9aa3a403"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/DirectA.java",
+      "bytes": 239,
+      "sha256": "5f6ba0c1d3ca003cde3c8078f17f9e1cba909217f1bb149c1e4ea47a998bd4f3"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/DirectB.java",
+      "bytes": 213,
+      "sha256": "4769120803e0c97cf3af515215802be910a00784eacfe8a637ac98f751481d92"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/LocalInterface.java",
+      "bytes": 118,
+      "sha256": "ff2f1080c22ccbe553e009360593529dcc94859e03acedc48b6bc95b41d25cd2"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/Main.java",
+      "bytes": 2152,
+      "sha256": "29d9490a2a9732b5775d81a2bf1e703829325f04bf30c75f8b1baf182f163af8"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/Mid.java",
+      "bytes": 197,
+      "sha256": "647856f0955a93a5711a6543fed49b550d722f9992e39f4e1f3e99d5391e230e"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/TwoHop.java",
+      "bytes": 234,
+      "sha256": "3d7eb89ee016d9eef752e7f50e99d0dcb90d7a6d6c4f52213c369a6c2476efdb"
+    },
+    {
+      "path": "javac8-jarde/classes/Base.class",
+      "bytes": 234,
+      "sha256": "409013f8c80ee540f8fb9db02908c5c1ce71c659a301a44e3eddce79ea576a1f"
+    },
+    {
+      "path": "javac8-jarde/classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "0642a6d4673dfc3d1d6946d293b2f617be0d665c9d3bdc379a975f7e317f1405"
+    },
+    {
+      "path": "javac8-jarde/classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "4e08bbc71ad1f73a9a39ad745feafaffea766cb2da510630aeeea7987d7bcf25"
+    },
+    {
+      "path": "javac8-jarde/classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "458be3d94118ac7daf045325634d8da5cd45f3c7c34649c9862f5696cd5b02d4"
+    },
+    {
+      "path": "javac8-jarde/sources/Base.java",
+      "bytes": 697,
+      "sha256": "77e08c37cc02cc6a0c6ff412e50b3794efd3a44b367e5f56abef140231c8ddb3"
+    },
+    {
+      "path": "javac8-jarde/sources/DirectA.java",
+      "bytes": 730,
+      "sha256": "417bc8f97ba597f9cb9623808752782ee48a7d3e95d0c8a0b4e42809a561ab9e"
+    },
+    {
+      "path": "javac8-jarde/sources/DirectB.java",
+      "bytes": 704,
+      "sha256": "5ae98d6e080ac3f1c6500f7a745b5680dd90d9ce87577a3867a19994c66c2664"
+    },
+    {
+      "path": "javac8-jarde/sources/LocalInterface.java",
+      "bytes": 386,
+      "sha256": "a1e5f79decafef2000790de25ec2dc531084fd9ad9252c36f21a8b6e8fd06231"
+    },
+    {
+      "path": "javac8-jarde/sources/Main.java",
+      "bytes": 14809,
+      "sha256": "14f302b0997a3602b9f2597b0a4ce6093affe6f98a05aab77b1b6add4f45973f"
+    },
+    {
+      "path": "javac8-jarde/sources/Mid.java",
+      "bytes": 684,
+      "sha256": "764ec789b713706c680655d20ecbc63a5a0528a2a7203c6a6af14b9f473b8000"
+    },
+    {
+      "path": "javac8-jarde/sources/TwoHop.java",
+      "bytes": 724,
+      "sha256": "72228174fbdbb5b730d16de5e175f064e27a4a54b0701de86030320bb343bab4"
+    },
+    {
+      "path": "javac8.jar",
+      "bytes": 4285,
+      "sha256": "d91d11738a1f4dbdfe2ce9356d1a2764a6282bdd47ab338f54dcbffe35ac545b"
+    },
+    {
+      "path": "logs/javac23-jadx-default-compile.stderr",
+      "bytes": 569,
+      "sha256": "8001bb6055b5bf556d9b3045c91474429e326d0d1fffc7d242e5397e727107bc"
+    },
+    {
+      "path": "logs/javac23-jadx-default-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-decompile.stdout",
+      "bytes": 148,
+      "sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c"
+    },
+    {
+      "path": "logs/javac23-jadx-default-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-run.stdout",
+      "bytes": 875,
+      "sha256": "ea9dd9c2732caa6489be0401a6710d71cb3ae1226436932d376a645dddec7bb7"
+    },
+    {
+      "path": "logs/javac23-jadx-none-compile.stderr",
+      "bytes": 555,
+      "sha256": "db5604f456cf97f740d1146edeaaf36ec21b7649a123219e2e46439fa5f19669"
+    },
+    {
+      "path": "logs/javac23-jadx-none-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-decompile.stdout",
+      "bytes": 148,
+      "sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c"
+    },
+    {
+      "path": "logs/javac23-jadx-none-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-run.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "logs/javac23-jarde-compile.stderr",
+      "bytes": 1585,
+      "sha256": "4a3596352b8b3abff72fdb3f8f8931cfd515f78270d4708018b317caffd3dfca"
+    },
+    {
+      "path": "logs/javac23-jarde-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-Base.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-Base.stdout",
+      "bytes": 15482,
+      "sha256": "c160078da4c8e45d5f80dd817a537255337193a41170410fde37ec48387732a5"
+    },
+    {
+      "path": "logs/javac23-jarde-render-DirectA.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-DirectA.stdout",
+      "bytes": 16370,
+      "sha256": "c82381f89892282a648ac04f8b8f7816cd10a214acbc2fafd7a4fd4dae855ff4"
+    },
+    {
+      "path": "logs/javac23-jarde-render-DirectB.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-DirectB.stdout",
+      "bytes": 16172,
+      "sha256": "d87f56a075748a08d28a2c9a49762ecbcf7121bbfeaf10ba9cdada62f933f4e6"
+    },
+    {
+      "path": "logs/javac23-jarde-render-LocalInterface.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-LocalInterface.stdout",
+      "bytes": 4031,
+      "sha256": "939e958e75f4d0749293c4442c9cc6a3e11d50ff40d58e4fc182ff053c711a0c"
+    },
+    {
+      "path": "logs/javac23-jarde-render-Main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-Main.stdout",
+      "bytes": 257143,
+      "sha256": "48be94c74914ece2fa6f985716580960d0e7cedd10a0d083ff797e610528aea2"
+    },
+    {
+      "path": "logs/javac23-jarde-render-Mid.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-Mid.stdout",
+      "bytes": 15894,
+      "sha256": "41f779e35493ce447841b99cfb6baac656420af54755c83d46d4944bdef84c05"
+    },
+    {
+      "path": "logs/javac23-jarde-render-TwoHop.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render-TwoHop.stdout",
+      "bytes": 16297,
+      "sha256": "cb66f023e5b9716fd265c4a285f8a574445a3c511f59b79b9838e93763fd51e5"
+    },
+    {
+      "path": "logs/javac8-jadx-default-compile.stderr",
+      "bytes": 325,
+      "sha256": "155e80f369712667d0dcbf81c33d9b2811fa3ba81c73c6bda574a907860d6fa7"
+    },
+    {
+      "path": "logs/javac8-jadx-default-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-decompile.stdout",
+      "bytes": 148,
+      "sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c"
+    },
+    {
+      "path": "logs/javac8-jadx-default-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-run.stdout",
+      "bytes": 875,
+      "sha256": "ea9dd9c2732caa6489be0401a6710d71cb3ae1226436932d376a645dddec7bb7"
+    },
+    {
+      "path": "logs/javac8-jadx-none-compile.stderr",
+      "bytes": 311,
+      "sha256": "1ca99f4abf4a713a045a480c5d5117be7c3584389af28d0e15f6005f763b95af"
+    },
+    {
+      "path": "logs/javac8-jadx-none-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-decompile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-decompile.stdout",
+      "bytes": 148,
+      "sha256": "833ff4f26b81960f6838479452465b25441d360f343bf3f9652055de7f29228c"
+    },
+    {
+      "path": "logs/javac8-jadx-none-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-run.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "logs/javac8-jarde-compile.stderr",
+      "bytes": 1336,
+      "sha256": "6653f5c6d7fbcbf31e2c45193f504a2644c602e80a4d0884f98eab3ab01bb1dd"
+    },
+    {
+      "path": "logs/javac8-jarde-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-Base.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-Base.stdout",
+      "bytes": 15482,
+      "sha256": "6022fb501b3c7abdb2e6be43ecb5aa8f3d8e9bba15f7b763f3ced48cd444387c"
+    },
+    {
+      "path": "logs/javac8-jarde-render-DirectA.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-DirectA.stdout",
+      "bytes": 16370,
+      "sha256": "fe85edd59268bee11d880a38d0160075c78b925d6b4cb37528c4f88963559988"
+    },
+    {
+      "path": "logs/javac8-jarde-render-DirectB.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-DirectB.stdout",
+      "bytes": 16172,
+      "sha256": "a963aab04edee0e2bba487fb20c002edf65e6cb3e9f89d50f0f50134f09ed5ab"
+    },
+    {
+      "path": "logs/javac8-jarde-render-LocalInterface.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-LocalInterface.stdout",
+      "bytes": 4031,
+      "sha256": "81d624406f4c7de8547c24da303004056c68c2017abe19cab38b099c662975c8"
+    },
+    {
+      "path": "logs/javac8-jarde-render-Main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-Main.stdout",
+      "bytes": 257145,
+      "sha256": "efcc30b988ef391b0d3506a589b1f64a6ce13c500e78fd02b3126852bbf7fa9f"
+    },
+    {
+      "path": "logs/javac8-jarde-render-Mid.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-Mid.stdout",
+      "bytes": 15894,
+      "sha256": "5f9fd1a6c40b84e68f086ce717962622732894687cb1c7322b307d42df48a607"
+    },
+    {
+      "path": "logs/javac8-jarde-render-TwoHop.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render-TwoHop.stdout",
+      "bytes": 16297,
+      "sha256": "1d4f2abd64ca207177a0adaed48994530582344952bbd9735f9a6e0d844f5ff8"
+    }
+  ]
+}

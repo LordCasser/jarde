@@ -1,0 +1,373 @@
+{
+  "schema": "constructed-reference-array-handler-fixture-v1",
+  "created_utc": "2026-10-09T13:36:01Z",
+  "runner_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/build_handler_fixture.py",
+  "runner_sha256": "bc1b972c62ec282845cf050d11492d54a908b4e44a4cbab5b75536b601dd9429",
+  "source_path": "tests/fixtures/p3-constructed-reference-array-handler-v1/HandlerControls.java",
+  "source_bytes": 367,
+  "source_sha256_before": "b4b7df3a293608257fc6f57bb260cb5aed2c3505dddd50878205f8b3c31cc459",
+  "source_sha256_after": "b4b7df3a293608257fc6f57bb260cb5aed2c3505dddd50878205f8b3c31cc459",
+  "source_contract": "one source class; uses only java.lang types; no main; handled() has one RuntimeException handler; no runtime command is issued",
+  "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/empty-classpath-sourcepath",
+  "legs": {
+    "javac8": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "flags": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ],
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "javap_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "javac_version_stdout": "",
+      "javac_version_stderr": "javac 1.8.0_432\n",
+      "javap_version_stdout": "1.8.0_432\n",
+      "javap_version_stderr": "",
+      "compile_exit_code": 0,
+      "javap_exit_code": 0,
+      "class_path": "javac8/classes/HandlerControls.class",
+      "class_bytes": 597,
+      "class_sha256": "107247d5fe5f4c713859e769583516961dca363ebb0ffbd1604260ee779f4f03",
+      "fixture_copy_path": "tests/fixtures/p3-constructed-reference-array-handler-v1/javac8/HandlerControls.class",
+      "fixture_copy_sha256": "107247d5fe5f4c713859e769583516961dca363ebb0ffbd1604260ee779f4f03",
+      "handled_code_and_handlers": {
+        "instructions": [
+          {
+            "bci": 0,
+            "opcode": "iconst_1",
+            "operands": ""
+          },
+          {
+            "bci": 1,
+            "opcode": "anewarray",
+            "operands": "#6                  // class java/lang/Object"
+          },
+          {
+            "bci": 4,
+            "opcode": "dup",
+            "operands": ""
+          },
+          {
+            "bci": 5,
+            "opcode": "iconst_0",
+            "operands": ""
+          },
+          {
+            "bci": 6,
+            "opcode": "new",
+            "operands": "#7                  // class java/lang/StringBuilder"
+          },
+          {
+            "bci": 9,
+            "opcode": "dup",
+            "operands": ""
+          },
+          {
+            "bci": 10,
+            "opcode": "ldc",
+            "operands": "#8                  // String handler"
+          },
+          {
+            "bci": 12,
+            "opcode": "invokestatic",
+            "operands": "#9                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;"
+          },
+          {
+            "bci": 15,
+            "opcode": "invokespecial",
+            "operands": "#10                 // Method java/lang/StringBuilder.\"<init>\":(Ljava/lang/String;)V"
+          },
+          {
+            "bci": 18,
+            "opcode": "aastore",
+            "operands": ""
+          },
+          {
+            "bci": 19,
+            "opcode": "areturn",
+            "operands": ""
+          },
+          {
+            "bci": 20,
+            "opcode": "astore_0",
+            "operands": ""
+          },
+          {
+            "bci": 21,
+            "opcode": "aconst_null",
+            "operands": ""
+          },
+          {
+            "bci": 22,
+            "opcode": "areturn",
+            "operands": ""
+          }
+        ],
+        "exception_table": [
+          {
+            "start_pc": 0,
+            "end_pc": 19,
+            "handler_pc": 20,
+            "catch_type": "Class java/lang/RuntimeException"
+          }
+        ]
+      }
+    },
+    "javac23": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "flags": [
+        "--release",
+        "8"
+      ],
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "javap_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "javac_version_stdout": "javac 23.0.1\n",
+      "javac_version_stderr": "",
+      "javap_version_stdout": "23.0.1\n",
+      "javap_version_stderr": "",
+      "compile_exit_code": 0,
+      "javap_exit_code": 0,
+      "class_path": "javac23/classes/HandlerControls.class",
+      "class_bytes": 594,
+      "class_sha256": "276000e03b62eb658e1fbc7c193c5180ef435a9b6c13af125d27c2a6254e3e9c",
+      "fixture_copy_path": "tests/fixtures/p3-constructed-reference-array-handler-v1/javac23/HandlerControls.class",
+      "fixture_copy_sha256": "276000e03b62eb658e1fbc7c193c5180ef435a9b6c13af125d27c2a6254e3e9c",
+      "handled_code_and_handlers": {
+        "instructions": [
+          {
+            "bci": 0,
+            "opcode": "iconst_1",
+            "operands": ""
+          },
+          {
+            "bci": 1,
+            "opcode": "anewarray",
+            "operands": "#2                  // class java/lang/Object"
+          },
+          {
+            "bci": 4,
+            "opcode": "dup",
+            "operands": ""
+          },
+          {
+            "bci": 5,
+            "opcode": "iconst_0",
+            "operands": ""
+          },
+          {
+            "bci": 6,
+            "opcode": "new",
+            "operands": "#24                 // class java/lang/StringBuilder"
+          },
+          {
+            "bci": 9,
+            "opcode": "dup",
+            "operands": ""
+          },
+          {
+            "bci": 10,
+            "opcode": "ldc",
+            "operands": "#26                 // String handler"
+          },
+          {
+            "bci": 12,
+            "opcode": "invokestatic",
+            "operands": "#28                 // Method mark:(Ljava/lang/String;)Ljava/lang/String;"
+          },
+          {
+            "bci": 15,
+            "opcode": "invokespecial",
+            "operands": "#34                 // Method java/lang/StringBuilder.\"<init>\":(Ljava/lang/String;)V"
+          },
+          {
+            "bci": 18,
+            "opcode": "aastore",
+            "operands": ""
+          },
+          {
+            "bci": 19,
+            "opcode": "areturn",
+            "operands": ""
+          },
+          {
+            "bci": 20,
+            "opcode": "astore_0",
+            "operands": ""
+          },
+          {
+            "bci": 21,
+            "opcode": "aconst_null",
+            "operands": ""
+          },
+          {
+            "bci": 22,
+            "opcode": "areturn",
+            "operands": ""
+          }
+        ],
+        "exception_table": [
+          {
+            "start_pc": 0,
+            "end_pc": 19,
+            "handler_pc": 20,
+            "catch_type": "Class java/lang/RuntimeException"
+          }
+        ]
+      }
+    }
+  },
+  "commands": [
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javac-version.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-javac-version.stderr",
+      "stderr_bytes": 16,
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javap-version.stdout",
+      "stdout_bytes": 10,
+      "stdout_sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713",
+      "stderr_path": "logs/javac8-javap-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-handler-v1/HandlerControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-compile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/javac8/classes",
+        "-c",
+        "-p",
+        "-v",
+        "HandlerControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javap.stdout",
+      "stdout_bytes": 4788,
+      "stdout_sha256": "770bde1ee14122098312bb84dfe8ae0edcde674e1b8ce35b3d215e8cc8966d96",
+      "stderr_path": "logs/javac8-javap.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javac-version.stdout",
+      "stdout_bytes": 13,
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr_path": "logs/javac23-javac-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javap-version.stdout",
+      "stdout_bytes": 7,
+      "stdout_sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb",
+      "stderr_path": "logs/javac23-javap-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-handler-v1/HandlerControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac23-compile.stderr",
+      "stderr_bytes": 243,
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/javac23/classes",
+        "-c",
+        "-p",
+        "-v",
+        "HandlerControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javap.stdout",
+      "stdout_bytes": 4973,
+      "stdout_sha256": "6822d963e71ed10ac8a74ab35df6a3a68004c45f5e5ec0f0225bc8c018db49c3",
+      "stderr_path": "logs/javac23-javap.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope_note": "only javac/javap were executed; no java runtime, Cargo, Git, or formatter was run"
+}

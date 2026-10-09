@@ -1,0 +1,766 @@
+{
+  "cli_sha256": "69a4a4bf86ca3cda412ea5ca6fba4dda24e84253daca781ddfec2da31b4d8495",
+  "original_manifest_sha256": "d9aa93d367726a6b355e6155bb5ce05de9fe37055a95c6f33aae4ee2ad2a3b90",
+  "commands": [
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac8/nested/classes",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-original-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac8-original-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8.jar",
+        "--class",
+        "NestedControls",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-render.stdout",
+      "stdout_sha256": "c50e1893de0ae39fb736ffb24023198097ef66e0dee1577cd7a12b97e3d59a4d",
+      "stderr": "logs/javac8-jarde-render.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde/sources/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8-jarde-compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde/classes",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jarde-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac8-jarde-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none/jadx-output",
+        "--rename-flags",
+        "none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-decompile.stdout",
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr": "logs/javac8-jadx-none-decompile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none/jadx-output/sources/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8-jadx-none-compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none/classes",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-none-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac8-jadx-none-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default/jadx-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-decompile.stdout",
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr": "logs/javac8-jadx-default-decompile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default/jadx-output/sources/defpackage/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac8-jadx-default-compile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default/classes",
+        "defpackage.NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac8-jadx-default-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac8-jadx-default-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac23/nested/classes",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-original-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac23-original-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23.jar",
+        "--class",
+        "NestedControls",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-render.stdout",
+      "stdout_sha256": "2891fc56c20e19556650c8a7313307098bc5f461d15c6c20c0acdc31da05b041",
+      "stderr": "logs/javac23-jarde-render.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde/sources/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23-jarde-compile.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde/classes",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jarde-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac23-jarde-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none/jadx-output",
+        "--rename-flags",
+        "none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-decompile.stdout",
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr": "logs/javac23-jadx-none-decompile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none/jadx-output/sources/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23-jadx-none-compile.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none/classes",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-none-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac23-jadx-none-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default-decompile",
+      "argv": [
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx",
+        "--no-res",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default/jadx-output",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-decompile.stdout",
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr": "logs/javac23-jadx-default-decompile.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default/jadx-output/sources/defpackage/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-compile.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "logs/javac23-jadx-default-compile.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default/classes",
+        "defpackage.NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default",
+      "exit": 0,
+      "stdout": "logs/javac23-jadx-default-run.stdout",
+      "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+      "stderr": "logs/javac23-jadx-default-run.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cases": [
+    {
+      "leg": "javac8",
+      "profile": "jarde",
+      "compile_exit": 0,
+      "quality": true,
+      "runtime": {
+        "label": "javac8-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde/classes",
+          "NestedControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jarde",
+        "exit": 0,
+        "stdout": "logs/javac8-jarde-run.stdout",
+        "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+        "stderr": "logs/javac8-jarde-run.stderr",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_set": [
+        "javac8-jarde/sources/NestedControls.java"
+      ],
+      "accepted": true
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-none",
+      "compile_exit": 0,
+      "quality": true,
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none/classes",
+          "NestedControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-none-run.stdout",
+        "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+        "stderr": "logs/javac8-jadx-none-run.stderr",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_set": [
+        "javac8-jadx-none/jadx-output/sources/NestedControls.java"
+      ],
+      "accepted": true
+    },
+    {
+      "leg": "javac8",
+      "profile": "jadx-default",
+      "compile_exit": 0,
+      "quality": true,
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default/classes",
+          "defpackage.NestedControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac8-jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac8-jadx-default-run.stdout",
+        "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+        "stderr": "logs/javac8-jadx-default-run.stderr",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_set": [
+        "javac8-jadx-default/jadx-output/sources/defpackage/NestedControls.java"
+      ],
+      "accepted": true
+    },
+    {
+      "leg": "javac23",
+      "profile": "jarde",
+      "compile_exit": 0,
+      "quality": true,
+      "runtime": {
+        "label": "javac23-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde/classes",
+          "NestedControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jarde",
+        "exit": 0,
+        "stdout": "logs/javac23-jarde-run.stdout",
+        "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+        "stderr": "logs/javac23-jarde-run.stderr",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_set": [
+        "javac23-jarde/sources/NestedControls.java"
+      ],
+      "accepted": true
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-none",
+      "compile_exit": 0,
+      "quality": true,
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none/classes",
+          "NestedControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-none",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-none-run.stdout",
+        "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+        "stderr": "logs/javac23-jadx-none-run.stderr",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_set": [
+        "javac23-jadx-none/jadx-output/sources/NestedControls.java"
+      ],
+      "accepted": true
+    },
+    {
+      "leg": "javac23",
+      "profile": "jadx-default",
+      "compile_exit": 0,
+      "quality": true,
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default/classes",
+          "defpackage.NestedControls"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/nested-controls-cli1-root-v1/javac23-jadx-default",
+        "exit": 0,
+        "stdout": "logs/javac23-jadx-default-run.stdout",
+        "stdout_sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3",
+        "stderr": "logs/javac23-jadx-default-run.stderr",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_set": [
+        "javac23-jadx-default/jadx-output/sources/defpackage/NestedControls.java"
+      ],
+      "accepted": true
+    }
+  ],
+  "files": [
+    {
+      "path": "javac23-jadx-default/classes/defpackage/NestedControls.class",
+      "sha256": "ef9e019e4cc1356cb03e5fb46d7eb7e5c8acb4ef0e8b2a51166cd180f093a136"
+    },
+    {
+      "path": "javac23-jadx-default/jadx-output/sources/defpackage/NestedControls.java",
+      "sha256": "911445833f3c890f5ea30bc0a2d2756cde56f0a9ade77a960f10e9a1cb172a86"
+    },
+    {
+      "path": "javac23-jadx-none/classes/NestedControls.class",
+      "sha256": "08d8144d04de1ca522f91673957fc3fc65b28aac882417e18f217c9f23edbf2b"
+    },
+    {
+      "path": "javac23-jadx-none/jadx-output/sources/NestedControls.java",
+      "sha256": "a3233ddb7463506167bace846fe4ccdbbb8d6e61456823b199917514d99250e9"
+    },
+    {
+      "path": "javac23-jarde/classes/NestedControls.class",
+      "sha256": "1f36b2aded400cb0698ee91a70a7e29dd4e9bccca00021e935fd1dc9e8015f69"
+    },
+    {
+      "path": "javac23-jarde/sources/NestedControls.java",
+      "sha256": "61394b73d0ff5bb06891820e64818cf1c1ea2eedd36599959c8140db8e7dd977"
+    },
+    {
+      "path": "javac23.jar",
+      "sha256": "e9df7714ec973abb681f20e8e8efd4e0063eb9be58e9919f703efc7451eab518"
+    },
+    {
+      "path": "javac8-jadx-default/classes/defpackage/NestedControls.class",
+      "sha256": "0a33e5bf2acffdb20fb9ee2332e437ac238431e2be2c67859caddc2248d7d1ef"
+    },
+    {
+      "path": "javac8-jadx-default/jadx-output/sources/defpackage/NestedControls.java",
+      "sha256": "4eab7b3845bd3aec885cb40dfaa3d79fe682c8cf039ce9836a6cf9418748fa67"
+    },
+    {
+      "path": "javac8-jadx-none/classes/NestedControls.class",
+      "sha256": "7d7462812c4d046a9b4c422b3bbe55e8494c2df3403a132633eef14771708a60"
+    },
+    {
+      "path": "javac8-jadx-none/jadx-output/sources/NestedControls.java",
+      "sha256": "4baa49dd9d74a73ce548dd9c0a0fd4fb0cc41994c807213e8e35b2ab065298f8"
+    },
+    {
+      "path": "javac8-jarde/classes/NestedControls.class",
+      "sha256": "02798edd491609dd8791fa07dfbf402c6dc6f6ff7830880d7d3327b51c4c5c5e"
+    },
+    {
+      "path": "javac8-jarde/sources/NestedControls.java",
+      "sha256": "61394b73d0ff5bb06891820e64818cf1c1ea2eedd36599959c8140db8e7dd977"
+    },
+    {
+      "path": "javac8.jar",
+      "sha256": "f715f3a3a1e27532bdd95f9d957c9f784869c9596d9a15a26b914a1bc6b3cdcc"
+    },
+    {
+      "path": "logs/javac23-jadx-default-compile.stderr",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "logs/javac23-jadx-default-compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-decompile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-decompile.stdout",
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "logs/javac23-jadx-default-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-default-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    },
+    {
+      "path": "logs/javac23-jadx-none-compile.stderr",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "logs/javac23-jadx-none-compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-decompile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-decompile.stdout",
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "logs/javac23-jadx-none-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jadx-none-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    },
+    {
+      "path": "logs/javac23-jarde-compile.stderr",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "logs/javac23-jarde-compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-render.stdout",
+      "sha256": "2891fc56c20e19556650c8a7313307098bc5f461d15c6c20c0acdc31da05b041"
+    },
+    {
+      "path": "logs/javac23-jarde-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-jarde-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    },
+    {
+      "path": "logs/javac23-original-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac23-original-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    },
+    {
+      "path": "logs/javac8-jadx-default-compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-decompile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-decompile.stdout",
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "logs/javac8-jadx-default-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-default-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    },
+    {
+      "path": "logs/javac8-jadx-none-compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-decompile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-decompile.stdout",
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "logs/javac8-jadx-none-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jadx-none-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    },
+    {
+      "path": "logs/javac8-jarde-compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-render.stdout",
+      "sha256": "c50e1893de0ae39fb736ffb24023198097ef66e0dee1577cd7a12b97e3d59a4d"
+    },
+    {
+      "path": "logs/javac8-jarde-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-jarde-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    },
+    {
+      "path": "logs/javac8-original-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/javac8-original-run.stdout",
+      "sha256": "34e449af9ae1626b27f334b06db84c82e98e22508c96079fec84f810e0e73ac3"
+    }
+  ]
+}

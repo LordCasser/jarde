@@ -1,0 +1,13 @@
+{
+  "cli_path": "/private/tmp/jarde-em18-composition-cli-v2",
+  "cli_sha256": "78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273",
+  "source_commit_base": "72aaac4a7d6eb0a3b77ea3366482bf63f7ff20a1",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "c7a79465370a6097ab03d7160ac07c5c8797ca35d786d94a778829fa9fe4921f",
+    "crates/jarde-java/src/build.rs": "88fcd020ac4bf8acc8a0787a3c99cd5694f7dab2f281aae9b2b354daf7aa9c70",
+    "crates/jarde-java/src/report.rs": "17c07d86e33acbd614f1449b122fbd1c836b5ab21b541bd6ff9879b8689be617"
+  },
+  "focused_index": "focused-v7/index.json",
+  "focused_index_sha256": "2d5f026775dd5e5f97c41106f95988fc2fb69ed3e2b6bc358c1ec892ed21abf4",
+  "status": "\u516c\u5171interval\u95ed\u5305\u4fee\u590d\u5019\u9009\uff0cfocused-v7\u4e03stage\u901a\u8fc7\uff0c\u5168\u4ed3\u53ca\u6700\u7ec8CI\u5f85\u9a8c\u6536\uff1b\u540e\u7eed\u4ec5\u65b0\u589etest\u9700\u53e6\u5217\u6e90\u7801hash"
+}

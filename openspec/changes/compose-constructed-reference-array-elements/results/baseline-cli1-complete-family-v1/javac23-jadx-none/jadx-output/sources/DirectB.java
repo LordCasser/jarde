@@ -1,0 +1,9 @@
+// default package
+
+/* JADX INFO: loaded from: javac23.jar:DirectB.class */
+public class DirectB extends Base {
+    public DirectB(String str) {
+        super(str);
+        Main.event("ctor:DirectB", str);
+    }
+}

@@ -1,0 +1,4 @@
+# 原始验收双流保持字节，不以源码空白检查改写证据。
+*.stdout -whitespace
+*.stderr -whitespace
+*.log -whitespace

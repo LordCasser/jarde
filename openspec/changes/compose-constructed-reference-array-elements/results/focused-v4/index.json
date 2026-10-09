@@ -1,0 +1,50 @@
+{
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "runner_sha256": "cca027055752afe03eec15de6725c9348f2bb5d926f4ebeb1fe13b4511e07be5",
+  "stages": [
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 2.8192479579884093,
+      "free_bytes_after": 43399405568,
+      "stdout": "fmt.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "fmt.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "init-focused",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "init::tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 101,
+      "seconds": 4.614030167009332,
+      "free_bytes_after": 43399737344,
+      "stdout": "init-focused.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "init-focused.stderr",
+      "stderr_sha256": "f0146be8956b7162caddd472f50904b96fdd85ea7946f2db87ed6a5bdfad0d62"
+    }
+  ]
+}

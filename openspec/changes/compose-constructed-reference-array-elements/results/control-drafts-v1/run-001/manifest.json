@@ -1,0 +1,710 @@
+{
+  "schema": "constructed-reference-array-control-drafts-v1",
+  "created_utc": "2026-10-09T12:48:04Z",
+  "status": "generated only by running this script; not executed when draft was prepared",
+  "runner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run_controls_v1.py",
+  "runner_sha256": "f5a772f4d56050fbb10dadd241441d6106abebeee2077911a2ff2be2f22af904",
+  "jdk_legs": {
+    "javac8": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "tool_sha256": {
+        "javac": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "javap": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      },
+      "version_stdout": {
+        "javac": "",
+        "javap": "1.8.0_432\n"
+      },
+      "version_stderr": {
+        "javac": "javac 1.8.0_432\n",
+        "javap": ""
+      },
+      "families": {
+        "nested": {
+          "sources": [
+            {
+              "path": "NestedControls.java",
+              "bytes": 447,
+              "sha256": "274887a029adee77f9a50ab4edfd9671ac976a1bead0fe1ab283b3b7bc5c53c2"
+            }
+          ],
+          "compiler_flags": [
+            "-source",
+            "8",
+            "-target",
+            "8"
+          ],
+          "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+          "compile_exit_code": 0,
+          "javap_exit_code": 0,
+          "classes": [
+            {
+              "path": "NestedControls.class",
+              "bytes": 676,
+              "sha256": "02798edd491609dd8791fa07dfbf402c6dc6f6ff7830880d7d3327b51c4c5c5e"
+            }
+          ],
+          "javap_instruction_bci": {
+            "NestedControls": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [
+                1
+              ],
+              "aastore": []
+            },
+            "mark": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            },
+            "nested": {
+              "new": [
+                6,
+                10
+              ],
+              "dup": [
+                4,
+                9,
+                13
+              ],
+              "invokespecial": [
+                19,
+                22
+              ],
+              "aastore": [
+                25
+              ]
+            },
+            "main": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            }
+          }
+        },
+        "boundary": {
+          "sources": [
+            {
+              "path": "BoundaryControls.java",
+              "bytes": 1445,
+              "sha256": "bfec4c7c797211cc3fdf2fb31605e6aadecb29c6e44e390c6449361f4f3762c5"
+            }
+          ],
+          "compiler_flags": [
+            "-source",
+            "8",
+            "-target",
+            "8"
+          ],
+          "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+          "compile_exit_code": 0,
+          "javap_exit_code": 0,
+          "classes": [
+            {
+              "path": "BoundaryControls.class",
+              "bytes": 1370,
+              "sha256": "f44881ada8171552c95841a0bcbc28962969708e59facae1246ca87b7b55a664"
+            }
+          ],
+          "javap_instruction_bci": {
+            "BoundaryControls": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [
+                1
+              ],
+              "aastore": []
+            },
+            "mark": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            },
+            "number": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            },
+            "firstThenUnsupportedStructure": {
+              "new": [
+                6,
+                21
+              ],
+              "dup": [
+                4,
+                9,
+                19,
+                24
+              ],
+              "invokespecial": [
+                15,
+                31
+              ],
+              "aastore": [
+                18,
+                34
+              ]
+            },
+            "old": {
+              "new": [
+                2
+              ],
+              "dup": [
+                5
+              ],
+              "invokespecial": [
+                11
+              ],
+              "aastore": [
+                14
+              ]
+            },
+            "repeated": {
+              "new": [
+                7,
+                22
+              ],
+              "dup": [
+                10,
+                25
+              ],
+              "invokespecial": [
+                16,
+                31
+              ],
+              "aastore": [
+                19,
+                34
+              ]
+            },
+            "descending": {
+              "new": [
+                7,
+                22
+              ],
+              "dup": [
+                10,
+                25
+              ],
+              "invokespecial": [
+                16,
+                31
+              ],
+              "aastore": [
+                19,
+                34
+              ]
+            },
+            "crossBlock": {
+              "new": [
+                5
+              ],
+              "dup": [
+                8
+              ],
+              "invokespecial": [
+                14
+              ],
+              "aastore": [
+                25
+              ]
+            },
+            "closedNumberBoundary": {
+              "new": [
+                6,
+                21
+              ],
+              "dup": [
+                4,
+                9,
+                19,
+                24
+              ],
+              "invokespecial": [
+                15,
+                30
+              ],
+              "aastore": [
+                18,
+                33
+              ]
+            }
+          }
+        }
+      }
+    },
+    "javac23": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tool_sha256": {
+        "javac": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "javap": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      },
+      "version_stdout": {
+        "javac": "javac 23.0.1\n",
+        "javap": "23.0.1\n"
+      },
+      "version_stderr": {
+        "javac": "",
+        "javap": ""
+      },
+      "families": {
+        "nested": {
+          "sources": [
+            {
+              "path": "NestedControls.java",
+              "bytes": 447,
+              "sha256": "274887a029adee77f9a50ab4edfd9671ac976a1bead0fe1ab283b3b7bc5c53c2"
+            }
+          ],
+          "compiler_flags": [
+            "--release",
+            "8"
+          ],
+          "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+          "compile_exit_code": 0,
+          "javap_exit_code": 0,
+          "classes": [
+            {
+              "path": "NestedControls.class",
+              "bytes": 676,
+              "sha256": "1f36b2aded400cb0698ee91a70a7e29dd4e9bccca00021e935fd1dc9e8015f69"
+            }
+          ],
+          "javap_instruction_bci": {
+            "NestedControls": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [
+                1
+              ],
+              "aastore": []
+            },
+            "mark": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            },
+            "nested": {
+              "new": [
+                6,
+                10
+              ],
+              "dup": [
+                4,
+                9,
+                13
+              ],
+              "invokespecial": [
+                19,
+                22
+              ],
+              "aastore": [
+                25
+              ]
+            },
+            "main": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            }
+          }
+        },
+        "boundary": {
+          "sources": [
+            {
+              "path": "BoundaryControls.java",
+              "bytes": 1445,
+              "sha256": "bfec4c7c797211cc3fdf2fb31605e6aadecb29c6e44e390c6449361f4f3762c5"
+            }
+          ],
+          "compiler_flags": [
+            "--release",
+            "8"
+          ],
+          "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+          "compile_exit_code": 0,
+          "javap_exit_code": 0,
+          "classes": [
+            {
+              "path": "BoundaryControls.class",
+              "bytes": 1367,
+              "sha256": "008835c56d57d64fb09ab862638118604d87e757e090af22bd1cdbac1f4bac5f"
+            }
+          ],
+          "javap_instruction_bci": {
+            "BoundaryControls": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [
+                1
+              ],
+              "aastore": []
+            },
+            "mark": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            },
+            "number": {
+              "new": [],
+              "dup": [],
+              "invokespecial": [],
+              "aastore": []
+            },
+            "firstThenUnsupportedStructure": {
+              "new": [
+                6,
+                21
+              ],
+              "dup": [
+                4,
+                9,
+                19,
+                24
+              ],
+              "invokespecial": [
+                15,
+                31
+              ],
+              "aastore": [
+                18,
+                34
+              ]
+            },
+            "old": {
+              "new": [
+                2
+              ],
+              "dup": [
+                5
+              ],
+              "invokespecial": [
+                11
+              ],
+              "aastore": [
+                14
+              ]
+            },
+            "repeated": {
+              "new": [
+                7,
+                22
+              ],
+              "dup": [
+                10,
+                25
+              ],
+              "invokespecial": [
+                16,
+                31
+              ],
+              "aastore": [
+                19,
+                34
+              ]
+            },
+            "descending": {
+              "new": [
+                7,
+                22
+              ],
+              "dup": [
+                10,
+                25
+              ],
+              "invokespecial": [
+                16,
+                31
+              ],
+              "aastore": [
+                19,
+                34
+              ]
+            },
+            "crossBlock": {
+              "new": [
+                5
+              ],
+              "dup": [
+                8
+              ],
+              "invokespecial": [
+                14
+              ],
+              "aastore": [
+                25
+              ]
+            },
+            "closedNumberBoundary": {
+              "new": [
+                6,
+                21
+              ],
+              "dup": [
+                4,
+                9,
+                19,
+                24
+              ],
+              "invokespecial": [
+                15,
+                30
+              ],
+              "aastore": [
+                18,
+                33
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "commands": [
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javac-version.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-javac-version.stderr",
+      "stderr_bytes": 16,
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javap-version.stdout",
+      "stdout_bytes": 10,
+      "stdout_sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713",
+      "stderr_path": "logs/javac8-javap-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-nested-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac8/nested/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-nested-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-nested-compile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-nested-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac8/nested/classes",
+        "-c",
+        "-p",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-nested-javap.stdout",
+      "stdout_bytes": 2001,
+      "stdout_sha256": "34fda07c396ff9c75145bdc30566577eb36ad1a390c245a1656fd4e7bf873822",
+      "stderr_path": "logs/javac8-nested-javap.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-boundary-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac8/boundary/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/BoundaryControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-boundary-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-boundary-compile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-boundary-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac8/boundary/classes",
+        "-c",
+        "-p",
+        "BoundaryControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-boundary-javap.stdout",
+      "stdout_bytes": 6175,
+      "stdout_sha256": "c9780dedb4adaadc6305e5b51df52a914a00a7383a043a083fbb77143287280b",
+      "stderr_path": "logs/javac8-boundary-javap.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javac-version.stdout",
+      "stdout_bytes": 13,
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr_path": "logs/javac23-javac-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javap-version.stdout",
+      "stdout_bytes": 7,
+      "stdout_sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb",
+      "stderr_path": "logs/javac23-javap-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-nested-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac23/nested/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/NestedControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-nested-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac23-nested-compile.stderr",
+      "stderr_bytes": 243,
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-nested-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac23/nested/classes",
+        "-c",
+        "-p",
+        "NestedControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-nested-javap.stdout",
+      "stdout_bytes": 2001,
+      "stdout_sha256": "5286c3bf847d7f86492a22666f5a13ff3d7b8c4ce321e236fe1f762bd665b3d4",
+      "stderr_path": "logs/javac23-nested-javap.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-boundary-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac23/boundary/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/BoundaryControls.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-boundary-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac23-boundary-compile.stderr",
+      "stderr_bytes": 243,
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-boundary-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac23/boundary/classes",
+        "-c",
+        "-p",
+        "BoundaryControls"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-boundary-javap.stdout",
+      "stdout_bytes": 6175,
+      "stdout_sha256": "8939138d5c33511ef6ce95f1afc163be61ad4899716e9543794bc6dc8f2cc827",
+      "stderr_path": "logs/javac23-boundary-javap.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope_note": "nested and boundary sources compile into separate class directories; no Java runtime command is issued"
+}

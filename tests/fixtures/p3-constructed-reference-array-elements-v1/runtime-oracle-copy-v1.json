@@ -1,0 +1,56 @@
+{
+  "schema": "constructed-reference-array-runtime-oracle-copy-v1",
+  "source_manifest_path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/manifest.json",
+  "source_manifest_sha256": "98e8f014b4cb7f8a4efca50ff54e7fee992805f27387f95d4c76db1f9b5bc713",
+  "entries": [
+    {
+      "leg": "javac8",
+      "stream": "stdout",
+      "source_path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-original-main.stdout",
+      "destination_path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac8/original-main.stdout",
+      "bytes": 809,
+      "run003_expected_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "source_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "destination_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "byte_identical": true,
+      "matches_run003_hash": true
+    },
+    {
+      "leg": "javac8",
+      "stream": "stderr",
+      "source_path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-original-main.stderr",
+      "destination_path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac8/original-main.stderr",
+      "bytes": 0,
+      "run003_expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true,
+      "matches_run003_hash": true
+    },
+    {
+      "leg": "javac23",
+      "stream": "stdout",
+      "source_path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-original-main.stdout",
+      "destination_path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac23/original-main.stdout",
+      "bytes": 809,
+      "run003_expected_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "source_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "destination_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "byte_identical": true,
+      "matches_run003_hash": true
+    },
+    {
+      "leg": "javac23",
+      "stream": "stderr",
+      "source_path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-original-main.stderr",
+      "destination_path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac23/original-main.stderr",
+      "bytes": 0,
+      "run003_expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true,
+      "matches_run003_hash": true
+    }
+  ],
+  "all_four_streams_verified": true
+}

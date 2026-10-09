@@ -1,0 +1,10 @@
+
+running 5 tests
+test complete_class_matches_five_verified_jvm_rows ... ignored, requires a JDK for complete Java 8 class comparison
+test local_postfix_is_one_ordered_element_with_complete_sources ... ok
+test low_budget_and_pre_cancellation_do_not_commit_a_partial_postfix ... ok
+test patched_controls_remain_verifier_valid_and_distinguishable ... ignored, requires a JDK to verify the patched control classes
+test plus_two_and_other_slot_are_not_local_postfix_values ... ok
+
+test result: ok. 3 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

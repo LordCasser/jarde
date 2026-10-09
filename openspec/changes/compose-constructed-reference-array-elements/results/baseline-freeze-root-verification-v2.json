@@ -1,0 +1,174 @@
+{
+  "code_baseline_sha": "29dcd5e892696e9f6b5adbb657ffa0a7db576c27",
+  "baseline_index_sha256": "083d8b516cc55981d291f873578df7ad5dae607fdc3e1a03cc5076fdad9ba963",
+  "checks": [
+    {
+      "label": "frozen-cli",
+      "sha256": "0ebf4e6189c02d1d84072c9aeacd380303e71e6885f95408e054e8f843154f79",
+      "matches": true
+    },
+    {
+      "label": "main29dcd:crates/jarde-java/src/build.rs",
+      "sha256": "3a1eb15d8563c074dab8303fbfb70a09e4e9bc0bc1ea54facb03f6a85d26a15f",
+      "matches": true
+    },
+    {
+      "label": "main29dcd:crates/jarde-java/src/init.rs",
+      "sha256": "1af8b71c8bd134094e3e1e4b7d327cbc881723378e544d76c9c636ebf9e15e8b",
+      "matches": true
+    },
+    {
+      "label": "main29dcd:crates/jarde-java/src/report.rs",
+      "sha256": "88f88541154ea4881f3dd0545b71660046e6ae0a3746f9aae1876cfe9188a3a8",
+      "matches": true
+    },
+    {
+      "label": "main29dcd:src/facade.rs",
+      "sha256": "f00a75f147542e4663b10fafff8daec28275dcd07996d8c01436c41ba145a16b",
+      "matches": true
+    },
+    {
+      "label": "main29dcd:crates/jarde-jvm/src/ssa.rs",
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a",
+      "matches": true
+    },
+    {
+      "label": "main29dcd:crates/jarde-jvm/src/method_ir.rs",
+      "sha256": "cb4fd073be36ae09081e897f1a37292ee1b3821d7257c79238fabdf1fbe1c286",
+      "matches": true
+    },
+    {
+      "label": "manifest",
+      "sha256": "d3dd331861d79d32cc64b2fd2e2c3677606868d54767e157fa99e5db7f508b87",
+      "matches": true
+    },
+    {
+      "label": "root_verification",
+      "sha256": "96087151f77d0dfcde9f4503c0479f686eb250e99b5fc3437ab1498346c193cb",
+      "matches": true
+    },
+    {
+      "label": "javap:javac8",
+      "sha256": "ae496a7fa34352d5cd68e49ce81e2e801b657752a76222785010b497aea24424",
+      "matches": true
+    },
+    {
+      "label": "javap:javac23",
+      "sha256": "26fe4e5c64e66942e93fe9da460f9b1de44be63fd5221c6b2639e4666dbe11e8",
+      "matches": true
+    },
+    {
+      "label": "Base.java",
+      "sha256": "d32b225a5e129346a2bef89edfc9ab7388336af1d65c1c9f6a4286572c4d2df2",
+      "matches": true
+    },
+    {
+      "label": "DerivedA.java",
+      "sha256": "d33f1ed9b05f59e5d5e077c34c2e056df286e2b63962ddac5c51be13ed9f9977",
+      "matches": true
+    },
+    {
+      "label": "DerivedB.java",
+      "sha256": "62ea0c550b93e2e50cfa97e079ef7036445c669929d6e0b485aa6bceb0b4c47c",
+      "matches": true
+    },
+    {
+      "label": "LocalInterface.java",
+      "sha256": "425f56e2492e46e3f32206b6e338f5faebd5fadb6dba2391a4048164f73cc621",
+      "matches": true
+    },
+    {
+      "label": "Mid.java",
+      "sha256": "c6f88e2194880bedd5fff9bf2ef1757af27b7dd6b48efc239cf3ed16cfc1b770",
+      "matches": true
+    },
+    {
+      "label": "Main.java",
+      "sha256": "e4e9189086f9417c523c4db0cadce69739c66f9e6c297ccc4a7914768f29a017",
+      "matches": true
+    },
+    {
+      "label": "jar:javac8",
+      "sha256": "78edae441cc1114e96c34feee027f862967adcf7bf606427e408bfbc0caf3788",
+      "matches": true
+    },
+    {
+      "label": "javac8:Main.class",
+      "sha256": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677",
+      "matches": true
+    },
+    {
+      "label": "javac8:Base.class",
+      "sha256": "bfe74c8011daf92fe9c7580e1a25ccbb2eb9a6eca688b0a35a29159f12c54654",
+      "matches": true
+    },
+    {
+      "label": "javac8:DerivedA.class",
+      "sha256": "e43a63c1e90282339e8714bbd3283874553a4283928ad1d989a93b2c3cb63b30",
+      "matches": true
+    },
+    {
+      "label": "javac8:DerivedB.class",
+      "sha256": "6fc600e1e2cef803943662e4f73fbb1c95c03a46959309b51c528d0fca0c839d",
+      "matches": true
+    },
+    {
+      "label": "javac8:Mid.class",
+      "sha256": "37adeff6467e1bac2312aed5b944f5cbbbc8dbd96839a4ec1c4bf20d6ce1916a",
+      "matches": true
+    },
+    {
+      "label": "javac8:LocalInterface.class",
+      "sha256": "1a981d32cf0cf13302e6ead05acbd9857968236baeca4e953efd445fe7660fcb",
+      "matches": true
+    },
+    {
+      "label": "jar:javac23",
+      "sha256": "edfce48db43b09de0df8ded0d3b29dfe51d73e2714b8d2e6bdfc301614a8bf79",
+      "matches": true
+    },
+    {
+      "label": "javac23:Main.class",
+      "sha256": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726",
+      "matches": true
+    },
+    {
+      "label": "javac23:Base.class",
+      "sha256": "42659d89c3f93095d5af59b536602b083430543804d5cf36668379dc6f327384",
+      "matches": true
+    },
+    {
+      "label": "javac23:DerivedA.class",
+      "sha256": "553c29faf0aeb8d00a0079d8e1dcbfb1436b3a55252eb9afd3e98158b8ed3fc5",
+      "matches": true
+    },
+    {
+      "label": "javac23:DerivedB.class",
+      "sha256": "eb40d297ff785c0358d67ffb493956eedfbf262fefd60ac98c6693cf6fbca1a9",
+      "matches": true
+    },
+    {
+      "label": "javac23:Mid.class",
+      "sha256": "0c9baa21caae1a01cfbd8008f4e354522a8d79d71148c1fcadda5fc5b809b66f",
+      "matches": true
+    },
+    {
+      "label": "javac23:LocalInterface.class",
+      "sha256": "cdfae937ae17747f4e217ce41d292ee54280edb88080285908846b7bf0b9d64d",
+      "matches": true
+    },
+    {
+      "label": "jadx-archive",
+      "sha256": "7d828c23041fddbb9b895bd45c0683e6b3c06c17dde016ea6f3da24fcb6124fc",
+      "matches": true
+    },
+    {
+      "label": "jadx-root",
+      "sha256": "353a225a9894a6af2e812f8b1928957f70a87948160eb4e50ed63e4ecea6cf9c",
+      "matches": true
+    }
+  ],
+  "issues": [],
+  "ssa_limit": "Frozen CLI JSON records BCIs only; candidate exact ValueId identity must be verified with actual same-run SSA in focused tests.",
+  "historical_verification": "baseline-freeze-root-verification.json"
+}

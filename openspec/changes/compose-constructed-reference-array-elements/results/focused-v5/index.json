@@ -1,0 +1,88 @@
+{
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "runner_sha256": "8ea42e487e3bb215010a7738916b63eb77b4baf40a5a2701b492d75f950120a5",
+  "stages": [
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 2.887206375002279,
+      "free_bytes_after": 43319623680,
+      "stdout": "fmt.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "fmt.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "init-focused",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "init::tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 12.128210166993085,
+      "free_bytes_after": 43318956032,
+      "stdout": "init-focused.stdout",
+      "stdout_sha256": "5bcb74656ccd37226d8edb1e92a707c54e3f711426bf1677b33e245d4d261fd7",
+      "stderr": "init-focused.stderr",
+      "stderr_sha256": "90395b4719e722459bd1edbc10ce21f906c7d96164910cf7839a68a0cd4c7e28"
+    },
+    {
+      "name": "complete-family-integration",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_constructed_reference_array_elements",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 18.610096207994502,
+      "free_bytes_after": 43314106368,
+      "stdout": "complete-family-integration.stdout",
+      "stdout_sha256": "86236dbdc328fdbc3e0f977f062186f34a7a12317896d4a8a1145cf7212d6ac3",
+      "stderr": "complete-family-integration.stderr",
+      "stderr_sha256": "d98dfb02fc435cf659425c10a99a00d69bc70183d05a1207d242adf2e78c3e0a"
+    },
+    {
+      "name": "cli-build",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 18.848128291996545,
+      "free_bytes_after": 43298275328,
+      "stdout": "cli-build.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "cli-build.stderr",
+      "stderr_sha256": "dca2d74436fa3e4f18bb4f0a97576a1e5a3a5c005924c629760a1127d574c72c"
+    }
+  ]
+}

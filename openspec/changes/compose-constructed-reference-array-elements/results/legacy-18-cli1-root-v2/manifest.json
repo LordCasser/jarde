@@ -1,0 +1,3063 @@
+{
+  "schema": "root-em18-candidate-v1-replay-v2",
+  "runner_sha256": "154c7e2d1f27c3a29b669fd860b147439f41153c15aa39bf50cbc040073f4d6a",
+  "cli_sha256": "69a4a4bf86ca3cda412ea5ca6fba4dda24e84253daca781ddfec2da31b4d8495",
+  "cases": [
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/ct-legacy/javac8/input.jar",
+      "input_jar_sha256": "0a0bb14ecbbcc3c32381b2ad7c09c74a714a55f648ad74de1dda7bcc639c697b",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "CT",
+          "source_sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_ct-legacy_javac8_render-CT.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/ct-legacy/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8/classes",
+          "CT"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8",
+        "exit": 0,
+        "stdout": "logs/baseline_ct-legacy_javac8_run.stdout",
+        "stderr": "logs/baseline_ct-legacy_javac8_run.stderr",
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/ct-legacy/javac23/input.jar",
+      "input_jar_sha256": "6790ebb71a10aa7703ed49f3da572368489f23f1e37f389637d0194930a5d8b4",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "CT",
+          "source_sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_ct-legacy_javac23_render-CT.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/ct-legacy/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23/classes",
+          "CT"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23",
+        "exit": 0,
+        "stdout": "logs/baseline_ct-legacy_javac23_run.stdout",
+        "stderr": "logs/baseline_ct-legacy_javac23_run.stderr",
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "boxed-number-six",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/boxed-number-six/javac8/input.jar",
+      "input_jar_sha256": "d329b20fee2477a93e5d5a33c7bc6736932d7075fdae4211346ea705c34b72ce",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "5a5de83746b7cb8bd9ad06c8bbcf288ef10feb100863df310e6977cfa0fd2a3b",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_boxed-number-six_javac8_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/boxed-number-six/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8",
+        "exit": 0,
+        "stdout": "logs/baseline_boxed-number-six_javac8_run.stdout",
+        "stderr": "logs/baseline_boxed-number-six_javac8_run.stderr",
+        "stdout_sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "boxed-number-six",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/boxed-number-six/javac23/input.jar",
+      "input_jar_sha256": "26cf42d9b6feb4e9b12f1191839cd4f18bcb8f512345cf1392d88ff9980152c9",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "5a5de83746b7cb8bd9ad06c8bbcf288ef10feb100863df310e6977cfa0fd2a3b",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_boxed-number-six_javac23_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/boxed-number-six/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23",
+        "exit": 0,
+        "stdout": "logs/baseline_boxed-number-six_javac23_run.stdout",
+        "stderr": "logs/baseline_boxed-number-six_javac23_run.stderr",
+        "stdout_sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "string-builder-charsequence",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/string-builder-charsequence/javac8/input.jar",
+      "input_jar_sha256": "d2a97be0f0ab5609a0419227b8c3c1b827090341418452485e683e81fe2c2940",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "5c675a138b92ad6659d2719707650a8f09875b35bb1ffaf2175e15f93f52ebca",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_string-builder-charsequence_javac8_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/string-builder-charsequence/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8",
+        "exit": 0,
+        "stdout": "logs/baseline_string-builder-charsequence_javac8_run.stdout",
+        "stderr": "logs/baseline_string-builder-charsequence_javac8_run.stderr",
+        "stdout_sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "string-builder-charsequence",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/string-builder-charsequence/javac23/input.jar",
+      "input_jar_sha256": "10622ee5287e68f1d23423cb8e407f5b2115b7e7c5bd605e601e5268b1ede6f0",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "5c675a138b92ad6659d2719707650a8f09875b35bb1ffaf2175e15f93f52ebca",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_string-builder-charsequence_javac23_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/string-builder-charsequence/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23",
+        "exit": 0,
+        "stdout": "logs/baseline_string-builder-charsequence_javac23_run.stdout",
+        "stderr": "logs/baseline_string-builder-charsequence_javac23_run.stderr",
+        "stdout_sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "arraylist-hashset-collection",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/arraylist-hashset-collection/javac8/input.jar",
+      "input_jar_sha256": "5cca769d775c5deaae0fc7b55cc74e50de69b3474daecfcc32ae210823c30ab6",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "e0e350452cd59c7f500599371efda03acddc81ecd0b8290e602552167fb4b87e",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_arraylist-hashset-collection_javac8_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/arraylist-hashset-collection/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8",
+        "exit": 0,
+        "stdout": "logs/baseline_arraylist-hashset-collection_javac8_run.stdout",
+        "stderr": "logs/baseline_arraylist-hashset-collection_javac8_run.stderr",
+        "stdout_sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "arraylist-hashset-collection",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/arraylist-hashset-collection/javac23/input.jar",
+      "input_jar_sha256": "aa268ec3556c4dff113af49b8f933bcb5348cbd4131177b132f678dafe207f7a",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "e0e350452cd59c7f500599371efda03acddc81ecd0b8290e602552167fb4b87e",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_arraylist-hashset-collection_javac23_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/arraylist-hashset-collection/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23",
+        "exit": 0,
+        "stdout": "logs/baseline_arraylist-hashset-collection_javac23_run.stdout",
+        "stderr": "logs/baseline_arraylist-hashset-collection_javac23_run.stderr",
+        "stdout_sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "exceptions-throwable",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/exceptions-throwable/javac8/input.jar",
+      "input_jar_sha256": "c5c9cadc2b0df753569206065f25c4bc0b3a3be832826c8fefd8ddfe57e15dbc",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "1bf4014365e3b0c41f5446d7d848c3fd0f632299fdc99180f2e151f636e1fa08",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_exceptions-throwable_javac8_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/exceptions-throwable/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8",
+        "exit": 0,
+        "stdout": "logs/baseline_exceptions-throwable_javac8_run.stdout",
+        "stderr": "logs/baseline_exceptions-throwable_javac8_run.stderr",
+        "stdout_sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "exceptions-throwable",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/exceptions-throwable/javac23/input.jar",
+      "input_jar_sha256": "f1ab218e8330a1464145c6b0d7c69fc341e00fc47454444805cadb5ba8256c1d",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "1bf4014365e3b0c41f5446d7d848c3fd0f632299fdc99180f2e151f636e1fa08",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_exceptions-throwable_javac23_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/exceptions-throwable/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23",
+        "exit": 0,
+        "stdout": "logs/baseline_exceptions-throwable_javac23_run.stdout",
+        "stderr": "logs/baseline_exceptions-throwable_javac23_run.stderr",
+        "stdout_sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "nested-number-array",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/nested-number-array/javac8/input.jar",
+      "input_jar_sha256": "1057d7562c6ef2ea34423cb99fe12c706efcd6df58f3336b563fff89e36a9b85",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "65038f3273bc29c9b161146a4754dd9265cfc8722231fad1f644a5272e0d6d50",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_nested-number-array_javac8_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/nested-number-array/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8",
+        "exit": 0,
+        "stdout": "logs/baseline_nested-number-array_javac8_run.stdout",
+        "stderr": "logs/baseline_nested-number-array_javac8_run.stderr",
+        "stdout_sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "nested-number-array",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/nested-number-array/javac23/input.jar",
+      "input_jar_sha256": "617aab83f90a1ad7d6a01e77634ae21a4e5fa2a8b99c8e6611afc30ee8fe1777",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "65038f3273bc29c9b161146a4754dd9265cfc8722231fad1f644a5272e0d6d50",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_nested-number-array_javac23_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/nested-number-array/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23",
+        "exit": 0,
+        "stdout": "logs/baseline_nested-number-array_javac23_run.stdout",
+        "stderr": "logs/baseline_nested-number-array_javac23_run.stderr",
+        "stdout_sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "same-jar-derived-base",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac8/input.jar",
+      "input_jar_sha256": "5f06a7434c767cc7ec87f46ed13a92f292919b576c2f382084ce36091f2e4855",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Base",
+          "source_sha256": "9e2de19e4f71792ddc36522ee1e0aeecfb9da58578fe3088db70ddadff0613fb",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac8_render-Base.stdout"
+        },
+        {
+          "class": "DerivedA",
+          "source_sha256": "e58ad53ea6bd8dcf08fadf73b28268d7216e8fbfe685d4ec4276a726a6cb8d88",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac8_render-DerivedA.stdout"
+        },
+        {
+          "class": "DerivedB",
+          "source_sha256": "925585ea900239b69e332d7004b4669af1bb7fe8bdbb7e2146e2d51a6c90ff77",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac8_render-DerivedB.stdout"
+        },
+        {
+          "class": "Main",
+          "source_sha256": "a106b3d94702723138fca8fef27e992869675e2930d5525e3eeb407140ab7b07",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac8_render-Main.stdout"
+        },
+        {
+          "class": "Named",
+          "source_sha256": "1765089489ab4e5043c784737943439ae0cb544d4778029530305ec09521d8ee",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac8_render-Named.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/same-jar-derived-base/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8",
+        "exit": 0,
+        "stdout": "logs/baseline_same-jar-derived-base_javac8_run.stdout",
+        "stderr": "logs/baseline_same-jar-derived-base_javac8_run.stderr",
+        "stdout_sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "same-jar-derived-base",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac23/input.jar",
+      "input_jar_sha256": "c9e9b1e122ffef0f33a346c22d10ea1d55ece53ad3b93725702246d0a7d8cf1c",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Base",
+          "source_sha256": "9e2de19e4f71792ddc36522ee1e0aeecfb9da58578fe3088db70ddadff0613fb",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac23_render-Base.stdout"
+        },
+        {
+          "class": "DerivedA",
+          "source_sha256": "e58ad53ea6bd8dcf08fadf73b28268d7216e8fbfe685d4ec4276a726a6cb8d88",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac23_render-DerivedA.stdout"
+        },
+        {
+          "class": "DerivedB",
+          "source_sha256": "925585ea900239b69e332d7004b4669af1bb7fe8bdbb7e2146e2d51a6c90ff77",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac23_render-DerivedB.stdout"
+        },
+        {
+          "class": "Main",
+          "source_sha256": "a106b3d94702723138fca8fef27e992869675e2930d5525e3eeb407140ab7b07",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac23_render-Main.stdout"
+        },
+        {
+          "class": "Named",
+          "source_sha256": "1765089489ab4e5043c784737943439ae0cb544d4778029530305ec09521d8ee",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/baseline_same-jar-derived-base_javac23_render-Named.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "baseline/same-jar-derived-base/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23",
+        "exit": 0,
+        "stdout": "logs/baseline_same-jar-derived-base_javac23_run.stdout",
+        "stderr": "logs/baseline_same-jar-derived-base_javac23_run.stderr",
+        "stdout_sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "addendum",
+      "family": "ct-legacy-frozen",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/ct-legacy-frozen/javac8/CT-frozen.jar",
+      "input_jar_sha256": "cb2d193f1bd435536fb90313b9947a0f8e521972cc304c74807f9d6590d0d8b0",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "CT",
+          "source_sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/addendum_ct-legacy-frozen_javac8_render-CT.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "addendum/ct-legacy-frozen/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8/classes",
+          "CT"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8",
+        "exit": 0,
+        "stdout": "logs/addendum_ct-legacy-frozen_javac8_run.stdout",
+        "stderr": "logs/addendum_ct-legacy-frozen_javac8_run.stderr",
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "addendum",
+      "family": "ct-legacy-frozen",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/ct-legacy-frozen/javac23/CT-frozen.jar",
+      "input_jar_sha256": "59adfef38723db240d1f8201c48cacf0b43a2f58b3dfbcf560db54f73f735c09",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "CT",
+          "source_sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+          "bytecode_marker": false,
+          "refused_body_marker": false,
+          "report_stdout": "logs/addendum_ct-legacy-frozen_javac23_render-CT.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "addendum/ct-legacy-frozen/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23/classes",
+          "CT"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23",
+        "exit": 0,
+        "stdout": "logs/addendum_ct-legacy-frozen_javac23_run.stdout",
+        "stderr": "logs/addendum_ct-legacy-frozen_javac23_run.stderr",
+        "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": true,
+      "all_sources_without_refusal": true,
+      "accepted": true
+    },
+    {
+      "dataset": "addendum",
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac8",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/input.jar",
+      "input_jar_sha256": "f42437404bb92d5f4680992482828871951b2ce395a61f6f000a06226f79d0dc",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e",
+          "bytecode_marker": true,
+          "refused_body_marker": false,
+          "report_stdout": "logs/addendum_bigdecimal-control-corrected_javac8_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "addendum/bigdecimal-control-corrected/javac8/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8",
+        "exit": 0,
+        "stdout": "logs/addendum_bigdecimal-control-corrected_javac8_run.stdout",
+        "stderr": "logs/addendum_bigdecimal-control-corrected_javac8_run.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": false,
+      "all_sources_without_refusal": false,
+      "accepted": false
+    },
+    {
+      "dataset": "addendum",
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac23",
+      "input_jar": "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/input.jar",
+      "input_jar_sha256": "f71d44a7315890d40ac5b28aafd55ffc739ab76b8590715b260a41bc5e696607",
+      "original_run": {
+        "exit": 0,
+        "stdout_sha256": "2cff3d4e1d402f123ac6042cd50af20e8bbe97d94384b341056fbbe4e80d7981",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "reports": [
+        {
+          "class": "Main",
+          "source_sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e",
+          "bytecode_marker": true,
+          "refused_body_marker": false,
+          "report_stdout": "logs/addendum_bigdecimal-control-corrected_javac23_render-Main.stdout"
+        }
+      ],
+      "compile_exit": 0,
+      "runtime": {
+        "label": "addendum/bigdecimal-control-corrected/javac23/run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23/classes",
+          "Main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23",
+        "exit": 0,
+        "stdout": "logs/addendum_bigdecimal-control-corrected_javac23_run.stdout",
+        "stderr": "logs/addendum_bigdecimal-control-corrected_javac23_run.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_original_streams": false,
+      "all_sources_without_refusal": false,
+      "accepted": false
+    }
+  ],
+  "commands": [
+    {
+      "label": "baseline/ct-legacy/javac8/render-CT",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/ct-legacy/javac8/input.jar",
+        "--class",
+        "CT",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_ct-legacy_javac8_render-CT.stdout",
+      "stderr": "logs/baseline_ct-legacy_javac8_render-CT.stderr",
+      "stdout_sha256": "228776f3cae6b1948316a1551097dcaad1fff954830da2024baf82c2dfcb56eb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/ct-legacy/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8/sources/CT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_ct-legacy_javac8_compile.stdout",
+      "stderr": "logs/baseline_ct-legacy_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/ct-legacy/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8/classes",
+        "CT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_ct-legacy_javac8_run.stdout",
+      "stderr": "logs/baseline_ct-legacy_javac8_run.stderr",
+      "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/ct-legacy/javac23/render-CT",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/ct-legacy/javac23/input.jar",
+        "--class",
+        "CT",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_ct-legacy_javac23_render-CT.stdout",
+      "stderr": "logs/baseline_ct-legacy_javac23_render-CT.stderr",
+      "stdout_sha256": "a72b8c073a23e19fb847b2c4c0003662a60e7c73d5b00a4df7077b7d6ee599fd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/ct-legacy/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23/sources/CT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_ct-legacy_javac23_compile.stdout",
+      "stderr": "logs/baseline_ct-legacy_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "baseline/ct-legacy/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23/classes",
+        "CT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/ct-legacy/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_ct-legacy_javac23_run.stdout",
+      "stderr": "logs/baseline_ct-legacy_javac23_run.stderr",
+      "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/boxed-number-six/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/boxed-number-six/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_boxed-number-six_javac8_render-Main.stdout",
+      "stderr": "logs/baseline_boxed-number-six_javac8_render-Main.stderr",
+      "stdout_sha256": "a4a0c2ac6234204e0407a813837f772117e40f9b9e7ab6ad896caa38c89bb35d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/boxed-number-six/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_boxed-number-six_javac8_compile.stdout",
+      "stderr": "logs/baseline_boxed-number-six_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/boxed-number-six/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_boxed-number-six_javac8_run.stdout",
+      "stderr": "logs/baseline_boxed-number-six_javac8_run.stderr",
+      "stdout_sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/boxed-number-six/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/boxed-number-six/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_boxed-number-six_javac23_render-Main.stdout",
+      "stderr": "logs/baseline_boxed-number-six_javac23_render-Main.stderr",
+      "stdout_sha256": "27c19b016f85a2c5b3023c23d1d781117a2642b7717006673b26c4cbbf80828f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/boxed-number-six/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_boxed-number-six_javac23_compile.stdout",
+      "stderr": "logs/baseline_boxed-number-six_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "baseline/boxed-number-six/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/boxed-number-six/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_boxed-number-six_javac23_run.stdout",
+      "stderr": "logs/baseline_boxed-number-six_javac23_run.stderr",
+      "stdout_sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/string-builder-charsequence/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/string-builder-charsequence/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_string-builder-charsequence_javac8_render-Main.stdout",
+      "stderr": "logs/baseline_string-builder-charsequence_javac8_render-Main.stderr",
+      "stdout_sha256": "eeb969f9a26f086d708bbc8e5d15d5e653117d451b1cad4cec465da06f4d7033",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/string-builder-charsequence/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_string-builder-charsequence_javac8_compile.stdout",
+      "stderr": "logs/baseline_string-builder-charsequence_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/string-builder-charsequence/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_string-builder-charsequence_javac8_run.stdout",
+      "stderr": "logs/baseline_string-builder-charsequence_javac8_run.stderr",
+      "stdout_sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/string-builder-charsequence/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/string-builder-charsequence/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_string-builder-charsequence_javac23_render-Main.stdout",
+      "stderr": "logs/baseline_string-builder-charsequence_javac23_render-Main.stderr",
+      "stdout_sha256": "595222322218e1594a207672cf1e7dd3b609fa59131ff134fb048f0098192156",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/string-builder-charsequence/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_string-builder-charsequence_javac23_compile.stdout",
+      "stderr": "logs/baseline_string-builder-charsequence_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "baseline/string-builder-charsequence/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/string-builder-charsequence/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_string-builder-charsequence_javac23_run.stdout",
+      "stderr": "logs/baseline_string-builder-charsequence_javac23_run.stderr",
+      "stdout_sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/arraylist-hashset-collection/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/arraylist-hashset-collection/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_arraylist-hashset-collection_javac8_render-Main.stdout",
+      "stderr": "logs/baseline_arraylist-hashset-collection_javac8_render-Main.stderr",
+      "stdout_sha256": "db366caab4859e5717365b7272620c6582f3483e536f8eb4ad4e94817fc2b070",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/arraylist-hashset-collection/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_arraylist-hashset-collection_javac8_compile.stdout",
+      "stderr": "logs/baseline_arraylist-hashset-collection_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/arraylist-hashset-collection/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_arraylist-hashset-collection_javac8_run.stdout",
+      "stderr": "logs/baseline_arraylist-hashset-collection_javac8_run.stderr",
+      "stdout_sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/arraylist-hashset-collection/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/arraylist-hashset-collection/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_arraylist-hashset-collection_javac23_render-Main.stdout",
+      "stderr": "logs/baseline_arraylist-hashset-collection_javac23_render-Main.stderr",
+      "stdout_sha256": "9cb5b4d559891988696383db1d15d2769b162b9c7332a297210855ff3542f84e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/arraylist-hashset-collection/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_arraylist-hashset-collection_javac23_compile.stdout",
+      "stderr": "logs/baseline_arraylist-hashset-collection_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "baseline/arraylist-hashset-collection/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/arraylist-hashset-collection/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_arraylist-hashset-collection_javac23_run.stdout",
+      "stderr": "logs/baseline_arraylist-hashset-collection_javac23_run.stderr",
+      "stdout_sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/exceptions-throwable/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/exceptions-throwable/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_exceptions-throwable_javac8_render-Main.stdout",
+      "stderr": "logs/baseline_exceptions-throwable_javac8_render-Main.stderr",
+      "stdout_sha256": "1ffc8f5733a326f7c9bb22c21482c36203d27b49e78538710a87e469279870c0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/exceptions-throwable/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_exceptions-throwable_javac8_compile.stdout",
+      "stderr": "logs/baseline_exceptions-throwable_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/exceptions-throwable/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_exceptions-throwable_javac8_run.stdout",
+      "stderr": "logs/baseline_exceptions-throwable_javac8_run.stderr",
+      "stdout_sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/exceptions-throwable/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/exceptions-throwable/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_exceptions-throwable_javac23_render-Main.stdout",
+      "stderr": "logs/baseline_exceptions-throwable_javac23_render-Main.stderr",
+      "stdout_sha256": "9e41bb6f683b155f46ad18bc17f0da2e4530d22f8bd508e0a2f491532a48e735",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/exceptions-throwable/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_exceptions-throwable_javac23_compile.stdout",
+      "stderr": "logs/baseline_exceptions-throwable_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "baseline/exceptions-throwable/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/exceptions-throwable/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_exceptions-throwable_javac23_run.stdout",
+      "stderr": "logs/baseline_exceptions-throwable_javac23_run.stderr",
+      "stdout_sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/nested-number-array/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/nested-number-array/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_nested-number-array_javac8_render-Main.stdout",
+      "stderr": "logs/baseline_nested-number-array_javac8_render-Main.stderr",
+      "stdout_sha256": "e3a68a5da81a1d22aede2c004d52b9be62ab52a99ce98103339c16f405d3fc9b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/nested-number-array/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_nested-number-array_javac8_compile.stdout",
+      "stderr": "logs/baseline_nested-number-array_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/nested-number-array/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_nested-number-array_javac8_run.stdout",
+      "stderr": "logs/baseline_nested-number-array_javac8_run.stderr",
+      "stdout_sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/nested-number-array/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/nested-number-array/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_nested-number-array_javac23_render-Main.stdout",
+      "stderr": "logs/baseline_nested-number-array_javac23_render-Main.stderr",
+      "stdout_sha256": "d5292533a869760e4f74fb30fd2610939a4de829841528075ee74d0e6006ccaf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/nested-number-array/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_nested-number-array_javac23_compile.stdout",
+      "stderr": "logs/baseline_nested-number-array_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "baseline/nested-number-array/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/nested-number-array/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_nested-number-array_javac23_run.stdout",
+      "stderr": "logs/baseline_nested-number-array_javac23_run.stderr",
+      "stdout_sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac8/render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac8/input.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac8_render-Base.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac8_render-Base.stderr",
+      "stdout_sha256": "a7df09fac7da7419328ca549fc0687dbe274c1f609f01d7ea7b26df9c1ffb7c7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac8/render-DerivedA",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac8/input.jar",
+        "--class",
+        "DerivedA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac8_render-DerivedA.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac8_render-DerivedA.stderr",
+      "stdout_sha256": "b85de42f290e1bace59a82583026ec65fc816ef612f4fda3146281fdef7cea23",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac8/render-DerivedB",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac8/input.jar",
+        "--class",
+        "DerivedB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac8_render-DerivedB.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac8_render-DerivedB.stderr",
+      "stdout_sha256": "9d1c982cfbc3fbb5d402df52164cdd88066a4e3126cae3ded4757c9f659d38fb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac8_render-Main.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac8_render-Main.stderr",
+      "stdout_sha256": "4ed06f32816d49ef3044e44135c6daa7f3086450484252658e48dac74db6f914",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac8/render-Named",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac8/input.jar",
+        "--class",
+        "Named",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac8_render-Named.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac8_render-Named.stderr",
+      "stdout_sha256": "38cd125cb4be2541a51ff1ee666a714756ce05b6b89f38baa9ec9343fb17d743",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/sources/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/sources/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/sources/Named.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac8_compile.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac8",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac8_run.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac8_run.stderr",
+      "stdout_sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac23/render-Base",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac23/input.jar",
+        "--class",
+        "Base",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac23_render-Base.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac23_render-Base.stderr",
+      "stdout_sha256": "ef6660c736a0f5f3332d0ba82d81857c14c7cd9f32099e48d980174d46b78273",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac23/render-DerivedA",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac23/input.jar",
+        "--class",
+        "DerivedA",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac23_render-DerivedA.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac23_render-DerivedA.stderr",
+      "stdout_sha256": "ff915ba84e5af17a4bdcd466229d34b938d22e8846588042d4922006139e795f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac23/render-DerivedB",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac23/input.jar",
+        "--class",
+        "DerivedB",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac23_render-DerivedB.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac23_render-DerivedB.stderr",
+      "stdout_sha256": "1930a43569ce073ca7ad71670757f2217d4c1eaa787a311dffedd4eb77bd700a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac23_render-Main.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac23_render-Main.stderr",
+      "stdout_sha256": "72e39b0aeb71d45abac39e9cc4676f761d3ded4ec82237057b5d34468c7fb677",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac23/render-Named",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/cases/same-jar-derived-base/javac23/input.jar",
+        "--class",
+        "Named",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac23_render-Named.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac23_render-Named.stderr",
+      "stdout_sha256": "d2c8c252b9b16d9572fb68a6eac792690dd8d5dd0c12404b2fae31dd126c7d68",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/sources/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/sources/DerivedA.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/sources/DerivedB.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/sources/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/sources/Named.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac23_compile.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "baseline/same-jar-derived-base/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/baseline/same-jar-derived-base/javac23",
+      "exit": 0,
+      "stdout": "logs/baseline_same-jar-derived-base_javac23_run.stdout",
+      "stderr": "logs/baseline_same-jar-derived-base_javac23_run.stderr",
+      "stdout_sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/ct-legacy-frozen/javac8/render-CT",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/ct-legacy-frozen/javac8/CT-frozen.jar",
+        "--class",
+        "CT",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/addendum_ct-legacy-frozen_javac8_render-CT.stdout",
+      "stderr": "logs/addendum_ct-legacy-frozen_javac8_render-CT.stderr",
+      "stdout_sha256": "468e9e12316b7cf984b2729e7775c01ebd983de4ec1e4b39f30295acdcc75869",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/ct-legacy-frozen/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8/sources/CT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8",
+      "exit": 0,
+      "stdout": "logs/addendum_ct-legacy-frozen_javac8_compile.stdout",
+      "stderr": "logs/addendum_ct-legacy-frozen_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/ct-legacy-frozen/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8/classes",
+        "CT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac8",
+      "exit": 0,
+      "stdout": "logs/addendum_ct-legacy-frozen_javac8_run.stdout",
+      "stderr": "logs/addendum_ct-legacy-frozen_javac8_run.stderr",
+      "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/ct-legacy-frozen/javac23/render-CT",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/ct-legacy-frozen/javac23/CT-frozen.jar",
+        "--class",
+        "CT",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/addendum_ct-legacy-frozen_javac23_render-CT.stdout",
+      "stderr": "logs/addendum_ct-legacy-frozen_javac23_render-CT.stderr",
+      "stdout_sha256": "4d968fd413c94d6e55f101fe23c1efa14d5ce8f76faa07411935b0dfe9e3a4cf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/ct-legacy-frozen/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23/sources/CT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23",
+      "exit": 0,
+      "stdout": "logs/addendum_ct-legacy-frozen_javac23_compile.stdout",
+      "stderr": "logs/addendum_ct-legacy-frozen_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "addendum/ct-legacy-frozen/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23/classes",
+        "CT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/ct-legacy-frozen/javac23",
+      "exit": 0,
+      "stdout": "logs/addendum_ct-legacy-frozen_javac23_run.stdout",
+      "stderr": "logs/addendum_ct-legacy-frozen_javac23_run.stderr",
+      "stdout_sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/bigdecimal-control-corrected/javac8/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac8/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/addendum_bigdecimal-control-corrected_javac8_render-Main.stdout",
+      "stderr": "logs/addendum_bigdecimal-control-corrected_javac8_render-Main.stderr",
+      "stdout_sha256": "ec1e40437b2f711896943e91dc9bae1e9313d4500b33c6d2b880e15c8d738f73",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/bigdecimal-control-corrected/javac8/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "logs/addendum_bigdecimal-control-corrected_javac8_compile.stdout",
+      "stderr": "logs/addendum_bigdecimal-control-corrected_javac8_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/bigdecimal-control-corrected/javac8/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac8",
+      "exit": 0,
+      "stdout": "logs/addendum_bigdecimal-control-corrected_javac8_run.stdout",
+      "stderr": "logs/addendum_bigdecimal-control-corrected_javac8_run.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/bigdecimal-control-corrected/javac23/render-Main",
+      "argv": [
+        "/private/tmp/jarde-em18-composition-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-em18-baseline-20261009/addendum-20261009-02/bigdecimal-control-corrected/javac23/input.jar",
+        "--class",
+        "Main",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "stdout": "logs/addendum_bigdecimal-control-corrected_javac23_render-Main.stdout",
+      "stderr": "logs/addendum_bigdecimal-control-corrected_javac23_render-Main.stderr",
+      "stdout_sha256": "f3b8ffb6cfc9382be508ccc0592f43b1eeb0cd379267f3d98e5fc3fa3141a1b2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "addendum/bigdecimal-control-corrected/javac23/compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23/sources/Main.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "logs/addendum_bigdecimal-control-corrected_javac23_compile.stdout",
+      "stderr": "logs/addendum_bigdecimal-control-corrected_javac23_compile.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "label": "addendum/bigdecimal-control-corrected/javac23/run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23/classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/legacy-18-cli1-root-v2/addendum/bigdecimal-control-corrected/javac23",
+      "exit": 0,
+      "stdout": "logs/addendum_bigdecimal-control-corrected_javac23_run.stdout",
+      "stderr": "logs/addendum_bigdecimal-control-corrected_javac23_run.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "files": [
+    {
+      "path": "addendum/bigdecimal-control-corrected/javac23/classes/Main.class",
+      "sha256": "322375ce75bf15f2edfcc1ab7e0a4b3e8f3f8d54e9aeaead0be5c392ab17488f",
+      "bytes": 178
+    },
+    {
+      "path": "addendum/bigdecimal-control-corrected/javac23/sources/Main.java",
+      "sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e",
+      "bytes": 1406
+    },
+    {
+      "path": "addendum/bigdecimal-control-corrected/javac8/classes/Main.class",
+      "sha256": "cfb14fa5cd6fdf9820608a42505c43e1185039a5a15ba5529177f2cb2fb4eac6",
+      "bytes": 178
+    },
+    {
+      "path": "addendum/bigdecimal-control-corrected/javac8/sources/Main.java",
+      "sha256": "fb6b42365d313bd128a266239eb0214da1dbf747944862e4d5ee19803b2d7d5e",
+      "bytes": 1406
+    },
+    {
+      "path": "addendum/ct-legacy-frozen/javac23/classes/CT.class",
+      "sha256": "be4acae32d600a8dcd5a93eba8330a6524b7f5d123aec8045a0594e467d911cd",
+      "bytes": 1585
+    },
+    {
+      "path": "addendum/ct-legacy-frozen/javac23/sources/CT.java",
+      "sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+      "bytes": 3023
+    },
+    {
+      "path": "addendum/ct-legacy-frozen/javac8/classes/CT.class",
+      "sha256": "1cfceef7bca8ce3f26ebc6b860c797d7cf9434509f40a4c15459ad994ee04152",
+      "bytes": 1588
+    },
+    {
+      "path": "addendum/ct-legacy-frozen/javac8/sources/CT.java",
+      "sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+      "bytes": 3023
+    },
+    {
+      "path": "baseline/arraylist-hashset-collection/javac23/classes/Main.class",
+      "sha256": "4016eae50ccd8edb397da4d6e4eb8c6a2fb997a02b6b2475fa1bc66c4453de47",
+      "bytes": 765
+    },
+    {
+      "path": "baseline/arraylist-hashset-collection/javac23/sources/Main.java",
+      "sha256": "e0e350452cd59c7f500599371efda03acddc81ecd0b8290e602552167fb4b87e",
+      "bytes": 1282
+    },
+    {
+      "path": "baseline/arraylist-hashset-collection/javac8/classes/Main.class",
+      "sha256": "4a716c334008dc902fa605aa2636e11747022fb7b88b2879f5792618d07d69a8",
+      "bytes": 756
+    },
+    {
+      "path": "baseline/arraylist-hashset-collection/javac8/sources/Main.java",
+      "sha256": "e0e350452cd59c7f500599371efda03acddc81ecd0b8290e602552167fb4b87e",
+      "bytes": 1282
+    },
+    {
+      "path": "baseline/boxed-number-six/javac23/classes/Main.class",
+      "sha256": "d6dce2751b6613697df4f4b251cb75a16450896f1b696d90135f22f757ef2691",
+      "bytes": 1038
+    },
+    {
+      "path": "baseline/boxed-number-six/javac23/sources/Main.java",
+      "sha256": "5a5de83746b7cb8bd9ad06c8bbcf288ef10feb100863df310e6977cfa0fd2a3b",
+      "bytes": 1384
+    },
+    {
+      "path": "baseline/boxed-number-six/javac8/classes/Main.class",
+      "sha256": "c0c04a1d90dead67d1c37298f4e64af865427db3fb95770efb155f650027aeb2",
+      "bytes": 1038
+    },
+    {
+      "path": "baseline/boxed-number-six/javac8/sources/Main.java",
+      "sha256": "5a5de83746b7cb8bd9ad06c8bbcf288ef10feb100863df310e6977cfa0fd2a3b",
+      "bytes": 1384
+    },
+    {
+      "path": "baseline/ct-legacy/javac23/classes/CT.class",
+      "sha256": "be4acae32d600a8dcd5a93eba8330a6524b7f5d123aec8045a0594e467d911cd",
+      "bytes": 1585
+    },
+    {
+      "path": "baseline/ct-legacy/javac23/sources/CT.java",
+      "sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+      "bytes": 3023
+    },
+    {
+      "path": "baseline/ct-legacy/javac8/classes/CT.class",
+      "sha256": "1cfceef7bca8ce3f26ebc6b860c797d7cf9434509f40a4c15459ad994ee04152",
+      "bytes": 1588
+    },
+    {
+      "path": "baseline/ct-legacy/javac8/sources/CT.java",
+      "sha256": "274acfef18de57f1a87f7eb119ab7e8395cc523b2930105f871a4bd13651c966",
+      "bytes": 3023
+    },
+    {
+      "path": "baseline/exceptions-throwable/javac23/classes/Main.class",
+      "sha256": "4da4b4f98625543ce25a76229f8847489ba3491e6c000973f4629c49cf3c309e",
+      "bytes": 734
+    },
+    {
+      "path": "baseline/exceptions-throwable/javac23/sources/Main.java",
+      "sha256": "1bf4014365e3b0c41f5446d7d848c3fd0f632299fdc99180f2e151f636e1fa08",
+      "bytes": 1287
+    },
+    {
+      "path": "baseline/exceptions-throwable/javac8/classes/Main.class",
+      "sha256": "7c63093e43dbbd1eb0163d0328ec4f286ffb59cb569d1679a07382688ad6eb25",
+      "bytes": 734
+    },
+    {
+      "path": "baseline/exceptions-throwable/javac8/sources/Main.java",
+      "sha256": "1bf4014365e3b0c41f5446d7d848c3fd0f632299fdc99180f2e151f636e1fa08",
+      "bytes": 1287
+    },
+    {
+      "path": "baseline/nested-number-array/javac23/classes/Main.class",
+      "sha256": "b5f1aaaaadcabff5bfe706b2f0bf40ac8f2b9e367f569f6e3fe812041b1faed6",
+      "bytes": 800
+    },
+    {
+      "path": "baseline/nested-number-array/javac23/sources/Main.java",
+      "sha256": "65038f3273bc29c9b161146a4754dd9265cfc8722231fad1f644a5272e0d6d50",
+      "bytes": 1370
+    },
+    {
+      "path": "baseline/nested-number-array/javac8/classes/Main.class",
+      "sha256": "48a17fe38cfbd030781d55726bbbee9c4153466b187240fc3c698d62b2202302",
+      "bytes": 800
+    },
+    {
+      "path": "baseline/nested-number-array/javac8/sources/Main.java",
+      "sha256": "65038f3273bc29c9b161146a4754dd9265cfc8722231fad1f644a5272e0d6d50",
+      "bytes": 1370
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/classes/Base.class",
+      "sha256": "cf5c289b17b0029c069432fc557ed6e923d58ac8fa01a63d19db2d568ff1837c",
+      "bytes": 170
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/classes/DerivedA.class",
+      "sha256": "c82dbd2997af457f84481c877047c8a5beb4ace3864dcfb723b6ce0b4cfaa413",
+      "bytes": 177
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/classes/DerivedB.class",
+      "sha256": "e243692f91df35410cd0cb01ae8677127c5192c268d8fcc349c8e341606a37d0",
+      "bytes": 177
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/classes/Main.class",
+      "sha256": "160d37ccc624f4a89656cc478c4918314f68cf8b3fc8c88ed043e38f35fa1a66",
+      "bytes": 641
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/classes/Named.class",
+      "sha256": "971633dc23a689399a40ffbfad6443959ba86de847a6d632dfddc245aa9cfeea",
+      "bytes": 95
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/sources/Base.java",
+      "sha256": "9e2de19e4f71792ddc36522ee1e0aeecfb9da58578fe3088db70ddadff0613fb",
+      "bytes": 819
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/sources/DerivedA.java",
+      "sha256": "e58ad53ea6bd8dcf08fadf73b28268d7216e8fbfe685d4ec4276a726a6cb8d88",
+      "bytes": 904
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/sources/DerivedB.java",
+      "sha256": "925585ea900239b69e332d7004b4669af1bb7fe8bdbb7e2146e2d51a6c90ff77",
+      "bytes": 904
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/sources/Main.java",
+      "sha256": "a106b3d94702723138fca8fef27e992869675e2930d5525e3eeb407140ab7b07",
+      "bytes": 1190
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac23/sources/Named.java",
+      "sha256": "1765089489ab4e5043c784737943439ae0cb544d4778029530305ec09521d8ee",
+      "bytes": 541
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/classes/Base.class",
+      "sha256": "891a2d645c4716793c404ba6d918845df10675287f046ae4f0f79bdada778b48",
+      "bytes": 170
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/classes/DerivedA.class",
+      "sha256": "7caffecfbb9d4de45f6b0cccd78fa60b8f506a8325a83b780b74ba49b0372581",
+      "bytes": 177
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/classes/DerivedB.class",
+      "sha256": "4dee7aa2bec9c945cfdec57f96255804ae69669ef7abf312c1a83c2af008e966",
+      "bytes": 177
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/classes/Main.class",
+      "sha256": "c39d7dedc2756253bfbc8b623be31fae0a5058ec6e1fe5108c9a3eb440905a0d",
+      "bytes": 641
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/classes/Named.class",
+      "sha256": "83d64510d9597b757174f8bd62161e45ee7971e438003771d73db34c620366ef",
+      "bytes": 95
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/sources/Base.java",
+      "sha256": "9e2de19e4f71792ddc36522ee1e0aeecfb9da58578fe3088db70ddadff0613fb",
+      "bytes": 819
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/sources/DerivedA.java",
+      "sha256": "e58ad53ea6bd8dcf08fadf73b28268d7216e8fbfe685d4ec4276a726a6cb8d88",
+      "bytes": 904
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/sources/DerivedB.java",
+      "sha256": "925585ea900239b69e332d7004b4669af1bb7fe8bdbb7e2146e2d51a6c90ff77",
+      "bytes": 904
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/sources/Main.java",
+      "sha256": "a106b3d94702723138fca8fef27e992869675e2930d5525e3eeb407140ab7b07",
+      "bytes": 1190
+    },
+    {
+      "path": "baseline/same-jar-derived-base/javac8/sources/Named.java",
+      "sha256": "1765089489ab4e5043c784737943439ae0cb544d4778029530305ec09521d8ee",
+      "bytes": 541
+    },
+    {
+      "path": "baseline/string-builder-charsequence/javac23/classes/Main.class",
+      "sha256": "95209a1bae8c4ec878b0b9d59090ae597c38e3f4b67222fd7f7a98ccbc889a37",
+      "bytes": 677
+    },
+    {
+      "path": "baseline/string-builder-charsequence/javac23/sources/Main.java",
+      "sha256": "5c675a138b92ad6659d2719707650a8f09875b35bb1ffaf2175e15f93f52ebca",
+      "bytes": 1219
+    },
+    {
+      "path": "baseline/string-builder-charsequence/javac8/classes/Main.class",
+      "sha256": "acca580477c046751c1896928b6cdba022daedfa26f7ca0b95eeb049810928c9",
+      "bytes": 677
+    },
+    {
+      "path": "baseline/string-builder-charsequence/javac8/sources/Main.java",
+      "sha256": "5c675a138b92ad6659d2719707650a8f09875b35bb1ffaf2175e15f93f52ebca",
+      "bytes": 1219
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac23_render-Main.stdout",
+      "sha256": "f3b8ffb6cfc9382be508ccc0592f43b1eeb0cd379267f3d98e5fc3fa3141a1b2",
+      "bytes": 35997
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac23_run.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac8_render-Main.stdout",
+      "sha256": "ec1e40437b2f711896943e91dc9bae1e9313d4500b33c6d2b880e15c8d738f73",
+      "bytes": 35997
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_bigdecimal-control-corrected_javac8_run.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac23_render-CT.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac23_render-CT.stdout",
+      "sha256": "4d968fd413c94d6e55f101fe23c1efa14d5ce8f76faa07411935b0dfe9e3a4cf",
+      "bytes": 135580
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac23_run.stdout",
+      "sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "bytes": 15
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac8_render-CT.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac8_render-CT.stdout",
+      "sha256": "468e9e12316b7cf984b2729e7775c01ebd983de4ec1e4b39f30295acdcc75869",
+      "bytes": 135580
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/addendum_ct-legacy-frozen_javac8_run.stdout",
+      "sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "bytes": 15
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac23_render-Main.stdout",
+      "sha256": "9cb5b4d559891988696383db1d15d2769b162b9c7332a297210855ff3542f84e",
+      "bytes": 49478
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac23_run.stdout",
+      "sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+      "bytes": 20
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac8_render-Main.stdout",
+      "sha256": "db366caab4859e5717365b7272620c6582f3483e536f8eb4ad4e94817fc2b070",
+      "bytes": 49478
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_arraylist-hashset-collection_javac8_run.stdout",
+      "sha256": "7d09200fc092d5c19817644ad184c8771c1ad3be7512d4945d8becbaf3651caf",
+      "bytes": 20
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac23_render-Main.stdout",
+      "sha256": "27c19b016f85a2c5b3023c23d1d781117a2642b7717006673b26c4cbbf80828f",
+      "bytes": 63432
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac23_run.stdout",
+      "sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac8_render-Main.stdout",
+      "sha256": "a4a0c2ac6234204e0407a813837f772117e40f9b9e7ab6ad896caa38c89bb35d",
+      "bytes": 63438
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_boxed-number-six_javac8_run.stdout",
+      "sha256": "308b7fc6484f13f505bffdd5ea7025fbaed66a6a2e4d8b882af2f38acf423722",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac23_render-CT.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac23_render-CT.stdout",
+      "sha256": "a72b8c073a23e19fb847b2c4c0003662a60e7c73d5b00a4df7077b7d6ee599fd",
+      "bytes": 135572
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac23_run.stdout",
+      "sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "bytes": 15
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac8_render-CT.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac8_render-CT.stdout",
+      "sha256": "228776f3cae6b1948316a1551097dcaad1fff954830da2024baf82c2dfcb56eb",
+      "bytes": 135588
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_ct-legacy_javac8_run.stdout",
+      "sha256": "e6c59624ac447b5dedee243c90b9557152065f635dfe51425ec11cd92da3d99d",
+      "bytes": 15
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac23_render-Main.stdout",
+      "sha256": "9e41bb6f683b155f46ad18bc17f0da2e4530d22f8bd508e0a2f491532a48e735",
+      "bytes": 49538
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac23_run.stdout",
+      "sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac8_render-Main.stdout",
+      "sha256": "1ffc8f5733a326f7c9bb22c21482c36203d27b49e78538710a87e469279870c0",
+      "bytes": 49538
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_exceptions-throwable_javac8_run.stdout",
+      "sha256": "297113a831b46510bc04a21a15f7ab897392b98dc656c8cd857d0289925bc59f",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac23_render-Main.stdout",
+      "sha256": "d5292533a869760e4f74fb30fd2610939a4de829841528075ee74d0e6006ccaf",
+      "bytes": 57657
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac23_run.stdout",
+      "sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac8_render-Main.stdout",
+      "sha256": "e3a68a5da81a1d22aede2c004d52b9be62ab52a99ce98103339c16f405d3fc9b",
+      "bytes": 57657
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_nested-number-array_javac8_run.stdout",
+      "sha256": "d4e33aba0849c680418794ca88db9d1f7ab00b6d2a20437266515e40a8aa44ad",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-Base.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-Base.stdout",
+      "sha256": "ef6660c736a0f5f3332d0ba82d81857c14c7cd9f32099e48d980174d46b78273",
+      "bytes": 13547
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-DerivedA.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-DerivedA.stdout",
+      "sha256": "ff915ba84e5af17a4bdcd466229d34b938d22e8846588042d4922006139e795f",
+      "bytes": 20210
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-DerivedB.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-DerivedB.stdout",
+      "sha256": "1930a43569ce073ca7ad71670757f2217d4c1eaa787a311dffedd4eb77bd700a",
+      "bytes": 20210
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-Main.stdout",
+      "sha256": "72e39b0aeb71d45abac39e9cc4676f761d3ded4ec82237057b5d34468c7fb677",
+      "bytes": 48001
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-Named.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_render-Named.stdout",
+      "sha256": "d2c8c252b9b16d9572fb68a6eac792690dd8d5dd0c12404b2fae31dd126c7d68",
+      "bytes": 5603
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac23_run.stdout",
+      "sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-Base.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-Base.stdout",
+      "sha256": "a7df09fac7da7419328ca549fc0687dbe274c1f609f01d7ea7b26df9c1ffb7c7",
+      "bytes": 13547
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-DerivedA.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-DerivedA.stdout",
+      "sha256": "b85de42f290e1bace59a82583026ec65fc816ef612f4fda3146281fdef7cea23",
+      "bytes": 20210
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-DerivedB.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-DerivedB.stdout",
+      "sha256": "9d1c982cfbc3fbb5d402df52164cdd88066a4e3126cae3ded4757c9f659d38fb",
+      "bytes": 20210
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-Main.stdout",
+      "sha256": "4ed06f32816d49ef3044e44135c6daa7f3086450484252658e48dac74db6f914",
+      "bytes": 48001
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-Named.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_render-Named.stdout",
+      "sha256": "38cd125cb4be2541a51ff1ee666a714756ce05b6b89f38baa9ec9343fb17d743",
+      "bytes": 5603
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_same-jar-derived-base_javac8_run.stdout",
+      "sha256": "50e75b29f03633cbe748baf11a21f962f7d8f097df6fddd2b4932bbd4a1ddaf1",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac23_compile.stderr",
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+      "bytes": 483
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac23_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac23_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac23_render-Main.stdout",
+      "sha256": "595222322218e1594a207672cf1e7dd3b609fa59131ff134fb048f0098192156",
+      "bytes": 46982
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac23_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac23_run.stdout",
+      "sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+      "bytes": 6
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac8_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac8_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac8_render-Main.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac8_render-Main.stdout",
+      "sha256": "eeb969f9a26f086d708bbc8e5d15d5e653117d451b1cad4cec465da06f4d7033",
+      "bytes": 46982
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac8_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "logs/baseline_string-builder-charsequence_javac8_run.stdout",
+      "sha256": "93140370c647e42e4910c82fcc659b0d6b54b3ecefcd62af3466aab42211f8f2",
+      "bytes": 6
+    }
+  ]
+}

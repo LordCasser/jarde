@@ -215,3 +215,9 @@ raw receiver实现已提交推送main c5d21640，实际CI run 37831218407四个j
 JADX对新v3的默认包重命名改变反射类名，默认profile四腿均双流不一致；显式rename-flags none四腿一致。72项initializer语法检测不是语义成功数，原记录与勘误永久保留。缺失中间Mid.class的两腿维持准确拒绝，独立平台/DerivedB方法不退化；错误方向、primitive/rank、错位proof、loader和budget/cancel边界见root验收。
 
 EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下一项[compose-constructed-reference-array-elements](../../changes/compose-constructed-reference-array-elements/)组合现有constructor/array两份证明，先闭合stored ValueId、candidate-local暂存和共同提交；五wrapper primitive转换、Dex fill-array-data、任意alias及其他效果变体分别保留待扩验。
+
+## EM-18 Constructed Element Slice — 2026-10-09
+
+[compose-constructed-reference-array-elements](../../changes/compose-constructed-reference-array-elements/verification-root.md) 在现有array/constructor证明内准确组合store BCI与completed ValueId，保留arrays→sites顺序，局部共同提交ownership及唯一new记录，无新pass/AST。原18完整冻结输入由前片8/18增至16/18；新增七类完整family两真实JDK2/2，旧factory2/2保持，旧direct完整六类仍0/2（五wrapper primitive转换及nested covariance等边界不删成员）。BigDecimal两腿compile0但拒绝正文/双流不符仍不计成功；EM18仍部分已测，71分母及全单元分类不变。
+
+本片本地两seed各351targets/3328passed/0failed/93ignored及全门禁通过，7/8任务，代码提交与确切SHA CI尚待验收；当前产品不可借前片CI success。首全仓发现公共interval检查遗漏、恢复三分支共同postlude后原postfix负例通过，真实失败永久保留。下一[recover-constructor-primitive-conversion-arguments](../../changes/recover-constructor-primitive-conversion-arguments/)仅规划4/4、0/7实现，复用已有15opcode/Cast并启用现有handler闭包，新scope不扩成员/statement、一般alias及数值折叠。

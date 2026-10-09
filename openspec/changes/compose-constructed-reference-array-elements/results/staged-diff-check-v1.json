@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit": 2,
+  "reason": "\u65b0\u52a0\u5165\u7684\u539f\u59cbCargo stdout\u7ec8\u5c3e\u7a7a\u884c\uff0c\u4e0d\u6539\u539f\u59cbstreams/hash\uff1b\u6cbf\u7528\u65e2\u6709results/.gitattributes\u7ea6\u5b9a\u3002",
+  "streams": {
+    "stdout": "8a5afc82a956c79be4a1ad9b7b7c4afab24edbebbf190537ec312accf03fe5ae",
+    "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

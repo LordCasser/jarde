@@ -1,0 +1,5 @@
+{
+  "exit": 1,
+  "stage": "input manifest preflight",
+  "reason": "historical runner referenced former extra fixture path; only original 18 rows are selected in v2, current factory/direct v3 replay separately. No candidate generation or execution occurred."
+}

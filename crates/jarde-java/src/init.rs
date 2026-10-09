@@ -33,9 +33,10 @@
 //! synthetic reference an inner class keeps to its enclosing instance, which JVMS 4.10.1.9 allows
 //! and which stays where the bytecode put it ([`crate::field`] presents it under its own proof).
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{Definition, RefType, Slot, SsaInstruction, SsaTable, Value, ValueId};
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{Base, MethodCodeFacts};
 use serde::Serialize;
 
@@ -96,11 +97,49 @@ pub(crate) struct Site {
     /// matched against: the tail's `dup` rewrites which SSA value the consumer reads, and that
     /// copy is still this construction's instance.
     pub(crate) instance: Vec<u32>,
+    /// The exact completed instance value paired with an array store, only for composed sites.
+    pub(crate) finished_value: Option<ValueId>,
     /// Every instruction from the allocation through the constructor call that the verifier
     /// accepted as this expression, including the value-producing argument instructions. A
     /// resource header can use this closed range to prove that its complete initializer is this
     /// site followed by the store that consumes the constructed instance.
     pub(crate) expression: BTreeSet<u32>,
+    /// BCIs whose single-use facts belong to a closed proof atom: this site's and nested sites'
+    /// constructor identity scaffolding, plus complete child-array chains already certified by
+    /// `ChildArrayFacts`. This is deliberately narrower than `expression`; ordinary argument
+    /// producers still pass the array expression's single-use check.
+    pub(crate) single_use_atoms: BTreeSet<u32>,
+    /// Recursively verified constructor sites inside this site's argument values. They remain
+    /// separate allocation records when a composed array commits its construction closure.
+    pub(crate) nested_sites: Vec<Site>,
+}
+
+impl Site {
+    pub(crate) fn into_composition_sites(
+        mut self,
+        budget: &mut Budget,
+    ) -> Result<Vec<Site>, crate::stop::StopReason> {
+        crate::stop::poll(budget, Some(self.head))?;
+        crate::stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(self.head))?;
+        let mut pending = std::mem::take(&mut self.nested_sites);
+        let mut sites = vec![self];
+        while let Some(mut site) = pending.pop() {
+            crate::stop::poll(budget, Some(site.head))?;
+            crate::stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(site.head))?;
+            for nested in std::mem::take(&mut site.nested_sites) {
+                crate::stop::poll(budget, Some(nested.head))?;
+                crate::stop::charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    1,
+                    Some(nested.head),
+                )?;
+                pending.push(nested);
+            }
+            sites.push(site);
+        }
+        Ok(sites)
+    }
 }
 
 /// The local qualifier and exact check already proved for one physical member constructor.
@@ -129,11 +168,114 @@ struct ConstructionFacts<'a> {
     /// nested-candidate scan must not claim what another rule already owns.
     reserved: &'a BTreeSet<u32>,
     fields: &'a field::Plan,
-    arrays: &'a crate::build::ArrayInitializers,
+    arrays: &'a crate::build::ChildArrayFacts<'a>,
     java_release: u16,
     member_targets: &'a [ProvedMemberInnerTarget],
     method: Option<&'a crate::facts::MethodFacts>,
     code: &'a MethodCodeFacts,
+}
+
+/// The existing facts the array candidate needs to ask the construction verifier one narrowly
+/// scoped question. The current candidate's child-array facts are supplied separately as a
+/// borrowed view, so this context does not clone or publish an ArrayInitializers plan.
+pub(crate) struct ArrayCompositionContext<'a> {
+    pub(crate) chains: &'a crate::concat::Plan,
+    pub(crate) reserved: &'a BTreeSet<u32>,
+    pub(crate) java_release: u16,
+    pub(crate) member_targets: &'a [ProvedMemberInnerTarget],
+    pub(crate) method: &'a crate::facts::MethodFacts,
+    pub(crate) code: &'a MethodCodeFacts,
+}
+
+#[derive(Debug)]
+enum VerifyFailure {
+    Refusal(Refusal),
+    Stop(crate::stop::StopReason),
+}
+
+impl From<Refusal> for VerifyFailure {
+    fn from(value: Refusal) -> Self {
+        Self::Refusal(value)
+    }
+}
+
+impl From<crate::stop::StopReason> for VerifyFailure {
+    fn from(value: crate::stop::StopReason) -> Self {
+        Self::Stop(value)
+    }
+}
+
+pub(crate) struct VerifyMeter<'a> {
+    budget: Option<&'a mut Budget>,
+}
+
+impl VerifyMeter<'_> {
+    #[cfg(test)]
+    pub(crate) fn unmetered() -> Self {
+        Self { budget: None }
+    }
+
+    pub(crate) fn charge(
+        &mut self,
+        dimension: CountedBudgetDimension,
+        at: Option<u32>,
+    ) -> Result<(), crate::stop::StopReason> {
+        let Some(budget) = self.budget.as_deref_mut() else {
+            return Ok(());
+        };
+        crate::stop::poll(budget, at)?;
+        crate::stop::charge(budget, dimension, 1, at)
+    }
+}
+
+/// Proves one construction as the value of one already-paired aastore. This keeps ordinary
+/// construction consumers closed while allowing the exact store under examination.
+pub(crate) fn verify_array_store(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    arrays: &crate::build::ChildArrayFacts<'_>,
+    context: &ArrayCompositionContext<'_>,
+    block: &[SsaInstruction],
+    head: u32,
+    index: usize,
+    ty: String,
+    store: u32,
+    stored_value: ValueId,
+    budget: &mut Budget,
+) -> Result<Option<Site>, crate::stop::StopReason> {
+    if context.reserved.contains(&head) || context.chains.owns(head) {
+        return Ok(None);
+    }
+    let facts = ConstructionFacts {
+        ssa,
+        operations,
+        chains: context.chains,
+        reserved: context.reserved,
+        fields,
+        arrays,
+        java_release: context.java_release,
+        member_targets: context.member_targets,
+        method: Some(context.method),
+        code: context.code,
+    };
+    let mut meter = VerifyMeter {
+        budget: Some(budget),
+    };
+    match verify_metered(
+        head,
+        index,
+        block,
+        ty,
+        &facts,
+        0,
+        Some((store, stored_value)),
+        &mut meter,
+    ) {
+        Ok(site) => Ok(Some(site)),
+        Err(VerifyFailure::Refusal(_)) => Ok(None),
+        Err(VerifyFailure::Stop(stop)) => Err(stop),
+    }
 }
 
 /// How many levels of construction one `new` expression of this rule presents: the outer
@@ -265,10 +407,18 @@ impl Sites {
 
     /// The uniquely accepted construction site that produced this SSA value.
     pub(crate) fn site_producing(&self, ssa: &SsaTable, value: ValueId) -> Option<&Site> {
-        let mut matches = self
+        let exact: Vec<&Site> = self
             .sites
             .iter()
-            .filter(|site| is_the_instance(ssa, value, &[site.head, site.dup, site.constructor]));
+            .filter(|site| site.finished_value == Some(value))
+            .collect();
+        if let [site] = exact.as_slice() {
+            return Some(*site);
+        }
+        let mut matches = self.sites.iter().filter(|site| {
+            site.finished_value.is_none()
+                && is_the_instance(ssa, value, &[site.head, site.dup, site.constructor])
+        });
         let site = matches.next()?;
         matches.next().is_none().then_some(site)
     }
@@ -329,6 +479,7 @@ impl Sites {
 /// whether an instruction really is an access to the member its own receiver's type declares is that
 /// rule's verdict. `@field` is therefore decided before `@new` — [`crate::report`] runs the two in
 /// that order — and the judgement is handed in rather than taken a second time here.
+#[cfg(test)]
 pub(crate) fn sites(
     ssa: &SsaTable,
     operations: &Operations,
@@ -341,13 +492,73 @@ pub(crate) fn sites(
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
 ) -> Sites {
-    let facts = ConstructionFacts {
+    sites_with_pending_array_composition(
         ssa,
         operations,
         chains,
         reserved,
         fields,
         arrays,
+        BTreeMap::new(),
+        java_release,
+        member_targets,
+        method,
+        code,
+    )
+}
+
+/// The report pipeline's one handoff from the array candidate proof. Sites are moved out exactly
+/// once, then enter the same allocation census and materializer as ordinary construction sites.
+pub(crate) fn sites_after_array_composition(
+    ssa: &SsaTable,
+    operations: &Operations,
+    chains: &crate::concat::Plan,
+    reserved: &BTreeSet<u32>,
+    fields: &field::Plan,
+    arrays: &mut crate::build::ArrayInitializers,
+    java_release: u16,
+    member_targets: &[ProvedMemberInnerTarget],
+    method: &crate::facts::MethodFacts,
+    code: &MethodCodeFacts,
+) -> Sites {
+    let pending_sites = arrays.take_pending_sites();
+    sites_with_pending_array_composition(
+        ssa,
+        operations,
+        chains,
+        reserved,
+        fields,
+        arrays,
+        pending_sites,
+        java_release,
+        member_targets,
+        method,
+        code,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn sites_with_pending_array_composition(
+    ssa: &SsaTable,
+    operations: &Operations,
+    chains: &crate::concat::Plan,
+    reserved: &BTreeSet<u32>,
+    fields: &field::Plan,
+    arrays: &crate::build::ArrayInitializers,
+    mut pending_sites: BTreeMap<u32, Site>,
+    java_release: u16,
+    member_targets: &[ProvedMemberInnerTarget],
+    method: &crate::facts::MethodFacts,
+    code: &MethodCodeFacts,
+) -> Sites {
+    let array_facts = arrays.child_facts();
+    let facts = ConstructionFacts {
+        ssa,
+        operations,
+        chains,
+        reserved,
+        fields,
+        arrays: &array_facts,
         java_release,
         member_targets,
         method: Some(method),
@@ -375,8 +586,14 @@ pub(crate) fn sites(
                 // Another rule of this run writes this allocation's text: it is not a second shape.
                 continue;
             }
+            if let Some(site) = pending_sites.remove(&head) {
+                plan.allocation_candidates[candidate_index].verified = true;
+                plan.owned.extend(site.owned.iter().copied());
+                plan.sites.push(site);
+                continue;
+            }
             let ty = ty.clone();
-            match verify(head, index, block, ty.clone(), &facts, 0) {
+            match verify(head, index, block, ty.clone(), &facts, 0, None) {
                 Ok(site) => {
                     plan.allocation_candidates[candidate_index].verified = true;
                     for bci in &site.owned {
@@ -439,7 +656,35 @@ fn verify(
     ty: String,
     facts: &ConstructionFacts<'_>,
     depth: u32,
+    expected_array_store: Option<(u32, ValueId)>,
 ) -> Result<Site, Refusal> {
+    let mut meter = VerifyMeter { budget: None };
+    match verify_metered(
+        head,
+        index,
+        block,
+        ty,
+        facts,
+        depth,
+        expected_array_store,
+        &mut meter,
+    ) {
+        Ok(site) => Ok(site),
+        Err(VerifyFailure::Refusal(refusal)) => Err(refusal),
+        Err(VerifyFailure::Stop(_)) => unreachable!("an unmetered verifier cannot stop"),
+    }
+}
+
+fn verify_metered(
+    head: u32,
+    index: usize,
+    block: &[SsaInstruction],
+    ty: String,
+    facts: &ConstructionFacts<'_>,
+    depth: u32,
+    expected_array_store: Option<(u32, ValueId)>,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Site, VerifyFailure> {
     let ConstructionFacts {
         ssa,
         operations,
@@ -451,13 +696,15 @@ fn verify(
         member_targets,
         ..
     } = *facts;
-    let shape = |detail: String| Refusal::shape("jre_new_shape", detail);
+    let shape = |detail: String| VerifyFailure::Refusal(Refusal::shape("jre_new_shape", detail));
     let Some(dup) = block.get(index + 1) else {
         return Err(shape(format!(
             "the allocation at BCI {head} ends its block: a construction continues with the `dup` of the instance"
         )));
     };
-    if operations.get(dup.bci()) != Some(&Operation::Duplicate) {
+    if operations.get(dup.bci()) != Some(&Operation::Duplicate)
+        || (expected_array_store.is_some() && dup.opcode() != 0x59)
+    {
         return Err(shape(format!(
             "the instruction after the allocation at BCI {head} is at BCI {}, and a construction continues with the `dup` of the instance it allocated",
             dup.bci()
@@ -480,6 +727,7 @@ fn verify(
             break None;
         };
         let bci = instruction.bci();
+        meter.charge(CountedBudgetDimension::AnalysisSteps, Some(bci))?;
         if depth + 1 < MAX_NESTED_CONSTRUCTION_LAYERS
             && !reserved.contains(&bci)
             && !chains.owns(bci)
@@ -487,16 +735,36 @@ fn verify(
             && block
                 .get(scan + 1)
                 .is_some_and(|next| operations.get(next.bci()) == Some(&Operation::Duplicate))
-            && let Ok(site) = verify(bci, scan, block, nested_ty.clone(), facts, depth + 1)
         {
+            let site = match verify_metered(
+                bci,
+                scan,
+                block,
+                nested_ty.clone(),
+                facts,
+                depth + 1,
+                None,
+                meter,
+            ) {
+                Ok(site) => site,
+                Err(VerifyFailure::Refusal(_)) => {
+                    scan += 1;
+                    continue;
+                }
+                Err(VerifyFailure::Stop(stop)) => return Err(VerifyFailure::Stop(stop)),
+            };
             // Step over the whole closed run: the nested constructor is the last instruction of
             // it, and the outer construction's own call is the first one after it that names this
             // allocation's class.
-            let after = block
-                .iter()
-                .position(|instruction| instruction.bci() == site.constructor)
-                .expect("the nested construction's call belongs to this block")
-                + 1;
+            let mut after = None;
+            for (position, candidate) in block.iter().enumerate() {
+                meter.charge(CountedBudgetDimension::AnalysisSteps, Some(candidate.bci()))?;
+                if candidate.bci() == site.constructor {
+                    after = Some(position + 1);
+                    break;
+                }
+            }
+            let after = after.expect("the nested construction's call belongs to this block");
             nested_sites.push(site);
             scan = after;
             continue;
@@ -517,15 +785,19 @@ fn verify(
     let at = constructor.bci();
     // The closed runs the scan stepped over: every instruction of every recursively proved nested
     // construction, which the span check below accepts as part of this one expression.
-    let nested_expression: BTreeSet<u32> = nested_sites
-        .iter()
-        .flat_map(|site| site.expression.iter().copied())
-        .collect();
+    let mut nested_expression = BTreeSet::new();
+    for site in &nested_sites {
+        meter.charge(CountedBudgetDimension::IrItems, Some(site.head))?;
+        for bci in &site.expression {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+            nested_expression.insert(*bci);
+        }
+    }
     // The instructions the instance comes from: the allocation, its copy and the constructor that
     // initialized it. A compiler may put the stored value down as any of the three, and what matters
     // is that the value really belongs to *this* allocation.
     let mut produced_by: Vec<u32> = vec![head, dup.bci(), at];
-    let operands = stack_operands(constructor);
+    let operands = stack_operands_metered(constructor, at, meter)?;
     let Some((_, receiver)) = operands.first().copied() else {
         return Err(shape(format!(
             "the constructor call at BCI {at} reads no receiver this run states"
@@ -548,25 +820,51 @@ fn verify(
     // the reader gate still demands exactly one instruction outside the site that writes the
     // instance somewhere, and the check's own result being dropped is proved by the single-use
     // facts of the tail, not by a spelling alone).
-    if let Some(tail) = block
-        .iter()
-        .position(|instruction| instruction.bci() == at)
-        .and_then(|constructor_index| {
-            discarded_null_check_tail(ssa, operations, block, constructor_index, &produced_by)
+    let mut constructor_position = None;
+    for (position, instruction) in block.iter().enumerate() {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
+        if instruction.bci() == at {
+            constructor_position = Some(position);
+            break;
+        }
+    }
+    let tail = constructor_position
+        .map(|position| {
+            discarded_null_check_tail_metered(ssa, operations, block, position, &produced_by, meter)
         })
-    {
+        .transpose()?;
+    if let Some(tail) = tail.flatten() {
         produced_by.extend_from_slice(&tail);
     }
-    let member = member_targets
-        .iter()
-        .find(|target| {
-            target.owner == ty
-                && matches!(
-                    operations.get(at),
-                    Some(Operation::Invoke(call)) if call.descriptor() == target.constructor_descriptor
-                )
+    let mut selected_member = None;
+    for target in member_targets {
+        meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
+        if target.owner == ty
+            && matches!(
+                operations.get(at),
+                Some(Operation::Invoke(call)) if call.descriptor() == target.constructor_descriptor
+            )
+        {
+            selected_member = Some(target);
+            break;
+        }
+    }
+    let member = selected_member
+        .map(|target| {
+            verify_member(
+                index,
+                block,
+                constructor,
+                &operands,
+                facts,
+                target,
+                &nested_sites,
+                meter,
+            )
         })
-        .map(|target| verify_member(index, block, constructor, &operands, facts, target, &nested_sites))
         .transpose()?;
     // Every nested construction the scan stepped over is one **argument** of this call: its
     // completed instance is exactly the value the call reads at that position — the same "the
@@ -575,12 +873,17 @@ fn verify(
     // the fresh instance, a store of it — has no place in the expression, and this construction
     // keeps its refusal.
     for nested in &nested_sites {
+        meter.charge(CountedBudgetDimension::IrItems, Some(nested.head))?;
         let nested_produced_by = nested.instance.as_slice();
-        if !operands
-            .iter()
-            .skip(1)
-            .any(|(_, value)| is_the_instance(ssa, *value, &nested_produced_by))
-        {
+        let mut is_argument = false;
+        for (_, value) in operands.iter().skip(1) {
+            meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
+            if is_the_instance(ssa, *value, &nested_produced_by) {
+                is_argument = true;
+                break;
+            }
+        }
+        if !is_argument {
             return Err(shape(format!(
                 "the construction at BCI {} completes inside the construction at BCI {head}, and its value is not one of the arguments of the constructor call at BCI {at}: the `new` expression has no single place to write it",
                 nested.head
@@ -592,6 +895,9 @@ fn verify(
     let mut embedded_array = BTreeSet::new();
     let mut inline_arrays = BTreeSet::new();
     let arguments = if let Some(member) = &member {
+        for argument in &member.arguments {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*argument))?;
+        }
         member.arguments.clone()
     } else {
         // Every argument has to be produced **between the copy and the call**, so that writing it as an
@@ -599,6 +905,7 @@ fn verify(
         // produced elsewhere would move, and this rule never moves a value.
         let mut arguments: Vec<u32> = Vec::new();
         for (_, value) in operands.iter().skip(1) {
+            meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
             let Some(produced) = produced_at(ssa, *value) else {
                 return Err(shape(format!(
                     "an argument of the constructor call at BCI {at} was not produced by an instruction of this body, so where it is evaluated is not stated"
@@ -616,8 +923,12 @@ fn verify(
         // reads. An invocation is part of the expression only when that actual dependency walk reaches
         // it; a result consumed by unrelated bytecode is not enough, and a void invocation cannot be
         // reached at all.
-        let argument_dependencies =
-            value_dependency_bcis(ssa, block, operands.iter().skip(1).map(|(_, value)| *value));
+        let argument_dependencies = value_dependency_bcis_metered(
+            ssa,
+            block,
+            operands.iter().skip(1).map(|(_, value)| *value),
+            meter,
+        )?;
         // The restricted Java 8 `String(char[])` shape keeps its own slice: its argument run's
         // inline `char[]` chains — direct or through an intervening call — are embedded only under
         // that slice's exact conditions, and the general inline array acceptance below never
@@ -628,7 +939,16 @@ fn verify(
             && operands.len() == 2;
         if string_char_array_ctor {
             embedded_array = arrays
-                .inline_char_argument_bcis(ssa, operations, block, operands[1].1, dup.bci(), at)
+                .inline_char_argument_bcis_metered(
+                    ssa,
+                    operations,
+                    block,
+                    operands[1].1,
+                    dup.bci(),
+                    at,
+                    meter,
+                )
+                .map_err(VerifyFailure::Stop)?
                 .unwrap_or_default();
         }
         // The inline anonymous array chains of this construction's argument run — the varargs
@@ -651,24 +971,41 @@ fn verify(
                 if instruction.bci() >= at {
                     break;
                 }
+                meter.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    Some(instruction.bci()),
+                )?;
                 let bci = instruction.bci();
-                if let Some(members) =
-                    arrays.inline_argument_chain_bcis(bci, dup.bci(), at, array_serves_argument)
+                if let Some(members) = arrays
+                    .inline_argument_chain_bcis_metered(
+                        bci,
+                        dup.bci(),
+                        at,
+                        array_serves_argument,
+                        meter,
+                    )
+                    .map_err(VerifyFailure::Stop)?
                 {
                     inline_arrays.extend(members);
                     continue;
                 }
                 if matches!(operations.get(bci), Some(Operation::NewArray { .. }))
                     && let Some((Slot::Stack(_), value)) = instruction.writes().first().copied()
-                    && let [use_site] = ssa.value(value).uses()
-                    && let Some(consumer) = use_site.bci()
-                    && array_serves_argument(consumer)
                 {
-                    inline_arrays.insert(bci);
+                    let uses = ssa.value(value).uses();
+                    for use_site in uses {
+                        meter.charge(CountedBudgetDimension::IrItems, use_site.bci())?;
+                    }
+                    if let [use_site] = uses
+                        && let Some(consumer) = use_site.bci()
+                        && array_serves_argument(consumer)
+                    {
+                        inline_arrays.insert(bci);
+                    }
                 }
             }
         }
-        let nested_concat = verify_concat_arguments(
+        let nested_concat = verify_concat_arguments_metered(
             head,
             dup.bci(),
             at,
@@ -677,6 +1014,7 @@ fn verify(
             chains,
             operands.iter().skip(1).map(|(_, value)| *value),
             &argument_dependencies,
+            meter,
         )?;
         embedded_concat = !nested_concat.is_empty();
         // Nothing inside the span may be an effect this rule would have to move: every invocation
@@ -685,6 +1023,10 @@ fn verify(
             if instruction.bci() >= at {
                 break;
             }
+            meter.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                Some(instruction.bci()),
+            )?;
             match operations.get(instruction.bci()) {
                 Some(_) if nested_expression.contains(&instruction.bci()) => {}
                 Some(_) if nested_concat.contains(&instruction.bci()) => {}
@@ -714,7 +1056,8 @@ fn verify(
                             "the invocation at BCI {} is not a value dependency of the constructor's physical arguments at BCI {at}, so presenting the construction would move that call effect",
                             instruction.bci()
                         ),
-                    ));
+                    )
+                    .into());
                 }
                 Some(operation) => {
                     return Err(Refusal::unmet(
@@ -724,7 +1067,8 @@ fn verify(
                             "the instruction at BCI {} is an {operation:?} between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
                             instruction.bci()
                         ),
-                    ));
+                    )
+                    .into());
                 }
                 None => {
                     return Err(shape(format!(
@@ -750,12 +1094,16 @@ fn verify(
     // out. The place the value is written is the reader's own text: a store, a call, a `return`, a
     // test and a *claimed* field access ([`renders_its_reads`]) all write the value they read, and
     // every other instruction is quoted as bytecode and writes nothing.
-    let readers = outside_readers(ssa, &produced_by);
-    let written: Vec<u32> = readers
-        .iter()
-        .copied()
-        .filter(|bci| renders_its_reads(operations, fields, *bci))
-        .collect();
+    let readers = outside_readers(ssa, block, &produced_by, meter)?;
+    let mut written = Vec::new();
+    for bci in &readers {
+        meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+        if renders_its_reads(operations, fields, *bci)
+            || expected_array_store.is_some_and(|(store, _)| *bci == store)
+        {
+            written.push(*bci);
+        }
+    }
     // The **statement position** (`recover-statement-position-news`): a construction whose finished
     // instance the body discards has no store, call, `return` or claimed field access to write its
     // text at — `new X(args);` is a statement of its own, and the category-1 `pop` that discards
@@ -795,7 +1143,25 @@ fn verify(
             )
         }));
     }
-    if readers.len() != 1 {
+    let invalid_array_store = if let Some((store, stored)) = expected_array_store {
+        readers.as_slice() != [store]
+            || written.as_slice() != [store]
+            || !array_store_consumes_site_value(
+                ssa,
+                operations,
+                block,
+                head,
+                dup.bci(),
+                at,
+                store,
+                stored,
+                &ty,
+                meter,
+            )?
+    } else {
+        false
+    };
+    if readers.len() != 1 || invalid_array_store {
         return Err(shape(format!(
             "the instance the allocation at BCI {head} builds is read by the instructions at BCIs {}, and a construction is written as one `new` expression in one place: a leftover that more than one instruction reads has no single Java spelling",
             readers
@@ -813,12 +1179,24 @@ fn verify(
     };
     let mut owned: BTreeSet<u32> = produced_by.iter().copied().collect();
     if let Some(member) = &member {
-        owned.extend(member.owned.iter().copied());
+        for bci in &member.owned {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+            owned.insert(*bci);
+        }
     }
-    let constructor_index = block
-        .iter()
-        .position(|instruction| instruction.bci() == at)
-        .expect("the selected constructor belongs to this block");
+    let mut constructor_index = None;
+    for (position, instruction) in block.iter().enumerate() {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
+        if instruction.bci() == at {
+            constructor_index = Some(position);
+            break;
+        }
+    }
+    let constructor_index =
+        constructor_index.expect("the selected constructor belongs to this block");
     if !embedded_array.is_empty()
         && (block.get(constructor_index + 1).map(SsaInstruction::bci) != Some(written[0])
             || !matches!(operations.get(written[0]), Some(Operation::Return { .. })))
@@ -828,7 +1206,8 @@ fn verify(
             format!(
                 "the String(char[]) construction at BCI {head} does not directly return its sole constructed value"
             ),
-        ));
+        )
+        .into());
     }
     if embedded_concat
         || embedded_dynamic
@@ -841,22 +1220,39 @@ fn verify(
         // inline array argument chain, a nested construction — into the outer construction is
         // sound only when every instruction in the construction and its sole consumer has the same
         // handler coverage as the outer allocation.
-        let coverage = |bci: u32| -> Vec<u32> {
-            facts
-                .code
-                .exception_handlers
-                .iter()
-                .filter(|handler| handler.start_bci <= bci && bci < handler.end_bci)
-                .map(|handler| handler.ordinal)
-                .collect()
-        };
-        let expected = coverage(head);
+        let mut expected = Vec::new();
+        for handler in &facts.code.exception_handlers {
+            meter.charge(CountedBudgetDimension::IrItems, Some(head))?;
+            if handler.start_bci <= head && head < handler.end_bci {
+                expected.push(handler.ordinal);
+            }
+        }
         let consumer = written[0];
-        if block[index..=constructor_index]
-            .iter()
-            .any(|instruction| coverage(instruction.bci()) != expected)
-            || coverage(consumer) != expected
-        {
+        let mut boundary_crossed = false;
+        for instruction in &block[index..=constructor_index] {
+            let mut coverage = Vec::new();
+            for handler in &facts.code.exception_handlers {
+                meter.charge(CountedBudgetDimension::IrItems, Some(instruction.bci()))?;
+                if handler.start_bci <= instruction.bci() && instruction.bci() < handler.end_bci {
+                    coverage.push(handler.ordinal);
+                }
+            }
+            if coverage != expected {
+                boundary_crossed = true;
+                break;
+            }
+        }
+        if !boundary_crossed {
+            let mut coverage = Vec::new();
+            for handler in &facts.code.exception_handlers {
+                meter.charge(CountedBudgetDimension::IrItems, Some(consumer))?;
+                if handler.start_bci <= consumer && consumer < handler.end_bci {
+                    coverage.push(handler.ordinal);
+                }
+            }
+            boundary_crossed = coverage != expected;
+        }
+        if boundary_crossed {
             let (code, argument) = if embedded_dynamic {
                 (
                     "jre_new_dynamic_argument_exception_boundary",
@@ -879,13 +1275,34 @@ fn verify(
                 format!(
                     "the {argument} argument of the construction at BCI {head} crosses an exception-handler boundary before its constructor or sole consumer at BCI {consumer}"
                 ),
-            ));
+            )
+            .into());
         }
     }
-    let expression = block[index..=constructor_index]
-        .iter()
-        .map(SsaInstruction::bci)
-        .collect();
+    let mut expression = BTreeSet::new();
+    for instruction in &block[index..=constructor_index] {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
+        expression.insert(instruction.bci());
+    }
+    let mut single_use_atoms: BTreeSet<u32> = produced_by.iter().copied().collect();
+    for nested in &nested_sites {
+        meter.charge(CountedBudgetDimension::IrItems, Some(nested.head))?;
+        for bci in &nested.single_use_atoms {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+            single_use_atoms.insert(*bci);
+        }
+    }
+    for bci in &embedded_array {
+        meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+        single_use_atoms.insert(*bci);
+    }
+    for bci in &inline_arrays {
+        meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+        single_use_atoms.insert(*bci);
+    }
     Ok(Site {
         head,
         dup: dup.bci(),
@@ -896,7 +1313,10 @@ fn verify(
         discarded,
         owned,
         instance: produced_by,
+        finished_value: expected_array_store.map(|(_, value)| value),
         expression,
+        single_use_atoms,
+        nested_sites,
     })
 }
 
@@ -911,7 +1331,8 @@ fn verify_member(
     facts: &ConstructionFacts<'_>,
     target: &ProvedMemberInnerTarget,
     nested_sites: &[Site],
-) -> Result<MemberProof, Refusal> {
+    meter: &mut VerifyMeter<'_>,
+) -> Result<MemberProof, VerifyFailure> {
     let ConstructionFacts {
         ssa,
         operations,
@@ -920,8 +1341,10 @@ fn verify_member(
         ..
     } = *facts;
     let at = constructor.bci();
-    let shape = |detail: String| Refusal::shape("jre_new_member_shape", detail);
-    let order = |detail: String| Refusal::shape("jre_new_member_order", detail);
+    let shape =
+        |detail: String| VerifyFailure::Refusal(Refusal::shape("jre_new_member_shape", detail));
+    let order =
+        |detail: String| VerifyFailure::Refusal(Refusal::shape("jre_new_member_order", detail));
     let Some((_, physical_outer)) = operands.get(1).copied() else {
         return Err(shape(format!(
             "the member constructor at BCI {at} has no physical outer argument"
@@ -947,13 +1370,15 @@ fn verify_member(
             && method_facts
                 .declaring_class()
                 .is_some_and(|class| class.name() == target.outer);
+        let mut exact_opcodes = true;
+        for (instruction, expected) in code.instructions.iter().zip([0xbb, 0x59, 0x2a, 0xb7, 0xb0])
+        {
+            meter.charge(CountedBudgetDimension::AnalysisSteps, Some(instruction.bci))?;
+            exact_opcodes &= instruction.opcode == expected;
+        }
         let exact_code = code.instructions.len() == 5
             && code.stopped_at.is_none()
-            && code
-                .instructions
-                .iter()
-                .map(|instruction| instruction.opcode)
-                .eq([0xbb, 0x59, 0x2a, 0xb7, 0xb0])
+            && exact_opcodes
             && code.exception_handlers.is_empty()
             && code.exception_handler_count == 0;
         let receiver_value = receiver.writes().first().map(|(_, value)| *value);
@@ -971,7 +1396,7 @@ fn verify_member(
                     && invoke.descriptor() == constructor_descriptor)
             && operands.len() == 2
             && receiver_value == Some(physical_outer)
-            && single_use_at(ssa, physical_outer, call.bci())
+            && single_use_at_metered(ssa, physical_outer, call.bci(), meter)?
             && receiver_value.is_some_and(names_outer)
         {
             let receiver_bci = receiver.bci();
@@ -1003,7 +1428,7 @@ fn verify_member(
         let qualifier_writes = qualifier.writes();
         if qualifier_writes.len() == 1
             && qualifier_writes[0].1 == physical_outer
-            && single_use_at(ssa, physical_outer, at)
+            && single_use_at_metered(ssa, physical_outer, at, meter)?
             && names_outer(physical_outer)
         {
             let qualifier_bci = qualifier.bci();
@@ -1015,6 +1440,7 @@ fn verify_member(
                 operands,
                 ssa,
                 operations,
+                meter,
             )?;
             let mut arguments = vec![qualifier_bci];
             arguments.extend(ordinary);
@@ -1039,12 +1465,20 @@ fn verify_member(
     // Outer first, and javac again writes no null check for it. The physical outer argument is
     // the completed instance of one nested construction this same scan proved — the scan accepts
     // that run as an argument of this call, and this arm proves it is *the* first argument.
-    if let Some(nested) = nested_sites.iter().find(|site| site.class == target.outer)
+    let mut matching_nested = None;
+    for nested in nested_sites {
+        meter.charge(CountedBudgetDimension::IrItems, Some(nested.head))?;
+        if nested.class == target.outer {
+            matching_nested = Some(nested);
+            break;
+        }
+    }
+    if let Some(nested) = matching_nested
         && block
             .get(index + 2)
             .is_some_and(|head| head.bci() == nested.head)
         && is_the_instance(ssa, physical_outer, nested.instance.as_slice())
-        && single_use_at(ssa, physical_outer, at)
+        && single_use_at_metered(ssa, physical_outer, at, meter)?
         && names_outer(physical_outer)
     {
         let qualifier_end = nested
@@ -1052,11 +1486,19 @@ fn verify_member(
             .last()
             .copied()
             .unwrap_or(nested.constructor);
-        let after_nested = block
-            .iter()
-            .position(|instruction| instruction.bci() == qualifier_end)
-            .expect("the nested construction's tail belongs to this block")
-            + 1;
+        let mut after_nested = None;
+        for (position, instruction) in block.iter().enumerate() {
+            meter.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() == qualifier_end {
+                after_nested = Some(position + 1);
+                break;
+            }
+        }
+        let after_nested =
+            after_nested.expect("the nested construction's tail belongs to this block");
         let ordinary = member_ordinary_arguments(
             after_nested,
             nested.constructor,
@@ -1065,6 +1507,7 @@ fn verify_member(
             operands,
             ssa,
             operations,
+            meter,
         )?;
         let mut arguments = vec![nested.constructor];
         arguments.extend(ordinary);
@@ -1110,11 +1553,20 @@ fn verify_member(
         )));
     }
     let qualifier_writes = qualifier.writes();
-    let copy_reads = stack_operands(copy);
+    let copy_reads = stack_operands_metered(copy, copy.bci(), meter)?;
     let copy_writes = copy.writes();
-    let check_reads = stack_operands(check);
+    let check_reads = stack_operands_metered(check, check.bci(), meter)?;
     let check_writes = check.writes();
-    let pop_reads = stack_operands(pop);
+    let pop_reads = stack_operands_metered(pop, pop.bci(), meter)?;
+    for _ in qualifier_writes {
+        meter.charge(CountedBudgetDimension::IrItems, Some(qualifier.bci()))?;
+    }
+    for _ in copy_writes {
+        meter.charge(CountedBudgetDimension::IrItems, Some(copy.bci()))?;
+    }
+    for _ in check_writes {
+        meter.charge(CountedBudgetDimension::IrItems, Some(check.bci()))?;
+    }
     if qualifier_writes.len() != 1
         || copy_reads.len() != 1
         || copy_writes.len() != 2
@@ -1130,10 +1582,10 @@ fn verify_member(
             .any(|(_, value)| *value == check_reads[0].1)
         || physical_outer == check_reads[0].1
         || pop_reads[0].1 != check_writes[0].1
-        || !single_use_at(ssa, qualifier_writes[0].1, copy.bci())
-        || !single_use_at(ssa, physical_outer, at)
-        || !single_use_at(ssa, check_reads[0].1, check.bci())
-        || !single_use_at(ssa, check_writes[0].1, pop.bci())
+        || !single_use_at_metered(ssa, qualifier_writes[0].1, copy.bci(), meter)?
+        || !single_use_at_metered(ssa, physical_outer, at, meter)?
+        || !single_use_at_metered(ssa, check_reads[0].1, check.bci(), meter)?
+        || !single_use_at_metered(ssa, check_writes[0].1, pop.bci(), meter)?
     {
         return Err(shape(format!(
             "the member constructor at BCI {at} does not pass the checked qualifier's two SSA copies as its physical outer and null-check operand exactly once"
@@ -1150,27 +1602,36 @@ fn verify_member(
 
     // The Java qualified expression puts its check at this position. Every instruction it owns
     // must have the same handler coverage as the original check; a boundary cannot be crossed.
-    let coverage = |bci: u32| -> Vec<u32> {
-        code.exception_handlers
-            .iter()
-            .filter(|handler| handler.start_bci <= bci && bci < handler.end_bci)
-            .map(|handler| handler.ordinal)
-            .collect()
+    let coverage = |bci: u32, meter: &mut VerifyMeter<'_>| -> Result<Vec<u32>, VerifyFailure> {
+        let mut covered = Vec::new();
+        for handler in &code.exception_handlers {
+            meter.charge(CountedBudgetDimension::IrItems, Some(bci))?;
+            if handler.start_bci <= bci && bci < handler.end_bci {
+                covered.push(handler.ordinal);
+            }
+        }
+        Ok(covered)
     };
-    let expected_handlers = coverage(check.bci());
-    if block[index..]
+    let expected_handlers = coverage(check.bci(), meter)?;
+    for instruction in block[index..]
         .iter()
         .take_while(|instruction| instruction.bci() <= at)
-        .any(|instruction| coverage(instruction.bci()) != expected_handlers)
     {
-        return Err(order(format!(
-            "the member constructor at BCI {at} crosses an exception-handler boundary around its qualifier check"
-        )));
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
+        if coverage(instruction.bci(), meter)? != expected_handlers {
+            return Err(order(format!(
+                "the member constructor at BCI {at} crosses an exception-handler boundary around its qualifier check"
+            )));
+        }
     }
 
     let mut arguments = vec![copy.bci()]; // physical first argument, not a source argument
     let mut last = pop.bci();
     for (_, value) in operands.iter().skip(2) {
+        meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
         let Some(produced) = produced_at(ssa, *value) else {
             return Err(order(format!(
                 "an ordinary argument of the member constructor at BCI {at} has no local producer"
@@ -1185,14 +1646,22 @@ fn verify_member(
         arguments.push(produced);
         last = produced;
     }
-    let dependencies =
-        value_dependency_bcis(ssa, block, operands.iter().skip(2).map(|(_, value)| *value));
+    let dependencies = value_dependency_bcis_metered(
+        ssa,
+        block,
+        operands.iter().skip(2).map(|(_, value)| *value),
+        meter,
+    )?;
     let after_check = index + 6;
     for instruction in block
         .iter()
         .skip(after_check)
         .take_while(|instruction| instruction.bci() < at)
     {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
         let bci = instruction.bci();
         if !dependencies.contains(&bci) {
             return Err(order(format!(
@@ -1242,11 +1711,14 @@ fn member_ordinary_arguments(
     operands: &[(jarde_jvm::method_ir::Slot, ValueId)],
     ssa: &SsaTable,
     operations: &crate::decode::Operations,
-) -> Result<Vec<u32>, Refusal> {
-    let order = |detail: String| Refusal::shape("jre_new_member_order", detail);
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Vec<u32>, VerifyFailure> {
+    let order =
+        |detail: String| VerifyFailure::Refusal(Refusal::shape("jre_new_member_order", detail));
     let mut arguments = Vec::new();
     let mut last = last;
     for (_, value) in operands.iter().skip(2) {
+        meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
         let Some(produced) = produced_at(ssa, *value) else {
             return Err(order(format!(
                 "an ordinary argument of the member constructor at BCI {at} has no local producer"
@@ -1260,13 +1732,21 @@ fn member_ordinary_arguments(
         arguments.push(produced);
         last = produced;
     }
-    let dependencies =
-        value_dependency_bcis(ssa, block, operands.iter().skip(2).map(|(_, value)| *value));
+    let dependencies = value_dependency_bcis_metered(
+        ssa,
+        block,
+        operands.iter().skip(2).map(|(_, value)| *value),
+        meter,
+    )?;
     for instruction in block
         .iter()
         .skip(start)
         .take_while(|instruction| instruction.bci() < at)
     {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
         let bci = instruction.bci();
         if !dependencies.contains(&bci) {
             return Err(order(format!(
@@ -1296,6 +1776,38 @@ fn single_use_at(ssa: &SsaTable, value: ValueId, at: u32) -> bool {
     uses.len() == 1 && uses[0].bci() == Some(at)
 }
 
+fn single_use_at_metered(
+    ssa: &SsaTable,
+    value: ValueId,
+    at: u32,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<bool, VerifyFailure> {
+    let uses = ssa.value(value).uses();
+    for usage in uses {
+        meter.charge(CountedBudgetDimension::IrItems, usage.bci())?;
+    }
+    Ok(uses.len() == 1 && uses[0].bci() == Some(at))
+}
+
+fn stack_operands_metered(
+    instruction: &SsaInstruction,
+    at: u32,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Vec<(Slot, ValueId)>, VerifyFailure> {
+    let mut operands = Vec::new();
+    for (slot, value) in instruction.reads() {
+        meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
+        if matches!(slot, Slot::Stack(_)) {
+            operands.push((*slot, *value));
+        }
+    }
+    operands.sort_by_key(|(slot, _)| match slot {
+        Slot::Stack(depth) => *depth,
+        Slot::Local(slot) => u32::from(*slot),
+    });
+    Ok(operands)
+}
+
 /// The discarded null-check tail spelled over a construction's finished instance, when there is
 /// one: `dup; <discarded null check>; pop` as the three block instructions immediately after the
 /// constructor call.
@@ -1303,20 +1815,77 @@ fn single_use_at(ssa: &SsaTable, value: ValueId, at: u32) -> bool {
 /// The `dup` must read the instance this site builds. The rest of the window's discipline is
 /// [`discarded_null_check_window`]'s, which the bound-receiver tail of a dynamic site shares: the
 /// two spellings of this shape differ only in the value the `dup` copies.
-fn discarded_null_check_tail(
+fn discarded_null_check_tail_metered(
     ssa: &SsaTable,
     operations: &Operations,
     block: &[SsaInstruction],
     constructor_index: usize,
     produced_by: &[u32],
-) -> Option<[u32; 3]> {
-    let [copy, check, pop] = block.get(constructor_index + 1..constructor_index + 4)? else {
-        return None;
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Option<[u32; 3]>, VerifyFailure> {
+    let Some([copy, check, pop]) = block.get(constructor_index + 1..constructor_index + 4) else {
+        return Ok(None);
     };
-    discarded_null_check_window(ssa, operations, copy, check, pop, |value| {
-        is_the_instance(ssa, value, produced_by).then_some(())
-    })
-    .map(|(bcis, ())| bcis)
+    meter.charge(CountedBudgetDimension::AnalysisSteps, Some(copy.bci()))?;
+    meter.charge(CountedBudgetDimension::AnalysisSteps, Some(check.bci()))?;
+    meter.charge(CountedBudgetDimension::AnalysisSteps, Some(pop.bci()))?;
+    if operations.get(copy.bci()) != Some(&Operation::Duplicate) {
+        return Ok(None);
+    }
+    let mut guarded = false;
+    for (_, value) in copy.reads() {
+        meter.charge(CountedBudgetDimension::IrItems, Some(copy.bci()))?;
+        if is_the_instance(ssa, *value, produced_by) {
+            guarded = true;
+            break;
+        }
+    }
+    let Some(Operation::Invoke(call)) = operations.get(check.bci()) else {
+        return Ok(None);
+    };
+    if !guarded
+        || !crate::facts::is_discarded_null_check(
+            call.kind(),
+            call.owner().as_bytes(),
+            call.name().as_bytes(),
+            call.descriptor().as_bytes(),
+            call.is_interface_reference(),
+        )
+    {
+        return Ok(None);
+    }
+    let copy_writes: Vec<ValueId> = copy.writes().iter().map(|(_, value)| *value).collect();
+    let check_reads = stack_operands_metered(check, check.bci(), meter)?;
+    let check_writes = check.writes();
+    let pop_reads = stack_operands_metered(pop, pop.bci(), meter)?;
+    for _ in &copy_writes {
+        meter.charge(CountedBudgetDimension::IrItems, Some(copy.bci()))?;
+    }
+    for _ in check_writes {
+        meter.charge(CountedBudgetDimension::IrItems, Some(check.bci()))?;
+    }
+    let check_is_single = if let [(_, value)] = check_reads.as_slice() {
+        single_use_at_metered(ssa, *value, check.bci(), meter)?
+    } else {
+        false
+    };
+    let pop_is_single = if let [(_, value)] = check_writes {
+        single_use_at_metered(ssa, *value, pop.bci(), meter)?
+    } else {
+        false
+    };
+    if pop.opcode() != 0x57
+        || check_reads.len() != 1
+        || check_writes.len() != 1
+        || pop_reads.len() != 1
+        || !copy_writes.contains(&check_reads[0].1)
+        || !check_is_single
+        || pop_reads[0].1 != check_writes[0].1
+        || !pop_is_single
+    {
+        return Ok(None);
+    }
+    Ok(Some([copy.bci(), check.bci(), pop.bci()]))
 }
 
 /// The three-instruction window `dup; <discarded null check>; pop`, when `copy` duplicates the value
@@ -1535,6 +2104,7 @@ fn captured_reference(descriptor: &str) -> Option<String> {
 /// `concat@1` chain at each argument's producer and then checks its identity, ownership, position,
 /// and physical completeness before the outer verifier may step over an allocation.
 #[allow(clippy::too_many_arguments)]
+#[cfg(test)]
 fn verify_concat_arguments(
     head: u32,
     dup: u32,
@@ -1545,15 +2115,45 @@ fn verify_concat_arguments(
     arguments: impl IntoIterator<Item = ValueId>,
     dependencies: &BTreeSet<u32>,
 ) -> Result<BTreeSet<u32>, Refusal> {
+    let mut meter = VerifyMeter::unmetered();
+    match verify_concat_arguments_metered(
+        head,
+        dup,
+        constructor,
+        block,
+        ssa,
+        chains,
+        arguments,
+        dependencies,
+        &mut meter,
+    ) {
+        Ok(value) => Ok(value),
+        Err(VerifyFailure::Refusal(refusal)) => Err(refusal),
+        Err(VerifyFailure::Stop(_)) => unreachable!("an unmetered concat check cannot stop"),
+    }
+}
+
+fn verify_concat_arguments_metered(
+    head: u32,
+    dup: u32,
+    constructor: u32,
+    block: &[SsaInstruction],
+    ssa: &SsaTable,
+    chains: &crate::concat::Plan,
+    arguments: impl IntoIterator<Item = ValueId>,
+    dependencies: &BTreeSet<u32>,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<BTreeSet<u32>, VerifyFailure> {
     let reject = |detail: String| {
-        Refusal::shape(
+        VerifyFailure::Refusal(Refusal::shape(
             "jre_new_concat_argument",
             format!("the construction at BCI {head} {detail}"),
-        )
+        ))
     };
     let mut nested = BTreeSet::new();
     let mut selected = BTreeSet::new();
     for value in arguments {
+        meter.charge(CountedBudgetDimension::IrItems, Some(head))?;
         let Some(tail) = produced_at(ssa, value) else {
             continue;
         };
@@ -1572,7 +2172,7 @@ fn verify_concat_arguments(
                 chain.tail
             )));
         };
-        if value != result || !single_use_at(ssa, result, constructor) {
+        if value != result || !single_use_at_metered(ssa, result, constructor, meter)? {
             return Err(reject(format!(
                 "uses the concatenation result at BCI {} outside its one constructor argument at BCI {constructor}",
                 chain.tail
@@ -1584,28 +2184,54 @@ fn verify_concat_arguments(
                 chain.head, chain.tail
             )));
         }
-        let Some(first) = block
-            .iter()
-            .position(|instruction| instruction.bci() == chain.head)
-        else {
+        let mut first = None;
+        for (position, instruction) in block.iter().enumerate() {
+            meter.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() == chain.head {
+                first = Some(position);
+                break;
+            }
+        }
+        let Some(first) = first else {
             return Err(reject(format!(
                 "has a concatenation beginning at BCI {} outside the construction block",
                 chain.head
             )));
         };
-        let Some(last) = block
-            .iter()
-            .position(|instruction| instruction.bci() == chain.tail)
-        else {
+        let mut last = None;
+        for (position, instruction) in block.iter().enumerate() {
+            meter.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() == chain.tail {
+                last = Some(position);
+                break;
+            }
+        }
+        let Some(last) = last else {
             return Err(reject(format!(
                 "has a concatenation ending at BCI {} outside the construction block",
                 chain.tail
             )));
         };
-        let members: BTreeSet<u32> = block[first..=last]
-            .iter()
-            .map(SsaInstruction::bci)
-            .collect();
+        let mut members = BTreeSet::new();
+        for instruction in &block[first..=last] {
+            meter.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                Some(instruction.bci()),
+            )?;
+            members.insert(instruction.bci());
+        }
+        for bci in &members {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+        }
+        for bci in chain.owned.iter() {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+        }
         if first >= last
             || chain.owned != members
             || !members.is_subset(chains.owned())
@@ -1638,21 +2264,33 @@ fn stack_value_written_at(ssa: &SsaTable, bci: u32) -> Option<ValueId> {
 ///
 /// The walk is the body's own instructions, in block order: the site's own three instructions are
 /// left out by BCI, and everything else is read from the table the caller already holds.
-fn outside_readers(ssa: &SsaTable, produced_by: &[u32]) -> Vec<u32> {
+fn outside_readers(
+    ssa: &SsaTable,
+    block: &[SsaInstruction],
+    produced_by: &[u32],
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Vec<u32>, VerifyFailure> {
     let mut readers: Vec<u32> = Vec::new();
-    for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
-        if produced_by.contains(&instruction.bci()) {
+    for producer in block {
+        meter.charge(CountedBudgetDimension::AnalysisSteps, Some(producer.bci()))?;
+        if !produced_by.contains(&producer.bci()) {
             continue;
         }
-        if instruction.reads().iter().any(|(_, read)| {
-            matches!(ssa.value(*read).def(), Definition::Instruction { bci, .. } if produced_by.contains(bci))
-        }) && !readers.contains(&instruction.bci())
-        {
-            readers.push(instruction.bci());
+        for (_, value) in producer.writes() {
+            meter.charge(CountedBudgetDimension::IrItems, Some(producer.bci()))?;
+            for usage in ssa.value(*value).uses() {
+                meter.charge(CountedBudgetDimension::IrItems, usage.bci())?;
+                let Some(bci) = usage.bci() else {
+                    continue;
+                };
+                if !produced_by.contains(&bci) && !readers.contains(&bci) {
+                    readers.push(bci);
+                }
+            }
         }
     }
     readers.sort_unstable();
-    readers
+    Ok(readers)
 }
 
 /// Whether the instruction at one BCI writes the values it reads into the text this build produces.
@@ -1696,6 +2334,178 @@ fn is_the_instance(ssa: &SsaTable, value: ValueId, produced_by: &[u32]) -> bool 
         Definition::Instruction { bci, .. } => produced_by.contains(bci),
         _ => false,
     }
+}
+
+/// The composed path accepts only the instance copy the verified new/dup/init run actually leaves
+/// for this one array store. Site.instance is a source-BCI set, so it is not sufficient for this
+/// ValueId identity proof.
+fn array_store_consumes_site_value(
+    ssa: &SsaTable,
+    operations: &Operations,
+    block: &[SsaInstruction],
+    head: u32,
+    duplicate: u32,
+    constructor: u32,
+    store: u32,
+    stored: ValueId,
+    class: &str,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<bool, VerifyFailure> {
+    for bci in [head, duplicate, constructor, store] {
+        meter.charge(CountedBudgetDimension::AnalysisSteps, Some(bci))?;
+    }
+    let Some(allocation) = instruction_in_block_by_bci_metered(block, head, meter)? else {
+        return Ok(false);
+    };
+    let Some(duplicate_instruction) = instruction_in_block_by_bci_metered(block, duplicate, meter)?
+    else {
+        return Ok(false);
+    };
+    let Some(constructor_instruction) =
+        instruction_in_block_by_bci_metered(block, constructor, meter)?
+    else {
+        return Ok(false);
+    };
+    let Some(store_instruction) = instruction_in_block_by_bci_metered(block, store, meter)? else {
+        return Ok(false);
+    };
+    let store_operands = stack_operands_metered(store_instruction, store, meter)?;
+    let [(_, _array), (_, _index), (_, store_value)] = store_operands.as_slice() else {
+        return Ok(false);
+    };
+    if duplicate_instruction.opcode() != 0x59
+        || !matches!(operations.get(store), Some(Operation::ArrayStore { .. }))
+        || *store_value != stored
+    {
+        return Ok(false);
+    }
+    let mut allocation_outputs = Vec::new();
+    for (slot, value) in allocation.writes() {
+        meter.charge(CountedBudgetDimension::IrItems, Some(head))?;
+        if matches!(slot, Slot::Stack(_)) {
+            allocation_outputs.push((*slot, *value));
+        }
+    }
+    let mut duplicate_reads = Vec::new();
+    for (slot, value) in duplicate_instruction.reads() {
+        meter.charge(CountedBudgetDimension::IrItems, Some(duplicate))?;
+        if matches!(slot, Slot::Stack(_)) {
+            duplicate_reads.push((*slot, *value));
+        }
+    }
+    let mut duplicate_outputs = Vec::new();
+    for (slot, value) in duplicate_instruction.writes() {
+        meter.charge(CountedBudgetDimension::IrItems, Some(duplicate))?;
+        if matches!(slot, Slot::Stack(_)) {
+            duplicate_outputs.push((*slot, *value));
+        }
+    }
+    if allocation_outputs.len() != 1
+        || duplicate_reads.as_slice() != allocation_outputs.as_slice()
+        || duplicate_outputs.len() != 2
+        || duplicate_outputs[0].0 == duplicate_outputs[1].0
+        || duplicate_outputs[0].1 == duplicate_outputs[1].1
+    {
+        return Ok(false);
+    }
+    let [(Slot::Stack(_), allocation_value)] = allocation_outputs.as_slice() else {
+        return Ok(false);
+    };
+    let Value::Uninitialized { new_site } = ssa.value(*allocation_value).ty() else {
+        return Ok(false);
+    };
+    let Definition::Instruction {
+        block: allocation_block,
+        bci: allocation_bci,
+    } = ssa.value(*allocation_value).def()
+    else {
+        return Ok(false);
+    };
+    if new_site.bci() != head || new_site.block() != allocation_block || *allocation_bci != head {
+        return Ok(false);
+    }
+    for (_, value) in &duplicate_outputs {
+        meter.charge(CountedBudgetDimension::IrItems, Some(duplicate))?;
+        if ssa.value(*value).ty() != ssa.value(*allocation_value).ty() {
+            return Ok(false);
+        }
+    }
+    let constructor_operands = stack_operands_metered(constructor_instruction, constructor, meter)?;
+    let Some((receiver_slot @ Slot::Stack(_), receiver)) = constructor_operands.first().copied()
+    else {
+        return Ok(false);
+    };
+    let mut receiver_output = false;
+    let mut surviving = None;
+    for (slot, value) in &duplicate_outputs {
+        meter.charge(CountedBudgetDimension::IrItems, Some(duplicate))?;
+        if (*slot, *value) == (receiver_slot, receiver) {
+            receiver_output = true;
+        }
+        if *slot != receiver_slot {
+            surviving = Some((*slot, *value));
+        }
+    }
+    if !receiver_output {
+        return Ok(false);
+    }
+    let Some((surviving_slot @ Slot::Stack(_), _)) = surviving else {
+        return Ok(false);
+    };
+    let mut constructor_outputs = Vec::new();
+    for (slot, value) in constructor_instruction.writes() {
+        meter.charge(CountedBudgetDimension::IrItems, Some(constructor))?;
+        if matches!(slot, Slot::Stack(_)) {
+            constructor_outputs.push((*slot, *value));
+        }
+    }
+    let completed: Vec<ValueId> = constructor_outputs
+        .iter()
+        .filter_map(|(slot, value)| (*slot == surviving_slot).then_some(*value))
+        .collect();
+    let [completed] = completed.as_slice() else {
+        return Ok(false);
+    };
+    let class_matches = matches!(
+        ssa.value(*completed).ty(),
+        Value::Ref(RefType::Named { name, .. }) if name == class.as_bytes()
+    );
+    let mut only_store_use = true;
+    let stored_uses = ssa.value(stored).uses();
+    let Definition::Instruction {
+        block: stored_block,
+        bci: stored_bci,
+    } = ssa.value(stored).def()
+    else {
+        return Ok(false);
+    };
+    if *stored_bci != constructor || stored_block != allocation_block {
+        return Ok(false);
+    }
+    for usage in stored_uses {
+        meter.charge(CountedBudgetDimension::IrItems, usage.bci())?;
+        if usage.block() != stored_block || usage.bci() != Some(store) {
+            only_store_use = false;
+        }
+    }
+    Ok(*completed == stored && class_matches && stored_uses.len() == 1 && only_store_use)
+}
+
+fn instruction_in_block_by_bci_metered<'a>(
+    block: &'a [SsaInstruction],
+    bci: u32,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Option<&'a SsaInstruction>, VerifyFailure> {
+    for instruction in block {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
+        if instruction.bci() == bci {
+            return Ok(Some(instruction));
+        }
+    }
+    Ok(None)
 }
 
 /// Whether the instruction at `pop` is the category-1 discard of one construction's finished
@@ -1819,20 +2629,37 @@ fn produced_at(ssa: &SsaTable, value: ValueId) -> Option<u32> {
 /// that instruction's reads, and a phi definition leads to its incoming values. Entry definitions
 /// have no instruction in this block to follow. The visited set makes loop-carried phi inputs and
 /// repeated reads finite without relying on instruction order.
+#[cfg(test)]
 fn value_dependency_bcis(
     ssa: &SsaTable,
     block: &[SsaInstruction],
     roots: impl IntoIterator<Item = ValueId>,
 ) -> BTreeSet<u32> {
-    let instructions: std::collections::BTreeMap<u32, &SsaInstruction> = block
-        .iter()
-        .map(|instruction| (instruction.bci(), instruction))
-        .collect();
+    let mut meter = VerifyMeter { budget: None };
+    value_dependency_bcis_metered(ssa, block, roots, &mut meter)
+        .expect("an unmetered dependency walk cannot stop")
+}
+
+fn value_dependency_bcis_metered(
+    ssa: &SsaTable,
+    block: &[SsaInstruction],
+    roots: impl IntoIterator<Item = ValueId>,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<BTreeSet<u32>, VerifyFailure> {
+    let mut instructions = std::collections::BTreeMap::new();
+    for instruction in block {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
+        instructions.insert(instruction.bci(), instruction);
+    }
     let mut pending: Vec<ValueId> = roots.into_iter().collect();
     let mut visited = BTreeSet::new();
     let mut dependencies = BTreeSet::new();
 
     while let Some(value) = pending.pop() {
+        meter.charge(CountedBudgetDimension::IrItems, produced_at(ssa, value))?;
         if !visited.insert(value) {
             continue;
         }
@@ -1840,12 +2667,24 @@ fn value_dependency_bcis(
             Definition::Instruction { bci, .. } => {
                 if let Some(instruction) = instructions.get(bci) {
                     dependencies.insert(*bci);
-                    pending.extend(instruction.reads().iter().map(|(_, read)| *read));
+                    for (_, read) in instruction.reads() {
+                        meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+                        pending.push(*read);
+                    }
                 }
             }
             Definition::Phi { .. } => {
-                if let Some(phi) = ssa.phis().iter().find(|phi| phi.value() == value) {
+                let mut found = None;
+                for phi in ssa.phis() {
+                    meter.charge(CountedBudgetDimension::IrItems, None)?;
+                    if phi.value() == value {
+                        found = Some(phi);
+                        break;
+                    }
+                }
+                if let Some(phi) = found {
                     for input in phi.inputs() {
+                        meter.charge(CountedBudgetDimension::IrItems, None)?;
                         if let jarde_jvm::method_ir::PhiInput::Value(input) = input {
                             pending.push(*input);
                         }
@@ -1855,7 +2694,7 @@ fn value_dependency_bcis(
             Definition::Entry { .. } | Definition::Caught { .. } => {}
         }
     }
-    dependencies
+    Ok(dependencies)
 }
 
 /// What one candidate construction site was presented as, or why it was not (P3 2.3, `new@1`).
@@ -2771,6 +3610,229 @@ mod tests {
         })
     }
 
+    fn sequence_code_facts(bytes: &[u8]) -> (jarde_reader::classfile::MethodCodeFacts, usize) {
+        let mut budget = proof_budget();
+        let class =
+            jarde_reader::classfile::class_facts(bytes, &mut budget).expect("sequence class facts");
+        let method = class
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0.as_slice() == b"sequence"
+                    && method.descriptor.raw().0.as_slice() == b"()[Ljava/lang/CharSequence;"
+            })
+            .expect("exact sequence method");
+        let code_attribute = method
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0.as_slice() == b"Code")
+            .expect("sequence Code attribute");
+        let attribute_length_offset = usize::try_from(code_attribute.content_span.start)
+            .expect("Code content offset fits usize")
+            .checked_sub(4)
+            .expect("Code attribute length precedes content");
+        let code = jarde_reader::classfile::method_code_facts(bytes, method, &mut budget)
+            .expect("sequence method code facts");
+        (code, attribute_length_offset)
+    }
+
+    fn read_u16_at(bytes: &[u8], offset: usize) -> u16 {
+        u16::from_be_bytes([bytes[offset], bytes[offset + 1]])
+    }
+
+    fn read_u32_at(bytes: &[u8], offset: usize) -> u32 {
+        u32::from_be_bytes([
+            bytes[offset],
+            bytes[offset + 1],
+            bytes[offset + 2],
+            bytes[offset + 3],
+        ])
+    }
+
+    fn write_u32_at(bytes: &mut [u8], offset: usize, value: u32) {
+        bytes[offset..offset + 4].copy_from_slice(&value.to_be_bytes());
+    }
+
+    fn write_u16_at(bytes: &mut [u8], offset: usize, value: u16) {
+        bytes[offset..offset + 2].copy_from_slice(&value.to_be_bytes());
+    }
+
+    fn sequence_index_variant(class: &[u8], descending: bool) -> Vec<u8> {
+        let (code, _) = sequence_code_facts(class);
+        let start = usize::try_from(code.code_span.start).expect("Code start fits usize");
+        assert_eq!(
+            code.instructions
+                .iter()
+                .find(|instruction| instruction.bci == 5)
+                .expect("first index producer")
+                .opcode,
+            0x03
+        );
+        assert_eq!(
+            code.instructions
+                .iter()
+                .find(|instruction| instruction.bci == 20)
+                .expect("second index producer")
+                .opcode,
+            0x04
+        );
+        let mut bytes = class.to_vec();
+        if descending {
+            bytes.swap(start + 5, start + 20);
+        } else {
+            bytes[start + 20] = 0x03;
+        }
+        bytes
+    }
+
+    fn sequence_extra_reader_variant(class: &[u8]) -> Vec<u8> {
+        let (code, attribute_length_offset) = sequence_code_facts(class);
+        assert!(code.exception_handlers.is_empty());
+        assert!(
+            code.control_flow_targets()
+                .expect("control-flow facts")
+                .is_empty()
+        );
+        assert!(
+            code.max_stack >= 5,
+            "dup_x2 peaks at five category-1 values"
+        );
+        assert_eq!(
+            code.instructions
+                .iter()
+                .find(|instruction| instruction.bci == 18)
+                .expect("first aastore")
+                .opcode,
+            0x53
+        );
+        let start = usize::try_from(code.code_span.start).expect("Code start fits usize");
+        assert_eq!(attribute_length_offset, start - 12);
+        let code_end =
+            start + usize::try_from(code.code_span.length).expect("Code length fits usize");
+        let exception_count = usize::from(read_u16_at(class, code_end));
+        assert_eq!(exception_count, 0, "fixture has no exception table");
+        let nested_attributes = code_end + 2 + exception_count * 8;
+        assert_eq!(
+            read_u16_at(class, nested_attributes),
+            0,
+            "fixture has no Code subattributes"
+        );
+
+        let mut bytes = class.to_vec();
+        bytes.splice(start + 18..start + 19, [0x5b, 0x53, 0x57]);
+        let code_length = u32::try_from(code.code_span.length).expect("Code length fits u32");
+        write_u32_at(&mut bytes, start - 4, code_length + 2);
+        write_u32_at(
+            &mut bytes,
+            attribute_length_offset,
+            read_u32_at(class, attribute_length_offset) + 2,
+        );
+        bytes
+    }
+
+    fn sequence_first_store_is_proved(class: &[u8]) -> bool {
+        let descriptor = "()[Ljava/lang/CharSequence;";
+        let (analysis, _) = analyzed_caller(class, "sequence", descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block.instructions().iter().any(|instruction| {
+                    instruction.bci() == 18
+                        && matches!(operations.get(18), Some(Operation::ArrayStore { .. }))
+                })
+            })
+            .expect("first sequence store block")
+            .instructions();
+        let store_instruction = block
+            .iter()
+            .find(|instruction| instruction.bci() == 18)
+            .expect("first sequence store");
+        let operands = crate::build::stack_operands(store_instruction);
+        let [_, _, (_, stored)] = operands.as_slice() else {
+            panic!("aastore has array, index and value operands");
+        };
+        let head_index = block
+            .iter()
+            .position(|instruction| instruction.bci() == 6)
+            .expect("first new block position");
+        let arrays = crate::build::ArrayInitializers::default();
+        let child_arrays = arrays.child_facts();
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let method = crate::facts::MethodFacts::new("sequence", descriptor, 0);
+        let context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        let mut budget = proof_budget();
+        verify_array_store(
+            ssa,
+            &operations,
+            &fields,
+            &child_arrays,
+            &context,
+            block,
+            6,
+            head_index,
+            "java/lang/StringBuilder".to_owned(),
+            18,
+            *stored,
+            &mut budget,
+        )
+        .expect("first store's independent construction proof")
+        .is_some()
+    }
+
+    fn sequence_first_store_identity_guard_accepts(class: &[u8]) -> bool {
+        let (analysis, _) = analyzed_caller(class, "sequence", "()[Ljava/lang/CharSequence;");
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .any(|instruction| instruction.bci() == 18)
+            })
+            .expect("first sequence store block")
+            .instructions();
+        let store_instruction = block
+            .iter()
+            .find(|instruction| instruction.bci() == 18)
+            .expect("first sequence store");
+        let operands = crate::build::stack_operands(store_instruction);
+        let [_, _, (_, stored)] = operands.as_slice() else {
+            panic!("aastore has array, index and value operands");
+        };
+        let mut meter = VerifyMeter::unmetered();
+        array_store_consumes_site_value(
+            ssa,
+            &operations,
+            block,
+            6,
+            9,
+            15,
+            18,
+            *stored,
+            "java/lang/StringBuilder",
+            &mut meter,
+        )
+        .expect("first store identity check")
+    }
+
     fn analyzed_caller(
         class: &[u8],
         name: &str,
@@ -2843,6 +3905,1052 @@ mod tests {
         }
     }
 
+    #[test]
+    fn composed_reference_array_commits_exact_constructed_values_once() {
+        const MAIN: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Main.class"
+        );
+        let descriptor = "()[Ljava/lang/CharSequence;";
+        let (analysis, _) = analyzed_caller(MAIN, "sequence", descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let fields = field::Plan::empty();
+        let chains = crate::concat::Plan::empty();
+        let method = crate::facts::MethodFacts::new("sequence", descriptor, 0);
+        let context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        let mut limits = proof_budget().limits().clone();
+        limits.analysis_steps = 1;
+        let mut limited = Budget::new(limits);
+        assert!(matches!(
+            crate::build::ArrayInitializers::prove_with_composition(
+                ssa,
+                &operations,
+                &fields,
+                Some(&context),
+                &mut limited,
+            ),
+            Err(crate::stop::StopReason::Budget { at: Some(_), .. })
+        ));
+        let mut cancelled = proof_budget();
+        cancelled.cancellation_token().cancel();
+        assert!(matches!(
+            crate::build::ArrayInitializers::prove_with_composition(
+                ssa,
+                &operations,
+                &fields,
+                Some(&context),
+                &mut cancelled,
+            ),
+            Err(crate::stop::StopReason::Cancelled { at: Some(_) })
+        ));
+        let mut budget = proof_budget();
+        let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &fields,
+            Some(&context),
+            &mut budget,
+        )
+        .expect("array and construction proof completes");
+        let sites = sites_after_array_composition(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &mut arrays,
+            8,
+            &[],
+            &method,
+            code,
+        );
+        let constructed: Vec<&Site> = sites
+            .allocation_candidates()
+            .iter()
+            .filter_map(|candidate| sites.site_at_head(candidate.head))
+            .filter(|site| {
+                matches!(
+                    site.class.as_str(),
+                    "java/lang/StringBuilder" | "java/lang/StringBuffer"
+                )
+            })
+            .collect();
+        assert_eq!(constructed.len(), 2);
+        assert!(constructed.iter().all(|site| site.finished_value.is_some()));
+        assert_ne!(
+            constructed[0].finished_value, constructed[1].finished_value,
+            "each array index retains its own exact constructor output"
+        );
+
+        let descriptor = "()[Ljava/util/Collection;";
+        let (analysis, _) = analyzed_caller(MAIN, "collections", descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let method = crate::facts::MethodFacts::new("collections", descriptor, 0);
+        let context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        let mut budget = proof_budget();
+        let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &fields,
+            Some(&context),
+            &mut budget,
+        )
+        .expect("nested child-array and construction proofs complete");
+        let sites = sites_after_array_composition(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &mut arrays,
+            8,
+            &[],
+            &method,
+            code,
+        );
+        let collection_sites: Vec<&Site> = sites
+            .allocation_candidates()
+            .iter()
+            .filter_map(|candidate| sites.site_at_head(candidate.head))
+            .filter(|site| {
+                matches!(
+                    site.class.as_str(),
+                    "java/util/ArrayList" | "java/util/HashSet"
+                )
+            })
+            .collect();
+        assert_eq!(collection_sites.len(), 2);
+        assert!(
+            collection_sites.iter().all(|site| {
+                site.single_use_atoms
+                    .iter()
+                    .any(|bci| matches!(operations.get(*bci), Some(Operation::NewArray { .. })))
+            }),
+            "the verified Arrays.asList child arrays are retained as identity atoms"
+        );
+    }
+
+    #[test]
+    fn composed_nested_site_ownership_and_store_binding_are_exact() {
+        const NESTED: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/NestedControls.class"
+        );
+        let descriptor = "()[Ljava/lang/Object;";
+        let (analysis, _) = analyzed_caller(NESTED, "nested", descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block.instructions().iter().any(|instruction| {
+                    matches!(
+                        operations.get(instruction.bci()),
+                        Some(Operation::ArrayStore { .. })
+                    )
+                })
+            })
+            .expect("nested method array-store block")
+            .instructions();
+        let (store, store_instruction) = block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::ArrayStore { .. })
+                )
+            })
+            .map(|instruction| (instruction.bci(), instruction))
+            .expect("paired aastore");
+        let operands = crate::build::stack_operands(store_instruction);
+        let [_, _, (_, stored)] = operands.as_slice() else {
+            panic!("aastore has array, index and value operands");
+        };
+        let stored = *stored;
+        let heads: Vec<u32> = block
+            .iter()
+            .filter(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::Allocate { .. })
+                )
+            })
+            .map(SsaInstruction::bci)
+            .collect();
+        assert_eq!(heads, [6, 10], "frozen nested controls source anchors");
+        assert_eq!(store, 25, "frozen nested controls store anchor");
+        let outer_index = block
+            .iter()
+            .position(|instruction| instruction.bci() == 6)
+            .expect("outer allocation block position");
+        let inner_index = block
+            .iter()
+            .position(|instruction| instruction.bci() == 10)
+            .expect("inner allocation block position");
+
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let method = crate::facts::MethodFacts::new("nested", descriptor, 0);
+        let context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        let mut budget = proof_budget();
+        let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &fields,
+            Some(&context),
+            &mut budget,
+        )
+        .expect("nested array candidate completes");
+        assert!(arrays.has_candidate_at(1), "array initializer is committed");
+        let pending = arrays.take_pending_sites();
+        assert_eq!(
+            pending.len(),
+            2,
+            "outer and inner allocations transfer once"
+        );
+        let outer = pending.get(&6).expect("outer site");
+        let inner = pending.get(&10).expect("inner site");
+        assert_eq!(outer.finished_value, Some(stored));
+        assert!(outer.owned.is_disjoint(&inner.owned));
+        assert_eq!(outer.owned.len(), 3);
+        assert_eq!(inner.owned.len(), 3);
+        assert!(
+            outer
+                .instance
+                .iter()
+                .all(|bci| !inner.instance.contains(bci))
+        );
+        assert!(
+            outer.nested_sites.is_empty(),
+            "sites were flattened, not merged"
+        );
+
+        // The exact pair succeeds. Counterfactual stored values use the actual array/index
+        // operands, followed by wrong allocation and block-position bindings.
+        let child_arrays = arrays.child_facts();
+        let mut budget = proof_budget();
+        assert!(
+            verify_array_store(
+                ssa,
+                &operations,
+                &fields,
+                &child_arrays,
+                &context,
+                block,
+                6,
+                outer_index,
+                "java/lang/StringBuilder".to_owned(),
+                store,
+                stored,
+                &mut budget,
+            )
+            .expect("correct stored-value proof completes")
+            .is_some()
+        );
+        for (head, index, value) in [
+            (6, outer_index, operands[0].1),
+            (6, outer_index, operands[1].1),
+            (10, inner_index, stored),
+            (6, inner_index, stored),
+        ] {
+            let mut budget = proof_budget();
+            assert!(
+                verify_array_store(
+                    ssa,
+                    &operations,
+                    &fields,
+                    &child_arrays,
+                    &context,
+                    block,
+                    head,
+                    index,
+                    "java/lang/StringBuilder".to_owned(),
+                    store,
+                    value,
+                    &mut budget,
+                )
+                .expect("counterfactual refusal is not a stop")
+                .is_none()
+            );
+        }
+        let mut meter = VerifyMeter::unmetered();
+        assert!(
+            !array_store_consumes_site_value(
+                ssa,
+                &operations,
+                block,
+                6,
+                store,
+                22,
+                store,
+                stored,
+                "java/lang/StringBuilder",
+                &mut meter,
+            )
+            .expect("wrong-dup check completes")
+        );
+    }
+
+    #[test]
+    fn nested_composition_budget_can_stop_inside_recursive_constructor_proof() {
+        const NESTED: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/NestedControls.class"
+        );
+        let descriptor = "()[Ljava/lang/Object;";
+        let (analysis, _) = analyzed_caller(NESTED, "nested", descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block.instructions().iter().any(|instruction| {
+                    matches!(
+                        operations.get(instruction.bci()),
+                        Some(Operation::ArrayStore { .. })
+                    )
+                })
+            })
+            .expect("nested method array-store block")
+            .instructions();
+        let (store, store_instruction) = block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::ArrayStore { .. })
+                )
+            })
+            .map(|instruction| (instruction.bci(), instruction))
+            .expect("paired aastore");
+        let operands = crate::build::stack_operands(store_instruction);
+        let [_, _, (_, stored)] = operands.as_slice() else {
+            panic!("aastore has array, index and value operands");
+        };
+        let stored = *stored;
+        assert_eq!(store, 25, "frozen nested controls store anchor");
+        let outer_index = block
+            .iter()
+            .position(|instruction| instruction.bci() == 6)
+            .expect("outer allocation block position");
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let method = crate::facts::MethodFacts::new("nested", descriptor, 0);
+        let context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        let arrays = crate::build::ArrayInitializers::default();
+        let child_arrays = arrays.child_facts();
+        let mut complete_budget = proof_budget();
+        assert!(
+            verify_array_store(
+                ssa,
+                &operations,
+                &fields,
+                &child_arrays,
+                &context,
+                block,
+                6,
+                outer_index,
+                "java/lang/StringBuilder".to_owned(),
+                store,
+                stored,
+                &mut complete_budget,
+            )
+            .expect("complete direct nested proof runs")
+            .is_some()
+        );
+
+        // In this direct seam, verify_metered's outer scan charges BCI 10 once and immediately
+        // enters the nested verifier. Its first argument-scan instruction is BCI 14, whose second
+        // AnalysisSteps charge must stop there with a limit of one. This cannot be an array
+        // candidate discovery or allocation/store pairing scan because those callers are absent.
+        let mut limits = proof_budget().limits().clone();
+        limits.analysis_steps = 1;
+        let mut budget = Budget::new(limits);
+        assert!(matches!(
+            verify_array_store(
+                ssa,
+                &operations,
+                &fields,
+                &child_arrays,
+                &context,
+                block,
+                6,
+                outer_index,
+                "java/lang/StringBuilder".to_owned(),
+                store,
+                stored,
+                &mut budget,
+            ),
+            Err(crate::stop::StopReason::Budget { at: Some(14), .. })
+        ));
+    }
+
+    #[test]
+    fn second_unsupported_element_leaves_no_array_or_site_commit() {
+        const BOUNDARY: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/BoundaryControls.class"
+        );
+        let descriptor = "()[Ljava/lang/Object;";
+        let (analysis, _) = analyzed_caller(BOUNDARY, "firstThenUnsupportedStructure", descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block.instructions().iter().any(|instruction| {
+                    matches!(
+                        operations.get(instruction.bci()),
+                        Some(Operation::ArrayStore { .. })
+                    )
+                })
+            })
+            .expect("boundary method array-store block")
+            .instructions();
+        let allocation = block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::NewArray { .. })
+                )
+            })
+            .expect("fresh Object[] allocation")
+            .bci();
+        let first_store = block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::ArrayStore { .. })
+                )
+            })
+            .expect("first element store")
+            .bci();
+        let conversion = block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::PrimitiveConversion {
+                        source: crate::Type::Int,
+                        target: crate::Type::Long
+                    })
+                )
+            })
+            .expect("second element's unsupported int-to-long conversion")
+            .bci();
+        assert!(allocation < first_store && first_store < conversion);
+        let long_constructor = block
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::Invoke(call))
+                        if call.owner() == "java/lang/Long" && call.name() == "<init>"
+                )
+            })
+            .expect("second element Long constructor");
+        let long_operands = crate::build::stack_operands(long_constructor);
+        assert!(matches!(
+            long_operands.last().map(|(_, value)| ssa.value(*value).def()),
+            Some(Definition::Instruction { bci, .. }) if *bci == conversion
+        ));
+
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let method = crate::facts::MethodFacts::new("firstThenUnsupportedStructure", descriptor, 0);
+        let context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        let mut budget = proof_budget();
+        let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &fields,
+            Some(&context),
+            &mut budget,
+        )
+        .expect("unsupported structure is a refusal, not a budget stop");
+        assert!(!arrays.has_candidate_at(allocation));
+        assert!(arrays.take_pending_sites().is_empty());
+    }
+
+    #[test]
+    fn fresh_array_index_byte_variants_do_not_commit_partial_candidates() {
+        const JAVAC8: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Main.class"
+        );
+        const JAVAC23: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Main.class"
+        );
+        for original in [JAVAC8, JAVAC23] {
+            let (original_code, _) = sequence_code_facts(original);
+            assert_eq!(
+                original_code
+                    .instructions
+                    .iter()
+                    .find(|instruction| instruction.bci == 5)
+                    .expect("first index")
+                    .opcode,
+                0x03
+            );
+            assert_eq!(
+                original_code
+                    .instructions
+                    .iter()
+                    .find(|instruction| instruction.bci == 20)
+                    .expect("second index")
+                    .opcode,
+                0x04
+            );
+            assert!(sequence_first_store_is_proved(original));
+
+            for descending in [false, true] {
+                let variant = sequence_index_variant(original, descending);
+                let (patched_code, _) = sequence_code_facts(&variant);
+                assert_eq!(
+                    patched_code
+                        .instructions
+                        .iter()
+                        .find(|instruction| instruction.bci == 5)
+                        .expect("patched first index")
+                        .opcode,
+                    if descending { 0x04 } else { 0x03 }
+                );
+                assert_eq!(
+                    patched_code
+                        .instructions
+                        .iter()
+                        .find(|instruction| instruction.bci == 20)
+                        .expect("patched second index")
+                        .opcode,
+                    0x03
+                );
+
+                let descriptor = "()[Ljava/lang/CharSequence;";
+                let (analysis, _) = analyzed_caller(&variant, "sequence", descriptor);
+                let ir = analysis.ir();
+                let ssa = ir.ssa().expect("patched SSA");
+                let code = ir.code().expect("patched method code");
+                let operations = Operations::of(code, ir.constant_pool());
+                let chains = crate::concat::Plan::empty();
+                let fields = field::Plan::empty();
+                let method = crate::facts::MethodFacts::new("sequence", descriptor, 0);
+                let context = ArrayCompositionContext {
+                    chains: &chains,
+                    reserved: chains.owned(),
+                    java_release: 8,
+                    member_targets: &[],
+                    method: &method,
+                    code,
+                };
+                let mut budget = proof_budget();
+                let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+                    ssa,
+                    &operations,
+                    &fields,
+                    Some(&context),
+                    &mut budget,
+                )
+                .expect("index mismatch is refusal, not a stop");
+                assert!(!arrays.has_candidate_at(1));
+                assert!(arrays.take_pending_sites().is_empty());
+
+                if !descending {
+                    assert!(
+                        sequence_first_store_is_proved(&variant),
+                        "duplicate-index variant still has an independently proved first new/store"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn extra_stack_reader_byte_variant_reaches_exact_site_value_guard() {
+        const JAVAC8: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Main.class"
+        );
+        const JAVAC23: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Main.class"
+        );
+        for original in [JAVAC8, JAVAC23] {
+            assert!(sequence_first_store_is_proved(original));
+            assert!(sequence_first_store_identity_guard_accepts(original));
+
+            let variant = sequence_extra_reader_variant(original);
+            let (original_code, attribute_length_offset) = sequence_code_facts(original);
+            let (patched_code, patched_attribute_length_offset) = sequence_code_facts(&variant);
+            assert_eq!(patched_attribute_length_offset, attribute_length_offset);
+            assert_eq!(
+                patched_code.code_span.length,
+                original_code.code_span.length + 2
+            );
+            assert_eq!(
+                read_u32_at(&variant, attribute_length_offset),
+                read_u32_at(original, attribute_length_offset) + 2
+            );
+            assert!(patched_code.exception_handlers.is_empty());
+            assert!(
+                patched_code
+                    .control_flow_targets()
+                    .expect("patched control flow")
+                    .is_empty()
+            );
+            assert!(patched_code.max_stack >= 5);
+            assert_eq!(
+                patched_code
+                    .instructions
+                    .iter()
+                    .find(|instruction| instruction.bci == 18)
+                    .unwrap()
+                    .opcode,
+                0x5b
+            );
+            assert_eq!(
+                patched_code
+                    .instructions
+                    .iter()
+                    .find(|instruction| instruction.bci == 19)
+                    .unwrap()
+                    .opcode,
+                0x53
+            );
+            assert_eq!(
+                patched_code
+                    .instructions
+                    .iter()
+                    .find(|instruction| instruction.bci == 20)
+                    .unwrap()
+                    .opcode,
+                0x57
+            );
+
+            let descriptor = "()[Ljava/lang/CharSequence;";
+            let (analysis, _) = analyzed_caller(&variant, "sequence", descriptor);
+            let ir = analysis.ir();
+            let ssa = ir.ssa().expect("patched SSA");
+            let code = ir.code().expect("patched method code");
+            let operations = Operations::of(code, ir.constant_pool());
+            let block = ssa
+                .blocks()
+                .iter()
+                .find(|block| {
+                    block
+                        .instructions()
+                        .iter()
+                        .any(|instruction| instruction.bci() == 19)
+                })
+                .expect("patched first-store block")
+                .instructions();
+            let completed = block
+                .iter()
+                .find(|instruction| instruction.bci() == 15)
+                .expect("first constructor")
+                .writes()
+                .iter()
+                .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+                .expect("constructor completed reference");
+            let duplicate_x2 = block
+                .iter()
+                .find(|instruction| instruction.bci() == 18)
+                .expect("dup_x2 reader");
+            assert!(
+                duplicate_x2
+                    .reads()
+                    .iter()
+                    .any(|(_, value)| *value == completed)
+            );
+            assert!(
+                ssa.value(completed)
+                    .uses()
+                    .iter()
+                    .any(|use_| use_.bci() == Some(18))
+            );
+
+            let store_instruction = block
+                .iter()
+                .find(|instruction| instruction.bci() == 19)
+                .expect("paired aastore");
+            let store_operands = crate::build::stack_operands(store_instruction);
+            let [(_, array_value), (_, index_value), (_, stored_alias)] = store_operands.as_slice()
+            else {
+                panic!("patched aastore keeps array, index, and reference operands");
+            };
+            assert_ne!(*stored_alias, completed);
+            let pop_alias = block
+                .iter()
+                .find(|instruction| instruction.bci() == 20)
+                .expect("post-store pop")
+                .reads()
+                .iter()
+                .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+                .expect("pop reads retained constructed alias");
+            let same_class_aliases: Vec<ValueId> = duplicate_x2
+                .writes()
+                .iter()
+                .filter_map(|(_, value)| {
+                    (ssa.value(*value).ty() == ssa.value(completed).ty()).then_some(*value)
+                })
+                .collect();
+            assert_eq!(same_class_aliases.len(), 2);
+            assert!(same_class_aliases.contains(stored_alias));
+            assert!(same_class_aliases.contains(&pop_alias));
+            assert_ne!(*stored_alias, pop_alias);
+            assert!(matches!(
+                ssa.value(*stored_alias).def(),
+                Definition::Instruction { bci, .. } if *bci == 18
+            ));
+            assert!(matches!(
+                ssa.value(pop_alias).def(),
+                Definition::Instruction { bci, .. } if *bci == 18
+            ));
+            assert!(matches!(operations.get(21), Some(Operation::Duplicate)));
+            let first_array_dup = block
+                .iter()
+                .find(|instruction| instruction.bci() == 4)
+                .expect("initial array dup");
+            let array_aliases: Vec<ValueId> = first_array_dup
+                .writes()
+                .iter()
+                .filter_map(|(_, value)| {
+                    (ssa.value(*value).ty() == ssa.value(*array_value).ty()).then_some(*value)
+                })
+                .collect();
+            assert_eq!(array_aliases.len(), 2);
+            let retained_array = array_aliases
+                .iter()
+                .find(|value| {
+                    ssa.value(**value)
+                        .uses()
+                        .iter()
+                        .any(|use_| use_.bci() == Some(21))
+                })
+                .copied()
+                .expect("retained array alias reaches the next dup");
+            let next_array_dup = block
+                .iter()
+                .find(|instruction| instruction.bci() == 21)
+                .expect("next array dup");
+            assert!(
+                next_array_dup
+                    .reads()
+                    .iter()
+                    .any(|(_, value)| *value == retained_array)
+            );
+            assert!(array_aliases.iter().any(|value| {
+                ssa.value(*value)
+                    .uses()
+                    .iter()
+                    .any(|use_| use_.bci() == Some(18))
+            }));
+            let _ = index_value;
+
+            let mut meter = VerifyMeter::unmetered();
+            assert!(
+                !array_store_consumes_site_value(
+                    ssa,
+                    &operations,
+                    block,
+                    6,
+                    9,
+                    15,
+                    19,
+                    *stored_alias,
+                    "java/lang/StringBuilder",
+                    &mut meter,
+                )
+                .expect("exact stored-alias guard returns a decision")
+            );
+            let mut meter = VerifyMeter::unmetered();
+            assert!(
+                !array_store_consumes_site_value(
+                    ssa,
+                    &operations,
+                    block,
+                    6,
+                    9,
+                    15,
+                    19,
+                    completed,
+                    "java/lang/StringBuilder",
+                    &mut meter,
+                )
+                .expect("constructor-value counterfactual returns a decision")
+            );
+
+            let chains = crate::concat::Plan::empty();
+            let fields = field::Plan::empty();
+            let method = crate::facts::MethodFacts::new("sequence", descriptor, 0);
+            let context = ArrayCompositionContext {
+                chains: &chains,
+                reserved: chains.owned(),
+                java_release: 8,
+                member_targets: &[],
+                method: &method,
+                code,
+            };
+            let mut budget = proof_budget();
+            let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+                ssa,
+                &operations,
+                &fields,
+                Some(&context),
+                &mut budget,
+            )
+            .expect("extra reader is refusal, not a stop");
+            assert!(!arrays.has_candidate_at(1));
+            assert!(arrays.take_pending_sites().is_empty());
+        }
+    }
+
+    #[test]
+    fn handler_range_byte_variant_reaches_array_effect_closure() {
+        const JAVAC8: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-handler-v1/javac8/HandlerControls.class"
+        );
+        const JAVAC23: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-constructed-reference-array-handler-v1/javac23/HandlerControls.class"
+        );
+        for original in [JAVAC8, JAVAC23] {
+            let mut budget = proof_budget();
+            let class = jarde_reader::classfile::class_facts(original, &mut budget)
+                .expect("handler class facts");
+            let method_header = class
+                .methods
+                .iter()
+                .find(|method| {
+                    method.name.raw().0.as_slice() == b"handled"
+                        && method.descriptor.raw().0.as_slice() == b"()[Ljava/lang/Object;"
+                })
+                .expect("handled method header");
+            let mut budget = proof_budget();
+            let original_code =
+                jarde_reader::classfile::method_code_facts(original, method_header, &mut budget)
+                    .expect("original handled code");
+            assert_eq!(original_code.exception_handlers.len(), 1);
+            let handler = &original_code.exception_handlers[0];
+            assert_eq!(
+                (handler.start_bci, handler.end_bci, handler.handler_bci),
+                (0, 19, 20)
+            );
+            assert_eq!(
+                original_code
+                    .instructions
+                    .iter()
+                    .find(|instruction| instruction.bci == 1)
+                    .expect("array allocation")
+                    .opcode,
+                0xbd
+            );
+            assert!(
+                original_code
+                    .control_flow_targets()
+                    .unwrap()
+                    .iter()
+                    .any(|target| {
+                        matches!(
+                            target.kind,
+                            jarde_reader::classfile::ControlFlowTargetKind::Handler { ordinal: 0 }
+                        ) && target.target_bci == 20
+                    })
+            );
+
+            let code_start =
+                usize::try_from(original_code.code_span.start).expect("Code start fits usize");
+            let code_end = code_start
+                + usize::try_from(original_code.code_span.length).expect("Code length fits usize");
+            let exception_count = usize::from(read_u16_at(original, code_end));
+            assert_eq!(exception_count, 1);
+            let exception_entry = code_end + 2;
+            assert_eq!(read_u16_at(original, exception_entry), 0);
+            assert_eq!(read_u16_at(original, exception_entry + 2), 19);
+            assert_eq!(read_u16_at(original, exception_entry + 4), 20);
+            assert_eq!(
+                Some(read_u16_at(original, exception_entry + 6)),
+                handler.catch_type_index
+            );
+
+            let mut patched = original.to_vec();
+            write_u16_at(&mut patched, exception_entry, 12);
+            assert_eq!(read_u16_at(&patched, exception_entry + 2), 19);
+            assert_eq!(read_u16_at(&patched, exception_entry + 4), 20);
+            assert_eq!(
+                read_u16_at(&patched, exception_entry + 6),
+                read_u16_at(original, exception_entry + 6)
+            );
+            let mut budget = proof_budget();
+            let patched_class = jarde_reader::classfile::class_facts(&patched, &mut budget)
+                .expect("patched handler class facts");
+            let patched_header = patched_class
+                .methods
+                .iter()
+                .find(|method| {
+                    method.name.raw().0.as_slice() == b"handled"
+                        && method.descriptor.raw().0.as_slice() == b"()[Ljava/lang/Object;"
+                })
+                .expect("patched handled method header");
+            let mut budget = proof_budget();
+            let patched_code =
+                jarde_reader::classfile::method_code_facts(&patched, patched_header, &mut budget)
+                    .expect("patched handled code");
+            assert_eq!(
+                (
+                    patched_code.exception_handlers[0].start_bci,
+                    patched_code.exception_handlers[0].end_bci,
+                    patched_code.exception_handlers[0].handler_bci
+                ),
+                (12, 19, 20)
+            );
+
+            const COVERED_HANDLER: &[u32] = &[0];
+            const NO_HANDLERS: &[u32] = &[];
+            for (bytes, expected_array_handlers) in [
+                (original, COVERED_HANDLER),
+                (patched.as_slice(), NO_HANDLERS),
+            ] {
+                let (analysis, _) = analyzed_caller(bytes, "handled", "()[Ljava/lang/Object;");
+                let ir = analysis.ir();
+                let ssa = ir.ssa().expect("handled SSA");
+                let code = ir.code().expect("handled method code");
+                let operations = Operations::of(code, ir.constant_pool());
+                let source_bcis = [1, 6, 12, 15, 18, 19];
+                let source_block = ssa
+                    .blocks()
+                    .iter()
+                    .find(|block| {
+                        source_bcis.iter().all(|bci| {
+                            block
+                                .instructions()
+                                .iter()
+                                .any(|instruction| instruction.bci() == *bci)
+                        })
+                    })
+                    .expect("array, new, mark, constructor and store remain one source block");
+                let effects = ssa.effects().instructions();
+                let handlers_at = |bci| {
+                    effects
+                        .iter()
+                        .find(|effect| effect.bci() == bci)
+                        .expect("instruction effect")
+                        .handlers()
+                };
+                assert_eq!(handlers_at(1), expected_array_handlers);
+                for bci in [12, 15, 18] {
+                    assert_eq!(handlers_at(bci), &[0]);
+                }
+
+                let block = source_block.instructions();
+                let head_index = block
+                    .iter()
+                    .position(|instruction| instruction.bci() == 6)
+                    .expect("constructed value allocation position");
+                let store_instruction = block
+                    .iter()
+                    .find(|instruction| instruction.bci() == 18)
+                    .expect("paired array store");
+                let operands = crate::build::stack_operands(store_instruction);
+                let [_, _, (_, stored)] = operands.as_slice() else {
+                    panic!("aastore has array, index and value operands");
+                };
+                let chains = crate::concat::Plan::empty();
+                let fields = field::Plan::empty();
+                let method = crate::facts::MethodFacts::new("handled", "()[Ljava/lang/Object;", 0);
+                let context = ArrayCompositionContext {
+                    chains: &chains,
+                    reserved: chains.owned(),
+                    java_release: 8,
+                    member_targets: &[],
+                    method: &method,
+                    code,
+                };
+                let empty_arrays = crate::build::ArrayInitializers::default();
+                let child_arrays = empty_arrays.child_facts();
+                let mut direct_budget = proof_budget();
+                assert!(
+                    verify_array_store(
+                        ssa,
+                        &operations,
+                        &fields,
+                        &child_arrays,
+                        &context,
+                        block,
+                        6,
+                        head_index,
+                        "java/lang/StringBuilder".to_owned(),
+                        18,
+                        *stored,
+                        &mut direct_budget,
+                    )
+                    .expect("site verifier passes before array effect closure")
+                    .is_some()
+                );
+
+                let mut budget = proof_budget();
+                let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+                    ssa,
+                    &operations,
+                    &fields,
+                    Some(&context),
+                    &mut budget,
+                )
+                .expect("handler closure is refusal, not a stop");
+                if expected_array_handlers.is_empty() {
+                    assert!(!arrays.has_candidate_at(1));
+                    assert!(arrays.take_pending_sites().is_empty());
+                } else {
+                    assert!(arrays.has_candidate_at(1));
+                    assert_eq!(arrays.take_pending_sites().len(), 1);
+                }
+            }
+        }
+    }
+
     fn verdict_with(
         class: &[u8],
         name: &str,
@@ -2897,6 +5005,7 @@ mod tests {
         }
         let fields = field::Plan::empty();
         let arrays = crate::build::ArrayInitializers::default();
+        let array_facts = arrays.child_facts();
         let reserved = BTreeSet::new();
         let facts = ConstructionFacts {
             ssa,
@@ -2904,13 +5013,21 @@ mod tests {
             chains: &crate::concat::Plan::empty(),
             reserved: &reserved,
             fields: &fields,
-            arrays: &arrays,
+            arrays: &array_facts,
             java_release: 8,
             member_targets: &targets,
             method: None,
             code: &code,
         };
-        verify(head, index, block.instructions(), ty.clone(), &facts, 0)
+        verify(
+            head,
+            index,
+            block.instructions(),
+            ty.clone(),
+            &facts,
+            0,
+            None,
+        )
     }
 
     fn verdict(class: &[u8], name: &str, descriptor: &str) -> Result<Site, Refusal> {
@@ -3029,6 +5146,7 @@ mod tests {
                 crate::concat::plan(ssa, &operations, &crate::build::FieldCopies::default());
             let fields = field::Plan::empty();
             let arrays = crate::build::ArrayInitializers::default();
+            let array_facts = arrays.child_facts();
             let method_facts = crate::facts::MethodFacts::new(name, descriptor, 0);
             let no_chain_proof = crate::concat::Plan::empty();
             let reserved_only = sites(
@@ -3162,7 +5280,7 @@ mod tests {
                 chains: &chains,
                 reserved: chains.owned(),
                 fields: &fields,
-                arrays: &arrays,
+                arrays: &array_facts,
                 java_release: 8,
                 member_targets: &[],
                 method: None,
@@ -3175,6 +5293,7 @@ mod tests {
                 site.class.clone(),
                 &boundary_facts,
                 0,
+                None,
             ) {
                 Ok(_) => {
                     panic!("a handler boundary cannot be crossed by the nested expression")

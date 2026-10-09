@@ -1,0 +1,10 @@
+{
+  "manifest_sha256": "3c44a58483928ee5ac2db4d37ba20dcdc9e547138b764bc9e2ea318723440582",
+  "checks": 257,
+  "site_count": 24,
+  "source_bci_checks": 100,
+  "issues": [],
+  "accepted_cases": 2,
+  "whole_source_sets": true,
+  "original_helpers_borrowed": false
+}

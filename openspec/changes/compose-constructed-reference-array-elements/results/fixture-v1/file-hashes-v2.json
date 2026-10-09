@@ -1,0 +1,793 @@
+{
+  "schema": "constructed-reference-array-fixture-root-hashes-v2",
+  "created_utc": "2026-10-09T12:17:23Z",
+  "included_roots": [
+    "tests/fixtures/p3-constructed-reference-array-elements-v1",
+    "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1"
+  ],
+  "additional_files": [
+    "tests/p3_constructed_reference_array_elements.rs"
+  ],
+  "excludes": [
+    "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/file-hashes-v2.json"
+  ],
+  "hash": "SHA-256 over each listed file byte sequence; the inventory does not hash itself",
+  "file_count": 155,
+  "files": [
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/file-hashes-v1.json",
+      "bytes": 37130,
+      "sha256": "7cd0a405aa77b96458731612f00ed47189222837196bb1dd3df5cf37245aa7ae"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes/Base.class",
+      "bytes": 234,
+      "sha256": "d1ed75e2021529df7051bcab98d29c733ade49ccb938572dd45ccec4453c2be5"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "c611e33d00be7f81c0d2ead8185afd99ca22262a1330a6d65dd64b9b88c35e53"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "3cca715c309bd1b35a654d49ac0f1d8712f6e945806e158675ce2cc6dac088e7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "6becaf10034efd71d3c3c34aa2dc475dbb1e56564871e5f50e1d24dc16bc0654"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes/Main.class",
+      "bytes": 2329,
+      "sha256": "27328a86654a0d836664ec6d0700edd2cba9daa82671ac562bd5c502de7f7c44"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes/Mid.class",
+      "bytes": 215,
+      "sha256": "7a142cfce88dac1a1ca36a744ca89b8117abc19591dc3bb48978c127ff9c25fb"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "d150683e6fa9ec389417666c1db37a696a87dbd58c8f4d6ef747377fc5b5ce81"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes/Base.class",
+      "bytes": 234,
+      "sha256": "409013f8c80ee540f8fb9db02908c5c1ce71c659a301a44e3eddce79ea576a1f"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "0642a6d4673dfc3d1d6946d293b2f617be0d665c9d3bdc379a975f7e317f1405"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "4e08bbc71ad1f73a9a39ad745feafaffea766cb2da510630aeeea7987d7bcf25"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "458be3d94118ac7daf045325634d8da5cd45f3c7c34649c9862f5696cd5b02d4"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes/Main.class",
+      "bytes": 2332,
+      "sha256": "13549120c523c044fec6d5810723ff434feb53584886c525c184dd3211e9d75e"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes/Mid.class",
+      "bytes": 215,
+      "sha256": "398ee87169937068a370cd40054e80e71774d971915837cab4107860aaef41ab"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "a54f405d3def556658c61b6ae0207cc89171fc80ba3fb67e4c07d8ec9195ed08"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-compile.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-java-version.stderr",
+      "bytes": 152,
+      "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-javac-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-javac-version.stdout",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-javap-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-javap-main.stdout",
+      "bytes": 10335,
+      "sha256": "bc00ffdce93f24e29623ca774208368a9d1daef69b240b4112f6823d99045d35"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-javap-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-javap-version.stdout",
+      "bytes": 7,
+      "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac23-original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-java-version.stderr",
+      "bytes": 174,
+      "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-javac-version.stderr",
+      "bytes": 16,
+      "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-javac-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-javap-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-javap-main.stdout",
+      "bytes": 10335,
+      "sha256": "59420cca03e597b6a4184c2cbe9bf628f83e0fc0d1a5578583f69c874266efb7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-javap-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-javap-version.stdout",
+      "bytes": 10,
+      "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/logs/javac8-original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/manifest.json",
+      "bytes": 23204,
+      "sha256": "c29a4dc6806337082f928b3769d77d95afaccd34d6f24dd9b45537ac95a08f9d"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac23/original-classes/Base.class",
+      "bytes": 234,
+      "sha256": "d1ed75e2021529df7051bcab98d29c733ade49ccb938572dd45ccec4453c2be5"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac23/original-classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "c611e33d00be7f81c0d2ead8185afd99ca22262a1330a6d65dd64b9b88c35e53"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac23/original-classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "3cca715c309bd1b35a654d49ac0f1d8712f6e945806e158675ce2cc6dac088e7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac23/original-classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "6becaf10034efd71d3c3c34aa2dc475dbb1e56564871e5f50e1d24dc16bc0654"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac23/original-classes/Main.class",
+      "bytes": 2329,
+      "sha256": "27328a86654a0d836664ec6d0700edd2cba9daa82671ac562bd5c502de7f7c44"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac23/original-classes/Mid.class",
+      "bytes": 215,
+      "sha256": "7a142cfce88dac1a1ca36a744ca89b8117abc19591dc3bb48978c127ff9c25fb"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac23/original-classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "d150683e6fa9ec389417666c1db37a696a87dbd58c8f4d6ef747377fc5b5ce81"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac8/original-classes/Base.class",
+      "bytes": 234,
+      "sha256": "409013f8c80ee540f8fb9db02908c5c1ce71c659a301a44e3eddce79ea576a1f"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac8/original-classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "0642a6d4673dfc3d1d6946d293b2f617be0d665c9d3bdc379a975f7e317f1405"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac8/original-classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "4e08bbc71ad1f73a9a39ad745feafaffea766cb2da510630aeeea7987d7bcf25"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac8/original-classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "458be3d94118ac7daf045325634d8da5cd45f3c7c34649c9862f5696cd5b02d4"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac8/original-classes/Main.class",
+      "bytes": 2332,
+      "sha256": "13549120c523c044fec6d5810723ff434feb53584886c525c184dd3211e9d75e"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac8/original-classes/Mid.class",
+      "bytes": 215,
+      "sha256": "398ee87169937068a370cd40054e80e71774d971915837cab4107860aaef41ab"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/javac8/original-classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "a54f405d3def556658c61b6ae0207cc89171fc80ba3fb67e4c07d8ec9195ed08"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-compile.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-java-version.stderr",
+      "bytes": 152,
+      "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-javac-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-javac-version.stdout",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-javap-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-javap-main.stdout",
+      "bytes": 10335,
+      "sha256": "bc00ffdce93f24e29623ca774208368a9d1daef69b240b4112f6823d99045d35"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-javap-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-javap-version.stdout",
+      "bytes": 7,
+      "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac23-original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-java-version.stderr",
+      "bytes": 174,
+      "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-javac-version.stderr",
+      "bytes": 16,
+      "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-javac-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-javap-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-javap-main.stdout",
+      "bytes": 10335,
+      "sha256": "59420cca03e597b6a4184c2cbe9bf628f83e0fc0d1a5578583f69c874266efb7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-javap-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-javap-version.stdout",
+      "bytes": 10,
+      "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/logs/javac8-original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-002/manifest.json",
+      "bytes": 23203,
+      "sha256": "1d34742a939490a1ca42469f08daf99b926d1a2d42b4eb0d292a45b4f2788d2d"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac23/original-classes/Base.class",
+      "bytes": 234,
+      "sha256": "d1ed75e2021529df7051bcab98d29c733ade49ccb938572dd45ccec4453c2be5"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac23/original-classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "c611e33d00be7f81c0d2ead8185afd99ca22262a1330a6d65dd64b9b88c35e53"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac23/original-classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "3cca715c309bd1b35a654d49ac0f1d8712f6e945806e158675ce2cc6dac088e7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac23/original-classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "6becaf10034efd71d3c3c34aa2dc475dbb1e56564871e5f50e1d24dc16bc0654"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac23/original-classes/Main.class",
+      "bytes": 2329,
+      "sha256": "27328a86654a0d836664ec6d0700edd2cba9daa82671ac562bd5c502de7f7c44"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac23/original-classes/Mid.class",
+      "bytes": 215,
+      "sha256": "7a142cfce88dac1a1ca36a744ca89b8117abc19591dc3bb48978c127ff9c25fb"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac23/original-classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "d150683e6fa9ec389417666c1db37a696a87dbd58c8f4d6ef747377fc5b5ce81"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac8/original-classes/Base.class",
+      "bytes": 234,
+      "sha256": "409013f8c80ee540f8fb9db02908c5c1ce71c659a301a44e3eddce79ea576a1f"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac8/original-classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "0642a6d4673dfc3d1d6946d293b2f617be0d665c9d3bdc379a975f7e317f1405"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac8/original-classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "4e08bbc71ad1f73a9a39ad745feafaffea766cb2da510630aeeea7987d7bcf25"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac8/original-classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "458be3d94118ac7daf045325634d8da5cd45f3c7c34649c9862f5696cd5b02d4"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac8/original-classes/Main.class",
+      "bytes": 2332,
+      "sha256": "13549120c523c044fec6d5810723ff434feb53584886c525c184dd3211e9d75e"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac8/original-classes/Mid.class",
+      "bytes": 215,
+      "sha256": "398ee87169937068a370cd40054e80e71774d971915837cab4107860aaef41ab"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/javac8/original-classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "a54f405d3def556658c61b6ae0207cc89171fc80ba3fb67e4c07d8ec9195ed08"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-compile.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-java-version.stderr",
+      "bytes": 152,
+      "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-javac-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-javac-version.stdout",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-javap-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-javap-main.stdout",
+      "bytes": 10335,
+      "sha256": "bc00ffdce93f24e29623ca774208368a9d1daef69b240b4112f6823d99045d35"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-javap-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-javap-version.stdout",
+      "bytes": 7,
+      "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac23-original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-java-version.stderr",
+      "bytes": 174,
+      "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-java-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-javac-version.stderr",
+      "bytes": 16,
+      "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-javac-version.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-javap-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-javap-main.stdout",
+      "bytes": 10335,
+      "sha256": "59420cca03e597b6a4184c2cbe9bf628f83e0fc0d1a5578583f69c874266efb7"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-javap-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-javap-version.stdout",
+      "bytes": 10,
+      "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/logs/javac8-original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-003/manifest.json",
+      "bytes": 23873,
+      "sha256": "98e8f014b4cb7f8a4efca50ff54e7fee992805f27387f95d4c76db1f9b5bc713"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/runner-run-001.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/runner-run-001.stdout",
+      "bytes": 1116,
+      "sha256": "7ea2a8bf02e2c57be55682cab18f7f4aa27ea16a9bc1a79da862e6b52d38ecee"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/runner-run-002.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/runner-run-002.stdout",
+      "bytes": 1115,
+      "sha256": "c8312b58bd05762dbc7e68927d6713106d2fe224b3e4440fd482ab81bbaa4cdd"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/runner.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/runner.stdout",
+      "bytes": 1116,
+      "sha256": "bb34272e061d4344d21603b3fa3eba944a911282c0c0a3d98409221ea9f97fbf"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/Base.java",
+      "bytes": 96,
+      "sha256": "557cd866b7807a25cea084b563b10463920959963c59fe0805649d6c7610b5e1"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/DirectA.java",
+      "bytes": 164,
+      "sha256": "51f61f57ca2e54e06438098318c590aac5494b2ae685fcad4e7a77844f8f16f6"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/DirectB.java",
+      "bytes": 138,
+      "sha256": "5775d6e6fdcc616d0f790aab4dd1351e87b8b1307ee3a33cca995c3e48cad3a0"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/LocalInterface.java",
+      "bytes": 36,
+      "sha256": "a0ccb036ab2b84961e76e6395e891e36baab2825cb201e04706d74693c3c2c9c"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/Main.java",
+      "bytes": 2274,
+      "sha256": "4bdf293b7a9feb21157aa4ffb6d719f85a9d41e4414fc8aef3b9f0179b0312d5"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/Mid.java",
+      "bytes": 126,
+      "sha256": "1ce43f334f3fc5c404ac312ef41b8ad66fc12729e8bf560646ef0a785f74296f"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/README.md",
+      "bytes": 3830,
+      "sha256": "6c7bff4b06df65b1c4a3654ec32e1fb9dae1ebdf3af3170f9d594c1b954db42b"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/TwoHop.java",
+      "bytes": 160,
+      "sha256": "24ad9c061d62f84f3e7ef750bf8d07ce0435608e1c8d2f1185d348471190a23a"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/build_fixture_v1.py",
+      "bytes": 10669,
+      "sha256": "fff9bddbe9c51d11165ea9265af5a9bd2f6e947202fb431543433ecfcc134963"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/fixture-class-copy-v1.json",
+      "bytes": 10698,
+      "sha256": "caa603f2a8795f5477703d24f1f591d31daac0e7a68d135850058b1f3888f6b5"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Base.class",
+      "bytes": 234,
+      "sha256": "d1ed75e2021529df7051bcab98d29c733ade49ccb938572dd45ccec4453c2be5"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "c611e33d00be7f81c0d2ead8185afd99ca22262a1330a6d65dd64b9b88c35e53"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "3cca715c309bd1b35a654d49ac0f1d8712f6e945806e158675ce2cc6dac088e7"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "6becaf10034efd71d3c3c34aa2dc475dbb1e56564871e5f50e1d24dc16bc0654"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Main.class",
+      "bytes": 2329,
+      "sha256": "27328a86654a0d836664ec6d0700edd2cba9daa82671ac562bd5c502de7f7c44"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Mid.class",
+      "bytes": 215,
+      "sha256": "7a142cfce88dac1a1ca36a744ca89b8117abc19591dc3bb48978c127ff9c25fb"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "d150683e6fa9ec389417666c1db37a696a87dbd58c8f4d6ef747377fc5b5ce81"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Base.class",
+      "bytes": 234,
+      "sha256": "409013f8c80ee540f8fb9db02908c5c1ce71c659a301a44e3eddce79ea576a1f"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/DirectA.class",
+      "bytes": 245,
+      "sha256": "0642a6d4673dfc3d1d6946d293b2f617be0d665c9d3bdc379a975f7e317f1405"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/DirectB.class",
+      "bytes": 223,
+      "sha256": "4e08bbc71ad1f73a9a39ad745feafaffea766cb2da510630aeeea7987d7bcf25"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/LocalInterface.class",
+      "bytes": 66,
+      "sha256": "458be3d94118ac7daf045325634d8da5cd45f3c7c34649c9862f5696cd5b02d4"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Main.class",
+      "bytes": 2332,
+      "sha256": "13549120c523c044fec6d5810723ff434feb53584886c525c184dd3211e9d75e"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Mid.class",
+      "bytes": 215,
+      "sha256": "398ee87169937068a370cd40054e80e71774d971915837cab4107860aaef41ab"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/TwoHop.class",
+      "bytes": 242,
+      "sha256": "a54f405d3def556658c61b6ae0207cc89171fc80ba3fb67e4c07d8ec9195ed08"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac23/original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac23/original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac8/original-main.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac8/original-main.stdout",
+      "bytes": 809,
+      "sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/runtime-oracle-copy-v1.json",
+      "bytes": 3159,
+      "sha256": "f750268b25046feaf6812613e889a14fa8f48b3c8a143985b98a5a27e1aa67ae"
+    },
+    {
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/source-plan-v1.md",
+      "bytes": 2515,
+      "sha256": "0c5929572e00b7924effe74203cc6017bc9c7234f98223653d048da3e9631f02"
+    },
+    {
+      "path": "tests/p3_constructed_reference_array_elements.rs",
+      "bytes": 16246,
+      "sha256": "acb48508252b018e7cb9f616a7b90cedf4130914034438c58775c913bcb27212"
+    }
+  ]
+}

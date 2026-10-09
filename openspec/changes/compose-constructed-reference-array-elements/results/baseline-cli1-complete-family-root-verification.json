@@ -1,0 +1,13 @@
+{
+  "manifest_sha256": "a3e835ff98f3c34a886d0ee024732c3967eaa54acbbb2e58cadf73cccbbefb65",
+  "checked_files": 136,
+  "checked_command_streams": 56,
+  "complete_class_source_sets_per_case": 7,
+  "isolated_compile_and_runtime_argv": true,
+  "semantic_accepted": {
+    "jarde": 0,
+    "jadx-none": 2,
+    "jadx-default": 0
+  },
+  "issues": []
+}

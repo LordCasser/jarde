@@ -1,0 +1,6 @@
+{
+  "manifest_sha256": "7cd0a405aa77b96458731612f00ed47189222837196bb1dd3df5cf37245aa7ae",
+  "checked_files": 148,
+  "issues": [],
+  "scope": "Agent inventory at fixture freeze; later oracle copies are additive and independently recorded."
+}

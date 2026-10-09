@@ -1,0 +1,112 @@
+{
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "runner_sha256": "f954ce83139b763a7db3bdde936b6fd6d98cda9b3fd582b921b18a9174c4fe2a",
+  "stages": [
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 2.9458012920076726,
+      "free_bytes_after": 48443650048,
+      "stdout": "fmt.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "fmt.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "init-focused",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "init::tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 11.538512166996952,
+      "free_bytes_after": 48443506688,
+      "stdout": "init-focused.stdout",
+      "stdout_sha256": "d060f65a7564a4d7562a79b75f964a08cd710ee50f73af150b9ac298ce316712",
+      "stderr": "init-focused.stderr",
+      "stderr_sha256": "d07e52aa2bbbcdf0bee7724d162cdd2051307a86d4d660d94c5f57e93e278aac"
+    },
+    {
+      "name": "complete-family-integration",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_constructed_reference_array_elements",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 18.245805750004365,
+      "free_bytes_after": 48442773504,
+      "stdout": "complete-family-integration.stdout",
+      "stdout_sha256": "b2192c223385a0221198b7e065ff4cbbb632a2b25026da94692aab97e702f7e6",
+      "stderr": "complete-family-integration.stderr",
+      "stderr_sha256": "4377d39f8195fb8bcf2706dc6f1542db658d850e4c28289e15d1be55402121c5"
+    },
+    {
+      "name": "legacy-array-integration",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_heterogeneous_array_initializers",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "seconds": 1.7076123750011902,
+      "free_bytes_after": 48393367552,
+      "stdout": "legacy-array-integration.stdout",
+      "stdout_sha256": "a1f1dd7c8554620d3cb28b0b4426dde294c985f461b87b4e3dfe8e8ece87d829",
+      "stderr": "legacy-array-integration.stderr",
+      "stderr_sha256": "96c3792880bcecd651380e57e546110d06db0c765d7c902df449dc2bd7c7a3df"
+    },
+    {
+      "name": "reader-census",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "repository_class_fixtures_validate_without_false_target_rejections",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 101,
+      "seconds": 4.932456584007014,
+      "free_bytes_after": 48383131648,
+      "stdout": "reader-census.stdout",
+      "stdout_sha256": "0581eda58e201a3170e3aa2593967993d4aab334f35cf45575fe9550d7a400a2",
+      "stderr": "reader-census.stderr",
+      "stderr_sha256": "5b865277f335fd28c4415ae3654ed3c1e6fea0d2f14c5cd23973eed797482dd2"
+    }
+  ]
+}

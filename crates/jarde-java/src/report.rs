@@ -9372,18 +9372,32 @@ fn recover_inner(
         Ok(chains) => chains,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let array_initializers =
-        match build::ArrayInitializers::prove(ssa, &operations, &fields, budget) {
-            Ok(arrays) => arrays,
-            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
-        };
-    let sites = init::sites(
+    let reserved_for_arrays = chains.owned();
+    let array_composition = init::ArrayCompositionContext {
+        chains: &chains,
+        reserved: reserved_for_arrays,
+        java_release: request.profile.java_release,
+        member_targets: request.member_inner_targets,
+        method: request.facts.method(),
+        code,
+    };
+    let mut array_initializers = match build::ArrayInitializers::prove_with_composition(
+        ssa,
+        &operations,
+        &fields,
+        Some(&array_composition),
+        budget,
+    ) {
+        Ok(arrays) => arrays,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
+    let sites = init::sites_after_array_composition(
         ssa,
         &operations,
         &chains,
         chains.owned(),
         &fields,
-        &array_initializers,
+        &mut array_initializers,
         request.profile.java_release,
         request.member_inner_targets,
         request.facts.method(),

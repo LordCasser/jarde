@@ -1,0 +1,382 @@
+{
+  "runner_sha256": "47d6949839d33a8c52b1dc83a91ecfdcea95b9b169b5d4f7ad1fee405cf004e5",
+  "ci_yml_sha256": "392cc33befd4802ff57a71b277318404c708c36cc4047115284cb0c972f3bbd9",
+  "stages": [
+    {
+      "name": "focused-varargs",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "varargs_ctor_argument_sites",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:31:16.520386+00:00",
+      "exit": 0,
+      "stdout": "focused-varargs.stdout",
+      "stdout_sha256": "f86f886ce24122a0639fe3e4011696a7d6b5b566c28c79cd955f500295fe0217",
+      "stderr": "focused-varargs.stderr",
+      "stderr_sha256": "b69d2cc3fbfece2f7b34820f4326e9cdc457c7e45d12df23fc2e1123e2e89c78",
+      "free_bytes_after": 32757911552
+    },
+    {
+      "name": "workspace-seed1",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--no-fail-fast"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PROPTEST_RNG_SEED": "5350648285461741569"
+      },
+      "started_utc": "2026-10-09T14:31:27.133446+00:00",
+      "exit": 0,
+      "stdout": "workspace-seed1.stdout",
+      "stdout_sha256": "0d3e43afc1302e1310469a97df0c87504ef7a68cf0cd3ccb11639e740e5a42ba",
+      "stderr": "workspace-seed1.stderr",
+      "stderr_sha256": "67a098bcea3b1dc1c25bc0b21d9542581fed55b32799cb9003bad885e21361ea",
+      "free_bytes_after": 25951715328
+    },
+    {
+      "name": "workspace-seed2",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--no-fail-fast"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PROPTEST_RNG_SEED": "5350648285461741570"
+      },
+      "started_utc": "2026-10-09T14:40:19.739008+00:00",
+      "exit": 0,
+      "stdout": "workspace-seed2.stdout",
+      "stdout_sha256": "3aa497e531afcf8b1d631d72d59f92e5f3f0c75ad2f30140c47ea0eb18da6676",
+      "stderr": "workspace-seed2.stderr",
+      "stderr_sha256": "10e3f57a6f6fd9063852768ebb6288b03da55227b44fbf631b30b7e402dc88bb",
+      "free_bytes_after": 25461637120
+    },
+    {
+      "name": "cargo-clean-mid-gates",
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:45:31.678227+00:00",
+      "exit": 0,
+      "stdout": "cargo-clean-mid-gates.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "cargo-clean-mid-gates.stderr",
+      "stderr_sha256": "613fcb43269b694d85595e4e1a197dbdd722f924ae1edd8fee4c7631fd3d95fd",
+      "free_bytes_after": 39420358656
+    },
+    {
+      "name": "p5-after-effect-fix",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p5_benchmark",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:45:32.348632+00:00",
+      "exit": 0,
+      "stdout": "p5-after-effect-fix.stdout",
+      "stdout_sha256": "1c750a70219e3982627465c2237395e9444e9353fadd121faeee7408f29c03d8",
+      "stderr": "p5-after-effect-fix.stderr",
+      "stderr_sha256": "7157a514a4a97ee233ff2b1cd33786e70811e22e1c66ae7ed243c4201bc3ab67",
+      "free_bytes_after": 39062224896
+    },
+    {
+      "name": "msrv-188",
+      "argv": [
+        "rustup",
+        "run",
+        "1.88.0",
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:46:12.735907+00:00",
+      "exit": 0,
+      "stdout": "msrv-188.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "msrv-188.stderr",
+      "stderr_sha256": "89598b77d4e449551ab3bde47068dde20e3885c7c92c476cbcc42736ddfd51ec",
+      "free_bytes_after": 33821360128
+    },
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:47:18.357401+00:00",
+      "exit": 0,
+      "stdout": "fmt.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "fmt.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "free_bytes_after": 33763323904
+    },
+    {
+      "name": "ci-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:47:21.122999+00:00",
+      "exit": 0,
+      "stdout": "ci-clippy.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "ci-clippy.stderr",
+      "stderr_sha256": "f423bc8b732177c447fb4ab12579e2a31629b99eedc38defef762bba7d14179f",
+      "free_bytes_after": 33641418752
+    },
+    {
+      "name": "ignored-p3",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_execution_comparison",
+        "--locked",
+        "--",
+        "--ignored"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:48:24.361875+00:00",
+      "exit": 0,
+      "stdout": "ignored-p3.stdout",
+      "stdout_sha256": "3e2e5595291733ad6a3ce3038b64d9564c8b66bc107b112574db9f509c1b39a3",
+      "stderr": "ignored-p3.stderr",
+      "stderr_sha256": "8a1650f84f134b63c88df2f6a9f85813ce55bd238ff68d5ecf905e784720d74e",
+      "free_bytes_after": 33132068864
+    },
+    {
+      "name": "ignored-constructor",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-cli",
+        "--test",
+        "json_cli",
+        "--locked",
+        "--",
+        "--ignored",
+        "--exact",
+        "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:50:13.812064+00:00",
+      "exit": 0,
+      "stdout": "ignored-constructor.stdout",
+      "stdout_sha256": "18d4f5754cbc76c6fb04ba4c1957ad43673c05236c175ac4d033a4b6b8bc30a0",
+      "stderr": "ignored-constructor.stderr",
+      "stderr_sha256": "e3973d1ab7afa07d08a4c8aed4b81eea339f7628583db99766468a603923c0e3",
+      "free_bytes_after": 32578883584
+    },
+    {
+      "name": "strict-openspec",
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:50:46.070193+00:00",
+      "exit": 0,
+      "stdout": "strict-openspec.stdout",
+      "stdout_sha256": "5b5309b86b5bb92a6bb65ab3646980287d11aedc586673b14577137e6a6a6a3b",
+      "stderr": "strict-openspec.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "free_bytes_after": 32552914944
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:50:46.646916+00:00",
+      "exit": 0,
+      "stdout": "diff-check.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "diff-check.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "free_bytes_after": 32531529728
+    }
+  ]
+}

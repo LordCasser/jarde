@@ -1,0 +1,27 @@
+{
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/manifest.json",
+  "manifest_sha256": "c29a4dc6806337082f928b3769d77d95afaccd34d6f24dd9b45537ac95a08f9d",
+  "runner_sha256": "3dc84b08ea176b90177c6f50e24cd48007711bfb20c74cafb762438fb7d972f7",
+  "checks": {
+    "all_classes_compiled": true,
+    "all_originals_verified_and_ran": true,
+    "all_target_methods_have_two_new_dup_init_store_sites": false,
+    "original_stdout_stderr_match_across_jdks": true
+  },
+  "legs": {
+    "javac8": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "classes": 7,
+      "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "javac23": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "classes": 7,
+      "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

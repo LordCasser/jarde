@@ -1,0 +1,7 @@
+
+running 2 tests
+test constructed_reference_array_elements_recover_as_one_complete_same_snapshot_family ... ok
+test nested_constructor_composition_is_presented_once_and_boundary_controls_remain_honest ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.55s
+

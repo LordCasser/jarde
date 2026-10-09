@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "utc": "2026-10-09T14:51:37.866169+00:00",
+  "free_bytes_before": 32076550144,
+  "free_bytes_after": 32877355008,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "5c0771252b5d2d52ae8242febd79d656322c79f2b8f32842780831b72cb147fa",
+  "main_target_exists": false,
+  "fuzz_target_exists": false,
+  "frozen_cli2_sha256": "78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273"
+}

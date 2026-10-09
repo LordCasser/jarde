@@ -1,0 +1,21 @@
+{
+  "checks": 93,
+  "issues": [],
+  "workspace": {
+    "workspace-seed1": {
+      "targets": 351,
+      "passed": 3328,
+      "failed": 0,
+      "ignored": 93
+    },
+    "workspace-seed2": {
+      "targets": 351,
+      "passed": 3328,
+      "failed": 0,
+      "ignored": 93
+    }
+  },
+  "gate_index_sha256": "ff4e8ed40a6e3f9e9b7a85556e962d24e6c7eefb476e5c3807a01bf5c8962da4",
+  "cli_sha256": "78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273",
+  "historical_failed_seed_preserved": true
+}

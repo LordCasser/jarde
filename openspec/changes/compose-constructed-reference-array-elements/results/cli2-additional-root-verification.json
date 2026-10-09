@@ -1,0 +1,10 @@
+{
+  "checks": 656,
+  "issues": [],
+  "prior_cli1_success_sets_retained": true,
+  "manifest_sha256": {
+    "legacy-18-cli2-root-v1": "c80c835bd4ce05fa20911dde9eb3c5873ba2a293ce052ab7b1c91adf9910f79a",
+    "legacy-family-cli2-root-v1": "b5418ee6cca10305de194dfa0e2491f5d7b92e93c13a09cfa6c6c0b39869138f",
+    "nested-controls-cli2-root-v1": "0d7888d64d80a47a7288d304aa6343a79e8613d20a86e7313712615f73db781a"
+  }
+}

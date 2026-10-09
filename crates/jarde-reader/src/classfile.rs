@@ -12214,7 +12214,11 @@ mod tests {
             // Forty-two reference-slot lifetime fixtures add 132 bodies, one handler and 33 branches.
             // EM-18 v3 factory/direct families add 24 classes, 172 Code bodies and eight
             // branch targets (the two complete observers per compiler), with no handlers.
-            (1035, 4468, 457, 2701, 8),
+            // The constructed-reference-array composition slice adds 20 classes, 64 Code
+            // bodies, two handlers and ten branch targets: 14 complete-family classes,
+            // four nested/boundary control classes and two handler control classes. It adds no
+            // subroutine.
+            (1055, 4532, 459, 2711, 8),
             "fixture population changed: re-measure these counts"
         );
     }

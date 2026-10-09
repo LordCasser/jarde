@@ -1,0 +1,670 @@
+{
+  "schema": "constructed-reference-array-elements-fixture-v1",
+  "created_utc": "2026-10-09T12:02:01Z",
+  "source_plan": "tests/fixtures/p3-constructed-reference-array-elements-v1/source-plan-v1.md",
+  "source_plan_sha256": "0c5929572e00b7924effe74203cc6017bc9c7234f98223653d048da3e9631f02",
+  "runner": "tests/fixtures/p3-constructed-reference-array-elements-v1/build_fixture_v1.py",
+  "runner_sha256": "3dc84b08ea176b90177c6f50e24cd48007711bfb20c74cafb762438fb7d972f7",
+  "run_id": "run-001",
+  "fixture_sources": [
+    {
+      "path": "Main.java",
+      "bytes": 2274,
+      "sha256": "4bdf293b7a9feb21157aa4ffb6d719f85a9d41e4414fc8aef3b9f0179b0312d5"
+    },
+    {
+      "path": "Base.java",
+      "bytes": 96,
+      "sha256": "557cd866b7807a25cea084b563b10463920959963c59fe0805649d6c7610b5e1"
+    },
+    {
+      "path": "Mid.java",
+      "bytes": 126,
+      "sha256": "1ce43f334f3fc5c404ac312ef41b8ad66fc12729e8bf560646ef0a785f74296f"
+    },
+    {
+      "path": "DirectA.java",
+      "bytes": 164,
+      "sha256": "51f61f57ca2e54e06438098318c590aac5494b2ae685fcad4e7a77844f8f16f6"
+    },
+    {
+      "path": "DirectB.java",
+      "bytes": 138,
+      "sha256": "5775d6e6fdcc616d0f790aab4dd1351e87b8b1307ee3a33cca995c3e48cad3a0"
+    },
+    {
+      "path": "TwoHop.java",
+      "bytes": 160,
+      "sha256": "24ad9c061d62f84f3e7ef750bf8d07ce0435608e1c8d2f1185d348471190a23a"
+    },
+    {
+      "path": "LocalInterface.java",
+      "bytes": 36,
+      "sha256": "a0ccb036ab2b84961e76e6395e891e36baab2825cb201e04706d74693c3c2c9c"
+    }
+  ],
+  "jdk_legs": {
+    "javac8": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "tool_sha256": {
+        "javac": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "java": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+        "javap": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      },
+      "version_stdout": {
+        "javac": "",
+        "java": "",
+        "javap": "1.8.0_432\n"
+      },
+      "version_stderr": {
+        "javac": "javac 1.8.0_432\n",
+        "java": "openjdk version \"1.8.0_432\"\nOpenJDK Runtime Environment Corretto-8.432.06.1 (build 1.8.0_432-b06)\nOpenJDK 64-Bit Server VM Corretto-8.432.06.1 (build 25.432-b06, mixed mode)\n",
+        "javap": ""
+      },
+      "compiler_flags": [
+        "-source",
+        "8",
+        "-target",
+        "8"
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/empty-classpath-sourcepath",
+      "compile_exit_code": 0,
+      "runtime_exit_code": 0,
+      "javap_exit_code": 0,
+      "class_files": [
+        {
+          "path": "Base.class",
+          "bytes": 234,
+          "sha256": "409013f8c80ee540f8fb9db02908c5c1ce71c659a301a44e3eddce79ea576a1f"
+        },
+        {
+          "path": "DirectA.class",
+          "bytes": 245,
+          "sha256": "0642a6d4673dfc3d1d6946d293b2f617be0d665c9d3bdc379a975f7e317f1405"
+        },
+        {
+          "path": "DirectB.class",
+          "bytes": 223,
+          "sha256": "4e08bbc71ad1f73a9a39ad745feafaffea766cb2da510630aeeea7987d7bcf25"
+        },
+        {
+          "path": "LocalInterface.class",
+          "bytes": 66,
+          "sha256": "458be3d94118ac7daf045325634d8da5cd45f3c7c34649c9862f5696cd5b02d4"
+        },
+        {
+          "path": "Main.class",
+          "bytes": 2332,
+          "sha256": "13549120c523c044fec6d5810723ff434feb53584886c525c184dd3211e9d75e"
+        },
+        {
+          "path": "Mid.class",
+          "bytes": 215,
+          "sha256": "398ee87169937068a370cd40054e80e71774d971915837cab4107860aaef41ab"
+        },
+        {
+          "path": "TwoHop.class",
+          "bytes": 242,
+          "sha256": "a54f405d3def556658c61b6ae0207cc89171fc80ba3fb67e4c07d8ec9195ed08"
+        }
+      ],
+      "original_stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "javap_stdout_sha256": "59420cca03e597b6a4184c2cbe9bf628f83e0fc0d1a5578583f69c874266efb7",
+      "javap_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_method_opcodes_bci": {
+        "sequence": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "collections": {
+          "new": [
+            6,
+            31
+          ],
+          "dup": [
+            4,
+            9,
+            14,
+            29,
+            34,
+            39
+          ],
+          "invokespecial": [
+            25,
+            50
+          ],
+          "aastore": [
+            21,
+            28,
+            46,
+            53
+          ]
+        },
+        "failures": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "ownDirect": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "ownTwoHop": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "ownInterface": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        }
+      }
+    },
+    "javac23": {
+      "jdk_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tool_sha256": {
+        "javac": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "java": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+        "javap": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      },
+      "version_stdout": {
+        "javac": "javac 23.0.1\n",
+        "java": "",
+        "javap": "23.0.1\n"
+      },
+      "version_stderr": {
+        "javac": "",
+        "java": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)\n",
+        "javap": ""
+      },
+      "compiler_flags": [
+        "--release",
+        "8"
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/empty-classpath-sourcepath",
+      "compile_exit_code": 0,
+      "runtime_exit_code": 0,
+      "javap_exit_code": 0,
+      "class_files": [
+        {
+          "path": "Base.class",
+          "bytes": 234,
+          "sha256": "d1ed75e2021529df7051bcab98d29c733ade49ccb938572dd45ccec4453c2be5"
+        },
+        {
+          "path": "DirectA.class",
+          "bytes": 245,
+          "sha256": "c611e33d00be7f81c0d2ead8185afd99ca22262a1330a6d65dd64b9b88c35e53"
+        },
+        {
+          "path": "DirectB.class",
+          "bytes": 223,
+          "sha256": "3cca715c309bd1b35a654d49ac0f1d8712f6e945806e158675ce2cc6dac088e7"
+        },
+        {
+          "path": "LocalInterface.class",
+          "bytes": 66,
+          "sha256": "6becaf10034efd71d3c3c34aa2dc475dbb1e56564871e5f50e1d24dc16bc0654"
+        },
+        {
+          "path": "Main.class",
+          "bytes": 2329,
+          "sha256": "27328a86654a0d836664ec6d0700edd2cba9daa82671ac562bd5c502de7f7c44"
+        },
+        {
+          "path": "Mid.class",
+          "bytes": 215,
+          "sha256": "7a142cfce88dac1a1ca36a744ca89b8117abc19591dc3bb48978c127ff9c25fb"
+        },
+        {
+          "path": "TwoHop.class",
+          "bytes": 242,
+          "sha256": "d150683e6fa9ec389417666c1db37a696a87dbd58c8f4d6ef747377fc5b5ce81"
+        }
+      ],
+      "original_stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "javap_stdout_sha256": "bc00ffdce93f24e29623ca774208368a9d1daef69b240b4112f6823d99045d35",
+      "javap_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_method_opcodes_bci": {
+        "sequence": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "collections": {
+          "new": [
+            6,
+            31
+          ],
+          "dup": [
+            4,
+            9,
+            14,
+            29,
+            34,
+            39
+          ],
+          "invokespecial": [
+            25,
+            50
+          ],
+          "aastore": [
+            21,
+            28,
+            46,
+            53
+          ]
+        },
+        "failures": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "ownDirect": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "ownTwoHop": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        },
+        "ownInterface": {
+          "new": [
+            6,
+            21
+          ],
+          "dup": [
+            4,
+            9,
+            19,
+            24
+          ],
+          "invokespecial": [
+            15,
+            30
+          ],
+          "aastore": [
+            18,
+            33
+          ]
+        }
+      }
+    }
+  },
+  "commands": [
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javac-version.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-javac-version.stderr",
+      "stderr_bytes": 16,
+      "stderr_sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+    },
+    {
+      "label": "javac8-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-java-version.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-java-version.stderr",
+      "stderr_bytes": 174,
+      "stderr_sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javap-version.stdout",
+      "stdout_bytes": 10,
+      "stdout_sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713",
+      "stderr_path": "logs/javac8-javap-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/TwoHop.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/LocalInterface.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac8-compile.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-original-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-original-main.stdout",
+      "stdout_bytes": 809,
+      "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "stderr_path": "logs/javac8-original-main.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-javap-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac8/original-classes",
+        "-c",
+        "-p",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac8-javap-main.stdout",
+      "stdout_bytes": 10335,
+      "stdout_sha256": "59420cca03e597b6a4184c2cbe9bf628f83e0fc0d1a5578583f69c874266efb7",
+      "stderr_path": "logs/javac8-javap-main.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javac-version.stdout",
+      "stdout_bytes": 13,
+      "stdout_sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd",
+      "stderr_path": "logs/javac23-javac-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-java-version.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac23-java-version.stderr",
+      "stderr_bytes": 152,
+      "stderr_sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javap-version.stdout",
+      "stdout_bytes": 7,
+      "stdout_sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb",
+      "stderr_path": "logs/javac23-javap-version.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/Main.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/Base.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/Mid.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/DirectA.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/DirectB.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/TwoHop.java",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1/LocalInterface.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-compile.stdout",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_path": "logs/javac23-compile.stderr",
+      "stderr_bytes": 243,
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-original-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-original-main.stdout",
+      "stdout_bytes": 809,
+      "stdout_sha256": "7f3031d85412a384e192dfe07b654d0aab6cfcd3dac85be8b795358e7f5651ee",
+      "stderr_path": "logs/javac23-original-main.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-javap-main",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/fixture-v1/run-001/javac23/original-classes",
+        "-c",
+        "-p",
+        "Main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-constructed-reference-array-elements-v1",
+      "exit_code": 0,
+      "stdout_path": "logs/javac23-javap-main.stdout",
+      "stdout_bytes": 10335,
+      "stdout_sha256": "bc00ffdce93f24e29623ca774208368a9d1daef69b240b4112f6823d99045d35",
+      "stderr_path": "logs/javac23-javap-main.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "checks": {
+    "all_classes_compiled": true,
+    "all_originals_verified_and_ran": true,
+    "all_target_methods_have_two_new_dup_init_store_sites": false,
+    "original_stdout_stderr_match_across_jdks": true
+  }
+}

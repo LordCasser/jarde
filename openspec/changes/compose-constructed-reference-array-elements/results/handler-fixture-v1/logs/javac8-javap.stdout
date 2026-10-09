@@ -1,0 +1,100 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/handler-fixture-v1/javac8/classes/HandlerControls.class
+  Last modified 2026-10-9; size 597 bytes
+  MD5 checksum b7779dfaceed08aceb9c63296e67b373
+public class HandlerControls
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#22         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #23.#24        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #25            // mark:
+   #4 = Methodref          #26.#27        // java/io/PrintStream.print:(Ljava/lang/String;)V
+   #5 = Methodref          #26.#28        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #6 = Class              #29            // java/lang/Object
+   #7 = Class              #30            // java/lang/StringBuilder
+   #8 = String             #31            // handler
+   #9 = Methodref          #12.#32        // HandlerControls.mark:(Ljava/lang/String;)Ljava/lang/String;
+  #10 = Methodref          #7.#33         // java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+  #11 = Class              #34            // java/lang/RuntimeException
+  #12 = Class              #35            // HandlerControls
+  #13 = Utf8               <init>
+  #14 = Utf8               ()V
+  #15 = Utf8               Code
+  #16 = Utf8               mark
+  #17 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #18 = Utf8               handled
+  #19 = Utf8               ()[Ljava/lang/Object;
+  #20 = Utf8               StackMapTable
+  #21 = Class              #34            // java/lang/RuntimeException
+  #22 = NameAndType        #13:#14        // "<init>":()V
+  #23 = Class              #36            // java/lang/System
+  #24 = NameAndType        #37:#38        // out:Ljava/io/PrintStream;
+  #25 = Utf8               mark:
+  #26 = Class              #39            // java/io/PrintStream
+  #27 = NameAndType        #40:#41        // print:(Ljava/lang/String;)V
+  #28 = NameAndType        #42:#41        // println:(Ljava/lang/String;)V
+  #29 = Utf8               java/lang/Object
+  #30 = Utf8               java/lang/StringBuilder
+  #31 = Utf8               handler
+  #32 = NameAndType        #16:#17        // mark:(Ljava/lang/String;)Ljava/lang/String;
+  #33 = NameAndType        #13:#41        // "<init>":(Ljava/lang/String;)V
+  #34 = Utf8               java/lang/RuntimeException
+  #35 = Utf8               HandlerControls
+  #36 = Utf8               java/lang/System
+  #37 = Utf8               out
+  #38 = Utf8               Ljava/io/PrintStream;
+  #39 = Utf8               java/io/PrintStream
+  #40 = Utf8               print
+  #41 = Utf8               (Ljava/lang/String;)V
+  #42 = Utf8               println
+{
+  public HandlerControls();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static java.lang.String mark(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #3                  // String mark:
+         5: invokevirtual #4                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+         8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: aload_0
+        12: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        15: aload_0
+        16: areturn
+
+  static java.lang.Object[] handled();
+    descriptor: ()[Ljava/lang/Object;
+    flags: ACC_STATIC
+    Code:
+      stack=6, locals=1, args_size=0
+         0: iconst_1
+         1: anewarray     #6                  // class java/lang/Object
+         4: dup
+         5: iconst_0
+         6: new           #7                  // class java/lang/StringBuilder
+         9: dup
+        10: ldc           #8                  // String handler
+        12: invokestatic  #9                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+        15: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+        18: aastore
+        19: areturn
+        20: astore_0
+        21: aconst_null
+        22: areturn
+      Exception table:
+         from    to  target type
+             0    19    20   Class java/lang/RuntimeException
+      StackMapTable: number_of_entries = 1
+        frame_type = 84 /* same_locals_1_stack_item */
+          stack = [ class java/lang/RuntimeException ]
+}

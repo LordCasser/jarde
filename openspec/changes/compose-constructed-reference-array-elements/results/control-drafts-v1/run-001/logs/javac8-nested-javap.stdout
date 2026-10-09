@@ -1,0 +1,48 @@
+public class NestedControls {
+  public NestedControls();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static java.lang.String mark(java.lang.String);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: ldc           #3                  // String mark:
+       5: invokevirtual #4                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+       8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      11: aload_0
+      12: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      15: aload_0
+      16: areturn
+
+  static java.lang.Object[] nested();
+    Code:
+       0: iconst_1
+       1: anewarray     #6                  // class java/lang/Object
+       4: dup
+       5: iconst_0
+       6: new           #7                  // class java/lang/StringBuilder
+       9: dup
+      10: new           #7                  // class java/lang/StringBuilder
+      13: dup
+      14: ldc           #8                  // String nested
+      16: invokestatic  #9                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      19: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      22: invokespecial #11                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/CharSequence;)V
+      25: aastore
+      26: areturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: invokestatic  #12                 // Method nested:()[Ljava/lang/Object;
+       3: astore_1
+       4: aload_1
+       5: iconst_0
+       6: aaload
+       7: astore_2
+       8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      11: aload_2
+      12: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+      15: return
+}

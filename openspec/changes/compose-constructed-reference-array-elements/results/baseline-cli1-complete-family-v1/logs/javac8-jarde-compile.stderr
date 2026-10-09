@@ -1,0 +1,19 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Main.java:55: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Main.java:83: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Main.java:110: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Main.java:137: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Main.java:164: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/compose-constructed-reference-array-elements/results/baseline-cli1-complete-family-v1/javac8-jarde/sources/Main.java:191: 错误: 缺少返回语句
+    }
+    ^
+6 个错误

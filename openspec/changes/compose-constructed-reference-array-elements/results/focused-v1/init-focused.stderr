@@ -1,0 +1,332 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling syn v3.0.5
+   Compiling find-msvc-tools v0.1.12
+   Compiling shlex v2.0.1
+   Compiling cc v1.4.6
+   Compiling serde_core v1.0.229
+   Compiling hashbrown v0.17.1
+   Compiling equivalent v1.0.2
+   Compiling cfg-if v1.0.4
+   Compiling crc32fast v1.5.2
+   Compiling indexmap v2.14.2
+   Compiling blake3 v1.8.7
+   Compiling simd-adler32 v0.3.10
+   Compiling thiserror v2.0.20
+   Compiling serde v1.0.229
+   Compiling adler2 v2.0.1
+   Compiling miniz_oxide v0.9.1
+   Compiling thiserror-impl v2.0.20
+   Compiling serde_derive v1.0.229
+   Compiling bitflags v2.13.2
+   Compiling constant_time_eq v0.4.2
+   Compiling arrayvec v0.7.8
+   Compiling noak v0.7.0
+   Compiling flate2 v1.1.10
+   Compiling rawzip v0.5.1
+   Compiling foldhash v0.1.5
+   Compiling hashbrown v0.15.5
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling fixedbitset v0.5.7
+   Compiling petgraph v0.8.3
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0425]: cannot find value `array_facts` in this scope
+    --> crates/jarde-java/src/init.rs:3854:22
+     |
+3854 |             arrays: &array_facts,
+     |                      ^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `array_facts` in this scope
+    --> crates/jarde-java/src/init.rs:4120:26
+     |
+4120 |                 arrays: &array_facts,
+     |                          ^^^^^^^^^^^ not found in this scope
+
+error[E0277]: `&&[(jarde_jvm::method_ir::Slot, ValueId)]` is not an iterator
+    --> crates/jarde-java/src/init.rs:1846:14
+     |
+1846 |     for _ in &check_writes {
+     |              ^^^^^^^^^^^^^ `&&[(jarde_jvm::method_ir::Slot, ValueId)]` is not an iterator
+     |
+     = help: the trait `Iterator` is not implemented for `&&[(jarde_jvm::method_ir::Slot, ValueId)]`
+     = note: required for `&&[(jarde_jvm::method_ir::Slot, ValueId)]` to implement `IntoIterator`
+help: consider removing the leading `&`-reference
+     |
+1846 -     for _ in &check_writes {
+1846 +     for _ in check_writes {
+     |
+
+error[E0658]: use of unstable library feature `str_as_str`
+    --> crates/jarde-java/src/init.rs:1854:60
+     |
+1854 |     let pop_is_single = if let [(_, value)] = check_writes.as_slice() {
+     |                                                            ^^^^^^^^
+     |
+     = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `block` found for reference `&SsaInstruction` in the current scope
+    --> crates/jarde-java/src/init.rs:2398:65
+     |
+2398 |     if new_site.bci() != head || new_site.block() != allocation.block() {
+     |                                                                 ^^^^^ method not found in `&SsaInstruction`
+
+error[E0599]: no method named `block` found for reference `&SsaInstruction` in the current scope
+    --> crates/jarde-java/src/init.rs:2451:51
+     |
+2451 |         if usage.block() != duplicate_instruction.block() || usage.bci() != Some(store) {
+     |                                                   ^^^^^ method not found in `&SsaInstruction`
+
+error[E0599]: no associated function or constant named `prove` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3176:55
+      |
+ 3176 |         let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
+      |                                                       ^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove` not found for this struct
+
+error[E0599]: no associated function or constant named `prove` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3288:46
+      |
+ 3288 |             crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
+      |                                              ^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove` not found for this struct
+
+error[E0599]: no associated function or constant named `prove` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3498:53
+      |
+ 3498 |         let stop = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut limited)
+      |                                                     ^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove` not found for this struct
+
+error[E0599]: no associated function or constant named `prove` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3509:46
+      |
+ 3509 |             crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut cancelled)
+      |                                              ^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove` not found for this struct
+
+error[E0599]: no associated function or constant named `prove` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3524:55
+      |
+ 3524 |         let arrays = crate::build::ArrayInitializers::prove(
+      |                                                       ^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove` not found for this struct
+
+error[E0599]: no associated function or constant named `prove_with_composition` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3675:46
+      |
+ 3675 |             crate::build::ArrayInitializers::prove_with_composition(
+      |                                              ^^^^^^^^^^^^^^^^^^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove_with_composition` not found for this struct
+
+error[E0599]: no associated function or constant named `prove_with_composition` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3687:46
+      |
+ 3687 |             crate::build::ArrayInitializers::prove_with_composition(
+      |                                              ^^^^^^^^^^^^^^^^^^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove_with_composition` not found for this struct
+
+error[E0599]: no associated function or constant named `prove_with_composition` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3697:59
+      |
+ 3697 |         let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+      |                                                           ^^^^^^^^^^^^^^^^^^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove_with_composition` not found for this struct
+
+error[E0599]: no associated function or constant named `prove_with_composition` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:3751:59
+      |
+ 3751 |         let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+      |                                                           ^^^^^^^^^^^^^^^^^^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove_with_composition` not found for this struct
+
+error[E0599]: no associated function or constant named `prove` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:4208:55
+      |
+ 4208 |         let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
+      |                                                       ^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove` not found for this struct
+
+error[E0599]: no associated function or constant named `prove` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/init.rs:4464:55
+      |
+ 4464 |         let arrays = crate::build::ArrayInitializers::prove(
+      |                                                       ^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove` not found for this struct
+
+error[E0599]: no associated function or constant named `prove_with_composition` found for struct `ArrayInitializers` in the current scope
+     --> crates/jarde-java/src/report.rs:9384:66
+      |
+ 9384 |     let mut array_initializers = match build::ArrayInitializers::prove_with_composition(
+      |                                                                  ^^^^^^^^^^^^^^^^^^^^^^ associated function or constant not found in `ArrayInitializers`
+      |
+     ::: crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ----------------------------------- associated function or constant `prove_with_composition` not found for this struct
+
+error[E0609]: no field `owned` on type `&ChildArrayFacts<'_>`
+     --> crates/jarde-java/src/build.rs:12819:14
+      |
+12819 |         self.owned.contains(&at)
+      |              ^^^^^ unknown field
+      |
+help: one of the expressions' fields has a field of the same name
+      |
+12819 |         self.committed.owned.contains(&at)
+      |              ++++++++++
+
+error[E0609]: no field `allocations` on type `&ChildArrayFacts<'_>`
+     --> crates/jarde-java/src/build.rs:12823:14
+      |
+12823 |         self.allocations.get(&at)
+      |              ^^^^^^^^^^^ unknown field
+      |
+help: one of the expressions' fields has a field of the same name
+      |
+12823 |         self.committed.allocations.get(&at)
+      |              ++++++++++
+
+error[E0609]: no field `aliases` on type `&ChildArrayFacts<'_>`
+     --> crates/jarde-java/src/build.rs:12827:14
+      |
+12827 |         self.aliases.get(&value).copied()
+      |              ^^^^^^^ unknown field
+      |
+help: one of the expressions' fields has a field of the same name
+      |
+12827 |         self.committed.aliases.get(&value).copied()
+      |              ++++++++++
+
+error[E0609]: no field `element_sources` on type `&ChildArrayFacts<'_>`
+     --> crates/jarde-java/src/build.rs:12831:31
+      |
+12831 |         self.owns(at) || self.element_sources.contains(&at)
+      |                               ^^^^^^^^^^^^^^^ unknown field
+      |
+help: one of the expressions' fields has a field of the same name
+      |
+12831 |         self.owns(at) || self.committed.element_sources.contains(&at)
+      |                               ++++++++++
+
+error[E0599]: no associated function or constant named `default` found for struct `ChildArrayFacts<'a>` in the current scope
+     --> crates/jarde-java/src/build.rs:12850:32
+      |
+12572 | pub(crate) struct ChildArrayFacts<'a> {
+      | ------------------------------------- associated function or constant `default` not found for this struct
+...
+12850 |         let mut proved = Self::default();
+      |                                ^^^^^^^ associated function or constant not found in `ChildArrayFacts<'_>`
+      |
+note: if you're trying to build a new `ChildArrayFacts<'_>` consider using one of the following associated functions:
+      ChildArrayFacts::<'_>::prove
+      ChildArrayFacts::<'_>::prove_with_composition
+     --> crates/jarde-java/src/build.rs:12834:5
+      |
+12834 | /     pub(crate) fn prove(
+12835 | |         ssa: &SsaTable,
+12836 | |         operations: &Operations,
+12837 | |         fields: &field::Plan,
+12838 | |         budget: &mut Budget,
+12839 | |     ) -> Result<Self, StopReason> {
+      | |_________________________________^
+...
+12843 | /     pub(crate) fn prove_with_composition(
+12844 | |         ssa: &SsaTable,
+12845 | |         operations: &Operations,
+12846 | |         fields: &field::Plan,
+12847 | |         composition: Option<&crate::init::ArrayCompositionContext<'_>>,
+12848 | |         budget: &mut Budget,
+12849 | |     ) -> Result<Self, StopReason> {
+      | |_________________________________^
+      = help: items from traits can only be used if the trait is implemented and in scope
+      = note: the following trait defines an item `default`, perhaps you need to implement it:
+              candidate #1: `Default`
+
+error[E0308]: mismatched types
+     --> crates/jarde-java/src/build.rs:13423:13
+      |
+13423 |       Ok(Some(ArrayInitializer {
+      |  ________----_^
+      | |        |
+      | |        arguments to this enum variant are incorrect
+13424 | |         allocation_value,
+13425 | |         final_value: array_value,
+13426 | |         elements,
+...     |
+13434 | |         depth,
+13435 | |     }))
+      | |_____^ expected `(ArrayInitializer, Vec<Site>)`, found `ArrayInitializer`
+      |
+      = note: expected tuple `(ArrayInitializer, Vec<init::Site>)`
+                found struct `ArrayInitializer`
+help: the type constructed contains `ArrayInitializer` due to the type of the argument passed
+     --> crates/jarde-java/src/build.rs:13423:8
+      |
+13423 |        Ok(Some(ArrayInitializer {
+      |   ________^    -
+      |  |_____________|
+13424 | ||         allocation_value,
+13425 | ||         final_value: array_value,
+13426 | ||         elements,
+...     ||
+13434 | ||         depth,
+13435 | ||     }))
+      | ||_____-^
+      | |______|
+      |        this argument influences the type of `Some`
+note: tuple variant defined here
+     --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/option.rs:606:5
+      |
+  606 |     Some(#[stable(feature = "rust1", since = "1.0.0")] T),
+      |     ^^^^
+
+Some errors have detailed explanations: E0277, E0308, E0425, E0599, E0609, E0658.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `jarde-java` (lib test) due to 24 previous errors

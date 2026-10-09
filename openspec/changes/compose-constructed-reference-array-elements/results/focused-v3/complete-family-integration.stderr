@@ -1,0 +1,99 @@
+   Compiling libc v0.2.189
+   Compiling bitflags v2.13.2
+   Compiling getrandom v0.3.4
+   Compiling noak v0.7.0
+   Compiling zerocopy v0.8.57
+   Compiling rustix v1.1.4
+   Compiling getrandom v0.4.3
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling rand_core v0.9.5
+   Compiling errno v0.3.14
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling once_cell v1.21.4
+   Compiling zmij v1.0.23
+   Compiling fastrand v2.5.0
+   Compiling tempfile v3.27.0
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling ppv-lite86 v0.2.21
+   Compiling wait-timeout v0.2.1
+   Compiling bit-vec v0.8.0
+   Compiling fnv v1.0.7
+   Compiling quick-error v1.2.3
+   Compiling serde_json v1.0.151
+   Compiling rusty-fork v0.3.1
+   Compiling bit-set v0.8.0
+   Compiling rand_chacha v0.9.0
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+warning: associated function `unmetered` is never used
+   --> crates/jarde-java/src/init.rs:213:19
+    |
+212 | impl VerifyMeter<'_> {
+    | -------------------- associated function in this implementation
+213 |     pub(crate) fn unmetered() -> Self {
+    |                   ^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `sites` is never used
+   --> crates/jarde-java/src/init.rs:481:15
+    |
+481 | pub(crate) fn sites(
+    |               ^^^^^
+
+warning: function `discarded_null_check_tail` is never used
+    --> crates/jarde-java/src/init.rs:1816:4
+     |
+1816 | fn discarded_null_check_tail(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `verify_concat_arguments` is never used
+    --> crates/jarde-java/src/init.rs:2121:4
+     |
+2121 | fn verify_concat_arguments(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `value_dependency_bcis` is never used
+    --> crates/jarde-java/src/init.rs:2645:4
+     |
+2645 | fn value_dependency_bcis(
+     |    ^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `inline_char_argument_bcis`, `inline_argument_chain_bcis`, and `prove` are never used
+     --> crates/jarde-java/src/build.rs:12618:19
+      |
+12580 | impl ArrayInitializers {
+      | ---------------------- associated items in this implementation
+...
+12618 |     pub(crate) fn inline_char_argument_bcis(
+      |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+12648 |     pub(crate) fn inline_argument_chain_bcis(
+      |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+12685 |     pub(crate) fn prove(
+      |                   ^^^^^
+
+warning: methods `inline_char_argument_bcis` and `inline_argument_chain_bcis` are never used
+     --> crates/jarde-java/src/build.rs:12864:19
+      |
+12863 | impl ChildArrayFacts<'_> {
+      | ------------------------ methods in this implementation
+12864 |     pub(crate) fn inline_char_argument_bcis(
+      |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+12957 |     pub(crate) fn inline_argument_chain_bcis(
+      |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `jarde-java` (lib) generated 7 warnings
+   Compiling rand v0.9.5
+   Compiling rand_xorshift v0.4.0
+   Compiling memchr v2.8.3
+   Compiling regex-syntax v0.8.11
+   Compiling unarray v0.1.4
+   Compiling itoa v1.0.18
+   Compiling proptest v1.11.0
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 32.19s
+     Running tests/p3_constructed_reference_array_elements.rs (target/debug/deps/p3_constructed_reference_array_elements-5b6845b6de275dbf)

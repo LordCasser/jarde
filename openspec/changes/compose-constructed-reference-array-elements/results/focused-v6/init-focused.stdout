@@ -1,0 +1,27 @@
+
+running 22 tests
+test init::tests::a_handler_boundary_inside_the_array_chain_keeps_the_refusal ... ok
+test init::tests::a_verified_concat_is_composed_only_as_the_unique_constructor_argument ... ok
+test init::tests::composed_nested_site_ownership_and_store_binding_are_exact ... ok
+test init::tests::composed_reference_array_commits_exact_constructed_values_once ... ok
+test init::tests::dynamic_constructor_arguments_keep_one_handler_coverage ... ok
+test init::tests::extra_stack_reader_byte_variant_reaches_exact_site_value_guard ... ok
+test init::tests::fresh_array_index_byte_variants_do_not_commit_partial_candidates ... ok
+test init::tests::functional_constructor_arguments_are_in_the_verified_dependency_run ... ok
+test init::tests::handler_range_byte_variant_reaches_array_effect_closure ... ok
+test init::tests::incomplete_or_double_purpose_array_chains_stay_refused ... ok
+test init::tests::inline_char_array_proof_obeys_shared_budget_and_cancellation ... ok
+test init::tests::inline_char_certificate_requires_the_exact_parent_interval_and_consumer ... ok
+test init::tests::member_call_proof_requires_same_qualifier_and_early_check ... ok
+test init::tests::nested_argument_sites_present_the_complete_inner_construction ... ok
+test init::tests::nested_composition_budget_can_stop_inside_recursive_constructor_proof ... ok
+test init::tests::only_the_complete_direct_java8_string_char_array_is_embedded ... ok
+test init::tests::second_unsupported_element_leaves_no_array_or_site_commit ... ok
+test init::tests::the_array_chain_certificate_requires_the_argument_consumer_interval ... ok
+test init::tests::the_bound_receiver_tail_is_claimed_exactly_where_the_receiver_is_proved ... ok
+test init::tests::the_two_construction_rules_state_what_they_read ... ok
+test init::tests::three_layers_present_and_a_deeper_run_keeps_its_outermost_refusal ... ok
+test init::tests::varargs_inline_array_argument_sites_present_the_complete_chain ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 295 filtered out; finished in 0.04s
+

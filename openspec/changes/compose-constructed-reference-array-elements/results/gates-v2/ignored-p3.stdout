@@ -1,0 +1,8 @@
+
+running 3 tests
+test the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour ... ok
+test the_corpus_is_read_the_same_way_by_every_legal_flag_set ... ok
+test the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 77.28s
+

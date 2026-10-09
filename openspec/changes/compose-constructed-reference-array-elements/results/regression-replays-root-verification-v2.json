@@ -1,0 +1,50 @@
+{
+  "checks": 652,
+  "issues": [],
+  "results": [
+    {
+      "run": "legacy-18-cli2-root-v1",
+      "manifest_sha256": "c80c835bd4ce05fa20911dde9eb3c5873ba2a293ce052ab7b1c91adf9910f79a",
+      "accepted": 16,
+      "total": 18,
+      "failed": [
+        {
+          "family": "bigdecimal-control-corrected",
+          "leg": "javac8",
+          "compile_exit": 0,
+          "matches_original_streams": false,
+          "all_sources_without_refusal": false
+        },
+        {
+          "family": "bigdecimal-control-corrected",
+          "leg": "javac23",
+          "compile_exit": 0,
+          "matches_original_streams": false,
+          "all_sources_without_refusal": false
+        }
+      ]
+    },
+    {
+      "run": "legacy-family-cli2-root-v1",
+      "manifest_sha256": "b5418ee6cca10305de194dfa0e2491f5d7b92e93c13a09cfa6c6c0b39869138f",
+      "accepted": 2,
+      "total": 4,
+      "failed": [
+        {
+          "family": "direct",
+          "leg": "javac8",
+          "compile_exit": 1,
+          "matches_original_streams": false,
+          "all_sources_without_refusal": false
+        },
+        {
+          "family": "direct",
+          "leg": "javac23",
+          "compile_exit": 1,
+          "matches_original_streams": false,
+          "all_sources_without_refusal": false
+        }
+      ]
+    }
+  ]
+}

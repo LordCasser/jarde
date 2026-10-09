@@ -1,0 +1,3 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 0.62s
+     Running tests/p3_heterogeneous_array_initializers.rs (target/debug/deps/p3_heterogeneous_array_initializers-cfa45638f5a7ded4)

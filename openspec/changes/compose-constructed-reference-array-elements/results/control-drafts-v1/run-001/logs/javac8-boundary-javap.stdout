@@ -1,0 +1,151 @@
+public class BoundaryControls {
+  public BoundaryControls();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static java.lang.String mark(java.lang.String);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: ldc           #3                  // String mark:
+       5: invokevirtual #4                  // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+       8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      11: aload_0
+      12: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      15: aload_0
+      16: areturn
+
+  static int number(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+       4: pop
+       5: iconst_1
+       6: ireturn
+
+  static java.lang.Object[] firstThenUnsupportedStructure();
+    Code:
+       0: iconst_2
+       1: anewarray     #7                  // class java/lang/Object
+       4: dup
+       5: iconst_0
+       6: new           #8                  // class java/lang/StringBuilder
+       9: dup
+      10: ldc           #9                  // String first
+      12: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      15: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: new           #11                 // class java/lang/Long
+      24: dup
+      25: ldc           #12                 // String second
+      27: invokestatic  #13                 // Method number:(Ljava/lang/String;)I
+      30: i2l
+      31: invokespecial #14                 // Method java/lang/Long."<init>":(J)V
+      34: aastore
+      35: areturn
+
+  static void old(java.lang.Object[]);
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: new           #8                  // class java/lang/StringBuilder
+       5: dup
+       6: ldc           #15                 // String old
+       8: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      11: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      14: aastore
+      15: return
+
+  static java.lang.Object[] repeated();
+    Code:
+       0: iconst_2
+       1: anewarray     #7                  // class java/lang/Object
+       4: astore_0
+       5: aload_0
+       6: iconst_0
+       7: new           #8                  // class java/lang/StringBuilder
+      10: dup
+      11: ldc           #16                 // String repeated-first
+      13: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      16: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      19: aastore
+      20: aload_0
+      21: iconst_0
+      22: new           #8                  // class java/lang/StringBuilder
+      25: dup
+      26: ldc           #17                 // String repeated-second
+      28: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      31: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      34: aastore
+      35: aload_0
+      36: areturn
+
+  static java.lang.Object[] descending();
+    Code:
+       0: iconst_2
+       1: anewarray     #7                  // class java/lang/Object
+       4: astore_0
+       5: aload_0
+       6: iconst_1
+       7: new           #8                  // class java/lang/StringBuilder
+      10: dup
+      11: ldc           #18                 // String descending-second
+      13: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      16: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      19: aastore
+      20: aload_0
+      21: iconst_0
+      22: new           #8                  // class java/lang/StringBuilder
+      25: dup
+      26: ldc           #19                 // String descending-first
+      28: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      31: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      34: aastore
+      35: aload_0
+      36: areturn
+
+  static java.lang.Object[] crossBlock(boolean);
+    Code:
+       0: iconst_1
+       1: anewarray     #7                  // class java/lang/Object
+       4: astore_1
+       5: new           #8                  // class java/lang/StringBuilder
+       8: dup
+       9: ldc           #20                 // String cross-block
+      11: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      14: invokespecial #10                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      17: astore_2
+      18: iload_0
+      19: ifeq          26
+      22: aload_1
+      23: iconst_0
+      24: aload_2
+      25: aastore
+      26: aload_1
+      27: areturn
+
+  static java.lang.Number[] closedNumberBoundary();
+    Code:
+       0: iconst_2
+       1: anewarray     #21                 // class java/lang/Number
+       4: dup
+       5: iconst_0
+       6: new           #22                 // class java/lang/Integer
+       9: dup
+      10: ldc           #23                 // String 1
+      12: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      15: invokespecial #24                 // Method java/lang/Integer."<init>":(Ljava/lang/String;)V
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: new           #25                 // class java/math/BigDecimal
+      24: dup
+      25: ldc           #26                 // String 2
+      27: invokestatic  #6                  // Method mark:(Ljava/lang/String;)Ljava/lang/String;
+      30: invokespecial #27                 // Method java/math/BigDecimal."<init>":(Ljava/lang/String;)V
+      33: aastore
+      34: areturn
+}

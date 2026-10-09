@@ -1,0 +1,9 @@
+{
+  "manifest_sha256": "54fd5180d75e179c343efdae50824a41230072964e2801d662fb0a759225de00",
+  "checks": 94,
+  "issues": [],
+  "whole_single_class_cases": 6,
+  "jarde_accepted": 2,
+  "jadx_none_accepted": 2,
+  "jadx_default_accepted": 2
+}

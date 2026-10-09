@@ -1,0 +1,3 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 10.58s
+     Running tests/varargs_ctor_argument_sites.rs (target/debug/deps/varargs_ctor_argument_sites-6d410c452dbef899)

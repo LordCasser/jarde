@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stage": "CLI hash preflight",
+  "reason": "root initially used target/debug/jarde; actual binary is target/debug/jarde-cli. No candidate source generation, compile or runtime executed.",
+  "retry_directory": "candidate-cli1-complete-family-v2"
+}

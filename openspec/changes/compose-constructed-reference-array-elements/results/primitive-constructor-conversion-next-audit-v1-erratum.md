@@ -1,0 +1,5 @@
+# Primitive conversion 参照纠正与下一项范围
+
+历史审计原稿保留。原稿将本机JADX称为DEX-only是错误的：本机JADX classfile插件 `jadx-plugins/jadx-java-input/src/main/java/jadx/plugins/input/java/data/code/JavaInsnsRegister.java:217-231` 注册全部0x85..0x93数值转换，oneRegWithResult记录单operand与NARROW/WIDE结果，再由共享InsnDecoder生成source/target CAST。原报告引用的DEX/Smali cast测试不能替代classfile对照，但不能据此否认实际classfile插件。root实际family回放已经使用该插件。
+
+root独立读入当前decoder、init参数区间与Builder：15项转换AST、唯一stack-read/source category、Boolean拒绝及constructor descriptor约束已存在；下一项只需接通真实argument_dependencies内的PrimitiveConversion，不新建cast节点、求值器或pass。成员类构造路径的另两份白名单需明确范围，不能默认继承。既有p3-primitive-conversions已覆盖15opcode及边界；应复用这些回归，新增验收聚焦真实构造参数、五wrapper trace以及完整源集，不重复建设纯cast fixture。共享reader/一般new effect位置仍需边界验证，数组组合成功不能代替普通constructor所有语义。

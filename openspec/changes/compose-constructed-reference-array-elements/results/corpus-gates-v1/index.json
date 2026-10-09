@@ -1,0 +1,136 @@
+{
+  "runner_sha256": "f7b45a0e35f4e2221aec726f7ae4bdf5be2906f7eeab5655c3bb6cb63eb3fc12",
+  "ci_yml_sha256": "392cc33befd4802ff57a71b277318404c708c36cc4047115284cb0c972f3bbd9",
+  "stages": [
+    {
+      "name": "fmt-before-corpus",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:02:10.206516+00:00",
+      "exit": 0,
+      "stdout": "fmt-before-corpus.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "fmt-before-corpus.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "free_bytes_after": 47813795840
+    },
+    {
+      "name": "reader-census-v2",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "repository_class_fixtures_validate_without_false_target_rejections",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:02:13.031371+00:00",
+      "exit": 0,
+      "stdout": "reader-census-v2.stdout",
+      "stdout_sha256": "cf71b0b37869b1b6054a86494c71edff41d3bc0d1cdb4ecc6ba40e81ef72eb3c",
+      "stderr": "reader-census-v2.stderr",
+      "stderr_sha256": "a38bcdf0206a39eb00955904f5d26131c0f3f0164271245d71aedec5aff39602",
+      "free_bytes_after": 47798808576
+    },
+    {
+      "name": "fingerprint-regenerate",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked",
+        "--",
+        "--ignored",
+        "regenerate_corpus_fingerprint"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:02:18.406452+00:00",
+      "exit": 0,
+      "stdout": "fingerprint-regenerate.stdout",
+      "stdout_sha256": "4c7a6d1ac80c077610ee57110afab1b02ce696085a9d1b832593a7d75d04fa9d",
+      "stderr": "fingerprint-regenerate.stderr",
+      "stderr_sha256": "eb467bf59af1d5b3694def492160d62e8138aa35895392a102d84a751d535561",
+      "free_bytes_after": 47649460224
+    },
+    {
+      "name": "fingerprint-verify",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:02:40.552381+00:00",
+      "exit": 0,
+      "stdout": "fingerprint-verify.stdout",
+      "stdout_sha256": "c6e7eb658968c857a78bf2ef8401fe5be6e846109e0c7981beda7505ca32c49a",
+      "stderr": "fingerprint-verify.stderr",
+      "stderr_sha256": "1edce283026c8d03407be3eed2fc22dec80e555af38fb0c489bbde1d9a1af67b",
+      "free_bytes_after": 47649284096
+    },
+    {
+      "name": "p5-benchmark-v1",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p5_benchmark",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "started_utc": "2026-10-09T14:02:40.856335+00:00",
+      "exit": 0,
+      "stdout": "p5-benchmark-v1.stdout",
+      "stdout_sha256": "54dd41ab7440d52fcdf3e87f19e13c522644b06d278668d139b22bb74d55e476",
+      "stderr": "p5-benchmark-v1.stderr",
+      "stderr_sha256": "11c7c8bd61a4dc5a241fa84c19ae37fc7bafaa47ac3843d0b688a7b278d67993",
+      "free_bytes_after": 47611723776
+    }
+  ]
+}

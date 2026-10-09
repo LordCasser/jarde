@@ -1,0 +1,13 @@
+{
+  "cli_path": "/private/tmp/jarde-em18-composition-cli-v1",
+  "cli_sha256": "69a4a4bf86ca3cda412ea5ca6fba4dda24e84253daca781ddfec2da31b4d8495",
+  "source_commit_base": "72aaac4a7d6eb0a3b77ea3366482bf63f7ff20a1",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "8137fafbb0cb1440955a86adc93cb5dbec72233dc3e0b86721c92692f88d3bc0",
+    "crates/jarde-java/src/build.rs": "ff7d28491c6b548568b7cc5f223406f15971a9abe5dcfa4db32f6f7bcb6cc65a",
+    "crates/jarde-java/src/report.rs": "17c07d86e33acbd614f1449b122fbd1c836b5ab21b541bd6ff9879b8689be617"
+  },
+  "focused_index": "openspec/changes/compose-constructed-reference-array-elements/results/focused-v3/index.json",
+  "focused_index_sha256": "f0ebff8ce152bf45fcb511e15e5d28bcd9d41bc3beec04d29e3a65f02b611b1c",
+  "status": "初步正例候选；负控制与全仓尚未验收"
+}

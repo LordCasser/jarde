@@ -1,0 +1,25 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0433]: cannot find type `Type` in this scope
+    --> crates/jarde-java/src/init.rs:4152:33
+     |
+4152 |                         source: Type::Int,
+     |                                 ^^^^ use of undeclared type `Type`
+     |
+help: consider importing this enum through its public re-export
+     |
+3123 +     use crate::Type;
+     |
+
+error[E0433]: cannot find type `Type` in this scope
+    --> crates/jarde-java/src/init.rs:4153:33
+     |
+4153 |                         target: Type::Long
+     |                                 ^^^^ use of undeclared type `Type`
+     |
+help: consider importing this enum through its public re-export
+     |
+3123 +     use crate::Type;
+     |
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `jarde-java` (lib test) due to 2 previous errors
