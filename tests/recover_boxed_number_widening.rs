@@ -15,9 +15,10 @@
 //!   variant the sister implementer table already answers, `same(Integer.valueOf(9))` is the
 //!   same-name control that introduces no cast, and `withParam` presents a boxed **parameter**
 //!   (not a literal) at the same slot;
-//! * `BNX` — the change's own negative: `java.math.BigDecimal` and
-//!   `java.util.concurrent.atomic.AtomicInteger` are `java.lang.Number` subclasses the reflective
-//!   check names **outside** the boxed six, so both keep the reference-conversion refusal verbatim.
+//! * `BNX` — the remaining negative: `java.math.BigDecimal` now has the separately pinned direct
+//!   `Number` row, while `java.util.concurrent.atomic.AtomicInteger` remains outside the closed
+//!   rows and keeps its reference-conversion refusal. The whole `main` still falls back atomically
+//!   when that latter call is refused.
 //!
 //! A `Boolean -> Number` argument position is not a source a javac accepts (a `Boolean` is not
 //! convertible to `Number`), so that negative is pinned where it can be stated: the unit test
@@ -277,9 +278,9 @@ const BN_PICKSEQ: &str = "    // jarde: generic Signature projection refused for
 /// `BN.larger`: the generic method's erased presentation, the same fold marker `C8.larger` carries.
 const BN_LARGER: &str = "    // jarde: generic Signature projection refused for `larger(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Number;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return\n    static java.lang.Number larger(java.lang.Number arg0, java.lang.Number arg1) {\n        // @method larger(Ljava/lang/Number;Ljava/lang/Number;)Ljava/lang/Number;\n        // @declaration a static method of `BN`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        return arg0.doubleValue() >= arg1.doubleValue() ? arg0 : arg1;\n    }\n";
 
-/// `BNX.main`: the change's own negative — `BigDecimal` and `AtomicInteger` are `Number`
-/// subclasses the closed six rows do not name, so both positions keep the refusal verbatim.
-const BNX_MAIN: &str = "    public static void main(java.lang.String[] arg0) {\n        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `BNX`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 24 0 21 3 6 7 9 12 15 16 18 27 30 33 34 35 38 41 42 43 46 49 52\n        // the parameter 0 of the invocation at BCI 21 is declared `java.lang.Number` presents `java.math.BigDecimal` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence\n        // @bytecode 49 27 46\n        // the parameter 0 of the invocation at BCI 46 is declared `java.lang.Number` presents `java.util.concurrent.atomic.AtomicInteger` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence\n        jarde_refused_body();\n    }\n";
+/// `BNX.main`: BigDecimal no longer refuses at BCI 21; AtomicInteger at BCI 46 still refuses.
+/// The whole body falls back because the refused AtomicInteger call blocks partial publication.
+const BNX_MAIN: &str = "    public static void main(java.lang.String[] arg0) {\n        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `BNX`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 49 27 46 0 3 6 7 9 12 15 16 18 21 24 30 33 34 35 38 41 42 43 52\n        // the parameter 0 of the invocation at BCI 46 is declared `java.lang.Number` presents `java.util.concurrent.atomic.AtomicInteger` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence\n        jarde_refused_body();\n    }\n";
 
 /// The refusal text every negative below states: the one reference-conversion sentence this layer
 /// writes, unchanged by this change.
@@ -345,20 +346,30 @@ fn the_boxed_number_positions_are_presented() {
     }
 }
 
-/// The change's own negative: the `Number` subclasses outside the closed six keep both refusals
-/// verbatim, and nothing else in the class is refused.
+/// BigDecimal no longer refuses at BCI 21; AtomicInteger at BCI 46 still refuses. The complete
+/// `main` remains a fallback because one unproved call prevents publishing a partial body.
 #[test]
-fn the_number_subclasses_outside_the_closed_rows_still_refuse() {
+fn atomic_number_subclass_outside_the_closed_rows_still_refuses() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("BNX", &[]));
         let report = class_source_of(&snapshot, "BNX");
         assert_eq!(text_of(&report, "main"), BNX_MAIN, "{}", leg.label);
         assert_eq!(
             report.text.matches(REFUSAL).count(),
-            2,
-            "only the two out-of-row pairs stay refused on `{}`:\n{}",
+            1,
+            "only the AtomicInteger pair stays refused on `{}`:\n{}",
             leg.label,
             report.text
+        );
+        assert!(
+            text_of(&report, "main").contains("at BCI 46 is declared `java.lang.Number` presents `java.util.concurrent.atomic.AtomicInteger`"),
+            "the AtomicInteger refusal remains anchored: {}",
+            text_of(&report, "main")
+        );
+        assert!(
+            !text_of(&report, "main").contains("at BCI 21"),
+            "BigDecimal at BCI 21 no longer carries a refusal: {}",
+            text_of(&report, "main")
         );
     }
 }

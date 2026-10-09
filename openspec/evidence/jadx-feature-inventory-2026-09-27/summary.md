@@ -259,3 +259,6 @@ EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下�
 recover-bigdecimal-number-widening现5/7任务，只新增release-8准确BigDecimal→Number行，完整24控制腿由22/24增至24/24，root独立1226checks/0errors；生产与双真实JDK全类比较、本地严格门禁均通过。新产品确切CI双seed/四job尚未验收，不能提前计为全片完成。
 
 CF16 ImplicitCleanup现有实现经当前CLI完整双JDK/all和essential四腿16路径fresh核验通过；DT26原生int[] capture已恢复。排除旧shortlist的重复实施方向，准确待分析的近邻是二维数组lambda helper复合元素更新：当前两真实JDK完整候选均compile1/helper fallback，capture本身成功。细节与证据在新片verification-root/current-finally-queue-root-v1/nested-array-update-baseline-v1。未freshJADX/未立新实现spec，不变更71分母或EM18/CF16/DT26全单元分类。
+
+
+2026-10-10 root更正BigDecimal产品CI状态：6997c9f8b确切CI37989319644 seed1命中旧closedNumberBoundary Fallback断言，actual已Structured；其余三job成功但产品CI未验收。fresh BoundaryControls/BNX各双输入完整报告核对后，两个旧test只更新BigDecimal已进入闭集的预期，AtomicInteger仍拒绝且wholebody effect来源保持；无产品逻辑修改。20项root验证通过，本地Cargo因空闲19GiB低于20GiB停线未跑，新修正提交的确切CI待执行。分母/EM18/DT26分类不变，详见BigDecimal verification-root。
