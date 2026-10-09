@@ -1,3 +1,7 @@
 *.stdout -whitespace
 *.stderr -whitespace
 *.log -whitespace
+
+# root runner 使用无后缀双流；同样保留原始字节。
+stdout -whitespace
+stderr -whitespace

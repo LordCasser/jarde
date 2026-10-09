@@ -80,3 +80,9 @@ root复核results/final-production-adversarial-audit-v1.md及实际生产接口�
 ## Final Local Gates
 
 root-java-execution-comparison-v1实际exit0，P3显式ignored三项全部通过，argv明确使用真实OpenJDK23 bin路径；root-functional-constructor-execution-v1实际exit0，完整class双JDK对照一项通过。root-final-fmt-v1、root-openspec-strict-v2及root-diff-check-v2均exit0。15opcode含ignored完整原语料、P5严格pins、指纹verify、reader census的已冻结成功记录及全部raw stream hash再核对，见results/root-local-acceptance-inputs-v1.json；init/report/build/Cargo.lock和冻结CLI二进制身份仍一致。3.2已完成，3.3仍待当前代码提交推送与该SHA实际CI。当地未安装JDK25，不声称本地执行了JDK25 oracle；该步骤须由当前提交的CI验收。
+
+## Raw Stream Whitespace Check
+
+首次root-staged-diff-check-v1实际exit2，只报告Cargo原始stdout的终尾空行；此前git diff检查不覆盖当时未跟踪的日志。产品提交a738a894已本地创建但尚未推送。本片已有results/.gitattributes只匹配*.stdout/*.stderr，而root runner以stdout/stderr无后缀保存流；沿用相邻片的原始证据策略，只为这两个basename补充-whitespace，不改任何日志字节、hash或源码规则。完整相对前置f9c6f56d的diff检查须在补充后通过再推送；不把首次staged检查冒称成功。
+
+补充后root-full-diff-check-v3实际exit0，命令为git diff f9c6f56d69d8dc3d37da4584003af8e3c83b3453 --check，覆盖当前全部已提交产品/测试/fixture/证据及尚未提交的属性修正。原始streams未变化，旧失败保留。
