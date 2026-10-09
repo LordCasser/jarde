@@ -1,21 +1,33 @@
 ## Why
 
-[异构数组初始化巡查](../../evidence/java-syntax-2026-10-05/heterogeneous-array-init-patrol/README.md)实证：`Arrays.asList(1, 2L)`（泛型上界推断形）生成 `anewarray java/lang/Number` + 元素 0 为 `Integer.valueOf(1)`、元素 1 为 `Long.valueOf(2L)`——**元素静态呈现类型互异**（各自是组件 `Number` 的子类）——呈现层要求元素呈现类型与数组组件一致而整方法拒绝："the array initializer element at BCI 23 is presented as `java.lang.Integer`, while the array component …"。响亮拒绝（行为安全）但整方法损失。
-
-**判别（已实测）**：同构装箱数组（`Arrays.asList("a","b")`，String 元素）**恢复**——缺口仅在元素类型互异且各需上转型到组件类型的初始化器。**jadx 有解**（`Arrays.asList(1, 2L).get(0)` + cast 呈现）。
+EM-18 的已冻结 `CT.cov` 与新建家族对照显示：字节码明确创建父类/接口分量数组，却因元素呈现为子类而在初始化器处拒绝。2026-10-09 基线也发现，生成 Java 编译、运行退出码为零仍可能丢失 main 的输出，因此恢复成功必须由完整源码及运行双流共同确认。
 
 ## What Changes
 
-数组初始化器的元素类型判据放宽为**赋值兼容**：元素呈现类型是组件类型的子类（向上赋值合法）即接受，呈现为按元素自身类型的初始化（`new Number[]{ Integer.valueOf(1), Long.valueOf(2L) }` 形或既有等价呈现）。不新增类型系统——赋值方向（子→父）是 Java 语言既有事实，比"类型一致"判据更准确而非更宽。
+- 对既有 fresh-array 初始化器，使用可证明的单向赋值兼容关系接受元素，保留分量类型、物理写入次序及元素表达式。
+- 复用当前平台、数组与快照 header 层级事实；为具体 reference-array store 提取站点证明，支持自有子类、接口及等秩引用数组关系。没有证明的合法 Java 输入仍明确记录为未覆盖。
+- 冻结 CT、数值、接口、集合、异常、嵌套数组、自有类族的双 javac 完整对照，以及非法方向、未知层级、位置错配和效果次序负例。
+
+## Capabilities
+
+### New Capabilities
+
+无。
+
+### Modified Capabilities
+
+- `java8-recovery`：初始化器元素按本次事实可证明的赋值兼容关系恢复，完整行为对照为验收条件。
 
 ## Impact
 
-- **代码**：呈现层数组初始化器的元素-组件一致性检查（拒绝文本 "array initializer element … while the array component …" 的发出处，实现者 task 1.1 定位；root 未预定位）。
-- **测试**：`CT.cov` fixture（巡查已冻结）+ 同构数组零回退 + `up()`（List 上转型）零回退。
-- **账本**：summary.md 异构数组登记行关闭。
+- `crates/jarde-java/src/build.rs` 的初始化器呈现与既有 reference widening predicates；不改变调用参数的 overload 固定逻辑。
+- `src/facade.rs` 的既有快照层级证据生产者；沿用 Runtime 环境选择、预算及 header walk，不新增层级服务、pass、crate 或外部依赖。
+- `crates/jarde-java/src/report.rs` 现有站点证明的错误注释与相关测试、fixture、EM-18 账本。
 
-## Non-Goals
+## Prerequisites and Non-Goals
 
-- **不**做元素间 LUB 计算或泛型推断重建（组件类型来自字节码 `anewarray`，已由 reader 事实给出）；
-- **不**改同构数组呈现（零回退锚）；
-- **不**触碰协变返回/通配符读取域（`cov` 的返回 cast 已恢复）。
+依赖现有 SSA、reader、ArrayInitializers 的 fresh-allocation/唯一消费者/次序证明及完整类源组装。method-only 路径继续遵循其现有证据可用性。
+
+构造元素的结构证明组合另见 `compose-constructed-reference-array-elements`，EM-18 整单元仍保持未完成。
+
+不计算 LUB，不重建泛型推断，不解析任意外部 classpath，不无条件接受 subtype 名字，不添加元素 cast，不放宽一般数组赋值，也不将 CT 外围问题混入此项。不得仅因退出码为零关闭 EM-18。

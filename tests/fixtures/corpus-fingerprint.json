@@ -3477,6 +3477,396 @@
       "path": "tests/fixtures/p3-handlers/v8/Res.class"
     },
     {
+      "blake3": "4a5e172acdb51844c216283b1e4b4f7b24430e7aabadae229825e8bad3fb3bb5",
+      "bytes": 120,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/.gitattributes"
+    },
+    {
+      "blake3": "90feb271561077d3e5d7128b70f7575bb7d92993fc9b5d55d6f6d4ef298609f9",
+      "bytes": 39018,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/build-manifest-v3-final.json"
+    },
+    {
+      "blake3": "309569a16fd90338074de54253a0c249ab3fa3a70926a49861a1fa72b1978461",
+      "bytes": 177,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Base.java"
+    },
+    {
+      "blake3": "970ab8515cecddbe64bc093c3e2012a5195c55c02d9f5407d2e8fff8355ed1a9",
+      "bytes": 91,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/DerivedA.java"
+    },
+    {
+      "blake3": "0c1adc810816a7a77e87e6342532a37d6f040bd5540af81e0ea94cee08e045af",
+      "bytes": 92,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/DerivedB.java"
+    },
+    {
+      "blake3": "01148ce3f0b57b896d5ee35964973bb13a8776d30e69f30f07297eeefaa14067",
+      "bytes": 51,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/LocalInterface.java"
+    },
+    {
+      "blake3": "aa68f2b60c458100ebee05f33d2e7af15a1b6a4b4356c911855dc69ce3261f70",
+      "bytes": 5367,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Main.java"
+    },
+    {
+      "blake3": "8435326ee1908e48f362b364626f8ba2b4cc6997e9197a4553cdca404676cd04",
+      "bytes": 76,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/Mid.java"
+    },
+    {
+      "blake3": "92f33b278a3f257fe9357cd5fd78678deda246a5ba72b6ae6c4fe27e1e192758",
+      "bytes": 220,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Base.class"
+    },
+    {
+      "blake3": "a5790a4c206a1ad6b63909c6026ada3b736b3ac62c6de2cfbd6e1a7e07efa5da",
+      "bytes": 112,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/DerivedA.class"
+    },
+    {
+      "blake3": "66154e147a966b05822febd88b98a878ad7205d53cae649683d5f90d1363af74",
+      "bytes": 113,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/DerivedB.class"
+    },
+    {
+      "blake3": "cf1ec97b4a298fa5f32ef8a70195090b62fd4448f3978c7049026e6ef18a235e",
+      "bytes": 88,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/LocalInterface.class"
+    },
+    {
+      "blake3": "c22783693c6693a6f52f099ce92129382557e65f3ef5fd9c25f28de309a83c17",
+      "bytes": 5079,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class"
+    },
+    {
+      "blake3": "ac5f0583520169639db1f9792c0fc960f9861563dd09ab69d93ff85c498997f4",
+      "bytes": 108,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Mid.class"
+    },
+    {
+      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
+      "bytes": 243,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_compile.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_compile.stdout"
+    },
+    {
+      "blake3": "471f46a550c2059443f437f50684522c04024dae9f1900ec30863b6730101dc5",
+      "bytes": 152,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_java-version.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_java-version.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_javac-version.stderr"
+    },
+    {
+      "blake3": "03e894ff4d84e88bc618c8ecf3faa5a939c451f65e72159af5775caa0f40199a",
+      "bytes": 13,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_javac-version.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_javap-main.stderr"
+    },
+    {
+      "blake3": "c6f4fc07e17127d6a014314e16050ad50b98d7e62807aa1d84d106808b015452",
+      "bytes": 22520,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_javap-main.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_original-main.stderr"
+    },
+    {
+      "blake3": "46979661094d9af699fda2d0f3791279a42a7dde10c2d77747d091e658a7cf77",
+      "bytes": 237,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/logs/direct_javac23_original-main.stdout"
+    },
+    {
+      "blake3": "bd6d67c5bf5e00ba8d742ecfd59715e59f9f0ffcaf573f8eee886e0258823bef",
+      "bytes": 220,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Base.class"
+    },
+    {
+      "blake3": "5c00eec14ba89051c67989762bbf4bc96bd5d18e768b330abbf930488efb940b",
+      "bytes": 112,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/DerivedA.class"
+    },
+    {
+      "blake3": "35612d27ec82ea3696b4777374313a8ea7bf044b8a8171b7c536244f2296a6d4",
+      "bytes": 113,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/DerivedB.class"
+    },
+    {
+      "blake3": "d9692f54f20f061e7877cd73e120320b4c840f76570160791beb30d41eab10c3",
+      "bytes": 88,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/LocalInterface.class"
+    },
+    {
+      "blake3": "52b4db9a8514188551c39989bd0634b97c8e97393223e117be5dfd35e6bc25d8",
+      "bytes": 5082,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class"
+    },
+    {
+      "blake3": "dac366f02a61d0c2fd606f792a934f36cdc80d2c66a9cd96ddf02242d5975c83",
+      "bytes": 108,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Mid.class"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_compile.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_compile.stdout"
+    },
+    {
+      "blake3": "0efed80b0ce1bda01102a125c0cd974b628140b72a565bd80e28809b89576771",
+      "bytes": 174,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_java-version.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_java-version.stdout"
+    },
+    {
+      "blake3": "25ec96df1b68b7d99633e63b6d1cb9a30ebd967cdc95ff3d44fbf3bb4a353999",
+      "bytes": 16,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_javac-version.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_javac-version.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_javap-main.stderr"
+    },
+    {
+      "blake3": "f7a7508acb948832055c9a6b47c9a292de9b8ce77df9128a1ebd9662b4ee5065",
+      "bytes": 22520,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_javap-main.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_original-main.stderr"
+    },
+    {
+      "blake3": "46979661094d9af699fda2d0f3791279a42a7dde10c2d77747d091e658a7cf77",
+      "bytes": 237,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/logs/direct_javac8_original-main.stdout"
+    },
+    {
+      "blake3": "309569a16fd90338074de54253a0c249ab3fa3a70926a49861a1fa72b1978461",
+      "bytes": 177,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Base.java"
+    },
+    {
+      "blake3": "970ab8515cecddbe64bc093c3e2012a5195c55c02d9f5407d2e8fff8355ed1a9",
+      "bytes": 91,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/DerivedA.java"
+    },
+    {
+      "blake3": "0c1adc810816a7a77e87e6342532a37d6f040bd5540af81e0ea94cee08e045af",
+      "bytes": 92,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/DerivedB.java"
+    },
+    {
+      "blake3": "01148ce3f0b57b896d5ee35964973bb13a8776d30e69f30f07297eeefaa14067",
+      "bytes": 51,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/LocalInterface.java"
+    },
+    {
+      "blake3": "0d9953fed87a84d0fedaf95ce8d3e21941c004b812dbd53d6ea8d8bdb56edab5",
+      "bytes": 4812,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Main.java"
+    },
+    {
+      "blake3": "8435326ee1908e48f362b364626f8ba2b4cc6997e9197a4553cdca404676cd04",
+      "bytes": 76,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/Mid.java"
+    },
+    {
+      "blake3": "92f33b278a3f257fe9357cd5fd78678deda246a5ba72b6ae6c4fe27e1e192758",
+      "bytes": 220,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes/Base.class"
+    },
+    {
+      "blake3": "a5790a4c206a1ad6b63909c6026ada3b736b3ac62c6de2cfbd6e1a7e07efa5da",
+      "bytes": 112,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes/DerivedA.class"
+    },
+    {
+      "blake3": "66154e147a966b05822febd88b98a878ad7205d53cae649683d5f90d1363af74",
+      "bytes": 113,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes/DerivedB.class"
+    },
+    {
+      "blake3": "cf1ec97b4a298fa5f32ef8a70195090b62fd4448f3978c7049026e6ef18a235e",
+      "bytes": 88,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes/LocalInterface.class"
+    },
+    {
+      "blake3": "1ac3ddded67e1fc7710df81cc61aa6185589e69b078ad56c4484aad05ceb6754",
+      "bytes": 4997,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes/Main.class"
+    },
+    {
+      "blake3": "ac5f0583520169639db1f9792c0fc960f9861563dd09ab69d93ff85c498997f4",
+      "bytes": 108,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/classes/Mid.class"
+    },
+    {
+      "blake3": "5c0505acaf0a884c30d2fa56de3b8695a4245d81abb62fed103b010045b5ea1e",
+      "bytes": 243,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_compile.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_compile.stdout"
+    },
+    {
+      "blake3": "471f46a550c2059443f437f50684522c04024dae9f1900ec30863b6730101dc5",
+      "bytes": 152,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_java-version.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_java-version.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_javac-version.stderr"
+    },
+    {
+      "blake3": "03e894ff4d84e88bc618c8ecf3faa5a939c451f65e72159af5775caa0f40199a",
+      "bytes": 13,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_javac-version.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_javap-main.stderr"
+    },
+    {
+      "blake3": "389b3fe4d4ecf4dd0402724b1eec26c7ef981a0bef63788a1695d020e0519cf2",
+      "bytes": 18916,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_javap-main.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_original-main.stderr"
+    },
+    {
+      "blake3": "46979661094d9af699fda2d0f3791279a42a7dde10c2d77747d091e658a7cf77",
+      "bytes": 237,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac23/logs/factory_javac23_original-main.stdout"
+    },
+    {
+      "blake3": "bd6d67c5bf5e00ba8d742ecfd59715e59f9f0ffcaf573f8eee886e0258823bef",
+      "bytes": 220,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes/Base.class"
+    },
+    {
+      "blake3": "5c00eec14ba89051c67989762bbf4bc96bd5d18e768b330abbf930488efb940b",
+      "bytes": 112,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes/DerivedA.class"
+    },
+    {
+      "blake3": "35612d27ec82ea3696b4777374313a8ea7bf044b8a8171b7c536244f2296a6d4",
+      "bytes": 113,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes/DerivedB.class"
+    },
+    {
+      "blake3": "d9692f54f20f061e7877cd73e120320b4c840f76570160791beb30d41eab10c3",
+      "bytes": 88,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes/LocalInterface.class"
+    },
+    {
+      "blake3": "b3b6b557356d5c6b2ddc62f03c8546a60b37d4dcee5443d65825e6e837cd2d99",
+      "bytes": 5000,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes/Main.class"
+    },
+    {
+      "blake3": "dac366f02a61d0c2fd606f792a934f36cdc80d2c66a9cd96ddf02242d5975c83",
+      "bytes": 108,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/classes/Mid.class"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_compile.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_compile.stdout"
+    },
+    {
+      "blake3": "0efed80b0ce1bda01102a125c0cd974b628140b72a565bd80e28809b89576771",
+      "bytes": 174,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_java-version.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_java-version.stdout"
+    },
+    {
+      "blake3": "25ec96df1b68b7d99633e63b6d1cb9a30ebd967cdc95ff3d44fbf3bb4a353999",
+      "bytes": 16,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_javac-version.stderr"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_javac-version.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_javap-main.stderr"
+    },
+    {
+      "blake3": "e699a4167e131e5d6772f1f21e8f087ee6cd98f22e9cb23aa92a7115d60667a9",
+      "bytes": 18916,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_javap-main.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_original-main.stderr"
+    },
+    {
+      "blake3": "46979661094d9af699fda2d0f3791279a42a7dde10c2d77747d091e658a7cf77",
+      "bytes": 237,
+      "path": "tests/fixtures/p3-heterogeneous-array-initializers-v3/factory/javac8/logs/factory_javac8_original-main.stdout"
+    },
+    {
       "blake3": "b77931b3cdb9d069e574287841aea65331e53b1df9e96a007338f19340c667c0",
       "bytes": 2203,
       "path": "tests/fixtures/p3-hoisted-boolean/Baseline.java"

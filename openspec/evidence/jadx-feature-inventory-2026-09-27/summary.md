@@ -204,4 +204,14 @@ raw receiver实现已提交推送main c5d21640，实际CI run 37831218407四个j
 
 [split-proved-reference-slot-lifetimes](../../changes/split-proved-reference-slot-lifetimes/verification-root.md)以JADX局部变量SSA身份/声明算法为参照，复用Jarde已有变量分段、唯一owner和声明路径。固定八类32输入：旧完整重编/行为8/32，候选24/32；16 no-debug腿全部新增通过，16 debug腿结果保持。原/JADX32腿完整源码均通过，Jarde八个同名LVT腿仍失败。旧值留栈的初候选误发布别名已在root真实SSA审计中发现并修正，非零栈checkcast双JDK负例也保留拒绝；拒绝不计成功。
 
-这是EM-20的明确子片，不代表整个局部类型/声明单元已完成。完整LG的finalize拒绝及其JADX Comparator基线失败仍分开登记；下一片优先EM-18异构Number[]初始化器，先修正既有spec对赋值转换事实入口的引用，再实现有来源的最小兼容判据。
+这是EM-20的明确子片，不代表整个局部类型/声明单元已完成。完整LG的finalize拒绝及其JADX Comparator基线失败仍分开登记；EM-18异构初始化器的当前推进见下文。
+
+## EM-18 Assignability Slice — 2026-10-09
+
+[recover-heterogeneous-array-init](../../changes/recover-heterogeneous-array-init/verification-root.md)已实现既有平台/数组兼容事实和本次Runtime选中的有界snapshot header事实，准确绑定aastore BCI与完整source/component；复用原结构/效果闭包，不加element cast或层级服务。当前candidate本地全门禁已通过，待提交/确切SHA CI验收，不能当已合入主线。
+
+原18有效冻结腿：原程序和源码参考版JADX完整双流匹配18/18，旧Jarde真实行为0/18；当前candidate8/18完整成功（fresh/frozen CT、六wrapper、Number[][]各两腿）。旧候选exit0但main输出为空不计恢复。新v3完整factory家族两compiler腿全部六类自行生成、隔离重编及验证运行双流匹配2/2，覆盖CharSequence、Collection、Throwable、自有直接/两跳继承、interface和等秩数组提升。独立direct-new完整家族仍0/2，构造元素组合未覆盖；合法BigDecimal控制仍未通过。
+
+JADX对新v3的默认包重命名改变反射类名，默认profile四腿均双流不一致；显式rename-flags none四腿一致。72项initializer语法检测不是语义成功数，原记录与勘误永久保留。缺失中间Mid.class的两腿维持准确拒绝，独立平台/DerivedB方法不退化；错误方向、primitive/rank、错位proof、loader和budget/cancel边界见root验收。
+
+EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下一项[compose-constructed-reference-array-elements](../../changes/compose-constructed-reference-array-elements/)组合现有constructor/array两份证明，先闭合stored ValueId、candidate-local暂存和共同提交；五wrapper primitive转换、Dex fill-array-data、任意alias及其他效果变体分别保留待扩验。

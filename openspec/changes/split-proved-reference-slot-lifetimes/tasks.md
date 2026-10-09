@@ -12,4 +12,4 @@
 
 - [x] 3.1 root 对32永久输入重放候选：16 no-debug 完整类两 JDK 隔离重编且 `-Xverify:all` 行为与原/JADX一致；另16 debug腿保持旧源文本与结果；保存实际 runner/工具/输入/源码 hash、双流及exit，不删拒绝成员、不借原jar、不覆盖历史失败。
 - [x] 3.2 root 运行单共享 Cargo 全仓固定seed门禁、MSRV1.88、fmt、CI-exact Clippy、strict OpenSpec、diff check及预算/语料指纹；记录真实新增计费并核对无无关退化，磁盘可用空间不得低于20GiB，完成后清理Cargo残留。
-- [ ] 3.3 root 对抗审查 SSA/CFG/类型来源与所有负例、验收上述完整对照；更新 EM-20/summary/handoff 的本片边界，不宣称完整LG/EM-20完成；提交推送并核对实际 main CI。
+- [x] 3.3 root 对抗审查 SSA/CFG/类型来源与所有负例、验收上述完整对照；更新 EM-20/summary/handoff 的本片边界，不宣称完整LG/EM-20完成；提交推送并核对实际 main CI。

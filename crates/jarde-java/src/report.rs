@@ -125,8 +125,8 @@ pub struct RecoveryRequest<'a> {
     /// Exact invocation sites whose source reference widening and target declaration were proved
     /// against the selected class-source environment. A method-only request has none.
     pub reference_overload_calls: &'a [ProvedReferenceOverloadCall],
-    /// Exact invocation arguments whose snapshot class-file header chain proved the reference
-    /// widening. A method-only request has none.
+    /// Exact invocation arguments and reference-array store sites whose snapshot class-file
+    /// header chain proved the reference widening. A method-only request has none.
     pub snapshot_hierarchy_widenings: &'a [ProvedSnapshotHierarchyWidening],
     /// Exact superclass field writes proved by the selected class-source environment.
     pub superclass_field_writes: &'a [ProvedSuperclassFieldWrite],
@@ -263,11 +263,14 @@ pub struct ProvedReferenceOverloadCall {
     pub target: String,
 }
 
-/// One invocation argument's safe upcast, proved by the snapshot's own class files: the presented
-/// type and the required type are both physical classes of the analyzed snapshot, and the
-/// presented type's class-file headers state the chain (superclass and interfaces, transitively,
-/// bounded) up to the required one.  A chain name absent from the snapshot proved nothing, so a
-/// platform target or a platform intermediate keeps its refusal.
+/// One invocation argument or reference-array store site's safe upcast, proved by the selected
+/// snapshot hierarchy. `bci` identifies the exact invocation/store whose descriptor or array
+/// component supplied the target. The source and target are complete Java type spellings; for
+/// reference arrays they retain the full rank while the producer proves the deepest class
+/// relation. Every intermediate class header is selected and read from the analyzed runtime
+/// environment. A target named directly by such a header need not itself be physical in the
+/// snapshot (for example, a platform interface); a missing intermediate header still proves no
+/// further edge.
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProvedSnapshotHierarchyWidening {
@@ -7191,7 +7194,8 @@ impl<'a> RecoveryRequest<'a> {
         self
     }
 
-    /// Supply only invocation arguments proved against this snapshot's own class-file headers.
+    /// Supply only exact invocation/store sites proved against this snapshot's own class-file
+    /// headers.
     pub fn with_snapshot_hierarchy_widenings(
         mut self,
         widenings: &'a [ProvedSnapshotHierarchyWidening],

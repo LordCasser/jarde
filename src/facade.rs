@@ -24985,12 +24985,187 @@ fn named_reference_class(ty: &jarde_jvm::method_ir::Value) -> Option<&[u8]> {
     }
 }
 
-/// The per-BCI widening proofs this body's own invocation arguments state (change
-/// `recover-snapshot-hierarchy-widening`): one call, one reference parameter whose presented type
-/// and required type are both classes of this snapshot, and the presented type's own class-file
-/// header chain reaches the required one. The same-name, Object-target, array and platform answers
-/// run earlier in the dispatch and never need this proof; a pair the walk does not reach stays
-/// refused exactly as before.
+struct SnapshotReferenceShape {
+    /// The full Java spelling: a class name or that class name followed by its array rank.
+    source_type: String,
+    /// The class whose selected header carries the hierarchy edge.
+    leaf_class: Vec<u8>,
+    /// Zero for a scalar class, otherwise the number of reference-array dimensions.
+    rank: u32,
+}
+
+/// Read a named class or reference-array descriptor without guessing a type for primitive arrays,
+/// unknown references, malformed descriptors, or a non-UTF-8 class name.
+fn snapshot_reference_shape(name: &[u8]) -> Option<SnapshotReferenceShape> {
+    if name.first() == Some(&b'[') {
+        let facts = jarde_reader::classfile::descriptor_facts(
+            name,
+            jarde_reader::classfile::DescriptorKind::Field,
+        )
+        .ok()?;
+        let component = facts.single()?;
+        let rank = component.dimensions();
+        if !component.is_array() || rank == 0 || rank > u32::from(u8::MAX) {
+            return None;
+        }
+        let encoded = component.bytes(name)?;
+        let rank_usize = usize::try_from(rank).ok()?;
+        let leaf_descriptor = encoded.get(rank_usize..)?;
+        let leaf_class = leaf_descriptor.strip_prefix(b"L")?.strip_suffix(b";")?;
+        if leaf_class.is_empty() {
+            return None;
+        }
+        let java_class = std::str::from_utf8(leaf_class).ok()?.replace('/', ".");
+        Some(SnapshotReferenceShape {
+            source_type: format!("{java_class}{}", "[]".repeat(rank_usize)),
+            leaf_class: leaf_class.to_vec(),
+            rank,
+        })
+    } else {
+        let leaf_class = name
+            .strip_prefix(b"L")
+            .and_then(|name| name.strip_suffix(b";"))
+            .unwrap_or(name);
+        if leaf_class.is_empty() {
+            return None;
+        }
+        let java_class = std::str::from_utf8(leaf_class).ok()?.replace('/', ".");
+        Some(SnapshotReferenceShape {
+            source_type: java_class,
+            leaf_class: leaf_class.to_vec(),
+            rank: 0,
+        })
+    }
+}
+
+/// A component obtained from an array descriptor must itself be a reference descriptor. This
+/// separate reader check keeps primitive descriptor letters (for example `I`) from being mistaken
+/// for class names, while source-side internal names such as a legal class named `I` remain valid.
+fn snapshot_reference_descriptor_shape(descriptor: &[u8]) -> Option<SnapshotReferenceShape> {
+    let facts = jarde_reader::classfile::descriptor_facts(
+        descriptor,
+        jarde_reader::classfile::DescriptorKind::Field,
+    )
+    .ok()?;
+    let component = facts.single()?;
+    let rank = usize::try_from(component.dimensions()).ok()?;
+    let encoded = component.bytes(descriptor)?;
+    let leaf_descriptor = encoded.get(rank..)?;
+    if !leaf_descriptor.starts_with(b"L") || !leaf_descriptor.ends_with(b";") {
+        return None;
+    }
+    snapshot_reference_shape(descriptor)
+}
+
+fn snapshot_aastore_reference_pair(
+    array_ty: &jarde_jvm::method_ir::Value,
+    index_ty: &jarde_jvm::method_ir::Value,
+    value_ty: &jarde_jvm::method_ir::Value,
+    expected_loader: &jarde_reader::view::LoaderId,
+) -> Option<(SnapshotReferenceShape, SnapshotReferenceShape)> {
+    use jarde_jvm::method_ir::{RefType, Value};
+
+    let (
+        Value::Ref(RefType::Named {
+            name: array_name,
+            loader: array_loader,
+        }),
+        Value::Int,
+        Value::Ref(RefType::Named {
+            name: value_name,
+            loader: value_loader,
+        }),
+    ) = (array_ty, index_ty, value_ty)
+    else {
+        return None;
+    };
+    if array_loader != value_loader
+        || array_loader.as_ref() != expected_loader
+        || value_loader.as_ref() != expected_loader
+        || array_name.first() != Some(&b'[')
+    {
+        return None;
+    }
+    let array_facts = jarde_reader::classfile::descriptor_facts(
+        array_name,
+        jarde_reader::classfile::DescriptorKind::Field,
+    )
+    .ok()?;
+    let array_component = array_facts.single()?;
+    if !array_component.is_array() || array_component.dimensions() == 0 {
+        return None;
+    }
+    let component_descriptor = array_name.get(1..)?;
+    let source = snapshot_reference_shape(value_name)?;
+    let target = snapshot_reference_descriptor_shape(component_descriptor)?;
+    (source.rank == target.rank).then_some((source, target))
+}
+
+/// One `aastore`'s type pair, read from its exact SSA stack operands. The top three absolute stack
+/// depths are array reference, index and value; a prefix may remain below them. The component
+/// descriptor is independently validated by the reader, and only equal-rank class/reference-array
+/// pairs can reach the snapshot header walk.
+fn snapshot_aastore_reference_pairs(
+    ssa: &jarde_jvm::method_ir::SsaTable,
+    bci: u32,
+    expected_loader: &jarde_reader::view::LoaderId,
+    budget: &mut Budget,
+) -> Result<Vec<(SnapshotReferenceShape, SnapshotReferenceShape)>> {
+    use jarde_jvm::method_ir::Slot;
+
+    let mut pairs = Vec::new();
+    for block in ssa.blocks() {
+        for site in block.instructions() {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if site.bci() != bci || site.opcode() != 0x53 {
+                continue;
+            }
+            if site.reads().len() != 3 {
+                continue;
+            }
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(site.reads().len()).unwrap_or(u64::MAX),
+            )?;
+            let mut stack_reads: Vec<(u32, jarde_jvm::method_ir::ValueId)> = site
+                .reads()
+                .iter()
+                .filter_map(|(slot, value)| match slot {
+                    Slot::Stack(depth) => Some((*depth, *value)),
+                    Slot::Local(_) => None,
+                })
+                .collect();
+            stack_reads.sort_by_key(|(depth, _)| *depth);
+            let [array_operand, index_operand, value_operand] = stack_reads.as_slice() else {
+                continue;
+            };
+            if array_operand.0.checked_add(1) != Some(index_operand.0)
+                || index_operand.0.checked_add(1) != Some(value_operand.0)
+            {
+                continue;
+            }
+            let pair = snapshot_aastore_reference_pair(
+                ssa.value(array_operand.1).ty(),
+                ssa.value(index_operand.1).ty(),
+                ssa.value(value_operand.1).ty(),
+                expected_loader,
+            );
+            if let Some(pair) = pair {
+                pairs.push(pair);
+            }
+        }
+    }
+    Ok(pairs)
+}
+
+/// The per-BCI widening proofs this body states at reference invocation arguments and `aastore`
+/// initializer stores. Invocation targets come from the selected method descriptor; store targets
+/// come from the exact arrayref SSA operand. Both use the analyzed method's selected snapshot
+/// header chain. Store records retain the full scalar/array source and component spellings, while
+/// the bounded walk proves their deepest named class relation. Same-name, Object, closed array and
+/// platform answers remain the earlier consumers' responsibility; a pair the walk cannot reach
+/// stays refused.
 fn prove_snapshot_hierarchy_widenings(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
@@ -25009,6 +25184,36 @@ fn prove_snapshot_hierarchy_widenings(
     for instruction in &code.instructions {
         budget.poll()?;
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if instruction.opcode == 0x53 {
+            for (source, target) in snapshot_aastore_reference_pairs(
+                ssa,
+                instruction.bci,
+                &request.environment.runtime.load_domain.loader,
+                budget,
+            )? {
+                if source.rank != target.rank || source.leaf_class == target.leaf_class {
+                    continue;
+                }
+                if snapshot_header_chain_widens(
+                    content,
+                    request,
+                    ir,
+                    &source.leaf_class,
+                    &target.leaf_class,
+                    SNAPSHOT_HIERARCHY_WALK_DEPTH,
+                    &mut cache,
+                    &mut execution,
+                    budget,
+                )? {
+                    proved.push(jarde_java::report::ProvedSnapshotHierarchyWidening {
+                        bci: instruction.bci,
+                        source: source.source_type,
+                        target: target.source_type,
+                    });
+                }
+            }
+            continue;
+        }
         // An `invokedynamic` site names no method reference at all; every other call carries its
         // receiver as the bottom operand it consumes, and a static call's first parameter stands
         // first instead.
@@ -25180,6 +25385,119 @@ mod snapshot_hierarchy_tests {
                 jarde_jvm::method_ir::RefType::Unknown
             )),
             None
+        );
+    }
+
+    #[test]
+    fn snapshot_reference_shapes_preserve_class_array_rank_and_reject_primitives() {
+        let scalar = snapshot_reference_shape(b"Lpkg/Child;").expect("named class");
+        assert_eq!(scalar.source_type, "pkg.Child");
+        assert_eq!(scalar.leaf_class.as_slice(), b"pkg/Child");
+        assert_eq!(scalar.rank, 0);
+
+        // `I` is a legal source-side internal name for a class. Primitive descriptor letters are
+        // rejected only at the descriptor boundary where the reader identifies them as primitives.
+        assert_eq!(
+            snapshot_reference_shape(b"I")
+                .expect("source-side internal class name")
+                .source_type,
+            "I"
+        );
+
+        let array = snapshot_reference_shape(b"[[Lpkg/Child;").expect("rank-two class array");
+        assert_eq!(array.source_type, "pkg.Child[][]");
+        assert_eq!(array.leaf_class.as_slice(), b"pkg/Child");
+        assert_eq!(array.rank, 2);
+
+        assert!(snapshot_reference_shape(b"[[I").is_none());
+        assert!(snapshot_reference_shape(b"[Lpkg/Child").is_none());
+        assert!(snapshot_reference_descriptor_shape(b"I").is_none());
+        assert!(snapshot_reference_descriptor_shape(b"[I").is_none());
+        assert!(snapshot_reference_descriptor_shape(b"[[I").is_none());
+        assert!(snapshot_reference_descriptor_shape(b"[Lpkg/Child").is_none());
+    }
+
+    #[test]
+    fn snapshot_aastore_pair_requires_reference_array_index_and_matching_loader() {
+        use jarde_jvm::method_ir::{RefType, Value};
+
+        let app_loader = LoaderId("app".to_owned());
+        let named = |name: &[u8]| {
+            Value::Ref(RefType::Named {
+                name: name.to_vec(),
+                loader: Box::new(app_loader.clone()),
+            })
+        };
+        let pair = snapshot_aastore_reference_pair(
+            &named(b"[Lpkg/Base;"),
+            &Value::Int,
+            &named(b"pkg/Child"),
+            &app_loader,
+        )
+        .expect("one-dimensional reference store");
+        assert_eq!(pair.0.source_type, "pkg.Child");
+        assert_eq!(pair.1.source_type, "pkg.Base");
+
+        assert!(
+            snapshot_aastore_reference_pair(
+                &named(b"[I"),
+                &Value::Int,
+                &named(b"pkg/Child"),
+                &app_loader,
+            )
+            .is_none()
+        );
+        assert!(
+            snapshot_aastore_reference_pair(
+                &named(b"[[I"),
+                &Value::Int,
+                &named(b"[I"),
+                &app_loader,
+            )
+            .is_none()
+        );
+        assert!(
+            snapshot_aastore_reference_pair(
+                &named(b"[Lpkg/Base;"),
+                &Value::Long,
+                &named(b"pkg/Child"),
+                &app_loader,
+            )
+            .is_none()
+        );
+        assert!(
+            snapshot_aastore_reference_pair(
+                &named(b"[Lpkg/Base"),
+                &Value::Int,
+                &named(b"pkg/Child"),
+                &app_loader,
+            )
+            .is_none()
+        );
+
+        let other_loader = Value::Ref(RefType::Named {
+            name: b"pkg/Child".to_vec(),
+            loader: Box::new(LoaderId("other".to_owned())),
+        });
+        assert!(
+            snapshot_aastore_reference_pair(
+                &named(b"[Lpkg/Base;"),
+                &Value::Int,
+                &other_loader,
+                &app_loader,
+            )
+            .is_none()
+        );
+
+        let wrong_selected_loader = LoaderId("selected-elsewhere".to_owned());
+        assert!(
+            snapshot_aastore_reference_pair(
+                &named(b"[Lpkg/Base;"),
+                &Value::Int,
+                &named(b"pkg/Child"),
+                &wrong_selected_loader,
+            )
+            .is_none()
         );
     }
 }
@@ -40474,9 +40792,9 @@ fn recovery_from_with_class_candidates(
     } else {
         (Vec::new(), Vec::new())
     };
-    // The widening proofs this body's own invocation arguments state, read from the same snapshot
-    // the body was decoded from: the presented type's class-file headers, and nothing else. A
-    // method-only request states none, like the other class-source proofs above.
+    // The widening proofs this body's invocation arguments and reference-array stores state,
+    // read from the same selected snapshot hierarchy. A method-only request states none, like the
+    // other class-source proofs above.
     let snapshot_hierarchy_widenings = if assembly_context.is_some() {
         snapshot_hierarchy_widenings_presented(content, request, analyzed.ir(), budget)?
     } else {

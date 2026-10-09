@@ -26187,9 +26187,9 @@ impl Builder<'_> {
 
     /// The value one proved array initializer stores into its component. `at` is where the element
     /// expression is evaluated in the recovered text; `store_bci` is the paired physical store and
-    /// anchors any conversion performed for that assignment. Reference compatibility stays
-    /// deliberately closed: without a hierarchy fact, only an exact component type, `Object`, or
-    /// `null` proves an `aastore` cannot gain or lose an `ArrayStoreException`.
+    /// anchors any compatibility fact used for that assignment. Reference compatibility reuses
+    /// only this run's closed platform/array facts or the snapshot hierarchy proof at that exact
+    /// store; absent those facts, only an exact component type, `Object`, or `null` is accepted.
     fn array_initializer_element(
         &self,
         value_id: ValueId,
@@ -26240,8 +26240,17 @@ impl Builder<'_> {
             if actual == expected || is_object {
                 return Ok(value);
             }
+            if initializer_reference_widens(
+                self.profile.java_release,
+                actual,
+                expected,
+                store_bci,
+                self.snapshot_hierarchy_widenings,
+            ) {
+                return Ok(value);
+            }
             return Err(format!(
-                "the array initializer element at BCI {at} is presented as `{}`, while the array component is `{}`; without a hierarchy fact this `aastore` cannot be rewritten as a Java initializer without changing its compatibility or exception behavior",
+                "the array initializer element at BCI {at} is presented as `{}`, while the array component is `{}`; this `aastore` has no compatible reference fact for a Java initializer",
                 actual, expected
             ));
         }
@@ -28896,6 +28905,77 @@ fn narrowed_literal(value: Expr, required: &Type) -> Expr {
 fn descriptor_type(descriptor: &str) -> Option<Type> {
     let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Field).ok()?;
     lambda::type_of_component(facts.single()?)
+}
+
+/// The scalar reference relations already stated by the closed Java 8 tables. A caller may use
+/// these for a scalar initializer element, or lift the same relation through an equal-rank
+/// reference-array shape; no invocation-site overload proof participates in initializer typing.
+fn known_scalar_initializer_reference_widens(
+    java_release: u16,
+    presented: &str,
+    required: &str,
+) -> bool {
+    release_reference_argument_widens(java_release, presented, required)
+        || java_lang_throwable_widens(presented, required)
+        || platform_interface_argument_widens(java_release, presented, required)
+}
+
+/// A spelling's deepest component and rank, for an actual reference array only. Primitive arrays
+/// are handled by the closed array-shape predicate and never borrow a class widening.
+fn reference_array_leaf(name: &str) -> Option<(&str, usize)> {
+    const MAX_ARRAY_DIMENSIONS: usize = 255;
+    let mut leaf = name;
+    let mut rank = 0usize;
+    while let Some(component) = leaf.strip_suffix("[]") {
+        rank += 1;
+        if rank > MAX_ARRAY_DIMENSIONS {
+            return None;
+        }
+        leaf = component;
+    }
+    if rank == 0
+        || leaf.is_empty()
+        || matches!(
+            leaf,
+            "boolean" | "byte" | "char" | "short" | "int" | "long" | "float" | "double" | "void"
+        )
+    {
+        return None;
+    }
+    Some((leaf, rank))
+}
+
+/// Whether one proved initializer element can be assigned to its component without changing the
+/// expression. The outer initializer path handles null, exact type, and Object first. This helper
+/// then reuses the same closed array and scalar facts used by call arguments, followed by the
+/// snapshot header proof for this exact store BCI. Equal-rank array lifting is limited to named
+/// reference leaves; primitive invariance and rank mismatches remain governed by the array-shape
+/// rules.
+fn initializer_reference_widens(
+    java_release: u16,
+    presented: &str,
+    required: &str,
+    store_bci: u32,
+    snapshot_hierarchy_widenings: &[crate::report::ProvedSnapshotHierarchyWidening],
+) -> bool {
+    if array_reference_widens(presented, required)
+        || platform_array_argument_widens(java_release, presented, required)
+        || known_scalar_initializer_reference_widens(java_release, presented, required)
+        || snapshot_hierarchy_widenings.iter().any(|proof| {
+            proof.bci == store_bci && proof.source == presented && proof.target == required
+        })
+    {
+        return true;
+    }
+
+    let (Some((presented_leaf, presented_rank)), Some((required_leaf, required_rank))) = (
+        reference_array_leaf(presented),
+        reference_array_leaf(required),
+    ) else {
+        return false;
+    };
+    presented_rank == required_rank
+        && known_scalar_initializer_reference_widens(java_release, presented_leaf, required_leaf)
 }
 
 /// Whether one presented array type can be widened to a proven array type or array supertype using
@@ -32986,6 +33066,94 @@ mod tests {
                 "release {release}: {presented} must not widen to {required} from this table"
             );
         }
+    }
+
+    #[test]
+    fn initializer_reference_widening_reuses_scalar_and_equal_rank_array_facts() {
+        let no_snapshot = [];
+        for (presented, required) in [
+            ("java.lang.Integer", "java.lang.Number"),
+            ("java.lang.String", "java.lang.CharSequence"),
+            ("java.util.ArrayList", "java.util.List"),
+            ("java.lang.IllegalStateException", "java.lang.Throwable"),
+            ("java.lang.Integer[]", "java.lang.Number[]"),
+            ("java.lang.Integer[][]", "java.lang.Number[][]"),
+            ("java.lang.String[][]", "java.lang.CharSequence[][]"),
+            ("java.util.ArrayList[]", "java.util.List[]"),
+            (
+                "java.lang.IllegalStateException[][]",
+                "java.lang.Throwable[][]",
+            ),
+        ] {
+            assert!(
+                initializer_reference_widens(8, presented, required, 17, &no_snapshot),
+                "{presented} should be accepted for initializer component {required}"
+            );
+        }
+
+        for (release, presented, required) in [
+            (8, "java.lang.Number", "java.lang.Integer"),
+            (8, "java.lang.String", "java.lang.Runnable"),
+            (8, "java.lang.Integer[]", "java.lang.Number[][]"),
+            (8, "java.lang.Integer[][]", "java.lang.Number[]"),
+            (8, "int[]", "long[]"),
+            (8, "int[]", "java.lang.Object[]"),
+            (8, "int[][]", "long[][]"),
+            (9, "java.lang.Integer", "java.lang.Number"),
+            (9, "java.lang.Integer[]", "java.lang.Number[]"),
+        ] {
+            assert!(
+                !initializer_reference_widens(release, presented, required, 17, &no_snapshot),
+                "release {release}: {presented} must not widen to {required}"
+            );
+        }
+
+        // The array closed set still proves reference arrays to Object where Java's shape says
+        // so, while primitive array components themselves remain invariant.
+        assert!(initializer_reference_widens(
+            8,
+            "int[][]",
+            "java.lang.Object[]",
+            17,
+            &no_snapshot
+        ));
+    }
+
+    #[test]
+    fn initializer_snapshot_widening_requires_the_exact_store_and_full_type_pair() {
+        let proof = crate::report::ProvedSnapshotHierarchyWidening {
+            bci: 23,
+            source: "example.Child[]".to_string(),
+            target: "example.Parent[]".to_string(),
+        };
+        assert!(initializer_reference_widens(
+            8,
+            "example.Child[]",
+            "example.Parent[]",
+            23,
+            &[proof.clone()]
+        ));
+        assert!(!initializer_reference_widens(
+            8,
+            "example.Child[]",
+            "example.Parent[]",
+            24,
+            &[proof.clone()]
+        ));
+        assert!(!initializer_reference_widens(
+            8,
+            "example.Child[]",
+            "example.Other[]",
+            23,
+            &[proof.clone()]
+        ));
+        assert!(!initializer_reference_widens(
+            8,
+            "example.Parent[]",
+            "example.Child[]",
+            23,
+            &[proof]
+        ));
     }
 
     fn functional_receiver(kind: ExprKind, presented: Option<Type>, bci: u32) -> Expr {
