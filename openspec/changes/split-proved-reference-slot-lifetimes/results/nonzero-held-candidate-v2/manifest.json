@@ -1,0 +1,323 @@
+{
+  "runner_sha256": "d9edf21eec3f24cd1a4a44b8f5ec3f0b96adb1640423907d4dbfa89de5daf0d9",
+  "cli": "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+  "cli_sha256": "f2ad93f5f024a0e1ec7d74e916839b17cac0f8db6fdf8c1a1eb62051f6dde33b",
+  "rows": [
+    {
+      "leg": "javac8",
+      "class_sha256": "07efa80a8c804de0b44da4c916398a99a19cd7f9e29ef1f88b85239227c69fe6",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "source_sha256": "1069fb4203b54dd4b1da1e716ef662f2a3bd0c9ac9f4bdf69852188758d77c04",
+      "jar_sha256": "5602b50b68e8bb145217aa3a9dbd1c59102bf913f06bf87be41d77411427867e",
+      "refusal_compile_exit": 1
+    },
+    {
+      "leg": "javac23",
+      "class_sha256": "aceecfdfe321a467b1d336f6067f4051a795e16b11f450658b111222e93a1c32",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "source_sha256": "1069fb4203b54dd4b1da1e716ef662f2a3bd0c9ac9f4bdf69852188758d77c04",
+      "jar_sha256": "78cffa3c59bbdef4c9096cd9073be0a37fc324222529f67bbdbdc2951089ad0a",
+      "refusal_compile_exit": 1
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8/original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/original-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/NonzeroHeldUse.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/original-classes",
+        "NonzeroHeldUse"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8",
+      "exit": 0,
+      "stdout_sha256": "0d81cbf9362beb2122fc18e3de5b08ba9fe3bafb2810f7b1763152242b8d77aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-c",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/original-classes/NonzeroHeldUse.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8",
+      "exit": 0,
+      "stdout_sha256": "a77879e1c686a805e19fb29c1a665fc712ae8ba1cd01ee4f39ac0bada99201f8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/report",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/NonzeroHeldUse.jar",
+        "--class",
+        "NonzeroHeldUse",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8",
+      "exit": 0,
+      "stdout_sha256": "16b07d6f0f0053e0af3398f17d34753adb2c043d43e9480904959f5f2a456a16",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/rendered-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/rendered-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8/generated/NonzeroHeldUse.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac8",
+      "exit": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "367fb867b6704a5270358aa6d9f3b96d3e004a55c3110444216057fb46948a3e"
+    },
+    {
+      "label": "javac23/original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/original-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/NonzeroHeldUse.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23/original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/original-classes",
+        "NonzeroHeldUse"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23",
+      "exit": 0,
+      "stdout_sha256": "0d81cbf9362beb2122fc18e3de5b08ba9fe3bafb2810f7b1763152242b8d77aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-c",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/original-classes/NonzeroHeldUse.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23",
+      "exit": 0,
+      "stdout_sha256": "56a17c033f6aadf31f7ac83bd4cd877f36a5baf02b78cc9755fb3b939c5b4aac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/report",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/NonzeroHeldUse.jar",
+        "--class",
+        "NonzeroHeldUse",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23",
+      "exit": 0,
+      "stdout_sha256": "8838a03b177e6212d1d3f1bf6b637a3e3fbccdf1a1ceefe2d9f70fda3af41d57",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/rendered-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/rendered-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23/generated/NonzeroHeldUse.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-candidate-v2/javac23",
+      "exit": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d0c4e57611b5475c96479220ed7caab4a06003e7ad3f141afb05b7eafda3590b"
+    }
+  ],
+  "files": [
+    {
+      "path": "javac23/NonzeroHeldUse.jar",
+      "sha256": "78cffa3c59bbdef4c9096cd9073be0a37fc324222529f67bbdbdc2951089ad0a"
+    },
+    {
+      "path": "javac23/NonzeroHeldUse.java",
+      "sha256": "1069fb4203b54dd4b1da1e716ef662f2a3bd0c9ac9f4bdf69852188758d77c04"
+    },
+    {
+      "path": "javac23/generated/NonzeroHeldUse.java",
+      "sha256": "b4e654f0b9834bfd7d733b9b7f00b4528acb2be9d3576f190da79b881e5a973e"
+    },
+    {
+      "path": "javac23/original-classes/NonzeroHeldUse.class",
+      "sha256": "aceecfdfe321a467b1d336f6067f4051a795e16b11f450658b111222e93a1c32"
+    },
+    {
+      "path": "javac23/original-javac.stderr",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "javac23/original-javac.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac23/original-javap.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac23/original-javap.stdout",
+      "sha256": "56a17c033f6aadf31f7ac83bd4cd877f36a5baf02b78cc9755fb3b939c5b4aac"
+    },
+    {
+      "path": "javac23/original-runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac23/original-runtime.stdout",
+      "sha256": "0d81cbf9362beb2122fc18e3de5b08ba9fe3bafb2810f7b1763152242b8d77aa"
+    },
+    {
+      "path": "javac23/rendered-javac.stderr",
+      "sha256": "d0c4e57611b5475c96479220ed7caab4a06003e7ad3f141afb05b7eafda3590b"
+    },
+    {
+      "path": "javac23/rendered-javac.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac23/report.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac23/report.stdout",
+      "sha256": "8838a03b177e6212d1d3f1bf6b637a3e3fbccdf1a1ceefe2d9f70fda3af41d57"
+    },
+    {
+      "path": "javac8/NonzeroHeldUse.jar",
+      "sha256": "5602b50b68e8bb145217aa3a9dbd1c59102bf913f06bf87be41d77411427867e"
+    },
+    {
+      "path": "javac8/NonzeroHeldUse.java",
+      "sha256": "1069fb4203b54dd4b1da1e716ef662f2a3bd0c9ac9f4bdf69852188758d77c04"
+    },
+    {
+      "path": "javac8/generated/NonzeroHeldUse.java",
+      "sha256": "b4e654f0b9834bfd7d733b9b7f00b4528acb2be9d3576f190da79b881e5a973e"
+    },
+    {
+      "path": "javac8/original-classes/NonzeroHeldUse.class",
+      "sha256": "07efa80a8c804de0b44da4c916398a99a19cd7f9e29ef1f88b85239227c69fe6"
+    },
+    {
+      "path": "javac8/original-javac.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8/original-javac.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8/original-javap.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8/original-javap.stdout",
+      "sha256": "a77879e1c686a805e19fb29c1a665fc712ae8ba1cd01ee4f39ac0bada99201f8"
+    },
+    {
+      "path": "javac8/original-runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8/original-runtime.stdout",
+      "sha256": "0d81cbf9362beb2122fc18e3de5b08ba9fe3bafb2810f7b1763152242b8d77aa"
+    },
+    {
+      "path": "javac8/rendered-javac.stderr",
+      "sha256": "367fb867b6704a5270358aa6d9f3b96d3e004a55c3110444216057fb46948a3e"
+    },
+    {
+      "path": "javac8/rendered-javac.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8/report.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "javac8/report.stdout",
+      "sha256": "16b07d6f0f0053e0af3398f17d34753adb2c043d43e9480904959f5f2a456a16"
+    }
+  ]
+}

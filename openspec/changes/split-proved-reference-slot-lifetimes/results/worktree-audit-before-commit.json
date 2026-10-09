@@ -1,0 +1,159 @@
+{
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "82090226fc6c7d4692e0280d197c41c684f8296a",
+      "branch": "refs/heads/main",
+      "detached": false,
+      "primary": true,
+      "clean": false,
+      "main_ancestor_exit": 0,
+      "has_target": true
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "primary": false,
+      "clean": true,
+      "main_ancestor_exit": 0,
+      "has_target": false
+    }
+  ],
+  "branches": [
+    "* main",
+    "  remotes/origin/HEAD -> origin/main",
+    "  remotes/origin/main"
+  ]
+}

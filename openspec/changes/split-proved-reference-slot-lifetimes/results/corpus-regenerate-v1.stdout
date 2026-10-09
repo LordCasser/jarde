@@ -1,0 +1,7 @@
+
+running 1 test
+test regenerate_corpus_fingerprint ... wrote tests/fixtures/corpus-fingerprint.json: 1878 files, 413018 bytes of JSON
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.36s
+

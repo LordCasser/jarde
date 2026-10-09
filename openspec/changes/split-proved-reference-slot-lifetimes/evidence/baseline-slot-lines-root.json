@@ -1,0 +1,421 @@
+{
+  "rows": [
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "ArrayThenList",
+      "javap_sha256": "58c9c95a3c24b2e5545e70bc51cbdc18f88373dbc92002588139d638629f8845",
+      "slot2_store_lines": [
+        "3: astore_2",
+        "44: astore_2"
+      ],
+      "source_sha256": "03cb76ad249732e53418e4c0633c443a2810f7fe590a41e5f05370850366fbdc",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "StringThenBuilder",
+      "javap_sha256": "a50fed08eab2d5e6be58004b00f7079bc3682e3f17b3c43f0b97ee8b73dc4d11",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "da9e6adbf927082df064d6578d451ca6d8643ec2b5b5e2c2c64fae7536588f94",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "StringThenArray",
+      "javap_sha256": "8d8814d9fa39f24d0392d4e4ae434d039e735e08f8f1b85f8405054ab91870dc",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "16: astore_2"
+      ],
+      "source_sha256": "17604c6d644c572b38133ada1031fd23c57b65b4951cf374f89e22752dba85cf",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "DequeThenBuilder",
+      "javap_sha256": "85bd0c61f57a4c814af0b752bf01e49f9ea44f24d96ea66f017ba94dc63ec111",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "ff1ee77d15047e7971c5e37812bf574f486e47fe11199ee4009c894ae5aeaa0d",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "ArrayThenList",
+      "javap_sha256": "529b6d0621bcf654a58cf6b9fe2d11b10471599bece51635e89729e9f8e8cf5a",
+      "slot2_store_lines": [
+        "3: astore_2",
+        "44: astore_2"
+      ],
+      "source_sha256": "03cb76ad249732e53418e4c0633c443a2810f7fe590a41e5f05370850366fbdc",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "StringThenBuilder",
+      "javap_sha256": "7a571f3e15cd610083b6b2e8f31823a0f050da2e750938e270d0569d8c1b206b",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "da9e6adbf927082df064d6578d451ca6d8643ec2b5b5e2c2c64fae7536588f94",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "StringThenArray",
+      "javap_sha256": "dc5726db9c753e845d7ab80c77ea47d9c8fa04e80602fdfe8d113a008a7b8975",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "16: astore_2"
+      ],
+      "source_sha256": "17604c6d644c572b38133ada1031fd23c57b65b4951cf374f89e22752dba85cf",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "DequeThenBuilder",
+      "javap_sha256": "01f4f625c3ec5e1f10434928ff1c0a78677f9e24c7cc3c9ff3440ce3ae86b43f",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "ff1ee77d15047e7971c5e37812bf574f486e47fe11199ee4009c894ae5aeaa0d",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "ArrayThenList",
+      "javap_sha256": "4081a1af17418e96032bb6f482c654704ed60c3e2b7d94098715b0faced3c845",
+      "slot2_store_lines": [
+        "3: astore_2",
+        "44: astore_2"
+      ],
+      "source_sha256": "03cb76ad249732e53418e4c0633c443a2810f7fe590a41e5f05370850366fbdc",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "StringThenBuilder",
+      "javap_sha256": "a1c2cf8e3e3091709560afc7447f8b21d69f1294351f01f215f9d08e840cb8cb",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "da9e6adbf927082df064d6578d451ca6d8643ec2b5b5e2c2c64fae7536588f94",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "StringThenArray",
+      "javap_sha256": "a840f063b6534ba5616cc430ff5f912809a54ae031e9356dc4e6d0ae4d012257",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "16: astore_2"
+      ],
+      "source_sha256": "17604c6d644c572b38133ada1031fd23c57b65b4951cf374f89e22752dba85cf",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "DequeThenBuilder",
+      "javap_sha256": "42c797f57d8ce8f441db5abcf2357c59d60dafeb9d6eac1300240ec9c97706fd",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "ff1ee77d15047e7971c5e37812bf574f486e47fe11199ee4009c894ae5aeaa0d",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "ArrayThenList",
+      "javap_sha256": "ffe0f2e4abaa2c52eb66a4f9acd0ad7f27785032fec2264b790ed18d16ba7377",
+      "slot2_store_lines": [
+        "3: astore_2",
+        "44: astore_2"
+      ],
+      "source_sha256": "03cb76ad249732e53418e4c0633c443a2810f7fe590a41e5f05370850366fbdc",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "StringThenBuilder",
+      "javap_sha256": "23b66c0361a5a2a35585416158f7257877d4cab1561fa80a6518a493c302d86f",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "da9e6adbf927082df064d6578d451ca6d8643ec2b5b5e2c2c64fae7536588f94",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "StringThenArray",
+      "javap_sha256": "351d5c913d65debdae5495e2fc81b9c159cf831e08162432ab2ec49322c944de",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "16: astore_2"
+      ],
+      "source_sha256": "17604c6d644c572b38133ada1031fd23c57b65b4951cf374f89e22752dba85cf",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "DequeThenBuilder",
+      "javap_sha256": "56e6cc782cc5835b0a268ebc4dedabb840514d52a3958307960c0b137fc39c13",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "ff1ee77d15047e7971c5e37812bf574f486e47fe11199ee4009c894ae5aeaa0d",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "ListThenMap",
+      "javap_sha256": "ffe4892b5176179ad6f173dcda02d173561c1e74a258fada36d3bef2544891aa",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "7f88cb2c6e134c944f868aefc6174dc36733c33851fef1e7ab702b1f4dc06059",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "MapThenBuilder",
+      "javap_sha256": "8b1f72637dac20c39e27a7b9ab0f7081cbc5adacbc3e60c8e5021f4c5a805ddb",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "39: astore_2"
+      ],
+      "source_sha256": "88e32f230f6c24557038c8ab5182247f0b90ff4bea6ff1e0decf95e43bcb0fec",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "StringThenQueue",
+      "javap_sha256": "1b309d342ca6560dea78f8ca50ee7e7865bff107944d91f1484c2eb5fbc9468e",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "4efd2401ee4403e40e5adaa6d3dcccd12843e3199da681d844a5171101dc8187",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "BuilderThenArray",
+      "javap_sha256": "644940e8fe0112de063d6e6fb3997742a2d349508222dd9f03d4b0e9e59948f0",
+      "slot2_store_lines": [
+        "8: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "d4debdc57316904b3a3672d9c6e34e87dcd59ccafc32b6915f9ad1f1391dda92",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "ListThenMap",
+      "javap_sha256": "fddc23dc533ae31bde01b9387dbf734b00fc0aefd9e3138518d15b0c34fbda1f",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "7f88cb2c6e134c944f868aefc6174dc36733c33851fef1e7ab702b1f4dc06059",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "MapThenBuilder",
+      "javap_sha256": "af7b5b3ce1459877fff019f482016613f51ffbf981122e4a73c80366c216a2cf",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "39: astore_2"
+      ],
+      "source_sha256": "88e32f230f6c24557038c8ab5182247f0b90ff4bea6ff1e0decf95e43bcb0fec",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "StringThenQueue",
+      "javap_sha256": "ca5b1dc0756831920a6e7e2fa54abb7b19e0c3b7bae2845b512fcb48a218a1e0",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "4efd2401ee4403e40e5adaa6d3dcccd12843e3199da681d844a5171101dc8187",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "BuilderThenArray",
+      "javap_sha256": "8a06b33a0bd7e17cc9ed09917d89b24b293d6d5dffdb4df671e32db54a91eaa9",
+      "slot2_store_lines": [
+        "8: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "d4debdc57316904b3a3672d9c6e34e87dcd59ccafc32b6915f9ad1f1391dda92",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "ListThenMap",
+      "javap_sha256": "360eb58c1b8422db1b84ca17ed3f3fea6fa6c5b9d1c7a1c0d459f263ca9b8390",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "7f88cb2c6e134c944f868aefc6174dc36733c33851fef1e7ab702b1f4dc06059",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "MapThenBuilder",
+      "javap_sha256": "d34bd4aae3946273cff0183278e6b22e97ef21109727efce2d891a50bb252226",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "39: astore_2"
+      ],
+      "source_sha256": "88e32f230f6c24557038c8ab5182247f0b90ff4bea6ff1e0decf95e43bcb0fec",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "StringThenQueue",
+      "javap_sha256": "e050eda6ad6e38e84dbd2e93becb9d9fb348357d3c832a19918434dd1f5d476f",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "4efd2401ee4403e40e5adaa6d3dcccd12843e3199da681d844a5171101dc8187",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "BuilderThenArray",
+      "javap_sha256": "ff62f69fdb2ba34aa8dfe8a112d19031c1840b5912bab387a5c50041cc2e0037",
+      "slot2_store_lines": [
+        "8: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "d4debdc57316904b3a3672d9c6e34e87dcd59ccafc32b6915f9ad1f1391dda92",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "ListThenMap",
+      "javap_sha256": "a31d7297041b0f0b940737e90092907018a051508f435ac82ae9eed195a655ce",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "40: astore_2"
+      ],
+      "source_sha256": "7f88cb2c6e134c944f868aefc6174dc36733c33851fef1e7ab702b1f4dc06059",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "MapThenBuilder",
+      "javap_sha256": "9bc312a631008b62e1f1e43a1fb4b98c4ef7369c959d24c4de6a2e2280f8bb2c",
+      "slot2_store_lines": [
+        "7: astore_2",
+        "39: astore_2"
+      ],
+      "source_sha256": "88e32f230f6c24557038c8ab5182247f0b90ff4bea6ff1e0decf95e43bcb0fec",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "StringThenQueue",
+      "javap_sha256": "18ebf538ec87e3c5d761f78be998417998c1c7772e79c1612e98008e5f9c53f9",
+      "slot2_store_lines": [
+        "4: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "4efd2401ee4403e40e5adaa6d3dcccd12843e3199da681d844a5171101dc8187",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "BuilderThenArray",
+      "javap_sha256": "972e721f38e73975e6129f85e6633c2e0c75312ad5e13bb2331eeb35c632118d",
+      "slot2_store_lines": [
+        "8: astore_2",
+        "17: astore_2"
+      ],
+      "source_sha256": "d4debdc57316904b3a3672d9c6e34e87dcd59ccafc32b6915f9ad1f1391dda92",
+      "causality_scope": "Two original astore_2 instructions; source explicitly separate lexical scopes. Type sources reviewed from declarations/new/call descriptors. SSA owner proof remains implementation verification."
+    }
+  ],
+  "count": 32
+}

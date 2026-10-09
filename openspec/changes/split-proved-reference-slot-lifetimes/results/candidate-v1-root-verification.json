@@ -1,0 +1,9 @@
+{
+  "manifest_sha256": "867e9c6fc269ccb8effd38168a2d0faeb068518049739444cb989c1b7eed38b9",
+  "files_verified": 296,
+  "commands_verified": 96,
+  "no_debug_complete_compile_runtime_pass": 16,
+  "debug_source_unchanged": 16,
+  "negatives_source_unchanged": 8,
+  "issues": []
+}

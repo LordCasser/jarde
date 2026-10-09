@@ -12211,7 +12211,8 @@ mod tests {
             // lock's own `goto`), no subroutine) moved it again.
             // The 2026-10-09 raw-receiver-field-selection standalone accessor guard adds one
             // class and three straight-line Code bodies; the other inputs are frozen jars.
-            (969, 4164, 456, 2660, 8),
+            // Forty-two reference-slot lifetime fixtures add 132 bodies, one handler and 33 branches.
+            (1011, 4296, 457, 2693, 8),
             "fixture population changed: re-measure these counts"
         );
     }

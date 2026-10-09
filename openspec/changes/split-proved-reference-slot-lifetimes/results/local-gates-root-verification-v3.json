@@ -1,0 +1,29 @@
+{
+  "all_stage_exits_zero": true,
+  "stats": {
+    "workspace-seed1": {
+      "targets": 349,
+      "passed": 3311,
+      "failed": 0,
+      "ignored": 93
+    },
+    "workspace-seed2": {
+      "targets": 349,
+      "passed": 3311,
+      "failed": 0,
+      "ignored": 93
+    }
+  },
+  "stage_names": [
+    "focused",
+    "workspace-seed1",
+    "workspace-seed2",
+    "msrv-188",
+    "fmt",
+    "ci-clippy",
+    "ignored-p3",
+    "ignored-constructor",
+    "strict-openspec",
+    "diff-check"
+  ]
+}

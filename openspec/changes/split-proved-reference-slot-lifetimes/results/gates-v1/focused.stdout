@@ -1,0 +1,10 @@
+
+running 5 tests
+test all_sixteen_no_debug_classes_keep_each_reference_lifetime_separate ... ok
+test different_name_lvt_sources_remain_byte_for_byte_unchanged ... ok
+test low_analysis_budget_and_cancellation_do_not_publish_a_split_source ... ok
+test same_name_lvt_sources_keep_their_existing_failure_verbatim ... ok
+test unsupported_reference_boundaries_keep_the_cli9_source_verbatim ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+

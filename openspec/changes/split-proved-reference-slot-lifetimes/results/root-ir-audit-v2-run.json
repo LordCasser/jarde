@@ -1,0 +1,54 @@
+{
+  "source_sha256": "feb4fa53f9e0f172aaf9ad95fe2b82c3b418a4f581d2d078da8bc17310b81b2d",
+  "externs": {
+    "jarde": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/libjarde-7d387fe190117cad.rlib",
+      "sha256": "c741892792bbf15fc7c89dd00ee7a8b3765d78667d6686ffd7aebd358bde3b37"
+    },
+    "jarde_jvm": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/libjarde_jvm-d46b9a4a16c9486d.rlib",
+      "sha256": "a5c6f7b14888e57a04f518477e143efecc838345658a631490d5e4a2a4e984a5"
+    },
+    "blake3": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/libblake3-0a6826165efe45f3.rlib",
+      "sha256": "01816294252c9675989ae96b5edf523f861b433f38b90b817ca2d119a74fa324"
+    }
+  },
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/homebrew/bin/rustc",
+        "--test",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/root-ir-audit-v2.rs",
+        "--edition=2024",
+        "-L",
+        "dependency=/Users/lordcasser/workspace/projects/jarde/target/debug/deps",
+        "-o",
+        "/private/tmp/jarde-reference-slot-root-ir-audit-v2",
+        "--extern",
+        "jarde=/Users/lordcasser/workspace/projects/jarde/target/debug/deps/libjarde-7d387fe190117cad.rlib",
+        "--extern",
+        "jarde_jvm=/Users/lordcasser/workspace/projects/jarde/target/debug/deps/libjarde_jvm-d46b9a4a16c9486d.rlib",
+        "--extern",
+        "blake3=/Users/lordcasser/workspace/projects/jarde/target/debug/deps/libblake3-0a6826165efe45f3.rlib"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-root-ir-audit-v2",
+        "--ignored",
+        "--exact",
+        "root_audits_reference_slot_owners_and_uses",
+        "--nocapture"
+      ],
+      "exit": 101,
+      "stdout_sha256": "89454ca578f23afb41dc536b86351813be3200f98c4aeae891c251d288442625",
+      "stderr_sha256": "1e4788a4f8a75ee0482b20cbe00e88a9e94d2af948aba812c6694ec30bd5b622"
+    }
+  ]
+}

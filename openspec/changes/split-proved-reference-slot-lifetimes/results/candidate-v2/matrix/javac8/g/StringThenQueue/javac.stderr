@@ -1,0 +1,24 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/StringThenQueue.java:18: 错误: 不兼容的类型: ArrayDeque无法转换为String
+        v = new java.util.ArrayDeque();
+            ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/StringThenQueue.java:19: 错误: 找不到符号
+        v.add((java.lang.Object) x);
+         ^
+  符号:   方法 add(Object)
+  位置: 类型为String的变量 v
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/StringThenQueue.java:20: 错误: 找不到符号
+        v.add((java.lang.Object) "!");
+         ^
+  符号:   方法 add(Object)
+  位置: 类型为String的变量 v
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/StringThenQueue.java:21: 错误: 找不到符号
+        return new java.lang.StringBuilder().append(n).append(":").append((java.lang.String) v.removeFirst()).append((java.lang.String) v.removeLast()).toString();
+                                                                                                                                         ^
+  符号:   方法 removeLast()
+  位置: 类型为String的变量 v
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/StringThenQueue.java:21: 错误: 找不到符号
+        return new java.lang.StringBuilder().append(n).append(":").append((java.lang.String) v.removeFirst()).append((java.lang.String) v.removeLast()).toString();
+                                                                                              ^
+  符号:   方法 removeFirst()
+  位置: 类型为String的变量 v
+5 个错误

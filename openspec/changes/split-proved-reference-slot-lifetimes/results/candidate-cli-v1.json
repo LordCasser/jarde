@@ -1,0 +1,12 @@
+{
+  "cli": "/private/tmp/jarde-reference-slot-candidate-v1-cli",
+  "sha256": "96fe2fe0fe21ad3596afcd5f3a8b9aa16f4222463c11d50de8a4b0b7f05d3684",
+  "base_commit": "82090226fc6c7d4692e0280d197c41c684f8296a",
+  "changed_product_sources": {
+    "crates/jarde-java/src/reuse.rs": "4b5eb5d45b2009890449fdf3b8e004a3c5e762e2dd9d7fc7d9407921449ef684",
+    "crates/jarde-java/src/build.rs": "39880f309ece9dadae17414948b23086734e0bafebe28ff4f5ab02310d1978ef"
+  },
+  "build_exit": 0,
+  "build_stdout": "cli-build-v1.stdout",
+  "build_stderr": "cli-build-v1.stderr"
+}

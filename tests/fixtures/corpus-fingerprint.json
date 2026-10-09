@@ -4977,6 +4977,346 @@
       "path": "tests/fixtures/p3-reference-cast/v8/ReferenceCastProbe.class"
     },
     {
+      "blake3": "495f7e5a68bc0da33a2b9cdb88fa16a00a79666a7faf21ead26adaed4f515a39",
+      "bytes": 1715,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/ArrayThenList.baseline.java"
+    },
+    {
+      "blake3": "a54accdf9727061fe3603fe97869f90c677ec714ac45607c2e9d491a79be4f08",
+      "bytes": 1145,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/ArrayThenList.class"
+    },
+    {
+      "blake3": "e2729a0e9b7e18c0d94991a49761a7acc79fd12fbb5cfca99913a8b8090b44dc",
+      "bytes": 1663,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/DequeThenBuilder.baseline.java"
+    },
+    {
+      "blake3": "aadbb5ac3cc0c174cf6055cae0e59848f72b2e2f9e6f275d27a16c66f3d7a728",
+      "bytes": 1209,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/DequeThenBuilder.class"
+    },
+    {
+      "blake3": "d553b1f6f066afbeb3e29fab1b3c685385fb994fce0b2d5801784e5afec6af7e",
+      "bytes": 1589,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/StringThenArray.baseline.java"
+    },
+    {
+      "blake3": "d0db51844e0be6b59c99a13a016ba46d488a7a608bbefd987fee53e05053b1a6",
+      "bytes": 987,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/StringThenArray.class"
+    },
+    {
+      "blake3": "bd6e6a6ad2e36ed35e32e949c0134f905c3e14bb72f5ca1422e805b902797d1d",
+      "bytes": 1554,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/StringThenBuilder.baseline.java"
+    },
+    {
+      "blake3": "0386fbbb624fe74d029d2fdc03255240414a17567126ddab6c423c5babe4fd74",
+      "bytes": 1030,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/StringThenBuilder.class"
+    },
+    {
+      "blake3": "495f7e5a68bc0da33a2b9cdb88fa16a00a79666a7faf21ead26adaed4f515a39",
+      "bytes": 1715,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/ArrayThenList.baseline.java"
+    },
+    {
+      "blake3": "78a7d0115a686a64245b039956e0ecd0d93c68c0a08ccde0a2d9d5d24b08825e",
+      "bytes": 1145,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/ArrayThenList.class"
+    },
+    {
+      "blake3": "e2729a0e9b7e18c0d94991a49761a7acc79fd12fbb5cfca99913a8b8090b44dc",
+      "bytes": 1663,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/DequeThenBuilder.baseline.java"
+    },
+    {
+      "blake3": "5c89b6e65f5a52f367ebd4477a80f4eee9f5c444eadcfe4d7225a6ad53738923",
+      "bytes": 1209,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/DequeThenBuilder.class"
+    },
+    {
+      "blake3": "d553b1f6f066afbeb3e29fab1b3c685385fb994fce0b2d5801784e5afec6af7e",
+      "bytes": 1589,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/StringThenArray.baseline.java"
+    },
+    {
+      "blake3": "9d917013ab42bf79edc65c6b5a9eeeb659d08940a8b4cf1d5d9deb6613455e9a",
+      "bytes": 987,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/StringThenArray.class"
+    },
+    {
+      "blake3": "bd6e6a6ad2e36ed35e32e949c0134f905c3e14bb72f5ca1422e805b902797d1d",
+      "bytes": 1554,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/StringThenBuilder.baseline.java"
+    },
+    {
+      "blake3": "9e990f97c28f9199f4233dd4385263b4815e359f2db628804f88a8464876848f",
+      "bytes": 1030,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac8/StringThenBuilder.class"
+    },
+    {
+      "blake3": "ec87a005b6fd22456102667fd9c426d9d3f4e9a6f23c83118cac873bc3d17bff",
+      "bytes": 1764,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/BuilderThenArray.baseline.java"
+    },
+    {
+      "blake3": "e150896809606e1ee053842ea57abd7841b3ace776eddb40b39a2d54cafd539a",
+      "bytes": 982,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/BuilderThenArray.class"
+    },
+    {
+      "blake3": "2b3752bac6619533fa24eee764867e67aa78da669913a5b4afac76e74808dcf2",
+      "bytes": 1614,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/ListThenMap.baseline.java"
+    },
+    {
+      "blake3": "9fd6beb686efad28aa3fdd74b2892073fb8effd522c7a0f118256095d6237f07",
+      "bytes": 1251,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/ListThenMap.class"
+    },
+    {
+      "blake3": "8b619c94f2ea3544648667ecbc267fd07cb5bc6fce214f25902a9c875afdb391",
+      "bytes": 1587,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/MapThenBuilder.baseline.java"
+    },
+    {
+      "blake3": "14b974b05e7ab6f8368765c082d1e01f9623bd79d20ecf271fe92a89950cf09d",
+      "bytes": 1311,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/MapThenBuilder.class"
+    },
+    {
+      "blake3": "1f868f9ac6f1eb78b280196403d5245f5bb0c9cb7ffba0396e69adf8dcac4351",
+      "bytes": 1636,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/StringThenQueue.baseline.java"
+    },
+    {
+      "blake3": "bcd94c8ffdb15b36eed5f71312abff343854fad6714d83ac827642dcc93d20cc",
+      "bytes": 1305,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/StringThenQueue.class"
+    },
+    {
+      "blake3": "ec87a005b6fd22456102667fd9c426d9d3f4e9a6f23c83118cac873bc3d17bff",
+      "bytes": 1764,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/BuilderThenArray.baseline.java"
+    },
+    {
+      "blake3": "0a1bd142fd3bf7c41b1eac7b3afd81fb92206a693d906daf6663c2e135758895",
+      "bytes": 982,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/BuilderThenArray.class"
+    },
+    {
+      "blake3": "2b3752bac6619533fa24eee764867e67aa78da669913a5b4afac76e74808dcf2",
+      "bytes": 1614,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/ListThenMap.baseline.java"
+    },
+    {
+      "blake3": "f5a2e24332843356fc02766542d66f1b09cd6678564255715842a7f72030a077",
+      "bytes": 1251,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/ListThenMap.class"
+    },
+    {
+      "blake3": "8b619c94f2ea3544648667ecbc267fd07cb5bc6fce214f25902a9c875afdb391",
+      "bytes": 1587,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/MapThenBuilder.baseline.java"
+    },
+    {
+      "blake3": "23686d827886ea51c4a5bc269df3962aa1b69b8f303532f42121baad09505bd1",
+      "bytes": 1311,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/MapThenBuilder.class"
+    },
+    {
+      "blake3": "1f868f9ac6f1eb78b280196403d5245f5bb0c9cb7ffba0396e69adf8dcac4351",
+      "bytes": 1636,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/StringThenQueue.baseline.java"
+    },
+    {
+      "blake3": "dab73c38c8778f46eaec339257676d5769ec50fde23c85f10b710e21567d4928",
+      "bytes": 1305,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/StringThenQueue.class"
+    },
+    {
+      "blake3": "d8dd447e9fdb55b7bd417a790971723c779518aeeab08acb89754941081cc573",
+      "bytes": 736,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/ArrayThenList.class"
+    },
+    {
+      "blake3": "42426875ba7fabf5f3804a0e2791c733516d72265aa5d6e348b20b3b638da3d4",
+      "bytes": 645,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/BuilderThenArray.class"
+    },
+    {
+      "blake3": "c7f4c22d71a9b3662d82c33bf05cca5d8e2ade59169ad4512463f092cfc25f3f",
+      "bytes": 789,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/DequeThenBuilder.class"
+    },
+    {
+      "blake3": "8a5e9b55f0e31725a93677e337aee1ad6901f759f70697a6df9aea54d78ef53b",
+      "bytes": 782,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/ListThenMap.class"
+    },
+    {
+      "blake3": "664d53fc3b330abb4f24245b72108251441ab5857f94299f3910c1ffd1f89b8c",
+      "bytes": 887,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/MapThenBuilder.class"
+    },
+    {
+      "blake3": "78364a52cea0d85121c8cfa46d19dfceb9efa874a28cc1931dda44941242711e",
+      "bytes": 690,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/StringThenArray.class"
+    },
+    {
+      "blake3": "944026db3f96515a001725829ac7e54494d8ceb1a2a6860eef39e6d3c566cc88",
+      "bytes": 701,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/StringThenBuilder.class"
+    },
+    {
+      "blake3": "5739e478d8ee598a7df80d56a68bfcc88dcf6adb1cb2b0bb26ae67959302d1a2",
+      "bytes": 899,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac23/StringThenQueue.class"
+    },
+    {
+      "blake3": "382e1bcd2b202e91f55c0c4f01e97e14e1d58d3bd0b525eef3c25cdb51da0386",
+      "bytes": 736,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/ArrayThenList.class"
+    },
+    {
+      "blake3": "7b0a3cf3ee379871fc83d3c598e469803ad8f9067d50ce9783d46f3df823dade",
+      "bytes": 645,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/BuilderThenArray.class"
+    },
+    {
+      "blake3": "2a5c031ec2d7952715e18afbc0346b11a6afb177de626b6120883e7283ba11d5",
+      "bytes": 789,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/DequeThenBuilder.class"
+    },
+    {
+      "blake3": "26993e6dae00f2a0407828e74c1dc286b129c198553580df9245aa9a34689d2c",
+      "bytes": 782,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/ListThenMap.class"
+    },
+    {
+      "blake3": "e11c645abb5cbf471e79d0a9f47b9bb25abe8324ed2ab6c6947444685b5b1304",
+      "bytes": 887,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/MapThenBuilder.class"
+    },
+    {
+      "blake3": "d242a37e08950ccd9a76be1cd64612f90a80392599f4d44ee20d2ba62a71f4a4",
+      "bytes": 690,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/StringThenArray.class"
+    },
+    {
+      "blake3": "0dd53f8264de95a4a30fe6ba15ab71509f3bd11a0e20b0f8e280db0050b11cac",
+      "bytes": 701,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/StringThenBuilder.class"
+    },
+    {
+      "blake3": "5f194d95aca361a51e50ab82a52f7f73b736b49b3f231e4cf430a1a0dfc91d77",
+      "bytes": 899,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/javac8/StringThenQueue.class"
+    },
+    {
+      "blake3": "4fa96a9563234ddc4bb514bdfbbf083af682cf0f7874c9c2ac175bfbc5671b49",
+      "bytes": 1491,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/cfg-backedge-disjoint/RefLoopBack.baseline.java"
+    },
+    {
+      "blake3": "5c17677bd07c495f2293928641fc3598139a621fc61e088bc3699c3fb062005d",
+      "bytes": 566,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/cfg-backedge-disjoint/RefLoopBack.class"
+    },
+    {
+      "blake3": "6e5e7c06013561cf9d2a6311c1830e559247fcbd05c2fa567c38166ff6b66c51",
+      "bytes": 1431,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/cfg-loop-phi/V4.baseline.java"
+    },
+    {
+      "blake3": "a914a4235d256b22f64f153c6ee795c9d2fd2f0c2ed7342d8b10345e0f245e5d",
+      "bytes": 570,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/cfg-loop-phi/V4.class"
+    },
+    {
+      "blake3": "8711d12f0114f6ce9829a5daede1e1e6c733410f05faeee2958702df42c5bcbd",
+      "bytes": 1396,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/cross-phi/V3.baseline.java"
+    },
+    {
+      "blake3": "508e67e88c1d0167729980a78e3044106d8cfb67082bdfe5df91a0b938da501c",
+      "bytes": 561,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/cross-phi/V3.class"
+    },
+    {
+      "blake3": "1aee1b53392d2b05950e516a8c5e89b476223cc951756a8ac86c00f2a1b166fd",
+      "bytes": 4280,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/handler/SlotReuseBoundaries.baseline.java"
+    },
+    {
+      "blake3": "872c34bcaf5cfd543ad5b74f3548b7a313f9ae14ba256a92bf0decb4e1f9702b",
+      "bytes": 642,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/handler/SlotReuseBoundaries.class"
+    },
+    {
+      "blake3": "dcf7d2a54175de1eda7df27d97900fefb624d70dd64fcf6c1c6773d7300b84f7",
+      "bytes": 2615,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/held-use/HeldUse.baseline.java"
+    },
+    {
+      "blake3": "20231736fce8ad167d4f1cf119f526ce0b5ae639b0aea9b02d18fb0ef7950003",
+      "bytes": 837,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/held-use/HeldUse.class"
+    },
+    {
+      "blake3": "35b4e9169e6f96ce3c00205409e4a5f526e76f98a5d352d3260a698be3042118",
+      "bytes": 2672,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/nonzero-held-use/javac23/NonzeroHeldUse.baseline.java"
+    },
+    {
+      "blake3": "3c1fa33d2ec242e952a8492c2535320bc8217f5cca5c3f1fc66231bd36c176c7",
+      "bytes": 879,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/nonzero-held-use/javac23/NonzeroHeldUse.class"
+    },
+    {
+      "blake3": "35b4e9169e6f96ce3c00205409e4a5f526e76f98a5d352d3260a698be3042118",
+      "bytes": 2672,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/nonzero-held-use/javac8/NonzeroHeldUse.baseline.java"
+    },
+    {
+      "blake3": "717ea1287e7ba2f911e1110fb7f6c28290c89bf230df665aae3b17af2e395432",
+      "bytes": 879,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/nonzero-held-use/javac8/NonzeroHeldUse.class"
+    },
+    {
+      "blake3": "08e8e8c75e0329d5d222519c7c37a7324c244cf3f9d2c48d07dac4b50c6b0079",
+      "bytes": 1479,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/parameter-header/ParameterHeader.baseline.java"
+    },
+    {
+      "blake3": "198fb41cb76b59653c34983ff4e0e8655f00b4bcdfdb4a50bed72205b042a846",
+      "bytes": 652,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/parameter-header/ParameterHeader.class"
+    },
+    {
+      "blake3": "395ae9d64c21a8f21f346105de4ceb5ff83567fcc21531f960b615682ca85a1a",
+      "bytes": 1377,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/same-type/V2.baseline.java"
+    },
+    {
+      "blake3": "07afbc2b58c3eadd1f024fe1fee164df3516a5f85509958ce2f5b8388ae6ea21",
+      "bytes": 384,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/same-type/V2.class"
+    },
+    {
+      "blake3": "bcadd758088d12326e644f97085db1ffe50e9c135ad8097cbbe7cecc2c3b80e7",
+      "bytes": 1618,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.baseline.java"
+    },
+    {
+      "blake3": "f24b5b45eb94733793e5ee6d7f52f9cfe710d89bdbd65140930822d38f84a77b",
+      "bytes": 629,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class"
+    },
+    {
       "blake3": "3aa46c10f360abf4fe543011fa76487dd6ce626aa577e38b2c92ef12a519e9fb",
       "bytes": 1498,
       "path": "tests/fixtures/p3-refused-cast/Baseline.java"

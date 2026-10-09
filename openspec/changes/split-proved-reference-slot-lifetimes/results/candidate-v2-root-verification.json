@@ -1,0 +1,9 @@
+{
+  "manifest_sha256": "875a5955ff93fb5299da94b75fd408a688c4956c8e7ae0234492af603fb6b1af",
+  "files": 296,
+  "commands": 96,
+  "no_debug_complete": 16,
+  "debug_unchanged": 16,
+  "negative_unchanged": 8,
+  "issues": []
+}

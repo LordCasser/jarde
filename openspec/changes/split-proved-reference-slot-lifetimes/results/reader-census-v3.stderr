@@ -1,0 +1,4 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.74s
+     Running unittests src/lib.rs (target/debug/deps/jarde_reader-ae33cc1e4f8f0316)
+error: test failed, to rerun pass `-p jarde-reader --lib`

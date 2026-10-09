@@ -1,0 +1,20 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/ListThenMap.java:20: 错误: 不兼容的类型: HashMap无法转换为ArrayList
+        v = new java.util.HashMap();
+            ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/ListThenMap.java:21: 错误: 找不到符号
+        v.put((java.lang.Object) "k", (java.lang.Object) java.lang.Integer.valueOf(n));
+         ^
+  符号:   方法 put(Object,Object)
+  位置: 类型为ArrayList的变量 v
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/ListThenMap.java:22: 错误: 对于get(Object), 找不到合适的方法
+        return v.size() + ((java.lang.Integer) v.get((java.lang.Object) "k")).intValue();
+                                                ^
+    方法 List.get(int)不适用
+      (参数不匹配; Object无法转换为int)
+    方法 AbstractList.get(int)不适用
+      (参数不匹配; Object无法转换为int)
+    方法 ArrayList.get(int)不适用
+      (参数不匹配; Object无法转换为int)
+注: /Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/ListThenMap.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+3 个错误

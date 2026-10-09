@@ -1,0 +1,6 @@
+
+thread 'root_audits_reference_slot_owners_and_uses' (10494881) panicked at /Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/root-ir-audit-v1.rs:178:5:
+assertion `left == right` failed: ArrayThenList: expected local 2 read anchors
+  left: [4, 45, 54, 64, 75]
+ right: [4, 45, 54, 64]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

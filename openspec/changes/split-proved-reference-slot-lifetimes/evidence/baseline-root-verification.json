@@ -1,0 +1,26 @@
+{
+  "archive_sha256": "57df4d7c88b042c281bd492ca2e712a270c8aab9b55ed6a435dfeaf6eb72b1fb",
+  "verifier_sha256": "d7b9ad5131fdee0d45008421913d372ce5bd6fde80da031724ce0a2fc79e0b00",
+  "counts": {
+    "inventoried_files": 1368,
+    "isolated_compile_commands": 160,
+    "commands": 432,
+    "isolated_verify_commands": 112,
+    "cases": 32,
+    "original_compile_0": 32,
+    "original_behavior_matches": 32,
+    "jadx_compile_0": 32,
+    "jadx_behavior_matches": 32,
+    "baseline_compile_0": 8,
+    "baseline_behavior_matches": 8,
+    "candidate_compile_0": 8,
+    "candidate_behavior_matches": 8,
+    "candidate_g_compile_0": 8,
+    "baseline_compile_1": 24,
+    "candidate_compile_1": 24,
+    "candidate_g-none_compile_1": 16,
+    "candidate_g_compile_1": 8
+  },
+  "issues": [],
+  "scope": "Recorded actual bytes/commands, complete sources, isolated runtime stdout AND stderr. No new Java run; slot/lifetime causality requires source/javap/SSA review."
+}

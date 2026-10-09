@@ -623,6 +623,12 @@ impl Billing {
 /// Reserving static owner roots during naming then bills one IR item for each static reference
 /// inspected: +1/+1/+1/+67/+1/+4 across the cases, +75 on either per-method arm. No text or
 /// outcome changes in this corpus; the separate type-qualifier fixture proves the collision fix.
+// 2026-10-09 split-proved-reference-slot-lifetimes: measured AnalysisSteps-only deltas
+// for flat/nested/two-origins/many/damaged/deep are +20/+22/+20/+67/+20/+0; both
+// per-method arms are +149, exactly their sum. New ordinary-reference proof bills
+// eligible-slot clone/type/owner/normal-CFG scans; source, outcomes and other
+// counted dimensions stand. Actual record_the_billing_table and failed old pins
+// are preserved in that change's results, rather than skipping the proof charges.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -643,7 +649,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 17,
         ir_items: 2473,
-        analysis_steps: 1340,
+        analysis_steps: 1360,
         result_items: 37,
         output_bytes: 3657,
     };
@@ -667,7 +673,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 26,
         ir_items: 4298,
-        analysis_steps: 2071,
+        analysis_steps: 2093,
         result_items: 64,
         output_bytes: 5628,
     };
@@ -689,7 +695,7 @@ impl Billing {
         class_headers: 4,
         method_bodies: 12,
         ir_items: 2058,
-        analysis_steps: 1101,
+        analysis_steps: 1121,
         result_items: 43,
         output_bytes: 2638,
     };
@@ -773,7 +779,7 @@ impl Billing {
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
         ir_items: 21278,
-        analysis_steps: 10542,
+        analysis_steps: 10609,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -791,7 +797,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 12,
         ir_items: 2058,
-        analysis_steps: 1101,
+        analysis_steps: 1121,
         result_items: 35,
         output_bytes: 2638,
     };
@@ -858,7 +864,7 @@ impl Billing {
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
         ir_items: 35378,
-        analysis_steps: 17327,
+        analysis_steps: 17476,
         result_items: 1378,
         output_bytes: 39617,
     };
@@ -897,7 +903,7 @@ impl Billing {
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
         ir_items: 35378,
-        analysis_steps: 17327,
+        analysis_steps: 17476,
         result_items: 26,
         output_bytes: 39617,
     };

@@ -199,3 +199,9 @@ raw receiver实现已提交推送main c5d21640，实际CI run 37831218407四个j
 本片任务9/9，MSRV收尾CLI9源码完整对照与CLI8一致：324次冻结输入请求的完整source/report/exit核验（仅elapsed_millis差异），另18个永久重建字段输入的class哈希与旧记录一致、完整源码等价，并补做原/baseline/JADX/候选完整编译和行为/API。共342条实际class-source请求、334个输入row，分母与既有144/46/80/64 protocol保持原义。实现提交276a1c31的实际CI37889792696四job成功，两个seed各3304passed/0failed/93ignored及真JDK25 oracle。详见本片verification-root与handoff。
 
 71单元数和各行总状态保持不变；本片完成不等于整个generic单元或全部JADX追平。字段旧临时ZIP字节身份未建立，class证据和失败历史如实保存；后续冻结输入必须永久归档。getter反向依赖、容器/wildcard、alias/phi、继承/跨类与this/super委派仍需单独OpenSpec。
+
+## 2026-10-09 EM-20 引用槽生命周期补片
+
+[split-proved-reference-slot-lifetimes](../../changes/split-proved-reference-slot-lifetimes/verification-root.md)以JADX局部变量SSA身份/声明算法为参照，复用Jarde已有变量分段、唯一owner和声明路径。固定八类32输入：旧完整重编/行为8/32，候选24/32；16 no-debug腿全部新增通过，16 debug腿结果保持。原/JADX32腿完整源码均通过，Jarde八个同名LVT腿仍失败。旧值留栈的初候选误发布别名已在root真实SSA审计中发现并修正，非零栈checkcast双JDK负例也保留拒绝；拒绝不计成功。
+
+这是EM-20的明确子片，不代表整个局部类型/声明单元已完成。完整LG的finalize拒绝及其JADX Comparator基线失败仍分开登记；下一片优先EM-18异构Number[]初始化器，先修正既有spec对赋值转换事实入口的引用，再实现有来源的最小兼容判据。

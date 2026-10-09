@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray/BuilderThenArray.java:21: 错误: 不兼容的类型: char[]无法转换为StringBuilder
+        v = new char[n];
+            ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray/BuilderThenArray.java:23: 错误: 需要数组, 但找到StringBuilder
+            v[i] = x.charAt(i);
+             ^
+2 个错误

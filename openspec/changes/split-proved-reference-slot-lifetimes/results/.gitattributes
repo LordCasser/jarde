@@ -1,0 +1,5 @@
+# Preserve raw subprocess bytes, including terminal padding and final blank lines.
+# Source files and audit scripts retain normal whitespace checks.
+*.stdout -whitespace
+*.stderr -whitespace
+*.log -whitespace

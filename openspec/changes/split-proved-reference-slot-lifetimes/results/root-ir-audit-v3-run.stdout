@@ -1,0 +1,94 @@
+
+running 1 test
+
+ArrayThenList: canonical edges
+  0 -> 13 Normal
+  13 -> 20 Normal
+  13 -> 37 Normal
+  20 -> 13 Normal
+ArrayThenList: SSA phis
+  block=13 slot=Local(0) value=ValueId(1) inputs=[Value(ValueId(0)), Itself] replacement=Some(ValueId(0))
+  block=13 slot=Local(1) value=ValueId(2) inputs=[Value(ValueId(8)), Value(ValueId(27))] replacement=None
+  block=13 slot=Local(2) value=ValueId(3) inputs=[Value(ValueId(10)), Itself] replacement=Some(ValueId(10))
+  block=13 slot=Local(3) value=ValueId(4) inputs=[Value(ValueId(12)), Itself] replacement=Some(ValueId(12))
+  block=13 slot=Local(4) value=ValueId(5) inputs=[Value(ValueId(15)), Itself] replacement=Some(ValueId(15))
+  block=13 slot=Local(5) value=ValueId(6) inputs=[Value(ValueId(17)), Value(ValueId(28))] replacement=None
+ArrayThenList: STORE slot=2 bci=3 block=0 value=ValueId(10) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 3 } chain=[ValueId(10)]
+  chain value=ValueId(10) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 3 } replaced_by=None
+    use value=ValueId(10) block=0 bci=Some(4)
+    use value=ValueId(10) block=13 bci=None
+ArrayThenList: STORE slot=2 bci=44 block=37 value=ValueId(33) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 37, path: [] }, bci: 44 } chain=[ValueId(33)]
+  chain value=ValueId(33) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 37, path: [] }, bci: 44 } replaced_by=None
+    use value=ValueId(33) block=37 bci=Some(45)
+    use value=ValueId(33) block=37 bci=Some(54)
+    use value=ValueId(33) block=37 bci=Some(64)
+    use value=ValueId(33) block=37 bci=Some(75)
+ArrayThenList: READ slot=2 bci=4 block=0 value=ValueId(10) ty=Ref(Named { name: [91, 73], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 3 } chain=[ValueId(10)] owners=[3]
+  read-chain use value=ValueId(10) block=0 bci=Some(4)
+  read-chain use value=ValueId(10) block=13 bci=None
+ArrayThenList: READ slot=2 bci=45 block=37 value=ValueId(33) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 37, path: [] }, bci: 44 } chain=[ValueId(33)] owners=[44]
+  read-chain use value=ValueId(33) block=37 bci=Some(45)
+  read-chain use value=ValueId(33) block=37 bci=Some(54)
+  read-chain use value=ValueId(33) block=37 bci=Some(64)
+  read-chain use value=ValueId(33) block=37 bci=Some(75)
+ArrayThenList: READ slot=2 bci=54 block=37 value=ValueId(33) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 37, path: [] }, bci: 44 } chain=[ValueId(33)] owners=[44]
+  read-chain use value=ValueId(33) block=37 bci=Some(45)
+  read-chain use value=ValueId(33) block=37 bci=Some(54)
+  read-chain use value=ValueId(33) block=37 bci=Some(64)
+  read-chain use value=ValueId(33) block=37 bci=Some(75)
+ArrayThenList: READ slot=2 bci=64 block=37 value=ValueId(33) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 37, path: [] }, bci: 44 } chain=[ValueId(33)] owners=[44]
+  read-chain use value=ValueId(33) block=37 bci=Some(45)
+  read-chain use value=ValueId(33) block=37 bci=Some(54)
+  read-chain use value=ValueId(33) block=37 bci=Some(64)
+  read-chain use value=ValueId(33) block=37 bci=Some(75)
+ArrayThenList: READ slot=2 bci=75 block=37 value=ValueId(33) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 37, path: [] }, bci: 44 } chain=[ValueId(33)] owners=[44]
+  read-chain use value=ValueId(33) block=37 bci=Some(45)
+  read-chain use value=ValueId(33) block=37 bci=Some(54)
+  read-chain use value=ValueId(33) block=37 bci=Some(64)
+  read-chain use value=ValueId(33) block=37 bci=Some(75)
+ArrayThenList: EARLIER-SEGMENT USE block=0 bci=Some(4)
+ArrayThenList: EARLIER-SEGMENT USE block=13 bci=None
+
+ListThenMap: canonical edges
+ListThenMap: SSA phis
+ListThenMap: STORE slot=2 bci=7 block=0 value=ValueId(5) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 7 } chain=[ValueId(5)]
+  chain value=ValueId(5) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 7 } replaced_by=None
+    use value=ValueId(5) block=0 bci=Some(8)
+    use value=ValueId(5) block=0 bci=Some(17)
+    use value=ValueId(5) block=0 bci=Some(28)
+ListThenMap: STORE slot=2 bci=40 block=0 value=ValueId(23) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 72, 97, 115, 104, 77, 97, 112], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 40 } chain=[ValueId(23)]
+  chain value=ValueId(23) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 72, 97, 115, 104, 77, 97, 112], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 40 } replaced_by=None
+    use value=ValueId(23) block=0 bci=Some(41)
+    use value=ValueId(23) block=0 bci=Some(52)
+    use value=ValueId(23) block=0 bci=Some(56)
+ListThenMap: READ slot=2 bci=8 block=0 value=ValueId(5) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 7 } chain=[ValueId(5)] owners=[7]
+  read-chain use value=ValueId(5) block=0 bci=Some(8)
+  read-chain use value=ValueId(5) block=0 bci=Some(17)
+  read-chain use value=ValueId(5) block=0 bci=Some(28)
+ListThenMap: READ slot=2 bci=17 block=0 value=ValueId(5) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 7 } chain=[ValueId(5)] owners=[7]
+  read-chain use value=ValueId(5) block=0 bci=Some(8)
+  read-chain use value=ValueId(5) block=0 bci=Some(17)
+  read-chain use value=ValueId(5) block=0 bci=Some(28)
+ListThenMap: READ slot=2 bci=28 block=0 value=ValueId(5) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 65, 114, 114, 97, 121, 76, 105, 115, 116], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 7 } chain=[ValueId(5)] owners=[7]
+  read-chain use value=ValueId(5) block=0 bci=Some(8)
+  read-chain use value=ValueId(5) block=0 bci=Some(17)
+  read-chain use value=ValueId(5) block=0 bci=Some(28)
+ListThenMap: READ slot=2 bci=41 block=0 value=ValueId(23) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 72, 97, 115, 104, 77, 97, 112], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 40 } chain=[ValueId(23)] owners=[40]
+  read-chain use value=ValueId(23) block=0 bci=Some(41)
+  read-chain use value=ValueId(23) block=0 bci=Some(52)
+  read-chain use value=ValueId(23) block=0 bci=Some(56)
+ListThenMap: READ slot=2 bci=52 block=0 value=ValueId(23) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 72, 97, 115, 104, 77, 97, 112], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 40 } chain=[ValueId(23)] owners=[40]
+  read-chain use value=ValueId(23) block=0 bci=Some(41)
+  read-chain use value=ValueId(23) block=0 bci=Some(52)
+  read-chain use value=ValueId(23) block=0 bci=Some(56)
+ListThenMap: READ slot=2 bci=56 block=0 value=ValueId(23) ty=Ref(Named { name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 72, 97, 115, 104, 77, 97, 112], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 40 } chain=[ValueId(23)] owners=[40]
+  read-chain use value=ValueId(23) block=0 bci=Some(41)
+  read-chain use value=ValueId(23) block=0 bci=Some(52)
+  read-chain use value=ValueId(23) block=0 bci=Some(56)
+ListThenMap: EARLIER-SEGMENT USE block=0 bci=Some(8)
+ListThenMap: EARLIER-SEGMENT USE block=0 bci=Some(17)
+ListThenMap: EARLIER-SEGMENT USE block=0 bci=Some(28)
+test root_audits_reference_slot_owners_and_uses ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

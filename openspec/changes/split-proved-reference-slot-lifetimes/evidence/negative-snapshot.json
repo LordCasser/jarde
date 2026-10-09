@@ -1,0 +1,7 @@
+{
+  "archive": "negative-baseline-20261009.tar.gz",
+  "sha256": "cb5f7d71d34254d75b4e78f0f1099151d6a6dd2ee4cc2dd2bc412800cf1888e9",
+  "original_root": "/private/tmp/jarde-ref-ref-slot-negative-20261009",
+  "archive_root": "jarde-ref-ref-slot-negative-20261009",
+  "policy": "Immutable raw inputs and failed harness attempts; path mapping only, no byte rewrite."
+}

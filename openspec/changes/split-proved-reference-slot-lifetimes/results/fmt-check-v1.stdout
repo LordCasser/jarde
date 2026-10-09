@@ -1,0 +1,111 @@
+Diff in /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs:755:
+     budget: &mut Budget,
+ ) -> Result<Option<Split>, StopReason> {
+     definitions.sort_by_key(|(bci, _, _)| *bci);
+-    if definitions.windows(2).any(|window| window[0].0 == window[1].0)
+-        || definitions.windows(2).all(|window| window[0].2 == window[1].2)
++    if definitions
++        .windows(2)
++        .any(|window| window[0].0 == window[1].0)
++        || definitions
++            .windows(2)
++            .all(|window| window[0].2 == window[1].2)
+     {
+         return Ok(None);
+     }
+Diff in /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs:868:
+             let at = Some(access.bci);
+             poll(budget, at)?;
+             charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+-            let Some(block) = ssa.blocks().get(access.block).map(|block| block.block().clone())
++            let Some(block) = ssa
++                .blocks()
++                .get(access.block)
++                .map(|block| block.block().clone())
+             else {
+                 return Ok(false);
+             };
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_reference_slot_lifetimes.rs:236:
+             let name = declaration.split_whitespace().next()?;
+             let name = name.trim_end_matches(';');
+             (name.starts_with("local")
+-                && name[5..]
+-                    .chars()
+-                    .all(|ch| ch.is_ascii_digit() || ch == '_'))
++                && name[5..].chars().all(|ch| ch.is_ascii_digit() || ch == '_'))
+             .then(|| name.to_owned())
+         })
+         .collect()
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_reference_slot_lifetimes.rs:248:
+     let first = declared_names(text, first_type);
+     let second = declared_names(text, second_type);
+     assert!(
+-        first.iter().any(|name| second.contains(&format!("{name}_2"))),
++        first
++            .iter()
++            .any(|name| second.contains(&format!("{name}_2"))),
+         "the two types must be separate declarations for one reused slot:\n{text}"
+     );
+ }
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_reference_slot_lifetimes.rs:299:
+     for (name, bytes, baseline, complete) in SAME_NAME_DEBUG {
+         assert!(!*complete);
+         let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
+-        assert_eq!(report.text, *baseline, "{name}: preserved same-name result changed");
++        assert_eq!(
++            report.text, *baseline,
++            "{name}: preserved same-name result changed"
++        );
+     }
+ }
+ 
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_reference_slot_lifetimes.rs:308:
+     assert_eq!(NEGATIVE_CASES.len(), 8);
+     for (name, bytes, baseline) in NEGATIVE_CASES {
+         let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
+-        assert_eq!(report.text, *baseline, "{name}: unsupported-shape output changed");
++        assert_eq!(
++            report.text, *baseline,
++            "{name}: unsupported-shape output changed"
++        );
+     }
+ }
+ 
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_reference_slot_lifetimes.rs:317:
+     let (snapshot, request) = opened(CASES[0].1, CASES[0].0);
+     let complete = recover(CASES[0].1, CASES[0].0, &RecoveryEvidenceRequest::all());
+ 
+-    let mut low_budget = task_budget(&[
+-        BudgetOverride::new("analysis_steps", 1).expect("valid analysis-step cap"),
+-    ])
+-    .expect("the bounded task budget accepts an analysis-step cap");
++    let mut low_budget =
++        task_budget(&[BudgetOverride::new("analysis_steps", 1).expect("valid analysis-step cap")])
++            .expect("the bounded task budget accepts an analysis-step cap");
+     match Engine::new().class_source_with_evidence(
+         slice::from_ref(&snapshot),
+         &request,
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_reference_slot_lifetimes.rs:329:
+     ) {
+         Ok(OperationOutcome::Performed(report)) => {
+             assert!(!report.text.is_empty(), "a completed response is not empty");
+-            assert_ne!(report.text, complete.text, "a stopped run published full output");
++            assert_ne!(
++                report.text, complete.text,
++                "a stopped run published full output"
++            );
+             assert!(
+                 !report.text.contains("java.util.ArrayList local2_2"),
+                 "a stopped run published the later segment's identity"
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_reference_slot_lifetimes.rs:354:
+     ) {
+         Ok(OperationOutcome::Performed(report)) => {
+             assert!(!report.text.is_empty(), "a completed response is not empty");
+-            assert_ne!(report.text, complete.text, "a cancelled run published full output");
++            assert_ne!(
++                report.text, complete.text,
++                "a cancelled run published full output"
++            );
+             assert!(
+                 !report.text.contains("java.util.ArrayList local2_2"),
+                 "a cancelled run published the later segment's identity"

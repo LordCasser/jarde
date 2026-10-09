@@ -1,0 +1,16 @@
+# Negative report semantic audit v2
+
+Compared the saved candidate-v2 JSON reports with the immutable CLI9 baseline archive and the saved `nonzero-held` baseline/candidate reports. The comparison is recursive and omits only members whose exact key is `elapsed_millis`; all other field differences remain in the JSON. The saved audit script made no CLI or compiler calls.
+
+The eight negative cases use byte-identical input jars in candidate-v2 and the archived baseline, verified against both manifests and the actual jar bytes. Their per-method `source_map` arrays are also semantically equal (canonical JSON hashes recorded in the JSON). Direct UTF-8 byte hashes of `baseline["text"]` and `candidate["text"]` match for all eight cases. Seven reports differ only in `usage.analysis_steps` counters; `parameter-header` is identical after elapsed time is omitted. Top-level counter pairs (baseline → candidate) are: same-type 498→503, cross-phi 601→610, cfg-loop-phi 663→683, handler 2099→2130, unknown-null 575→585, held-use 621→638, cfg-backedge-disjoint 637→680. `handler` has 11 counter leaves differing; the other six have 5 each. The same-named manifest fields have different meanings: candidate `negative_rows.source_sha256` hashes rendered report text, while the archived baseline command `source_sha256` hashes the original Java fixture. The script verifies each against its actual bytes; those values are not compared as if they described the same source. The direct rendered-text byte comparison is recorded separately.
+
+For `held-use`, the report metadata compared across all four methods—`aliased_names`, diagnostics, and markers—is equal. Its report source maps are equal too; the five remaining differences are `analysis_steps` counters. This confirms the saved candidate-v2 raw report no longer carries the prior HeldUse metadata delta.
+
+The two `nonzero-held` JDK reports have byte-identical rendered text and matching class/source hashes, but their input jar hashes differ. Their source-map segment positions and instruction anchors (BCI/CP/member identity) match. Their provenance snapshot identities differ, so the complete source-map hashes differ. Strict report diffs (79 leaves per JDK, beyond elapsed time) consist of 70 provenance `snapshot` values, four matching `artifact.binding.environment.content` snapshot references, and five `analysis_steps` counters. Held-use metadata is equal. No snapshot or counter fields were normalized away.
+
+Evidence and reproducibility:
+
+- Candidate matrix manifest: `candidate-v2/manifest.json`, SHA-256 `875a5955ff93fb5299da94b75fd408a688c4956c8e7ae0234492af603fb6b1af`; candidate CLI SHA-256 `f2ad93f5f024a0e1ec7d74e916839b17cac0f8db6fdf8c1a1eb62051f6dde33b`; matrix runner SHA-256 `b6aaf4a4509eb36508e954a8785f6cbaa7c2dfcfbad33e6ead368903a7e12901`.
+- Immutable negative archive SHA-256 `cb5f7d71d34254d75b4e78f0f1099151d6a6dd2ee4cc2dd2bc412800cf1888e9`; archived CLI9-v3 manifest and per-report/input hashes are recorded in the JSON.
+- Audit script SHA-256 `8f10018706d0ce997737ff31518c92513e9c103e27dbd308a426142a6847c597`.
+- Full per-case output/input/source-map hashes and every differing JSON path/value: `negative-semantic-audit-v2.json`.

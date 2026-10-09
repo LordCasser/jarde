@@ -1,0 +1,166 @@
+{
+  "runner": "inline Python in root tool transcript",
+  "baseline_cli_sha256": "5bb2fcfdcf958839f0b1e060a2e55114510c6115cb225ec3279d7d7adf95e006",
+  "rows": [
+    {
+      "leg": "javac8",
+      "class_sha256": "07efa80a8c804de0b44da4c916398a99a19cd7f9e29ef1f88b85239227c69fe6",
+      "jar_sha256": "e1662bda9bb7f6895d8789e5d73d8d77df361642c6a7e4f72ff55466c70efdf0",
+      "java_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "javac_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "source_sha256": "1069fb4203b54dd4b1da1e716ef662f2a3bd0c9ac9f4bdf69852188758d77c04"
+    },
+    {
+      "leg": "javac23",
+      "class_sha256": "aceecfdfe321a467b1d336f6067f4051a795e16b11f450658b111222e93a1c32",
+      "jar_sha256": "761c18fbb92752eff49a268d0e6e5bcd6a7acb71f3432a4cb8d90b98b951da8e",
+      "java_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "javac_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "source_sha256": "1069fb4203b54dd4b1da1e716ef662f2a3bd0c9ac9f4bdf69852188758d77c04"
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8/original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8/original-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8/NonzeroHeldUse.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8/original-classes",
+        "NonzeroHeldUse"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8",
+      "exit": 0,
+      "stdout_sha256": "0d81cbf9362beb2122fc18e3de5b08ba9fe3bafb2810f7b1763152242b8d77aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-c",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8/original-classes/NonzeroHeldUse.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8",
+      "exit": 0,
+      "stdout_sha256": "18b5db425c31d769c548d6ebd5f3f22378eb9ec72bba2ed48987e5ff036ed205",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8/baseline-report",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v9-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8/NonzeroHeldUse.jar",
+        "--class",
+        "NonzeroHeldUse",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac8",
+      "exit": 0,
+      "stdout_sha256": "1861be5a5eacff3f509a099ff30f3524f9e1d46ac4ab112785a74155121f6dc5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/original-javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23/original-classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23/NonzeroHeldUse.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23/original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23/original-classes",
+        "NonzeroHeldUse"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23",
+      "exit": 0,
+      "stdout_sha256": "0d81cbf9362beb2122fc18e3de5b08ba9fe3bafb2810f7b1763152242b8d77aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-c",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23/original-classes/NonzeroHeldUse.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23",
+      "exit": 0,
+      "stdout_sha256": "863ac1850512304061e6b51716c488232383f97ff63008d0222b1d5289c4d1b1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23/baseline-report",
+      "argv": [
+        "/private/tmp/jarde-generic-calls-candidate-v9-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23/NonzeroHeldUse.jar",
+        "--class",
+        "NonzeroHeldUse",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/nonzero-held-baseline-v1/javac23",
+      "exit": 0,
+      "stdout_sha256": "2fde3d723d3eafe53741f3f86c76f13d2f1f07c4df44a58c1e0f5dd1fa244be1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

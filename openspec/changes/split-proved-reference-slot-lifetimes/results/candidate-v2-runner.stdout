@@ -1,0 +1,41 @@
+javac8 g ArrayThenList compile 0 unchanged True runtime_match True
+javac8 g StringThenBuilder compile 0 unchanged True runtime_match True
+javac8 g StringThenArray compile 0 unchanged True runtime_match True
+javac8 g DequeThenBuilder compile 0 unchanged True runtime_match True
+javac8 g-none ArrayThenList compile 0 unchanged False runtime_match True
+javac8 g-none StringThenBuilder compile 0 unchanged False runtime_match True
+javac8 g-none StringThenArray compile 0 unchanged False runtime_match True
+javac8 g-none DequeThenBuilder compile 0 unchanged False runtime_match True
+javac23 g ArrayThenList compile 0 unchanged True runtime_match True
+javac23 g StringThenBuilder compile 0 unchanged True runtime_match True
+javac23 g StringThenArray compile 0 unchanged True runtime_match True
+javac23 g DequeThenBuilder compile 0 unchanged True runtime_match True
+javac23 g-none ArrayThenList compile 0 unchanged False runtime_match True
+javac23 g-none StringThenBuilder compile 0 unchanged False runtime_match True
+javac23 g-none StringThenArray compile 0 unchanged False runtime_match True
+javac23 g-none DequeThenBuilder compile 0 unchanged False runtime_match True
+javac8 g ListThenMap compile 1 unchanged True runtime_match None
+javac8 g MapThenBuilder compile 1 unchanged True runtime_match None
+javac8 g StringThenQueue compile 1 unchanged True runtime_match None
+javac8 g BuilderThenArray compile 1 unchanged True runtime_match None
+javac8 g-none ListThenMap compile 0 unchanged False runtime_match True
+javac8 g-none MapThenBuilder compile 0 unchanged False runtime_match True
+javac8 g-none StringThenQueue compile 0 unchanged False runtime_match True
+javac8 g-none BuilderThenArray compile 0 unchanged False runtime_match True
+javac23 g ListThenMap compile 1 unchanged True runtime_match None
+javac23 g MapThenBuilder compile 1 unchanged True runtime_match None
+javac23 g StringThenQueue compile 1 unchanged True runtime_match None
+javac23 g BuilderThenArray compile 1 unchanged True runtime_match None
+javac23 g-none ListThenMap compile 0 unchanged False runtime_match True
+javac23 g-none MapThenBuilder compile 0 unchanged False runtime_match True
+javac23 g-none StringThenQueue compile 0 unchanged False runtime_match True
+javac23 g-none BuilderThenArray compile 0 unchanged False runtime_match True
+negative same-type unchanged True
+negative cross-phi unchanged True
+negative cfg-loop-phi unchanged True
+negative handler unchanged True
+negative parameter-header unchanged True
+negative unknown-null unchanged True
+negative held-use unchanged True
+negative cfg-backedge-disjoint unchanged True
+PASS sixteen no-debug complete classes; sixteen debug and eight controls unchanged

@@ -1,0 +1,4 @@
+
+thread 'root_audits_reference_slot_owners_and_uses' (10508946) panicked at /Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/root-ir-audit-v2.rs:269:9:
+ArrayThenList: earlier local value is live across split boundary 44
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

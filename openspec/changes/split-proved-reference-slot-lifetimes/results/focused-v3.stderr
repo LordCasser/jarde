@@ -1,0 +1,4 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 26.84s
+     Running tests/p3_reference_slot_lifetimes.rs (target/debug/deps/p3_reference_slot_lifetimes-38c86119bcfdf562)

@@ -1,0 +1,4085 @@
+{
+  "cli": {
+    "cli": "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+    "sha256": "f2ad93f5f024a0e1ec7d74e916839b17cac0f8db6fdf8c1a1eb62051f6dde33b",
+    "base_head": "82090226fc6c7d4692e0280d197c41c684f8296a",
+    "product_files": {
+      "crates/jarde-java/src/build.rs": "39880f309ece9dadae17414948b23086734e0bafebe28ff4f5ab02310d1978ef",
+      "crates/jarde-java/src/reuse.rs": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458"
+    },
+    "build_log": "cli-build-v2.stderr",
+    "build_exit": 0
+  },
+  "runner_sha256": "b6aaf4a4509eb36508e954a8785f6cbaa7c2dfcfbad33e6ead368903a7e12901",
+  "baseline_archive": {
+    "archive": "baseline-patrol-20261009.tar.gz",
+    "sha256": "57df4d7c88b042c281bd492ca2e712a270c8aab9b55ed6a435dfeaf6eb72b1fb",
+    "bytes": 1003649,
+    "original_root": "/private/tmp/jarde-ref-ref-slot-patrol-20261009",
+    "archive_root": "jarde-ref-ref-slot-patrol-20261009",
+    "identity_policy": "All raw bytes, manifests, commands and original absolute paths are preserved. Resolve historical absolute paths through the archive-root mapping when the temp tree is absent. Failed harness attempt is preserved, not counted."
+  },
+  "negative_archive": {
+    "archive": "negative-baseline-20261009.tar.gz",
+    "sha256": "cb5f7d71d34254d75b4e78f0f1099151d6a6dd2ee4cc2dd2bc412800cf1888e9",
+    "original_root": "/private/tmp/jarde-ref-ref-slot-negative-20261009",
+    "archive_root": "jarde-ref-ref-slot-negative-20261009",
+    "policy": "Immutable raw inputs and failed harness attempts; path mapping only, no byte rewrite."
+  },
+  "commands": [
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList/ArrayThenList.jar",
+        "--class",
+        "ArrayThenList",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/ArrayThenList/class-source.stdout",
+      "stdout_sha256": "d411ae1c1013514417a6f719b144228cd1c89b2a6be612e5c05215dd4c7c2fad",
+      "stderr": "matrix/javac8/g/ArrayThenList/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList/ArrayThenList.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/ArrayThenList/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/ArrayThenList/javac.stderr",
+      "stderr_sha256": "2007d97bd5b72656908635d2045ff408c86cccc70cdb1a962773e310437b38f0"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList/classes",
+        "ArrayThenList"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/ArrayThenList/runtime.stdout",
+      "stdout_sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "stderr": "matrix/javac8/g/ArrayThenList/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder/StringThenBuilder.jar",
+        "--class",
+        "StringThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/StringThenBuilder/class-source.stdout",
+      "stdout_sha256": "b1dfb25114f205feea4bc3cdfe0af898c7198c10d1adcec7a73b3f39b9135142",
+      "stderr": "matrix/javac8/g/StringThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder/StringThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/StringThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/StringThenBuilder/javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder/classes",
+        "StringThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/StringThenBuilder/runtime.stdout",
+      "stdout_sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6",
+      "stderr": "matrix/javac8/g/StringThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray/StringThenArray.jar",
+        "--class",
+        "StringThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/StringThenArray/class-source.stdout",
+      "stdout_sha256": "2f75c7791551c8a6af8445732b34ab15e64933d26bffbd0135a7ffa1665ccd56",
+      "stderr": "matrix/javac8/g/StringThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray/StringThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/StringThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/StringThenArray/javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray/classes",
+        "StringThenArray"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/StringThenArray/runtime.stdout",
+      "stdout_sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34",
+      "stderr": "matrix/javac8/g/StringThenArray/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder/DequeThenBuilder.jar",
+        "--class",
+        "DequeThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/DequeThenBuilder/class-source.stdout",
+      "stdout_sha256": "39e933bca22425a480caf7391e269f44db07340aaa10bb163ad6e193f1d1a455",
+      "stderr": "matrix/javac8/g/DequeThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder/DequeThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/DequeThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/DequeThenBuilder/javac.stderr",
+      "stderr_sha256": "e87a2a2e4d91716fe8de518ccf2a63e2712f3d42ea2cf0db2f2ec6f610bfd27f"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder/classes",
+        "DequeThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/DequeThenBuilder/runtime.stdout",
+      "stdout_sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9",
+      "stderr": "matrix/javac8/g/DequeThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList/ArrayThenList.jar",
+        "--class",
+        "ArrayThenList",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/ArrayThenList/class-source.stdout",
+      "stdout_sha256": "961054404dfd00fea89980600a501e6206f52a44f318ee8189a3f20e80005c33",
+      "stderr": "matrix/javac8/g-none/ArrayThenList/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList/ArrayThenList.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/ArrayThenList/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/ArrayThenList/javac.stderr",
+      "stderr_sha256": "8b5b71cdbc7450675037172e1e3157b3a9d4f57e6564f05e988ed9d716aceb36"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList/classes",
+        "ArrayThenList"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/ArrayThenList/runtime.stdout",
+      "stdout_sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "stderr": "matrix/javac8/g-none/ArrayThenList/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder/StringThenBuilder.jar",
+        "--class",
+        "StringThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenBuilder/class-source.stdout",
+      "stdout_sha256": "fd9653a9ac495f515ea2ab0e597288d5dcb69b4c2e2980fd4a04e444971c510b",
+      "stderr": "matrix/javac8/g-none/StringThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder/StringThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/StringThenBuilder/javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder/classes",
+        "StringThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenBuilder/runtime.stdout",
+      "stdout_sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6",
+      "stderr": "matrix/javac8/g-none/StringThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray/StringThenArray.jar",
+        "--class",
+        "StringThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenArray/class-source.stdout",
+      "stdout_sha256": "c3b0b629e669420065a9eb6cbf23279f548654dc0061c9504562201ee8e800a2",
+      "stderr": "matrix/javac8/g-none/StringThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray/StringThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/StringThenArray/javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray/classes",
+        "StringThenArray"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenArray/runtime.stdout",
+      "stdout_sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34",
+      "stderr": "matrix/javac8/g-none/StringThenArray/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder/DequeThenBuilder.jar",
+        "--class",
+        "DequeThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/DequeThenBuilder/class-source.stdout",
+      "stdout_sha256": "94a8a993b1f8cb86b0389df806e16fdab490363648b998a44b531cdd19d3570a",
+      "stderr": "matrix/javac8/g-none/DequeThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder/DequeThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/DequeThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/DequeThenBuilder/javac.stderr",
+      "stderr_sha256": "15cdb6ec1238c7147620ef55a69e35d8cdcd24aba3a5131bd28b5b1a24df0894"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder/classes",
+        "DequeThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/DequeThenBuilder/runtime.stdout",
+      "stdout_sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9",
+      "stderr": "matrix/javac8/g-none/DequeThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList/ArrayThenList.jar",
+        "--class",
+        "ArrayThenList",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/ArrayThenList/class-source.stdout",
+      "stdout_sha256": "ba0540bab6fac8cb9a80951be8cb0be4463c7b5b459c3afc85d089a96ceeb545",
+      "stderr": "matrix/javac23/g/ArrayThenList/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList/ArrayThenList.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/ArrayThenList/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/ArrayThenList/javac.stderr",
+      "stderr_sha256": "27eb49994b6226b20ef78c196d231a99b6c145cbeb302858ceb5c83a4518aef4"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList/classes",
+        "ArrayThenList"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/ArrayThenList/runtime.stdout",
+      "stdout_sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "stderr": "matrix/javac23/g/ArrayThenList/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder/StringThenBuilder.jar",
+        "--class",
+        "StringThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/StringThenBuilder/class-source.stdout",
+      "stdout_sha256": "6d3b265af4679e4818a6f16f9f38f73c23bce593bb4f5bcc7a260a6544f7c141",
+      "stderr": "matrix/javac23/g/StringThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder/StringThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/StringThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/StringThenBuilder/javac.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder/classes",
+        "StringThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/StringThenBuilder/runtime.stdout",
+      "stdout_sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6",
+      "stderr": "matrix/javac23/g/StringThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray/StringThenArray.jar",
+        "--class",
+        "StringThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/StringThenArray/class-source.stdout",
+      "stdout_sha256": "b1b2b6120bea9581b888166dcb61127f85482a0cb912519cbe66a68c0748fe06",
+      "stderr": "matrix/javac23/g/StringThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray/StringThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/StringThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/StringThenArray/javac.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray/classes",
+        "StringThenArray"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/StringThenArray/runtime.stdout",
+      "stdout_sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34",
+      "stderr": "matrix/javac23/g/StringThenArray/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder/DequeThenBuilder.jar",
+        "--class",
+        "DequeThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/DequeThenBuilder/class-source.stdout",
+      "stdout_sha256": "9937e1ab9777226cf582a6646177436cfeab58eeb0722cd74a2f2385c1c1e878",
+      "stderr": "matrix/javac23/g/DequeThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder/DequeThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/DequeThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/DequeThenBuilder/javac.stderr",
+      "stderr_sha256": "4b9a845850b6b8cb23f9d5350fa7e25af47d27006ab76f0ffa472c13c1db4390"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder/classes",
+        "DequeThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/DequeThenBuilder/runtime.stdout",
+      "stdout_sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9",
+      "stderr": "matrix/javac23/g/DequeThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList/ArrayThenList.jar",
+        "--class",
+        "ArrayThenList",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/ArrayThenList/class-source.stdout",
+      "stdout_sha256": "12431575a3c1886f4563a76d418424f747762b249fd1e7b2faefee08e2703824",
+      "stderr": "matrix/javac23/g-none/ArrayThenList/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList/ArrayThenList.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/ArrayThenList/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/ArrayThenList/javac.stderr",
+      "stderr_sha256": "84509a3016d552667e9256515b35194a341e4b7cb11fc3bf6282981f7928bdce"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList/classes",
+        "ArrayThenList"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ArrayThenList",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/ArrayThenList/runtime.stdout",
+      "stdout_sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "stderr": "matrix/javac23/g-none/ArrayThenList/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder/StringThenBuilder.jar",
+        "--class",
+        "StringThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenBuilder/class-source.stdout",
+      "stdout_sha256": "dccef93c59fb937f5a2624751f710d22b27b0c2a141c1a664941382a73318162",
+      "stderr": "matrix/javac23/g-none/StringThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder/StringThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/StringThenBuilder/javac.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder/classes",
+        "StringThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenBuilder/runtime.stdout",
+      "stdout_sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6",
+      "stderr": "matrix/javac23/g-none/StringThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray/StringThenArray.jar",
+        "--class",
+        "StringThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenArray/class-source.stdout",
+      "stdout_sha256": "649a0f9203a5ccfa8b5915c0fee150c31cebfad5a9eea985c60bb02907e99842",
+      "stderr": "matrix/javac23/g-none/StringThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray/StringThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/StringThenArray/javac.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray/classes",
+        "StringThenArray"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenArray/runtime.stdout",
+      "stdout_sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34",
+      "stderr": "matrix/javac23/g-none/StringThenArray/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder/DequeThenBuilder.jar",
+        "--class",
+        "DequeThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/DequeThenBuilder/class-source.stdout",
+      "stdout_sha256": "fa2ba02c0c42908dba03e7e16e9be2a141debe29f7085dea346ad64b6867690d",
+      "stderr": "matrix/javac23/g-none/DequeThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder/DequeThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/DequeThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/DequeThenBuilder/javac.stderr",
+      "stderr_sha256": "0b698f05bd839fcc33e220e49746fd37c36e5edd6da1ddf8c637d4957b404826"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder/classes",
+        "DequeThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/DequeThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/DequeThenBuilder/runtime.stdout",
+      "stdout_sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9",
+      "stderr": "matrix/javac23/g-none/DequeThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/ListThenMap.jar",
+        "--class",
+        "ListThenMap",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/ListThenMap/class-source.stdout",
+      "stdout_sha256": "a726f0e840f014d385486e2e9b41d21c71584446b8ea098cb529fa74e9f16c2e",
+      "stderr": "matrix/javac8/g/ListThenMap/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap/ListThenMap.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/ListThenMap",
+      "exit": 1,
+      "stdout": "matrix/javac8/g/ListThenMap/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/ListThenMap/javac.stderr",
+      "stderr_sha256": "b7ec539652bae2a702327e0a1f0b3b0c15768173a337061fcb19a16054eb2f81"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/MapThenBuilder/MapThenBuilder.jar",
+        "--class",
+        "MapThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/MapThenBuilder/class-source.stdout",
+      "stdout_sha256": "903601b942d63789da3db6b8c1ed0319463c101266850b855912766f0471c792",
+      "stderr": "matrix/javac8/g/MapThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/MapThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/MapThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/MapThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/MapThenBuilder/MapThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/MapThenBuilder",
+      "exit": 1,
+      "stdout": "matrix/javac8/g/MapThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/MapThenBuilder/javac.stderr",
+      "stderr_sha256": "7fbb273e42218ee9c47a47b1c44139c478c5856ddb62b6e5aefd049ee150d9a5"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/StringThenQueue.jar",
+        "--class",
+        "StringThenQueue",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/StringThenQueue/class-source.stdout",
+      "stdout_sha256": "6c76dbc4b24a5a2768e59c63c58a5c2701563559769067699de889c6a5632c5a",
+      "stderr": "matrix/javac8/g/StringThenQueue/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue/StringThenQueue.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/StringThenQueue",
+      "exit": 1,
+      "stdout": "matrix/javac8/g/StringThenQueue/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/StringThenQueue/javac.stderr",
+      "stderr_sha256": "da620e9d3dffae0d24d7089a0d787b9aaa4c473b84c71731d8c66a7fabe90e7c"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray/BuilderThenArray.jar",
+        "--class",
+        "BuilderThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g/BuilderThenArray/class-source.stdout",
+      "stdout_sha256": "f187e0c1b6d71006b96326ded3f0a3d0c3bd3aac8032dd3fbd8cd036bb8c4d4c",
+      "stderr": "matrix/javac8/g/BuilderThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray/BuilderThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g/BuilderThenArray",
+      "exit": 1,
+      "stdout": "matrix/javac8/g/BuilderThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g/BuilderThenArray/javac.stderr",
+      "stderr_sha256": "20e912bb4eb2ae46074b13b4bc5c92db7c757b82aac939753e71bb1f0b92047a"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap/ListThenMap.jar",
+        "--class",
+        "ListThenMap",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/ListThenMap/class-source.stdout",
+      "stdout_sha256": "d9e9d5443f8c79d120e5ce9daeba7e6a46b294fb4b135ca721cce7f994e1922f",
+      "stderr": "matrix/javac8/g-none/ListThenMap/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap/ListThenMap.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/ListThenMap/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/ListThenMap/javac.stderr",
+      "stderr_sha256": "d63aaeba98b92a5a952de8980dc0803eaf4b351a3ccb086ac740158aef8f0475"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap/classes",
+        "ListThenMap"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/ListThenMap/runtime.stdout",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr": "matrix/javac8/g-none/ListThenMap/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder/MapThenBuilder.jar",
+        "--class",
+        "MapThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/MapThenBuilder/class-source.stdout",
+      "stdout_sha256": "d356b0b98e781b5da4a8fc460a748823961b65688dc9739cc4d4fd958ff445c9",
+      "stderr": "matrix/javac8/g-none/MapThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder/MapThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/MapThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/MapThenBuilder/javac.stderr",
+      "stderr_sha256": "75a15a8346c472b4e373c1e0fc7efcca46ca3029a6d012a125b09a54e26b437c"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder/classes",
+        "MapThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/MapThenBuilder/runtime.stdout",
+      "stdout_sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff",
+      "stderr": "matrix/javac8/g-none/MapThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue/StringThenQueue.jar",
+        "--class",
+        "StringThenQueue",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenQueue/class-source.stdout",
+      "stdout_sha256": "38f736518435bcd7e632285dc4897e899fffec5692f9fdb4936e4a23871b814c",
+      "stderr": "matrix/javac8/g-none/StringThenQueue/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue/StringThenQueue.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenQueue/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/StringThenQueue/javac.stderr",
+      "stderr_sha256": "01f6579ff6baed27dc9a923a6eabe122d746aaa7d4fef7ce43ecd5f80c6cc6e9"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue/classes",
+        "StringThenQueue"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/StringThenQueue/runtime.stdout",
+      "stdout_sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad",
+      "stderr": "matrix/javac8/g-none/StringThenQueue/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray/BuilderThenArray.jar",
+        "--class",
+        "BuilderThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/BuilderThenArray/class-source.stdout",
+      "stdout_sha256": "1bd30b56bea4bdc3a66e23214c7c7fbf84b697563cf7b140b56df2b4e8d58018",
+      "stderr": "matrix/javac8/g-none/BuilderThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray/BuilderThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/BuilderThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac8/g-none/BuilderThenArray/javac.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray/classes",
+        "BuilderThenArray"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac8/g-none/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac8/g-none/BuilderThenArray/runtime.stdout",
+      "stdout_sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb",
+      "stderr": "matrix/javac8/g-none/BuilderThenArray/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ListThenMap/ListThenMap.jar",
+        "--class",
+        "ListThenMap",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/ListThenMap/class-source.stdout",
+      "stdout_sha256": "ce08b23a8d3557c5b805a9fc28623b925924de4b6edbf10cf4d722bcd15c6749",
+      "stderr": "matrix/javac23/g/ListThenMap/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ListThenMap/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ListThenMap/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ListThenMap/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ListThenMap/ListThenMap.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/ListThenMap",
+      "exit": 1,
+      "stdout": "matrix/javac23/g/ListThenMap/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/ListThenMap/javac.stderr",
+      "stderr_sha256": "8f457cc6ca540629da8c3d72ab734ebb3e4be60a2c22d1de4debb7c7c8c2fcae"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/MapThenBuilder/MapThenBuilder.jar",
+        "--class",
+        "MapThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/MapThenBuilder/class-source.stdout",
+      "stdout_sha256": "0e7f23d8557e93a81469b8bee773e8063ef9949db87cac18d4d39426ac7d4dc5",
+      "stderr": "matrix/javac23/g/MapThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/MapThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/MapThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/MapThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/MapThenBuilder/MapThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/MapThenBuilder",
+      "exit": 1,
+      "stdout": "matrix/javac23/g/MapThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/MapThenBuilder/javac.stderr",
+      "stderr_sha256": "cfe0c17c40c1a9db8409eedbf8a0d95488d1506aa845f4c0776d722a512bf589"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenQueue/StringThenQueue.jar",
+        "--class",
+        "StringThenQueue",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/StringThenQueue/class-source.stdout",
+      "stdout_sha256": "4a722e3b72cedacc81acfb733eb8042e4e98160d519957d5067b110c9f329df8",
+      "stderr": "matrix/javac23/g/StringThenQueue/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenQueue/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenQueue/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenQueue/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenQueue/StringThenQueue.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/StringThenQueue",
+      "exit": 1,
+      "stdout": "matrix/javac23/g/StringThenQueue/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/StringThenQueue/javac.stderr",
+      "stderr_sha256": "b4fedbe168147b4c773633ede6bdca063e454ca84b9ea733cb11cc0c55faa193"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/BuilderThenArray/BuilderThenArray.jar",
+        "--class",
+        "BuilderThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g/BuilderThenArray/class-source.stdout",
+      "stdout_sha256": "0ceec3c8a9f22fbfa8dfda6ae214bb17539c920b3df3d5d5a858aa6f7e243be1",
+      "stderr": "matrix/javac23/g/BuilderThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/BuilderThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/BuilderThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/BuilderThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/BuilderThenArray/BuilderThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g/BuilderThenArray",
+      "exit": 1,
+      "stdout": "matrix/javac23/g/BuilderThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g/BuilderThenArray/javac.stderr",
+      "stderr_sha256": "9ea6e2be9619e1a07015f6c169eb8528971db005dd960d99fae69ac6fc22462e"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap/ListThenMap.jar",
+        "--class",
+        "ListThenMap",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/ListThenMap/class-source.stdout",
+      "stdout_sha256": "c61214f7e01626d29775ccab3a7e2d70cfa85df0f15ea472c858bb59a69bc6dd",
+      "stderr": "matrix/javac23/g-none/ListThenMap/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap/ListThenMap.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/ListThenMap/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/ListThenMap/javac.stderr",
+      "stderr_sha256": "aea351f41d10f981044bcc00ee5a783ff2da69d8590b1f02122c01f44367e774"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap/classes",
+        "ListThenMap"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/ListThenMap",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/ListThenMap/runtime.stdout",
+      "stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "stderr": "matrix/javac23/g-none/ListThenMap/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder/MapThenBuilder.jar",
+        "--class",
+        "MapThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/MapThenBuilder/class-source.stdout",
+      "stdout_sha256": "a996cf2a9cff3c20c80db77d34139bb86f187e7f56959a612fbf638507686077",
+      "stderr": "matrix/javac23/g-none/MapThenBuilder/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder/MapThenBuilder.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/MapThenBuilder/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/MapThenBuilder/javac.stderr",
+      "stderr_sha256": "3718e5077e8faa5ce4accb96134e6a6c19b332e6cb2e663832017e447bc5a5a5"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder/classes",
+        "MapThenBuilder"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/MapThenBuilder",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/MapThenBuilder/runtime.stdout",
+      "stdout_sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff",
+      "stderr": "matrix/javac23/g-none/MapThenBuilder/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue/StringThenQueue.jar",
+        "--class",
+        "StringThenQueue",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenQueue/class-source.stdout",
+      "stdout_sha256": "5c67e9307c3928d7a9de95260845310d694ce0f91e41831677691498a79bdd19",
+      "stderr": "matrix/javac23/g-none/StringThenQueue/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue/StringThenQueue.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenQueue/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/StringThenQueue/javac.stderr",
+      "stderr_sha256": "0ca05196c3b58f240758acde18b3471883292a5fd628a3469c3a17605abb455c"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue/classes",
+        "StringThenQueue"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/StringThenQueue",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/StringThenQueue/runtime.stdout",
+      "stdout_sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad",
+      "stderr": "matrix/javac23/g-none/StringThenQueue/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray/BuilderThenArray.jar",
+        "--class",
+        "BuilderThenArray",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/BuilderThenArray/class-source.stdout",
+      "stdout_sha256": "8a7fbcdb1771a565a6f8a59f6ab80fea041bdbd370104a7057c0a2a364ec41b5",
+      "stderr": "matrix/javac23/g-none/BuilderThenArray/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray/BuilderThenArray.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/BuilderThenArray/javac.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "matrix/javac23/g-none/BuilderThenArray/javac.stderr",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray/classes",
+        "BuilderThenArray"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/matrix/javac23/g-none/BuilderThenArray",
+      "exit": 0,
+      "stdout": "matrix/javac23/g-none/BuilderThenArray/runtime.stdout",
+      "stdout_sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb",
+      "stderr": "matrix/javac23/g-none/BuilderThenArray/runtime.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/same-type/V2.jar",
+        "--class",
+        "V2",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/same-type",
+      "exit": 0,
+      "stdout": "negative/same-type/class-source.stdout",
+      "stdout_sha256": "c24a0630ef24c10110dc0f7dfdd9f1c0c299f850a3909974c84f46488c5d629c",
+      "stderr": "negative/same-type/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/cross-phi/V3.jar",
+        "--class",
+        "V3",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/cross-phi",
+      "exit": 0,
+      "stdout": "negative/cross-phi/class-source.stdout",
+      "stdout_sha256": "13af6e9fdf57758a0316412b60d3d2350cab3bd0ef9e4dbf98095d5507ecf914",
+      "stderr": "negative/cross-phi/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/cfg-loop-phi/V4.jar",
+        "--class",
+        "V4",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/cfg-loop-phi",
+      "exit": 0,
+      "stdout": "negative/cfg-loop-phi/class-source.stdout",
+      "stdout_sha256": "09c0e6ce4dc8d5379ddd1886a8a9717f9d2a92463a5c2139214962231bb8fb6b",
+      "stderr": "negative/cfg-loop-phi/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/handler/SlotReuseBoundaries.jar",
+        "--class",
+        "SlotReuseBoundaries",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/handler",
+      "exit": 0,
+      "stdout": "negative/handler/class-source.stdout",
+      "stdout_sha256": "062ee82264bf33db77b944c729ad3f28073652f4ba16eca34521b5c88e18f682",
+      "stderr": "negative/handler/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/parameter-header/ParameterHeader.jar",
+        "--class",
+        "ParameterHeader",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/parameter-header",
+      "exit": 0,
+      "stdout": "negative/parameter-header/class-source.stdout",
+      "stdout_sha256": "a6565cd87c6524b28ae7de1294188fc0b586840a9cf7497415c9fe15722a616b",
+      "stderr": "negative/parameter-header/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/unknown-null/NullThenBuilder.jar",
+        "--class",
+        "NullThenBuilder",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/unknown-null",
+      "exit": 0,
+      "stdout": "negative/unknown-null/class-source.stdout",
+      "stdout_sha256": "697fc509b7487c1c9e8f6abf302bfcd99001c82aae5a8d89c3467e98f4775a51",
+      "stderr": "negative/unknown-null/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/held-use/HeldUse.jar",
+        "--class",
+        "HeldUse",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/held-use",
+      "exit": 0,
+      "stdout": "negative/held-use/class-source.stdout",
+      "stdout_sha256": "d7ad63686f7d6d6b05a3ab4bbc0be069d9fec10f523b1564ec085b8f9bc63bff",
+      "stderr": "negative/held-use/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "class-source",
+      "argv": [
+        "/private/tmp/jarde-reference-slot-candidate-v2-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/cfg-backedge-disjoint/RefLoopBack.jar",
+        "--class",
+        "RefLoopBack",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--release",
+        "8"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-v2/negative/cfg-backedge-disjoint",
+      "exit": 0,
+      "stdout": "negative/cfg-backedge-disjoint/class-source.stdout",
+      "stdout_sha256": "79f335730f76fcf2801e00c5cf35c9322bd412b6a42f1230acb9659131b28935",
+      "stderr": "negative/cfg-backedge-disjoint/class-source.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "rows": [
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "ArrayThenList",
+      "jar_sha256": "05d17f84ae079bd63ce72bd1062ba7d61044ed76b54337235bbc3ccd73d2a094",
+      "source_sha256": "6e56c3de4a9dda75d0b93f10f03d9363259da48827f22248afcc26feb570709a",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "StringThenBuilder",
+      "jar_sha256": "c2c2ff8749254498ce2a2e2488d355589a8948743740c2c93664b72333cd33ba",
+      "source_sha256": "2f21b729cc675907f25e4f5e55df8823bd5a0da308878b3b1e2f7ff6ebf29091",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "StringThenArray",
+      "jar_sha256": "c020cc1fd8d44ca3bfb316a6f7903d9f4eb5085f67067dd0af4c32065db5fb2e",
+      "source_sha256": "e07ed8bdf629cd77113f2ee385799806b0bba5c2a6dfdb87976256a3ba1c1396",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "DequeThenBuilder",
+      "jar_sha256": "2caf841190d346598078c74da4787a334ce862ef1b12279ab2671b9dd7d6b392",
+      "source_sha256": "e1af601952868dc3e08a0be3f32e5752baf5821531c949bc6b7dae4f6cefcd1a",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "ArrayThenList",
+      "jar_sha256": "7c2c05f68526e3e21e03662cee7c12ac6b60c4222f8abf3993b39d3a732684e0",
+      "source_sha256": "7dd2b117f93268f413d34d4d9091da6cc4ec2d73dbe8636887b7b67fb074d137",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "StringThenBuilder",
+      "jar_sha256": "4a0fef1c8427d8111b6af1f65e7ecdca0379488fee61ab9a653df6d585c3e34a",
+      "source_sha256": "b6e946806c071f386904c8f3b7145a892fa84b3989274a52841dbb3b2c4ece0c",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "StringThenArray",
+      "jar_sha256": "1f9fdcf49c172827b1a65a9f5f7e9f4ff95494745606071ef04f272f46c40489",
+      "source_sha256": "0aee572345e824d3ce9cf299d32ada20a58a0d4e9310fe164de1048ecb1596df",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "DequeThenBuilder",
+      "jar_sha256": "4ce32f747d462396a449836d83d6892113a0eb63f19398788e5d9ed814749d73",
+      "source_sha256": "18813c1b1ef0cd1e29d3c4f66e4ea687da890609782ca890d8c1a6e8eec18bc0",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "ArrayThenList",
+      "jar_sha256": "6a50d466c184a9cbc36ec4aad3e74f76118ff50253fcaf5e8e7d4686bd777465",
+      "source_sha256": "6e56c3de4a9dda75d0b93f10f03d9363259da48827f22248afcc26feb570709a",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "StringThenBuilder",
+      "jar_sha256": "352c4141e66ecd65b403f01bbad4ffba23fbbc7efd2d79872fcc5a41c356119c",
+      "source_sha256": "2f21b729cc675907f25e4f5e55df8823bd5a0da308878b3b1e2f7ff6ebf29091",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "StringThenArray",
+      "jar_sha256": "91a189075335eef0004074c850c77bdc036fe60cdb70e5dc6a9f5b83c470924c",
+      "source_sha256": "e07ed8bdf629cd77113f2ee385799806b0bba5c2a6dfdb87976256a3ba1c1396",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "DequeThenBuilder",
+      "jar_sha256": "798dd25af56fa328c87b9eb48102f76e88dd933a36fd4d2ddf068b33538d86f0",
+      "source_sha256": "e1af601952868dc3e08a0be3f32e5752baf5821531c949bc6b7dae4f6cefcd1a",
+      "baseline_source_unchanged": true,
+      "compile_exit": 0,
+      "baseline_compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "ArrayThenList",
+      "jar_sha256": "56dc9ddd74950e1d7a74478684e54388de50a09c9a3d08cbf237f274c626d727",
+      "source_sha256": "7dd2b117f93268f413d34d4d9091da6cc4ec2d73dbe8636887b7b67fb074d137",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "StringThenBuilder",
+      "jar_sha256": "e0bee39b5599795bb4deb2e0a88556892596b1d9108de9f842130a0101f06152",
+      "source_sha256": "b6e946806c071f386904c8f3b7145a892fa84b3989274a52841dbb3b2c4ece0c",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "StringThenArray",
+      "jar_sha256": "100551964cb3d29f954c0cdff4713594cb96662c3e87a8979f4b620e8ecdb5a2",
+      "source_sha256": "0aee572345e824d3ce9cf299d32ada20a58a0d4e9310fe164de1048ecb1596df",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-2-proper-source-names",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "DequeThenBuilder",
+      "jar_sha256": "1e4619b832d6cbd50d4edcb976dc2320af8681802b652692212dea2b3e49a6a7",
+      "source_sha256": "18813c1b1ef0cd1e29d3c4f66e4ea687da890609782ca890d8c1a6e8eec18bc0",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "ListThenMap",
+      "jar_sha256": "15142875208d8d2c1dbaae06200d8ff320f355e1f279d3be37ca592ae114521b",
+      "source_sha256": "a565a5ea2d1f04f583113dcf7c400026c4a44dae33d85cf7b8bb1b9da9733368",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "MapThenBuilder",
+      "jar_sha256": "52e943a0946a451ada61b396bccb412e575098cdd05e49c2ea7d1e1f26154564",
+      "source_sha256": "2313a55bdcadebd981d7b162de1d0b66c3bb77294d1f2c9d1696a7f188aaa06c",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "StringThenQueue",
+      "jar_sha256": "c599fdd03c56c3eb33352619b61ce5c5ad32801f780beffba4278bacfd00afba",
+      "source_sha256": "6663a57b38eb32ca0580429a8725c368ed0435dbcf4e79021fd87715e2184d98",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g",
+      "family": "BuilderThenArray",
+      "jar_sha256": "a9a659bb978d973cd854445c24ab1218eac0cd82384dec1e7eade78256361723",
+      "source_sha256": "c4434829bd4f5643e272dd893e0ca7e6e718b02c5fba1a43af07fa5762ccd1b4",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "ListThenMap",
+      "jar_sha256": "be22933e45c3b0397afc9513a6f8dc4831259412e829f8a6a798f6daf94e10f9",
+      "source_sha256": "72c7b296e0e49ceb9680b96274953fe96e62f226dd3bd394c2847f67da2d4b4d",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "MapThenBuilder",
+      "jar_sha256": "6c44dc6114ccfc5a9dcdf3820c3fc2e94d79403c477c0f6024d922d2744fd690",
+      "source_sha256": "0031ebe11a496fe0788a48d71f108b5bfea4cd5898a329b7c9ebf96722cf2791",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "StringThenQueue",
+      "jar_sha256": "8b9372c9d960d25ea7b37ad22490ca5284523b6201bc4f90517bc380e1c11ef0",
+      "source_sha256": "c476dd83fbcc2ec60aedc2cd49888ab1e3f88ea6aba6c632f07232475d2b6b75",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac8",
+      "debug": "g-none",
+      "family": "BuilderThenArray",
+      "jar_sha256": "d30f9279c9110941e3ad70e247289fc9fded14c951f423ce833d16b74e245852",
+      "source_sha256": "0dcabed1fda828fce5d5d53b398ae4ae78b16d67d33b6de7e9c880d4d9fadcd1",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "ListThenMap",
+      "jar_sha256": "b799e87276d6e821278f2af820ba03c5689ada93cad41d9d2bbf3ad61098e9a7",
+      "source_sha256": "a565a5ea2d1f04f583113dcf7c400026c4a44dae33d85cf7b8bb1b9da9733368",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "MapThenBuilder",
+      "jar_sha256": "9f2d3cf78b5b1e28f669544d3a22bfe639eb1be2b97ceddb150269f3283b1e83",
+      "source_sha256": "2313a55bdcadebd981d7b162de1d0b66c3bb77294d1f2c9d1696a7f188aaa06c",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "StringThenQueue",
+      "jar_sha256": "c918cde6c934d27b28681039e619410735eade9dce95ba8ec963106d621ab81f",
+      "source_sha256": "6663a57b38eb32ca0580429a8725c368ed0435dbcf4e79021fd87715e2184d98",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g",
+      "family": "BuilderThenArray",
+      "jar_sha256": "929409a7f7f8495498a76627c1d2ed375dbc56d5c011ed0927c6105549c9314d",
+      "source_sha256": "c4434829bd4f5643e272dd893e0ca7e6e718b02c5fba1a43af07fa5762ccd1b4",
+      "baseline_source_unchanged": true,
+      "compile_exit": 1,
+      "baseline_compile_exit": 1
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "ListThenMap",
+      "jar_sha256": "f3a21e9dd36c576055eaaa9a3988dd04fc567a7557f8d822f338b362fd0efe42",
+      "source_sha256": "72c7b296e0e49ceb9680b96274953fe96e62f226dd3bd394c2847f67da2d4b4d",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "MapThenBuilder",
+      "jar_sha256": "9454aa7f434deee3bef2a495b29838db7b4fcc0e526ecccd6b12ca28dc1481fc",
+      "source_sha256": "0031ebe11a496fe0788a48d71f108b5bfea4cd5898a329b7c9ebf96722cf2791",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "StringThenQueue",
+      "jar_sha256": "306173b01ccdce627f5ceda8006a40f3440901475e0cf96a4f4f8e6a33b3922a",
+      "source_sha256": "c476dd83fbcc2ec60aedc2cd49888ab1e3f88ea6aba6c632f07232475d2b6b75",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    },
+    {
+      "batch": "attempt-3-additional-four",
+      "leg": "javac23",
+      "debug": "g-none",
+      "family": "BuilderThenArray",
+      "jar_sha256": "e4ab0d34acf28e76cf5e66193818260e46b34ec148bf3380abf87b78ab8cf461",
+      "source_sha256": "0dcabed1fda828fce5d5d53b398ae4ae78b16d67d33b6de7e9c880d4d9fadcd1",
+      "baseline_source_unchanged": false,
+      "compile_exit": 0,
+      "baseline_compile_exit": 1,
+      "runtime_exit": 0,
+      "runtime_matches_original": true
+    }
+  ],
+  "negative_rows": [
+    {
+      "family": "same-type",
+      "input_sha256": "9c9ed061f34bae54cfc8620939b6f099516193a47e3eca6703c3326a201cc932",
+      "source_sha256": "a8a2f7dfe78259a566fcd9054742ecadfb410b653e5b96cee38651693912c4ed",
+      "baseline_source_unchanged": true
+    },
+    {
+      "family": "cross-phi",
+      "input_sha256": "8a2e15c292855f043a1da2c78706a2e7da8af8fd2924f49bf05e7d6e6006c59c",
+      "source_sha256": "959dce5c0bddfa5e886e9460ac62c2280ccfb9c125293518ee60602cf05983f6",
+      "baseline_source_unchanged": true
+    },
+    {
+      "family": "cfg-loop-phi",
+      "input_sha256": "a41079a487de85a5bc5217cee8ff533e4c433c2c8f289f8508f33e764e7d1826",
+      "source_sha256": "2a275195295cb73c3cb37d7e555bfb99d82e404fccaf098eb22a7d2f91449074",
+      "baseline_source_unchanged": true
+    },
+    {
+      "family": "handler",
+      "input_sha256": "7bd7a3b2b72b9e8a8b51073eb7c18f0d531cbd2ba9db5ee18abdddab2401db37",
+      "source_sha256": "4be627aeb8430c97d67986d7163a90f90e6aac7afad7fef2134359cfdad3e4ca",
+      "baseline_source_unchanged": true
+    },
+    {
+      "family": "parameter-header",
+      "input_sha256": "cf8a4504c3d54216521f9047eaf2d2122faa715ca99a9df0083ea56d607d34f4",
+      "source_sha256": "7db57220e7778f67f42535ffc10f0046b802c7da8cbce69eadd6af3d78a24a89",
+      "baseline_source_unchanged": true
+    },
+    {
+      "family": "unknown-null",
+      "input_sha256": "ab33a492b356e72885d5b851ea51d8268404b57a6cddb2bf9ecbd811eef4bd8c",
+      "source_sha256": "f04aad4af575953e14ce91084bc5e3e5fc23b3656f42dd21280701a81ccb8e1e",
+      "baseline_source_unchanged": true
+    },
+    {
+      "family": "held-use",
+      "input_sha256": "7f5e987b65b08c49d0b4263b3560f0d2a83f9eb6877c31977b636b66034dd06e",
+      "source_sha256": "211d89a9d3e1c9a5a2bc3986d7790a8e38718bd01bac1d775311659056b144fa",
+      "baseline_source_unchanged": true
+    },
+    {
+      "family": "cfg-backedge-disjoint",
+      "input_sha256": "def74be91b3293e28d50619da6ea5c8ea95e8e8b3c4c4b6916e638990b09457b",
+      "source_sha256": "6892115d9ee112915fcd61a900db1fa5878c057457c0ebee9b3779d1f0057b90",
+      "baseline_source_unchanged": true
+    }
+  ],
+  "files": [
+    {
+      "path": "matrix/javac23/g/ArrayThenList/ArrayThenList.jar",
+      "bytes": 1132,
+      "sha256": "6a50d466c184a9cbc36ec4aad3e74f76118ff50253fcaf5e8e7d4686bd777465"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/ArrayThenList.java",
+      "bytes": 1715,
+      "sha256": "6e56c3de4a9dda75d0b93f10f03d9363259da48827f22248afcc26feb570709a"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/class-source.stdout",
+      "bytes": 70247,
+      "sha256": "ba0540bab6fac8cb9a80951be8cb0be4463c7b5b459c3afc85d089a96ceeb545"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/classes/ArrayThenList.class",
+      "bytes": 743,
+      "sha256": "69e9660a26ec79bcc16e228f69865be4ca5d826c808a872c95ed56144a85d329"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/javac.stderr",
+      "bytes": 530,
+      "sha256": "27eb49994b6226b20ef78c196d231a99b6c145cbeb302858ceb5c83a4518aef4"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/ArrayThenList/runtime.stdout",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8"
+    },
+    {
+      "path": "matrix/javac23/g/BuilderThenArray/BuilderThenArray.jar",
+      "bytes": 1030,
+      "sha256": "929409a7f7f8495498a76627c1d2ed375dbc56d5c011ed0927c6105549c9314d"
+    },
+    {
+      "path": "matrix/javac23/g/BuilderThenArray/BuilderThenArray.java",
+      "bytes": 1764,
+      "sha256": "c4434829bd4f5643e272dd893e0ca7e6e718b02c5fba1a43af07fa5762ccd1b4"
+    },
+    {
+      "path": "matrix/javac23/g/BuilderThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/BuilderThenArray/class-source.stdout",
+      "bytes": 56616,
+      "sha256": "0ceec3c8a9f22fbfa8dfda6ae214bb17539c920b3df3d5d5a858aa6f7e243be1"
+    },
+    {
+      "path": "matrix/javac23/g/BuilderThenArray/javac.stderr",
+      "bytes": 807,
+      "sha256": "9ea6e2be9619e1a07015f6c169eb8528971db005dd960d99fae69ac6fc22462e"
+    },
+    {
+      "path": "matrix/javac23/g/BuilderThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/DequeThenBuilder.jar",
+      "bytes": 1087,
+      "sha256": "798dd25af56fa328c87b9eb48102f76e88dd933a36fd4d2ddf068b33538d86f0"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/DequeThenBuilder.java",
+      "bytes": 1663,
+      "sha256": "e1af601952868dc3e08a0be3f32e5752baf5821531c949bc6b7dae4f6cefcd1a"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/class-source.stdout",
+      "bytes": 59170,
+      "sha256": "9937e1ab9777226cf582a6646177436cfeab58eeb0722cd74a2f2385c1c1e878"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/classes/DequeThenBuilder.class",
+      "bytes": 789,
+      "sha256": "84ed124449b73c70b4b20b0e12ce1d0718a042185ee42239e0ac94e36dd1fce9"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/javac.stderr",
+      "bytes": 536,
+      "sha256": "4b9a845850b6b8cb23f9d5350fa7e25af47d27006ab76f0ffa472c13c1db4390"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/DequeThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9"
+    },
+    {
+      "path": "matrix/javac23/g/ListThenMap/ListThenMap.jar",
+      "bytes": 1100,
+      "sha256": "b799e87276d6e821278f2af820ba03c5689ada93cad41d9d2bbf3ad61098e9a7"
+    },
+    {
+      "path": "matrix/javac23/g/ListThenMap/ListThenMap.java",
+      "bytes": 1614,
+      "sha256": "a565a5ea2d1f04f583113dcf7c400026c4a44dae33d85cf7b8bb1b9da9733368"
+    },
+    {
+      "path": "matrix/javac23/g/ListThenMap/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/ListThenMap/class-source.stdout",
+      "bytes": 58615,
+      "sha256": "ce08b23a8d3557c5b805a9fc28623b925924de4b6edbf10cf4d722bcd15c6749"
+    },
+    {
+      "path": "matrix/javac23/g/ListThenMap/javac.stderr",
+      "bytes": 1649,
+      "sha256": "8f457cc6ca540629da8c3d72ab734ebb3e4be60a2c22d1de4debb7c7c8c2fcae"
+    },
+    {
+      "path": "matrix/javac23/g/ListThenMap/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/MapThenBuilder/MapThenBuilder.jar",
+      "bytes": 1107,
+      "sha256": "9f2d3cf78b5b1e28f669544d3a22bfe639eb1be2b97ceddb150269f3283b1e83"
+    },
+    {
+      "path": "matrix/javac23/g/MapThenBuilder/MapThenBuilder.java",
+      "bytes": 1587,
+      "sha256": "2313a55bdcadebd981d7b162de1d0b66c3bb77294d1f2c9d1696a7f188aaa06c"
+    },
+    {
+      "path": "matrix/javac23/g/MapThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/MapThenBuilder/class-source.stdout",
+      "bytes": 57064,
+      "sha256": "0e7f23d8557e93a81469b8bee773e8063ef9949db87cac18d4d39426ac7d4dc5"
+    },
+    {
+      "path": "matrix/javac23/g/MapThenBuilder/javac.stderr",
+      "bytes": 1162,
+      "sha256": "cfe0c17c40c1a9db8409eedbf8a0d95488d1506aa845f4c0776d722a512bf589"
+    },
+    {
+      "path": "matrix/javac23/g/MapThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/StringThenArray.jar",
+      "bytes": 1001,
+      "sha256": "91a189075335eef0004074c850c77bdc036fe60cdb70e5dc6a9f5b83c470924c"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/StringThenArray.java",
+      "bytes": 1589,
+      "sha256": "e07ed8bdf629cd77113f2ee385799806b0bba5c2a6dfdb87976256a3ba1c1396"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/class-source.stdout",
+      "bytes": 55906,
+      "sha256": "b1b2b6120bea9581b888166dcb61127f85482a0cb912519cbe66a68c0748fe06"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/classes/StringThenArray.class",
+      "bytes": 690,
+      "sha256": "c9b1f7c33d4cfe7798c56efc3817f219f0304112d636656db5762bb2b442e02e"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenArray/runtime.stdout",
+      "bytes": 7,
+      "sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/StringThenBuilder.jar",
+      "bytes": 1000,
+      "sha256": "352c4141e66ecd65b403f01bbad4ffba23fbbc7efd2d79872fcc5a41c356119c"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/StringThenBuilder.java",
+      "bytes": 1554,
+      "sha256": "2f21b729cc675907f25e4f5e55df8823bd5a0da308878b3b1e2f7ff6ebf29091"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/class-source.stdout",
+      "bytes": 49262,
+      "sha256": "6d3b265af4679e4818a6f16f9f38f73c23bce593bb4f5bcc7a260a6544f7c141"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/classes/StringThenBuilder.class",
+      "bytes": 701,
+      "sha256": "11103c9b84ceb1eed496ff301ca801759bed901cdbe26d6e0f859b4a6941038f"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenQueue/StringThenQueue.jar",
+      "bytes": 1125,
+      "sha256": "c918cde6c934d27b28681039e619410735eade9dce95ba8ec963106d621ab81f"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenQueue/StringThenQueue.java",
+      "bytes": 1636,
+      "sha256": "6663a57b38eb32ca0580429a8725c368ed0435dbcf4e79021fd87715e2184d98"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenQueue/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenQueue/class-source.stdout",
+      "bytes": 60943,
+      "sha256": "4a722e3b72cedacc81acfb733eb8042e4e98160d519957d5067b110c9f329df8"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenQueue/javac.stderr",
+      "bytes": 2286,
+      "sha256": "b4fedbe168147b4c773633ede6bdca063e454ca84b9ea733cb11cc0c55faa193"
+    },
+    {
+      "path": "matrix/javac23/g/StringThenQueue/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/ArrayThenList.jar",
+      "bytes": 961,
+      "sha256": "56dc9ddd74950e1d7a74478684e54388de50a09c9a3d08cbf237f274c626d727"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/ArrayThenList.java",
+      "bytes": 1758,
+      "sha256": "7dd2b117f93268f413d34d4d9091da6cc4ec2d73dbe8636887b7b67fb074d137"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/class-source.stdout",
+      "bytes": 70470,
+      "sha256": "12431575a3c1886f4563a76d418424f747762b249fd1e7b2faefee08e2703824"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/classes/ArrayThenList.class",
+      "bytes": 743,
+      "sha256": "69e9660a26ec79bcc16e228f69865be4ca5d826c808a872c95ed56144a85d329"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/javac.stderr",
+      "bytes": 535,
+      "sha256": "84509a3016d552667e9256515b35194a341e4b7cb11fc3bf6282981f7928bdce"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/ArrayThenList/runtime.stdout",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/BuilderThenArray.jar",
+      "bytes": 888,
+      "sha256": "e4ab0d34acf28e76cf5e66193818260e46b34ec148bf3380abf87b78ab8cf461"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/BuilderThenArray.java",
+      "bytes": 1687,
+      "sha256": "0dcabed1fda828fce5d5d53b398ae4ae78b16d67d33b6de7e9c880d4d9fadcd1"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/class-source.stdout",
+      "bytes": 59259,
+      "sha256": "8a7fbcdb1771a565a6f8a59f6ab80fea041bdbd370104a7057c0a2a364ec41b5"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/classes/BuilderThenArray.class",
+      "bytes": 656,
+      "sha256": "a327c24b995890fc1ecebf4fa5cd9e6ded0cc9bdd70d311552472a990a138b29"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/BuilderThenArray/runtime.stdout",
+      "bytes": 4,
+      "sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/DequeThenBuilder.jar",
+      "bytes": 925,
+      "sha256": "1e4619b832d6cbd50d4edcb976dc2320af8681802b652692212dea2b3e49a6a7"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/DequeThenBuilder.java",
+      "bytes": 1685,
+      "sha256": "18813c1b1ef0cd1e29d3c4f66e4ea687da890609782ca890d8c1a6e8eec18bc0"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/class-source.stdout",
+      "bytes": 59362,
+      "sha256": "fa2ba02c0c42908dba03e7e16e9be2a141debe29f7085dea346ad64b6867690d"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/classes/DequeThenBuilder.class",
+      "bytes": 789,
+      "sha256": "84ed124449b73c70b4b20b0e12ce1d0718a042185ee42239e0ac94e36dd1fce9"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/javac.stderr",
+      "bytes": 541,
+      "sha256": "0b698f05bd839fcc33e220e49746fd37c36e5edd6da1ddf8c637d4957b404826"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/DequeThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/ListThenMap.jar",
+      "bytes": 927,
+      "sha256": "f3a21e9dd36c576055eaaa9a3988dd04fc567a7557f8d822f338b362fd0efe42"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/ListThenMap.java",
+      "bytes": 1702,
+      "sha256": "72c7b296e0e49ceb9680b96274953fe96e62f226dd3bd394c2847f67da2d4b4d"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/class-source.stdout",
+      "bytes": 58995,
+      "sha256": "c61214f7e01626d29775ccab3a7e2d70cfa85df0f15ea472c858bb59a69bc6dd"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/classes/ListThenMap.class",
+      "bytes": 782,
+      "sha256": "93b3d3446e842d3f00223da2143e16288869fd573680b78f3a8180eb0a8a06cc"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/javac.stderr",
+      "bytes": 531,
+      "sha256": "aea351f41d10f981044bcc00ee5a783ff2da69d8590b1f02122c01f44367e774"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/ListThenMap/runtime.stdout",
+      "bytes": 2,
+      "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/MapThenBuilder.jar",
+      "bytes": 944,
+      "sha256": "9454aa7f434deee3bef2a495b29838db7b4fcc0e526ecccd6b12ca28dc1481fc"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/MapThenBuilder.java",
+      "bytes": 1669,
+      "sha256": "0031ebe11a496fe0788a48d71f108b5bfea4cd5898a329b7c9ebf96722cf2791"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/class-source.stdout",
+      "bytes": 57436,
+      "sha256": "a996cf2a9cff3c20c80db77d34139bb86f187e7f56959a612fbf638507686077"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/classes/MapThenBuilder.class",
+      "bytes": 887,
+      "sha256": "a7c2d1b8c7a51c88f55b350054e360df0f717a676a52572eda55ea106eb01aa8"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/javac.stderr",
+      "bytes": 537,
+      "sha256": "3718e5077e8faa5ce4accb96134e6a6c19b332e6cb2e663832017e447bc5a5a5"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/MapThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/StringThenArray.jar",
+      "bytes": 868,
+      "sha256": "100551964cb3d29f954c0cdff4713594cb96662c3e87a8979f4b620e8ecdb5a2"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/StringThenArray.java",
+      "bytes": 1616,
+      "sha256": "0aee572345e824d3ce9cf299d32ada20a58a0d4e9310fe164de1048ecb1596df"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/class-source.stdout",
+      "bytes": 56179,
+      "sha256": "649a0f9203a5ccfa8b5915c0fee150c31cebfad5a9eea985c60bb02907e99842"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/classes/StringThenArray.class",
+      "bytes": 690,
+      "sha256": "c9b1f7c33d4cfe7798c56efc3817f219f0304112d636656db5762bb2b442e02e"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenArray/runtime.stdout",
+      "bytes": 7,
+      "sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/StringThenBuilder.jar",
+      "bytes": 855,
+      "sha256": "e0bee39b5599795bb4deb2e0a88556892596b1d9108de9f842130a0101f06152"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/StringThenBuilder.java",
+      "bytes": 1571,
+      "sha256": "b6e946806c071f386904c8f3b7145a892fa84b3989274a52841dbb3b2c4ece0c"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/class-source.stdout",
+      "bytes": 49455,
+      "sha256": "dccef93c59fb937f5a2624751f710d22b27b0c2a141c1a664941382a73318162"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/classes/StringThenBuilder.class",
+      "bytes": 701,
+      "sha256": "11103c9b84ceb1eed496ff301ca801759bed901cdbe26d6e0f859b4a6941038f"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/javac.stderr",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/StringThenQueue.jar",
+      "bytes": 967,
+      "sha256": "306173b01ccdce627f5ceda8006a40f3440901475e0cf96a4f4f8e6a33b3922a"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/StringThenQueue.java",
+      "bytes": 1724,
+      "sha256": "c476dd83fbcc2ec60aedc2cd49888ab1e3f88ea6aba6c632f07232475d2b6b75"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/class-source.stdout",
+      "bytes": 61332,
+      "sha256": "5c67e9307c3928d7a9de95260845310d694ce0f91e41831677691498a79bdd19"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/classes/StringThenQueue.class",
+      "bytes": 899,
+      "sha256": "1df274ffb3bee8b1329c07f8bf596f6f760bba3df506e67c54e783d79df2c354"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/javac.stderr",
+      "bytes": 539,
+      "sha256": "0ca05196c3b58f240758acde18b3471883292a5fd628a3469c3a17605abb455c"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac23/g-none/StringThenQueue/runtime.stdout",
+      "bytes": 7,
+      "sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/ArrayThenList.jar",
+      "bytes": 1144,
+      "sha256": "05d17f84ae079bd63ce72bd1062ba7d61044ed76b54337235bbc3ccd73d2a094"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/ArrayThenList.java",
+      "bytes": 1715,
+      "sha256": "6e56c3de4a9dda75d0b93f10f03d9363259da48827f22248afcc26feb570709a"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/class-source.stdout",
+      "bytes": 70252,
+      "sha256": "d411ae1c1013514417a6f719b144228cd1c89b2a6be612e5c05215dd4c7c2fad"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/classes/ArrayThenList.class",
+      "bytes": 743,
+      "sha256": "0bd88a56b884d0a7243fb63dd49d26fa0ddf5192db81eeae54ef55e6820499b9"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/javac.stderr",
+      "bytes": 286,
+      "sha256": "2007d97bd5b72656908635d2045ff408c86cccc70cdb1a962773e310437b38f0"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/ArrayThenList/runtime.stdout",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8"
+    },
+    {
+      "path": "matrix/javac8/g/BuilderThenArray/BuilderThenArray.jar",
+      "bytes": 1045,
+      "sha256": "a9a659bb978d973cd854445c24ab1218eac0cd82384dec1e7eade78256361723"
+    },
+    {
+      "path": "matrix/javac8/g/BuilderThenArray/BuilderThenArray.java",
+      "bytes": 1764,
+      "sha256": "c4434829bd4f5643e272dd893e0ca7e6e718b02c5fba1a43af07fa5762ccd1b4"
+    },
+    {
+      "path": "matrix/javac8/g/BuilderThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/BuilderThenArray/class-source.stdout",
+      "bytes": 56616,
+      "sha256": "f187e0c1b6d71006b96326ded3f0a3d0c3bd3aac8032dd3fbd8cd036bb8c4d4c"
+    },
+    {
+      "path": "matrix/javac8/g/BuilderThenArray/javac.stderr",
+      "bytes": 562,
+      "sha256": "20e912bb4eb2ae46074b13b4bc5c92db7c757b82aac939753e71bb1f0b92047a"
+    },
+    {
+      "path": "matrix/javac8/g/BuilderThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/DequeThenBuilder.jar",
+      "bytes": 1102,
+      "sha256": "2caf841190d346598078c74da4787a334ce862ef1b12279ab2671b9dd7d6b392"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/DequeThenBuilder.java",
+      "bytes": 1663,
+      "sha256": "e1af601952868dc3e08a0be3f32e5752baf5821531c949bc6b7dae4f6cefcd1a"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/class-source.stdout",
+      "bytes": 59170,
+      "sha256": "39e933bca22425a480caf7391e269f44db07340aaa10bb163ad6e193f1d1a455"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/classes/DequeThenBuilder.class",
+      "bytes": 789,
+      "sha256": "0085f006a37f711ef081f75dfad6f23ce8f24ef3b3ac25878f4bbc8e06524452"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/javac.stderr",
+      "bytes": 292,
+      "sha256": "e87a2a2e4d91716fe8de518ccf2a63e2712f3d42ea2cf0db2f2ec6f610bfd27f"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/DequeThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9"
+    },
+    {
+      "path": "matrix/javac8/g/ListThenMap/ListThenMap.jar",
+      "bytes": 1106,
+      "sha256": "15142875208d8d2c1dbaae06200d8ff320f355e1f279d3be37ca592ae114521b"
+    },
+    {
+      "path": "matrix/javac8/g/ListThenMap/ListThenMap.java",
+      "bytes": 1614,
+      "sha256": "a565a5ea2d1f04f583113dcf7c400026c4a44dae33d85cf7b8bb1b9da9733368"
+    },
+    {
+      "path": "matrix/javac8/g/ListThenMap/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/ListThenMap/class-source.stdout",
+      "bytes": 58615,
+      "sha256": "a726f0e840f014d385486e2e9b41d21c71584446b8ea098cb529fa74e9f16c2e"
+    },
+    {
+      "path": "matrix/javac8/g/ListThenMap/javac.stderr",
+      "bytes": 1567,
+      "sha256": "b7ec539652bae2a702327e0a1f0b3b0c15768173a337061fcb19a16054eb2f81"
+    },
+    {
+      "path": "matrix/javac8/g/ListThenMap/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/MapThenBuilder/MapThenBuilder.jar",
+      "bytes": 1121,
+      "sha256": "52e943a0946a451ada61b396bccb412e575098cdd05e49c2ea7d1e1f26154564"
+    },
+    {
+      "path": "matrix/javac8/g/MapThenBuilder/MapThenBuilder.java",
+      "bytes": 1587,
+      "sha256": "2313a55bdcadebd981d7b162de1d0b66c3bb77294d1f2c9d1696a7f188aaa06c"
+    },
+    {
+      "path": "matrix/javac8/g/MapThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/MapThenBuilder/class-source.stdout",
+      "bytes": 57064,
+      "sha256": "903601b942d63789da3db6b8c1ed0319463c101266850b855912766f0471c792"
+    },
+    {
+      "path": "matrix/javac8/g/MapThenBuilder/javac.stderr",
+      "bytes": 916,
+      "sha256": "7fbb273e42218ee9c47a47b1c44139c478c5856ddb62b6e5aefd049ee150d9a5"
+    },
+    {
+      "path": "matrix/javac8/g/MapThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/StringThenArray.jar",
+      "bytes": 1013,
+      "sha256": "c020cc1fd8d44ca3bfb316a6f7903d9f4eb5085f67067dd0af4c32065db5fb2e"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/StringThenArray.java",
+      "bytes": 1589,
+      "sha256": "e07ed8bdf629cd77113f2ee385799806b0bba5c2a6dfdb87976256a3ba1c1396"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/class-source.stdout",
+      "bytes": 55906,
+      "sha256": "2f75c7791551c8a6af8445732b34ab15e64933d26bffbd0135a7ffa1665ccd56"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/classes/StringThenArray.class",
+      "bytes": 690,
+      "sha256": "b32e5c5c5737a2470a60b167a68dd7a62b4a104ff8b44e01b3964037397a52df"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenArray/runtime.stdout",
+      "bytes": 7,
+      "sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/StringThenBuilder.jar",
+      "bytes": 1018,
+      "sha256": "c2c2ff8749254498ce2a2e2488d355589a8948743740c2c93664b72333cd33ba"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/StringThenBuilder.java",
+      "bytes": 1554,
+      "sha256": "2f21b729cc675907f25e4f5e55df8823bd5a0da308878b3b1e2f7ff6ebf29091"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/class-source.stdout",
+      "bytes": 49262,
+      "sha256": "b1dfb25114f205feea4bc3cdfe0af898c7198c10d1adcec7a73b3f39b9135142"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/classes/StringThenBuilder.class",
+      "bytes": 701,
+      "sha256": "835b1717cf06d135d75f0ba36f24a4999514b247ef0537e6140e984d7c348539"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenQueue/StringThenQueue.jar",
+      "bytes": 1140,
+      "sha256": "c599fdd03c56c3eb33352619b61ce5c5ad32801f780beffba4278bacfd00afba"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenQueue/StringThenQueue.java",
+      "bytes": 1636,
+      "sha256": "6663a57b38eb32ca0580429a8725c368ed0435dbcf4e79021fd87715e2184d98"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenQueue/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenQueue/class-source.stdout",
+      "bytes": 60943,
+      "sha256": "6c76dbc4b24a5a2768e59c63c58a5c2701563559769067699de889c6a5632c5a"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenQueue/javac.stderr",
+      "bytes": 2038,
+      "sha256": "da620e9d3dffae0d24d7089a0d787b9aaa4c473b84c71731d8c66a7fabe90e7c"
+    },
+    {
+      "path": "matrix/javac8/g/StringThenQueue/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/ArrayThenList.jar",
+      "bytes": 977,
+      "sha256": "7c2c05f68526e3e21e03662cee7c12ac6b60c4222f8abf3993b39d3a732684e0"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/ArrayThenList.java",
+      "bytes": 1758,
+      "sha256": "7dd2b117f93268f413d34d4d9091da6cc4ec2d73dbe8636887b7b67fb074d137"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/class-source.stdout",
+      "bytes": 70470,
+      "sha256": "961054404dfd00fea89980600a501e6206f52a44f318ee8189a3f20e80005c33"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/classes/ArrayThenList.class",
+      "bytes": 743,
+      "sha256": "0bd88a56b884d0a7243fb63dd49d26fa0ddf5192db81eeae54ef55e6820499b9"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/javac.stderr",
+      "bytes": 291,
+      "sha256": "8b5b71cdbc7450675037172e1e3157b3a9d4f57e6564f05e988ed9d716aceb36"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/ArrayThenList/runtime.stdout",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/BuilderThenArray.jar",
+      "bytes": 905,
+      "sha256": "d30f9279c9110941e3ad70e247289fc9fded14c951f423ce833d16b74e245852"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/BuilderThenArray.java",
+      "bytes": 1687,
+      "sha256": "0dcabed1fda828fce5d5d53b398ae4ae78b16d67d33b6de7e9c880d4d9fadcd1"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/class-source.stdout",
+      "bytes": 59259,
+      "sha256": "1bd30b56bea4bdc3a66e23214c7c7fbf84b697563cf7b140b56df2b4e8d58018"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/classes/BuilderThenArray.class",
+      "bytes": 662,
+      "sha256": "601e029af85336d7c36f1995147e0fbe26af4dba55f3b49a9a7c788bc173fdcc"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/BuilderThenArray/runtime.stdout",
+      "bytes": 4,
+      "sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/DequeThenBuilder.jar",
+      "bytes": 941,
+      "sha256": "4ce32f747d462396a449836d83d6892113a0eb63f19398788e5d9ed814749d73"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/DequeThenBuilder.java",
+      "bytes": 1685,
+      "sha256": "18813c1b1ef0cd1e29d3c4f66e4ea687da890609782ca890d8c1a6e8eec18bc0"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/class-source.stdout",
+      "bytes": 59362,
+      "sha256": "94a8a993b1f8cb86b0389df806e16fdab490363648b998a44b531cdd19d3570a"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/classes/DequeThenBuilder.class",
+      "bytes": 789,
+      "sha256": "0085f006a37f711ef081f75dfad6f23ce8f24ef3b3ac25878f4bbc8e06524452"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/javac.stderr",
+      "bytes": 297,
+      "sha256": "15cdb6ec1238c7147620ef55a69e35d8cdcd24aba3a5131bd28b5b1a24df0894"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/DequeThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "504266f6363eedf0483aec7ad8aa2af56e1850316dddb75cec34711f0369a8a9"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/ListThenMap.jar",
+      "bytes": 942,
+      "sha256": "be22933e45c3b0397afc9513a6f8dc4831259412e829f8a6a798f6daf94e10f9"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/ListThenMap.java",
+      "bytes": 1702,
+      "sha256": "72c7b296e0e49ceb9680b96274953fe96e62f226dd3bd394c2847f67da2d4b4d"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/class-source.stdout",
+      "bytes": 58995,
+      "sha256": "d9e9d5443f8c79d120e5ce9daeba7e6a46b294fb4b135ca721cce7f994e1922f"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/classes/ListThenMap.class",
+      "bytes": 782,
+      "sha256": "fb389601b48386245cc90ff4a3c61c9666ec857c6636ffd508797b1d9ef36666"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/javac.stderr",
+      "bytes": 287,
+      "sha256": "d63aaeba98b92a5a952de8980dc0803eaf4b351a3ccb086ac740158aef8f0475"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/ListThenMap/runtime.stdout",
+      "bytes": 2,
+      "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/MapThenBuilder.jar",
+      "bytes": 964,
+      "sha256": "6c44dc6114ccfc5a9dcdf3820c3fc2e94d79403c477c0f6024d922d2744fd690"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/MapThenBuilder.java",
+      "bytes": 1669,
+      "sha256": "0031ebe11a496fe0788a48d71f108b5bfea4cd5898a329b7c9ebf96722cf2791"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/class-source.stdout",
+      "bytes": 57436,
+      "sha256": "d356b0b98e781b5da4a8fc460a748823961b65688dc9739cc4d4fd958ff445c9"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/classes/MapThenBuilder.class",
+      "bytes": 887,
+      "sha256": "1990f7c43bfd18e004eee3a636e023ae69579c2bdf16084cdbb77c8960aecc0e"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/javac.stderr",
+      "bytes": 293,
+      "sha256": "75a15a8346c472b4e373c1e0fc7efcca46ca3029a6d012a125b09a54e26b437c"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/MapThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/StringThenArray.jar",
+      "bytes": 883,
+      "sha256": "1f9fdcf49c172827b1a65a9f5f7e9f4ff95494745606071ef04f272f46c40489"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/StringThenArray.java",
+      "bytes": 1616,
+      "sha256": "0aee572345e824d3ce9cf299d32ada20a58a0d4e9310fe164de1048ecb1596df"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/class-source.stdout",
+      "bytes": 56179,
+      "sha256": "c3b0b629e669420065a9eb6cbf23279f548654dc0061c9504562201ee8e800a2"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/classes/StringThenArray.class",
+      "bytes": 690,
+      "sha256": "b32e5c5c5737a2470a60b167a68dd7a62b4a104ff8b44e01b3964037397a52df"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenArray/runtime.stdout",
+      "bytes": 7,
+      "sha256": "7a35ba00eeec7da2d05f536e65ec4ec4ed6af4af1e33b6a400af81195d864e34"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/StringThenBuilder.jar",
+      "bytes": 884,
+      "sha256": "4a0fef1c8427d8111b6af1f65e7ecdca0379488fee61ab9a653df6d585c3e34a"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/StringThenBuilder.java",
+      "bytes": 1571,
+      "sha256": "b6e946806c071f386904c8f3b7145a892fa84b3989274a52841dbb3b2c4ece0c"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/class-source.stdout",
+      "bytes": 49455,
+      "sha256": "fd9653a9ac495f515ea2ab0e597288d5dcb69b4c2e2980fd4a04e444971c510b"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/classes/StringThenBuilder.class",
+      "bytes": 701,
+      "sha256": "835b1717cf06d135d75f0ba36f24a4999514b247ef0537e6140e984d7c348539"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/javac.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenBuilder/runtime.stdout",
+      "bytes": 4,
+      "sha256": "582d5b6fd4ba99f3a291171c29e0bc7f96cc9d61b395f670444cf9ca380f41a6"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/StringThenQueue.jar",
+      "bytes": 984,
+      "sha256": "8b9372c9d960d25ea7b37ad22490ca5284523b6201bc4f90517bc380e1c11ef0"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/StringThenQueue.java",
+      "bytes": 1724,
+      "sha256": "c476dd83fbcc2ec60aedc2cd49888ab1e3f88ea6aba6c632f07232475d2b6b75"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/class-source.stdout",
+      "bytes": 61332,
+      "sha256": "38f736518435bcd7e632285dc4897e899fffec5692f9fdb4936e4a23871b814c"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/classes/StringThenQueue.class",
+      "bytes": 899,
+      "sha256": "da1ea11ea74b7f3008e0fd743be20f10b4febc58c095d7f9ff1bc1011df43af9"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/javac.stderr",
+      "bytes": 295,
+      "sha256": "01f6579ff6baed27dc9a923a6eabe122d746aaa7d4fef7ce43ecd5f80c6cc6e9"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/javac.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix/javac8/g-none/StringThenQueue/runtime.stdout",
+      "bytes": 7,
+      "sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad"
+    },
+    {
+      "path": "negative/cfg-backedge-disjoint/RefLoopBack.jar",
+      "bytes": 835,
+      "sha256": "def74be91b3293e28d50619da6ea5c8ea95e8e8b3c4c4b6916e638990b09457b"
+    },
+    {
+      "path": "negative/cfg-backedge-disjoint/RefLoopBack.java",
+      "bytes": 1491,
+      "sha256": "6892115d9ee112915fcd61a900db1fa5878c057457c0ebee9b3779d1f0057b90"
+    },
+    {
+      "path": "negative/cfg-backedge-disjoint/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/cfg-backedge-disjoint/class-source.stdout",
+      "bytes": 47617,
+      "sha256": "79f335730f76fcf2801e00c5cf35c9322bd412b6a42f1230acb9659131b28935"
+    },
+    {
+      "path": "negative/cfg-loop-phi/V4.jar",
+      "bytes": 806,
+      "sha256": "a41079a487de85a5bc5217cee8ff533e4c433c2c8f289f8508f33e764e7d1826"
+    },
+    {
+      "path": "negative/cfg-loop-phi/V4.java",
+      "bytes": 1431,
+      "sha256": "2a275195295cb73c3cb37d7e555bfb99d82e404fccaf098eb22a7d2f91449074"
+    },
+    {
+      "path": "negative/cfg-loop-phi/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/cfg-loop-phi/class-source.stdout",
+      "bytes": 52641,
+      "sha256": "09c0e6ce4dc8d5379ddd1886a8a9717f9d2a92463a5c2139214962231bb8fb6b"
+    },
+    {
+      "path": "negative/cross-phi/V3.jar",
+      "bytes": 792,
+      "sha256": "8a2e15c292855f043a1da2c78706a2e7da8af8fd2924f49bf05e7d6e6006c59c"
+    },
+    {
+      "path": "negative/cross-phi/V3.java",
+      "bytes": 1396,
+      "sha256": "959dce5c0bddfa5e886e9460ac62c2280ccfb9c125293518ee60602cf05983f6"
+    },
+    {
+      "path": "negative/cross-phi/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/cross-phi/class-source.stdout",
+      "bytes": 47148,
+      "sha256": "13af6e9fdf57758a0316412b60d3d2350cab3bd0ef9e4dbf98095d5507ecf914"
+    },
+    {
+      "path": "negative/handler/SlotReuseBoundaries.jar",
+      "bytes": 1462,
+      "sha256": "7bd7a3b2b72b9e8a8b51073eb7c18f0d531cbd2ba9db5ee18abdddab2401db37"
+    },
+    {
+      "path": "negative/handler/SlotReuseBoundaries.java",
+      "bytes": 4280,
+      "sha256": "4be627aeb8430c97d67986d7163a90f90e6aac7afad7fef2134359cfdad3e4ca"
+    },
+    {
+      "path": "negative/handler/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/handler/class-source.stdout",
+      "bytes": 108733,
+      "sha256": "062ee82264bf33db77b944c729ad3f28073652f4ba16eca34521b5c88e18f682"
+    },
+    {
+      "path": "negative/held-use/HeldUse.jar",
+      "bytes": 922,
+      "sha256": "7f5e987b65b08c49d0b4263b3560f0d2a83f9eb6877c31977b636b66034dd06e"
+    },
+    {
+      "path": "negative/held-use/HeldUse.java",
+      "bytes": 2615,
+      "sha256": "211d89a9d3e1c9a5a2bc3986d7790a8e38718bd01bac1d775311659056b144fa"
+    },
+    {
+      "path": "negative/held-use/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/held-use/class-source.stdout",
+      "bytes": 62974,
+      "sha256": "d7ad63686f7d6d6b05a3ab4bbc0be069d9fec10f523b1564ec085b8f9bc63bff"
+    },
+    {
+      "path": "negative/parameter-header/ParameterHeader.jar",
+      "bytes": 875,
+      "sha256": "cf8a4504c3d54216521f9047eaf2d2122faa715ca99a9df0083ea56d607d34f4"
+    },
+    {
+      "path": "negative/parameter-header/ParameterHeader.java",
+      "bytes": 1479,
+      "sha256": "7db57220e7778f67f42535ffc10f0046b802c7da8cbce69eadd6af3d78a24a89"
+    },
+    {
+      "path": "negative/parameter-header/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/parameter-header/class-source.stdout",
+      "bytes": 48983,
+      "sha256": "a6565cd87c6524b28ae7de1294188fc0b586840a9cf7497415c9fe15722a616b"
+    },
+    {
+      "path": "negative/same-type/V2.jar",
+      "bytes": 710,
+      "sha256": "9c9ed061f34bae54cfc8620939b6f099516193a47e3eca6703c3326a201cc932"
+    },
+    {
+      "path": "negative/same-type/V2.java",
+      "bytes": 1377,
+      "sha256": "a8a2f7dfe78259a566fcd9054742ecadfb410b653e5b96cee38651693912c4ed"
+    },
+    {
+      "path": "negative/same-type/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/same-type/class-source.stdout",
+      "bytes": 45880,
+      "sha256": "c24a0630ef24c10110dc0f7dfdd9f1c0c299f850a3909974c84f46488c5d629c"
+    },
+    {
+      "path": "negative/unknown-null/NullThenBuilder.jar",
+      "bytes": 869,
+      "sha256": "ab33a492b356e72885d5b851ea51d8268404b57a6cddb2bf9ecbd811eef4bd8c"
+    },
+    {
+      "path": "negative/unknown-null/NullThenBuilder.java",
+      "bytes": 1618,
+      "sha256": "f04aad4af575953e14ce91084bc5e3e5fc23b3656f42dd21280701a81ccb8e1e"
+    },
+    {
+      "path": "negative/unknown-null/class-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "negative/unknown-null/class-source.stdout",
+      "bytes": 53396,
+      "sha256": "697fc509b7487c1c9e8f6abf302bfcd99001c82aae5a8d89c3467e98f4775a51"
+    }
+  ]
+}

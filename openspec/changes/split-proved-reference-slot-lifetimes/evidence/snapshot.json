@@ -1,0 +1,8 @@
+{
+  "archive": "baseline-patrol-20261009.tar.gz",
+  "sha256": "57df4d7c88b042c281bd492ca2e712a270c8aab9b55ed6a435dfeaf6eb72b1fb",
+  "bytes": 1003649,
+  "original_root": "/private/tmp/jarde-ref-ref-slot-patrol-20261009",
+  "archive_root": "jarde-ref-ref-slot-patrol-20261009",
+  "identity_policy": "All raw bytes, manifests, commands and original absolute paths are preserved. Resolve historical absolute paths through the archive-root mapping when the temp tree is absent. Failed harness attempt is preserved, not counted."
+}
