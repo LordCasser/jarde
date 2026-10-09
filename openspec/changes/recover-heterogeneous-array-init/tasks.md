@@ -14,4 +14,4 @@
 
 - [x] 3.1 root 构建并冻结 candidate CLI/source/hash，在同一 baseline 输入上重放全部正例与负例；全部生成类隔离编译并 -Xverify:all 运行，与原程序/JADX 双流对比，所有实际失败保留。
 - [x] 3.2 完成双 seed workspace、MSRV、fmt、CI-exact clippy、必要 ignored gate、strict OpenSpec、fingerprint/P5预算与 diff check；每项保存实际 exit/双流，不因预计通过打勾。
-- [ ] 3.3 root 对抗性审查并核对所有上述契约后更新 EM-18 账本和 handoff，提交推送并确认确切 SHA 的实际 CI；完整家族未通过或缺证据时不得关闭登记行。
+- [x] 3.3 root 对抗性审查并核对所有上述契约后更新 EM-18 账本和 handoff，提交推送并确认确切 SHA 的实际 CI；完整家族未通过或缺证据时不得关闭登记行。

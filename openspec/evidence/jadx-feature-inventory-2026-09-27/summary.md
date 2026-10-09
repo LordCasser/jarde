@@ -208,7 +208,7 @@ raw receiver实现已提交推送main c5d21640，实际CI run 37831218407四个j
 
 ## EM-18 Assignability Slice — 2026-10-09
 
-[recover-heterogeneous-array-init](../../changes/recover-heterogeneous-array-init/verification-root.md)已实现既有平台/数组兼容事实和本次Runtime选中的有界snapshot header事实，准确绑定aastore BCI与完整source/component；复用原结构/效果闭包，不加element cast或层级服务。当前candidate本地全门禁已通过，待提交/确切SHA CI验收，不能当已合入主线。
+[recover-heterogeneous-array-init](../../changes/recover-heterogeneous-array-init/verification-root.md)已实现既有平台/数组兼容事实和本次Runtime选中的有界snapshot header事实，准确绑定aastore BCI与完整source/component；复用原结构/效果闭包，不加element cast或层级服务。本片9/9任务完成，已合入并推送main代码29dcd5e892696e9f6b5adbb657ffa0a7db576c27；确切SHA的CI37926854875四job、48steps全部success，含双seed与JDK25 oracle。下一构造组合片工作区修改尚未验收。
 
 原18有效冻结腿：原程序和源码参考版JADX完整双流匹配18/18，旧Jarde真实行为0/18；当前candidate8/18完整成功（fresh/frozen CT、六wrapper、Number[][]各两腿）。旧候选exit0但main输出为空不计恢复。新v3完整factory家族两compiler腿全部六类自行生成、隔离重编及验证运行双流匹配2/2，覆盖CharSequence、Collection、Throwable、自有直接/两跳继承、interface和等秩数组提升。独立direct-new完整家族仍0/2，构造元素组合未覆盖；合法BigDecimal控制仍未通过。
 

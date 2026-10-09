@@ -1,6 +1,6 @@
 # Root Verification — EM-18 Assignability Slice
 
-本片全部本地门禁已通过，待提交推送及确切代码 SHA 的 CI 验收。EM-18 整单元保持部分完成。
+本片9/9任务完成，代码已提交推送main `29dcd5e892696e9f6b5adbb657ffa0a7db576c27`，确切SHA的CI37926854875四job、48steps全部成功。EM-18整单元保持部分完成。
 
 ## Architecture Acceptance
 
@@ -40,6 +40,6 @@ focused 产品测试11+4通过；集成最终四项通过。删除 `Mid.class` �
 
 ## Remaining Acceptance
 
-最终两 seed 各350 targets、3319 passed/0 failed/93 ignored；MSRV1.88、fmt、CI-exact Clippy、显式 ignored P3及完整双JDK构造器 gate、strict OpenSpec和diff check均exit0。root核验38份原始双流hash（含明确保留且不计通过的首次census失败），见 `results/local-gates-root-verification.json`。任务3.2已完成。两seed后触及20GiB停建线，清理5323个文件/18.3GiB后继续剩余门禁；最终再次清理并核对主仓/fuzz无target、冻结CLI hash不变，清理后可用42,043,613,184字节，见 `cargo-clean-mid-gates.json` 与 `cargo-clean-final.json`。提交/推送/确切 SHA CI 前不勾选3.3。14辅助工作树重新确认 detached、干净、为main祖先且无target；只有main/origin/main，见 `results/worktree-audit-before-commit.json`。
+最终两 seed 各350 targets、3319 passed/0 failed/93 ignored；MSRV1.88、fmt、CI-exact Clippy、显式 ignored P3及完整双JDK构造器 gate、strict OpenSpec和diff check均exit0。root核验38份原始双流hash（含明确保留且不计通过的首次census失败），见 `results/local-gates-root-verification.json`。任务3.2已完成。两seed后触及20GiB停建线，清理5323个文件/18.3GiB后继续剩余门禁；最终再次清理并核对主仓/fuzz无target、冻结CLI hash不变，清理后可用42,043,613,184字节，见 `cargo-clean-mid-gates.json` 与 `cargo-clean-final.json`。代码已提交推送main，root核对确切SHA的CI四job全部success、48steps，包括两seed和JDK25 oracle；任务3.3已完成。原JSON为 `results/ci-code-sha-29dcd5e89-success.json`，SHA `71cac4537552fe4ab1d0b5710c24fd69fe4a0ef8f1580bf5a8b5cdee82817570`，实际run为 [CI37926854875](https://github.com/LordCasser/jarde/actions/runs/37926854875)。当前工作区的下一片修改没有因此获得验收。14辅助工作树重新确认 detached、干净、为main祖先且无target；只有main/origin/main，见 `results/worktree-audit-before-commit.json`。
 
 下一个现有证明组合任务为 [compose-constructed-reference-array-elements](../compose-constructed-reference-array-elements/)。direct-new 构造结果与 array element 尚无共同原子证明；五 wrapper 的 primitive argument conversion 另有构造证明边界。两者不靠泛化 Allocate 白名单掩盖，不关闭 EM-18。
