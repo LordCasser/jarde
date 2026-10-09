@@ -1,0 +1,23 @@
+{
+  "scope": "root tool-call failure record; original failed script/partial directory retained; this is a summary, not captured raw stderr",
+  "failures": [
+    {
+      "command": "git apply --check nested-boundary-tests-luna-v1.patch",
+      "exit": 128,
+      "error": "corrupt patch at line 227",
+      "resolved_by": "v2 patch passed apply-check and applied"
+    },
+    {
+      "command": "replay-candidate-v1.py frozen CLI metadata",
+      "exit": 1,
+      "error": "duplicated controls-v1 path",
+      "resolved_by": "replay-candidate-v2.py four actual legs passed"
+    },
+    {
+      "command": "verify-candidate-v3.py",
+      "exit": 1,
+      "error": "KeyError: copied_input (case.input itself is the file row)",
+      "resolved_by": "root verify-candidate-v4.py 443 checks 0 errors"
+    }
+  ]
+}

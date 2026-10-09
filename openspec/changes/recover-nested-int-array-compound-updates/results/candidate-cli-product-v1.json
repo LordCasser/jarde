@@ -1,0 +1,12 @@
+{
+  "cli_path": "/private/tmp/jarde-nested-int-array-cli-v1",
+  "cli_sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+    "crates/jarde-java/src/build.rs": "18a69f648d12c60f16b989fff7922b3ca555ac8ec8f52d8da2550c0d34975c64",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "build_result_sha256": "49312de4e4111e7600de85c393cbc74c3483f36ec9860155860d6dd74eb5284e"
+}

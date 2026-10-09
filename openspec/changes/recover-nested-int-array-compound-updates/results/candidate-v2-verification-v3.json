@@ -1,0 +1,11 @@
+{
+  "verifier_sha256": "471e865aa06589f7f223dfb2be4d9c72e4e842803c193039f0f4de7a4d1a8a72",
+  "schema": "nested-int-array-compound-candidate-verification-v4",
+  "status": "passed",
+  "checks": 443,
+  "errors": [],
+  "candidate_manifest_sha256": "ea0754188d1533306a6a3400008b1ffdf75c3c16f8a74af15a1b4dcbc22943f7",
+  "candidate_cli_sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+  "case_count": 4,
+  "successful_case_count": 4
+}

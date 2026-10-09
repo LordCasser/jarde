@@ -1,0 +1,55 @@
+openspec/changes/recover-bigdecimal-number-widening/results/root-ci-stale-boundary-focused-v1/stdout:16: new blank line at EOF.
+openspec/changes/recover-bigdecimal-number-widening/results/root-nested-focused-v1/stdout:38: new blank line at EOF.
+openspec/changes/recover-bigdecimal-number-widening/results/root-nested-focused-v2/stdout:18: new blank line at EOF.
+openspec/changes/recover-bigdecimal-number-widening/results/root-nested-java23-v1/stdout:6: new blank line at EOF.
+openspec/changes/recover-bigdecimal-number-widening/results/root-nested-java8-v1/stdout:6: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/ci-stale-boundary-fix-luna-v1.patch:5: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/ci-stale-boundary-fix-luna-v1.patch:49: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/ci-stale-boundary-fix-luna-v1.patch:56: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/ci-stale-boundary-fix-luna-v1.patch:62: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/handoff-notes-luna-v1.patch:4: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/handoff-notes-luna-v1.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/handoff-notes-luna-v1.patch:9: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/handoff-notes-luna-v1.patch:20: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/handoff-notes-luna-v1.patch:22: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/handoff-notes-luna-v1.patch:26: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/handoff-notes-luna-v1.patch:27: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/nested-boundary-tests-luna-v1.patch:23: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/nested-boundary-tests-luna-v1.patch:72: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/nested-boundary-tests-luna-v1.patch:76: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/nested-boundary-tests-luna-v1.patch:226: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/nested-boundary-tests-luna-v2.patch:23: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/nested-boundary-tests-luna-v2.patch:72: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/nested-boundary-tests-luna-v2.patch:76: trailing whitespace.
++ 
+openspec/changes/recover-nested-int-array-compound-updates/results/root-deny-fuzz-v1/stderr:27: trailing whitespace.
++   │  
+openspec/changes/recover-nested-int-array-compound-updates/results/root-deny-fuzz-v1/stderr:31: trailing whitespace.
++   │  
+openspec/changes/recover-nested-int-array-compound-updates/results/root-deny-fuzz-v1/stderr:57: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/root-deny-workspace-v1/stderr:27: trailing whitespace.
++   │  
+openspec/changes/recover-nested-int-array-compound-updates/results/root-deny-workspace-v1/stderr:31: trailing whitespace.
++   │  
+openspec/changes/recover-nested-int-array-compound-updates/results/root-deny-workspace-v1/stderr:59: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/root-focused-boundaries-v1/stdout:34: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/root-java-lib-v1/stdout:330: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/root-reader-new-pin-v1/stdout:6: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/root-reader-old-pin-v1/stdout:5: new blank line at EOF.
+openspec/changes/recover-nested-int-array-compound-updates/results/root-reader-old-pin-v2/stdout:11: new blank line at EOF.

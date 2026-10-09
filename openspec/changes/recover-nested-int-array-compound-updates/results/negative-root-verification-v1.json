@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "checks": 64,
+  "errors": [],
+  "scope": "frozen whole-class CLI negative outputs and exact test anchors; Rust integration and public budget/cancel tests pending CI",
+  "manifest_sha256": "0dd1adb6d249ff3ff44839b6e70c36530d98ab6501305bc7aa3adcf1858b8afe"
+}

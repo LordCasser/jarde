@@ -1,0 +1,20 @@
+{
+  "cli_path": "/private/tmp/jarde-nested-int-array-cli-v1",
+  "cli_sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+    "crates/jarde-java/src/build.rs": "18a69f648d12c60f16b989fff7922b3ca555ac8ec8f52d8da2550c0d34975c64",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "build_result_sha256": "49312de4e4111e7600de85c393cbc74c3483f36ec9860155860d6dd74eb5284e",
+  "test_sources": {
+    "tests/p3_nested_int_array_compound_updates.rs": "14a40dcbaa50da8337142b2208481b6a71fdb6a81acec76edd9191b0cef42e16",
+    "tests/recover_lambda_primitive_array_capture.rs": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5",
+    "tests/p3_constructed_reference_array_elements.rs": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2",
+    "tests/recover_boxed_number_widening.rs": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824",
+    ".github/workflows/ci.yml": "204196749f3621da747576d52d8a2852dd1563e97830b1d43f12b3aba1566b75"
+  },
+  "scope": "Frozen product CLI plus final five review sources; reader census changes are test-only"
+}

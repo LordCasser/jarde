@@ -1,0 +1,24 @@
+{
+  "scope": "bounded Python fingerprint-only update; not a Rust test pass",
+  "python_blake3_version": "1.0.8",
+  "manifest_sha256_before": "3b021fe39981721eb6ca2f71c09a5ecdbd36c466a8b9224c3e7add72de6d54f4",
+  "manifest_sha256_after": "95588e8451a8b39fcc74063bab30836bad861fc23b9ba403c5a4f81d0202df00",
+  "old_file_count": 2029,
+  "new_file_count": 2040,
+  "added": [
+    "tests/fixtures/nested-int-array-compound-updates/NestedIntBoundaries.java",
+    "tests/fixtures/nested-int-array-compound-updates/NestedIntUpdates.java",
+    "tests/fixtures/nested-int-array-compound-updates/Runner.java",
+    "tests/fixtures/nested-int-array-compound-updates/javac23.original.stderr",
+    "tests/fixtures/nested-int-array-compound-updates/javac23.original.stdout",
+    "tests/fixtures/nested-int-array-compound-updates/javac8.original.stderr",
+    "tests/fixtures/nested-int-array-compound-updates/javac8.original.stdout",
+    "tests/fixtures/nested-int-array-compound-updates/v23/NestedIntBoundaries.class",
+    "tests/fixtures/nested-int-array-compound-updates/v23/NestedIntUpdates.class",
+    "tests/fixtures/nested-int-array-compound-updates/v8/NestedIntBoundaries.class",
+    "tests/fixtures/nested-int-array-compound-updates/v8/NestedIntUpdates.class"
+  ],
+  "old_rows_unchanged": true,
+  "classification_unchanged": true,
+  "official_rust_verification": "pending; cargo stopped below 20 GiB"
+}

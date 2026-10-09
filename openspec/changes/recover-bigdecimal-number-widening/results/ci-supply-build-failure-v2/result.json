@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "37991578328",
+    "--job",
+    "114026830943",
+    "--log"
+  ],
+  "exit": 1,
+  "note": "exact corrected-product supply job failed before checkout; run stable continues"
+}

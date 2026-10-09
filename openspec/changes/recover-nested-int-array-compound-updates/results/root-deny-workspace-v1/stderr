@@ -1,0 +1,59 @@
+warning[license-exception-not-encountered]: license exception was not encountered
+   ┌─ /Users/lordcasser/workspace/projects/jarde/./deny.toml:33:10
+   │
+33 │ crate = "libfuzzer-sys@0.4.13"
+   │          ━━━━━━━━━━━━━━━━━━━━ unmatched license exception
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lordcasser/workspace/projects/jarde/./deny.toml:18:4
+   │
+18 │   "BSD-2-Clause",
+   │    ━━━━━━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lordcasser/workspace/projects/jarde/./deny.toml:19:4
+   │
+19 │   "BSD-3-Clause",
+   │    ━━━━━━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lordcasser/workspace/projects/jarde/./deny.toml:24:4
+   │
+24 │   "Unicode-DFS-2016",
+   │    ━━━━━━━━━━━━━━━━ unmatched license allowance
+
+warning[duplicate]: found 2 duplicate entries for crate 'hashbrown'
+   ┌─ /Users/lordcasser/workspace/projects/jarde/Cargo.lock:31:1
+   │  
+31 │ ╭ hashbrown 0.15.5 registry+https://github.com/rust-lang/crates.io-index
+32 │ │ hashbrown 0.17.1 registry+https://github.com/rust-lang/crates.io-index
+   │ ╰──────────────────────────────────────────────────────────────────────┘ lock entries
+   │  
+   ├ hashbrown v0.15.5
+     └── petgraph v0.8.3
+         ├── (dev) jarde v0.1.0
+         │   └── jarde-cli v0.1.0
+         ├── jarde-java v0.1.0
+         │   └── jarde v0.1.0 (*)
+         └── jarde-jvm v0.1.0
+             ├── jarde v0.1.0 (*)
+             └── jarde-java v0.1.0 (*)
+   ├ hashbrown v0.17.1
+     └── indexmap v2.14.2
+         ├── noak v0.7.0
+         │   └── jarde-reader v0.1.0
+         │       ├── jarde v0.1.0
+         │       │   └── jarde-cli v0.1.0
+         │       ├── jarde-java v0.1.0
+         │       │   └── jarde v0.1.0 (*)
+         │       ├── jarde-jvm v0.1.0
+         │       │   ├── jarde v0.1.0 (*)
+         │       │   └── jarde-java v0.1.0 (*)
+         │       └── jarde-query v0.1.0
+         │           ├── jarde v0.1.0 (*)
+         │           └── jarde-jvm v0.1.0 (*)
+         └── petgraph v0.8.3
+             ├── (dev) jarde v0.1.0 (*)
+             ├── jarde-java v0.1.0 (*)
+             └── jarde-jvm v0.1.0 (*)
+

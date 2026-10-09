@@ -1,0 +1,16 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-baseline-v1/cases/jarde-javac23/compile-sources/NestedIntUpdates.java:27: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 NestedIntUpdates
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-baseline-v1/cases/jarde-javac23/compile-sources/NestedIntUpdates.java:43: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 NestedIntUpdates
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-baseline-v1/cases/jarde-javac23/compile-sources/NestedIntUpdates.java:69: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 NestedIntUpdates
+3 个错误

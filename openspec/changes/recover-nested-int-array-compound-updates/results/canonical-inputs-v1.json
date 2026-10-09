@@ -1,0 +1,64 @@
+{
+  "schema": "canonical-nested-int-array-inputs-v1",
+  "original_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+  "root_original_checks": 30,
+  "copies": [
+    {
+      "source": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/classes/NestedIntUpdates.class",
+      "target": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v8/NestedIntUpdates.class",
+      "sha256": "cf17b99fc66303514f08e56cccb50e767f3c59726f6f2d0a0e395ea348fc4132"
+    },
+    {
+      "source": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/classes/NestedIntUpdates.class",
+      "target": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v23/NestedIntUpdates.class",
+      "sha256": "a17f352cf5f261b88424dd8e829f808ae007ec7e8285b8c1f69912de4928ecce"
+    }
+  ],
+  "files": [
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/NestedIntUpdates.java",
+      "bytes": 1021,
+      "sha256": "e9a569ec69e69c36b932fe71d5fd2d2500cdab47589f829a25376c5ca1fe0334"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/README.md",
+      "bytes": 824,
+      "sha256": "68588081f1f2f52123663a15b7cc37c8b3c22168df476e0774096cc9b3a11794"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/Runner.java",
+      "bytes": 3083,
+      "sha256": "958e8a27c96d8ced021eb4c131dd64e2a7666744c73a8aeea7c290fdecc73f32"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac23.original.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac23.original.stdout",
+      "bytes": 158,
+      "sha256": "05249092cc15ec86bfd867ed710f901ec088697357e336da57ebb1821ef112eb"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac8.original.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac8.original.stdout",
+      "bytes": 158,
+      "sha256": "05249092cc15ec86bfd867ed710f901ec088697357e336da57ebb1821ef112eb"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/v23/NestedIntUpdates.class",
+      "bytes": 742,
+      "sha256": "a17f352cf5f261b88424dd8e829f808ae007ec7e8285b8c1f69912de4928ecce"
+    },
+    {
+      "path": "tests/fixtures/nested-int-array-compound-updates/v8/NestedIntUpdates.class",
+      "bytes": 742,
+      "sha256": "cf17b99fc66303514f08e56cccb50e767f3c59726f6f2d0a0e395ea348fc4132"
+    }
+  ]
+}

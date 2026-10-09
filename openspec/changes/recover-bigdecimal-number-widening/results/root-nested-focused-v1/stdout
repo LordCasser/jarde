@@ -1,0 +1,38 @@
+
+running 2 tests
+test nested_int_array_updates_are_structured_and_preserve_lvalue_boundaries ... ok
+test nested_int_array_updates_match_the_frozen_runner_oracle ... ignored, requires a real JDK to compile the complete generated class with the fixed Runner and verify behavior
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 6 tests
+test the_frozen_anchor_is_the_recorded_patrol_probe ... ok
+test the_frozen_baseline_of_the_same_anchor_refused_the_capture ... ok
+test the_multianewarray_capture_keeps_its_recorded_status ... FAILED
+test the_primitive_array_capture_recovers_in_both_javac_legs ... ok
+test the_recovered_text_recompiles_and_prints_the_original_output ... ok
+test the_reference_capture_and_the_rest_of_the_class_are_unchanged ... ok
+
+failures:
+
+---- the_multianewarray_capture_keeps_its_recorded_status stdout ----
+
+thread 'the_multianewarray_capture_keeps_its_recorded_status' (14762642) panicked at tests/recover_lambda_primitive_array_capture.rs:428:9:
+v8 helper preserves the nested int compound update:
+    private static void lambda$sum$0$jarde(int[][] arg0, java.lang.Integer arg1) {
+        // jarde: renamed physical lambda helper "lambda$sum$0" to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)
+        // @method lambda$sum$0([[ILjava/lang/Integer;)V
+        // @declaration a static method of `P02_multianewarray`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0[0][0] += arg1.intValue();
+        return;
+    }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_multianewarray_capture_keeps_its_recorded_status
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.01s
+

@@ -1,0 +1,226 @@
+--- a/tests/p3_nested_int_array_compound_updates.rs
++++ b/tests/p3_nested_int_array_compound_updates.rs
+@@ -19,6 +19,16 @@
+     (
+         "v23",
+         include_bytes!("fixtures/nested-int-array-compound-updates/v23/NestedIntUpdates.class"),
++    ),
++];
++const BOUNDARY_LEGS: &[(&str, &[u8])] = &[
++    (
++        "v8",
++        include_bytes!("fixtures/nested-int-array-compound-updates/v8/NestedIntBoundaries.class"),
++    ),
++    (
++        "v23",
++        include_bytes!("fixtures/nested-int-array-compound-updates/v23/NestedIntBoundaries.class"),
+     ),
+ ];
+ const METHODS: &[&str] = &[
+@@ -59,16 +69,19 @@
+     }
+ }
+ 
+-fn class_source(class_bytes: &[u8]) -> ClassSourceReport {
++fn opened_class_source(
++    class_bytes: &[u8],
++    class_name: &str,
++) -> (ArtifactSnapshot, ClassSourceRequest) {
+     let snapshot = Engine::new()
+         .open(
+             ArtifactInput::bytes(class_bytes.to_vec()),
+             &mut task_budget(&[]).expect("task defaults are bounded"),
+         )
+-        .expect("one NestedIntUpdates class opens");
++        .expect("one fixture class opens");
+     let request = ClassSourceRequest {
+         class: ClassRef::Name {
+-            class: ClassNameQuery::internal("NestedIntUpdates"),
++            class: ClassNameQuery::internal(class_name),
+         },
+         environment: EnvironmentRequest {
+             snapshot: snapshot.id().clone(),
+@@ -82,6 +95,11 @@
+             loader: LoaderId("app".to_owned()),
+         },
+     };
++    (snapshot, request)
++}
++
++fn class_source_named(class_bytes: &[u8], class_name: &str) -> ClassSourceReport {
++    let (snapshot, request) = opened_class_source(class_bytes, class_name);
+     match Engine::new()
+         .class_source_with_evidence(
+             slice::from_ref(&snapshot),
+@@ -89,11 +107,15 @@
+             &RecoveryEvidenceRequest::all(),
+             &mut task_budget(&[]).expect("task defaults are bounded"),
+         )
+-        .expect("valid NestedIntUpdates class-source request answers")
++        .expect("valid fixture class-source request answers")
+     {
+         OperationOutcome::Performed(report) => report,
+-        other => panic!("NestedIntUpdates class source did not complete: {other:?}"),
+-    }
++        other => panic!("fixture class source did not complete: {other:?}"),
++    }
++}
++
++fn class_source(class_bytes: &[u8]) -> ClassSourceReport {
++    class_source_named(class_bytes, "NestedIntUpdates")
+ }
+ 
+ fn body<'a>(report: &'a ClassSourceReport, name: &str) -> &'a RecoveryReport {
+@@ -236,6 +258,144 @@
+ }
+ 
+ #[test]
++fn nested_int_array_boundaries_do_not_claim_unproved_compound_updates() {
++    for (leg, class_bytes) in BOUNDARY_LEGS {
++        let report = class_source_named(class_bytes, "NestedIntBoundaries");
++        assert_eq!(report.methods.len(), 3, "{leg}: keep constructor and both methods");
++        for name in ["<init>", "returned", "merged"] {
++            assert!(
++                report.methods.iter().any(|method| method.item.name.raw().0 == name.as_bytes()),
++                "{leg}: missing physical member {name}"
++            );
++        }
++
++        for (name, bcis) in [
++            ("returned", &[2u32, 4, 5, 8, 9, 10][..]),
++            ("merged", &[18u32, 19, 22][..]),
++        ] {
++            let physical = report
++                .methods
++                .iter()
++                .find(|method| method.item.name.raw().0 == name.as_bytes())
++                .expect("the physical method remains in the class report");
++            let ClassSourceOutcome::Recovered { report: recovery, .. } = &physical.outcome else {
++                panic!("{leg}/{name}: missing recovery record: {:?}", physical.outcome)
++            };
++            assert!(
++                !physical.text.contains(" += "),
++                "{leg}/{name}: the dup_x2 return / row-Phi boundary is not this proven compound update:\n{}",
++                physical.text
++            );
++            for bci in bcis {
++                assert!(
++                    !recovery.source_map.text_of_bci(&recovery.text, *bci).is_empty(),
++                    "{leg}/{name}: lost observable boundary BCI {bci}: {:?}\n{}",
++                    recovery.source_map.segments(),
++                    physical.text
++                );
++            }
++        }
++
++        let merged = report
++            .methods
++            .iter()
++            .find(|method| method.item.name.raw().0 == b"merged")
++            .expect("merged method is retained");
++        let ClassSourceOutcome::Recovered { report: recovery, .. } = &merged.outcome else {
++            unreachable!("the merged recovery record was checked above")
++        };
++        assert!(
++            !recovery.source_map.direct_of_bci(18).is_empty(),
++            "{leg}/merged: the row-Phi Other stays directly anchored: {:?}",
++            recovery.source_map.segments()
++        );
++        for bci in [0u32, 1, 4, 5, 6, 7, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21, 22, 23] {
++            assert!(
++                !recovery.source_map.derived_of_bci(bci).is_empty(),
++                "{leg}/merged: the row-read closure lost derived BCI {bci}: {:?}",
++                recovery.source_map.segments()
++            );
++        }
++        assert!(
++            !recovery.source_map.direct_of_bci(22).is_empty(),
++            "{leg}/merged: the final update consumer stays directly anchored: {:?}",
++            recovery.source_map.segments()
++        );
++    }
++}
++
++#[test]
++fn nested_int_array_class_source_stops_do_not_claim_complete_members() {
++    for (leg, class_bytes) in LEGS {
++        let (snapshot, request) = opened_class_source(class_bytes, "NestedIntUpdates");
++        let complete = class_source(class_bytes);
++        let mut limits = complete.limits.clone();
++        limits.analysis_steps = complete
++            .usage
++            .analysis_steps
++            .checked_sub(1)
++            .expect("the completed class-source request used analysis steps");
++        let mut budget = Budget::new(limits);
++        let bounded = Engine::new()
++            .class_source_with_evidence(
++                slice::from_ref(&snapshot),
++                &request,
++                &RecoveryEvidenceRequest::all(),
++                &mut budget,
++            )
++            .expect("the budget-stopped class-source operation answers");
++        match bounded {
++            OperationOutcome::Incomplete(candidates) => assert!(matches!(
++                candidates.execution,
++                ExecutionReport::Partial {
++                    reason: TerminationReason::BudgetExceeded {
++                        dimension: BudgetDimension::AnalysisSteps
++                    },
++                    ..
++                }
++            )),
++            OperationOutcome::Performed(report) => {
++                assert!(matches!(
++                    report.execution,
++                    ExecutionReport::Partial {
++                        reason: TerminationReason::BudgetExceeded {
++                            dimension: BudgetDimension::AnalysisSteps
++                        },
++                        ..
++                    }
++                ), "{leg}: stopped class presentation cannot claim completion");
++                for method in &report.methods {
++                    let stopped = match &method.outcome {
++                        ClassSourceOutcome::Recovered { report: body, .. } => {
++                            !matches!(body.execution, ExecutionReport::Complete { .. })
++                        }
++                        ClassSourceOutcome::Refused { .. } => true,
++                        _ => false,
++                    };
++                    if stopped {
++                        assert!(
++                            !method.text.contains(" += "),
++                            "{leg}: a stopped method cannot publish a partial compound update:\n{}",
++                            method.text
++                        );
++                    }
++                }
++            }
++            other => panic!("{leg}: unexpected budget-stopped result: {other:?}"),
++        }
++
++        let mut cancelled = task_budget(&[]).expect("task defaults are bounded");
++        cancelled.cancellation_token().cancel();
++        let answer = Engine::new()
++            .class_source_with_evidence(
++                slice::from_ref(&snapshot),
++                &request,
++                &RecoveryEvidenceRequest::all(),
++                &mut cancelled,
++            )
++            .expect("the pre-cancelled class-source operation answers");
++        assert!(
++            matches!(answer, OperationOutcome::Incomplete(candidates)
++                if matches!(candidates.execution, ExecutionReport::Cancelled { .. })),
++            "{leg}: pre-cancellation returns no class-source artifact"
++        );
++    }
++}
++
++#[test]
+ #[ignore = "requires a real JDK to compile the complete generated class with the fixed Runner and verify behavior"]
+ fn nested_int_array_updates_match_the_frozen_runner_oracle() {
+     for (leg, class_bytes) in LEGS {
+

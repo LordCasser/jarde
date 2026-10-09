@@ -14049,9 +14049,10 @@ fn prove_array_update(
         return Ok(None);
     };
     let (array_store, index_store, sum) = (*array_store, *index_store, *sum);
-    if array_of_value(ssa, operations, array_store, 0) != Some((Type::Int, 1)) {
-        return Ok(None);
-    }
+    // The dup2 store-copy is not a type source: aaload leaves its row reference Unknown in the
+    // verifier frame, and the copied ValueId keeps that conservative type. Prove int[] from the
+    // original array value below; array_of_value follows the aaload source and lowers [[I by one
+    // rank. The four exact dup2 outputs and their unique read/store consumers still close identity.
     let Some(add_bci) = definition_in_block(ssa, sum, block.block()) else {
         return Ok(None);
     };

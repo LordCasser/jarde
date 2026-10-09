@@ -1,0 +1,2 @@
+注: /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/candidate-v2/cases/P02-javac23/P02_multianewarray.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。

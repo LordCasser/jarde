@@ -262,3 +262,7 @@ CF16 ImplicitCleanup现有实现经当前CLI完整双JDK/all和essential四腿16
 
 
 2026-10-10 root更正BigDecimal产品CI状态：6997c9f8b确切CI37989319644 seed1命中旧closedNumberBoundary Fallback断言，actual已Structured；其余三job成功但产品CI未验收。fresh BoundaryControls/BNX各双输入完整报告核对后，两个旧test只更新BigDecimal已进入闭集的预期，AtomicInteger仍拒绝且wholebody effect来源保持；无产品逻辑修改。20项root验证通过，本地Cargo因空闲19GiB低于20GiB停线未跑，新修正提交的确切CI待执行。分母/EM18/DT26分类不变，详见BigDecimal verification-root。
+
+2026-10-10 nested int-array compound update窄片进入实现：目标是恢复 DT-26 P02 lambda helper `t[0][0] += i`，只移除既有证明中冗余的 dup2 store-copy 类型 gate，保留原始行数组 `int[]` 证明、四个准确 copy identity、唯一消费/顺序/依赖及预算/Stop，不增 pass 或类型框架。JADX 1.5.6 四腿将二维更新呈现为临时行变量加普通赋值；原程序两真实JDK输出 `6\n`，fresh source/JDK 对照记录在 nested-array-jadx-baseline-v2。candidate v2经root verifier v6 **4/4、474 checks**，旧24回归腿 **24/24**、root独立 **1226 checks**；两个负例完整CLI报告root64 checks。focused新结构测试1项、capture集成6项通过。任务当前3/7；任务2.2预算/Stop和任务3.1同边界final验收未执行：final Rust边界测试因空闲约17GiB低于20GiB停止线未跑，cargo clean后仍约17GiB。确切产品CI仍待root验收；不改变71分母或DT-26整单元分类。BigDecimal两次旧CI分别是37989319644的真实陈旧断言失败、8cd8c4f修正提交CI37991578328的supply-chain DockerHub HTTP429（checkout前，未到advisory）；root本机cargo-deny0.20.2对root/fuzz manifest运行命令，advisories/bans/licenses/sources四类检查各通过，但不替代CI。19GiB仅是历史测量，以实时df和20GiB停止线为准。
+
+本片最新根验收见[verification-root](../../changes/recover-nested-int-array-compound-updates/verification-root.md)：reader1071/4654/463/2715/8已实测，指纹最小增11输入，官方Rust指纹/最终边界/P5与确切新产品CI尚待执行；旧CF16/DT29 shortlist经只读审计已实现，不能继续重复其主体。

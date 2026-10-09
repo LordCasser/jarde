@@ -1,0 +1,16 @@
+
+running 2 tests
+test constructed_reference_array_elements_recover_as_one_complete_same_snapshot_family ... ok
+test nested_constructor_composition_is_presented_once_and_boundary_controls_remain_honest ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.60s
+
+
+running 4 tests
+test atomic_number_subclass_outside_the_closed_rows_still_refuses ... ok
+test every_stripped_anchor_answers_what_its_class_answers ... ignored, needs a JDK on PATH: it strips the class-source comment lines, compiles the text with the installed javac --release 8 (and with a real javac 8 when one is present) and runs both, comparing every answer with the fixture's own class files
+test the_boxed_number_positions_are_presented ... ok
+test the_patrol_anchor_presents_its_boxed_argument ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

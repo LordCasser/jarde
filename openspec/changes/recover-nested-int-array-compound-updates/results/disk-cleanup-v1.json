@@ -1,0 +1,13 @@
+{
+  "scope": "only current jarde target; frozen CLI and raw evidence retained",
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit": 0,
+  "stdout": "",
+  "stderr": "     Removed 894 files, 701.7MiB total\n",
+  "free_before": 17443618816,
+  "free_after": 18128510976,
+  "frozen_cli_sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a"
+}

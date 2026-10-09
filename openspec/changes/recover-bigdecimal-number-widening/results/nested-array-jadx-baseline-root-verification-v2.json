@@ -1,0 +1,11 @@
+{
+  "schema": "root-independent-nested-array-jadx-baseline-v2",
+  "manifest_sha256": "4489648c257a8e40ee906ad5bfb371e56d245fb215e17adf9c2b72e95083c29e",
+  "checks": 78,
+  "errors": 0,
+  "cases": 4,
+  "installed_jadx": "1.5.6",
+  "source_checkout_distinct": "/Users/lordcasser/workspace/testzone/jadx, v1.5.6-26-g2fb1b163; source audit is distinct from installed 1.5.6 execution",
+  "old_jarde_fullclass_compile_failures": 2,
+  "fresh_jadx_fullclass_matches": 4
+}

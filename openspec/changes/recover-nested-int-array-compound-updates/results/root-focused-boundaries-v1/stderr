@@ -1,0 +1,10 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 27.21s
+     Running tests/p3_constructed_reference_array_elements.rs (target/debug/deps/p3_constructed_reference_array_elements-af7175f66b9c3ac1)
+     Running tests/p3_nested_int_array_compound_updates.rs (target/debug/deps/p3_nested_int_array_compound_updates-617999fe8fcf9a16)
+     Running tests/recover_boxed_number_widening.rs (target/debug/deps/recover_boxed_number_widening-34a1e042323ad2dc)
+     Running tests/recover_lambda_primitive_array_capture.rs (target/debug/deps/recover_lambda_primitive_array_capture-6e6843ff3d957375)

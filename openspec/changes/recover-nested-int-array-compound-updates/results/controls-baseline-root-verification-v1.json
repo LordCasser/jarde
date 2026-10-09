@@ -1,0 +1,10 @@
+{
+  "schema": "root-controls-baseline-v1",
+  "manifest_sha256": "cd19abcd9d6de854253a33191aec6a560b6026624c967e9eef16031732ebfbcc",
+  "checks": 91,
+  "errors": 0,
+  "jarde_complete_class_compile_failures": 2,
+  "fresh_jadx_ten_path_semantic_matches": 4,
+  "original_raw_streams_hash_reused": true,
+  "runner_external_harness": true
+}

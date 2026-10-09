@@ -1,0 +1,30 @@
+--- a/handoff.md
++++ b/handoff.md
+@@ -22,9 +22,17 @@
+ 
+ 新五源CLI `/private/tmp/jarde-bigdecimal-number-cli-v1` SHA **b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0**；当前source与metadata一致。完整原24腿本次fresh **24/24**，root独立 **1226checks/0errors**，102commands/384closedfiles，两真实JDK空CP/SP编译所有生成source、只运行新classes且-Xverify:all，匹配原exit/raw双流；original/JADX采用逐hash核对历史基线，非fresh执行。完整两BigDecimal、旧八家族/factory/direct/数值均过；准确Collection<?>[][]声明/成功Signature marker与物理BCI仍保持。不能把24控制腿称作71单元完成。
+ 
+-reader census测量更新为(1067,4626,463,2711,8)，只新增4classes/10直线Code body；指纹仅增11条输入；P5严格pins不变。MSRV1.88、CI-exact Clippy、fmt、OpenSpec all strict、diff、finally两专项均过。原旧pin/指纹失败、首CLI20GiB停建exit-15及finally verifier v1误要求essential可选source-map的失败均保留。CLI v2成功；末次仅清本仓target，冻结CLI/raw证据保留。机器空间实时以df为准，20GiB守卫继续有效。其它项目Cargo使空闲约19GiB，本仓target无可清；当前只完成小规模Java夹具/补丁准备，暂不本地Cargo。
++reader census测量更新为(1067,4626,463,2711,8)，只新增4classes/10直线Code body；指纹仅增11条输入；P5严格pins不变。MSRV1.88、CI-exact Clippy、fmt、OpenSpec all strict、diff、finally两专项均过。原旧pin/指纹失败、首CLI20GiB停建exit-15及finally verifier v1误要求essential可选source-map的失败均保留。CLI v2成功；末次仅清本仓target，冻结CLI/raw证据保留。机器空间实时以df为准，20GiB守卫继续有效。该段“空闲约19GiB、本仓target无可清、暂不本地Cargo”是BigDecimal验收时的历史测量与限制，不代表当前磁盘状态；仍按实时df和20GiB停止线决策。
+ 
+-下一步：先核对CI修正提交的新run，不重用failed37989319644。保留其原JSON/gzip log/ci-failure-root-v1.json；用版本化CI verifier核验**确切修正产品**的四job、全部steps、两个fresh workspace seed及新增BigDecimal显式JDK执行。CI原JSON/完整gzip日志未落盘前，不勾3.2/3.3，不借45b前置CI；本地未重复全workspace双seed。验收入口：[verification-root](openspec/changes/recover-bigdecimal-number-widening/verification-root.md)、results/local-root-acceptance-v1.json、candidate-root-verification-v1.json。完成CI后再更新任务/账本/handoff并提交验收文档。
++下一步：37991578328是修正BigDecimal旧测试后的确切CI，但在supply-chain checkout前被DockerHub HTTP 429挡住，不能作通过证据；待修正后的产品CI必须以新run核验，不能重用37989319644或37991578328。保留379893原JSON/gzip log/ci-failure-root-v1.json；用版本化CI verifier核验**确切修正产品**的四job、全部steps、两个fresh workspace seed及新增BigDecimal显式JDK执行。CI原JSON/完整gzip日志未落盘前，不勾3.2/3.3，不借45b前置CI；本地未重复全workspace双seed。验收入口：[verification-root](openspec/changes/recover-bigdecimal-number-widening/verification-root.md)、results/local-root-acceptance-v1.json、candidate-root-verification-v1.json。完成CI后再更新任务/账本/handoff并提交验收文档。
++
++## 当前接续：二维数组lambda复合更新窄片
++
++[recover-nested-int-array-compound-updates](openspec/changes/recover-nested-int-array-compound-updates/)修复 DT-26 P02 lambda helper 中 `t[0][0] += i` 因引用 fallback 而使整类无法编译的问题。物理字节码为 `aload0@0, const@1, aaload@2, const@3, dup2@4, iaload@5, aload1@6, intValue@7, iadd@10, iastore@11, return@12`；原始 `[[I` 经既有 `array_of_value` 降 rank 可证为行 `int[]`，但 `aaload` frame 为 Unknown、`dup2` copy 为 Other，故副本自身没有独立数组类型。实现只移除对 store-copy 的冗余类型 gate，保留原始行 `int[]` 证明，以及四个准确 copy identity、读写 operands、唯一用途、顺序/依赖闭合和预算/Stop；复用现有 IndexAssign，不扩展 array_of_value、frame、decode、SAM 或新 type/pass 框架。
++
++JADX 1.5.6 四腿源对照以临时行变量后做普通赋值，真实 JDK8/23 全源重编和新 classes 运行匹配原输出 `6\n`；事实及 raw 记录见该片 `results/nested-array-jadx-baseline-v2`。root candidate CLI v2 已冻结，candidate 四腿经 root verifier v4 **4/4、443 checks**；旧 24 回归腿 **24/24**、root 独立 **1226 checks**，两个负例原始腿另经 root **64 checks**。focused 新结构用例1项和 capture 集成6项通过。仍未完成的是任务 2.2 的预算/Stop边界及任务 3.1 的同一边界验收：final Rust 边界测试因空闲约17GiB低于20GiB停止线未执行，cargo clean后仍约17GiB；不得将未执行项记为通过。任务当前 **3/7**，确切产品 CI 仍待验收；不能以本窄片代表DT-26或71单元完成。
++
++BigDecimal CI 历史需区分：run **37989319644** 时 BigDecimal 片任务进度为 5/7，seed1 命中真实旧测试断言失败（BigDecimal 已 Structured，旧 `closedNumberBoundary` 仍期待 Fallback），其它三个 job 成功也不等于产品 CI 通过；而后续修正提交 **8cd8c4f5fbfdb51d56c3725783e2d0666f8903ac** 的 run **37991578328** 在 supply-chain job checkout 前因 DockerHub `rust:1.85` pull HTTP 429 失败，没有抵达 advisory 检查。为替换 Docker action，root 已用本机 cargo-deny 0.20.2 对 root/fuzz manifest 分别运行原配置的命令；两者输出均为 advisories/bans/licenses/sources ok。这只是本机命令证据，不是上述失败 CI 的通过，也不是 nested 新产品 CI。
+ 
+ ## 71账本队列：避免重复已实现片
+ 
+--- a/openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md
++++ b/openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md
+@@ -262,3 +262,5 @@
+ 
+ 
+ 2026-10-10 root更正BigDecimal产品CI状态：6997c9f8b确切CI37989319644 seed1命中旧closedNumberBoundary Fallback断言，actual已Structured；其余三job成功但产品CI未验收。fresh BoundaryControls/BNX各双输入完整报告核对后，两个旧test只更新BigDecimal已进入闭集的预期，AtomicInteger仍拒绝且wholebody effect来源保持；无产品逻辑修改。20项root验证通过，本地Cargo因空闲19GiB低于20GiB停线未跑，新修正提交的确切CI待执行。分母/EM18/DT26分类不变，详见BigDecimal verification-root。
++
++2026-10-10 nested int-array compound update窄片进入实现：目标是恢复 DT-26 P02 lambda helper `t[0][0] += i`，只移除既有证明中冗余的 dup2 store-copy 类型 gate，保留原始行数组 `int[]` 证明、四个准确 copy identity、唯一消费/顺序/依赖及预算/Stop，不增 pass 或类型框架。JADX 1.5.6 四腿将二维更新呈现为临时行变量加普通赋值；原程序两真实JDK输出 `6\n`，fresh source/JDK 对照记录在 nested-array-jadx-baseline-v2。candidate v2经root verifier v4 **4/4、443 checks**，旧24回归腿 **24/24**、root独立 **1226 checks**；两个负例原始腿root64 checks。focused新结构测试1项、capture集成6项通过。任务当前3/7；任务2.2预算/Stop和任务3.1同边界final验收未执行：final Rust边界测试因空闲约17GiB低于20GiB停止线未跑，cargo clean后仍约17GiB。确切产品CI仍待root验收；不改变71分母或DT-26整单元分类。BigDecimal两次旧CI分别是37989319644的真实陈旧断言失败、8cd8c4f修正提交CI37991578328的supply-chain DockerHub HTTP429（checkout前，未到advisory）；root本机cargo-deny0.20.2对root/fuzz manifest运行命令，advisories/bans/licenses/sources四类检查各通过，但不替代CI。19GiB仅是历史测量，以实时df和20GiB停止线为准。

@@ -1,0 +1,82 @@
+{
+  "schema": "negative-candidate-v1",
+  "cli_sha256": "8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a",
+  "commands": [
+    {
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "tests/fixtures/nested-int-array-compound-updates/v8/NestedIntBoundaries.class",
+        "--class",
+        "NestedIntBoundaries",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "input_sha256": "f2a937baa5609afd170b01b30346ed1eb995796a87a47af17f7239f15160f48a",
+      "stdout_sha256": "eb5acf57dc38964917f638b089fdee13c79ae9cc5730311e40812d65989c2b8a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-nested-int-array-cli-v1",
+        "class-source",
+        "--input",
+        "tests/fixtures/nested-int-array-compound-updates/v23/NestedIntBoundaries.class",
+        "--class",
+        "NestedIntBoundaries",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "input_sha256": "75e9fcf66ab6c57b2e77e066b0d2ce3419119b006f776265eeada6614910f69e",
+      "stdout_sha256": "3106e12ac021b3436fa41ea734bea75be1faac3abe98f04c37a446edd9e1a990",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "files": [
+    {
+      "path": "v23.java",
+      "bytes": 2715,
+      "sha256": "56cdeb9bf096c5e9d4cfb224d6d7d91e68f0d2080e4132829c3cd2d85319f783"
+    },
+    {
+      "path": "v23.json",
+      "bytes": 42249,
+      "sha256": "3106e12ac021b3436fa41ea734bea75be1faac3abe98f04c37a446edd9e1a990"
+    },
+    {
+      "path": "v23.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v8.java",
+      "bytes": 2715,
+      "sha256": "56cdeb9bf096c5e9d4cfb224d6d7d91e68f0d2080e4132829c3cd2d85319f783"
+    },
+    {
+      "path": "v8.json",
+      "bytes": 42249,
+      "sha256": "eb5acf57dc38964917f638b089fdee13c79ae9cc5730311e40812d65989c2b8a"
+    },
+    {
+      "path": "v8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

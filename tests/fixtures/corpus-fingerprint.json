@@ -1477,6 +1477,61 @@
       "path": "tests/fixtures/method-signature-grammar/v17/TypeVarResult.class"
     },
     {
+      "blake3": "9836bb2f2b59ea8b1cf132219cb4941e95054fea16ad167372bc5104a66c4451",
+      "bytes": 283,
+      "path": "tests/fixtures/nested-int-array-compound-updates/NestedIntBoundaries.java"
+    },
+    {
+      "blake3": "864529468824b5a4e8207497663d3c4bff5b6870d19a6071e7928929bdf3518d",
+      "bytes": 1021,
+      "path": "tests/fixtures/nested-int-array-compound-updates/NestedIntUpdates.java"
+    },
+    {
+      "blake3": "0d851af428cd1669e9d9f8309e3b5d8971c6a72c90afdf8e711a6a763c51cca4",
+      "bytes": 3083,
+      "path": "tests/fixtures/nested-int-array-compound-updates/Runner.java"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac23.original.stderr"
+    },
+    {
+      "blake3": "76fbed484718134e07fa1a1267dfa567c074e53554d9f6d47cdc1ffefee9022d",
+      "bytes": 158,
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac23.original.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac8.original.stderr"
+    },
+    {
+      "blake3": "76fbed484718134e07fa1a1267dfa567c074e53554d9f6d47cdc1ffefee9022d",
+      "bytes": 158,
+      "path": "tests/fixtures/nested-int-array-compound-updates/javac8.original.stdout"
+    },
+    {
+      "blake3": "84ea8f8f969f2152be308e7136f5f8afe2fb1d14200ad266b9d2cd43a55019ca",
+      "bytes": 304,
+      "path": "tests/fixtures/nested-int-array-compound-updates/v23/NestedIntBoundaries.class"
+    },
+    {
+      "blake3": "cec826106c609940123101857c52f535cc778b05f31fe9764e41bdb352ee0d16",
+      "bytes": 742,
+      "path": "tests/fixtures/nested-int-array-compound-updates/v23/NestedIntUpdates.class"
+    },
+    {
+      "blake3": "11f6c2c26d513c46363ff0ff05e9727718f60c5edef9a77ff55bfac0a1db73da",
+      "bytes": 304,
+      "path": "tests/fixtures/nested-int-array-compound-updates/v8/NestedIntBoundaries.class"
+    },
+    {
+      "blake3": "c298fe588c2e9d20b29bad7c0ff959e99f83a51bc336c2218939588218f71297",
+      "bytes": 742,
+      "path": "tests/fixtures/nested-int-array-compound-updates/v8/NestedIntUpdates.class"
+    },
+    {
       "blake3": "5b3ab8fe58d19b7825517efcd00dbd93ae33b1e2f71c0e4a5e364b8817b01dd7",
       "bytes": 22996,
       "path": "tests/fixtures/p1-golden/bootstrap.json"

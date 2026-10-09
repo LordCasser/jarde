@@ -1,0 +1,79 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v8/NestedIntBoundaries.class
+  Last modified 2026-10-10; size 304 bytes
+  MD5 checksum 4eabbf84835b63e3e86f1e8514416c61
+public class NestedIntBoundaries
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#13         // java/lang/Object."<init>":()V
+   #2 = Class              #14            // NestedIntBoundaries
+   #3 = Class              #15            // java/lang/Object
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               returned
+   #8 = Utf8               ([[IIII)I
+   #9 = Utf8               merged
+  #10 = Utf8               (Z[[I[[II)V
+  #11 = Utf8               StackMapTable
+  #12 = Class              #16            // "[I"
+  #13 = NameAndType        #4:#5          // "<init>":()V
+  #14 = Utf8               NestedIntBoundaries
+  #15 = Utf8               java/lang/Object
+  #16 = Utf8               [I
+{
+  public NestedIntBoundaries();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int returned(int[][], int, int, int);
+    descriptor: ([[IIII)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: iload_1
+         2: aaload
+         3: iload_2
+         4: dup2
+         5: iaload
+         6: iload_3
+         7: iadd
+         8: dup_x2
+         9: iastore
+        10: ireturn
+
+  public static void merged(boolean, int[][], int[][], int);
+    descriptor: (Z[[I[[II)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=5, args_size=4
+         0: iload_0
+         1: ifeq          10
+         4: aload_1
+         5: iconst_0
+         6: aaload
+         7: goto          13
+        10: aload_2
+        11: iconst_0
+        12: aaload
+        13: astore        4
+        15: aload         4
+        17: iconst_0
+        18: dup2
+        19: iaload
+        20: iload_3
+        21: iadd
+        22: iastore
+        23: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 10 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class "[I" ]
+}

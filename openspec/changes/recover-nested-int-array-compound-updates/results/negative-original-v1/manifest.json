@@ -1,0 +1,122 @@
+{
+  "schema": "negative-original-v1",
+  "source_sha256": "df7a830b31be1b1a7e4d23a759c4696136434abc7ef8805b276eea28f360c5fb",
+  "commands": [
+    {
+      "leg": "javac8",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v8",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/NestedIntBoundaries.java"
+      ],
+      "exit": 0
+    },
+    {
+      "leg": "javac8",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v8/NestedIntBoundaries.class"
+      ],
+      "exit": 0
+    },
+    {
+      "leg": "javac23",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v23",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/NestedIntBoundaries.java"
+      ],
+      "exit": 0
+    },
+    {
+      "leg": "javac23",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v23/NestedIntBoundaries.class"
+      ],
+      "exit": 0
+    }
+  ],
+  "classes": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v8/NestedIntBoundaries.class",
+      "sha256": "f2a937baa5609afd170b01b30346ed1eb995796a87a47af17f7239f15160f48a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/v23/NestedIntBoundaries.class",
+      "sha256": "75e9fcf66ab6c57b2e77e066b0d2ce3419119b006f776265eeada6614910f69e"
+    }
+  ],
+  "files": [
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac23/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac23/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac23/javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac23/javap.stdout",
+      "bytes": 2663,
+      "sha256": "2b911ff679d353abb0f9095d7ca3301a95d9fc6e6541543f49677f086e5a7b46"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac8/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac8/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac8/javap.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/negative-original-v1/javac8/javap.stdout",
+      "bytes": 2402,
+      "sha256": "cef90d5d31801684d235619850016ea50f88603947b51bc0cdadc3ba1881bb89"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/LordCasser/jarde/actions/jobs/114026830943/logs"
+  ],
+  "exit": 0,
+  "note": "completed job log via REST while whole run remains live"
+}

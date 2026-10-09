@@ -1,0 +1,9 @@
+{
+  "prior_verifier": "verify-candidate-v4.py 443 checks passed; output named candidate-v2-verification-v3.json but schema v4",
+  "additional_concern": "Independently bind actual render exits/12 exact command labels and physical dup2/read/add/store/row/effect anchors for five compound methods plus source evaluation counts",
+  "v5_exit": 1,
+  "v5_reason": "output name inherited v3; refusing to overwrite existing accepted v4 result; no evidence changed",
+  "v6_result": "candidate-v2-verification-v6.json",
+  "v6_checks": 474,
+  "v6_errors": []
+}

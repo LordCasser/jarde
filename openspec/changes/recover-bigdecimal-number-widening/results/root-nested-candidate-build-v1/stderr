@@ -1,0 +1,3 @@
+error: no bin target named `jarde-cli` in default-run packages
+help: available bin in `jarde-cli` package:
+    jarde-cli

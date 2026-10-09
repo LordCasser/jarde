@@ -54,3 +54,9 @@ root-clean-after-local-v1只清本仓target；冻结新旧CLI和所有raw证据�
 root用同一冻结产品CLI对两个实际输入重新提取BoundaryControls与BNX，四个完整报告与原双流保存在ci-stale-boundary-current-v2。closedNumberBoundary现为完整Number initializer，每个Integer/BigDecimal构造及mark参数各一次，两个NewRecord及原全部BCI保持；旧拒绝预期需转正。BNX仍wholebody fallback，只有AtomicInteger@46拒绝；BigDecimal@21拒绝消失，完整effect来源闭包仍保留，不能把其正文称已编译成功。v1两BNX成功后root误写Boundary路径中止，partial失败保留。
 
 Luna提供两个旧test更新，root应用/rustfmt并fresh20checks/0errors确认准确预期、Atomic拒绝与全来源；五产品源及原本片测试/workflow都不改。无新增恢复规则。由于其它项目Cargo占用后空闲约19GiB、本仓target已无，root遵守20GiB停线，未运行本地focused Cargo；该限制写入ci-stale-boundary-root-verification-v1.json，必须等新确切CI执行补齐，不能以CLI核验冒称测试已跑。此次CI修正独立提交，不混入下一片nested产品/fixture。
+
+## 2026-10-10 接续状态更新
+
+修正旧测试的8cd8c4f5fbfdb51d56c3725783e2d0666f8903ac确切CI37991578328第一轮workspace成功，第二轮仍在运行；supply job114026830943在checkout前构建Docker action时DockerHub429失败，没有执行advisory政策检查。原REST日志在results/ci-supply-build-failure-v3；failed v2下载因run未结束而拒绝，原失败保留。当前nested片改用固定cargo-deny0.20.2官方独立CLI，root/fuzz本机原配置四项检查皆ok，但新产品确切CI仍待验收。BigDecimal3.2/3.3继续未勾；旧8cd run完整结束后可以只重跑失败任务单独验收，不把它借给新nested产品。
+
+旧陈旧断言修正两test的root focused实际5ordinary通过/1ignored，结果在results/root-ci-stale-boundary-focused-v1；先前19GiB未跑说明属于历史。当前新nested片已经变更build.rs，因此该BigDecimal历史CLI仅绑定当时blob，不再代表当前工作区。新CLI旧24完整回归24/24、独立1226checks，详见[下一片root验收](../recover-nested-int-array-compound-updates/verification-root.md)。

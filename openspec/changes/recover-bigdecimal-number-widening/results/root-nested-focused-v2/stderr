@@ -1,0 +1,4 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 0.52s
+     Running tests/p3_nested_int_array_compound_updates.rs (target/debug/deps/p3_nested_int_array_compound_updates-617999fe8fcf9a16)
+     Running tests/recover_lambda_primitive_array_capture.rs (target/debug/deps/recover_lambda_primitive_array_capture-6e6843ff3d957375)

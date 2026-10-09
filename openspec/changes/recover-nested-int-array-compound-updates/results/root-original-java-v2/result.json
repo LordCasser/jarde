@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "python3",
+    "openspec/changes/recover-nested-int-array-compound-updates/results/prepare-controls-v1.py"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 1.1895880840020254,
+  "free_before": 20358930432,
+  "free_after": 20358590464,
+  "policy": "20GiB Cargo stop retained. This bounded Java fixture process has no Cargo/target build, creates only two source and four small class files plus raw streams. Prior all-command preflight v1 refused before launch and is retained.",
+  "script_sha256": "1a8b2fa72ca4ac9293eb45d151ddf22fb69efb8d5a15c1665462460bfdf4bbc7",
+  "streams": [
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/root-original-java-v2/stdout",
+      "bytes": 557,
+      "sha256": "2971747bad1757e4477f461c69843deecdc6f7863d47b3cc4f037674bb40927d"
+    },
+    {
+      "path": "openspec/changes/recover-nested-int-array-compound-updates/results/root-original-java-v2/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

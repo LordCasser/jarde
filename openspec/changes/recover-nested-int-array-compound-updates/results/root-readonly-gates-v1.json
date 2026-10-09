@@ -1,0 +1,36 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit": 0,
+    "stdout": "root-readonly-fmt-v1.stdout",
+    "stderr": "root-readonly-fmt-v1.stderr"
+  },
+  {
+    "argv": [
+      "openspec",
+      "validate",
+      "--all",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit": 0,
+    "stdout": "root-readonly-openspec-v1.stdout",
+    "stderr": "root-readonly-openspec-v1.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "stdout": "root-readonly-git-v1.stdout",
+    "stderr": "root-readonly-git-v1.stderr"
+  }
+]
