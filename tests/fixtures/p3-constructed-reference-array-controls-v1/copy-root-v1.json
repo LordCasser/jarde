@@ -1,0 +1,40 @@
+{
+  "mode": "byte-exact copy of independently compiled control sources; original frozen positive family unchanged",
+  "files": [
+    {
+      "source": "openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/NestedControls.java",
+      "destination": "tests/fixtures/p3-constructed-reference-array-controls-v1/NestedControls.java",
+      "sha256": "274887a029adee77f9a50ab4edfd9671ac976a1bead0fe1ab283b3b7bc5c53c2"
+    },
+    {
+      "source": "openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/BoundaryControls.java",
+      "destination": "tests/fixtures/p3-constructed-reference-array-controls-v1/BoundaryControls.java",
+      "sha256": "bfec4c7c797211cc3fdf2fb31605e6aadecb29c6e44e390c6449361f4f3762c5"
+    },
+    {
+      "source": "openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/README.md",
+      "destination": "tests/fixtures/p3-constructed-reference-array-controls-v1/README.md",
+      "sha256": "839d02bc354df4730af4efa988378160e06802479a1656df9a8bf56f67949486"
+    },
+    {
+      "source": "openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac8/nested/classes/NestedControls.class",
+      "destination": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac8/NestedControls.class",
+      "sha256": "02798edd491609dd8791fa07dfbf402c6dc6f6ff7830880d7d3327b51c4c5c5e"
+    },
+    {
+      "source": "openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac8/boundary/classes/BoundaryControls.class",
+      "destination": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac8/BoundaryControls.class",
+      "sha256": "f44881ada8171552c95841a0bcbc28962969708e59facae1246ca87b7b55a664"
+    },
+    {
+      "source": "openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac23/nested/classes/NestedControls.class",
+      "destination": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/NestedControls.class",
+      "sha256": "1f36b2aded400cb0698ee91a70a7e29dd4e9bccca00021e935fd1dc9e8015f69"
+    },
+    {
+      "source": "openspec/changes/compose-constructed-reference-array-elements/results/control-drafts-v1/run-001/javac23/boundary/classes/BoundaryControls.class",
+      "destination": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/BoundaryControls.class",
+      "sha256": "008835c56d57d64fb09ab862638118604d87e757e090af22bd1cdbac1f4bac5f"
+    }
+  ]
+}

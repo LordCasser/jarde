@@ -12535,6 +12535,9 @@ struct ArrayInitializer {
     /// Each element stays paired with the array-store instruction that proved its assignment.
     /// The separate, ordered pair is the only authority for a conversion's store provenance.
     elements: Vec<(ValueId, u32)>,
+    /// Construction sites paired with their element value, when this element was accepted by the
+    /// candidate-scoped construction verifier. This is structural provenance, not another owner.
+    element_sites: Vec<Option<u32>>,
     local_postfix: BTreeMap<u32, LocalPostfixElement>,
     element_sources: Vec<u32>,
     owned: Vec<u32>,
@@ -12558,92 +12561,23 @@ pub(crate) struct ArrayInitializers {
     aliases: BTreeMap<ValueId, ValueId>,
     owned: BTreeSet<u32>,
     element_sources: BTreeSet<u32>,
+    /// Construction sites committed with a complete array candidate and moved exactly once into
+    /// the ordinary Sites census.
+    pending_sites: BTreeMap<u32, crate::init::Site>,
+}
+
+/// A borrowed read view of array candidates available to a constructor argument proof. The
+/// current block's complete-but-not-yet-committed candidates overlay the previously committed
+/// plan; neither map is cloned or published through this view.
+pub(crate) struct ChildArrayFacts<'a> {
+    committed: &'a ArrayInitializers,
+    candidates: Option<(
+        &'a BTreeMap<u32, ArrayInitializer>,
+        &'a BTreeMap<ValueId, u32>,
+    )>,
 }
 
 impl ArrayInitializers {
-    /// The complete physical interval of a proved inline `char[]` argument. This deliberately
-    /// accepts only constant element producers and the exact sole constructor consumer; general
-    /// array initializers remain the builder's concern.
-    pub(crate) fn inline_char_argument_bcis(
-        &self,
-        ssa: &SsaTable,
-        operations: &Operations,
-        block: &[SsaInstruction],
-        value: ValueId,
-        dup: u32,
-        constructor: u32,
-    ) -> Option<BTreeSet<u32>> {
-        let allocation = match ssa.value(*self.aliases.get(&value)?).def() {
-            Definition::Instruction { bci, .. } => *bci,
-            _ => return None,
-        };
-        let initializer = self.allocations.get(&allocation)?;
-        if initializer.final_value != value
-            || initializer.consumer != constructor
-            || !matches!(
-                operations.get(allocation),
-                Some(Operation::NewArray {
-                    element: Type::Char,
-                    dimensions: 1,
-                    total_dimensions: 1,
-                })
-            )
-            || !initializer.children.is_empty()
-            || !initializer.local_postfix.is_empty()
-            || initializer
-                .element_sources
-                .iter()
-                .any(|bci| !matches!(operations.get(*bci), Some(Operation::Push(_))))
-        {
-            return None;
-        }
-        let members: BTreeSet<u32> = block
-            .iter()
-            .filter(|instruction| dup < instruction.bci() && instruction.bci() < constructor)
-            .map(SsaInstruction::bci)
-            .collect();
-        let sources: BTreeSet<u32> = initializer
-            .sources
-            .iter()
-            .copied()
-            .filter(|bci| *bci != constructor)
-            .collect();
-        (sources == members && sources.contains(&allocation)).then_some(members)
-    }
-
-    /// The complete physical interval of a proved inline array initializer whose sole consumer is
-    /// an invocation inside a construction's argument run — the varargs lowering
-    /// `anewarray; [dup; index; value; aastore]×n; invoke` whose result (directly or through
-    /// further argument production) the constructor call reads. The element production, the closed
-    /// interval and the single-use judgements are the ones this plan already proved; this accessor
-    /// only states the chain's BCIs, and the caller decides which consumers its construction
-    /// accepts. The consumer and every source must sit between the construction's copy and its
-    /// call, so the initializer is written exactly where the bytecode evaluated it. A chain the
-    /// constructor itself consumes directly stays its own slice's boundary (`new@1` embeds it only
-    /// for the Java 8 `String(char[])` shape), and multi-dimensional chains (proved children) and
-    /// local postfix elements are not argument-position shapes.
-    pub(crate) fn inline_argument_chain_bcis(
-        &self,
-        allocation: u32,
-        dup: u32,
-        constructor: u32,
-        serves_argument: impl Fn(u32) -> bool,
-    ) -> Option<BTreeSet<u32>> {
-        let initializer = self.allocations.get(&allocation)?;
-        let consumer = initializer.consumer;
-        let within = |bci: u32| dup < bci && bci < constructor;
-        if !within(consumer)
-            || !serves_argument(consumer)
-            || !initializer
-                .sources
-                .iter()
-                .all(|bci| *bci == consumer || within(*bci))
-        {
-            return None;
-        }
-        Some(initializer.sources.iter().copied().collect())
-    }
-
     fn owns(&self, at: u32) -> bool {
         self.owned.contains(&at)
     }
@@ -12660,10 +12594,116 @@ impl ArrayInitializers {
         self.owns(at) || self.element_sources.contains(&at)
     }
 
+    pub(crate) fn child_facts(&self) -> ChildArrayFacts<'_> {
+        ChildArrayFacts {
+            committed: self,
+            candidates: None,
+        }
+    }
+
+    fn child_facts_with_candidates<'a>(
+        &'a self,
+        candidates: &'a BTreeMap<u32, ArrayInitializer>,
+        candidate_values: &'a BTreeMap<ValueId, u32>,
+    ) -> ChildArrayFacts<'a> {
+        ChildArrayFacts {
+            committed: self,
+            candidates: Some((candidates, candidate_values)),
+        }
+    }
+
+    /// The complete physical interval of a proved inline `char[]` argument. This deliberately
+    /// accepts only constant element producers and the exact sole constructor consumer; general
+    /// array initializers remain the builder's concern.
+    #[cfg(test)]
+    pub(crate) fn inline_char_argument_bcis(
+        &self,
+        ssa: &SsaTable,
+        operations: &Operations,
+        block: &[SsaInstruction],
+        value: ValueId,
+        dup: u32,
+        constructor: u32,
+    ) -> Option<BTreeSet<u32>> {
+        self.child_facts().inline_char_argument_bcis(
+            ssa,
+            operations,
+            block,
+            value,
+            dup,
+            constructor,
+        )
+    }
+
+    /// The complete physical interval of a proved inline array initializer whose sole consumer is
+    /// an invocation inside a construction's argument run — the varargs lowering
+    /// `anewarray; [dup; index; value; aastore]×n; invoke` whose result (directly or through
+    /// further argument production) the constructor call reads. The element production, the closed
+    /// interval and the single-use judgements are the ones this plan already proved; this accessor
+    /// only states the chain's BCIs, and the caller decides which consumers its construction
+    /// accepts. The consumer and every source must sit between the construction's copy and its
+    /// call, so the initializer is written exactly where the bytecode evaluated it. A chain the
+    /// constructor itself consumes directly stays its own slice's boundary (`new@1` embeds it only
+    /// for the Java 8 `String(char[])` shape), and multi-dimensional chains (proved children) and
+    /// local postfix elements are not argument-position shapes.
+    #[cfg(test)]
+    pub(crate) fn inline_argument_chain_bcis(
+        &self,
+        allocation: u32,
+        dup: u32,
+        constructor: u32,
+        serves_argument: impl Fn(u32) -> bool,
+    ) -> Option<BTreeSet<u32>> {
+        self.child_facts()
+            .inline_argument_chain_bcis(allocation, dup, constructor, serves_argument)
+    }
+
+    pub(crate) fn take_pending_sites(&mut self) -> BTreeMap<u32, crate::init::Site> {
+        std::mem::take(&mut self.pending_sites)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn has_candidate_at(&self, allocation: u32) -> bool {
+        self.allocations.contains_key(&allocation)
+    }
+
+    fn commit_site(&mut self, site: crate::init::Site) {
+        self.pending_sites.insert(site.head, site);
+    }
+
+    fn owns_or_site_owns(&self, bci: u32, budget: &mut Budget) -> Result<bool, StopReason> {
+        if self.owned.contains(&bci) {
+            return Ok(true);
+        }
+        for site in self.pending_sites.values() {
+            poll(budget, Some(site.head))?;
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(site.head))?;
+            for owned in &site.owned {
+                poll(budget, Some(*owned))?;
+                charge(budget, CountedBudgetDimension::IrItems, 1, Some(*owned))?;
+                if *owned == bci {
+                    return Ok(true);
+                }
+            }
+        }
+        Ok(false)
+    }
+
+    #[cfg(test)]
     pub(crate) fn prove(
         ssa: &SsaTable,
         operations: &Operations,
         fields: &field::Plan,
+        budget: &mut Budget,
+    ) -> Result<Self, StopReason> {
+        Self::prove_with_composition(ssa, operations, fields, None, budget)
+    }
+
+    pub(crate) fn prove_with_composition(
+        ssa: &SsaTable,
+        operations: &Operations,
+        fields: &field::Plan,
+        composition: Option<&crate::init::ArrayCompositionContext<'_>>,
         budget: &mut Budget,
     ) -> Result<Self, StopReason> {
         let mut proved = Self::default();
@@ -12695,6 +12735,7 @@ impl ArrayInitializers {
         for block in ssa.blocks() {
             let mut candidates = BTreeMap::new();
             let mut candidate_values = BTreeMap::new();
+            let mut candidate_sites: BTreeMap<u32, Vec<crate::init::Site>> = BTreeMap::new();
             for allocation in block.instructions().iter().rev() {
                 poll(budget, Some(allocation.bci()))?;
                 charge(
@@ -12709,10 +12750,14 @@ impl ArrayInitializers {
                 ) {
                     continue;
                 }
-                if let Some(initializer) = prove_array_initializer(
+                let child_facts =
+                    proved.child_facts_with_candidates(&candidates, &candidate_values);
+                if let Some((initializer, sites)) = prove_array_initializer(
                     ssa,
                     operations,
                     fields,
+                    &child_facts,
+                    composition,
                     block,
                     allocation,
                     &effects,
@@ -12721,16 +12766,15 @@ impl ArrayInitializers {
                     budget,
                 )? {
                     candidate_values.insert(initializer.final_value, allocation.bci());
+                    if !sites.is_empty() {
+                        candidate_sites.insert(allocation.bci(), sites);
+                    }
                     candidates.insert(allocation.bci(), initializer);
                 }
             }
             // A child whose sole consumer is an array store **of an array this block builds**
-            // cannot stand alone: only a closed parent expression may commit it. A dance whose
-            // single reader is an element store into an array the body already had is no child of
-            // anything — the store is the reader `prove_array_initializer` admitted, and the
-            // candidate commits here like every other consumer position
-            // (`recover-array-initializer-value-positions`). Walk from ordinary consumers after
-            // all proofs.
+            // cannot stand alone: only a closed parent expression may commit it. Walk from
+            // ordinary consumers after all proofs.
             for (at, candidate) in &candidates {
                 if matches!(
                     operations.get(candidate.consumer),
@@ -12752,15 +12796,57 @@ impl ArrayInitializers {
                     stack.extend(node.children.iter().copied());
                 }
                 let mut claimed = BTreeSet::new();
-                if !closed
-                    || chain.iter().any(|bci| {
-                        candidates[bci]
-                            .owned
-                            .iter()
-                            .any(|owned| proved.owned.contains(owned) || !claimed.insert(*owned))
-                    })
-                {
+                let mut chain_sites = Vec::new();
+                let mut array_conflict = !closed;
+                if !array_conflict {
+                    for bci in &chain {
+                        for owned in &candidates[bci].owned {
+                            if proved.owns_or_site_owns(*owned, budget)? || !claimed.insert(*owned)
+                            {
+                                array_conflict = true;
+                                break;
+                            }
+                        }
+                        if array_conflict {
+                            break;
+                        }
+                    }
+                }
+                if array_conflict {
                     continue;
+                }
+                let mut site_conflict = false;
+                'sites: for bci in &chain {
+                    if let Some(sites) = candidate_sites.get(bci) {
+                        for site in sites {
+                            poll(budget, Some(site.head))?;
+                            charge(budget, CountedBudgetDimension::IrItems, 1, Some(site.head))?;
+                            for owned in &site.owned {
+                                poll(budget, Some(*owned))?;
+                                charge(budget, CountedBudgetDimension::IrItems, 1, Some(*owned))?;
+                                if proved.owns_or_site_owns(*owned, budget)?
+                                    || !claimed.insert(*owned)
+                                {
+                                    site_conflict = true;
+                                    break 'sites;
+                                }
+                            }
+                        }
+                    }
+                }
+                if site_conflict {
+                    continue;
+                }
+                for bci in &chain {
+                    if let Some(sites) = candidate_sites.remove(bci) {
+                        poll(budget, Some(*bci))?;
+                        charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
+                        for site in sites {
+                            poll(budget, Some(site.head))?;
+                            charge(budget, CountedBudgetDimension::IrItems, 1, Some(site.head))?;
+                            chain_sites.push(site);
+                        }
+                    }
                 }
                 for bci in chain {
                     let node = candidates[&bci].clone();
@@ -12773,9 +12859,157 @@ impl ArrayInitializers {
                         .insert(node.final_value, node.allocation_value);
                     proved.allocations.insert(bci, node);
                 }
+                for site in chain_sites {
+                    proved.commit_site(site);
+                }
             }
         }
         Ok(proved)
+    }
+}
+
+impl ChildArrayFacts<'_> {
+    #[cfg(test)]
+    pub(crate) fn inline_char_argument_bcis(
+        &self,
+        ssa: &SsaTable,
+        operations: &Operations,
+        block: &[SsaInstruction],
+        value: ValueId,
+        dup: u32,
+        constructor: u32,
+    ) -> Option<BTreeSet<u32>> {
+        let mut meter = crate::init::VerifyMeter::unmetered();
+        self.inline_char_argument_bcis_metered(
+            ssa,
+            operations,
+            block,
+            value,
+            dup,
+            constructor,
+            &mut meter,
+        )
+        .expect("an unmetered child-array lookup cannot stop")
+    }
+
+    pub(crate) fn inline_char_argument_bcis_metered(
+        &self,
+        ssa: &SsaTable,
+        operations: &Operations,
+        block: &[SsaInstruction],
+        value: ValueId,
+        dup: u32,
+        constructor: u32,
+        meter: &mut crate::init::VerifyMeter<'_>,
+    ) -> Result<Option<BTreeSet<u32>>, StopReason> {
+        let committed = self.committed;
+        let allocation_value = committed.aliases.get(&value).copied();
+        let Some(allocation) = allocation_value
+            .and_then(|value| match ssa.value(value).def() {
+                Definition::Instruction { bci, .. } => Some(*bci),
+                _ => None,
+            })
+            .or_else(|| {
+                self.candidates
+                    .and_then(|(_, candidate_values)| candidate_values.get(&value).copied())
+            })
+        else {
+            return Ok(None);
+        };
+        let Some(initializer) = committed.allocations.get(&allocation).or_else(|| {
+            self.candidates
+                .and_then(|(candidates, _)| candidates.get(&allocation))
+        }) else {
+            return Ok(None);
+        };
+        if initializer.final_value != value
+            || initializer.consumer != constructor
+            || !matches!(
+                operations.get(allocation),
+                Some(Operation::NewArray {
+                    element: Type::Char,
+                    dimensions: 1,
+                    total_dimensions: 1,
+                })
+            )
+            || !initializer.children.is_empty()
+            || !initializer.local_postfix.is_empty()
+        {
+            return Ok(None);
+        }
+        for bci in &initializer.element_sources {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+            if !matches!(operations.get(*bci), Some(Operation::Push(_))) {
+                return Ok(None);
+            }
+        }
+        let mut members = BTreeSet::new();
+        for instruction in block {
+            meter.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                Some(instruction.bci()),
+            )?;
+            if dup < instruction.bci() && instruction.bci() < constructor {
+                members.insert(instruction.bci());
+            }
+        }
+        let mut sources = BTreeSet::new();
+        for bci in &initializer.sources {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+            if *bci != constructor {
+                sources.insert(*bci);
+            }
+        }
+        Ok((sources == members && sources.contains(&allocation)).then_some(members))
+    }
+
+    #[cfg(test)]
+    pub(crate) fn inline_argument_chain_bcis(
+        &self,
+        allocation: u32,
+        dup: u32,
+        constructor: u32,
+        serves_argument: impl Fn(u32) -> bool,
+    ) -> Option<BTreeSet<u32>> {
+        let mut meter = crate::init::VerifyMeter::unmetered();
+        self.inline_argument_chain_bcis_metered(
+            allocation,
+            dup,
+            constructor,
+            serves_argument,
+            &mut meter,
+        )
+        .expect("an unmetered child-array lookup cannot stop")
+    }
+
+    pub(crate) fn inline_argument_chain_bcis_metered(
+        &self,
+        allocation: u32,
+        dup: u32,
+        constructor: u32,
+        serves_argument: impl Fn(u32) -> bool,
+        meter: &mut crate::init::VerifyMeter<'_>,
+    ) -> Result<Option<BTreeSet<u32>>, StopReason> {
+        let Some(initializer) = self.committed.allocations.get(&allocation).or_else(|| {
+            self.candidates
+                .and_then(|(candidates, _)| candidates.get(&allocation))
+        }) else {
+            return Ok(None);
+        };
+        let consumer = initializer.consumer;
+        let within = |bci: u32| dup < bci && bci < constructor;
+        if !within(consumer) || !serves_argument(consumer) {
+            return Ok(None);
+        }
+        let mut sources = BTreeSet::new();
+        for bci in &initializer.sources {
+            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+            if *bci != consumer && !within(*bci) {
+                return Ok(None);
+            }
+            sources.insert(*bci);
+        }
+        Ok(Some(sources))
     }
 }
 
@@ -12786,13 +13020,15 @@ fn prove_array_initializer(
     ssa: &SsaTable,
     operations: &Operations,
     fields: &field::Plan,
+    child_facts: &ChildArrayFacts<'_>,
+    composition: Option<&crate::init::ArrayCompositionContext<'_>>,
     block: &jarde_jvm::method_ir::SsaBlock,
     allocation: &SsaInstruction,
     effects: &BTreeMap<u32, &jarde_jvm::method_ir::CanonicalInstructionEffect>,
     children: &BTreeMap<u32, ArrayInitializer>,
     child_values: &BTreeMap<ValueId, u32>,
     budget: &mut Budget,
-) -> Result<Option<ArrayInitializer>, StopReason> {
+) -> Result<Option<(ArrayInitializer, Vec<crate::init::Site>)>, StopReason> {
     let Some(Operation::NewArray {
         element,
         dimensions: 1,
@@ -12862,6 +13098,8 @@ fn prove_array_initializer(
     let mut dependencies = BTreeSet::new();
     let mut element_sources = BTreeSet::new();
     let mut child_allocations = Vec::new();
+    let mut construction_sites = Vec::new();
+    let mut element_sites = Vec::with_capacity(length);
     let mut depth = 1;
     let mut cursor = allocation_pos + 1;
 
@@ -12965,6 +13203,7 @@ fn prove_array_initializer(
         }
 
         let mut element_dependencies = BTreeSet::new();
+        let mut element_site = None;
         let value_context = ExpressionBciContext {
             ssa,
             operations,
@@ -13020,47 +13259,175 @@ fn prove_array_initializer(
             );
             child_allocations.push(*child_at);
         } else {
-            let postfix = if component == Type::Int {
-                prove_local_postfix_element(
-                    ssa,
-                    operations,
-                    block,
-                    cursor + 2,
-                    store_pos,
-                    *stored_value,
-                    budget,
-                )?
+            let constructed_site = if matches!(&component, Type::Reference(_)) {
+                (|| -> Result<Option<crate::init::Site>, StopReason> {
+                    let Some(composition) = composition else {
+                        return Ok(None);
+                    };
+                    let Some(constructor) = definition_in_block(ssa, *stored_value, block.block())
+                    else {
+                        return Ok(None);
+                    };
+                    if constructor < block.instructions()[cursor + 2].bci()
+                        || constructor >= store.bci()
+                    {
+                        return Ok(None);
+                    }
+                    let mut constructor_instruction = None;
+                    for (position, candidate) in block
+                        .instructions()
+                        .iter()
+                        .enumerate()
+                        .take(store_pos)
+                        .skip(cursor + 2)
+                    {
+                        charge_array_initializer_instruction(candidate, budget)?;
+                        if candidate.bci() == constructor {
+                            constructor_instruction = Some((position, candidate));
+                            break;
+                        }
+                    }
+                    let Some((_, constructor_instruction)) = constructor_instruction else {
+                        return Ok(None);
+                    };
+                    let Some(Operation::Invoke(call)) = operations.get(constructor) else {
+                        return Ok(None);
+                    };
+                    if call.name() != "<init>" {
+                        return Ok(None);
+                    }
+                    let constructor_reads = stack_operands(constructor_instruction);
+                    charge(
+                        budget,
+                        CountedBudgetDimension::IrItems,
+                        constructor_reads.len() as u64,
+                        Some(constructor),
+                    )?;
+                    let Some((_, receiver)) = constructor_reads.first() else {
+                        return Ok(None);
+                    };
+                    let Value::Uninitialized { new_site } = ssa.value(*receiver).ty() else {
+                        return Ok(None);
+                    };
+                    if new_site.block() != block.block() {
+                        return Ok(None);
+                    }
+                    let head = new_site.bci();
+                    let mut allocation_position = None;
+                    for (position, candidate) in block
+                        .instructions()
+                        .iter()
+                        .enumerate()
+                        .take(store_pos)
+                        .skip(cursor + 2)
+                    {
+                        charge_array_initializer_instruction(candidate, budget)?;
+                        if candidate.bci() == head {
+                            allocation_position = Some((position, candidate));
+                            break;
+                        }
+                    }
+                    let Some((position, _)) = allocation_position else {
+                        return Ok(None);
+                    };
+                    let Some(Operation::Allocate { ty }) = operations.get(head) else {
+                        return Ok(None);
+                    };
+                    crate::init::verify_array_store(
+                        ssa,
+                        operations,
+                        fields,
+                        child_facts,
+                        composition,
+                        block.instructions(),
+                        head,
+                        position,
+                        ty.clone(),
+                        store.bci(),
+                        *stored_value,
+                        budget,
+                    )
+                })()
             } else {
-                None
+                Ok(None)
             };
-            if let Some(postfix) = postfix {
-                element_dependencies.extend([postfix.load, postfix.update]);
-                owned.push(postfix.update);
-                local_postfix.insert(store.bci(), postfix);
-            } else if !collect_expression_bcis(
-                &value_context,
-                *stored_value,
-                &mut element_dependencies,
-                &mut BTreeSet::new(),
-                budget,
-                0,
-            )? {
-                return Ok(None);
-            }
-            if !expression_values_have_single_use(
-                ssa,
-                block,
-                &element_dependencies,
-                store.bci(),
-                budget,
-            )? || !dependency_uses_stay_within(
-                ssa,
-                block,
-                &element_dependencies,
-                store.bci(),
-                budget,
-            )? {
-                return Ok(None);
+            let constructed_site = constructed_site?;
+            if let Some(site) = constructed_site {
+                let interval_dependencies: BTreeSet<u32> = site
+                    .expression
+                    .iter()
+                    .copied()
+                    .filter(|bci| {
+                        position_in_block(block, *bci)
+                            .is_some_and(|pos| pos >= cursor + 2 && pos < store_pos)
+                    })
+                    .collect();
+                if interval_dependencies.is_empty() {
+                    return Ok(None);
+                }
+                element_dependencies = interval_dependencies;
+                if !expression_values_have_single_use_except(
+                    ssa,
+                    block,
+                    &element_dependencies,
+                    &site.single_use_atoms,
+                    store.bci(),
+                    budget,
+                )? || !dependency_uses_stay_within_metered(
+                    ssa,
+                    block,
+                    &element_dependencies,
+                    store.bci(),
+                    budget,
+                )? {
+                    return Ok(None);
+                }
+                element_sources.extend(site.expression.iter().copied());
+                element_site = Some(site.head);
+                construction_sites.extend(site.into_composition_sites(budget)?);
+            } else {
+                let postfix = if component == Type::Int {
+                    prove_local_postfix_element(
+                        ssa,
+                        operations,
+                        block,
+                        cursor + 2,
+                        store_pos,
+                        *stored_value,
+                        budget,
+                    )?
+                } else {
+                    None
+                };
+                if let Some(postfix) = postfix {
+                    element_dependencies.extend([postfix.load, postfix.update]);
+                    owned.push(postfix.update);
+                    local_postfix.insert(store.bci(), postfix);
+                } else if !collect_expression_bcis(
+                    &value_context,
+                    *stored_value,
+                    &mut element_dependencies,
+                    &mut BTreeSet::new(),
+                    budget,
+                    0,
+                )? {
+                    return Ok(None);
+                }
+                if !expression_values_have_single_use(
+                    ssa,
+                    block,
+                    &element_dependencies,
+                    store.bci(),
+                    budget,
+                )? || !dependency_uses_stay_within(
+                    ssa,
+                    block,
+                    &element_dependencies,
+                    store.bci(),
+                    budget,
+                )? {
+                    return Ok(None);
+                }
             }
         }
         if element_dependencies.is_empty()
@@ -13071,6 +13438,7 @@ fn prove_array_initializer(
         dependencies.extend(element_dependencies.iter().copied());
         element_sources.extend(element_dependencies.iter().copied());
         elements.push((*stored_value, store.bci()));
+        element_sites.push(element_site);
         owned.extend([duplicate.bci(), index_instruction.bci(), store.bci()]);
 
         if expected_index + 1 == i64::try_from(length).unwrap_or(i64::MAX) {
@@ -13128,18 +13496,22 @@ fn prove_array_initializer(
         }
     }
 
-    Ok(Some(ArrayInitializer {
-        allocation_value,
-        final_value: array_value,
-        elements,
-        local_postfix,
-        element_sources: element_sources.into_iter().collect(),
-        owned,
-        sources: source_bcis.into_iter().collect(),
-        consumer,
-        children: child_allocations,
-        depth,
-    }))
+    Ok(Some((
+        ArrayInitializer {
+            allocation_value,
+            final_value: array_value,
+            elements,
+            element_sites,
+            local_postfix,
+            element_sources: element_sources.into_iter().collect(),
+            owned,
+            sources: source_bcis.into_iter().collect(),
+            consumer,
+            children: child_allocations,
+            depth,
+        },
+        construction_sites,
+    )))
 }
 
 /// The only local update admitted inside an initializer element is the physical
@@ -14331,6 +14703,54 @@ fn dependency_uses_stay_within(
     Ok(true)
 }
 
+/// Candidate-only counterpart: charge the instruction lookup and each real SSA use while
+/// checking the newly composed construction atom. Existing array-initializer callers retain the
+/// historical budget profile through `dependency_uses_stay_within` above.
+fn dependency_uses_stay_within_metered(
+    ssa: &SsaTable,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    dependencies: &BTreeSet<u32>,
+    terminal: u32,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    for bci in dependencies {
+        poll(budget, Some(*bci))?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
+        let mut found = None;
+        for instruction in block.instructions() {
+            poll(budget, Some(instruction.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() == *bci {
+                found = Some(instruction);
+                break;
+            }
+        }
+        let Some(instruction) = found else {
+            return Ok(false);
+        };
+        for (_, value) in stack_outputs(instruction) {
+            let uses = ssa.value(value).uses();
+            for usage in uses {
+                poll(budget, usage.bci())?;
+                charge(budget, CountedBudgetDimension::IrItems, 1, usage.bci())?;
+                if usage.block() != block.block()
+                    || !usage
+                        .bci()
+                        .is_some_and(|at| at == terminal || dependencies.contains(&at))
+                {
+                    return Ok(false);
+                }
+            }
+        }
+    }
+    Ok(true)
+}
+
 /// Rendering an expression DAG recursively writes each child where it occurs in the text. A
 /// producer with two SSA readers would therefore be evaluated twice even if both readers belong to
 /// this one element expression. Refuse that shape instead of asking deferred binding to hoist the
@@ -14349,6 +14769,57 @@ fn expression_values_have_single_use(
             return Ok(false);
         };
         for (_, value) in stack_outputs(instruction) {
+            poll(budget, Some(*bci))?;
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
+            let uses = ssa.value(value).uses();
+            for usage in uses {
+                poll(budget, usage.bci())?;
+                charge(budget, CountedBudgetDimension::IrItems, 1, usage.bci())?;
+            }
+            if uses.len() != 1 {
+                return Ok(false);
+            }
+        }
+    }
+    poll(budget, Some(terminal))?;
+    charge(budget, CountedBudgetDimension::IrItems, 1, Some(terminal))?;
+    Ok(true)
+}
+
+fn expression_values_have_single_use_except(
+    ssa: &SsaTable,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    dependencies: &BTreeSet<u32>,
+    certified_atoms: &BTreeSet<u32>,
+    terminal: u32,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    for bci in dependencies {
+        poll(budget, Some(*bci))?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
+        let mut found = None;
+        for instruction in block.instructions() {
+            poll(budget, Some(instruction.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() == *bci {
+                found = Some(instruction);
+                break;
+            }
+        }
+        let Some(instruction) = found else {
+            return Ok(false);
+        };
+        if certified_atoms.contains(bci) {
+            continue;
+        }
+        for (_, value) in stack_outputs(instruction) {
+            poll(budget, Some(*bci))?;
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
             let uses = ssa.value(value).uses();
             for usage in uses {
                 poll(budget, usage.bci())?;
@@ -24837,7 +25308,28 @@ impl Builder<'_> {
                                 ))
                             };
                             let mut rendered = Vec::with_capacity(initializer.elements.len());
-                            for (value, store_bci) in initializer.elements {
+                            for (element_index, (value, store_bci)) in
+                                initializer.elements.into_iter().enumerate()
+                            {
+                                if let Some(expected_head) = initializer
+                                    .element_sites
+                                    .get(element_index)
+                                    .copied()
+                                    .flatten()
+                                {
+                                    let Some(site) = self.sites.site_at_head(expected_head) else {
+                                        return Err(format!(
+                                            "the array element at BCI {store_bci} has no committed construction site at BCI {expected_head}"
+                                        )
+                                        .into());
+                                    };
+                                    if site.finished_value != Some(value) {
+                                        return Err(format!(
+                                            "the construction site at BCI {expected_head} does not own the exact value stored at BCI {store_bci}"
+                                        )
+                                        .into());
+                                    }
+                                }
                                 let element_value = if let Some(postfix) =
                                     initializer.local_postfix.get(&store_bci)
                                 {

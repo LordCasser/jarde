@@ -1,9 +1,11 @@
 //! EM-18 heterogeneous reference-array initializer proof and constructor-composition boundary.
 //!
 //! `factory` is the complete positive type-proof family: the array initializer's actual element
-//! is a typed call result. `direct` is a separate, verifier-valid complete family that pins the
-//! current `new@1` refusal when a fresh constructor result's sole consumer is `aastore`. That
-//! refusal is a proof-composition boundary, not evidence that the source assignment is illegal.
+//! is a typed call result. `direct` is a verifier-valid family with several now-recovered direct
+//! constructor/store methods plus deliberately incomplete boxed and array-child controls. The
+//! latter keep the complete class report from being treated as accepted; the direct-method
+//! positives are also covered as a full generated-source family by
+//! `p3_constructed_reference_array_elements.rs`.
 
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
@@ -221,6 +223,124 @@ const FACTORY_STORES: &[(&str, &[u32])] = &[
     ("nullElement", &[7]),
 ];
 
+#[derive(Clone, Copy)]
+struct DirectPresentedSite {
+    class: &'static str,
+    head: u32,
+    dup: u32,
+    constructor: u32,
+    argument: u32,
+    store: u32,
+}
+
+const DIRECT_SITE_PRESENTATIONS: &[(&str, &[DirectPresentedSite])] = &[
+    (
+        "sequenceDirect",
+        &[
+            DirectPresentedSite {
+                class: "java/lang/String",
+                head: 6,
+                dup: 9,
+                constructor: 17,
+                argument: 14,
+                store: 20,
+            },
+            DirectPresentedSite {
+                class: "java/lang/StringBuilder",
+                head: 23,
+                dup: 26,
+                constructor: 34,
+                argument: 31,
+                store: 37,
+            },
+        ],
+    ),
+    (
+        "collectionDirect",
+        &[
+            DirectPresentedSite {
+                class: "java/util/ArrayList",
+                head: 6,
+                dup: 9,
+                constructor: 20,
+                argument: 17,
+                store: 23,
+            },
+            DirectPresentedSite {
+                class: "java/util/HashSet",
+                head: 26,
+                dup: 29,
+                constructor: 40,
+                argument: 37,
+                store: 43,
+            },
+        ],
+    ),
+    (
+        "throwableDirect",
+        &[
+            DirectPresentedSite {
+                class: "java/lang/IllegalStateException",
+                head: 6,
+                dup: 9,
+                constructor: 17,
+                argument: 14,
+                store: 20,
+            },
+            DirectPresentedSite {
+                class: "java/lang/IllegalArgumentException",
+                head: 23,
+                dup: 26,
+                constructor: 34,
+                argument: 31,
+                store: 37,
+            },
+        ],
+    ),
+    (
+        "ownTwoHopDirect",
+        &[
+            DirectPresentedSite {
+                class: "DerivedA",
+                head: 6,
+                dup: 9,
+                constructor: 14,
+                argument: 11,
+                store: 17,
+            },
+            DirectPresentedSite {
+                class: "DerivedB",
+                head: 20,
+                dup: 23,
+                constructor: 28,
+                argument: 25,
+                store: 31,
+            },
+        ],
+    ),
+    (
+        "ownInterfaceDirect",
+        &[
+            DirectPresentedSite {
+                class: "DerivedA",
+                head: 6,
+                dup: 9,
+                constructor: 14,
+                argument: 11,
+                store: 17,
+            },
+            DirectPresentedSite {
+                class: "DerivedB",
+                head: 20,
+                dup: 23,
+                constructor: 28,
+                argument: 25,
+                store: 31,
+            },
+        ],
+    ),
+];
+
 const DIRECT_SITE_REFUSALS: &[(&str, &[(&str, &str)])] = &[
     (
         "boxedDirect",
@@ -232,35 +352,6 @@ const DIRECT_SITE_REFUSALS: &[(&str, &[(&str, &str)])] = &[
             ("java/lang/Float", "jre_new_interleaved_effect"),
             ("java/lang/Double", "jre_new_interleaved_effect"),
         ],
-    ),
-    (
-        "sequenceDirect",
-        &[
-            ("java/lang/String", "jre_new_shape"),
-            ("java/lang/StringBuilder", "jre_new_shape"),
-        ],
-    ),
-    (
-        "collectionDirect",
-        &[
-            ("java/util/ArrayList", "jre_new_shape"),
-            ("java/util/HashSet", "jre_new_shape"),
-        ],
-    ),
-    (
-        "throwableDirect",
-        &[
-            ("java/lang/IllegalStateException", "jre_new_shape"),
-            ("java/lang/IllegalArgumentException", "jre_new_shape"),
-        ],
-    ),
-    (
-        "ownTwoHopDirect",
-        &[("DerivedA", "jre_new_shape"), ("DerivedB", "jre_new_shape")],
-    ),
-    (
-        "ownInterfaceDirect",
-        &[("DerivedA", "jre_new_shape"), ("DerivedB", "jre_new_shape")],
     ),
     (
         "ownGridDirect",
@@ -581,11 +672,16 @@ fn factory_families_are_complete_mapped_and_match_both_frozen_jdk_legs() {
 }
 
 #[test]
-fn direct_new_family_pins_constructor_store_composition_refusal_without_type_negative_claim() {
+fn direct_new_family_pins_recovered_constructor_methods_and_remaining_controls() {
     for leg in LEGS.iter().filter(|leg| leg.family == "direct") {
         let jar = archive(leg.files);
         let (snapshot, _) = opened(&jar, "Main");
         let report = class_source(&snapshot, "Main");
+        assert!(
+            report.text.contains("@bytecode"),
+            "{}/Main remains an incomplete class-source report even though several methods recover",
+            leg.name
+        );
         let original = Scratch::new(&format!("direct-{}-oracle", leg.name));
         let classes = original.path().join("original-classes");
         save_original_classes(leg.files, &classes);
@@ -606,6 +702,74 @@ fn direct_new_family_pins_constructor_store_composition_refusal_without_type_neg
             "direct-new original {} wrote stderr",
             leg.name
         );
+
+        for (method_name, expected_sites) in DIRECT_SITE_PRESENTATIONS {
+            let recovered = body(&report, method_name);
+            assert_eq!(
+                recovered.quality,
+                Quality::Structured,
+                "{}/{method_name} quality",
+                leg.name
+            );
+            assert_eq!(
+                recovered.representation,
+                Representation::Java,
+                "{}/{method_name} representation",
+                leg.name
+            );
+            assert!(
+                !recovered.text.contains("@bytecode")
+                    && !recovered.text.contains("jarde_refused_body"),
+                "{}/{method_name} retained a refusal marker:\n{}",
+                leg.name,
+                recovered.text
+            );
+            assert_eq!(
+                recovered.news.len(),
+                expected_sites.len(),
+                "{}/{method_name} construction records: {:?}",
+                leg.name,
+                recovered.news
+            );
+            for expected in *expected_sites {
+                let matching = recovered
+                    .news
+                    .iter()
+                    .filter(|site| site.head == expected.head)
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    matching.len(),
+                    1,
+                    "{}/{method_name} new@{} record",
+                    leg.name,
+                    expected.head
+                );
+                let record = matching[0];
+                assert_eq!(record.class, expected.class);
+                assert_eq!(record.dup, Some(expected.dup));
+                assert_eq!(record.constructor, Some(expected.constructor));
+                assert_eq!(record.arguments.as_slice(), &[expected.argument]);
+                assert!(record.presented, "{}/{method_name}: {record:?}", leg.name);
+                assert!(
+                    record.refusal.is_none(),
+                    "{}/{method_name}: {record:?}",
+                    leg.name
+                );
+                for bci in [
+                    expected.head,
+                    expected.dup,
+                    expected.argument,
+                    expected.constructor,
+                    expected.store,
+                ] {
+                    assert!(
+                        !recovered.source_map.of_bci(bci).is_empty(),
+                        "{}/{method_name} omitted new/dup/argument/init/aastore BCI {bci}",
+                        leg.name
+                    );
+                }
+            }
+        }
 
         for (method_name, expected_sites) in DIRECT_SITE_REFUSALS {
             let recovered = body(&report, method_name);
@@ -695,8 +859,10 @@ fn direct_new_family_pins_constructor_store_composition_refusal_without_type_neg
                 recovered.news
             );
         }
-        // The direct family is intentionally not compiled from Jarde output: its expected refusals
-        // are the open constructor/array proof-composition boundary, not failed subtype tests.
+        // The complete direct class still has boxed and grid refusal controls. The positive direct
+        // methods above are per-method evidence; the sibling seven-class integration checks the
+        // complete generated-source family and runtime semantics. Neither makes the remaining
+        // controls type-negative claims.
     }
 }
 

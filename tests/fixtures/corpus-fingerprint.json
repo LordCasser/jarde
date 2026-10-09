@@ -3012,6 +3012,191 @@
       "path": "tests/fixtures/p3-conditional-values/v8/TernaryValues.class"
     },
     {
+      "blake3": "3af720718911f172f85058e8415020f7249a0ef16a5a79285c08e62d53b1d83c",
+      "bytes": 1445,
+      "path": "tests/fixtures/p3-constructed-reference-array-controls-v1/BoundaryControls.java"
+    },
+    {
+      "blake3": "5091b11e9e5b9f4424ea0de68c04d0fd0db342b7c904de13cb805e073cf8eb35",
+      "bytes": 447,
+      "path": "tests/fixtures/p3-constructed-reference-array-controls-v1/NestedControls.java"
+    },
+    {
+      "blake3": "003d4a7d5fe1ac52dee7588f59a77246ca32843c7c3fe6809043565cfd05c42a",
+      "bytes": 2565,
+      "path": "tests/fixtures/p3-constructed-reference-array-controls-v1/copy-root-v1.json"
+    },
+    {
+      "blake3": "853caa5487f8ac951ada54000f37b8989430bc3e95e20853043cea627df9aa3c",
+      "bytes": 1367,
+      "path": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/BoundaryControls.class"
+    },
+    {
+      "blake3": "40fbd61eda3f6195e19c16cde6703b5f12690a6a720c131dd6013c226287954f",
+      "bytes": 676,
+      "path": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac23/NestedControls.class"
+    },
+    {
+      "blake3": "5b696a06c635bc05cdd6435b07c15a3f3440ebe6bc4d8989406dafe3be336874",
+      "bytes": 1370,
+      "path": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac8/BoundaryControls.class"
+    },
+    {
+      "blake3": "982dc826c07e5e58206e8f692a3ca1cab9bfdd142f11d7a4a5e15f849b6776e8",
+      "bytes": 676,
+      "path": "tests/fixtures/p3-constructed-reference-array-controls-v1/javac8/NestedControls.class"
+    },
+    {
+      "blake3": "bbeb4c3adecd92d4104c8c13d8e60cde7fc077ed28e92bc19c6d406b87a53cfa",
+      "bytes": 96,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/Base.java"
+    },
+    {
+      "blake3": "6902dc0f00e4191b2221b8a8fdbb5434f71de05a1f4ca7f98d99ddebf25c9d9c",
+      "bytes": 164,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/DirectA.java"
+    },
+    {
+      "blake3": "0da1eb4c571f5f92d504ebb07d897d73622e1090f8bbc29e16f72a55f59ee7c4",
+      "bytes": 138,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/DirectB.java"
+    },
+    {
+      "blake3": "1971ce195d84e9ca21fc3fb7d0219d063a02f8a8f5892a3ea2c6bff96b1a3841",
+      "bytes": 36,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/LocalInterface.java"
+    },
+    {
+      "blake3": "9199d16ac7059729e1d53260f58f6229d8c1e05103da9fac3dafe04dd8c91393",
+      "bytes": 2274,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/Main.java"
+    },
+    {
+      "blake3": "5c29fdce098ef3f107bcb79264cd08d35bd1dee893de1bbfe0c5cf099b6245b0",
+      "bytes": 126,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/Mid.java"
+    },
+    {
+      "blake3": "1c155d04f531e098e7bf3c9054f7a1d7837ed41268be576d12364283dac5dd13",
+      "bytes": 160,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/TwoHop.java"
+    },
+    {
+      "blake3": "fb2bd0146f8be0f94c4ac6a8da94db1ede7b16e6fe06287682ea7587918fae42",
+      "bytes": 10698,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/fixture-class-copy-v1.json"
+    },
+    {
+      "blake3": "0d0e03b775b371a52640778a86a6e00a495fc30966ad6c7c5fb528d58fea62c5",
+      "bytes": 234,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Base.class"
+    },
+    {
+      "blake3": "f574d8d751ae44ec979b7f3e1a3638f599fcc814b1dd9fede241e68c3eb281fd",
+      "bytes": 245,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/DirectA.class"
+    },
+    {
+      "blake3": "a3262e223a62d9dcf306445e4d83f65f81dfddc0cd8f4cdcffeeb0e483c3ec0c",
+      "bytes": 223,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/DirectB.class"
+    },
+    {
+      "blake3": "a0eddf476600af57b57a03d7f773cc7d183b5d18ff342d81ea5666eb2e5076b2",
+      "bytes": 66,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/LocalInterface.class"
+    },
+    {
+      "blake3": "774af06c46f424c81f92ea15349ed226661dd5713a1751d968936da8d726f2be",
+      "bytes": 2329,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Main.class"
+    },
+    {
+      "blake3": "7dc26a6c5c0909add02f550b1fa4b11dd062f4364281407605e22c4f46e8c23e",
+      "bytes": 215,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/Mid.class"
+    },
+    {
+      "blake3": "b29ed81c32a538573acb28f059d4536fa5e3116b4ad7ec7295c851430242b978",
+      "bytes": 242,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac23/classes/TwoHop.class"
+    },
+    {
+      "blake3": "68d916ac15b6d17046f21e4a6416c5ad23af6a6653817b1edbc83b06e81ba907",
+      "bytes": 234,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Base.class"
+    },
+    {
+      "blake3": "f4d4acad76496d958748df7a5801cf6900154e35e62fd0e044d3e62b7ce5b927",
+      "bytes": 245,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/DirectA.class"
+    },
+    {
+      "blake3": "3f5e4fe9bfc7677c63b92868ab86c349abe0bcb958c78b1bb90a4fc11bb957c0",
+      "bytes": 223,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/DirectB.class"
+    },
+    {
+      "blake3": "5187be42930cc5501dbefbed0f81bc9063879dffba795aefe4ab70aac0793755",
+      "bytes": 66,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/LocalInterface.class"
+    },
+    {
+      "blake3": "0e5b0a79ab6962b96236e394575f2fa2d106bac9d9fe0e85bd2f284e5ecba3f9",
+      "bytes": 2332,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Main.class"
+    },
+    {
+      "blake3": "31f851d287ebba49a2e702e86ff67f305a78d5d19448ac1d35c560e63077fd28",
+      "bytes": 215,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/Mid.class"
+    },
+    {
+      "blake3": "b6cc0d6fe6aca7c2201458e3f554c031d2c69c04b814185207d7531f5c1137bd",
+      "bytes": 242,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/javac8/classes/TwoHop.class"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac23/original-main.stderr"
+    },
+    {
+      "blake3": "66b58b483021e5a9db00c2435a5fe3b6044b34762bd338704e5427e736d14506",
+      "bytes": 809,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac23/original-main.stdout"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac8/original-main.stderr"
+    },
+    {
+      "blake3": "66b58b483021e5a9db00c2435a5fe3b6044b34762bd338704e5427e736d14506",
+      "bytes": 809,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/oracle/javac8/original-main.stdout"
+    },
+    {
+      "blake3": "69fb790cda842a7beea3aab4c6564832576e03227d65e8c09ebe391fb7ffc22b",
+      "bytes": 3159,
+      "path": "tests/fixtures/p3-constructed-reference-array-elements-v1/runtime-oracle-copy-v1.json"
+    },
+    {
+      "blake3": "4bdeedb5f768394e8c7777e00905fab3c75f20953908ccf5ee62f734c7878c13",
+      "bytes": 367,
+      "path": "tests/fixtures/p3-constructed-reference-array-handler-v1/HandlerControls.java"
+    },
+    {
+      "blake3": "c4e0c00fae37837d5dfea5064c14eccf055e7fea267c88b560fb5d85ed65a022",
+      "bytes": 594,
+      "path": "tests/fixtures/p3-constructed-reference-array-handler-v1/javac23/HandlerControls.class"
+    },
+    {
+      "blake3": "3cd30855f3db7cd347efb7b7c800798a4075a9e08e8e76cb0916b7878fd1f9a5",
+      "bytes": 597,
+      "path": "tests/fixtures/p3-constructed-reference-array-handler-v1/javac8/HandlerControls.class"
+    },
+    {
       "blake3": "5d86b8fb0e6aeab5b229db3d0416c5738fd10697940b679ec201590bfe42dc93",
       "bytes": 1754,
       "path": "tests/fixtures/p3-corpus/Flags.java"
