@@ -10,5 +10,5 @@
 ## 3. Root验收
 
 - [x] 3.1 root冻结包含init/report/build/class_source/Cargo.lock五源身份的新CLI，全部六类双真实JDK空CP/SP重编并-Xverify:all运行，exit/raw stdout/stderr2/2一致；核对完整泛型声明/markers、三grid来源和次数；旧factory2/2、18矩阵16/18、数值2/2及BigDecimal两已知失败边界保持，并回验child片3.1。
-- [ ] 3.2 root验证MSRV1.88、fmt/CI-exact Clippy、显式Java对照、P5严格pins/指纹/reader census与OpenSpec strict；确切组合代码双seed全workspace目标测试成功，磁盘不足使用该SHA的实际CI覆盖而不冒称本地完成，所有失败/argv/streams/hash保留。
-- [ ] 3.3 root对抗验收，更新71单元/两片handoff并提交推送，确认确切代码CI全成功后完成两片所需项，清本项目编译残留并保留新旧冻结CLI；不把两窄片当整EM18完成。
+- [x] 3.2 root验证MSRV1.88、fmt/CI-exact Clippy、显式Java对照、P5严格pins/指纹/reader census与OpenSpec strict；确切组合代码双seed全workspace目标测试成功，磁盘不足使用该SHA的实际CI覆盖而不冒称本地完成，所有失败/argv/streams/hash保留。
+- [x] 3.3 root对抗验收，更新71单元/两片handoff并提交推送，确认确切代码CI全成功后完成两片所需项，清本项目编译残留并保留新旧冻结CLI；不把两窄片当整EM18完成。
