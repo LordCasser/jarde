@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "free_before": 20828213248,
+  "free_after": 21696798720,
+  "elapsed_seconds": 0.3264762909966521,
+  "scope": "only this checkout target; frozen CLI and all evidence retained",
+  "target_exists_after": false,
+  "stdout": {
+    "path": "stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "stderr",
+    "bytes": 40,
+    "sha256": "c2641380084b10032695171d29e6bbe6c2b3a43767ea86a564d497176efa376c"
+  }
+}

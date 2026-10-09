@@ -1,0 +1,85 @@
+   Compiling libc v0.2.189
+   Compiling bitflags v2.13.2
+   Compiling getrandom v0.3.4
+   Compiling noak v0.7.0
+   Compiling zerocopy v0.8.57
+   Compiling rustix v1.1.4
+   Compiling getrandom v0.4.3
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling rand_core v0.9.5
+   Compiling errno v0.3.14
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling once_cell v1.21.4
+   Compiling fastrand v2.5.0
+   Compiling zmij v1.0.23
+   Compiling tempfile v3.27.0
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling ppv-lite86 v0.2.21
+   Compiling wait-timeout v0.2.1
+   Compiling serde_json v1.0.151
+   Compiling fnv v1.0.7
+   Compiling quick-error v1.2.3
+   Compiling bit-vec v0.8.0
+   Compiling bit-set v0.8.0
+   Compiling rusty-fork v0.3.1
+   Compiling rand_chacha v0.9.0
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling rand_xorshift v0.4.0
+   Compiling rand v0.9.5
+   Compiling unarray v0.1.4
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling regex-syntax v0.8.11
+   Compiling proptest v1.11.0
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0425]: cannot find value `JAVA_8` in this scope
+   --> tests/p3_heterogeneous_array_initializers.rs:849:63
+    |
+849 |         &RecoveryRequest::new(analysis.ir(), &recovery_facts, JAVA_8)
+    |                                                               ^^^^^^ not found in this scope
+
+error[E0433]: cannot find type `DeclaringClass` in this scope
+   --> tests/p3_heterogeneous_array_initializers.rs:843:35
+    |
+843 |             .with_declaring_class(DeclaringClass::new(
+    |                                   ^^^^^^^^^^^^^^ use of undeclared type `DeclaringClass`
+
+error[E0277]: `&&[u32]` is not an iterator
+    --> tests/p3_heterogeneous_array_initializers.rs:1257:43
+     |
+1257 |             for bci in allocations.iter().chain(stores).chain(producers) {
+     |                                           ^^^^^ `&&[u32]` is not an iterator
+     |
+     = help: the trait `Iterator` is not implemented for `&&[u32]`
+     = help: the following other types implement trait `IntoIterator`:
+               &[T; N]
+               &[T]
+               &mut [T; N]
+               &mut [T]
+               [T; N]
+     = note: required for `&&[u32]` to implement `IntoIterator`
+
+error[E0599]: the method `chain` exists for struct `std::iter::Chain<std::slice::Iter<'_, u32>, &&[u32]>`, but its trait bounds were not satisfied
+    --> tests/p3_heterogeneous_array_initializers.rs:1257:57
+     |
+1257 |             for bci in allocations.iter().chain(stores).chain(producers) {
+     |                                                         ^^^^^ method cannot be called due to unsatisfied trait bounds
+     |
+    ::: /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/iter/adapters/chain.rs:23:1
+     |
+  23 | pub struct Chain<A, B> {
+     | ---------------------- doesn't satisfy `_: Iterator`
+     |
+     = note: the following trait bounds were not satisfied:
+             `<&&[u32] as Iterator>::Item = &u32`
+             which is required by `std::iter::Chain<std::slice::Iter<'_, u32>, &&[u32]>: Iterator`
+             `&&[u32]: Iterator`
+             which is required by `std::iter::Chain<std::slice::Iter<'_, u32>, &&[u32]>: Iterator`
+             `std::iter::Chain<std::slice::Iter<'_, u32>, &&[u32]>: Iterator`
+             which is required by `&mut std::iter::Chain<std::slice::Iter<'_, u32>, &&[u32]>: Iterator`
+
+Some errors have detailed explanations: E0277, E0425, E0433, E0599.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `jarde` (test "p3_heterogeneous_array_initializers") due to 4 previous errors

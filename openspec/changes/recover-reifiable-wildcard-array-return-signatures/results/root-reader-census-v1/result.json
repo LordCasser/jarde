@@ -1,0 +1,96 @@
+{
+  "schema": "root-command-v2-disk-guard",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "-p",
+    "jarde-reader",
+    "--lib",
+    "repository_class_fixtures_validate_without_false_target_rejections",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 21474836480,
+    "poll_seconds": 2,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/run-root-gate-v1.py",
+    "bytes": 5484,
+    "sha256": "3716b3306c0b5d8b6ee881311a20178efd9ebd29e66c3ff2b2c28a9a5fff7b86"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 569793,
+      "sha256": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1624710,
+      "sha256": "ca0147bf5dc0d545380efc7822a19836bedb2cd8317d3da8ba69a33cddeb5103"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 729640,
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_heterogeneous_array_initializers.rs",
+      "bytes": 58141,
+      "sha256": "c98ee57fb1e9b4b2408ae88a124a1b40b4ef2366f63cb76a03badc88fa96aea8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/ordinary_generic_projection.rs",
+      "bytes": 23906,
+      "sha256": "9269190285c9017bce7943a88600579ad570c3f22ab6c64ebab7eae2a6f71596"
+    }
+  ],
+  "free_before": 25981935616,
+  "exit": 0,
+  "runner_exit": 0,
+  "elapsed_seconds": 6.0259066250000615,
+  "free_after": 25974083584,
+  "min_free": 25974083584,
+  "disk_stop_reason": null,
+  "stdout": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/root-reader-census-v1/stdout",
+    "bytes": 211,
+    "sha256": "05643c4107ed7c3c216c857bc7f66af05969e18fc9084049647c4d061d6942e8"
+  },
+  "stderr": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/root-reader-census-v1/stderr",
+    "bytes": 243,
+    "sha256": "1d9a645d0f7b8355cec5fb8f16111b350eb57d9f30c021c1cb51f6573b2f76db"
+  }
+}

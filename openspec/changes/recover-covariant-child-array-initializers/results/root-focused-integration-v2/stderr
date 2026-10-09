@@ -1,0 +1,9 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0432]: unresolved import `jarde_java::JAVA_8`
+  --> tests/p3_heterogeneous_array_initializers.rs:12:34
+   |
+12 | use jarde_java::{DeclaringClass, JAVA_8};
+   |                                  ^^^^^^ no `JAVA_8` in the root
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `jarde` (test "p3_heterogeneous_array_initializers") due to 1 previous error

@@ -1,0 +1,6 @@
+
+running 1 test
+test report::generic_array_return_candidate_tests::collection_grid_array_return_is_closed_and_uses_the_exact_allocation_value ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.01s
+

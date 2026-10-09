@@ -1,0 +1,11 @@
+   Compiling serde v1.0.229
+   Compiling thiserror v2.0.20
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling clap v4.6.7
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+    Finished `test` profile [unoptimized] target(s) in 31.32s
+     Running tests/json_cli.rs (target/debug/deps/json_cli-7df1ae5abfb82338)

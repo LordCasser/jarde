@@ -1,0 +1,21 @@
+
+running 16 tests
+test class_source::tests::a_varargs_flag_writes_the_last_parameters_array_as_the_dots ... ok
+test class_source::tests::an_arrays_element_width_does_not_move_the_parameters_after_it ... ok
+test class_source::tests::generic_call_substitution_preserves_binders_bounds_and_arrays ... ok
+test class_source::tests::ordinary_parameterized_declaration_requires_array_candidate_and_unbounded_wildcards ... ok
+test class_source::tests::ordinary_signature_types_spell_each_structured_argument_and_array ... ok
+test class_source::tests::raw_receiver_assignment_uses_java_reference_and_array_erasure_rules ... ok
+test class_source::tests::wildcard_array_declaration_gate_propagates_budget_and_cancellation ... ok
+test class_source::tests::wildcard_array_return_projection_requires_the_same_reifiable_array_shape ... ok
+test enum_constants::tests::extra_user_read_of_values_backing_array_refuses_and_stays_visible ... ok
+test enum_constants::tests::object_and_array_descriptors_follow_the_classfile_owner ... ok
+test enum_constants::tests::repeated_string_array_index_write_is_jvm_verifiable_and_refused ... ok
+test enum_constants::tests::string_varargs_arrays_are_proved_and_projected_atomically ... ok
+test facade::array_helper_census_tests::direct_invocation_and_ldc_handle_refuse_the_exact_physical_helper ... ok
+test facade::snapshot_hierarchy_tests::named_reference_classes_carry_both_spellings_and_no_arrays ... ok
+test facade::snapshot_hierarchy_tests::snapshot_aastore_pair_requires_reference_array_index_and_matching_loader ... ok
+test facade::snapshot_hierarchy_tests::snapshot_reference_shapes_preserve_class_array_rank_and_reject_primitives ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 195 filtered out; finished in 1.19s
+

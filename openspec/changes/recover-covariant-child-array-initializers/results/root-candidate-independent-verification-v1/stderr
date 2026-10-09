@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/verify-candidate-root-v1.py", line 144, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/verify-candidate-root-v1.py", line 122, in main
+    check(not method['markers'] and all(fragment in body['text'] for fragment in fragments), name + ' actual types/generic declaration')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/verify-candidate-root-v1.py", line 18, in check
+    raise AssertionError(label)
+AssertionError: collectionGridDirect actual types/generic declaration

@@ -1,0 +1,13 @@
+{
+  "cli_path": "/private/tmp/jarde-child-array-covariance-cli-v1",
+  "cli_sha256": "27e53f610f1915c16c21fb144d63aebafb7d376c3eff349b6b5de7673a313123",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2",
+    "crates/jarde-java/src/build.rs": "ca0147bf5dc0d545380efc7822a19836bedb2cd8317d3da8ba69a33cddeb5103",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "base_commit": "92e12704a665f6a0c5f88c934d81fd2814f4c6e4",
+  "build_result_sha256": "860ecf647868ca8b4b2190229d5cd1c8a59001db9d09caeb04518f8a86802940",
+  "production_note": "child NewArray ownership type equality removed; type presentation gates unchanged"
+}

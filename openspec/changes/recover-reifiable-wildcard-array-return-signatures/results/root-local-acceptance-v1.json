@@ -1,0 +1,228 @@
+{
+  "verification": "local_targeted_gates_passed",
+  "gate_results": [
+    {
+      "label": "root-final-fmt-v1",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "result_sha256": "9434c1bf3ffed79d9c3917af52bf635abb00a1e2af7b9544b552be9a4a7bf29c"
+    },
+    {
+      "label": "root-msrv-v1",
+      "argv": [
+        "rustup",
+        "run",
+        "1.88.0",
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "exit": 0,
+      "result_sha256": "02bbcaceef38924d0184379c183431f3218af6db0cbc33141c67c20b18339633"
+    },
+    {
+      "label": "root-ci-exact-clippy-v1",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "result_sha256": "918cbf2a043bb8146e316892e7f49f9f653b39290346d0f4c08789778da0134e"
+    },
+    {
+      "label": "root-p5-strict-v1",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "p5_bulk_corpus",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "result_sha256": "faa776aa3d2092b4e9ab858b989787364b721d61197314b5b3f6492636493fa0"
+    },
+    {
+      "label": "root-fingerprint-verify-v1",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "result_sha256": "5722bc53eba4a01b4a3584a9f591d7a697a1c52c5db262d0568d59871367298a"
+    },
+    {
+      "label": "root-reader-census-v1",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "repository_class_fixtures_validate_without_false_target_rejections",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "result_sha256": "9789634ef4cb2fdc1a3c0f386c6a485319f97795676901f236d2b79c3c3f49f5"
+    },
+    {
+      "label": "root-java-execution-comparison-v1",
+      "argv": [
+        "env",
+        "PATH=/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.local/bin:/Users/lordcasser/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/Wireshark.app/Contents/MacOS:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/Users/lordcasser/.codex/tmp/arg0/codex-arg0Gu94RU:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/lordcasser/.local/bin:/Users/lordcasser/.jenv/shims:/Users/lordcasser/.jenv/bin:/Users/lordcasser/.pyenv/shims:/Users/lordcasser/Library/npm-global/bin:/Users/lordcasser/.pyenv/versions/3.12.12/bin:/Users/lordcasser/Applications/jb-tools:/Users/lordcasser/go/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/nix/var/nix/profiles/default/bin:/Users/lordcasser/.grok/bin:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/openjdk@17/bin:/Users/lordcasser/.cargo/bin:/Users/lordcasser/.orbstack/bin:/Users/lordcasser/.lmstudio/bin:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/lordcasser/Library/Application Support/JetBrains/Toolbox/scripts:/Applications/极空间.app/Contents/Resources/app.asar.unpacked/bin/platform-tools:/Users/lordcasser/.lmstudio/bin",
+        "cargo",
+        "test",
+        "--test",
+        "p3_execution_comparison",
+        "--locked",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "result_sha256": "a4c09af5e0a18f542aa2a8993bb6edb85ef6e4b2dacb59c4f090d297c598542d"
+    },
+    {
+      "label": "root-functional-constructor-execution-v1",
+      "argv": [
+        "env",
+        "PATH=/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.local/bin:/Users/lordcasser/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/Wireshark.app/Contents/MacOS:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/Users/lordcasser/.codex/tmp/arg0/codex-arg0Gu94RU:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/lordcasser/.local/bin:/Users/lordcasser/.jenv/shims:/Users/lordcasser/.jenv/bin:/Users/lordcasser/.pyenv/shims:/Users/lordcasser/Library/npm-global/bin:/Users/lordcasser/.pyenv/versions/3.12.12/bin:/Users/lordcasser/Applications/jb-tools:/Users/lordcasser/go/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/nix/var/nix/profiles/default/bin:/Users/lordcasser/.grok/bin:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/openjdk@17/bin:/Users/lordcasser/.cargo/bin:/Users/lordcasser/.orbstack/bin:/Users/lordcasser/.lmstudio/bin:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/lordcasser/Library/Application Support/JetBrains/Toolbox/scripts:/Applications/极空间.app/Contents/Resources/app.asar.unpacked/bin/platform-tools:/Users/lordcasser/.lmstudio/bin",
+        "cargo",
+        "test",
+        "-p",
+        "jarde-cli",
+        "--test",
+        "json_cli",
+        "--locked",
+        "--",
+        "--ignored",
+        "--exact",
+        "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+      ],
+      "exit": 0,
+      "result_sha256": "1502d78be7e0af2dd41659b79841f9e931e1692115c86567a158f7172c20df7e"
+    },
+    {
+      "label": "root-openspec-child-strict-v1",
+      "argv": [
+        "openspec",
+        "validate",
+        "recover-covariant-child-array-initializers",
+        "--strict"
+      ],
+      "exit": 0,
+      "result_sha256": "c0329f81486c0952289d46f350aff0aa651d5231465161c2542895a62d167feb"
+    },
+    {
+      "label": "root-openspec-wildcard-strict-v1",
+      "argv": [
+        "openspec",
+        "validate",
+        "recover-reifiable-wildcard-array-return-signatures",
+        "--strict"
+      ],
+      "exit": 0,
+      "result_sha256": "917b5aa8d9b92b9870124b9c3762e6b79124bd16dac1ef49b1d2365ebcfc3e55"
+    },
+    {
+      "label": "root-diff-check-v1",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "result_sha256": "5cd85b8393f0acb695b2236a30b3580fca502fe5e24526e43e3d8783f6517430"
+    }
+  ],
+  "candidate_cli_sha256": "196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761",
+  "sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+    "crates/jarde-java/src/build.rs": "ca0147bf5dc0d545380efc7822a19836bedb2cd8317d3da8ba69a33cddeb5103",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "full_workspace_two_seed_and_jdk25": "pending exact new CI; no local full workspace success claimed",
+  "known_local_workspace_failure": "child results partitioned-workspace-gates-v1 stopped at first lib/seed1 by20GiB guard, preserved"
+}

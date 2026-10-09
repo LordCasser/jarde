@@ -1,0 +1,1 @@
+{"label": "partitioned-workspace-gates-v1/lib/seed-5350648285461741569", "exit": -15, "runner_exit": 1, "elapsed_seconds": 80.27957133400196, "min_free": 21266669568, "disk_stop_reason": {"reason": "free space crossed below 20 GiB during command", "observed_free_bytes": 21267722240, "threshold_bytes": 21474836480, "process_group_id": 18607}}

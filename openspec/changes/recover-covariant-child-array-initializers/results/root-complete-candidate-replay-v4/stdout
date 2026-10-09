@@ -1,0 +1,7 @@
+{
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/candidate-root-v4/manifest.json",
+  "runner_sha256": "f1698cdd9e7fb85cb8e51e242ceae575ca7442253ad815bc3901969b79a486b3",
+  "cli_sha256": "27e53f610f1915c16c21fb144d63aebafb7d376c3eff349b6b5de7673a313123",
+  "legs": 24,
+  "candidate_successes": 22
+}

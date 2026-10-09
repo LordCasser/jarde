@@ -1,0 +1,159 @@
+{
+  "verification": "semantic_replay_passed_signature_pending",
+  "task_3_1_complete": false,
+  "remaining_refusal": "collectionGridDirect ordinary_generic_source_unproved on both direct legs",
+  "checks": 1116,
+  "errors": [],
+  "manifest_sha256": "a073bc6a41a057f81c1bcb3df1a00dfd2a53093e55f35aa05f59a8d7e5f8c440",
+  "cli_sha256": "27e53f610f1915c16c21fb144d63aebafb7d376c3eff349b6b5de7673a313123",
+  "files": 384,
+  "commands": 102,
+  "cases": [
+    {
+      "dataset": "fixture",
+      "family": "factory",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "factory",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "direct",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "direct",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "boxed-number-six",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "boxed-number-six",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "string-builder-charsequence",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "string-builder-charsequence",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "arraylist-hashset-collection",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "arraylist-hashset-collection",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "exceptions-throwable",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "exceptions-throwable",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "nested-number-array",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "nested-number-array",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "same-jar-derived-base",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "same-jar-derived-base",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy-frozen",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy-frozen",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac8",
+      "success": false
+    },
+    {
+      "dataset": "baseline",
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac23",
+      "success": false
+    },
+    {
+      "dataset": "numeric",
+      "family": "constructor-primitive-conversion",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "numeric",
+      "family": "constructor-primitive-conversion",
+      "leg": "javac8",
+      "success": true
+    }
+  ],
+  "original_and_jadx_execution": "historical verified baseline; not freshly executed",
+  "mutant_execution": false
+}

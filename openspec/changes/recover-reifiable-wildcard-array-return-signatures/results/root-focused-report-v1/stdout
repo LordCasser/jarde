@@ -1,0 +1,11 @@
+
+running 1 test
+test report::generic_array_return_candidate_tests::collection_grid_array_return_is_closed_and_uses_the_exact_allocation_value ... FAILED
+
+failures:
+
+failures:
+    report::generic_array_return_candidate_tests::collection_grid_array_return_is_closed_and_uses_the_exact_allocation_value
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.01s
+

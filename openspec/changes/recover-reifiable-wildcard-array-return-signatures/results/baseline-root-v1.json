@@ -1,0 +1,52 @@
+{
+  "verification": "baseline_frozen_signature_pending",
+  "fresh_execution": false,
+  "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/candidate-root-v4/manifest.json",
+  "manifest_sha256": "a073bc6a41a057f81c1bcb3df1a00dfd2a53093e55f35aa05f59a8d7e5f8c440",
+  "root_verification_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/candidate-root-verification-v2.json",
+  "root_verification_sha256": "aa67b85759b06f21d6cd70ce156bef9b2228d24e3ab1d966ee5f6a2c68720c86",
+  "candidate_cli_sha256": "27e53f610f1915c16c21fb144d63aebafb7d376c3eff349b6b5de7673a313123",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2",
+    "crates/jarde-java/src/build.rs": "ca0147bf5dc0d545380efc7822a19836bedb2cd8317d3da8ba69a33cddeb5103",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "legs": [
+    {
+      "leg": "javac8",
+      "class_sha256": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677",
+      "physical_descriptor": "()[[Ljava/util/Collection;",
+      "physical_signature": "()[[Ljava/util/Collection<*>;",
+      "access_flags": 9,
+      "declaration": "public static java.util.Collection[][] collectionGridDirect()",
+      "markers": [
+        "// jarde: generic Signature projection refused for `collectionGridDirect()[[Ljava/util/Collection;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types"
+      ],
+      "body_sha256": "5143602c34da8470de09bd3097d092e4fdc15572b646f7a815870b9bbb21933a",
+      "source_sha256": "07b8aa3351bbe2f6875b327f4f9c687c3779975bb578e1300f142acf67ae3695",
+      "field_count": 1,
+      "method_count": 38,
+      "runtime_exit": 0,
+      "raw_streams_match": true
+    },
+    {
+      "leg": "javac23",
+      "class_sha256": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726",
+      "physical_descriptor": "()[[Ljava/util/Collection;",
+      "physical_signature": "()[[Ljava/util/Collection<*>;",
+      "access_flags": 9,
+      "declaration": "public static java.util.Collection[][] collectionGridDirect()",
+      "markers": [
+        "// jarde: generic Signature projection refused for `collectionGridDirect()[[Ljava/util/Collection;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types"
+      ],
+      "body_sha256": "5143602c34da8470de09bd3097d092e4fdc15572b646f7a815870b9bbb21933a",
+      "source_sha256": "07b8aa3351bbe2f6875b327f4f9c687c3779975bb578e1300f142acf67ae3695",
+      "field_count": 1,
+      "method_count": 38,
+      "runtime_exit": 0,
+      "raw_streams_match": true
+    }
+  ],
+  "scope": "two exact original Signature attributes parsed; complete member/runtime evidence inherits verified1116checks, not generic success; no old CI borrowed"
+}

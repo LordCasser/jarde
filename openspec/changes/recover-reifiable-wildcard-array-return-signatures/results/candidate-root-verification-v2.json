@@ -1,0 +1,276 @@
+{
+  "verification": "semantic_and_wildcard_signature_passed",
+  "task_3_1_complete": true,
+  "remaining_refusal": null,
+  "checks": 1166,
+  "errors": [],
+  "manifest_sha256": "506aeb4add6aa46bfe8167c39a281864139ad77da23ef8b98afe98a9cafd26c1",
+  "cli_sha256": "196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761",
+  "files": 384,
+  "commands": 102,
+  "cases": [
+    {
+      "dataset": "fixture",
+      "family": "factory",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "factory",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "direct",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "fixture",
+      "family": "direct",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "boxed-number-six",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "boxed-number-six",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "string-builder-charsequence",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "string-builder-charsequence",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "arraylist-hashset-collection",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "arraylist-hashset-collection",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "exceptions-throwable",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "exceptions-throwable",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "nested-number-array",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "nested-number-array",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "same-jar-derived-base",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "same-jar-derived-base",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy-frozen",
+      "leg": "javac8",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "ct-legacy-frozen",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "baseline",
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac8",
+      "success": false
+    },
+    {
+      "dataset": "baseline",
+      "family": "bigdecimal-control-corrected",
+      "leg": "javac23",
+      "success": false
+    },
+    {
+      "dataset": "numeric",
+      "family": "constructor-primitive-conversion",
+      "leg": "javac23",
+      "success": true
+    },
+    {
+      "dataset": "numeric",
+      "family": "constructor-primitive-conversion",
+      "leg": "javac8",
+      "success": true
+    }
+  ],
+  "collection_grid_direct_signature_checks": [
+    {
+      "leg": "javac8",
+      "input_signature": "()[[Ljava/util/Collection<*>;",
+      "generated_declaration": "public static java.util.Collection<?>[][] collectionGridDirect()",
+      "source_declaration_occurrences": 1,
+      "member_markers": [
+        "// jarde: generic Signature `()[[Ljava/util/Collection<*>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof; same-class call binding proved"
+      ],
+      "body_sha256": "5143602c34da8470de09bd3097d092e4fdc15572b646f7a815870b9bbb21933a",
+      "body_raw_type_fragments": [
+        "new java.util.Collection[][]",
+        "new java.util.ArrayList[]{listValue(mark(1))}",
+        "new java.util.HashSet[]{setValue(mark(2))}"
+      ],
+      "physical_bcis": {
+        "allocations": [
+          [
+            1,
+            "[Ljava/util/Collection;"
+          ],
+          [
+            7,
+            "java/util/ArrayList"
+          ],
+          [
+            24,
+            "java/util/HashSet"
+          ]
+        ],
+        "stores": [
+          19,
+          20,
+          36,
+          37
+        ],
+        "producers": [
+          [
+            13,
+            "mark"
+          ],
+          [
+            16,
+            "listValue"
+          ],
+          [
+            30,
+            "mark"
+          ],
+          [
+            33,
+            "setValue"
+          ]
+        ]
+      }
+    },
+    {
+      "leg": "javac23",
+      "input_signature": "()[[Ljava/util/Collection<*>;",
+      "generated_declaration": "public static java.util.Collection<?>[][] collectionGridDirect()",
+      "source_declaration_occurrences": 1,
+      "member_markers": [
+        "// jarde: generic Signature `()[[Ljava/util/Collection<*>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof; same-class call binding proved"
+      ],
+      "body_sha256": "5143602c34da8470de09bd3097d092e4fdc15572b646f7a815870b9bbb21933a",
+      "body_raw_type_fragments": [
+        "new java.util.Collection[][]",
+        "new java.util.ArrayList[]{listValue(mark(1))}",
+        "new java.util.HashSet[]{setValue(mark(2))}"
+      ],
+      "physical_bcis": {
+        "allocations": [
+          [
+            1,
+            "[Ljava/util/Collection;"
+          ],
+          [
+            7,
+            "java/util/ArrayList"
+          ],
+          [
+            24,
+            "java/util/HashSet"
+          ]
+        ],
+        "stores": [
+          19,
+          20,
+          36,
+          37
+        ],
+        "producers": [
+          [
+            13,
+            "mark"
+          ],
+          [
+            16,
+            "listValue"
+          ],
+          [
+            30,
+            "mark"
+          ],
+          [
+            33,
+            "setValue"
+          ]
+        ]
+      }
+    }
+  ],
+  "verifier_sha256": "fe522ac557d9799a738c05d08d6ce25651b6ae378a6baa5d527dbf1390784ae6",
+  "classfile_parser": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/prepare-child-jvm-controls-v1.py",
+    "sha256": "c02abceb328f451ec93a45d752dbeb94947615df32a2ca45a307b6b71574d103"
+  },
+  "original_and_jadx_execution": "historical verified baseline; not freshly executed",
+  "mutant_execution": false
+}

@@ -1,0 +1,14 @@
+{
+  "cli_path": "/private/tmp/jarde-wildcard-array-return-cli-v1",
+  "cli_sha256": "196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761",
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e39c912731e3f65a2fc8f5778d41c81078f00ebf9a2c578b059c66d72a43ca17",
+    "crates/jarde-java/src/build.rs": "ca0147bf5dc0d545380efc7822a19836bedb2cd8317d3da8ba69a33cddeb5103",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "base_commit": "92e12704a665f6a0c5f88c934d81fd2814f4c6e4",
+  "build_result_sha256": "6e44eef0ecdc8a1caaa18c401686a81a1504eec918aefdf38a9ba8484d1dc9a2",
+  "production_note": "child covariance ownership + same-run ArrayCreation candidate + reifiable all-unbounded wildcard array declaration"
+}

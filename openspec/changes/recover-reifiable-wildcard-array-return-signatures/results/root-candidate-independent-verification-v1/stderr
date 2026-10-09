@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/verify-candidate-root-v1.py", line 325, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/verify-candidate-root-v1.py", line 231, in main
+    check(not method['markers'], 'collectionGridDirect has no generic Signature refusal marker')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/verify-candidate-root-v1.py", line 33, in check
+    raise AssertionError(label)
+AssertionError: collectionGridDirect has no generic Signature refusal marker

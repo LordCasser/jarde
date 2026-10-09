@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/replay-candidate-root-v3.py", line 569, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/replay-candidate-root-v3.py", line 324, in main
+    compile_old = find_compile_command(old_manifest, old_case, dataset)
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/replay-candidate-root-v3.py", line 106, in find_compile_command
+    family, leg = case['family'], case['leg']
+                  ~~~~^^^^^^^^^^
+KeyError: 'family'

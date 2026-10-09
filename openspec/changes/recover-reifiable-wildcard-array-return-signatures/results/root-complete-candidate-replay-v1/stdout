@@ -1,0 +1,7 @@
+{
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/manifest.json",
+  "runner_sha256": "22626bfd8ed8809099b2e0117b6d529a5f1b924e2dd09794865a833d4bd6dcbf",
+  "cli_sha256": "196bb3e1e1bd074bb851f363938951a6d2dea81d8e895cd67e1a2560b3c2f761",
+  "legs": 24,
+  "candidate_successes": 22
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "root-command-v2-disk-guard",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--lib",
+    "direct_child_array",
+    "--locked"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "env": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_STRIP": "symbols",
+    "CARGO_PROFILE_TEST_STRIP": "symbols"
+  },
+  "profile_settings": {
+    "dev_debug": "0",
+    "test_debug": "0",
+    "dev_strip": "symbols",
+    "test_strip": "symbols",
+    "opt_level": "Cargo default; not overridden",
+    "debug_assertions": "Cargo default remains enabled; not overridden"
+  },
+  "disk_guard": {
+    "threshold_bytes": 21474836480,
+    "poll_seconds": 2,
+    "termination": "SIGTERM the command's own process group; SIGKILL after 10s"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-covariant-child-array-initializers/results/run-root-gate-v1.py",
+    "bytes": 5423,
+    "sha256": "192c69876847ca582c49297c6c367e8d7db02f25aa5984dbfb3c07b88fbc9dbd"
+  },
+  "before": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 543220,
+      "sha256": "fb31c8d81e0f139accceca11b39b5d24480e692c1b088e9b330d7a726fe370c2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1624665,
+      "sha256": "06654811d4d4fa6d60c13c7e10ee118c6c14c05fd5205648f481880f471c540f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_heterogeneous_array_initializers.rs",
+      "bytes": 57023,
+      "sha256": "518a0a16625d22317c167d20e260f29ebbbd249c2e92ccfefb8e0ba804631b44"
+    }
+  ],
+  "free_before": 27387285504
+}

@@ -1,0 +1,7 @@
+
+running 2 tests
+test build::tests::direct_child_array_builder_uses_exact_store_type_proofs_and_stops_atomically ... ok
+test build::tests::direct_child_array_chain_is_structural_and_commits_only_as_a_whole ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 322 filtered out; finished in 0.03s
+

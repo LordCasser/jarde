@@ -1,0 +1,27 @@
+警告: [options] 未与 -source 8 一起设置引导类路径
+  不设置引导类路径可能会导致类文件无法在 JDK 8 上运行
+    建议使用 --release 8 而不是 -source 8 -target 8，因为它会自动设置引导类路径
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/fixture/direct/javac23/sources/Main.java:205: 警告: [removal] Byte 中的 Byte(byte) 已过时, 且标记为待删除
+        return new java.lang.Number[]{new java.lang.Byte((byte) mark(1)), new java.lang.Short((short) mark(2)), new java.lang.Integer(mark(3)), new java.lang.Long((long) mark(4)), new java.lang.Float((float) mark(5)), new java.lang.Double((double) mark(6))};
+                                      ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/fixture/direct/javac23/sources/Main.java:205: 警告: [removal] Short 中的 Short(short) 已过时, 且标记为待删除
+        return new java.lang.Number[]{new java.lang.Byte((byte) mark(1)), new java.lang.Short((short) mark(2)), new java.lang.Integer(mark(3)), new java.lang.Long((long) mark(4)), new java.lang.Float((float) mark(5)), new java.lang.Double((double) mark(6))};
+                                                                          ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/fixture/direct/javac23/sources/Main.java:205: 警告: [removal] Integer 中的 Integer(int) 已过时, 且标记为待删除
+        return new java.lang.Number[]{new java.lang.Byte((byte) mark(1)), new java.lang.Short((short) mark(2)), new java.lang.Integer(mark(3)), new java.lang.Long((long) mark(4)), new java.lang.Float((float) mark(5)), new java.lang.Double((double) mark(6))};
+                                                                                                                ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/fixture/direct/javac23/sources/Main.java:205: 警告: [removal] Long 中的 Long(long) 已过时, 且标记为待删除
+        return new java.lang.Number[]{new java.lang.Byte((byte) mark(1)), new java.lang.Short((short) mark(2)), new java.lang.Integer(mark(3)), new java.lang.Long((long) mark(4)), new java.lang.Float((float) mark(5)), new java.lang.Double((double) mark(6))};
+                                                                                                                                                ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/fixture/direct/javac23/sources/Main.java:205: 警告: [removal] Float 中的 Float(float) 已过时, 且标记为待删除
+        return new java.lang.Number[]{new java.lang.Byte((byte) mark(1)), new java.lang.Short((short) mark(2)), new java.lang.Integer(mark(3)), new java.lang.Long((long) mark(4)), new java.lang.Float((float) mark(5)), new java.lang.Double((double) mark(6))};
+                                                                                                                                                                                    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/fixture/direct/javac23/sources/Main.java:205: 警告: [removal] Double 中的 Double(double) 已过时, 且标记为待删除
+        return new java.lang.Number[]{new java.lang.Byte((byte) mark(1)), new java.lang.Short((short) mark(2)), new java.lang.Integer(mark(3)), new java.lang.Long((long) mark(4)), new java.lang.Float((float) mark(5)), new java.lang.Double((double) mark(6))};
+                                                                                                                                                                                                                          ^
+注: /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-reifiable-wildcard-array-return-signatures/results/candidate-root-v1/fixture/direct/javac23/sources/Main.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+10 个警告

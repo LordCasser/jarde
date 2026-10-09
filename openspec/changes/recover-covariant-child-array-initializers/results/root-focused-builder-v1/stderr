@@ -1,0 +1,95 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling syn v3.0.5
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.12
+   Compiling cc v1.4.6
+   Compiling hashbrown v0.17.1
+   Compiling cfg-if v1.0.4
+   Compiling serde_core v1.0.229
+   Compiling crc32fast v1.5.2
+   Compiling equivalent v1.0.2
+   Compiling indexmap v2.14.2
+   Compiling blake3 v1.8.7
+   Compiling simd-adler32 v0.3.10
+   Compiling adler2 v2.0.1
+   Compiling serde v1.0.229
+   Compiling thiserror v2.0.20
+   Compiling miniz_oxide v0.9.1
+   Compiling thiserror-impl v2.0.20
+   Compiling serde_derive v1.0.229
+   Compiling bitflags v2.13.2
+   Compiling constant_time_eq v0.4.2
+   Compiling arrayvec v0.7.8
+   Compiling noak v0.7.0
+   Compiling flate2 v1.1.10
+   Compiling rawzip v0.5.1
+   Compiling foldhash v0.1.5
+   Compiling hashbrown v0.15.5
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling fixedbitset v0.5.7
+   Compiling petgraph v0.8.3
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0369]: binary operation `==` cannot be applied to type `Result<build::ArrayInitializers, stop::StopReason>`
+     --> crates/jarde-java/src/build.rs:32747:13
+      |
+32747 | /             assert_eq!(
+32748 | |                 prove_own_grid(&analysis, release, &mut cancelled),
+32749 | |                 Err(crate::stop::StopReason::Cancelled {
+32750 | |                     at: Some(first_effect)
+32751 | |                 })
+32752 | |             );
+      | |             ^
+      | |             |
+      | |_____________Result<build::ArrayInitializers, stop::StopReason>
+      |               Result<build::ArrayInitializers, stop::StopReason>
+      |
+note: an implementation of `PartialEq` might be missing for `build::ArrayInitializers`
+     --> crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `build::ArrayInitializers` with `#[derive(PartialEq)]`
+      |
+12559 + #[derive(PartialEq)]
+12560 | pub(crate) struct ArrayInitializers {
+      |
+
+error[E0277]: `build::ArrayInitializers` doesn't implement `Debug`
+     --> crates/jarde-java/src/build.rs:32747:13
+      |
+32747 | /             assert_eq!(
+32748 | |                 prove_own_grid(&analysis, release, &mut cancelled),
+32749 | |                 Err(crate::stop::StopReason::Cancelled {
+32750 | |                     at: Some(first_effect)
+32751 | |                 })
+32752 | |             );
+      | |_____________^ unsatisfied trait bound
+      |
+help: the trait `Debug` is not implemented for `build::ArrayInitializers`
+     --> crates/jarde-java/src/build.rs:12559:1
+      |
+12559 | pub(crate) struct ArrayInitializers {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      = note: add `#[derive(Debug)]` to `build::ArrayInitializers` or manually `impl Debug for build::ArrayInitializers`
+help: the trait `Debug` is conditionally implemented for `Result<T, E>`
+     --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/result.rs:552:16
+      |
+  552 | #[derive(Copy, Debug, Hash)]
+      |                ^^^^^
+...
+  557 | pub enum Result<T, E> {
+      |                 - unsatisfied requirement introduced here: `build::ArrayInitializers: Debug`
+
+error[E0599]: no method named `counted_usage` found for struct `jarde_reader::budget::Budget` in the current scope
+     --> crates/jarde-java/src/build.rs:32797:44
+      |
+32797 |             let complete_ir_items = budget.counted_usage(CountedBudgetDimension::IrItems);
+      |                                            ^^^^^^^^^^^^^ method not found in `jarde_reader::budget::Budget`
+
+Some errors have detailed explanations: E0277, E0369, E0599.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `jarde-java` (lib test) due to 4 previous errors
