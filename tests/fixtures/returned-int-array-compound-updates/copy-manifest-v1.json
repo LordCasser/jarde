@@ -1,0 +1,122 @@
+{
+  "files": [
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/ReturnedIntArrayUpdates.java",
+      "origin": "openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/ReturnedIntArrayUpdates.java",
+      "bytes": 1041,
+      "sha256": "073fb19298a16fadd84b3c5cdea58c768013312b9da4105f92b69d62f13f8951"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/Runner.java",
+      "origin": "openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/Runner.java",
+      "bytes": 3643,
+      "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/expected.stdout",
+      "origin": "openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/expected.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/v8/ReturnedIntArrayUpdates.class",
+      "origin": "openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac8-original/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "0165fd2120ceee93e7cce4ccf77324ca2e20157d3f2c2b2ce18691cc3e52cf88"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/v23/ReturnedIntArrayUpdates.class",
+      "origin": "openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/cases/javac23-original/classes/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "5a7814b10195117112967f3db8eea0b322e70152544d0c32a5723ed9a59ca793"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-index.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac8-boolean-index/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "ced7e278f244d76d7864468f98efc6f04048a11472d617d766fbc0ddcd2691fd"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-rhs.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac8-boolean-rhs/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "b61f284aaa4e48b7eb6cd025a4b3750a7398634ee62cae68a4221cf02e5eb58d"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-index.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac8-char-index/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "7028ba14c0f5b33657d377dbf5afc9a962fd2cc3461d61d31556abc33f12cc9e"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-rhs.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac8-char-rhs/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "7c0b8a0ef2b693b16e61924e0109c41eab2da9215093b16e8d003955927b94fc"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-index.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac23-boolean-index/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "a68cd715adc67b38fb1041b56cb9f3205dbf13eb1927ce71c55dd2c97be6340c"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-rhs.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac23-boolean-rhs/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "e935551506c087f1acde1a7d66a4febcec3064fce64d3ab617f20df2555835fc"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-index.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac23-char-index/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "3379771d904476a632c59f5c952d4542fcc225354e3cbe186c35d7826b6d8da7"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-rhs.class",
+      "origin": "openspec/changes/recover-returned-int-array-compound-updates/results/typed-controls-root-v1/javac23-char-rhs/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "25b22c283da8ed8936c81f90029291b2ec50d204ca8c18abeff46eaace80988a"
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/sum-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v8/sum-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "678fe9b867e33e1b5c4552671b30d5dfd0ef5dcf425f51856199f5054e253289",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/returned-copy-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v8/returned-copy-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "b03f0cc602ff78999c324caf9ce44c423fa7ccbd055bac1ddc1a44e2a9acd82d",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/long-return.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v8/long-return/ReturnedIntArrayUpdates.class",
+      "sha256": "67c412323f6cc015841cbfc6148086160322ab3d702671cd050f9a1b29ad200f",
+      "bytes": 753
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/sum-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v23/sum-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "dd17c24b682ceb6526f2598ccfb1b67afc1a2e4c503247938de14686141c6289",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/returned-copy-extra-consumer.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v23/returned-copy-extra-consumer/ReturnedIntArrayUpdates.class",
+      "sha256": "16cc15b51fec54305cabb781da718a4763b2daa4e8e389fb8f60e0fb70c544d8",
+      "bytes": 754
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/long-return.class",
+      "origin": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/consumer-controls-root-v1/controls/v23/long-return/ReturnedIntArrayUpdates.class",
+      "sha256": "9491a463cb76c2736d43bfef1dd13c71aa6163c1de429d9653eb956971d1ee1e",
+      "bytes": 753
+    }
+  ],
+  "original_manifest_sha256": "10a6ea368ba5304594909d0318d650b7ad7c580904d0897c2cf7ba13232db4a3",
+  "typed_controls_manifest_sha256": "5792f68356ff4cc1cac32417665bd8f4a2f190aa1bd9efc5be0157e51586f934",
+  "scope": "Byte-for-byte canonical copies, no recompile or target execution during copying.",
+  "consumer_control_scope": "Exact bytecode/descriptor mutations independently verified and loaded with each corresponding JVM; no target method executed."
+}

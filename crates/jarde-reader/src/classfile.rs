@@ -12226,7 +12226,10 @@ mod tests {
             // Nested int updates add four canonical classes: 22 straight-line control bodies
             // and six boundary bodies, including four branch records from the two row-Phi
             // methods. No handler or subroutine is introduced.
-            (1071, 4654, 463, 2715, 8),
+            // Returned int updates add 16 complete 11-member classes: two originals, eight
+            // Java-typed controls and six consumer/return controls. The measured addition is
+            // 176 Code bodies, with no handlers, branches or subroutines.
+            (1087, 4830, 463, 2715, 8),
             "fixture population changed: re-measure these counts"
         );
     }

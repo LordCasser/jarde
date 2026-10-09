@@ -431,6 +431,10 @@ pub(crate) fn committed_presentations(
                     }
                     pending.push(Node::Expr(target));
                 }
+                ExprKind::ArrayAssign { target, value, .. } => {
+                    pending.push(Node::Expr(target));
+                    pending.push(Node::Expr(value));
+                }
                 ExprKind::Call { receiver, args, .. } => {
                     if let Some(receiver) = receiver {
                         pending.push(Node::Expr(receiver));

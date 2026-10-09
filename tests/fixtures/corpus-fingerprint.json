@@ -11017,6 +11017,111 @@
       "path": "tests/fixtures/recover-write-accessor-field-types/wb/WB.java"
     },
     {
+      "blake3": "c764e0efb02ed1f66aaf6560684c34cfc2d4ad235a2e41134585652582ff4f7e",
+      "bytes": 1041,
+      "path": "tests/fixtures/returned-int-array-compound-updates/ReturnedIntArrayUpdates.java"
+    },
+    {
+      "blake3": "0a26541e81044172e9674ab6eb393369b46ee7fea4eb318cf6081db47bc697c8",
+      "bytes": 3643,
+      "path": "tests/fixtures/returned-int-array-compound-updates/Runner.java"
+    },
+    {
+      "blake3": "10cee9cbbe6c6747582161faeeb2c333789f1b994025a7b421bf79b7db7dd357",
+      "bytes": 753,
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/long-return.class"
+    },
+    {
+      "blake3": "7729a243ce9452b09e4cfb15b99c6e2193e861a47fb301d0f7dcb9729a68e0a6",
+      "bytes": 754,
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/returned-copy-extra-consumer.class"
+    },
+    {
+      "blake3": "32af4d4030707b7d7588f16ec5c62f8443806c91c7de808a1c68452c31c68e4d",
+      "bytes": 754,
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/sum-extra-consumer.class"
+    },
+    {
+      "blake3": "6bef979efe4d459844f79a227f02181de69d77bb5def1c7d2030c444e7618a6c",
+      "bytes": 753,
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/long-return.class"
+    },
+    {
+      "blake3": "5a7b912aa013f6f59919f18b94157f008a591be753a750d6c4e439e15f4be0ad",
+      "bytes": 754,
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/returned-copy-extra-consumer.class"
+    },
+    {
+      "blake3": "c11775cc730bb9baa39effb7b43c27984e77d955bae3031013136b41bdb31797",
+      "bytes": 754,
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/sum-extra-consumer.class"
+    },
+    {
+      "blake3": "d951f2cda003837d3cbda40e611dbeb11cb3aee291fa2e5ed66d108979b7efb5",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-index.class"
+    },
+    {
+      "blake3": "65c27969ced811f252f36cb67ff728711aac06e1dae3b3268623c907e758aeab",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-rhs.class"
+    },
+    {
+      "blake3": "7bea843b2fff3680f359c2d2304de325301f4aeab4a43f2eed11bccb0a1f3267",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-index.class"
+    },
+    {
+      "blake3": "b8823220d6f4112cfde7d351de274ecd5e10f0d62d79e2a3ff46002947f5ce10",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-rhs.class"
+    },
+    {
+      "blake3": "54d278e950e251cdf9750ca0bf45fbe9e4b43ec16717e8864838599b4686786f",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-index.class"
+    },
+    {
+      "blake3": "ac1d51062a60b6ce7074c762858477bfcb8204b2b4ed78c91be3311e02c659c1",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-rhs.class"
+    },
+    {
+      "blake3": "fae11d652164923bcdedd27196b42e3997068a5a6a6bf2225bbdcf1cf00ea65a",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-index.class"
+    },
+    {
+      "blake3": "16e23451136877d060c492aa3c353e1629c2168c21c94bf705328717ecb1130e",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-rhs.class"
+    },
+    {
+      "blake3": "781b4cf0b19e1f289482996d043f896796456aff9fe8fe462fbbb4ceed2d0a64",
+      "bytes": 7956,
+      "path": "tests/fixtures/returned-int-array-compound-updates/copy-manifest-v1.json"
+    },
+    {
+      "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "bytes": 0,
+      "path": "tests/fixtures/returned-int-array-compound-updates/expected.stderr"
+    },
+    {
+      "blake3": "fb3c1c62ecdd3ad4628d46984a2cd6eebb2f6026afa2898660f0e4c91c33960a",
+      "bytes": 159,
+      "path": "tests/fixtures/returned-int-array-compound-updates/expected.stdout"
+    },
+    {
+      "blake3": "8c01cbeb2f30bb52807d8de77917181365f6bd730a9a847502efc5052f4ce49c",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/v23/ReturnedIntArrayUpdates.class"
+    },
+    {
+      "blake3": "13708c0c7e841f41892f0e6a9ec23dc8bda440c4b9c458348719545d828344d9",
+      "bytes": 752,
+      "path": "tests/fixtures/returned-int-array-compound-updates/v8/ReturnedIntArrayUpdates.class"
+    },
+    {
       "blake3": "8b14a235bc3fa882b6545f3dcf662e15bce7e322b793dd59f5709640adcf428d",
       "bytes": 572,
       "path": "tests/fixtures/shared-latch-nested-loops/ExitDiverges.class"

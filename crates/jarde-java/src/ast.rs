@@ -180,6 +180,15 @@ pub enum ExprKind {
         value: Box<Expr>,
         ty: Type,
     },
+    /// A proved value-producing `int` array compound assignment such as `a[i] += rhs`.
+    ///
+    /// This node is built only for an update whose store and `ireturn` share a closed bytecode
+    /// proof; ordinary array writes remain statements.
+    ArrayAssign {
+        target: Box<Expr>,
+        op: AssignOp,
+        value: Box<Expr>,
+    },
     /// An `int`-shaped literal.
     Integer(i64),
     /// A class-source-only name for an exact same-class integer ConstantValue.
@@ -549,6 +558,7 @@ impl Expr {
 fn presented_of(kind: &ExprKind) -> Option<Type> {
     match kind {
         ExprKind::LocalAssign { ty, .. } => Some(ty.clone()),
+        ExprKind::ArrayAssign { target, .. } => target.presented.clone(),
         ExprKind::Integer(_) | ExprKind::IntegerConstantName { .. } => Some(Type::Int),
         ExprKind::Long(_) => Some(Type::Long),
         // The leaf's own bits state its type: a float literal is a float, a double literal a

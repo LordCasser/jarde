@@ -612,6 +612,10 @@ impl<'a> Iterator for ExprNodes<'a> {
             | ExprKind::QualifiedThis { .. }
             | ExprKind::Super { .. } => {}
             ExprKind::LocalAssign { value, .. } => push(value),
+            ExprKind::ArrayAssign { target, value, .. } => {
+                push(target);
+                push(value);
+            }
             ExprKind::InstanceOf { value, .. } => push(value),
             ExprKind::Call { receiver, args, .. } => {
                 if let Some(receiver) = receiver {
