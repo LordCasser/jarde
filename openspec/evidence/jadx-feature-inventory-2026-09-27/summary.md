@@ -220,4 +220,6 @@ EM-18仍为部分已测单元，不改变71单元分母及整单元分类。下�
 
 [compose-constructed-reference-array-elements](../../changes/compose-constructed-reference-array-elements/verification-root.md) 在现有array/constructor证明内准确组合store BCI与completed ValueId，保留arrays→sites顺序，局部共同提交ownership及唯一new记录，无新pass/AST。原18完整冻结输入由前片8/18增至16/18；新增七类完整family两真实JDK2/2，旧factory2/2保持，旧direct完整六类仍0/2（五wrapper primitive转换及nested covariance等边界不删成员）。BigDecimal两腿compile0但拒绝正文/双流不符仍不计成功；EM18仍部分已测，71分母及全单元分类不变。
 
-本片本地两seed各351targets/3328passed/0failed/93ignored及全门禁通过，7/8任务，代码提交与确切SHA CI尚待验收；当前产品不可借前片CI success。首全仓发现公共interval检查遗漏、恢复三分支共同postlude后原postfix负例通过，真实失败永久保留。下一[recover-constructor-primitive-conversion-arguments](../../changes/recover-constructor-primitive-conversion-arguments/)仅规划4/4、0/7实现，复用已有15opcode/Cast并启用现有handler闭包，新scope不扩成员/statement、一般alias及数值折叠。
+本片本地两seed各351targets/3328passed/0failed/93ignored及全门禁通过，8/8任务，已提交推送main代码5a6264de1b3481e1cdbef4fd30361940bfac33cf；确切CI37947791151四job/48steps全部success（原JSON/逐源码hash核对见该片root验收）。首全仓发现公共interval检查遗漏、恢复三分支共同postlude后原postfix负例通过，真实失败永久保留。下一[recover-constructor-primitive-conversion-arguments](../../changes/recover-constructor-primitive-conversion-arguments/)规划4/4、2/7任务（基线/前置完成，产品尚未实施），复用已有15opcode/Cast并启用现有handler闭包；ordinary Site入口必须透传本次Budget/Stop补齐必要漏计，新scope不扩成员/statement、一般alias及数值折叠。
+
+数值转换片完整两类两真实JDK基线已证：原程序2/2，旧Jarde拒绝且compile失败0/2；JADX none/default四腿compile/run0但删除long→float→long及long→double→long中间转换、舍入值错误，语义0/4。保留全部成员与原始双流，不为制造JADX成功缩小分母；Jarde以原程序和逐层转换语义为oracle。child-array协变已有独立架构审计，结构identity/ownership与Javaassignability呈现分层，不混入数值片。

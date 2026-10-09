@@ -1,6 +1,8 @@
-# HANDOFF — jarde 主线与下一语法片
+# HANDOFF — jarde 当前主线与接续入口
 
-当前聊天按用户指示继续推进：root负责架构、OpenSpec、对抗验收；确定性实现交给Luna。先读取本文件和71单元账本，再核对实际主线，不能把历史通过日志当作当前HEAD的结果。
+用户明确要求继续在当前聊天推进，不暂停持续目标。root负责架构、OpenSpec和对抗验收，确定性实现交给Luna；以JADX的71单元账本逐片推进，不恢复随机巡查。
+
+## 先核对实际状态
 
 ```sh
 git status --short
@@ -8,45 +10,45 @@ git log -1 --oneline
 git rev-parse HEAD origin/main
 git branch -av
 git worktree list
-gh run list --workflow CI --commit "$(git rev-parse HEAD)" --limit 3
 ```
 
-## 当前语法片
+最新已验收产品代码为 **5a6264de1b3481e1cdbef4fd30361940bfac33cf**，已推送main；[CI37947791151](https://github.com/LordCasser/jarde/actions/runs/37947791151)四job、48steps全部success，含双seed、JDK25 oracle、完整Java对照和fuzz。后续文档提交不改变该代码身份；未来产品WIP不能借这次CI结果。实际JSON和源码/CLI身份核对入口为[构造组合root验收](openspec/changes/compose-constructed-reference-array-elements/verification-root.md)。
 
-[split-proved-reference-slot-lifetimes](openspec/changes/split-proved-reference-slot-lifetimes/verification-root.md)补齐无LVT普通引用槽的独立生命周期，复用既有SSA owner、变量分段、名称和声明。八类32完整输入从8/32增至24/32：16 no-debug新增完整重编/隔离行为成功；16 debug保持原结果，其中8同名LVT仍失败。原/JADX32腿成功对照已冻结。完整LG/finalize与整个EM-20不宣称完成。
+## 当前下一片：构造参数数值转换
 
-root发现并修正了“仅查store直接uses会漏掉aload后的旧栈值”问题；HeldUse以及两javac的非零栈checkcast控制都直接验证命名元数据未发布分段。初候选的失败、最终完整32腿、10个负控制及逐字段source-map审查均永久保留。[任务](openspec/changes/split-proved-reference-slot-lifetimes/tasks.md)、[实现与真实SSA](openspec/changes/split-proved-reference-slot-lifetimes/results/implementation-notes.md)、[最终CLI2元数据](openspec/changes/split-proved-reference-slot-lifetimes/results/candidate-cli-v2.json)、[门禁实际index](openspec/changes/split-proved-reference-slot-lifetimes/results/gates-v3/index.json)是入口。代码4fba93438的[CI37915062977](https://github.com/LordCasser/jarde/actions/runs/37915062977)已四job全部success，包含JDK25oracle；本片7/7任务完成。原JSON和清理记录见本片root验收，HEAD状态仍以顶部命令为准。
+[recover-constructor-primitive-conversion-arguments](openspec/changes/recover-constructor-primitive-conversion-arguments/)规划4/4、任务 **2/7**：前置确切代码CI与完整基线已完成，产品尚未实施。继续前先读proposal、design、specs、tasks及[本片root验收](openspec/changes/recover-constructor-primitive-conversion-arguments/verification-root.md)。
 
-此前同类泛型调用已合入主线，9/9任务完成，历史root验收在 [recover-same-class-generic-call-consumers](openspec/changes/recover-same-class-generic-call-consumers/verification-root.md)。本片开始前主线82090226的CI37892494665四job成功。旧handoff完整保存在新片results/handoff-before-reference-slot.md。
+下一步由Luna限定实现2.1/2.2，再交root真实双JDK完整对照：
 
-## 当前推进：EM-18异构数组初始化
+1. 普通constructor实际argument_dependencies中放行PrimitiveConversion，复用现有15opcode、逐层Cast、源类别/Boolean和constructor descriptor验证；不新增pass/AST/table，不删舍入链。
+2. 仅新conversion路径触发既有allocation→constructor→唯一consumer的handler ordinal闭包，不扩旧普通invoke所有handler债务。
+3. 普通Site生产入口目前经verify创建budget:None。将report本次Budget传入已有verify_metered，Result原子返回Stop；Refusal照常登记。必要地补这个入口的漏计，不用feature计费开关、预扫或长度估价；测试unmetered入口不能作预算证据。
+4. 补真实SSA/extra-dup2、无关conversion、handler不同/同覆盖、ordinary路径预算和取消、Boolean正文拒绝。PrimitiveLongPair实际constructor为(JJ)，复用现有pool entries和dup2，不能假称存在Pair(IJ)。stored-local生产者只执行一次，两个参数各自load/转换。
 
-`recover-heterogeneous-array-init` 已完成架构修订、产品实现、本地root与确切SHA CI验收（9/9任务），已提交推送main代码29dcd5e892696e9f6b5adbb657ffa0a7db576c27。实际CI37926854875四job、48steps全部success，含双seed和JDK25 oracle；原JSON及hash见本片root验收，当前下一片工作区修改不因此获得验收。现有平台/数组事实加本次Runtime选中的有界snapshot header关系授权具体aastore；匹配store BCI与完整source/component，保留元素表达式，支持等秩引用数组，无新层级服务、LUB或element cast。源码、快照事实与真实SSA需以当前文件核对，Atlas行号缓存过时。
+完整基线从创建起保留两个顶层类及所有成员：五wrapper、Integer对照、六元素Number[]、普通return-new、stored-local、15转换和三种舍入链。原程序两真实JDK均成功；旧Jarde两腿拒绝且compile失败。JADX none/default四腿均compile/run0但删掉两种long经float/double往返的cast，16777217和9007199254740993没有产生原程序的舍入结果，语义 **0/4**。原程序是oracle，不能以JADX exit0替代行为正确。
 
-永久基线、架构和失败审查入口：[results/README-baseline.md](openspec/changes/recover-heterogeneous-array-init/results/README-baseline.md)。原18有效腿的原程序、源码参考版JADX均完整重编/验证运行双流匹配18/18，Jarde旧行为0/18；exit0但stdout为空的4腿不算恢复。CLI1 `0ebf4e6189c02d1d84072c9aeacd380303e71e6885f95408e054e8f843154f79` 当前同输入8/18完全通过（fresh/frozen CT、boxed、nested各两腿），其余inline-new仍失败，不关闭EM18整单元。原两次runner的命名/观察器失败与修正均保留；以root verification而非早期汇总为准。
+永久入口：results/baseline-v1/manifest.json、baseline-root-verification-v2.json、baseline-method-review-v1.json、antecedent-freeze-root-v1.json、jadx-cast-chain-audit-v1/audit.json。root独立核对6比较腿零问题，旧完整family110文件hash重查零问题；verifier v1误用另一JDK flags的真实失败与修复保留。基线已冻结，不覆盖或删成员。源码草稿虽位于draft-sources-v1，内容身份已由baseline固定，后续修改需新版本及重新对照。
 
-完整factory-family验证平台接口/集合/异常及自有类两跳/interface/引用数组；direct-new是独立完整未覆盖控制，不能伪称非法赋值方向。新手写observer的loop/ternary共享arrayread曾拒绝，v2完整保留；v3只简化observer、不删目标成员；root完整六类两compiler腿独立重放，factory 2/2隔离重编/双流匹配，共50个store来源/无element cast核验通过，direct-new 0/2明确未覆盖。永久入口为本片verification-root.md与results/candidate-v1-fixture-v3-root-verification.json。所有源码完整生成，runtime CP只能用其新编译目录。
+成员/statement-position news、一般alias/phi、nested covariant child-array和BigDecimal不扩围。当前Luna只读预审已完成，须root明确派发后才编辑；后续实际状态以git diff为准。
 
-已写好下一项 [compose-constructed-reference-array-elements](openspec/changes/compose-constructed-reference-array-elements/)（规划4/4、7/8任务已验收，组合、双javac完整源集、负控制、计费与本地全门禁完成，确切代码CI待验收）。构造器验证不承认aastore reader，ArrayInitializers又不接受verified constructor atom，需在现有两个证明内准确、原子组合；单开放白名单不安全。保留原arrays→sites编排对constructor内varargs/char[]的支持。周边concat/arraylength/field与primitive constructor-argument conversion缺口独立记录，不混入当前类型片。
+## 已完成片与剩余边界
 
-构造组合片已冻结前片CLI与完整direct-v3输入，原始source与Jarde生成source的hash身份混淆经root校验发现，v1及勘误保留，修正后33项hash全部通过。新完整7类双javac family从创建时覆盖平台CharSequence/Collection/Throwable及自有直接/两跳/接口构造；root同输入全源码回放旧Jarde0/2、JADX none2/2，default2腿因类名观察双流不符。入口为该片results/baseline-freeze-root-verification-v2.json、baseline-cli1-complete-family-root-verification.json与current-proof-seam-audit.md。两轮接口编译失败与新增测试缺导入失败均保留，focused-v5已init19/19、新完整家族及控制集成2/2、CLI构建通过。冻结CLI1为69a4a4bf86ca3cda412ea5ca6fba4dda24e84253daca781ddfec2da31b4d8495；完整七类两实际JDK 2/2成功，原18腿8→16/18，BigDecimal仍2腿拒绝/双流不符。旧factory2/2、direct全家族0/2，primitive conversion及nested covariant child-array仍独立边界。独立nested完整单类原/JADX/Jarde两JDK全部通过。focused-v6 init22/22、新完整及控制集成2/2、旧数组集成4/4通过；额外stackreader、fresh直接索引变体、真实handler控制均已通过。第一次census读取后因旧计数断言失败保留，更新实测1055/4532/459/2711/8后复跑成功，指纹/P5已通过。首全仓seed351targets/3327passed/1failed/93ignored暴露generic/child-array公共interval检查遗漏，已恢复共同postlude且focused-v7全部通过，原负例不变、失败永久保留；冻结CLI2完整回放、新双seed全门禁与确切SHA CI继续进行。以该片verification-root.md与真实results index为准，不把初步CLI验收当作当前WIP/整个EM18通过。
+[compose-constructed-reference-array-elements](openspec/changes/compose-constructed-reference-array-elements/verification-root.md) **8/8任务**：保留arrays→sites顺序，准确store BCI/completed ValueId许可，candidate-local子数组/嵌套Site共同闭合后单次移交，无全计划clone。新完整七类两真实JDK成功2/2，原18有效腿由8/18增至16/18；旧factory完整六类2/2，旧direct完整六类仍0/2。BigDecimal两腿compile0但正文拒绝/双流不符，不计成功。首seed暴露公共interval检查遗漏，恢复共同postlude后原负例通过，真实失败永久保留。
 
-[71单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)的71是验收单元数，612是JADX测试文件数，均不是成功率。每片明确完整正例、保守拒绝、JADX真实失败与待扩验范围；不要恢复漫无目的的随机巡查。
+本片最终本地双seed各351targets、3328passed/0failed/93ignored；MSRV1.88、fmt、CI-exact Clippy、P5/指纹、显式Java对照、OpenSpec strict及diff全部成功。源码与冻结CLI2 SHA **78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273**一致；实际CI原JSON SHA f7ac30572c1c7b66c6375661c7c1176166c9b9f411f52baf6031865f917ff72e。CLI保留于/private/tmp/jarde-em18-composition-cli-v2。
 
-TWR另有真实javac8两资源未闭合：[当前root复核](openspec/changes/recover-twr-javac8-close-sequence/verification-root-current.md)。javac23 --release8两资源成功不能代替真实javac8两资源；不要把旧的剥离成员结果计作整类成功。泛型剩余getter反向依赖、容器/wildcard、任意alias/phi、继承/跨类等边界另片处理。共享Signature缓存与物理事实复制计费是架构债务，不混入本片。
+前置[异构数组类型片](openspec/changes/recover-heterogeneous-array-init/verification-root.md)代码29dcd5e89、CI37926854875全部成功；[引用槽生命周期片](openspec/changes/split-proved-reference-slot-lifetimes/verification-root.md)代码4fba93438、CI37915062977全部成功。完整LG/finalize、同名LVT变体、TWR真实javac8两资源仍各自保留边界，不能把窄片验收当整个单元完成。
 
-## 主线、工作树与构建纪律
+数值片之后，优先按已登记的[child-array协变架构审计](openspec/changes/recover-heterogeneous-array-init/results/child-array-covariant-architecture-audit.md)提出独立change：ownGrid的精确component==child_type在候选阶段先断链；reader/value identity及ownership闭合与Javaassignability呈现须分层，后者复用准确store BCI平台/Runtime snapshot事实。类型未证时完整正文fallback，保留真实来源。该片尚未提出/实现，不能把设计审计当成功结果。BigDecimal平台事实另片处理。
 
-未新建分支或工作树。14个辅助工作树均detached、干净、提交为main祖先，无剩余工作、无分支占用且无target；只有main/origin/main，受Codex保护的副本保留。实际审计见新片results/worktree-audit-before-commit.json。
+[71单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)的71是验收单元数，612是JADX测试文件数，均不是成功率。EM18仍部分已测，分母及全单元分类不变。
 
-只允许root在主仓串行Cargo/Git/rustfmt；环境CARGO_BUILD_JOBS=1、CARGO_INCREMENTAL=0、RUST_TEST_THREADS=1。20GiB为停建线，验收后清Cargo；保留冻结输入、完整源集和真实双流/exit证据。不动其它项目target，不删拒绝成员，不借原jar编译或执行渲染代码。
+## 工作树、磁盘与执行纪律
 
-引用槽片本地最终门禁已全通过：两seed各349targets、3311passed/0failed/93ignored，MSRV1.88、CI-exact Clippy、显式Java对照、strict及diff均exit0。Cargo清理10177文件、17.8GiB，可用空间约51.5GiB，当时主仓与fuzz均无target；实际清理JSON位于引用槽片results/cargo-clean-final-v1.json。EM18最终两seed各350targets、3319passed/0failed/93ignored，MSRV、fmt、Clippy、显式Java对照、strict及diff均通过。第一次旧varargs拒绝断言失败与首次census旧计数失败均保留，完整V3独立对照后迁移正确正例断言。两seed后磁盘触停建线，清理5323文件/18.3GiB再完成余下门禁；最终已再次清理，主仓与fuzz均无target，冻结CLI保留，清理后可用约39.2GiB。实际索引、原始双流hash与清理JSON见EM18 results/local-gates-root-verification.json、cargo-clean-mid-gates.json与cargo-clean-final.json；实时空间以df为准。
+只有main/origin/main，无剩余分支占用。14个辅助worktree均detached、干净、main祖先、无target，保留受Codex保护的副本；没有遗留工作等待合并。最新实际审计见数值片results/worktree-audit-before-baseline-commit.json，主仓当时仅本轮文档/基线WIP。
 
-## 下一片已规划（尚未实现）
+只由root串行执行Cargo/Git/rustfmt；一次一个Cargo，运行期间冻结产品/测试/canonical fixture。使用CARGO_BUILD_JOBS=1、CARGO_INCREMENTAL=0、RUST_TEST_THREADS=1，debug信息关闭但assertions开启；**20GiB为停建线**，不碰其它项目target。构造组合片中途清13.2GiB、最终清814.8MiB；本轮主仓/fuzz及14辅助树均无target，实时空间以df为准。
 
-[recover-constructor-primitive-conversion-arguments](openspec/changes/recover-constructor-primitive-conversion-arguments/) 已写proposal/design/spec/tasks并通过单change strict；实现必须等当前构造组合片最终门禁与确切代码CI成功。该片复用已有15opcode、Cast、Java源类别/Boolean拒绝，只允许实际参数依赖中的conversion，并仅该新路径触发既有handler区间loop。不新增数值服务/pass/AST。extra-dup真实SSA是一读两ValueId，保守拒绝来自StatementFree，不能用错误的uses.len解释；stored-local reuse独立正控。成员/statement/new一般alias和BigDecimal/nested covariance不扩围。Luna仅准备results下完整源码草稿，未固化新fixture、不执行Java；全部任务未勾选。
+全部生成source必须参与空classpath/sourcepath重编，runtime仅用其新编译classes并-Xverify:all；原始exit/stdout/stderr逐字核对，结构事实、正文质量和执行成功分别计证据。不得借原class/helper、剥离失败成员或修剪原始日志。保留所有历史失败、完整输入和冻结CLI。
 
-## 构造组合片最终本地验收
-
-CLI2为78cfb53212489c017a8ac64292df2531d65300739cdc3297435d76993b2fa273；全部七类两真实JDK成功2/2，原18腿16/18、旧factory2/2、旧direct完整家族0/2与独立nested两JDK结果保持，root完整hash/argv/来源审查无问题。公共interval回归修复后两seed各351targets/3328passed/0failed/93ignored，MSRV1.88、fmt、CI-exact Clippy、P5/指纹、显式Java比较、strict/diff全部通过（7/8任务）。中途清13.2GiB、最终清814.8MiB，主仓和fuzz无target，最终可用约30.6GiB。当前还需提交推送及确切代码SHA CI，全gate入口为本片results/local-gates-root-verification.json；首seed真实失败及不定位parent guard的临时测试记录均保留，后者未纳入最终代码。
+此前完整handoff已保存在数值片results/handoff-before-primitive-conversions-v1.md。

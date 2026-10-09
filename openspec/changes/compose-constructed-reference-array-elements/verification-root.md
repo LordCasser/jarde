@@ -1,6 +1,6 @@
 # Root Verification — Constructed Reference Array Elements
 
-本片7/8任务已验收：架构、实现、双javac完整源集、负控制与本地全门禁完成；提交推送及确切代码SHA CI仍待验收。两轮编译失败保留；第三轮init16/16、完整家族集成1/1及CLI构建exit0。前置类型片代码已推送main `29dcd5e892696e9f6b5adbb657ffa0a7db576c27`；CI37926854875已四job、48steps全部成功，不能把此处原程序或JADX的成功记作新候选成功。
+本片8/8任务全部验收：架构、实现、双javac完整源集、负控制、本地全门禁及确切代码SHA CI完成；main代码 `5a6264de1b3481e1cdbef4fd30361940bfac33cf` 已提交推送，CI37947791151四job/48steps全部success。两轮编译失败保留；第三轮init16/16、完整家族集成1/1及CLI构建exit0。前置类型片代码已推送main `29dcd5e892696e9f6b5adbb657ffa0a7db576c27`；CI37926854875已四job、48steps全部成功，不能把此处原程序或JADX的成功记作新候选成功。
 
 ## Frozen Baseline
 
@@ -74,3 +74,7 @@ reader-census真实读取后因旧固定计数失败保留在focused-v6，实测
 3.1/3.2已勾选。3.3必须等提交推送后实际代码SHA CI全部成功，不能以本地green预先勾选。下一数值转换OpenSpec规划4/4、0/7实现任务，仅源码草稿；独立保留BigDecimal、nested covariance、member/statement与一般alias边界，不把当前片当整个EM18追平。
 
 原始门禁日志在首次staged diff检查因Cargo stdout终尾空行exit2；不修剪原始stream或重算历史hash，沿用相邻片已有的results/.gitattributes（stdout/stderr/log仅关闭源码空白检查）。失败与正确配置后的exit0分别保留staged-diff-check-v1/v2.json；源码与文档空白仍正常检查。
+
+## Exact Code CI Acceptance
+
+代码5a6264de1b3481e1cdbef4fd30361940bfac33cf的CI37947791151四job/48steps全部completed/success，含双seed、JDK25 oracle、ignored P3、functional-constructor完整类和fuzz。实际gh run view原JSON SHA `f7ac30572c1c7b66c6375661c7c1176166c9b9f411f52baf6031865f917ff72e`，永久保留results/ci-code-sha-5a6264de-success.json及ci-root-acceptance-5a6264de.json。root逐文件核对该代码提交、当前产品文件与冻结CLI2 metadata的三个源码SHA相同；没有把前片CI或文档HEAD当成代码验收。3.3勾选，本片8/8完成，整个EM18仍待扩验。下一数值转换片已冻两类完整双JDK基线/预算设计，2/7任务，产品尚未实施。
